@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -49,6 +48,7 @@ public class MainMenuScreen implements Screen {
     private void loadUI(int width, int height) {
         int buttonWidth = width / 4;
         int buttonHeight = height / 10;
+
         //Reset stage
         stage.clear();
 
@@ -56,7 +56,7 @@ public class MainMenuScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = game.defaultFont40;
         labelStyle.fontColor = Color.WHITE;
-        Label headerLabel = new Label("Welcome to ATC Sim!", labelStyle);
+        Label headerLabel = new Label("ATC Sim", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
         headerLabel.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.8f);
@@ -82,6 +82,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Start new game -> Choose airport screen
+                game.setScreen(new NewGameScreen(game));
+                dispose();
             }
         });
         stage.addActor(newGameButton);
@@ -125,6 +127,7 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Quit game
                 dispose();
+                game.dispose();
                 Gdx.app.exit();
                 System.exit(0);
             }
@@ -179,6 +182,5 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
         skin.dispose();
         buttonAtlas.dispose();
-        game.dispose();
     }
 }
