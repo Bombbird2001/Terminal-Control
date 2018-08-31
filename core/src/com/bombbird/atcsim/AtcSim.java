@@ -11,7 +11,7 @@ public class AtcSim extends Game {
 	private FreeTypeFontGenerator blockyFont;
 	BitmapFont blockyFont24;
 	private FreeTypeFontGenerator defaultFont;
-	BitmapFont defaultFont12;
+	BitmapFont defaultFont20;
 	BitmapFont defaultFont40;
 	
 	@Override
@@ -20,7 +20,7 @@ public class AtcSim extends Game {
 		blockyFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/blocky.ttf"));
 		blockyFont24 = generateFont(blockyFont, 24);
 		defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
-		defaultFont12 = generateFont(defaultFont, 12);
+		defaultFont20 = generateFont(defaultFont, 20);
 		defaultFont40 = generateFont(defaultFont, 40);
 		this.setScreen(new MainMenuScreen(this));
 	}
@@ -36,7 +36,7 @@ public class AtcSim extends Game {
 		blockyFont.dispose();
 		defaultFont.dispose();
 		blockyFont24.dispose();
-		defaultFont12.dispose();
+		defaultFont20.dispose();
 		defaultFont40.dispose();
 	}
 

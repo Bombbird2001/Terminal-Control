@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -49,7 +51,7 @@ public class NewGameScreen implements Screen {
 
     private void loadUI(int width, int height) {
         int buttonWidth = width / 4;
-        int buttonHeight = height / 5;
+        int buttonHeight = height / 10;
 
         //Reset stage
         stage.clear();
@@ -60,7 +62,7 @@ public class NewGameScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
-        headerLabel.setHeight(height / 10.0f);
+        headerLabel.setHeight(buttonHeight);
         headerLabel.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.85f);
         headerLabel.setAlignment(Align.center);
         stage.addActor(headerLabel);
@@ -71,12 +73,12 @@ public class NewGameScreen implements Screen {
         skin = new Skin();
         skin.addRegions(airportAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.defaultFont40;
+        buttonStyle.font = game.defaultFont20;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
         //Load airports
-        String[] airports = {"RCTP", "WSSS"};//, "VHHH", "RJAA", "WMKK", "WIII", "ZSPD", "VTBS", "VVTS"};
+        String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
         for (String airport: airports) {
             TextButton airportButton = new TextButton(airport, buttonStyle);
             airportButton.setWidth(buttonWidth);
@@ -91,6 +93,20 @@ public class NewGameScreen implements Screen {
         stage.addActor(table);
 
         //Set back button params
+        TextButton backButton = new TextButton("<- Back", buttonStyle);
+        backButton.setWidth(buttonWidth);
+        backButton.setHeight(buttonHeight);
+        backButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.05f);
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go back to main menu
+                game.setScreen(new MainMenuScreen(game));
+                dispose();
+            }
+        });
+
+        stage.addActor(backButton);
     }
 
     @Override
