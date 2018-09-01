@@ -1,4 +1,4 @@
-package com.bombbird.atcsim;
+package com.bombbird.atcsim.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bombbird.atcsim.AtcSim;
 
 public class NewGameScreen implements Screen {
     //Init game (set in constructor)
@@ -58,7 +59,7 @@ public class NewGameScreen implements Screen {
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.defaultFont40;
+        labelStyle.font = game.fonts.defaultFont40;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
@@ -69,20 +70,41 @@ public class NewGameScreen implements Screen {
 
         //Set button textures
         //Using main menu textures for now, will change later
-        airportAtlas = new TextureAtlas(Gdx.files.internal("buttons/main_menu/mainmenubuttons.atlas"));
+        airportAtlas = new TextureAtlas(Gdx.files.internal("new_game/backbuttons.atlas"));
         skin = new Skin();
         skin.addRegions(airportAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.defaultFont20;
+        buttonStyle.font = game.fonts.defaultFont20;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
         //Load airports
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
+        int id = 0;
         for (String airport: airports) {
-            TextButton airportButton = new TextButton(airport, buttonStyle);
+            final TextButton airportButton = new TextButton(airport, buttonStyle);
+            airportButton.setName(airport);
             airportButton.setWidth(buttonWidth);
             airportButton.setHeight(buttonHeight);
+            airportButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    String name = actor.getName();
+                    if (name.equals("RCTP\nTaiwan Taoyuan International Airport")) {
+                        game.setScreen(new RctpScreen(game));
+                    } else if (name.equals("WSSS\nSingapore Changi Airport")) {
+                    } else if (name.equals("VHHH\nHong Kong International Airport")) {
+                    } else if (name.equals("RJAA\nNarita International Airport")) {
+                    } else if (name.equals("WMKK\nKuala Lumpur International Airport")) {
+                    } else if (name.equals("WIII\nSoekarno-Hatta International Airport")) {
+                    } else if (name.equals("ZSPD\nShanghai Pudong International Airport")) {
+                    } else if (name.equals("VTBS\nBangkok Suvarnabhumi Airport")) {
+                    } else if (name.equals("VVTS\nTan Son Nhat International Airport")) {
+                    } else {
+                        System.out.println("Airport not found");
+                    }
+                }
+            });
             scrollTable.add(airportButton);
             scrollTable.row();
         }

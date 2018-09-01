@@ -1,4 +1,4 @@
-package com.bombbird.atcsim;
+package com.bombbird.atcsim.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bombbird.atcsim.AtcSim;
 
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
@@ -29,7 +30,7 @@ public class MainMenuScreen implements Screen {
     private TextureAtlas buttonAtlas;
     private Skin skin;
 
-    MainMenuScreen(final AtcSim game) {
+    public MainMenuScreen(final AtcSim game) {
         this.game = game;
 
         //Set camera params
@@ -54,7 +55,7 @@ public class MainMenuScreen implements Screen {
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.defaultFont40;
+        labelStyle.font = game.fonts.defaultFont40;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("ATC Sim", labelStyle);
         headerLabel.setWidth(buttonWidth);
@@ -64,11 +65,11 @@ public class MainMenuScreen implements Screen {
         stage.addActor(headerLabel);
 
         //Set button textures
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("buttons/main_menu/mainmenubuttons.atlas"));
+        buttonAtlas = new TextureAtlas(Gdx.files.internal("main_menu/mainmenubuttons.atlas"));
         skin = new Skin();
         skin.addRegions(buttonAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.defaultFont40;
+        buttonStyle.font = game.fonts.defaultFont40;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
