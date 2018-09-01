@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.entities.RangeCircle;
 
 public class GameScreen implements Screen {
     //Init game (set in constructor)
@@ -22,13 +21,28 @@ public class GameScreen implements Screen {
     Viewport viewport;
 
     //Create texture stuff
-    TextureAtlas airportAtlas;
-    Texture radarScreenTexture;
-    Image radarScreenImage;
     Skin skin;
+    private ShapeRenderer shapeRenderer;
+
+    //Create range circles
+    private RangeCircle[] rangeCircles;
 
     GameScreen(final AtcSim game) {
         this.game = game;
+        shapeRenderer = new ShapeRenderer();
+
+        //Initiate range circles
+        rangeCircles = new RangeCircle[3];
+    }
+
+    void loadRange() {
+        //Load radar screen
+        rangeCircles[0] = new RangeCircle(game, 10, 60);
+        rangeCircles[1] = new RangeCircle(game, 30, 228);
+        rangeCircles[2] = new RangeCircle(game, 50, 390);
+        for (RangeCircle circle: rangeCircles) {
+            stage.addActor(circle);
+        }
     }
 
     @Override
@@ -38,15 +52,15 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0.3f, 0, 0);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
 
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(delta);
-        game.batch.begin();
         stage.draw();
+        game.batch.begin();
         game.batch.end();
     }
 
@@ -70,14 +84,17 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
     public void dispose() {
+        stage.clear();
+        for (RangeCircle circle: rangeCircles) {
+            circle.dispose();
+        }
         stage.dispose();
         skin.dispose();
-        airportAtlas.dispose();
-        radarScreenTexture.dispose();
+        shapeRenderer.dispose();
     }
 }

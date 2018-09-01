@@ -1,16 +1,15 @@
 package com.bombbird.atcsim.desktop;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.bombbird.atcsim.AtcSim;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "ATC Sim";
-		config.width = 1440;
-		config.height = 810;
-		config.forceExit = false;
-		new LwjglApplication(new AtcSim(), config);
+		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle("ATC Sim");
+		config.setMaximized(true);
+		config.setWindowedMode(1440, 810);
+		new Lwjgl3Application(new AtcSim(), config);
 	}
 }

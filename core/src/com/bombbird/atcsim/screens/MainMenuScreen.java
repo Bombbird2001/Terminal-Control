@@ -13,9 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
+
+import static com.bombbird.atcsim.AtcSim.HEIGHT;
+import static com.bombbird.atcsim.AtcSim.WIDTH;
 
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
@@ -32,23 +36,23 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final AtcSim game) {
         this.game = game;
+        Gdx.graphics.setWindowedMode(WIDTH, HEIGHT);
 
         //Set camera params
         camera = new OrthographicCamera();
-        viewport = new FillViewport(1440, 810, camera);
+        camera.setToOrtho(false,1440, 810);
+        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
 
         //Set stage params
-        stage = new Stage(viewport);
+        stage = new Stage(new FitViewport(1440, 810));
+        stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
-
-        loadUI(1440, 810);
     }
 
-    private void loadUI(int width, int height) {
-        int buttonWidth = width / 4;
-        int buttonHeight = height / 10;
+    private void loadUI() {
+        int buttonWidth = 500;
+        int buttonHeight = 100;
 
         //Reset stage
         stage.clear();
@@ -60,7 +64,7 @@ public class MainMenuScreen implements Screen {
         Label headerLabel = new Label("ATC Sim", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
-        headerLabel.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.8f);
+        headerLabel.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.8f);
         headerLabel.setAlignment(Align.center);
         stage.addActor(headerLabel);
 
@@ -75,7 +79,7 @@ public class MainMenuScreen implements Screen {
 
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
-        newGameButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.65f);
+        newGameButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.65f);
         newGameButton.setWidth(buttonWidth);
         newGameButton.setHeight(buttonHeight);
         newGameButton.getLabel().setAlignment(Align.center);
@@ -91,7 +95,7 @@ public class MainMenuScreen implements Screen {
 
         //Set load game button params
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
-        loadGameButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.5f);
+        loadGameButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.5f);
         loadGameButton.setWidth(buttonWidth);
         loadGameButton.setHeight(buttonHeight);
         loadGameButton.getLabel().setAlignment(Align.center);
@@ -105,7 +109,7 @@ public class MainMenuScreen implements Screen {
 
         //Set settings button params
         TextButton settingsButton = new TextButton("Settings", buttonStyle);
-        settingsButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.35f);
+        settingsButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.35f);
         settingsButton.setWidth(buttonWidth);
         settingsButton.setHeight(buttonHeight);
         settingsButton.getLabel().setAlignment(Align.center);
@@ -119,7 +123,7 @@ public class MainMenuScreen implements Screen {
 
         //Set quit button params
         TextButton quitButton = new TextButton("Quit", buttonStyle);
-        quitButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.2f);
+        quitButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.2f);
         quitButton.setWidth(buttonWidth);
         quitButton.setHeight(buttonHeight);
         quitButton.getLabel().setAlignment(Align.center);
@@ -138,7 +142,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-
+        loadUI();
     }
 
     @Override
@@ -180,6 +184,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        stage.clear();
         stage.dispose();
         skin.dispose();
         buttonAtlas.dispose();

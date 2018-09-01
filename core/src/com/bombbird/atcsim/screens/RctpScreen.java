@@ -1,56 +1,89 @@
 package com.bombbird.atcsim.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.entities.restrictions.Obstacle;
+
+import java.util.ArrayList;
 
 class RctpScreen extends GameScreen {
+    private FileHandle obstacles;
+    private Array<Obstacle> obsArray;
+
     RctpScreen(final AtcSim game) {
         super(game);
 
         //Set camera params
         camera = new OrthographicCamera();
-        viewport = new FillViewport(1440, 810, camera);
+        camera.setToOrtho(false,1440, 810);
+        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
 
         //Set stage params
-        stage = new Stage();
+        stage = new Stage(new FitViewport(1440, 810));
+        stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
-        loadUI(1440, 810);
+        //Load files containing obstacle information
+        obstacles = Gdx.files.internal("game/rctp/rctp.obs");
+        obsArray = new Array<Obstacle>();
     }
 
-    private void loadUI(int width, int height) {
+    private void loadUI() {
         //Reset stage
         stage.clear();
 
-        //Set test label
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.fonts.defaultFont40;
-        labelStyle.fontColor = Color.WHITE;
-        Label headerLabel = new Label("Success!!!!!", labelStyle);
-        headerLabel.setWidth(500);
-        headerLabel.setHeight(100);
-        headerLabel.setPosition(width / 2.0f - 500 / 2.0f, height * 0.85f);
-        headerLabel.setAlignment(Align.center);
-        stage.addActor(headerLabel);
+        //Load altitude restrictions
+        loadRange();
+        String obsStr = obstacles.readString();
+        String[] indivObs = obsStr.split("\\r?\\n");
+        for (String s: indivObs) {
+            //For each individual obstacle:
+            String[] obsInfo = s.split(", ");
+            int index = 0;
+            int minAlt = 0;
+            String text = "";
+            int textX = 0;
+            int textY = 0;
+            ArrayList<Float> vertices = new ArrayList<Float>();
+            for (String s1: obsInfo) {
+                switch (index) {
+                    case 0: minAlt = Integer.parseInt(s1); break;
+                    case 1: text = s1; break;
+                    case 2: textX = Integer.parseInt(s1); break;
+                    case 3: textY = Integer.parseInt(s1); break;
+                    default: vertices.add(Float.parseFloat(s1));
+                }
+                index++;
+            }
+            int i = 0;
+            float[] verts = new float[vertices.size()];
+            for (float f: vertices) {
+                verts[i++] = f;
+            }
+            Obstacle obs = new Obstacle(game, verts, minAlt, text, textX, textY);
+            obsArray.add(obs);
+            stage.addActor(obs);
+        }
+    }
 
-        //Load textures
-        airportAtlas = new TextureAtlas();
-        airportAtlas.dispose();
+    @Override
+    public void show() {
+        loadUI();
+    }
 
-        //Load radar screen
-        radarScreenTexture = new Texture(Gdx.files.internal("game/default_screen.png"));
-        radarScreenImage = new Image(radarScreenTexture);
-        stage.addActor(radarScreenImage);
+    @Override
+    public void dispose() {
+        stage.clear();
+        for (Obstacle obs: obsArray) {
+            obs.dispose();
+        }
+        stage.dispose();
+        skin.dispose();
     }
 }

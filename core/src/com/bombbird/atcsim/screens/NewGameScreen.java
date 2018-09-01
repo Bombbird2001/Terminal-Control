@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
 
@@ -35,24 +35,23 @@ public class NewGameScreen implements Screen {
 
         //Set camera params
         camera = new OrthographicCamera();
-        viewport = new FillViewport(1440, 810, camera);
+        camera.setToOrtho(false,1440, 810);
+        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
 
         //Set stage params
-        stage = new Stage(viewport);
+        stage = new Stage(new FitViewport(1440, 810));
+        stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
         //Set table params (for scrollpane)
         table = new Table();
         scrollTable = new Table();
-
-        loadUI(1440, 810);
     }
 
-    private void loadUI(int width, int height) {
-        int buttonWidth = width / 4;
-        int buttonHeight = height / 10;
+    private void loadUI() {
+        int buttonWidth = 500;
+        int buttonHeight = 100;
 
         //Reset stage
         stage.clear();
@@ -64,7 +63,7 @@ public class NewGameScreen implements Screen {
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
-        headerLabel.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.85f);
+        headerLabel.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.85f);
         headerLabel.setAlignment(Align.center);
         stage.addActor(headerLabel);
 
@@ -80,7 +79,6 @@ public class NewGameScreen implements Screen {
 
         //Load airports
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
-        int id = 0;
         for (String airport: airports) {
             final TextButton airportButton = new TextButton(airport, buttonStyle);
             airportButton.setName(airport);
@@ -109,7 +107,7 @@ public class NewGameScreen implements Screen {
             scrollTable.row();
         }
         ScrollPane scrollPane = new ScrollPane(scrollTable);
-        table.setBounds(width / 2.0f - buttonWidth * 0.75f, height * 0.2f, buttonWidth * 1.5f, height * 0.6f);
+        table.setBounds(1440 / 2.0f - 500 * 0.75f, 810 * 0.2f, buttonWidth * 1.5f, 810 * 0.6f);
         table.add(scrollPane).fill().expand();
 
         stage.addActor(table);
@@ -118,13 +116,12 @@ public class NewGameScreen implements Screen {
         TextButton backButton = new TextButton("<- Back", buttonStyle);
         backButton.setWidth(buttonWidth);
         backButton.setHeight(buttonHeight);
-        backButton.setPosition(width / 2.0f - buttonWidth / 2.0f, height * 0.05f);
+        backButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.05f);
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
                 game.setScreen(new MainMenuScreen(game));
-                dispose();
             }
         });
 
@@ -133,7 +130,7 @@ public class NewGameScreen implements Screen {
 
     @Override
     public void show() {
-
+        loadUI();
     }
 
     @Override
@@ -170,11 +167,12 @@ public class NewGameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
     public void dispose() {
+        stage.clear();
         stage.dispose();
         skin.dispose();
         airportAtlas.dispose();

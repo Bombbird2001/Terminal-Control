@@ -1,16 +1,24 @@
 package com.bombbird.atcsim;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.bombbird.atcsim.screens.Fonts;
 import com.bombbird.atcsim.screens.MainMenuScreen;
 
 public class AtcSim extends Game {
+	//Get screen size
+	public static int WIDTH;
+	public static int HEIGHT;
+
 	public SpriteBatch batch;
 	public Fonts fonts;
 	
 	@Override
 	public void create () {
+		WIDTH = Gdx.graphics.getWidth();
+		HEIGHT = Gdx.graphics.getHeight();
+		System.out.println(WIDTH + " " + HEIGHT);
 		batch = new SpriteBatch();
 		fonts = new Fonts();
 		this.setScreen(new MainMenuScreen(this));
