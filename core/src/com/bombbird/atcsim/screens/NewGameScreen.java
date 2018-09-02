@@ -149,9 +149,8 @@ public class NewGameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+        viewport.update(width, height, true);
         stage.getViewport().update(width, height, true);
-        //Gdx.app.log("Resize", width + " " + height);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
     }
 

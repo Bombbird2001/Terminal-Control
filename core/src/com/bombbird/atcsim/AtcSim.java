@@ -18,7 +18,6 @@ public class AtcSim extends Game {
 	public void create () {
 		WIDTH = Gdx.graphics.getWidth();
 		HEIGHT = Gdx.graphics.getHeight();
-		System.out.println(WIDTH + " " + HEIGHT);
 		batch = new SpriteBatch();
 		fonts = new Fonts();
 		this.setScreen(new MainMenuScreen(this));

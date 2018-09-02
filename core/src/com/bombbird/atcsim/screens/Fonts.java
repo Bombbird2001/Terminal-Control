@@ -9,6 +9,7 @@ public class Fonts implements Disposable {
     private FreeTypeFontGenerator blockyFont;
     public BitmapFont blockyFont24;
     private FreeTypeFontGenerator defaultFont;
+    public BitmapFont defaultFont10;
     public BitmapFont defaultFont12;
     public BitmapFont defaultFont20;
     public BitmapFont defaultFont40;
@@ -17,6 +18,7 @@ public class Fonts implements Disposable {
         blockyFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/blocky.ttf"));
         blockyFont24 = generateFont(blockyFont, 24);
         defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
+        defaultFont10 = generateFont(defaultFont, 10);
         defaultFont12 = generateFont(defaultFont, 12);
         defaultFont20 = generateFont(defaultFont, 20);
         defaultFont40 = generateFont(defaultFont, 40);

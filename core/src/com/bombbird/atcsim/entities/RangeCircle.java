@@ -4,40 +4,36 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
 
-public class RangeCircle extends Actor implements Disposable {
-    private final AtcSim game;
+public class RangeCircle extends Actor{
     private int range;
+    private Label labelUp;
+    private Label labelDown;
     private ShapeRenderer shapeRenderer;
-    private boolean matrixSet;
-    private int yOffset;
-    private int xOffset;
 
-    public RangeCircle(AtcSim game, int range, int yOffset) {
-        this.game = game;
+    public RangeCircle(AtcSim game, int range, int yOffset, ShapeRenderer shapeRenderer) {
         this.range = range;
-        this.yOffset = yOffset;
-        shapeRenderer = new ShapeRenderer();
-        matrixSet = false;
-        xOffset = -10;
+        this.shapeRenderer = shapeRenderer;
+        int xOffset = -15;
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = game.fonts.defaultFont10;
+        labelStyle.fontColor = Color.GRAY;
+        labelUp = new Label(Integer.toString(range) + "nm", labelStyle);
+        labelUp.setPosition(1440 / 2f + xOffset, 810 / 2f - yOffset - 10);
+        labelDown = new Label(Integer.toString(range)+ "nm", labelStyle);
+        labelDown.setPosition(1440 / 2f + xOffset, 810 / 2f + yOffset);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (!matrixSet) {
-            shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-            matrixSet = true;
-        }
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(720, 405, range / 10f * 81);
-        shapeRenderer.end();
+        labelUp.draw(batch, 1);
+        labelDown.draw(batch, 1);
     }
 
-    @Override
-    public void dispose() {
-        shapeRenderer.dispose();
+    public void renderShape() {
+        shapeRenderer.setColor(Color.GRAY);
+        shapeRenderer.circle(720, 405, range / 10f * 81);
     }
 }

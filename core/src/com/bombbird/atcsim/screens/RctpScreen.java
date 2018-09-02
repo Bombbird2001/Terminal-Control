@@ -18,16 +18,19 @@ class RctpScreen extends GameScreen {
     RctpScreen(final AtcSim game) {
         super(game);
 
-        //Set camera params
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false,1440, 810);
-        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
-        viewport.apply();
-
         //Set stage params
         stage = new Stage(new FitViewport(1440, 810));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
-        Gdx.input.setInputProcessor(stage);
+        inputProcessor2 = stage;
+        inputMultiplexer.addProcessor(inputProcessor1);
+        inputMultiplexer.addProcessor(inputProcessor2);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
+        //Set camera params
+        camera = (OrthographicCamera) stage.getViewport().getCamera();
+        camera.setToOrtho(false,1440, 810);
+        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
+        viewport.apply();
 
         //Load files containing obstacle information
         obstacles = Gdx.files.internal("game/rctp/rctp.obs");
@@ -38,8 +41,13 @@ class RctpScreen extends GameScreen {
         //Reset stage
         stage.clear();
 
-        //Load altitude restrictions
+        //Load range circles
         loadRange();
+
+        //Load scroll listener
+        loadScroll();
+
+        //Load altitude restrictions
         String obsStr = obstacles.readString();
         String[] indivObs = obsStr.split("\\r?\\n");
         for (String s: indivObs) {
@@ -66,9 +74,16 @@ class RctpScreen extends GameScreen {
             for (float f: vertices) {
                 verts[i++] = f;
             }
-            Obstacle obs = new Obstacle(game, verts, minAlt, text, textX, textY);
+            Obstacle obs = new Obstacle(game, verts, minAlt, text, textX, textY, shapeRenderer);
             obsArray.add(obs);
             stage.addActor(obs);
+        }
+    }
+
+    @Override
+    void renderShape() {
+        for (Obstacle obstacle: obsArray) {
+            obstacle.renderShape();
         }
     }
 
@@ -80,9 +95,6 @@ class RctpScreen extends GameScreen {
     @Override
     public void dispose() {
         stage.clear();
-        for (Obstacle obs: obsArray) {
-            obs.dispose();
-        }
         stage.dispose();
         skin.dispose();
     }
