@@ -7,16 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
 import java.util.ArrayList;
 
 class RctpScreen extends GameScreen {
-    private FileHandle obstacles;
-    private Array<Obstacle> obsArray;
-    private FileHandle restrictions;
-    private Array<RestrictedArea> restArray;
 
     RctpScreen(final AtcSim game) {
         super(game);
@@ -42,12 +39,20 @@ class RctpScreen extends GameScreen {
         restArray = new Array<RestrictedArea>();
     }
 
+    private void loadAirports() {
+        Airport rctp = new Airport("RCTP");
+        airports.add(rctp);
+    }
+
     private void loadUI() {
         //Reset stage
         stage.clear();
 
         //Load range circles
         loadRange();
+
+        //Load airports
+        loadAirports();
 
         //Load scroll listener
         loadScroll();
@@ -79,7 +84,7 @@ class RctpScreen extends GameScreen {
             for (float f: vertices) {
                 verts[i++] = f;
             }
-            Obstacle obs = new Obstacle(verts, minAlt, text, textX, textY, shapeRenderer);
+            Obstacle obs = new Obstacle(verts, minAlt, text, textX, textY);
             obsArray.add(obs);
             stage.addActor(obs);
         }
@@ -111,7 +116,7 @@ class RctpScreen extends GameScreen {
                 }
                 index++;
             }
-            RestrictedArea area = new RestrictedArea(centreX, centreY, radius, minAlt, text, textX, textY, shapeRenderer);
+            RestrictedArea area = new RestrictedArea(centreX, centreY, radius, minAlt, text, textX, textY);
             restArray.add(area);
             stage.addActor(area);
         }
@@ -121,6 +126,9 @@ class RctpScreen extends GameScreen {
     void renderShape() {
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
+        }
+        for (Airport airport: airports) {
+            airport.renderRunways();
         }
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();

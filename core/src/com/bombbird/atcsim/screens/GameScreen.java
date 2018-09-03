@@ -1,6 +1,7 @@
 package com.bombbird.atcsim.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,14 +11,18 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.RangeCircle;
+import com.bombbird.atcsim.entities.restrictions.Obstacle;
+import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
     //Init game (set in constructor)
     private final AtcSim game;
-    Stage stage;
+    public static Stage stage;
 
     //Set input processors
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -32,10 +37,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Create texture stuff
     Skin skin;
-    ShapeRenderer shapeRenderer;
+    public static ShapeRenderer shapeRenderer;
 
     //Create range circles
     private RangeCircle[] rangeCircles;
+
+    //Create obstacle resources
+    FileHandle obstacles;
+    Array<Obstacle> obsArray;
+    FileHandle restrictions;
+    Array<RestrictedArea> restArray;
+
+    //Create airports
+    Array<Airport> airports;
 
     GameScreen(final AtcSim game) {
         this.game = game;
@@ -43,6 +57,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Initiate range circles
         rangeCircles = new RangeCircle[3];
+
+        //Initiate airports
+        airports = new Array<Airport>();
     }
 
     void loadRange() {
@@ -157,9 +174,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
         renderShape();
         shapeRenderer.end();
+        /*
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         //TODO: Add rendering for runways
         shapeRenderer.end();
+        */
 
         //Draw to the spritebatch
         game.batch.begin();
