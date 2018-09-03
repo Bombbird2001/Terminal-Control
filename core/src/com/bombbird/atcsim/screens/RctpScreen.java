@@ -8,12 +8,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
+import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
 import java.util.ArrayList;
 
 class RctpScreen extends GameScreen {
     private FileHandle obstacles;
     private Array<Obstacle> obsArray;
+    private FileHandle restrictions;
+    private Array<RestrictedArea> restArray;
 
     RctpScreen(final AtcSim game) {
         super(game);
@@ -22,8 +25,8 @@ class RctpScreen extends GameScreen {
         stage = new Stage(new FitViewport(1440, 810));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         inputProcessor2 = stage;
-        inputMultiplexer.addProcessor(inputProcessor1);
         inputMultiplexer.addProcessor(inputProcessor2);
+        inputMultiplexer.addProcessor(inputProcessor1);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         //Set camera params
@@ -35,6 +38,8 @@ class RctpScreen extends GameScreen {
         //Load files containing obstacle information
         obstacles = Gdx.files.internal("game/rctp/rctp.obs");
         obsArray = new Array<Obstacle>();
+        restrictions = Gdx.files.internal("game/rctp/rctp.rest");
+        restArray = new Array<RestrictedArea>();
     }
 
     private void loadUI() {
@@ -47,7 +52,7 @@ class RctpScreen extends GameScreen {
         //Load scroll listener
         loadScroll();
 
-        //Load altitude restrictions
+        //Load obstacles
         String obsStr = obstacles.readString();
         String[] indivObs = obsStr.split("\\r?\\n");
         for (String s: indivObs) {
@@ -74,9 +79,41 @@ class RctpScreen extends GameScreen {
             for (float f: vertices) {
                 verts[i++] = f;
             }
-            Obstacle obs = new Obstacle(game, verts, minAlt, text, textX, textY, shapeRenderer);
+            Obstacle obs = new Obstacle(verts, minAlt, text, textX, textY, shapeRenderer);
             obsArray.add(obs);
             stage.addActor(obs);
+        }
+
+        //Load altitude restrictions
+        String restString = restrictions.readString();
+        String[] indivRests = restString.split("\\r?\\n");
+        for (String s: indivRests) {
+            //For each individual restricted area
+            String[] restInfo = s.split(", ");
+            int index = 0;
+            int minAlt = 0;
+            String text = "";
+            int textX = 0;
+            int textY = 0;
+            float centreX = 0;
+            float centreY = 0;
+            float radius = 0;
+            for (String s1: restInfo) {
+                switch (index) {
+                    case 0: minAlt = Integer.parseInt(s1); break;
+                    case 1: text = s1; break;
+                    case 2: textX = Integer.parseInt(s1); break;
+                    case 3: textY = Integer.parseInt(s1); break;
+                    case 4: centreX = Float.parseFloat(s1); break;
+                    case 5: centreY = Float.parseFloat(s1); break;
+                    case 6: radius = Float.parseFloat(s1); break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in rctp.rest");
+                }
+                index++;
+            }
+            RestrictedArea area = new RestrictedArea(centreX, centreY, radius, minAlt, text, textX, textY, shapeRenderer);
+            restArray.add(area);
+            stage.addActor(area);
         }
     }
 
@@ -84,6 +121,9 @@ class RctpScreen extends GameScreen {
     void renderShape() {
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
+        }
+        for (RestrictedArea restrictedArea: restArray) {
+            restrictedArea.renderShape();
         }
     }
 

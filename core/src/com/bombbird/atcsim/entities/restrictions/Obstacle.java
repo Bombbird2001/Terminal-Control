@@ -14,12 +14,12 @@ public class Obstacle extends Actor {
     private ShapeRenderer shapeRenderer;
     private Label label;
 
-    public Obstacle(AtcSim game, float[] vertices, int minAlt, String text, int textX, int textY, ShapeRenderer shapeRenderer) {
+    public Obstacle(float[] vertices, int minAlt, String text, int textX, int textY, ShapeRenderer shapeRenderer) {
         this.minAlt = minAlt;
         polygon = new Polygon(vertices);
         this.shapeRenderer = shapeRenderer;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.fonts.defaultFont12;
+        labelStyle.font = AtcSim.fonts.defaultFont12;
         labelStyle.fontColor = Color.GRAY;
         label = new Label(text, labelStyle);
         label.setPosition(textX, textY);
@@ -34,4 +34,6 @@ public class Obstacle extends Actor {
         shapeRenderer.setColor(Color.GRAY);
         shapeRenderer.polygon(polygon.getVertices());
     }
+
+    //TODO: Test for conflict with aircraft
 }

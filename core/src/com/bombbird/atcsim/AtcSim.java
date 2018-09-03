@@ -12,7 +12,9 @@ public class AtcSim extends Game {
 	public static int HEIGHT;
 
 	public SpriteBatch batch;
-	public Fonts fonts;
+
+	//Set font to be usable for all classes
+	public static Fonts fonts;
 	
 	@Override
 	public void create () {
@@ -32,5 +34,26 @@ public class AtcSim extends Game {
 	public void dispose () {
 		batch.dispose();
 		fonts.dispose();
+	}
+
+	//Set some constant conversion methods
+	public static float nmToPixel(float nm) {
+		return nm * 16.2f;
+	}
+
+	public static float pixelToNm(float pixel) {
+		return pixel / 16.2f;
+	}
+
+	public static float nmToFeet(float nm) {
+		return nm * 6076.12f;
+	}
+
+	public static float feetToNm(float feet) {
+		return feet / 6076.12f;
+	}
+
+	public static float feetToPixel(float feet) {
+		return nmToPixel(feetToNm(feet));
 	}
 }

@@ -13,12 +13,12 @@ public class RangeCircle extends Actor{
     private Label labelDown;
     private ShapeRenderer shapeRenderer;
 
-    public RangeCircle(AtcSim game, int range, int yOffset, ShapeRenderer shapeRenderer) {
+    public RangeCircle(int range, int yOffset, ShapeRenderer shapeRenderer) {
         this.range = range;
         this.shapeRenderer = shapeRenderer;
         int xOffset = -15;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.fonts.defaultFont10;
+        labelStyle.font = AtcSim.fonts.defaultFont10;
         labelStyle.fontColor = Color.GRAY;
         labelUp = new Label(Integer.toString(range) + "nm", labelStyle);
         labelUp.setPosition(1440 / 2f + xOffset, 810 / 2f - yOffset - 10);

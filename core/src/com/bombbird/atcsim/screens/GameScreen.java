@@ -16,7 +16,7 @@ import com.bombbird.atcsim.entities.RangeCircle;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
     //Init game (set in constructor)
-    final AtcSim game;
+    private final AtcSim game;
     Stage stage;
 
     //Set input processors
@@ -29,10 +29,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create new camera
     OrthographicCamera camera;
     Viewport viewport;
-
-    //Zoom, pan constants
-    private static float ZOOMCONSTANT = 0.5f;
-    private static float SCROLLCONSTANT = 150.0f;
 
     //Create texture stuff
     Skin skin;
@@ -50,10 +46,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     }
 
     void loadRange() {
-        //Load radar screen
-        rangeCircles[0] = new RangeCircle(game, 10, -67, shapeRenderer);
-        rangeCircles[1] = new RangeCircle(game, 30, -235, shapeRenderer);
-        rangeCircles[2] = new RangeCircle(game, 50, -397, shapeRenderer);
+        //Load radar screen range circles
+        rangeCircles[0] = new RangeCircle(10, -67, shapeRenderer);
+        rangeCircles[1] = new RangeCircle(30, -235, shapeRenderer);
+        rangeCircles[2] = new RangeCircle(50, -397, shapeRenderer);
         for (RangeCircle circle: rangeCircles) {
             stage.addActor(circle);
         }
@@ -64,43 +60,48 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         stage.addListener(new InputListener() {
             @Override
             public boolean scrolled(InputEvent event, float x, float y, int amount) {
-                camera.zoom += amount * ZOOMCONSTANT / 12.0f;
+                camera.zoom += amount * 0.042f;
                 return false;
             }
         });
     }
 
     private void handleInput(float dt) {
+        float ZOOMCONSTANT = 0.5f;
+        float SCROLLCONSTANT = 150.0f;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            //Zoom in
             camera.zoom += ZOOMCONSTANT * dt;
-            //If the A Key is pressed, add 0.02 to the Camera's Zoom
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            //Zoom out
             camera.zoom -= ZOOMCONSTANT * dt;
-            //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            //Move left
             camera.translate(-SCROLLCONSTANT * dt, 0, 0);
-            //If the LEFT Key is pressed, translate the camera -3 units in the X-Axis
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            //Move right
             camera.translate(SCROLLCONSTANT * dt, 0, 0);
-            //If the RIGHT Key is pressed, translate the camera 3 units in the X-Axis
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            //Move down
             camera.translate(0, -SCROLLCONSTANT * dt, 0);
-            //If the DOWN Key is pressed, translate the camera -3 units in the Y-Axis
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            //Move up
             camera.translate(0, SCROLLCONSTANT * dt, 0);
-            //If the UP Key is pressed, translate the camera 3 units in the Y-Axis
         }
+
+        //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.2f) {
             camera.zoom = 0.2f;
         } else if (camera.zoom > 1.0f) {
             camera.zoom = 1.0f;
         }
 
+        //Setting new boundaries for camera position after zooming
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
@@ -110,6 +111,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         float downLimit = effectiveViewportHeight / 2f;
         float upLimit = downLimit + 2 * yDeviation;
 
+        //Prevent camera from going out of boundary
         if (camera.position.x < leftLimit) {
             camera.position.x = leftLimit;
         } else if (camera.position.x > rightLimit) {
@@ -133,21 +135,33 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void render(float delta) {
+        //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        //Test for input, update camera
         handleInput(delta);
         camera.update();
 
+        //Set rendering for stage camera
         game.batch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
+
+        //Update stage
         stage.act(delta);
+
+        //Render each of the range circles, obstacles using shaperenderer
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         for (RangeCircle rangeCircle: rangeCircles) {
             rangeCircle.renderShape();
         }
         renderShape();
         shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //TODO: Add rendering for runways
+        shapeRenderer.end();
+
+        //Draw to the spritebatch
         game.batch.begin();
         stage.draw();
         game.batch.end();
