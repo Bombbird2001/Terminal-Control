@@ -11,6 +11,9 @@ public class AtcSim extends Game {
 	public static int WIDTH;
 	public static int HEIGHT;
 
+	//Is html? (freetype not supported in html)
+	public static boolean ishtml;
+
 	public SpriteBatch batch;
 
 	//Set font to be usable for all classes

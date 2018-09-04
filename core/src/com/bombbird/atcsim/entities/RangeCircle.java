@@ -2,20 +2,19 @@ package com.bombbird.atcsim.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
+
+import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class RangeCircle extends Actor{
     private int range;
     private Label labelUp;
     private Label labelDown;
-    private ShapeRenderer shapeRenderer;
 
-    public RangeCircle(int range, int yOffset, ShapeRenderer shapeRenderer) {
+    public RangeCircle(int range, int yOffset) {
         this.range = range;
-        this.shapeRenderer = shapeRenderer;
         int xOffset = -15;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont10;
@@ -34,6 +33,6 @@ public class RangeCircle extends Actor{
 
     public void renderShape() {
         shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(720, 405, range / 10f * 81);
+        shapeRenderer.circle(720, 405, range / 10f * 81, 60);
     }
 }

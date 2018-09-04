@@ -58,7 +58,7 @@ public class NewGameScreen implements Screen {
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.fonts.defaultFont40;
+        labelStyle.font = AtcSim.fonts.defaultFont40;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
@@ -73,7 +73,7 @@ public class NewGameScreen implements Screen {
         skin = new Skin();
         skin.addRegions(airportAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.fonts.defaultFont20;
+        buttonStyle.font = AtcSim.fonts.defaultFont20;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
@@ -81,26 +81,14 @@ public class NewGameScreen implements Screen {
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
         for (String airport: airports) {
             final TextButton airportButton = new TextButton(airport, buttonStyle);
-            airportButton.setName(airport);
+            airportButton.setName(airport.substring(0, 4));
             airportButton.setWidth(buttonWidth);
             airportButton.setHeight(buttonHeight);
             airportButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     String name = actor.getName();
-                    if (name.equals("RCTP\nTaiwan Taoyuan International Airport")) {
-                        game.setScreen(new RctpScreen(game));
-                    } else if (name.equals("WSSS\nSingapore Changi Airport")) {
-                    } else if (name.equals("VHHH\nHong Kong International Airport")) {
-                    } else if (name.equals("RJAA\nNarita International Airport")) {
-                    } else if (name.equals("WMKK\nKuala Lumpur International Airport")) {
-                    } else if (name.equals("WIII\nSoekarno-Hatta International Airport")) {
-                    } else if (name.equals("ZSPD\nShanghai Pudong International Airport")) {
-                    } else if (name.equals("VTBS\nBangkok Suvarnabhumi Airport")) {
-                    } else if (name.equals("VVTS\nTan Son Nhat International Airport")) {
-                    } else {
-                        System.out.println("Airport not found");
-                    }
+                    game.setScreen(new RadarScreen(game, name));
                 }
             });
             scrollTable.add(airportButton);

@@ -2,19 +2,20 @@ package com.bombbird.atcsim.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
-import com.bombbird.atcsim.screens.GameScreen;
+
+import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class Runway extends Actor {
     //Name of runway
     private String name;
 
     //Set landing/takeoff status
+    private boolean active;
     private boolean landing;
     private boolean takeoff;
 
@@ -33,20 +34,16 @@ public class Runway extends Actor {
 
     //Set polygon to render later
     private Polygon polygon;
-    private ShapeRenderer shapeRenderer;
 
     //Set the ILS
     //TODO: Implement ILS
 
-    Runway(String name, float x, float y, float length, int heading, int textX, int textY, boolean landing, boolean takeoff) {
+    Runway(String name, float x, float y, float length, int heading, float textX, float textY) {
         //Set the parameters
         this.name = name;
         this.x = x;
         this.y = y;
         this.heading = heading;
-        this.landing = landing;
-        this.takeoff = takeoff;
-        this.shapeRenderer = GameScreen.shapeRenderer;
 
         //Convert length in feet to pixels
         length = AtcSim.feetToPixel(length);
@@ -66,6 +63,12 @@ public class Runway extends Actor {
         polygon = new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});
     }
 
+    void setActive(boolean landing, boolean takeoff) {
+        this.landing = landing;
+        this.takeoff = takeoff;
+        active = landing || takeoff;
+    }
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         label.draw(batch, 1);
@@ -74,5 +77,9 @@ public class Runway extends Actor {
     void renderShape() {
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.polygon(polygon.getVertices());
+    }
+
+    boolean isActive() {
+        return active;
     }
 }

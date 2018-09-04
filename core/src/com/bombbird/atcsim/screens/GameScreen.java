@@ -16,8 +16,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.RangeCircle;
+import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
+
+import java.util.Hashtable;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
     //Init game (set in constructor)
@@ -51,6 +54,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create airports
     Array<Airport> airports;
 
+    //Create waypoints
+    Hashtable<String, Waypoint> waypoints;
+
     GameScreen(final AtcSim game) {
         this.game = game;
         shapeRenderer = new ShapeRenderer();
@@ -64,9 +70,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     void loadRange() {
         //Load radar screen range circles
-        rangeCircles[0] = new RangeCircle(10, -67, shapeRenderer);
-        rangeCircles[1] = new RangeCircle(30, -235, shapeRenderer);
-        rangeCircles[2] = new RangeCircle(50, -397, shapeRenderer);
+        rangeCircles[0] = new RangeCircle(10, -67);
+        rangeCircles[1] = new RangeCircle(30, -235);
+        rangeCircles[2] = new RangeCircle(50, -397);
         for (RangeCircle circle: rangeCircles) {
             stage.addActor(circle);
         }
@@ -112,8 +118,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
 
         //Make sure user doesn't zoom in too much or zoom out of bounds
-        if (camera.zoom < 0.2f) {
-            camera.zoom = 0.2f;
+        if (camera.zoom < 0.3f) {
+            camera.zoom = 0.3f;
         } else if (camera.zoom > 1.0f) {
             camera.zoom = 1.0f;
         }
@@ -174,11 +180,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
         renderShape();
         shapeRenderer.end();
-        /*
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        //TODO: Add rendering for runways
-        shapeRenderer.end();
-        */
 
         //Draw to the spritebatch
         game.batch.begin();

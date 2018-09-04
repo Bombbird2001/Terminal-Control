@@ -2,21 +2,28 @@ package com.bombbird.atcsim.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
-class RctpScreen extends GameScreen {
+class RadarScreen extends GameScreen {
+    private String name;
 
-    RctpScreen(final AtcSim game) {
+    RadarScreen(final AtcSim game, String name) {
         super(game);
+
+        this.name = name;
 
         //Set stage params
         stage = new Stage(new FitViewport(1440, 810));
@@ -31,16 +38,11 @@ class RctpScreen extends GameScreen {
         camera.setToOrtho(false,1440, 810);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
-
-        //Load files containing obstacle information
-        obstacles = Gdx.files.internal("game/rctp/rctp.obs");
-        obsArray = new Array<Obstacle>();
-        restrictions = Gdx.files.internal("game/rctp/rctp.rest");
-        restArray = new Array<RestrictedArea>();
     }
 
     private void loadAirports() {
-        Airport rctp = new Airport("RCTP");
+        //TODO: Set file containing airport information
+        Airport rctp = new Airport(name);
         airports.add(rctp);
     }
 
@@ -58,8 +60,19 @@ class RctpScreen extends GameScreen {
         loadScroll();
 
         //Load obstacles
-        String obsStr = obstacles.readString();
-        String[] indivObs = obsStr.split("\\r?\\n");
+        loadObstacles();
+
+        //Load altitude restrictions
+        loadRestricted();
+
+        //Load waypoints
+        loadWaypoints();
+    }
+
+    private void loadObstacles() {
+        obstacles = Gdx.files.internal("game/" + name + "/obstacle.obs");
+        obsArray = new Array<Obstacle>();
+        String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             //For each individual obstacle:
             String[] obsInfo = s.split(", ");
@@ -88,10 +101,12 @@ class RctpScreen extends GameScreen {
             obsArray.add(obs);
             stage.addActor(obs);
         }
+    }
 
-        //Load altitude restrictions
-        String restString = restrictions.readString();
-        String[] indivRests = restString.split("\\r?\\n");
+    private void loadRestricted() {
+        restrictions = Gdx.files.internal("game/" + name + "/restricted.rest");
+        restArray = new Array<RestrictedArea>();
+        String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             //For each individual restricted area
             String[] restInfo = s.split(", ");
@@ -112,7 +127,7 @@ class RctpScreen extends GameScreen {
                     case 4: centreX = Float.parseFloat(s1); break;
                     case 5: centreY = Float.parseFloat(s1); break;
                     case 6: radius = Float.parseFloat(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in rctp.rest");
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + name + "/restricted.rest");
                 }
                 index++;
             }
@@ -122,13 +137,51 @@ class RctpScreen extends GameScreen {
         }
     }
 
+    private void loadWaypoints() {
+        FileHandle handle = Gdx.files.internal("game/" + name + "/waypoint.way");
+        String wayptStr = handle.readString();
+        String[] indivWpt = wayptStr.split("\\r?\\n");
+        waypoints = new Hashtable<String, Waypoint>(indivWpt.length + 1, 0.999f);
+        for (String s: indivWpt) {
+            //For each waypoint
+            String wptData[] = s.split(" ");
+            int index = 0;
+            String name = "";
+            int x = 0;
+            int y = 0;
+            for (String s1: wptData) {
+                switch (index) {
+                    case 0: name = s1; break;
+                    case 1: x = Integer.parseInt(s1); break;
+                    case 2: y = Integer.parseInt(s1); break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + name + "/restricted.rest");
+                }
+                index++;
+            }
+            Waypoint waypoint = new Waypoint(name, x, y);
+            waypoints.put(name, waypoint);
+            stage.addActor(waypoint);
+        }
+    }
+
     @Override
     void renderShape() {
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
         }
+        //Additional adjustments for certain airports
+        shapeRenderer.setColor(Color.BLACK);
+        if (name.equals("RCTP")) {
+            shapeRenderer.line(1125, 604, 1125, 531);
+            shapeRenderer.line(314, 512.5f, 314, 295);
+        }
         for (Airport airport: airports) {
             airport.renderRunways();
+        }
+        Enumeration<String> enumKeys = waypoints.keys();
+        while (enumKeys.hasMoreElements()) {
+            String key = enumKeys.nextElement();
+            waypoints.get(key).renderShape();
         }
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();

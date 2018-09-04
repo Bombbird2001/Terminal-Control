@@ -7,12 +7,12 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.bombbird.atcsim.AtcSim;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.atcsim.screens.GameScreen;
+
+import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class RestrictedArea extends Actor {
     private Circle circle;
     private int minAlt;
-    private ShapeRenderer shapeRenderer;
     private Label label;
 
     public RestrictedArea(float centreX, float centreY, float radius, int minAlt, String text, int textX, int textY) {
@@ -20,7 +20,6 @@ public class RestrictedArea extends Actor {
         this.setSize(radius * 2, radius * 2);
         this.minAlt = minAlt;
         circle = new Circle(centreX, centreY, radius);
-        this.shapeRenderer = GameScreen.shapeRenderer;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont12;
         labelStyle.fontColor = Color.GRAY;

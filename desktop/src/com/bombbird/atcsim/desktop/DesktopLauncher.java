@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.setTitle("ATC Sim");
 		config.setMaximized(true);
 		config.setWindowedMode(1440, 810);
+		AtcSim.ishtml = false;
 		new Lwjgl3Application(new AtcSim(), config);
 	}
 }
