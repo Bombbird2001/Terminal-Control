@@ -5,12 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
-import com.bombbird.atcsim.screens.GameScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class Waypoint extends Actor {
-    private String name;
+    String name;
     private int x;
     private int y;
     private Label label;

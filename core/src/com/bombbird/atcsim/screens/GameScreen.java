@@ -55,7 +55,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     Array<Airport> airports;
 
     //Create waypoints
-    Hashtable<String, Waypoint> waypoints;
+    public static Hashtable<String, Waypoint> waypoints;
 
     GameScreen(final AtcSim game) {
         this.game = game;

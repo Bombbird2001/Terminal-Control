@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-class RadarScreen extends GameScreen {
-    private String name;
+public class RadarScreen extends GameScreen {
+    public static String mainName;
 
     RadarScreen(final AtcSim game, String name) {
         super(game);
 
-        this.name = name;
+        mainName = name;
 
         //Set stage params
         stage = new Stage(new FitViewport(1440, 810));
@@ -42,7 +42,7 @@ class RadarScreen extends GameScreen {
 
     private void loadAirports() {
         //TODO: Set file containing airport information
-        Airport rctp = new Airport(name);
+        Airport rctp = new Airport(mainName);
         airports.add(rctp);
     }
 
@@ -52,6 +52,9 @@ class RadarScreen extends GameScreen {
 
         //Load range circles
         loadRange();
+
+        //Load waypoints
+        loadWaypoints();
 
         //Load airports
         loadAirports();
@@ -64,13 +67,10 @@ class RadarScreen extends GameScreen {
 
         //Load altitude restrictions
         loadRestricted();
-
-        //Load waypoints
-        loadWaypoints();
     }
 
     private void loadObstacles() {
-        obstacles = Gdx.files.internal("game/" + name + "/obstacle.obs");
+        obstacles = Gdx.files.internal("game/" + mainName + "/obstacle.obs");
         obsArray = new Array<Obstacle>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
@@ -104,7 +104,7 @@ class RadarScreen extends GameScreen {
     }
 
     private void loadRestricted() {
-        restrictions = Gdx.files.internal("game/" + name + "/restricted.rest");
+        restrictions = Gdx.files.internal("game/" + mainName + "/restricted.rest");
         restArray = new Array<RestrictedArea>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
@@ -127,7 +127,7 @@ class RadarScreen extends GameScreen {
                     case 4: centreX = Float.parseFloat(s1); break;
                     case 5: centreY = Float.parseFloat(s1); break;
                     case 6: radius = Float.parseFloat(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + name + "/restricted.rest");
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/restricted.rest");
                 }
                 index++;
             }
@@ -138,18 +138,17 @@ class RadarScreen extends GameScreen {
     }
 
     private void loadWaypoints() {
-        FileHandle handle = Gdx.files.internal("game/" + name + "/waypoint.way");
+        FileHandle handle = Gdx.files.internal("game/" + mainName + "/waypoint.way");
         String wayptStr = handle.readString();
         String[] indivWpt = wayptStr.split("\\r?\\n");
         waypoints = new Hashtable<String, Waypoint>(indivWpt.length + 1, 0.999f);
         for (String s: indivWpt) {
             //For each waypoint
-            String wptData[] = s.split(" ");
             int index = 0;
             String name = "";
             int x = 0;
             int y = 0;
-            for (String s1: wptData) {
+            for (String s1: s.split(" ")) {
                 switch (index) {
                     case 0: name = s1; break;
                     case 1: x = Integer.parseInt(s1); break;
@@ -171,7 +170,7 @@ class RadarScreen extends GameScreen {
         }
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
-        if (name.equals("RCTP")) {
+        if (mainName.equals("RCTP")) {
             shapeRenderer.line(1125, 604, 1125, 531);
             shapeRenderer.line(314, 512.5f, 314, 295);
         }

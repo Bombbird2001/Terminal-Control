@@ -2,7 +2,9 @@ package com.bombbird.atcsim.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
+import com.bombbird.atcsim.screens.GameScreen;
+import com.bombbird.atcsim.screens.RadarScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.stage;
 
@@ -15,17 +17,18 @@ public class Airport {
     private Hashtable<String, Runway> takeoffRunways;
     private String icao;
     private String metar;
-    private Hashtable<String, SidStar> stars;
-    private Hashtable<String, SidStar> sids;
+    private Hashtable<String, Star> stars;
+    private Hashtable<String, Star> sids;
 
     public Airport(String icao) {
         this.icao = icao;
         loadRunways();
+        loadStars();
     }
 
     private void loadRunways() {
         runways = new Hashtable<String, Runway>();
-        FileHandle handle = Gdx.files.internal("game/" + icao + "/runway" + icao + ".rwy");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/runway" + icao + ".rwy");
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
             //For each individual runway
@@ -83,7 +86,88 @@ public class Airport {
         }
     }
 
-    public void loadSidStars() {
+    private void loadStars() {
+        //Load STARs
+        stars = new Hashtable<String, Star>();
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + icao + ".star");
+        String[] indivStars = handle.readString().split("\\r?\\n");
+        for (String s: indivStars) {
+            //For each individual STAR
+            String starInfo[] = s.split(",");
+            String name = "";
+            int inboundTrack = 0;
+            Array<Waypoint> waypoints = new Array<Waypoint>();
+            Array<int[]> restrictions = new Array<int[]>();
+            Array<Waypoint> holdingPoints = new Array<Waypoint>();
+            Array<int[]> holdingInfo = new Array<int[]>();
+            int index = 0;
+            for (String s1: starInfo) {
+                switch (index) {
+                    case 0: name = s1; break; //First part is the name of the STAR
+                    case 1: inboundTrack = Integer.parseInt(s1); break; //Second part is the inbound track of the STAR
+                    case 2: //Add waypoints to STAR
+                        for (String s2: s1.split(">")) {
+                            //For each waypoint on the STAR
+                            int index1 = 0;
+                            int[] altSpdRestrictions = new int[3];
+                            for (String s3: s2.split(" ")) {
+                                switch (index1) {
+                                    case 0:
+                                        waypoints.add(GameScreen.waypoints.get(s3));
+                                        break; //First part is the name of the waypoint
+                                    case 1:
+                                        altSpdRestrictions[0] = Integer.parseInt(s3);
+                                        break; //1 is min alt
+                                    case 2:
+                                        altSpdRestrictions[1] = Integer.parseInt(s3);
+                                        break; //2 is max alt
+                                    case 3:
+                                        altSpdRestrictions[2] = Integer.parseInt(s3);
+                                        break; //3 is max speed
+                                    default:
+                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                }
+                                index1++;
+                            }
+                            restrictions.add(altSpdRestrictions);
+                        }
+                    case 3: //Add holding points to STAR
+                        for (String s2: s1.split(">")) {
+                            //For each holding point in STAR
+                            int index1 = 0;
+                            int[] info = new int[4];
+                            for (String s3: s2.split(" ")) {
+                                switch (index1) {
+                                    case 0:
+                                        holdingPoints.add(GameScreen.waypoints.get(s3)); //Get waypoint
+                                        break;
+                                    case 1:
+                                        info[0] = Integer.parseInt(s3); //Min alt for holding
+                                        break;
+                                    case 2:
+                                        info[1] = Integer.parseInt(s3); //Max alt for holding
+                                        break;
+                                    case 3:
+                                        info[2] = Integer.parseInt(s3); //Holding pattern heading
+                                        break;
+                                    case 4:
+                                        info[3] = Integer.parseInt(s3); //Leg distance
+                                        break;
+                                    default:
+                                        Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                }
+                                index1++;
+                            }
+                            holdingInfo.add(info);
+                        }
+                }
+                index++;
+            }
+            stars.put(name, new Star(name, inboundTrack, waypoints, restrictions, holdingPoints, holdingInfo));
+        }
+    }
 
+    public void loadSids() {
+        //Load SIDs
     }
 }
