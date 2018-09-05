@@ -89,6 +89,7 @@ public class Airport {
     private void loadStars() {
         //Load STARs
         stars = new Hashtable<String, Star>();
+        //TODO: Add transition waypoints into STARs
         FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + icao + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
