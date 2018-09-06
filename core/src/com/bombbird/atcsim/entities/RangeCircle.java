@@ -15,14 +15,14 @@ public class RangeCircle extends Actor{
 
     public RangeCircle(int range, int yOffset) {
         this.range = range;
-        int xOffset = -15;
+        int xOffset = -60;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont10;
         labelStyle.fontColor = Color.GRAY;
         labelUp = new Label(Integer.toString(range) + "nm", labelStyle);
-        labelUp.setPosition(1440 / 2f + xOffset, 810 / 2f - yOffset - 10);
+        labelUp.setPosition(5760 / 2f + xOffset, 3240 / 2f - yOffset + 5);
         labelDown = new Label(Integer.toString(range)+ "nm", labelStyle);
-        labelDown.setPosition(1440 / 2f + xOffset, 810 / 2f + yOffset);
+        labelDown.setPosition(5760 / 2f + xOffset, 3140 / 2f + yOffset);
     }
 
     @Override
@@ -33,6 +33,6 @@ public class RangeCircle extends Actor{
 
     public void renderShape() {
         shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(720, 405, range / 10f * 81, 60);
+        shapeRenderer.circle(2880, 1620, range / 10f * 324, 60);
     }
 }

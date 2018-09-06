@@ -19,6 +19,7 @@ import java.util.Hashtable;
 
 public class RadarScreen extends GameScreen {
     public static String mainName;
+    public static float magHdgDev;
 
     RadarScreen(final AtcSim game, String name) {
         super(game);
@@ -26,7 +27,7 @@ public class RadarScreen extends GameScreen {
         mainName = name;
 
         //Set stage params
-        stage = new Stage(new FitViewport(1440, 810));
+        stage = new Stage(new FitViewport(5760, 3240));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         inputProcessor2 = stage;
         inputMultiplexer.addProcessor(inputProcessor2);
@@ -35,12 +36,15 @@ public class RadarScreen extends GameScreen {
 
         //Set camera params
         camera = (OrthographicCamera) stage.getViewport().getCamera();
-        camera.setToOrtho(false,1440, 810);
+        camera.setToOrtho(false,5760, 3240);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
     }
 
     private void loadAirports() {
+        if (mainName.equals("RCTP")) {
+            magHdgDev = 4.6f;
+        }
         //TODO: Set file containing airport information
         Airport rctp = new Airport(mainName);
         airports.add(rctp);
@@ -171,8 +175,8 @@ public class RadarScreen extends GameScreen {
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
         if (mainName.equals("RCTP")) {
-            shapeRenderer.line(1125, 604, 1125, 531);
-            shapeRenderer.line(314, 512.5f, 314, 295);
+            shapeRenderer.line(4500, 2416, 4500, 2124);
+            shapeRenderer.line(1256, 2050, 1256, 1180);
         }
         for (Airport airport: airports) {
             airport.renderRunways();

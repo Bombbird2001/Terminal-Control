@@ -41,11 +41,11 @@ public class AtcSim extends Game {
 
 	//Set some constant conversion methods
 	public static float nmToPixel(float nm) {
-		return nm * 16.2f;
+		return nm * 32.4f;
 	}
 
 	public static float pixelToNm(float pixel) {
-		return pixel / 16.2f;
+		return pixel / 32.4f;
 	}
 
 	public static float nmToFeet(float nm) {

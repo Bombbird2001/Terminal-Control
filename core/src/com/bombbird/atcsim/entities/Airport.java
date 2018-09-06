@@ -7,6 +7,7 @@ import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.stage;
+import static com.bombbird.atcsim.screens.RadarScreen.mainName;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -28,7 +29,7 @@ public class Airport {
 
     private void loadRunways() {
         runways = new Hashtable<String, Runway>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/runway" + icao + ".rwy");
+        FileHandle handle = Gdx.files.internal("game/" + mainName + "/runway" + icao + ".rwy");
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
             //For each individual runway
@@ -41,6 +42,7 @@ public class Airport {
             int heading = 0;
             float textX = 0;
             float textY = 0;
+            int elevation = 0;
             for (String s1: rwyInfo) {
                 switch (index) {
                     case 0: name = s1; break;
@@ -48,12 +50,14 @@ public class Airport {
                     case 2: y = Float.parseFloat(s1); break;
                     case 3: length = Integer.parseInt(s1); break;
                     case 4: heading = Integer.parseInt(s1); break;
-                    case 5: textX = Float.parseFloat(s1);
+                    case 5: textX = Float.parseFloat(s1); break;
                     case 6: textY = Float.parseFloat(s1); break;
+                    case 7: elevation = Integer.parseInt(s1); break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/runway" + icao + ".rest");
                 }
                 index++;
             }
-            Runway runway = new Runway(name, x, y, length, heading, textX, textY);
+            Runway runway = new Runway(name, x, y, length, heading, textX, textY, elevation);
             runways.put(name, runway);
         }
         landingRunways = new Hashtable<String, Runway>();
@@ -61,10 +65,9 @@ public class Airport {
 
         setActive("05L", true, false);
         setActive("05R", false, true);
-        /*
         setActive("23R", true, false);
         setActive("23L", false, true);
-        */
+
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
@@ -93,7 +96,7 @@ public class Airport {
     private void loadStars() {
         //Load STARs
         stars = new Hashtable<String, Star>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + icao + ".star");
+        FileHandle handle = Gdx.files.internal("game/" + mainName + "/star" + icao + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
             //For each individual STAR
@@ -129,7 +132,7 @@ public class Airport {
                                         altSpdRestrictions[2] = Integer.parseInt(s3);
                                         break; //3 is max speed
                                     default:
-                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + mainName + "/star" + icao + ".rest");
                                 }
                                 index1++;
                             }
@@ -158,7 +161,7 @@ public class Airport {
                                         info[3] = Integer.parseInt(s3); //Leg distance
                                         break;
                                     default:
-                                        Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                        Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + mainName + "/star" + icao + ".rest");
                                 }
                                 index1++;
                             }

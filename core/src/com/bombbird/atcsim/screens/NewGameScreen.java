@@ -19,7 +19,6 @@ public class NewGameScreen implements Screen {
     //Init game (set in constructor)
     private final AtcSim game;
     private Stage stage;
-    private Table table;
     private Table scrollTable;
 
     //Create new camera
@@ -35,35 +34,34 @@ public class NewGameScreen implements Screen {
 
         //Set camera params
         camera = new OrthographicCamera();
-        camera.setToOrtho(false,1440, 810);
+        camera.setToOrtho(false,2880, 1620);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
 
         //Set stage params
-        stage = new Stage(new FitViewport(1440, 810));
+        stage = new Stage(new FitViewport(2880, 1620));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
         //Set table params (for scrollpane)
-        table = new Table();
         scrollTable = new Table();
     }
 
     private void loadUI() {
-        int buttonWidth = 500;
-        int buttonHeight = 100;
+        int buttonWidth = 1000;
+        int buttonHeight = 200;
 
         //Reset stage
         stage.clear();
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont40;
+        labelStyle.font = AtcSim.fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
-        headerLabel.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.85f);
+        headerLabel.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.85f);
         headerLabel.setAlignment(Align.center);
         stage.addActor(headerLabel);
 
@@ -73,7 +71,7 @@ public class NewGameScreen implements Screen {
         skin = new Skin();
         skin.addRegions(airportAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = AtcSim.fonts.defaultFont20;
+        buttonStyle.font = AtcSim.fonts.defaultFont12;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
@@ -82,8 +80,6 @@ public class NewGameScreen implements Screen {
         for (String airport: airports) {
             final TextButton airportButton = new TextButton(airport, buttonStyle);
             airportButton.setName(airport.substring(0, 4));
-            airportButton.setWidth(buttonWidth);
-            airportButton.setHeight(buttonHeight);
             airportButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -91,20 +87,23 @@ public class NewGameScreen implements Screen {
                     game.setScreen(new RadarScreen(game, name));
                 }
             });
-            scrollTable.add(airportButton);
+            scrollTable.add(airportButton).width(buttonWidth * 1.2f).height(buttonHeight);
             scrollTable.row();
         }
         ScrollPane scrollPane = new ScrollPane(scrollTable);
-        table.setBounds(1440 / 2.0f - 500 * 0.75f, 810 * 0.2f, buttonWidth * 1.5f, 810 * 0.6f);
-        table.add(scrollPane).fill().expand();
+        scrollPane.setupFadeScrollBars(1, 1.5f);
+        scrollPane.setX(2880 / 2f - buttonWidth * 0.6f);
+        scrollPane.setY(1620 * 0.2f);
+        scrollPane.setWidth(buttonWidth * 1.2f);
+        scrollPane.setHeight(1620 * 0.6f);
 
-        stage.addActor(table);
+        stage.addActor(scrollPane);
 
         //Set back button params
         TextButton backButton = new TextButton("<- Back", buttonStyle);
         backButton.setWidth(buttonWidth);
         backButton.setHeight(buttonHeight);
-        backButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.05f);
+        backButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.05f);
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

@@ -24,7 +24,7 @@ public class Waypoint extends Actor {
         labelStyle.font = AtcSim.fonts.defaultFont6;
         labelStyle.fontColor = Color.GRAY;
         label = new Label(name, labelStyle);
-        label.setPosition(x + 5, y - 3);
+        label.setPosition(x - 44, y + 16);
     }
 
     @Override
@@ -34,6 +34,6 @@ public class Waypoint extends Actor {
 
     public void renderShape() {
         shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(x, y, 3, 10);
+        shapeRenderer.circle(x, y, 12, 10);
     }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.screens.RadarScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
@@ -22,12 +23,14 @@ public class Runway extends Actor {
     //Position of bottom center of runway
     private float x;
     private float y;
+    private int elevation;
 
     //Set constant width
-    private static float halfWidth = 1f;
+    private static float halfWidth = 2f;
 
     //Set heading of runway
     private int heading;
+    private float trueHdg;
 
     //Label of runway
     private Label label;
@@ -38,21 +41,23 @@ public class Runway extends Actor {
     //Set the ILS
     //TODO: Implement ILS
 
-    Runway(String name, float x, float y, float length, int heading, float textX, float textY) {
+    Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
         //Set the parameters
         this.name = name;
         this.x = x;
         this.y = y;
         this.heading = heading;
+        this.elevation = elevation;
+        trueHdg = heading - RadarScreen.magHdgDev;
 
         //Convert length in feet to pixels
         length = AtcSim.feetToPixel(length);
 
         //Calculate the position offsets
-        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - heading);
-        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - heading);
-        float xOffsetL = length * MathUtils.cosDeg(90 - heading);
-        float yOffsetL = length * MathUtils.sinDeg(90 - heading);
+        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - trueHdg);
+        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - trueHdg);
+        float xOffsetL = length * MathUtils.cosDeg(90 - trueHdg);
+        float yOffsetL = length * MathUtils.sinDeg(90 - trueHdg);
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();

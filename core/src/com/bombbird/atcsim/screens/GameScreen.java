@@ -70,9 +70,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     void loadRange() {
         //Load radar screen range circles
-        rangeCircles[0] = new RangeCircle(10, -67);
-        rangeCircles[1] = new RangeCircle(30, -235);
-        rangeCircles[2] = new RangeCircle(50, -397);
+        rangeCircles[0] = new RangeCircle(10, -255);
+        rangeCircles[1] = new RangeCircle(30, -900);
+        rangeCircles[2] = new RangeCircle(50, -1548);
         for (RangeCircle circle: rangeCircles) {
             stage.addActor(circle);
         }
@@ -291,8 +291,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        int deltaX = (int)((screenX - lastX) * camera.zoom);
-        int deltaY = (int)((screenY - lastY) * camera.zoom);
+        float screenRatio = 3240f / AtcSim.HEIGHT;
+        int deltaX = (int)((screenX - lastX) * camera.zoom * screenRatio);
+        int deltaY = (int)((screenY - lastY) * camera.zoom * screenRatio);
         camera.translate(-deltaX, deltaY);
         lastX = screenX;
         lastY = screenY;

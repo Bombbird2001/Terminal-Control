@@ -14,12 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
-
-import static com.bombbird.atcsim.AtcSim.HEIGHT;
-import static com.bombbird.atcsim.AtcSim.WIDTH;
 
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
@@ -39,31 +35,31 @@ public class MainMenuScreen implements Screen {
 
         //Set camera params
         camera = new OrthographicCamera();
-        camera.setToOrtho(false,1440, 810);
+        camera.setToOrtho(false,2880, 1620);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
 
         //Set stage params
-        stage = new Stage(new FitViewport(1440, 810));
+        stage = new Stage(new FitViewport(2880, 1620));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
     }
 
     private void loadUI() {
-        int buttonWidth = 500;
-        int buttonHeight = 100;
+        int buttonWidth = 1000;
+        int buttonHeight = 200;
 
         //Reset stage
         stage.clear();
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.fonts.defaultFont40;
+        labelStyle.font = AtcSim.fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("ATC Sim", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
-        headerLabel.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.8f);
+        headerLabel.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.8f);
         headerLabel.setAlignment(Align.center);
         stage.addActor(headerLabel);
 
@@ -72,13 +68,13 @@ public class MainMenuScreen implements Screen {
         skin = new Skin();
         skin.addRegions(buttonAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.fonts.defaultFont40;
+        buttonStyle.font = AtcSim.fonts.defaultFont20;
         buttonStyle.up = skin.getDrawable("Button_up");
         buttonStyle.down = skin.getDrawable("Button_down");
 
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
-        newGameButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.65f);
+        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.65f);
         newGameButton.setWidth(buttonWidth);
         newGameButton.setHeight(buttonHeight);
         newGameButton.getLabel().setAlignment(Align.center);
@@ -94,7 +90,7 @@ public class MainMenuScreen implements Screen {
 
         //Set load game button params
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
-        loadGameButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.5f);
+        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.5f);
         loadGameButton.setWidth(buttonWidth);
         loadGameButton.setHeight(buttonHeight);
         loadGameButton.getLabel().setAlignment(Align.center);
@@ -108,7 +104,7 @@ public class MainMenuScreen implements Screen {
 
         //Set settings button params
         TextButton settingsButton = new TextButton("Settings", buttonStyle);
-        settingsButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.35f);
+        settingsButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.35f);
         settingsButton.setWidth(buttonWidth);
         settingsButton.setHeight(buttonHeight);
         settingsButton.getLabel().setAlignment(Align.center);
@@ -122,7 +118,7 @@ public class MainMenuScreen implements Screen {
 
         //Set quit button params
         TextButton quitButton = new TextButton("Quit", buttonStyle);
-        quitButton.setPosition(1440 / 2.0f - buttonWidth / 2.0f, 810 * 0.2f);
+        quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.2f);
         quitButton.setWidth(buttonWidth);
         quitButton.setHeight(buttonHeight);
         quitButton.getLabel().setAlignment(Align.center);

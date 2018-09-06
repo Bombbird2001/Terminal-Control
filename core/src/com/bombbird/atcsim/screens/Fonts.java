@@ -21,14 +21,14 @@ public class Fonts implements Disposable {
     public Fonts() {
         if (!AtcSim.ishtml) {
             blockyFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/blocky.ttf"));
-            blockyFont24 = generateFont(blockyFont, 24);
+            blockyFont24 = generateFont(blockyFont, 96);
             defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
-            defaultFont6 = generateFont(defaultFont, 6);
-            defaultFont8 = generateFont(defaultFont, 8);
-            defaultFont10 = generateFont(defaultFont, 10);
-            defaultFont12 = generateFont(defaultFont, 12);
-            defaultFont20 = generateFont(defaultFont, 20);
-            defaultFont40 = generateFont(defaultFont, 40);
+            defaultFont6 = generateFont(defaultFont, 24);
+            defaultFont8 = generateFont(defaultFont, 32);
+            defaultFont10 = generateFont(defaultFont, 40);
+            defaultFont12 = generateFont(defaultFont, 48);
+            defaultFont20 = generateFont(defaultFont, 80);
+            defaultFont40 = generateFont(defaultFont, 160);
         } else {
             defaultFont6 = new BitmapFont();
             defaultFont6.getData().setScale(0.45f);
