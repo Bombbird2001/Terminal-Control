@@ -10,8 +10,8 @@ import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class Waypoint extends Actor {
     String name;
-    private int x;
-    private int y;
+    public int x;
+    public int y;
     private Label label;
 
     public Waypoint(String name, int x, int y) {

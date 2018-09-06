@@ -61,6 +61,10 @@ public class Airport {
 
         setActive("05L", true, false);
         setActive("05R", false, true);
+        /*
+        setActive("23R", true, false);
+        setActive("23L", false, true);
+        */
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
@@ -89,7 +93,6 @@ public class Airport {
     private void loadStars() {
         //Load STARs
         stars = new Hashtable<String, Star>();
-        //TODO: Add transition waypoints into STARs
         FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + icao + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
@@ -169,6 +172,10 @@ public class Airport {
     }
 
     public void loadSids() {
-        //Load SIDs
+        //TODO: Load SIDs
+    }
+
+    public Hashtable<String, Star> getStars() {
+        return stars;
     }
 }

@@ -36,7 +36,6 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final AtcSim game) {
         this.game = game;
-        Gdx.graphics.setWindowedMode(WIDTH, HEIGHT);
 
         //Set camera params
         camera = new OrthographicCamera();
