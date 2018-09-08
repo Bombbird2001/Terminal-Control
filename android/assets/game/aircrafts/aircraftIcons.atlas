@@ -1,0 +1,26 @@
+aircraftIcons.png
+size: 60, 20
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+aircraftControlled
+  rotate: false
+  xy: 0, 0
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+aircraftEnroute
+  rotate: false
+  xy: 20, 0
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+aircraftNotControlled
+  rotate: false
+  xy: 40, 0
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1

@@ -16,9 +16,23 @@ public class Arrival extends Aircraft {
     public Arrival(String callsign, String icaoType, int wakeCat, int[] maxVertSpd, int minSpeed) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
         Hashtable starList = arrival.getStars();
-        String starStr = (String) starList.keySet().toArray()[MathUtils.random(0, starList.size() - 1)];
-        star = (Star) starList.get(starStr);
+        boolean starSet = false;
+
+        //Gets a STAR for active runways
+        while (!starSet) {
+            String starStr = (String) starList.keySet().toArray()[MathUtils.random(0, starList.size() - 1)];
+            star = (Star) starList.get(starStr);
+            for (String runway: star.getRunways()) {
+                if (arrival.getLandingRunways().containsKey(runway)) {
+                    starSet = true;
+                    break;
+                }
+            }
+        }
         star.printWpts();
+
+        //setControlState(0);
+
     }
 
     @Override

@@ -45,7 +45,7 @@ public class RadarScreen extends GameScreen {
         viewport.apply();
 
         //Set aircraft array
-        aircrafts = new Array<Aircraft>();
+        aircrafts = new Hashtable<String, Aircraft>();
     }
 
     private void loadAirports() {
@@ -84,7 +84,7 @@ public class RadarScreen extends GameScreen {
     }
 
     private void newAircraft() {
-        aircrafts.add(new Arrival("EVA226", "B77W", 2, new int[]{4000, -3000}, 147));
+        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 2, new int[]{4000, -3000}, 147));
     }
 
     private void loadUI() {
@@ -212,26 +212,38 @@ public class RadarScreen extends GameScreen {
 
     @Override
     void renderShape() {
+        //Draw obstacles
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
         }
+
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
         if (mainName.equals("RCTP")) {
             shapeRenderer.line(4500, 2416, 4500, 2124);
             shapeRenderer.line(1256, 2050, 1256, 1180);
         }
+
+        //Draw runway(s) for each airport
         for (Airport airport: airports) {
             airport.renderRunways();
         }
+
+        //Draw waypoints
         Enumeration<String> enumKeys = waypoints.keys();
         while (enumKeys.hasMoreElements()) {
             String key = enumKeys.nextElement();
             waypoints.get(key).renderShape();
         }
-        for (Aircraft aircraft: aircrafts) {
-            aircraft.renderShape();
+
+        //Draw aircrafts
+        enumKeys = aircrafts.keys();
+        while (enumKeys.hasMoreElements()) {
+            String key = enumKeys.nextElement();
+            aircrafts.get(key).renderShape();
         }
+
+        //Draw restricted areas
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();
         }
@@ -247,5 +259,7 @@ public class RadarScreen extends GameScreen {
         stage.clear();
         stage.dispose();
         skin.dispose();
+        Aircraft.skin.dispose();
+        Aircraft.iconAtlas.dispose();
     }
 }

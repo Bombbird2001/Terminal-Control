@@ -19,6 +19,7 @@ public class Waypoint extends Actor {
         this.name = name;
         this.x = x;
         this.y = y;
+        selected = false;
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();

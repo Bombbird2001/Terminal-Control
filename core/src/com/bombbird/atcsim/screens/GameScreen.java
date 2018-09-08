@@ -56,7 +56,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public static Array<Airport> airports;
 
     //Array of planes
-    public static Array<Aircraft> aircrafts;
+    public static Hashtable<String, Aircraft> aircrafts;
 
     //Create waypoints
     public static Hashtable<String, Waypoint> waypoints;
@@ -295,7 +295,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float screenRatio = 3240f / AtcSim.HEIGHT;
+        float screenHeightRatio = 3240f / Gdx.graphics.getHeight();
+        float screenWidthRatio = 5760f / Gdx.graphics.getWidth();
+        float screenRatio = (screenHeightRatio > screenWidthRatio) ? screenHeightRatio : screenWidthRatio;
         int deltaX = (int)((screenX - lastX) * camera.zoom * screenRatio);
         int deltaY = (int)((screenY - lastY) * camera.zoom * screenRatio);
         camera.translate(-deltaX, deltaY);

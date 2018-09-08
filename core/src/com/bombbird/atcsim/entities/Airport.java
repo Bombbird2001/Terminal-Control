@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.screens.GameScreen;
-import com.bombbird.atcsim.screens.RadarScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.stage;
 import static com.bombbird.atcsim.screens.RadarScreen.mainName;
@@ -65,21 +64,43 @@ public class Airport {
 
         setActive("05L", true, false);
         setActive("05R", false, true);
+        /*
         setActive("23R", true, false);
         setActive("23L", false, true);
+        */
 
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
+        //Retrieves runway from hashtable
         Runway runway = runways.get(rwy);
+
+        //Set actor
         if ((landing || takeoff) && !runway.isActive()) {
+            //Add if active now but not before
             stage.addActor(runway);
         } else if (!landing && !takeoff && runway.isActive()) {
+            //Remove if not active but active before
             stage.getActors().removeValue(runway, true);
         }
+
+        if (!runway.isLanding() && landing) {
+            //Add to landing runways if not landing before, but landing now
+            landingRunways.put(rwy, runway);
+        } else if (runway.isLanding() && !landing) {
+            //Remove if landing before, but not landing now
+            landingRunways.remove(rwy);
+        }
+        if (!runway.isTakeoff() && takeoff) {
+            //Add to takeoff runways if not taking off before, but taking off now
+            takeoffRunways.put(rwy, runway);
+        } else if (runway.isTakeoff() && !takeoff) {
+            //Remove if taking off before, but not taking off now
+            takeoffRunways.remove(rwy);
+        }
+
+        //Set runway's internal active state
         runway.setActive(landing, takeoff);
-        if (landing) landingRunways.put(rwy, runway);
-        if (takeoff) takeoffRunways.put(rwy, runway);
     }
 
     public void renderRunways() {
@@ -101,18 +122,31 @@ public class Airport {
         for (String s: indivStars) {
             //For each individual STAR
             String starInfo[] = s.split(",");
+
+            //Info for the STAR
             String name = "";
-            int inboundTrack = 0;
+            Array<Integer> inboundHdg = new Array<Integer>();
             Array<Waypoint> waypoints = new Array<Waypoint>();
             Array<int[]> restrictions = new Array<int[]>();
             Array<Waypoint> holdingPoints = new Array<Waypoint>();
             Array<int[]> holdingInfo = new Array<int[]>();
+            Array<String> runways = new Array<String>();
+
             int index = 0;
             for (String s1: starInfo) {
                 switch (index) {
                     case 0: name = s1; break; //First part is the name of the STAR
-                    case 1: inboundTrack = Integer.parseInt(s1); break; //Second part is the inbound track of the STAR
-                    case 2: //Add waypoints to STAR
+                    case 1: //Add STAR runways
+                        for (String s2: s1.split(">")) {
+                            runways.add(s2);
+                        }
+                        break;
+                    case 2: //Second part is the inbound track(s) of the STAR
+                        for (String s2: s1.split(">")) {
+                            inboundHdg.add(Integer.parseInt(s2));
+                        }
+                        break;
+                    case 3: //Add waypoints to STAR
                         for (String s2: s1.split(">")) {
                             //For each waypoint on the STAR
                             int index1 = 0;
@@ -138,7 +172,7 @@ public class Airport {
                             }
                             restrictions.add(altSpdRestrictions);
                         }
-                    case 3: //Add holding points to STAR
+                    case 4: //Add holding points to STAR
                         for (String s2: s1.split(">")) {
                             //For each holding point in STAR
                             int index1 = 0;
@@ -170,7 +204,7 @@ public class Airport {
                 }
                 index++;
             }
-            stars.put(name, new Star(name, inboundTrack, waypoints, restrictions, holdingPoints, holdingInfo));
+            stars.put(name, new Star(name, runways, inboundHdg, waypoints, restrictions, holdingPoints, holdingInfo));
         }
     }
 
@@ -180,5 +214,13 @@ public class Airport {
 
     public Hashtable<String, Star> getStars() {
         return stars;
+    }
+
+    public Hashtable<String, Runway> getLandingRunways() {
+        return landingRunways;
+    }
+
+    public Hashtable<String, Runway> getTakeoffRunways() {
+        return takeoffRunways;
     }
 }

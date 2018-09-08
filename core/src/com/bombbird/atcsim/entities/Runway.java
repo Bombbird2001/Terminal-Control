@@ -87,4 +87,12 @@ public class Runway extends Actor {
     boolean isActive() {
         return active;
     }
+
+    public boolean isLanding() {
+        return landing;
+    }
+
+    public boolean isTakeoff() {
+        return takeoff;
+    }
 }
