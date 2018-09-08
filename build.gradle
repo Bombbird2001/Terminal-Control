@@ -114,7 +114,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        
+        compile 'com.squareup.okhttp3:okhttp:3.7.0'
     }
 }
 

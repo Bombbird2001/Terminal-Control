@@ -32,6 +32,7 @@ public class Star {
         float previousX = -1;
         float previousY = -1;
         for (Waypoint waypoint: waypoints) {
+            waypoint.setSelected(true);
             if (previousX != -1 && previousY != -1) GameScreen.shapeRenderer.line(previousX, previousY, waypoint.x, waypoint.y);
             previousX = waypoint.x;
             previousY = waypoint.y;

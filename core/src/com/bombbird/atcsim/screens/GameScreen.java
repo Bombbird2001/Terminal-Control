@@ -17,6 +17,7 @@ import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.RangeCircle;
 import com.bombbird.atcsim.entities.Waypoint;
+import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
@@ -52,7 +53,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     Array<RestrictedArea> restArray;
 
     //Create airports
-    Array<Airport> airports;
+    public static Array<Airport> airports;
+
+    //Array of planes
+    public static Array<Aircraft> aircrafts;
 
     //Create waypoints
     public static Hashtable<String, Waypoint> waypoints;

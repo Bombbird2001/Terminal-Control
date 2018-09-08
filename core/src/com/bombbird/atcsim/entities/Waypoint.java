@@ -13,6 +13,7 @@ public class Waypoint extends Actor {
     public int x;
     public int y;
     private Label label;
+    private Boolean selected;
 
     public Waypoint(String name, int x, int y) {
         this.name = name;
@@ -32,8 +33,15 @@ public class Waypoint extends Actor {
         label.draw(batch, 1);
     }
 
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
     public void renderShape() {
         shapeRenderer.setColor(Color.GRAY);
+        if (selected) {
+            shapeRenderer.setColor(Color.WHITE);
+        }
         shapeRenderer.circle(x, y, 12, 10);
     }
 }

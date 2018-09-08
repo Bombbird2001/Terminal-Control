@@ -10,9 +10,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Waypoint;
+import com.bombbird.atcsim.entities.aircrafts.Aircraft;
+import com.bombbird.atcsim.entities.aircrafts.Arrival;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
+import okhttp3.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -39,6 +43,9 @@ public class RadarScreen extends GameScreen {
         camera.setToOrtho(false,5760, 3240);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
+
+        //Set aircraft array
+        aircrafts = new Array<Aircraft>();
     }
 
     private void loadAirports() {
@@ -48,6 +55,36 @@ public class RadarScreen extends GameScreen {
         //TODO: Set file containing airport information
         Airport rctp = new Airport(mainName);
         airports.add(rctp);
+    }
+
+    private void loadMetar() {
+        OkHttpClient client = new OkHttpClient();
+        MediaType json = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(json, "json");
+        Request request = new Request.Builder()
+                .addHeader("X-API-KEY", "INSERT-API-KEY")
+                .url("https://api.checkwx.com/metar/RCTP,RCSS")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    //TODO: Decode json into metar data
+                    System.out.println(response.body().string());
+                }
+            }
+        });
+    }
+
+    private void newAircraft() {
+        aircrafts.add(new Arrival("EVA226", "B77W", 2, new int[]{4000, -3000}, 147));
     }
 
     private void loadUI() {
@@ -63,6 +100,9 @@ public class RadarScreen extends GameScreen {
         //Load airports
         loadAirports();
 
+        //Load METARs
+        //loadMetar();
+
         //Load scroll listener
         loadScroll();
 
@@ -71,6 +111,9 @@ public class RadarScreen extends GameScreen {
 
         //Load altitude restrictions
         loadRestricted();
+
+        //Load planes
+        newAircraft();
     }
 
     private void loadObstacles() {
@@ -185,6 +228,9 @@ public class RadarScreen extends GameScreen {
         while (enumKeys.hasMoreElements()) {
             String key = enumKeys.nextElement();
             waypoints.get(key).renderShape();
+        }
+        for (Aircraft aircraft: aircrafts) {
+            aircraft.renderShape();
         }
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();
