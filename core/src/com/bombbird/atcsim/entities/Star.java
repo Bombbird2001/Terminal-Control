@@ -54,4 +54,8 @@ public class Star {
             return MathUtils.random(inboundHdg.get(0), inboundHdg.get(1));
         }
     }
+
+    public Waypoint getWaypoint(int index) {
+        return waypoints.get(index);
+    }
 }

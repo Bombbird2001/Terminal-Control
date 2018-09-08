@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bombbird.atcsim.entities.Waypoint;
 
 import static com.bombbird.atcsim.screens.GameScreen.aircrafts;
 import static com.bombbird.atcsim.screens.GameScreen.stage;
@@ -37,8 +38,9 @@ public class Aircraft extends Actor {
     float x;
     float y;
     String latMode;
-    private int heading;
-    private int track;
+    int heading;
+    float track;
+    Waypoint direct;
 
     //Altitude
     float altitude;
@@ -71,8 +73,6 @@ public class Aircraft extends Actor {
             loadedIcons = true;
         }
 
-        x = 2880;
-        y = 1620;
         this.callsign = callsign;
         stage.addActor(this);
         this.icaoType = icaoType;
@@ -81,12 +81,14 @@ public class Aircraft extends Actor {
         this.minSpeed = minSpeed;
         selected = false;
         icon = new ImageButton(buttonStyleUnctrl);
-        icon.setSize(20, 20);
+        icon.setSize(40, 40);
+        icon.getImageCell().size(40, 40);
         icon.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 aircrafts.get(actor.getName()).setSelected(true);
                 event.handle();
+                System.out.println("Aircraft clicked/tapped");
             }
         });
         stage.addActor(icon);
@@ -101,7 +103,7 @@ public class Aircraft extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        icon.setPosition(x, y);
+        icon.setPosition(x - 20, y - 20);
         icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
         icon.draw(batch, 1);
     }

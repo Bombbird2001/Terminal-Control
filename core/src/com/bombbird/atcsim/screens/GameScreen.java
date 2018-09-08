@@ -124,6 +124,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.3f) {
             camera.zoom = 0.3f;
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > 0.6f) {
+            camera.zoom = 0.6f;
         } else if (camera.zoom > 1.0f) {
             camera.zoom = 1.0f;
         }
@@ -258,6 +260,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        double deltaDist = Math.sqrt(Math.pow(pointer1.x - pointer2.x, 2) - Math.pow(pointer1.y - pointer2.y, 2));
+        double screenDist = Math.sqrt(Math.pow(AtcSim.WIDTH, 2) - Math.pow(AtcSim.HEIGHT, 2));
+        camera.zoom += screenDist / (screenDist - deltaDist);
         return false;
     }
 
