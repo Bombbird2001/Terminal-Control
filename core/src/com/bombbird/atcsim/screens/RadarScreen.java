@@ -49,12 +49,15 @@ public class RadarScreen extends GameScreen {
     }
 
     private void loadAirports() {
-        if (mainName.equals("RCTP")) {
-            magHdgDev = 4.6f;
+        FileHandle handle = Gdx.files.internal("game/" + mainName +"/airport.arpt");
+        int index = 0;
+        for (String s: handle.readString().split("\\r?\\n")) {
+            switch (index) {
+                case 0: magHdgDev = Float.parseFloat(s); break;
+                default: airports.put(s, new Airport(s));
+            }
+            index++;
         }
-        //TODO: Set file containing airport information
-        Airport rctp = new Airport(mainName);
-        airports.add(rctp);
     }
 
     private void loadMetar() {
@@ -225,12 +228,14 @@ public class RadarScreen extends GameScreen {
         }
 
         //Draw runway(s) for each airport
-        for (Airport airport: airports) {
-            airport.renderRunways();
+        Enumeration<String> enumKeys = airports.keys();
+        while (enumKeys.hasMoreElements()) {
+            String key = enumKeys.nextElement();
+            airports.get(key).renderRunways();
         }
 
         //Draw waypoints
-        Enumeration<String> enumKeys = waypoints.keys();
+        enumKeys = waypoints.keys();
         while (enumKeys.hasMoreElements()) {
             String key = enumKeys.nextElement();
             waypoints.get(key).renderShape();

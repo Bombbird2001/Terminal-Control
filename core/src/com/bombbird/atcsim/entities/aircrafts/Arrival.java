@@ -13,7 +13,7 @@ public class Arrival extends Aircraft {
     //Others
     private int ils;
     private Star star;
-    private Airport arrival = GameScreen.airports.get(0);
+    private Airport arrival = GameScreen.airports.get("RCTP");
 
     public Arrival(String callsign, String icaoType, int wakeCat, int[] maxVertSpd, int minSpeed) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);

@@ -61,9 +61,10 @@ public class Airport {
         }
         landingRunways = new Hashtable<String, Runway>();
         takeoffRunways = new Hashtable<String, Runway>();
-
-        setActive("05L", true, false);
-        setActive("05R", false, true);
+        if (icao.equals("RCTP")) {
+            setActive("05L", true, false);
+            setActive("05R", false, true);
+        }
         /*
         setActive("23R", true, false);
         setActive("23L", false, true);

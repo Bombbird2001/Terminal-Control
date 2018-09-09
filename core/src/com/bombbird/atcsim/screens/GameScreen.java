@@ -53,7 +53,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     Array<RestrictedArea> restArray;
 
     //Create airports
-    public static Array<Airport> airports;
+    public static Hashtable<String, Airport> airports;
 
     //Array of planes
     public static Hashtable<String, Aircraft> aircrafts;
@@ -69,7 +69,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         rangeCircles = new RangeCircle[3];
 
         //Initiate airports
-        airports = new Array<Airport>();
+        airports = new Hashtable<String, Airport>();
     }
 
     void loadRange() {
