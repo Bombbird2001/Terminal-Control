@@ -5,7 +5,7 @@ public class Departure extends Aircraft {
     private String sid;
     private int deptRwy;
 
-    Departure(String callsign, String icaoType, int wakeCat, int[] maxVertSpd, int minSpeed) {
+    Departure(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
     }
 }

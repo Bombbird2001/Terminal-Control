@@ -9,11 +9,11 @@ import com.bombbird.atcsim.AtcSim;
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class Waypoint extends Actor {
-    String name;
+    public String name;
     public int x;
     public int y;
     private Label label;
-    private Boolean selected;
+    private boolean selected;
 
     public Waypoint(String name, int x, int y) {
         this.name = name;

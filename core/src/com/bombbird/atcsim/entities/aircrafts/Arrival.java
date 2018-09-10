@@ -11,11 +11,11 @@ import java.util.Hashtable;
 
 public class Arrival extends Aircraft {
     //Others
-    private int ils;
+    private String ils;
     private Star star;
     private Airport arrival = GameScreen.airports.get("RCTP");
 
-    public Arrival(String callsign, String icaoType, int wakeCat, int[] maxVertSpd, int minSpeed) {
+    public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
         Hashtable starList = arrival.getStars();
         boolean starSet = false;
@@ -51,6 +51,8 @@ public class Arrival extends Aircraft {
         float dist = xDist > yDist ? yDist : xDist;
         x = direct.x + dist * MathUtils.cosDeg(270 - track);
         y = direct.y + dist * MathUtils.sinDeg(270 - track);
+
+        label.setPosition(x - 100, y + 25);
     }
 
     @Override
@@ -58,5 +60,11 @@ public class Arrival extends Aircraft {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
         star.joinLines();
+    }
+
+    @Override
+    public void updateLabel() {
+        labelText[8] = star.name;
+        super.updateLabel();
     }
 }

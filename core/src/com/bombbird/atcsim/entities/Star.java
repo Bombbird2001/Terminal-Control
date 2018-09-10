@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.screens.GameScreen;
 
 public class Star {
-    private String name;
+    public String name;
     private Array<String> runways;
     private Array<Integer> inboundHdg;
     private Array<Waypoint> waypoints;

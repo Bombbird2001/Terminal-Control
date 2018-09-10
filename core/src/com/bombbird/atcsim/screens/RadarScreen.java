@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -87,7 +88,7 @@ public class RadarScreen extends GameScreen {
     }
 
     private void newAircraft() {
-        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 2, new int[]{4000, -3000}, 147));
+        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 'H', new int[]{4000, -3000}, 147));
     }
 
     private void loadUI() {
@@ -251,6 +252,16 @@ public class RadarScreen extends GameScreen {
         //Draw restricted areas
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();
+        }
+
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        //Draw aircraft labels
+        enumKeys = aircrafts.keys();
+        while (enumKeys.hasMoreElements()) {
+            String key = enumKeys.nextElement();
+            aircrafts.get(key).renderLabels();
         }
     }
 
