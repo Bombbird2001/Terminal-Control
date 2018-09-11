@@ -113,16 +113,6 @@ public class Airport {
                 runway.renderShape();
             }
         }
-        /*
-        Enumeration<String> enumKeys = runways.keys();
-        while (enumKeys.hasMoreElements()) {
-            String key = enumKeys.nextElement();
-            Runway runway = runways.get(key);
-            if (runway.isActive()) {
-                runway.renderShape();
-            }
-        }
-        */
     }
 
     private void loadStars() {
@@ -191,8 +181,8 @@ public class Airport {
                             for (String s3: s2.split(" ")) {
                                 if (index1 == 0) {
                                     holdingPoints.add(GameScreen.waypoints.get(s3)); // Get waypoint
-                                } else if (index1 > 0 && index1 < 5) {
-                                    info[index1] = Integer.parseInt(s3);
+                                } else if (index1 > 0 && index1 < 6) {
+                                    info[index1 - 1] = Integer.parseInt(s3);
                                 } else {
                                     Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + mainName + "/star" + icao + ".rest");
                                 }
