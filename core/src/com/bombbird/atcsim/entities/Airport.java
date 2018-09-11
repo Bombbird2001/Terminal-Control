@@ -8,26 +8,27 @@ import com.bombbird.atcsim.screens.GameScreen;
 import static com.bombbird.atcsim.screens.GameScreen.stage;
 import static com.bombbird.atcsim.screens.RadarScreen.mainName;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class Airport {
-    private Hashtable<String, Runway> runways;
-    private Hashtable<String, Runway> landingRunways;
-    private Hashtable<String, Runway> takeoffRunways;
-    private String icao;
+    private HashMap<String, Runway> runways;
+    private HashMap<String, Runway> landingRunways;
+    private HashMap<String, Runway> takeoffRunways;
+    public String icao;
     private String metar;
-    private Hashtable<String, Star> stars;
-    private Hashtable<String, Star> sids;
+    private HashMap<String, Star> stars;
+    private HashMap<String, Star> sids;
+    public int elevation;
 
-    public Airport(String icao) {
+    public Airport(String icao, int elevation) {
         this.icao = icao;
+        this.elevation = elevation;
         loadRunways();
         loadStars();
     }
 
     private void loadRunways() {
-        runways = new Hashtable<String, Runway>();
+        runways = new HashMap<String, Runway>();
         FileHandle handle = Gdx.files.internal("game/" + mainName + "/runway" + icao + ".rwy");
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
@@ -59,11 +60,13 @@ public class Airport {
             Runway runway = new Runway(name, x, y, length, heading, textX, textY, elevation);
             runways.put(name, runway);
         }
-        landingRunways = new Hashtable<String, Runway>();
-        takeoffRunways = new Hashtable<String, Runway>();
+        landingRunways = new HashMap<String, Runway>();
+        takeoffRunways = new HashMap<String, Runway>();
         if (icao.equals("RCTP")) {
             setActive("05L", true, false);
             setActive("05R", false, true);
+        } else if (icao.equals("RCSS")) {
+            setActive("10", true, true);
         }
         /*
         setActive("23R", true, false);
@@ -105,6 +108,12 @@ public class Airport {
     }
 
     public void renderRunways() {
+        for (Runway runway: runways.values()) {
+            if (runway.isActive()) {
+                runway.renderShape();
+            }
+        }
+        /*
         Enumeration<String> enumKeys = runways.keys();
         while (enumKeys.hasMoreElements()) {
             String key = enumKeys.nextElement();
@@ -113,11 +122,12 @@ public class Airport {
                 runway.renderShape();
             }
         }
+        */
     }
 
     private void loadStars() {
         //Load STARs
-        stars = new Hashtable<String, Star>();
+        stars = new HashMap<String, Star>();
         FileHandle handle = Gdx.files.internal("game/" + mainName + "/star" + icao + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
@@ -177,26 +187,14 @@ public class Airport {
                         for (String s2: s1.split(">")) {
                             //For each holding point in STAR
                             int index1 = 0;
-                            int[] info = new int[4];
+                            int[] info = new int[5];
                             for (String s3: s2.split(" ")) {
-                                switch (index1) {
-                                    case 0:
-                                        holdingPoints.add(GameScreen.waypoints.get(s3)); //Get waypoint
-                                        break;
-                                    case 1:
-                                        info[0] = Integer.parseInt(s3); //Min alt for holding
-                                        break;
-                                    case 2:
-                                        info[1] = Integer.parseInt(s3); //Max alt for holding
-                                        break;
-                                    case 3:
-                                        info[2] = Integer.parseInt(s3); //Holding pattern heading
-                                        break;
-                                    case 4:
-                                        info[3] = Integer.parseInt(s3); //Leg distance
-                                        break;
-                                    default:
-                                        Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + mainName + "/star" + icao + ".rest");
+                                if (index1 == 0) {
+                                    holdingPoints.add(GameScreen.waypoints.get(s3)); // Get waypoint
+                                } else if (index1 > 0 && index1 < 5) {
+                                    info[index1] = Integer.parseInt(s3);
+                                } else {
+                                    Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + mainName + "/star" + icao + ".rest");
                                 }
                                 index1++;
                             }
@@ -213,15 +211,15 @@ public class Airport {
         //TODO: Load SIDs
     }
 
-    public Hashtable<String, Star> getStars() {
+    public HashMap<String, Star> getStars() {
         return stars;
     }
 
-    public Hashtable<String, Runway> getLandingRunways() {
+    public HashMap<String, Runway> getLandingRunways() {
         return landingRunways;
     }
 
-    public Hashtable<String, Runway> getTakeoffRunways() {
+    public HashMap<String, Runway> getTakeoffRunways() {
         return takeoffRunways;
     }
 }

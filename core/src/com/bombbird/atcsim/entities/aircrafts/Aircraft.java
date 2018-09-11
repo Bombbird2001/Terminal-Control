@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,9 +15,7 @@ import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
 
-import static com.bombbird.atcsim.screens.GameScreen.aircrafts;
-import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
-import static com.bombbird.atcsim.screens.GameScreen.stage;
+import static com.bombbird.atcsim.screens.GameScreen.*;
 
 public class Aircraft extends Actor {
     //Rendering parameters
@@ -31,6 +30,7 @@ public class Aircraft extends Actor {
     private static ImageButton.ImageButtonStyle buttonStyleCtrl;
     private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
     private static ImageButton.ImageButtonStyle buttonStyleEnroute;
+    private Image background;
 
     //Aircraft information
     //Aircraft characteristics
@@ -88,7 +88,7 @@ public class Aircraft extends Actor {
         this.wakeCat = wakeCat;
         this.maxVertSpd = maxVertSpd;
         this.minSpeed = minSpeed;
-        latMode = "vector";
+        latMode = "star";
         heading = 0;
         clearedHeading = (int) heading;
         track = 0;
@@ -107,6 +107,10 @@ public class Aircraft extends Actor {
         spdMode = "open";
 
         selected = false;
+        loadLabel();
+    }
+
+    private void loadLabel() {
         icon = new ImageButton(buttonStyleUnctrl);
         icon.setSize(40, 40);
         icon.getImageCell().size(40, 40);
@@ -119,14 +123,22 @@ public class Aircraft extends Actor {
             }
         });
         stage.addActor(icon);
+
+        background = new Image();
+        background.setDrawable(skin.getDrawable("labelBackground"));
+        background.setPosition(x - 100, y + 25);
+        background.setSize(290, 120);
+        GameScreen.stage.addActor(background);
+
         icon.setName(callsign);
-        labelText = new String[9];
+        labelText = new String[10];
+        labelText[9] = "";
         labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont6;
         labelStyle.fontColor = Color.WHITE;
         label = new Label("Loading...", labelStyle);
         label.setPosition(x - 100, y + 25);
-        label.setSize(220, 120);
+        label.setSize(290, 120);
         label.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
@@ -144,15 +156,14 @@ public class Aircraft extends Actor {
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
-    }
-
-    public void renderLabels() {
-        shapeRenderer.setColor(Color.BLACK);
-        GameScreen.shapeRenderer.rect(label.getX(), label.getY(), label.getWidth(), label.getHeight());
+        if (controlState == 1) {
+            shapeRenderer.setColor(Color.BLUE);
+            GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg(90 - track), y + gs * MathUtils.sinDeg(90 - track));
+        }
     }
 
     private void update() {
-
+        direct.setSelected(true);
     }
 
     @Override
@@ -209,8 +220,8 @@ public class Aircraft extends Actor {
         }
         labelText[0] = callsign;
         labelText[1] = icaoType + "/" + wakeCat;
-        labelText[2] = Integer.toString((int)altitude);
-        labelText[3] = Integer.toString(clearedAltitude);
+        labelText[2] = Integer.toString((int)(altitude / 100));
+        labelText[3] = Integer.toString(clearedAltitude / 100);
         labelText[4] = Integer.toString((int)heading);
         if (latMode.equals("vector")) {
             labelText[5] = Integer.toString(clearedHeading);
@@ -219,7 +230,8 @@ public class Aircraft extends Actor {
         }
         labelText[6] = Integer.toString((int)gs);
         labelText[7] = Integer.toString(clearedIas);
-        String updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7];
+        String updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         label.setText(updatedText);
+        background.setPosition(label.getX(), label.getY());
     }
 }

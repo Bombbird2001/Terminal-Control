@@ -1,5 +1,5 @@
 aircraftIcons.png
-size: 60, 20
+size: 350, 120
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -22,5 +22,12 @@ aircraftNotControlled
   xy: 40, 0
   size: 20, 20
   orig: 20, 20
+  offset: 0, 0
+  index: -1
+labelBackground
+  rotate: false
+  xy: 60, 0
+  size: 290, 120
+  orig: 290, 120
   offset: 0, 0
   index: -1

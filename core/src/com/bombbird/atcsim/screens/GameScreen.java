@@ -21,7 +21,7 @@ import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
     //Init game (set in constructor)
@@ -53,13 +53,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     Array<RestrictedArea> restArray;
 
     //Create airports
-    public static Hashtable<String, Airport> airports;
+    public static HashMap<String, Airport> airports;
 
     //Array of planes
-    public static Hashtable<String, Aircraft> aircrafts;
+    public static HashMap<String, Aircraft> aircrafts;
 
     //Create waypoints
-    public static Hashtable<String, Waypoint> waypoints;
+    public static HashMap<String, Waypoint> waypoints;
 
     GameScreen(final AtcSim game) {
         this.game = game;
@@ -69,7 +69,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         rangeCircles = new RangeCircle[3];
 
         //Initiate airports
-        airports = new Hashtable<String, Airport>();
+        airports = new HashMap<String, Airport>();
     }
 
     void loadRange() {

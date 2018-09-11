@@ -7,17 +7,19 @@ import com.bombbird.atcsim.entities.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class Arrival extends Aircraft {
     //Others
     private String ils;
     private Star star;
-    private Airport arrival = GameScreen.airports.get("RCTP");
+    private Airport arrival;
 
-    public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed) {
+    public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport arrival) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
-        Hashtable starList = arrival.getStars();
+        this.arrival = arrival;
+        labelText[9] = arrival.icao;
+        HashMap starList = arrival.getStars();
         boolean starSet = false;
 
         //Gets a STAR for active runways
@@ -37,7 +39,7 @@ public class Arrival extends Aircraft {
         System.out.println("Heading: " + heading);
         track = heading - RadarScreen.magHdgDev;
 
-        setControlState(0);
+        setControlState(1);
 
         //Calculate spawn border
         int[] xBorder = {1310, 4450};

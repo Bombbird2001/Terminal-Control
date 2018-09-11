@@ -19,8 +19,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class RadarScreen extends GameScreen {
     public static String mainName;
@@ -46,7 +45,7 @@ public class RadarScreen extends GameScreen {
         viewport.apply();
 
         //Set aircraft array
-        aircrafts = new Hashtable<String, Aircraft>();
+        aircrafts = new HashMap<String, Aircraft>();
     }
 
     private void loadAirports() {
@@ -55,7 +54,19 @@ public class RadarScreen extends GameScreen {
         for (String s: handle.readString().split("\\r?\\n")) {
             switch (index) {
                 case 0: magHdgDev = Float.parseFloat(s); break;
-                default: airports.put(s, new Airport(s));
+                default:
+                    int index1 = 0;
+                    String icao = "";
+                    int elevation = 0;
+                    for (String s1: s.split(" ")) {
+                        switch (index1) {
+                            case 0: icao = s1; break;
+                            case 1: elevation = Integer.parseInt(s1); break;
+                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
+                        }
+                        index1++;
+                    }
+                    airports.put(icao, new Airport(icao, elevation));
             }
             index++;
         }
@@ -88,7 +99,8 @@ public class RadarScreen extends GameScreen {
     }
 
     private void newAircraft() {
-        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 'H', new int[]{4000, -3000}, 147));
+        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 'H', new int[]{4000, -3000}, 147, airports.get("RCTP")));
+        aircrafts.put("UIA231", new Arrival("UIA231", "A321", 'M', new int[]{3000, -2500}, 124, airports.get("RCSS")));
     }
 
     private void loadUI() {
@@ -192,7 +204,7 @@ public class RadarScreen extends GameScreen {
         FileHandle handle = Gdx.files.internal("game/" + mainName + "/waypoint.way");
         String wayptStr = handle.readString();
         String[] indivWpt = wayptStr.split("\\r?\\n");
-        waypoints = new Hashtable<String, Waypoint>(indivWpt.length + 1, 0.999f);
+        waypoints = new HashMap<String, Waypoint>(indivWpt.length + 1, 0.999f);
         for (String s: indivWpt) {
             //For each waypoint
             int index = 0;
@@ -229,24 +241,18 @@ public class RadarScreen extends GameScreen {
         }
 
         //Draw runway(s) for each airport
-        Enumeration<String> enumKeys = airports.keys();
-        while (enumKeys.hasMoreElements()) {
-            String key = enumKeys.nextElement();
-            airports.get(key).renderRunways();
+        for (Airport airport: airports.values()) {
+            airport.renderRunways();
         }
 
         //Draw waypoints
-        enumKeys = waypoints.keys();
-        while (enumKeys.hasMoreElements()) {
-            String key = enumKeys.nextElement();
-            waypoints.get(key).renderShape();
+        for (Waypoint waypoint: waypoints.values()) {
+            waypoint.renderShape();
         }
 
         //Draw aircrafts
-        enumKeys = aircrafts.keys();
-        while (enumKeys.hasMoreElements()) {
-            String key = enumKeys.nextElement();
-            aircrafts.get(key).renderShape();
+        for (Aircraft aircraft: aircrafts.values()) {
+            aircraft.renderShape();
         }
 
         //Draw restricted areas
@@ -256,13 +262,6 @@ public class RadarScreen extends GameScreen {
 
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        //Draw aircraft labels
-        enumKeys = aircrafts.keys();
-        while (enumKeys.hasMoreElements()) {
-            String key = enumKeys.nextElement();
-            aircrafts.get(key).renderLabels();
-        }
     }
 
     @Override
