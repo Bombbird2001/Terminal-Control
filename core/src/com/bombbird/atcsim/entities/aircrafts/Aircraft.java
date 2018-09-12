@@ -230,7 +230,16 @@ public class Aircraft extends Actor {
         }
         labelText[6] = Integer.toString((int)gs);
         labelText[7] = Integer.toString(clearedIas);
-        String updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
+        String updatedText;
+        if (controlState == 1) {
+            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
+            label.setSize(290, 120);
+            background.setSize(290, 120);
+        } else {
+            updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
+            label.setSize(120, 95);
+            background.setSize(120, 95);
+        }
         label.setText(updatedText);
         background.setPosition(label.getX(), label.getY());
     }

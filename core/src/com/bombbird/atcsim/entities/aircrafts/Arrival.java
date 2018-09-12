@@ -39,7 +39,7 @@ public class Arrival extends Aircraft {
         System.out.println("Heading: " + heading);
         track = heading - RadarScreen.magHdgDev;
 
-        setControlState(1);
+        setControlState(0);
 
         //Calculate spawn border
         int[] xBorder = {1310, 4450};

@@ -16,18 +16,21 @@ import com.bombbird.atcsim.entities.aircrafts.Arrival;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 import okhttp3.*;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RadarScreen extends GameScreen {
     public static String mainName;
     public static float magHdgDev;
+    private Timer timer;
+    private String apiKey;
 
     RadarScreen(final AtcSim game, String name) {
         super(game);
-
         mainName = name;
 
         //Set stage params
@@ -46,6 +49,9 @@ public class RadarScreen extends GameScreen {
 
         //Set aircraft array
         aircrafts = new HashMap<String, Aircraft>();
+
+        //Set timer for METAR
+        timer = new Timer();
     }
 
     private void loadAirports() {
@@ -72,13 +78,85 @@ public class RadarScreen extends GameScreen {
         }
     }
 
-    private void loadMetar() {
+    private void updateMetar() {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
-        MediaType json = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(json, "json");
+        getMetar(JSON, client);
+    }
+
+    private void loadMetar() {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MM yyyy HH mm ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String[] currentDateTime = dateFormat.format(date).split(" ");
+        String[] dateTime = new String[6];
+        int index = 0;
+        for (String s: currentDateTime) {
+            if (index == 4) {
+                int minute = Integer.parseInt(s);
+                if (minute >= 45) {
+                    minute = 0;
+                } else if (minute >= 30) {
+                    minute = 45;
+                } else if (minute >= 15) {
+                    minute = 30;
+                } else {
+                    minute = 15;
+                }
+                s = Integer.toString(minute);
+            }
+            dateTime[index] = s;
+            index++;
+        }
+
+        String dateTimeStr = dateTime[0] + " " + dateTime[1] + " " + dateTime[2] + " " + dateTime[3] + " " + dateTime[4] + " " + dateTime[5];
+
+        try {
+            date = dateFormat.parse(dateTimeStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //Update the METAR every 15 minutes
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateMetar();
+            }
+        }, date, 900000);
+
+        updateMetar();
+    }
+
+    private void sendMetar(MediaType mediaType, OkHttpClient client, JSONObject jo) {
+        jo.put("password", "anotherrandompassword");
+        RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
-                .addHeader("X-API-KEY", "INSERT-API-KEY")
-                .url("https://api.checkwx.com/metar/RCTP,RCSS")
+                .url("http://bombbird2001.pythonanywhere.com/sendmetar")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    System.out.println(response.body().string());
+                }
+            }
+        });
+    }
+
+    private void receiveMetar(final MediaType mediaType, final OkHttpClient client) {
+        String str = airports.keySet().toString();
+        Request request = new Request.Builder()
+                .addHeader("X-API-KEY", apiKey)
+                .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s",""))
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -93,6 +171,72 @@ public class RadarScreen extends GameScreen {
                 } else {
                     //TODO: Decode json into metar data
                     System.out.println(response.body().string());
+                    JSONObject jo = new JSONObject(response.body().string());
+                    sendMetar(mediaType, client, jo);
+                }
+            }
+        });
+    }
+
+    private void getApiKey(final MediaType mediaType, final OkHttpClient client) {
+        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"-___________________________-\"}");
+        Request request = new Request.Builder()
+                .url("http://bombbird2001.pythonanywhere.com/getapikey")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    apiKey = response.body().string();
+                    receiveMetar(mediaType, client);
+                }
+            }
+        });
+    }
+
+    private void getMetar(final MediaType mediaType, final OkHttpClient client) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        JSONObject jo = new JSONObject();
+        jo.put("password", "somerandompassword");
+        jo.put("year", year);
+        jo.put("month", month);
+        jo.put("day", day);
+        jo.put("hour", hour);
+        jo.put("minute", minute);
+        RequestBody body = RequestBody.create(mediaType, jo.toString());
+        Request request = new Request.Builder()
+                .url("http://bombbird2001.pythonanywhere.com/getmetar")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    String responseText = response.body().string();
+                    if (responseText.equals("Update")) {
+                        getApiKey(mediaType, client);
+                    }
                 }
             }
         });
@@ -117,7 +261,7 @@ public class RadarScreen extends GameScreen {
         loadAirports();
 
         //Load METARs
-        //loadMetar();
+        loadMetar();
 
         //Load scroll listener
         loadScroll();
