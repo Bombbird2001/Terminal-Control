@@ -116,6 +116,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile 'com.squareup.okhttp3:okhttp:3.7.0'
         compile 'org.json:json:20180813'
+        compile 'org.apache.commons:commons-lang3:3.8'
     }
 }
 
