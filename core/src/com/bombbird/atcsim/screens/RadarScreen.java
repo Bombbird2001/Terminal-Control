@@ -28,6 +28,7 @@ public class RadarScreen extends GameScreen {
     public static float magHdgDev;
     private Timer timer;
     private String apiKey;
+    private JSONObject metarObject;
 
     RadarScreen(final AtcSim game, String name) {
         super(game);
@@ -90,20 +91,23 @@ public class RadarScreen extends GameScreen {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         calendar.add(Calendar.MINUTE, 15);
         int minute = calendar.get(Calendar.MINUTE);
-        if (minute >= 45) {
-            minute = 45;
-        } else if (minute >= 30) {
-            minute = 30;
-        } else if (minute >= 15) {
-            minute = 15;
+        if (minute >= 55) {
+            minute = 55;
+        } else if (minute >= 40) {
+            minute = 40;
+        } else if (minute >= 25) {
+            minute = 25;
+        } else if (minute >= 10) {
+            minute = 10;
         } else {
-            minute = 0;
+            minute = 55;
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
         }
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
         System.out.println(calendar.getTime().toString());
 
-        //Update the METAR every 15 minutes
+        //Update the METAR every 15 minutes starting from 10 minutes after each quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -114,11 +118,16 @@ public class RadarScreen extends GameScreen {
         updateMetar();
     }
 
-    private void sendMetar(MediaType mediaType, OkHttpClient client, JSONObject jo) {
-        jo.put("password", "");
+    private void sendMetar(final MediaType mediaType, final OkHttpClient client, JSONObject jo, Calendar calendar) {
+        jo.put("password", ""); //TODO: Remove before committing
+        jo.put("year", calendar.get(Calendar.YEAR));
+        jo.put("month", calendar.get(Calendar.MONTH) + 1);
+        jo.put("day", calendar.get(Calendar.DAY_OF_MONTH));
+        jo.put("hour", calendar.get(Calendar.HOUR_OF_DAY));
+        jo.put("minute", calendar.get(Calendar.MINUTE));
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
-                .url("")
+                .url("") //TODO: Remove before committing
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -133,6 +142,7 @@ public class RadarScreen extends GameScreen {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     System.out.println(response.body().string());
+                    getMetar(mediaType, client);
                 }
             }
         });
@@ -142,8 +152,23 @@ public class RadarScreen extends GameScreen {
         String str = airports.keySet().toString();
         Request request = new Request.Builder()
                 .addHeader("X-API-KEY", apiKey)
-                .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s",""))
+                .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
                 .build();
+        final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        int minute = calendar.get(Calendar.MINUTE);
+        if (minute >= 55) {
+            minute = 45;
+        } else if (minute >= 40) {
+            minute = 30;
+        } else if (minute >= 25) {
+            minute = 15;
+        } else if (minute >= 10) {
+            minute = 0;
+        } else {
+            minute = 45;
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+        }
+        calendar.set(Calendar.MINUTE, minute);
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -155,19 +180,19 @@ public class RadarScreen extends GameScreen {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
-                    //TODO: Decode json into metar data
-                    System.out.println(response.body().string());
-                    JSONObject jo = new JSONObject(response.body().string());
-                    sendMetar(mediaType, client, jo);
+                    String responseText = response.body().string();
+                    //System.out.println("Receive METAR decoded string: " + responseText);
+                    JSONObject jo = new JSONObject(responseText);
+                    sendMetar(mediaType, client, jo, calendar);
                 }
             }
         });
     }
 
     private void getApiKey(final MediaType mediaType, final OkHttpClient client) {
-        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"\"}");
+        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"\"}"); //TODO: Remove before committing
         Request request = new Request.Builder()
-                .url("")
+                .url("") //TODO: Remove before committing
                 .post(body)
                 .build();
 
@@ -183,8 +208,7 @@ public class RadarScreen extends GameScreen {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     apiKey = response.body().string();
-                    System.out.println(apiKey);
-                    //receiveMetar(mediaType, client);
+                    receiveMetar(mediaType, client);
                 }
             }
         });
@@ -192,22 +216,17 @@ public class RadarScreen extends GameScreen {
 
     private void getMetar(final MediaType mediaType, final OkHttpClient client) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
         JSONObject jo = new JSONObject();
-        jo.put("password", "");
-        jo.put("year", year);
-        jo.put("month", month);
-        jo.put("day", day);
-        jo.put("hour", hour);
-        jo.put("minute", minute);
+        jo.put("password", ""); //TODO: Remove before committing
+        jo.put("year", calendar.get(Calendar.YEAR));
+        jo.put("month", calendar.get(Calendar.MONTH) + 1);
+        jo.put("day", calendar.get(Calendar.DAY_OF_MONTH));
+        jo.put("hour", calendar.get(Calendar.HOUR_OF_DAY));
+        jo.put("minute", calendar.get(Calendar.MINUTE));
         jo.put("airports", airports.keySet());
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
-                .url("")
+                .url("") //TODO: Remove before committing
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -224,7 +243,11 @@ public class RadarScreen extends GameScreen {
                     String responseText = response.body().string();
                     if (responseText.equals("Update")) {
                         getApiKey(mediaType, client);
-                        System.out.println("Update returned!");
+                        System.out.println("Update requested");
+                    } else {
+                        //TODO: Decode json into metar data
+                        metarObject = new JSONObject(responseText);
+                        System.out.println(metarObject.toString());
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.screens.GameScreen;
+import org.json.JSONObject;
 
 import static com.bombbird.atcsim.screens.GameScreen.stage;
 import static com.bombbird.atcsim.screens.RadarScreen.mainName;
@@ -15,10 +16,10 @@ public class Airport {
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
     public String icao;
-    private String metar;
+    private JSONObject metar;
     private HashMap<String, Star> stars;
     private HashMap<String, Star> sids;
-    public int elevation;
+    private int elevation;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -199,6 +200,10 @@ public class Airport {
 
     public void loadSids() {
         //TODO: Load SIDs
+    }
+
+    public void setMetar(JSONObject metar) {
+        this.metar = metar;
     }
 
     public HashMap<String, Star> getStars() {

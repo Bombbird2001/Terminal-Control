@@ -26,7 +26,7 @@ public class Waypoint extends Actor {
         labelStyle.font = AtcSim.fonts.defaultFont6;
         labelStyle.fontColor = Color.GRAY;
         label = new Label(name, labelStyle);
-        label.setPosition(x - 44, y + 16);
+        label.setPosition(x - label.getWidth() / 2, y + 16);
     }
 
     @Override
