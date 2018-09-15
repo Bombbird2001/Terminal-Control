@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.screens.GameScreen;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 
 import static com.bombbird.atcsim.screens.GameScreen.stage;
@@ -202,8 +203,26 @@ public class Airport {
         //TODO: Load SIDs
     }
 
-    public void setMetar(JSONObject metar) {
-        this.metar = metar;
+    void setMetar(JSONObject metar) {
+        this.metar = metar.getJSONObject(icao);
+        System.out.println("METAR of " + icao + ": " + this.metar.toString());
+        //Update active runways if METAR is updated
+        int windHdg = this.metar.getInt("windDirection");
+        String ws = this.metar.getString("windshear");
+        for (Runway runway: runways.values()) {
+            int rightHeading = runway.heading + 90;
+            int leftHeading = runway.heading - 90;
+            if (rightHeading > 360) {
+
+            } else if (leftHeading < 0) {
+
+            }
+            runway.windshear = ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.name);
+        }
+    }
+
+    public JSONObject getMetar() {
+        return metar;
     }
 
     public HashMap<String, Star> getStars() {

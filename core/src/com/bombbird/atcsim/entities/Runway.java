@@ -13,7 +13,7 @@ import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
 public class Runway extends Actor {
     //Name of runway
-    private String name;
+    public String name;
 
     //Set landing/takeoff status
     private boolean active;
@@ -29,7 +29,7 @@ public class Runway extends Actor {
     private static float halfWidth = 2f;
 
     //Set heading of runway
-    private int heading;
+    public int heading;
     private float trueHdg;
 
     //Label of runway
@@ -40,6 +40,9 @@ public class Runway extends Actor {
 
     //Set the ILS
     //TODO: Implement ILS
+
+    //Set windshear properties
+    public boolean windshear;
 
     Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
         //Set the parameters
