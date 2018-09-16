@@ -11,12 +11,15 @@ import java.util.TimeZone;
 public class Metar {
     private JSONObject metarObject;
     private String apiKey;
-    public Metar() {
+    private RadarScreen radarScreen;
+
+    public Metar(RadarScreen radarScreen) {
         apiKey = "";
+        this.radarScreen = radarScreen;
     }
 
     public void updateMetar() {
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
         getMetar(JSON, client);
     }
@@ -147,8 +150,8 @@ public class Metar {
                         System.out.println("Update requested");
                     } else {
                         metarObject = new JSONObject(responseText);
-                        System.out.println(metarObject.toString());
                         updateAirports();
+                        radarScreen.loading = false;
                     }
                 }
             }

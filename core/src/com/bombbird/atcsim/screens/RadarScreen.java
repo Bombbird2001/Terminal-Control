@@ -99,7 +99,7 @@ public class RadarScreen extends GameScreen {
         calendar.set(Calendar.SECOND, 0);
         System.out.println(calendar.getTime().toString());
 
-        metar = new Metar();
+        metar = new Metar(this);
 
         //Update the METAR every 15 minutes starting from 10 minutes after each quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -112,7 +112,7 @@ public class RadarScreen extends GameScreen {
         metar.updateMetar();
     }
 
-    private void newAircraft() {
+    void newAircraft() {
         aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 'H', new int[]{4000, -3000}, 147, airports.get("RCTP")));
         aircrafts.put("UIA231", new Arrival("UIA231", "A321", 'M', new int[]{3000, -2500}, 124, airports.get("RCSS")));
     }
@@ -120,6 +120,9 @@ public class RadarScreen extends GameScreen {
     private void loadUI() {
         //Reset stage
         stage.clear();
+
+        //Show loading screen
+        loading = true;
 
         //Load range circles
         loadRange();
@@ -133,17 +136,14 @@ public class RadarScreen extends GameScreen {
         //Load METARs
         loadMetar();
 
-        //Load scroll listener
-        loadScroll();
-
         //Load obstacles
         loadObstacles();
 
         //Load altitude restrictions
         loadRestricted();
 
-        //Load planes
-        newAircraft();
+        //Load scroll listener
+        loadScroll();
     }
 
     private void loadObstacles() {

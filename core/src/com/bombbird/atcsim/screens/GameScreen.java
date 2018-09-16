@@ -27,6 +27,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Init game (set in constructor)
     private final AtcSim game;
     public static Stage stage;
+    private boolean aircraftLoaded;
+    public boolean loading;
 
     //Set input processors
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -70,6 +72,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Initiate airports
         airports = new HashMap<String, Airport>();
+
+        loading = false;
+        aircraftLoaded = false;
     }
 
     void loadRange() {
@@ -153,6 +158,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
+    void newAircraft() {
+
+    }
+
     @Override
     public void show() {
 
@@ -164,6 +173,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void render(float delta) {
+        if (!loading && !aircraftLoaded) {
+            newAircraft();
+            aircraftLoaded = true;
+        }
+
         //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -180,16 +194,22 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         stage.act(delta);
 
         //Render each of the range circles, obstacles using shaperenderer
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        for (RangeCircle rangeCircle: rangeCircles) {
-            rangeCircle.renderShape();
+        if (!loading) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            for (RangeCircle rangeCircle : rangeCircles) {
+                rangeCircle.renderShape();
+            }
+            renderShape();
+            shapeRenderer.end();
         }
-        renderShape();
-        shapeRenderer.end();
 
         //Draw to the spritebatch
         game.batch.begin();
-        stage.draw();
+        if (loading) {
+            AtcSim.fonts.defaultFont40.draw(game.batch, "Loading...", 2400, 1500);
+        } else {
+            stage.draw();
+        }
         game.batch.end();
     }
 

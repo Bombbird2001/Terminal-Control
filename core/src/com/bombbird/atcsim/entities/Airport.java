@@ -208,14 +208,33 @@ public class Airport {
         System.out.println("METAR of " + icao + ": " + this.metar.toString());
         //Update active runways if METAR is updated
         int windHdg = this.metar.getInt("windDirection");
-        String ws = this.metar.getString("windshear");
+        String ws = "";
+        if (this.metar.get("windshear") != JSONObject.NULL) {
+            ws = this.metar.getString("windshear");
+        }
         for (Runway runway: runways.values()) {
             int rightHeading = runway.heading + 90;
             int leftHeading = runway.heading - 90;
             if (rightHeading > 360) {
-
+                rightHeading -= 360;
+                if (windHdg >= rightHeading && windHdg < leftHeading) {
+                    setActive(runway.name, false, false);
+                } else {
+                    setActive(runway.name, true, true);
+                }
             } else if (leftHeading < 0) {
-
+                leftHeading += 360;
+                if (windHdg >= rightHeading && windHdg < leftHeading) {
+                    setActive(runway.name, false, false);
+                } else {
+                    setActive(runway.name, true, true);
+                }
+            } else {
+                if (windHdg >= leftHeading && windHdg < rightHeading) {
+                    setActive(runway.name, true, true);
+                } else {
+                    setActive(runway.name, false, false);
+                }
             }
             runway.windshear = ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.name);
         }
