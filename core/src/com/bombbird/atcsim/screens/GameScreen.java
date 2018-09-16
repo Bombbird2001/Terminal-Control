@@ -29,6 +29,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public static Stage stage;
     private boolean aircraftLoaded;
     public boolean loading;
+    public String loadingPercent;
 
     //Set input processors
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -75,6 +76,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         loading = false;
         aircraftLoaded = false;
+        loadingPercent = "0%";
     }
 
     void loadRange() {
@@ -174,6 +176,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     @Override
     public void render(float delta) {
         if (!loading && !aircraftLoaded) {
+            //Load the initial aircrafts if METAR has finished loading but aircrafts not loaded yet
             newAircraft();
             aircraftLoaded = true;
         }
@@ -195,6 +198,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Render each of the range circles, obstacles using shaperenderer
         if (!loading) {
+            //Render shapes only if METAR has finished loading
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             for (RangeCircle rangeCircle : rangeCircles) {
                 rangeCircle.renderShape();
@@ -206,7 +210,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //Draw to the spritebatch
         game.batch.begin();
         if (loading) {
-            AtcSim.fonts.defaultFont40.draw(game.batch, "Loading...", 2400, 1500);
+            //Write loading text if loading
+            AtcSim.fonts.defaultFont20.draw(game.batch, "Loading... " + loadingPercent, 2550, 1550);
         } else {
             stage.draw();
         }

@@ -83,17 +83,14 @@ public class RadarScreen extends GameScreen {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         calendar.add(Calendar.MINUTE, 15);
         int minute = calendar.get(Calendar.MINUTE);
-        if (minute >= 55) {
-            minute = 55;
-        } else if (minute >= 40) {
-            minute = 40;
-        } else if (minute >= 25) {
-            minute = 25;
-        } else if (minute >= 10) {
-            minute = 10;
+        if (minute >= 45) {
+            minute = 45;
+        } else if (minute >= 30) {
+            minute = 30;
+        } else if (minute >= 15) {
+            minute = 15;
         } else {
-            minute = 55;
-            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            minute = 0;
         }
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
@@ -101,7 +98,7 @@ public class RadarScreen extends GameScreen {
 
         metar = new Metar(this);
 
-        //Update the METAR every 15 minutes starting from 10 minutes after each quarter of the hour
+        //Update the METAR every quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

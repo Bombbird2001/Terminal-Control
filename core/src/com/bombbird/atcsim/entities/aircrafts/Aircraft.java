@@ -157,7 +157,7 @@ public class Aircraft extends Actor {
         shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
         if (controlState == 1) {
-            shapeRenderer.setColor(Color.BLUE);
+            shapeRenderer.setColor(Color.GREEN);
             GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg(90 - track), y + gs * MathUtils.sinDeg(90 - track));
         }
     }

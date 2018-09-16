@@ -19,7 +19,7 @@ public class Metar {
     }
 
     public void updateMetar() {
-        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
         getMetar(JSON, client);
     }
@@ -49,6 +49,7 @@ public class Metar {
                 } else {
                     System.out.println(response.body().string());
                     getMetar(mediaType, client);
+                    radarScreen.loadingPercent = "80%";
                 }
             }
         });
@@ -62,13 +63,11 @@ public class Metar {
                 .build();
         final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         int minute = calendar.get(Calendar.MINUTE);
-        if (minute >= 55) {
-            minute = 45;
-        } else if (minute >= 40) {
+        if (minute >= 45) {
             minute = 30;
-        } else if (minute >= 25) {
+        } else if (minute >= 30) {
             minute = 15;
-        } else if (minute >= 10) {
+        } else if (minute >= 15) {
             minute = 0;
         } else {
             minute = 45;
@@ -90,6 +89,7 @@ public class Metar {
                     //System.out.println("Receive METAR decoded string: " + responseText);
                     JSONObject jo = new JSONObject(responseText);
                     sendMetar(mediaType, client, jo, calendar);
+                    radarScreen.loadingPercent = "60%";
                 }
             }
         });
@@ -115,6 +115,7 @@ public class Metar {
                 } else {
                     apiKey = response.body().string();
                     receiveMetar(mediaType, client);
+                    radarScreen.loadingPercent = "40%";
                 }
             }
         });
@@ -146,11 +147,13 @@ public class Metar {
                 } else {
                     String responseText = response.body().string();
                     if (responseText.equals("Update")) {
-                        getApiKey(mediaType, client);
                         System.out.println("Update requested");
+                        radarScreen.loadingPercent = "20%";
+                        getApiKey(mediaType, client);
                     } else {
                         metarObject = new JSONObject(responseText);
                         updateAirports();
+                        radarScreen.loadingPercent = "100%";
                         radarScreen.loading = false;
                     }
                 }
