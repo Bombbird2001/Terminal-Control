@@ -13,11 +13,11 @@ public class Arrival extends Aircraft {
     //Others
     private String ils;
     private Star star;
-    private Airport arrival;
+    private int starIndex = 0;
 
     public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport arrival) {
         super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
-        this.arrival = arrival;
+        airport = arrival;
         labelText[9] = arrival.icao;
         HashMap starList = arrival.getStars();
         boolean starSet = false;
@@ -34,7 +34,7 @@ public class Arrival extends Aircraft {
             }
         }
         star.printWpts();
-        direct = star.getWaypoint(0);
+        direct = star.getWaypoint(starIndex);
         heading = star.getInboundHdg();
         System.out.println("Heading: " + heading);
         track = heading - RadarScreen.magHdgDev;
@@ -54,6 +54,9 @@ public class Arrival extends Aircraft {
         x = direct.x + dist * MathUtils.cosDeg(270 - track);
         y = direct.y + dist * MathUtils.sinDeg(270 - track);
 
+        heading = update();
+        System.out.println("New heading: " + heading);
+
         label.setPosition(x - 100, y + 25);
     }
 
@@ -61,12 +64,19 @@ public class Arrival extends Aircraft {
     public void drawStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
-        star.joinLines();
+        star.joinLines(starIndex);
     }
 
     @Override
     public void updateLabel() {
         labelText[8] = star.name;
         super.updateLabel();
+    }
+
+    @Override
+    public void updateDirect() {
+        direct.setSelected(false);
+        starIndex++;
+        direct = star.getWaypoint(starIndex);
     }
 }

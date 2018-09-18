@@ -20,7 +20,7 @@ public class Airport {
     private JSONObject metar;
     private HashMap<String, Star> stars;
     private HashMap<String, Star> sids;
-    private int elevation;
+    public int elevation;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -254,5 +254,9 @@ public class Airport {
 
     public HashMap<String, Runway> getTakeoffRunways() {
         return takeoffRunways;
+    }
+
+    public int[] getWinds() {
+        return new int[] {metar.getInt("windDirection"), metar.getInt("windSpeed")};
     }
 }

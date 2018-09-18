@@ -55,7 +55,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     FileHandle restrictions;
     Array<RestrictedArea> restArray;
 
-    //Create airports
+    //Create airports + wind data
     public static HashMap<String, Airport> airports;
 
     //Array of planes

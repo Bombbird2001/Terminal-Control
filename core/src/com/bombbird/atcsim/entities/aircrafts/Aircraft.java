@@ -12,8 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
+import com.bombbird.atcsim.screens.RadarScreen;
 
 import static com.bombbird.atcsim.screens.GameScreen.*;
 
@@ -33,6 +35,7 @@ public class Aircraft extends Actor {
     private Image background;
 
     //Aircraft information
+    Airport airport;
     //Aircraft characteristics
     String callsign;
     String icaoType;
@@ -66,6 +69,9 @@ public class Aircraft extends Actor {
     int targetIas;
     float deltaIas;
     String spdMode;
+
+    //Winds
+    int[] winds;
 
     Aircraft(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed) {
         if (!loadedIcons) {
@@ -162,8 +168,64 @@ public class Aircraft extends Actor {
         }
     }
 
-    private void update() {
+    float update() {
+        deltaPosition.setZero();
         direct.setSelected(true);
+        float targetHeading;
+        if (latMode.equals("vector")) {
+            targetHeading = clearedHeading;
+        } else {
+            //TODO: Set aircraft direct waypoint characteristics
+            //Calculates distance between waypoint and plane
+            float deltaX = direct.x - x;
+            float deltaY = direct.y - y;
+            float distance = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+            //If within 25px of waypoint, target next waypoint
+            if (distance <= 25) {
+                updateDirect();
+            }
+
+            //Find target track angle
+            if (deltaX >= 0) {
+                targetHeading = 90 - (float)(Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            } else {
+                targetHeading = 270 - (float)(Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            }
+            //Get wind data
+            if (altitude - airport.elevation <= 4000) {
+                winds = airport.getWinds();
+            } else {
+                winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
+            }
+            //Calculate required aircraft heading to account for winds
+            int windHdg = winds[0] + 180;
+            int windSpd = winds[1];
+            windSpd = 50;
+            //Using sine rule to determine angle between aircraft velocity and actual velocity
+            float angle = windHdg - targetHeading;
+            float angleDiff = (float) Math.asin(windSpd * MathUtils.sinDeg(angle) / tas) * MathUtils.radiansToDegrees;
+            targetHeading -= angleDiff;
+
+            //Aaaand now the cosine rule to determine ground speed
+            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg(180 - angle - angleDiff));
+
+            track = targetHeading; //Take track as targetHeading for now; will replace with turning later
+            //Add magnetic deviation to give magnetic heading
+            targetHeading += RadarScreen.magHdgDev;
+        }
+        if (targetHeading > 360) {
+            targetHeading -= 360;
+        } else if (targetHeading <= 0) {
+            targetHeading += 360;
+        }
+        //System.out.println(callsign + targetHeading);
+        //Add aircraft velocity vector
+        track = heading - RadarScreen.magHdgDev;
+        deltaPosition.x = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.cosDeg(90 - track);
+        deltaPosition.y = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.sinDeg(90 - track);
+        x += deltaPosition.x;
+        y += deltaPosition.y;
+        return targetHeading;
     }
 
     @Override
@@ -176,6 +238,10 @@ public class Aircraft extends Actor {
     }
 
     void drawStar() {
+
+    }
+
+    void updateDirect() {
 
     }
 
@@ -233,8 +299,8 @@ public class Aircraft extends Actor {
         String updatedText;
         if (controlState == 1) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(290, 120);
-            background.setSize(290, 120);
+            label.setSize(250, 120);
+            background.setSize(250, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
             label.setSize(120, 95);

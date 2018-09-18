@@ -31,15 +31,20 @@ public class Star {
         }
     }
 
-    public void joinLines() {
+    public void joinLines(int start) {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         float previousX = -1;
         float previousY = -1;
+        int index = 0;
         for (Waypoint waypoint: waypoints) {
-            waypoint.setSelected(true);
-            if (previousX != -1 && previousY != -1) GameScreen.shapeRenderer.line(previousX, previousY, waypoint.x, waypoint.y);
-            previousX = waypoint.x;
-            previousY = waypoint.y;
+            if (index >= start) {
+                waypoint.setSelected(true);
+                if (previousX != -1 && previousY != -1)
+                    GameScreen.shapeRenderer.line(previousX, previousY, waypoint.x, waypoint.y);
+                previousX = waypoint.x;
+                previousY = waypoint.y;
+            }
+            index++;
         }
     }
 
