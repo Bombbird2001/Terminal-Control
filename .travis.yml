@@ -1,5 +1,8 @@
-language: java
+language: android
 jdk:
   - oraclejdk8
+android:
+  components:
+    - android-28
 script:
   - ./gradlew desktop:dist
