@@ -4,6 +4,8 @@ jdk:
 android:
   components:
     - android-28
+  licenses:
+    - 'android-sdk-license-.+'
 before_script:
   - chmod +x gradlew
 script:
