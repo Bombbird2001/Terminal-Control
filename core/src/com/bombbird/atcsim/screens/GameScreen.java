@@ -30,6 +30,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private boolean aircraftLoaded;
     public boolean loading;
     public String loadingPercent;
+    private float loadedTime = 0;
 
     //Set input processors
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -209,9 +210,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Draw to the spritebatch
         game.batch.begin();
+        String loadingText = "Loading.   ";
         if (loading) {
             //Write loading text if loading
-            AtcSim.fonts.defaultFont20.draw(game.batch, "Loading... " + loadingPercent, 2550, 1550);
+            loadedTime += Gdx.graphics.getDeltaTime();
+            if (loadedTime > 1.5) {
+                loadedTime = 0;
+                loadingText = "Loading.   ";
+            } else if (loadedTime > 1) {
+                loadingText = "Loading... ";
+            } else if (loadedTime > 0.5) {
+                loadingText = "Loading..  ";
+            }
+            AtcSim.fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 2550, 1550);
         } else {
             stage.draw();
         }

@@ -45,7 +45,7 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
+                    throw new IOException(response.toString());
                 } else {
                     System.out.println(response.body().string());
                     getMetar(mediaType, client);
@@ -83,7 +83,7 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
+                    throw new IOException(response.toString());
                 } else {
                     String responseText = response.body().string();
                     //System.out.println("Receive METAR decoded string: " + responseText);
@@ -111,7 +111,7 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
+                    throw new IOException(response.toString());
                 } else {
                     apiKey = response.body().string();
                     receiveMetar(mediaType, client);
@@ -143,7 +143,7 @@ public class Metar {
                         System.out.println("503 received: trying again");
                         getMetar(mediaType, client);
                     }
-                    throw new IOException("Unexpected code " + response);
+                    throw new IOException(response.toString());
                 } else {
                     String responseText = response.body().string();
                     if (responseText.equals("Update")) {

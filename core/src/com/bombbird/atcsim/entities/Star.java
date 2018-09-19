@@ -61,6 +61,9 @@ public class Star {
     }
 
     public Waypoint getWaypoint(int index) {
+        if (index >= waypoints.size) {
+            return null;
+        }
         return waypoints.get(index);
     }
 }

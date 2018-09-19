@@ -42,33 +42,34 @@ public class Aircraft extends Actor {
     char wakeCat;
     int[] maxVertSpd;
     int minSpeed;
-    int controlState;
+    private int controlState;
 
     //Aircraft position
     float x;
     float y;
     String latMode;
-    float heading;
+    double heading;
     int clearedHeading;
-    float track;
+    private double angularVelocity;
+    double track;
     Waypoint direct;
 
     //Altitude
     float altitude;
-    int clearedAltitude;
-    int targetAltitude;
-    float verticalSpeed;
-    String altMode;
+    public int clearedAltitude;
+    private int targetAltitude;
+    private float verticalSpeed;
+    public String altMode;
 
     //Speed
-    float ias;
-    float tas;
-    float gs;
-    Vector2 deltaPosition;
-    int clearedIas;
-    int targetIas;
-    float deltaIas;
-    String spdMode;
+    public float ias;
+    private float tas;
+    private float gs;
+    private Vector2 deltaPosition;
+    public int clearedIas;
+    private int targetIas;
+    private float deltaIas;
+    public String spdMode;
 
     //Winds
     int[] winds;
@@ -156,7 +157,7 @@ public class Aircraft extends Actor {
     }
 
     public void renderShape() {
-        if (selected) {
+        if (selected && direct != null) {
             drawStar();
         }
         moderateLabel();
@@ -164,18 +165,43 @@ public class Aircraft extends Actor {
         GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
         if (controlState == 1) {
             shapeRenderer.setColor(Color.GREEN);
-            GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg(90 - track), y + gs * MathUtils.sinDeg(90 - track));
+            GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
+            shapeRenderer.setColor(Color.BROWN);
+            GameScreen.shapeRenderer.line(x, y, x + tas * MathUtils.cosDeg((float)(90 - heading + RadarScreen.magHdgDev)), y + tas * MathUtils.sinDeg((float)(90 - heading + RadarScreen.magHdgDev)));
         }
     }
 
-    float update() {
+    double update() {
+        if (direct != null) {
+            direct.setSelected(true);
+        }
+        double[] info = updateTargetHeading();
+        updateHeading(info[0], 0);
+        updatePosition(info[1]);
+        return info[0];
+    }
+
+    private double[] updateTargetHeading() {
         deltaPosition.setZero();
-        direct.setSelected(true);
-        float targetHeading;
+        double targetHeading;
+        double angleDiff;
+
+        //Get wind data
+        if (altitude - airport.elevation <= 4000) {
+            winds = airport.getWinds();
+        } else {
+            winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
+        }
+        float windHdg = winds[0] + 180;
+        int windSpd = winds[1];
+        windSpd = 50;
+
         if (latMode.equals("vector")) {
             targetHeading = clearedHeading;
+            double angle = 180 - windHdg + heading;
+            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
+            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
         } else {
-            //TODO: Set aircraft direct waypoint characteristics
             //Calculates distance between waypoint and plane
             float deltaX = direct.x - x;
             float deltaY = direct.y - y;
@@ -187,45 +213,100 @@ public class Aircraft extends Actor {
 
             //Find target track angle
             if (deltaX >= 0) {
-                targetHeading = 90 - (float)(Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+                targetHeading = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
             } else {
-                targetHeading = 270 - (float)(Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+                targetHeading = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
             }
-            //Get wind data
-            if (altitude - airport.elevation <= 4000) {
-                winds = airport.getWinds();
-            } else {
-                winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
-            }
+
             //Calculate required aircraft heading to account for winds
-            int windHdg = winds[0] + 180;
-            int windSpd = winds[1];
-            windSpd = 50;
             //Using sine rule to determine angle between aircraft velocity and actual velocity
-            float angle = windHdg - targetHeading;
-            float angleDiff = (float) Math.asin(windSpd * MathUtils.sinDeg(angle) / tas) * MathUtils.radiansToDegrees;
+            double angle = windHdg - targetHeading;
+            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / tas) * MathUtils.radiansToDegrees;
             targetHeading -= angleDiff;
 
             //Aaaand now the cosine rule to determine ground speed
-            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg(180 - angle - angleDiff));
+            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)(180 - angle - angleDiff)));
 
-            track = targetHeading; //Take track as targetHeading for now; will replace with turning later
             //Add magnetic deviation to give magnetic heading
             targetHeading += RadarScreen.magHdgDev;
         }
+
         if (targetHeading > 360) {
             targetHeading -= 360;
         } else if (targetHeading <= 0) {
             targetHeading += 360;
         }
-        //System.out.println(callsign + targetHeading);
-        //Add aircraft velocity vector
-        track = heading - RadarScreen.magHdgDev;
-        deltaPosition.x = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.cosDeg(90 - track);
-        deltaPosition.y = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.sinDeg(90 - track);
+        //System.out.println(callsign + " target heading: " + targetHeading);
+        return new double[] {targetHeading, angleDiff};
+    }
+
+    private void updatePosition(double angleDiff) {
+        track = heading - RadarScreen.magHdgDev + angleDiff;
+        deltaPosition.x = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
+        deltaPosition.y = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
         y += deltaPosition.y;
-        return targetHeading;
+        label.moveBy(deltaPosition.x, deltaPosition.y);
+    }
+
+    private void updateHeading(double targetHeading, int forceDirection) {
+        double deltaHeading = targetHeading - heading;
+        //System.out.println(callsign + " deltaheading: " + deltaHeading);
+        switch (forceDirection) {
+            case 0: //Not specified: pick quickest direction
+                if (deltaHeading > 180) {
+                    deltaHeading -= 360; //Turn left: deltaHeading is -ve
+                } else if (deltaHeading <= -180) {
+                    deltaHeading += 360; //Turn right: deltaHeading is +ve
+                }
+                break;
+            case 1: //Must turn left
+                if (deltaHeading > 0) {
+                    deltaHeading -= 360;
+                }
+                break;
+            case 2: //Must turn right
+                if (deltaHeading < 0) {
+                    deltaHeading += 360;
+                }
+                break;
+            default:
+                Gdx.app.log("Direction error", "Invalid turn direction specified!");
+        }
+        //System.out.println(callsign + " new deltaheading: " + deltaHeading);
+        //Note: angular velocities unit is change in heading per second
+        double targetAngularVelocity = 0;
+        if (deltaHeading > 0) {
+            //Aircraft needs to turn right
+            targetAngularVelocity = 2.5;
+        } else if (deltaHeading < 0) {
+            //Aircraft needs to turn left
+            targetAngularVelocity = -2.5;
+        }
+        if (Math.abs(deltaHeading) <= 10) {
+            targetAngularVelocity = deltaHeading / 3;
+        }
+        //System.out.println(callsign + " angular velocity: " + angularVelocity);
+        //System.out.println(callsign + " target angular velocity: " + targetAngularVelocity);
+        //Update angular velocity towards target angular velocity
+        if (targetAngularVelocity > angularVelocity + 0.1f) {
+            //If need to turn right, start turning right
+            angularVelocity += 0.5f * Gdx.graphics.getDeltaTime();
+        } else if (targetAngularVelocity < angularVelocity - 0.1f) {
+            //If need to turn left, start turning left
+            angularVelocity -= 0.5f * Gdx.graphics.getDeltaTime();
+        } else {
+            //If within +-0.1 of target, set equal to target
+            angularVelocity = targetAngularVelocity;
+        }
+
+        //Add angular velocity to heading
+        heading += angularVelocity * Gdx.graphics.getDeltaTime();
+        if (heading > 360) {
+            heading -= 360;
+        } else if (heading <= 0) {
+            heading += 360;
+        }
     }
 
     @Override
@@ -299,8 +380,8 @@ public class Aircraft extends Actor {
         String updatedText;
         if (controlState == 1) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(250, 120);
-            background.setSize(250, 120);
+            label.setSize(240, 120);
+            background.setSize(240, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
             label.setSize(120, 95);

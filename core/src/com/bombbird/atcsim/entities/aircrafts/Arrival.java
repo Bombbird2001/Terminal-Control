@@ -44,15 +44,15 @@ public class Arrival extends Aircraft {
         //Calculate spawn border
         int[] xBorder = {1310, 4450};
         int[] yBorder = {50, 3190};
-        float xDistRight = (xBorder[1] - direct.x)/MathUtils.cosDeg(270 - track);
-        float xDistLeft = (xBorder[0] - direct.x)/MathUtils.cosDeg(270 - track);
-        float yDistUp = (yBorder[1] - direct.y)/MathUtils.sinDeg(270 - track);
-        float yDistDown = (yBorder[0] - direct.y)/MathUtils.sinDeg(270 - track);
+        float xDistRight = (xBorder[1] - direct.x)/MathUtils.cosDeg((float)(270 - track));
+        float xDistLeft = (xBorder[0] - direct.x)/MathUtils.cosDeg((float)(270 - track));
+        float yDistUp = (yBorder[1] - direct.y)/MathUtils.sinDeg((float)(270 - track));
+        float yDistDown = (yBorder[0] - direct.y)/MathUtils.sinDeg((float)(270 - track));
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
         float dist = xDist > yDist ? yDist : xDist;
-        x = direct.x + dist * MathUtils.cosDeg(270 - track);
-        y = direct.y + dist * MathUtils.sinDeg(270 - track);
+        x = direct.x + dist * MathUtils.cosDeg((float)(270 - track));
+        y = direct.y + dist * MathUtils.sinDeg((float)(270 - track));
 
         heading = update();
         System.out.println("New heading: " + heading);
@@ -78,5 +78,9 @@ public class Arrival extends Aircraft {
         direct.setSelected(false);
         starIndex++;
         direct = star.getWaypoint(starIndex);
+        if (direct == null) {
+            latMode = "vector";
+            clearedHeading = (int)heading;
+        }
     }
 }
