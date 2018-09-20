@@ -13,3 +13,5 @@ before_script:
   - chmod +x gradlew
 script:
   - ./gradlew desktop:dist
+before_install:
+    - yes | sdkmanager "build-tools;28.0.2"
