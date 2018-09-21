@@ -55,13 +55,13 @@ public class Runway extends Actor {
         trueHdg = heading - RadarScreen.magHdgDev;
 
         //Convert length in feet to pixels
-        length = MathTools.feetToPixel(length);
+        float pxLength = MathTools.feetToPixel(length);
 
         //Calculate the position offsets
         float xOffsetW = halfWidth * MathUtils.sinDeg(90 - trueHdg);
         float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - trueHdg);
-        float xOffsetL = length * MathUtils.cosDeg(90 - trueHdg);
-        float yOffsetL = length * MathUtils.sinDeg(90 - trueHdg);
+        float xOffsetL = pxLength * MathUtils.cosDeg(90 - trueHdg);
+        float yOffsetL = pxLength * MathUtils.sinDeg(90 - trueHdg);
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();

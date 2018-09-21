@@ -217,12 +217,14 @@ public class FileLoader {
                                 } else if (index1 > 0 && index1 < 6) {
                                     info[index1 - 1] = Integer.parseInt(s3);
                                 } else {
-                                    Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                    Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
                                 }
                                 index1++;
                             }
                             holdingInfo.add(info);
                         }
+                        break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
                 }
                 index++;
             }

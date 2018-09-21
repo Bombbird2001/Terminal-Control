@@ -195,7 +195,6 @@ public class Aircraft extends Actor {
         }
         float windHdg = winds[0] + 180;
         int windSpd = winds[1];
-        windSpd = 50;
 
         if (latMode.equals("vector")) {
             targetHeading = clearedHeading;
@@ -381,8 +380,8 @@ public class Aircraft extends Actor {
         String updatedText;
         if (controlState == 1) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(240, 120);
-            background.setSize(240, 120);
+            label.setSize(290, 120);
+            background.setSize(290, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
             label.setSize(120, 95);
