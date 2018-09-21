@@ -51,9 +51,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    FileHandle obstacles;
     Array<Obstacle> obsArray;
-    FileHandle restrictions;
     Array<RestrictedArea> restArray;
 
     //Create airports + wind data
@@ -187,7 +185,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Test for input, update camera
-        handleInput(delta);
+        if (!loading) {
+            handleInput(delta);
+        }
         camera.update();
 
         //Set rendering for stage camera

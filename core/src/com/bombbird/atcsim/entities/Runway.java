@@ -45,7 +45,7 @@ public class Runway extends Actor {
     //Set windshear properties
     public boolean windshear;
 
-    Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
+    public Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
         //Set the parameters
         this.name = name;
         this.x = x;

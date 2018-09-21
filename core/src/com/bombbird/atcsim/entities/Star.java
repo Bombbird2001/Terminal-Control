@@ -14,7 +14,7 @@ public class Star {
     private Array<Waypoint> holdingPoints;
     private Array<int[]> holdingInfo;
 
-    Star(String name, Array<String>runways, Array<Integer> inboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions, Array<Waypoint> holdingPoints, Array<int[]> holdingInfo) {
+    public Star(String name, Array<String>runways, Array<Integer> inboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions, Array<Waypoint> holdingPoints, Array<int[]> holdingInfo) {
         this.name = name;
         this.runways = runways;
         this.inboundHdg = inboundHdg;
