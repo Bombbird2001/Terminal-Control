@@ -16,6 +16,7 @@ import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.MathTools;
 
 import static com.bombbird.atcsim.screens.GameScreen.*;
 
@@ -242,8 +243,8 @@ public class Aircraft extends Actor {
 
     private void updatePosition(double angleDiff) {
         track = heading - RadarScreen.magHdgDev + angleDiff;
-        deltaPosition.x = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
-        deltaPosition.y = Gdx.graphics.getDeltaTime() * AtcSim.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
+        deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
+        deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
         y += deltaPosition.y;
         label.moveBy(deltaPosition.x, deltaPosition.y);

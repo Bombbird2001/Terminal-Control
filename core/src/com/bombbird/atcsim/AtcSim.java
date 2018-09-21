@@ -3,7 +3,7 @@ package com.bombbird.atcsim;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.bombbird.atcsim.screens.Fonts;
+import com.bombbird.atcsim.utilities.Fonts;
 import com.bombbird.atcsim.screens.MainMenuScreen;
 
 public class AtcSim extends Game {
@@ -39,24 +39,4 @@ public class AtcSim extends Game {
 		fonts.dispose();
 	}
 
-	//Set some constant conversion methods
-	public static float nmToPixel(float nm) {
-		return nm * 32.4f;
-	}
-
-	public static float pixelToNm(float pixel) {
-		return pixel / 32.4f;
-	}
-
-	public static float nmToFeet(float nm) {
-		return nm * 6076.12f;
-	}
-
-	public static float feetToNm(float feet) {
-		return feet / 6076.12f;
-	}
-
-	public static float feetToPixel(float feet) {
-		return nmToPixel(feetToNm(feet));
-	}
 }

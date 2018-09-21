@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.MathTools;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
@@ -54,7 +55,7 @@ public class Runway extends Actor {
         trueHdg = heading - RadarScreen.magHdgDev;
 
         //Convert length in feet to pixels
-        length = AtcSim.feetToPixel(length);
+        length = MathTools.feetToPixel(length);
 
         //Calculate the position offsets
         float xOffsetW = halfWidth * MathUtils.sinDeg(90 - trueHdg);

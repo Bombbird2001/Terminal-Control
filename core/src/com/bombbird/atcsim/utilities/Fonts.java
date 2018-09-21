@@ -1,4 +1,4 @@
-package com.bombbird.atcsim.screens;
+package com.bombbird.atcsim.utilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
