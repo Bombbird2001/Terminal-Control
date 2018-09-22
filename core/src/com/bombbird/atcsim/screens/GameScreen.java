@@ -92,15 +92,17 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         stage.addListener(new InputListener() {
             @Override
             public boolean scrolled(InputEvent event, float x, float y, int amount) {
-                camera.zoom += amount * 0.042f;
+                if (!loading) {
+                    camera.zoom += amount * 0.042f;
+                }
                 return false;
             }
         });
     }
 
     private void handleInput(float dt) {
-        float ZOOMCONSTANT = 0.5f;
-        float SCROLLCONSTANT = 150.0f;
+        float ZOOMCONSTANT = 0.6f;
+        float SCROLLCONSTANT = 250.0f;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             //Zoom in
             camera.zoom += ZOOMCONSTANT * dt;

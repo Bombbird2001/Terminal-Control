@@ -1,27 +1,21 @@
-package com.bombbird.atcsim.entities;
+package com.bombbird.atcsim.entities.sidstar;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
 
-public class Star {
+public class SidStar {
     public String name;
-    private Array<String> runways;
-    private Array<Integer> inboundHdg;
-    private Array<Waypoint> waypoints;
-    private Array<int[]> restrictions;
-    private Array<Waypoint> holdingPoints;
-    private Array<int[]> holdingInfo;
+    Array<String> runways;
+    Array<Waypoint> waypoints;
+    Array<int[]> restrictions;
 
-    public Star(String name, Array<String>runways, Array<Integer> inboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions, Array<Waypoint> holdingPoints, Array<int[]> holdingInfo) {
+    SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
         this.name = name;
         this.runways = runways;
-        this.inboundHdg = inboundHdg;
         this.waypoints = waypoints;
         this.restrictions = restrictions;
-        this.holdingPoints = holdingPoints;
-        this.holdingInfo = holdingInfo;
     }
 
     public void printWpts() {
@@ -50,14 +44,6 @@ public class Star {
 
     public Array<String> getRunways() {
         return runways;
-    }
-
-    public int getInboundHdg() {
-        if (inboundHdg.size == 1) {
-            return inboundHdg.get(0);
-        } else {
-            return MathUtils.random(inboundHdg.get(0), inboundHdg.get(1));
-        }
     }
 
     public Waypoint getWaypoint(int index) {

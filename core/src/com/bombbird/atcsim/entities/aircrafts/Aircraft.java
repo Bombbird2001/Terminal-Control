@@ -326,7 +326,7 @@ public class Aircraft extends Actor {
 
     }
 
-    public void setControlState(int controlState) {
+    void setControlState(int controlState) {
         this.controlState = controlState;
         if (controlState == -1) {
             icon.setStyle(buttonStyleEnroute);
@@ -339,7 +339,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    public void setSelected(boolean selected) {
+    void setSelected(boolean selected) {
         this.selected = selected;
     }
 

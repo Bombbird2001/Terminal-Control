@@ -3,7 +3,7 @@ package com.bombbird.atcsim.entities.aircrafts;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
-import com.bombbird.atcsim.entities.Star;
+import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 

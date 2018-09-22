@@ -1,5 +1,6 @@
 package com.bombbird.atcsim.entities;
 
+import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.utilities.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
@@ -24,6 +25,12 @@ public class Airport {
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
         stars = FileLoader.loadStars(icao);
+        if (icao.equals("RCTP")) {
+            setActive("05L", true, false);
+            setActive("05R", true, true);
+        } else if (icao.equals("RCSS")) {
+            setActive("10", true, true);
+        }
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
@@ -75,31 +82,33 @@ public class Airport {
         if (this.metar.get("windshear") != JSONObject.NULL) {
             ws = this.metar.getString("windshear");
         }
-        for (Runway runway: runways.values()) {
-            int rightHeading = runway.heading + 90;
-            int leftHeading = runway.heading - 90;
-            if (rightHeading > 360) {
-                rightHeading -= 360;
-                if (windHdg >= rightHeading && windHdg < leftHeading) {
-                    setActive(runway.name, false, false);
+        if (windHdg != 0) { //Update runways if winds are not variable
+            for (Runway runway : runways.values()) {
+                int rightHeading = runway.heading + 90;
+                int leftHeading = runway.heading - 90;
+                if (rightHeading > 360) {
+                    rightHeading -= 360;
+                    if (windHdg >= rightHeading && windHdg < leftHeading) {
+                        setActive(runway.name, false, false);
+                    } else {
+                        setActive(runway.name, true, true);
+                    }
+                } else if (leftHeading < 0) {
+                    leftHeading += 360;
+                    if (windHdg >= rightHeading && windHdg < leftHeading) {
+                        setActive(runway.name, false, false);
+                    } else {
+                        setActive(runway.name, true, true);
+                    }
                 } else {
-                    setActive(runway.name, true, true);
+                    if (windHdg >= leftHeading && windHdg < rightHeading) {
+                        setActive(runway.name, true, true);
+                    } else {
+                        setActive(runway.name, false, false);
+                    }
                 }
-            } else if (leftHeading < 0) {
-                leftHeading += 360;
-                if (windHdg >= rightHeading && windHdg < leftHeading) {
-                    setActive(runway.name, false, false);
-                } else {
-                    setActive(runway.name, true, true);
-                }
-            } else {
-                if (windHdg >= leftHeading && windHdg < rightHeading) {
-                    setActive(runway.name, true, true);
-                } else {
-                    setActive(runway.name, false, false);
-                }
+                runway.windshear = ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.name);
             }
-            runway.windshear = ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.name);
         }
     }
 
