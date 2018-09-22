@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
@@ -37,6 +38,9 @@ public class Aircraft extends Actor {
 
     //Aircraft information
     Airport airport;
+    Runway runway;
+    boolean onGround;
+
     //Aircraft characteristics
     String callsign;
     String icaoType;
@@ -75,7 +79,7 @@ public class Aircraft extends Actor {
     //Winds
     int[] winds;
 
-    Aircraft(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed) {
+    Aircraft(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport airport) {
         if (!loadedIcons) {
             skin.addRegions(iconAtlas);
             buttonStyleCtrl = new ImageButton.ImageButtonStyle();
@@ -96,6 +100,7 @@ public class Aircraft extends Actor {
         this.wakeCat = wakeCat;
         this.maxVertSpd = maxVertSpd;
         this.minSpeed = minSpeed;
+        this.airport = airport;
         latMode = "star";
         heading = 0;
         clearedHeading = (int) heading;
@@ -106,7 +111,7 @@ public class Aircraft extends Actor {
         verticalSpeed = 0;
         altMode = "open";
         ias = 250;
-        tas = ias * (1 + altitude / 1000 * 0.02f);
+        tas = MathTools.iasToTas(ias, altitude);
         gs = tas;
         deltaPosition = new Vector2();
         clearedIas = 250;
@@ -159,7 +164,7 @@ public class Aircraft extends Actor {
 
     public void renderShape() {
         if (selected && direct != null) {
-            drawStar();
+            drawSidStar();
         }
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
@@ -173,13 +178,23 @@ public class Aircraft extends Actor {
     }
 
     double update() {
+        tas = MathTools.iasToTas(ias, altitude);
         if (direct != null) {
             direct.setSelected(true);
         }
-        double[] info = updateTargetHeading();
-        updateHeading(info[0], 0);
-        updatePosition(info[1]);
-        return info[0];
+        if (!onGround) {
+            double[] info = updateTargetHeading();
+            updateHeading(info[0], 0);
+            updatePosition(info[1]);
+            return info[0];
+        } else {
+            updatePosition(0);
+            return 0;
+        }
+    }
+
+    private void updateIas() {
+
     }
 
     private double[] updateTargetHeading() {
@@ -236,11 +251,11 @@ public class Aircraft extends Actor {
         } else if (targetHeading <= 0) {
             targetHeading += 360;
         }
-        //System.out.println(callsign + " target heading: " + targetHeading);
         return new double[] {targetHeading, angleDiff};
     }
 
     private void updatePosition(double angleDiff) {
+        //Angle diff is angle correction due to winds
         track = heading - RadarScreen.magHdgDev + angleDiff;
         deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
@@ -251,7 +266,6 @@ public class Aircraft extends Actor {
 
     private void updateHeading(double targetHeading, int forceDirection) {
         double deltaHeading = targetHeading - heading;
-        //System.out.println(callsign + " deltaheading: " + deltaHeading);
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
                 if (deltaHeading > 180) {
@@ -273,7 +287,6 @@ public class Aircraft extends Actor {
             default:
                 Gdx.app.log("Direction error", "Invalid turn direction specified!");
         }
-        //System.out.println(callsign + " new deltaheading: " + deltaHeading);
         //Note: angular velocities unit is change in heading per second
         double targetAngularVelocity = 0;
         if (deltaHeading > 0) {
@@ -286,8 +299,6 @@ public class Aircraft extends Actor {
         if (Math.abs(deltaHeading) <= 10) {
             targetAngularVelocity = deltaHeading / 3;
         }
-        //System.out.println(callsign + " angular velocity: " + angularVelocity);
-        //System.out.println(callsign + " target angular velocity: " + targetAngularVelocity);
         //Update angular velocity towards target angular velocity
         if (targetAngularVelocity > angularVelocity + 0.1f) {
             //If need to turn right, start turning right
@@ -318,7 +329,7 @@ public class Aircraft extends Actor {
         icon.draw(batch, 1);
     }
 
-    void drawStar() {
+    void drawSidStar() {
 
     }
 
@@ -389,5 +400,9 @@ public class Aircraft extends Actor {
         }
         label.setText(updatedText);
         background.setPosition(label.getX(), label.getY());
+    }
+
+    public void setTargetIas(int ias) {
+        targetIas = ias;
     }
 }

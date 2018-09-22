@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.entities.Runway;
+import com.bombbird.atcsim.entities.sidstar.Sid;
 import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
@@ -200,12 +201,13 @@ public class FileLoader {
                                         altSpdRestrictions[2] = Integer.parseInt(s3);
                                         break; //3 is max speed
                                     default:
-                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/star" + icao + ".rest");
+                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
                                 }
                                 index1++;
                             }
                             restrictions.add(altSpdRestrictions);
                         }
+                        break;
                     case 4: //Add holding points to STAR
                         for (String s2: s1.split(">")) {
                             //For each holding point in STAR
@@ -233,8 +235,76 @@ public class FileLoader {
         return stars;
     }
 
-    public static HashMap<String, String> loadSids() {
-        //TODO: Load SIDs
-        return new HashMap<String, String>();
+    public static HashMap<String, Sid> loadSids(String icao) {
+        //Load SIDs
+        HashMap<String, Sid> sids = new HashMap<String, Sid>();
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
+        String[] indivStars = handle.readString().split("\\r?\\n");
+        for (String s: indivStars) {
+            //For each individual SID
+            String[] sidInfo = s.split(",");
+
+            //Info for the SID
+            String name = "";
+            Array<String> runways = new Array<String>();
+            int[] initClimb = new int[3];
+            Array<Integer> outboundHdg = new Array<Integer>();
+            Array<Waypoint> waypoints = new Array<Waypoint>();
+            Array<int[]> restrictions = new Array<int[]>();
+
+            int index = 0;
+            for (String s1: sidInfo) {
+                switch (index) {
+                    case 0: name = s1; break; //First part is the name of the SID
+                    case 1: //Add SID runways
+                        for (String s2: s1.split(">")) {
+                            runways.add(s2);
+                        }
+                        break;
+                    case 2: //Second part is the initial climb of the SID
+                        String[] info = s1.split(" ");
+                        for (int i = 0; i < 3; i++) {
+                            initClimb[i] = Integer.parseInt(info[i]);
+                        }
+                        break;
+                    case 3: //Add waypoints to SID
+                        for (String s2: s1.split(">")) {
+                            //For each waypoint on the STAR
+                            int index1 = 0;
+                            int[] altSpdRestrictions = new int[3];
+                            for (String s3: s2.split(" ")) {
+                                switch (index1) {
+                                    case 0:
+                                        waypoints.add(GameScreen.waypoints.get(s3));
+                                        break; //First part is the name of the waypoint
+                                    case 1:
+                                        altSpdRestrictions[0] = Integer.parseInt(s3);
+                                        break; //1 is min alt
+                                    case 2:
+                                        altSpdRestrictions[1] = Integer.parseInt(s3);
+                                        break; //2 is max alt
+                                    case 3:
+                                        altSpdRestrictions[2] = Integer.parseInt(s3);
+                                        break; //3 is max speed
+                                    default:
+                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
+                                }
+                                index1++;
+                            }
+                            restrictions.add(altSpdRestrictions);
+                        }
+                        break;
+                    case 4: //Outbound heading after last waypoint
+                        for (String s2: s1.split(">")) {
+                            outboundHdg.add(Integer.parseInt(s2));
+                        }
+                        break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
+                }
+                index++;
+            }
+            sids.put(name, new Sid(name, runways, initClimb, outboundHdg, waypoints, restrictions));
+        }
+        return sids;
     }
 }

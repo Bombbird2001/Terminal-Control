@@ -30,7 +30,7 @@ public class Runway extends Actor {
     private static float halfWidth = 2f;
 
     //Set heading of runway
-    public int heading;
+    private int heading;
     private float trueHdg;
 
     //Label of runway
@@ -98,5 +98,17 @@ public class Runway extends Actor {
 
     public boolean isTakeoff() {
         return takeoff;
+    }
+
+    public int getElevation() {
+        return elevation;
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public float[] getPosition() {
+        return new float[] {x, y};
     }
 }

@@ -13,19 +13,20 @@ public class Arrival extends Aircraft {
     //Others
     private String ils;
     private Star star;
-    private int starIndex = 0;
+    private int starIndex;
 
     public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport arrival) {
-        super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed);
-        airport = arrival;
+        super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed, arrival);
         labelText[9] = arrival.icao;
-        HashMap starList = arrival.getStars();
-        boolean starSet = false;
+        onGround = false;
+        starIndex = 0;
 
         //Gets a STAR for active runways
+        HashMap<String, Star> starList = airport.getStars();
+        boolean starSet = false;
         while (!starSet) {
-            String starStr = (String) starList.keySet().toArray()[MathUtils.random(0, starList.size() - 1)];
-            star = (Star) starList.get(starStr);
+            String starStr = (String) starList.keySet().toArray()[MathUtils.random(starList.size() - 1)];
+            star = starList.get(starStr);
             for (String runway: star.getRunways()) {
                 if (arrival.getLandingRunways().containsKey(runway)) {
                     starSet = true;
@@ -61,7 +62,7 @@ public class Arrival extends Aircraft {
     }
 
     @Override
-    public void drawStar() {
+    public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
         star.joinLines(starIndex);

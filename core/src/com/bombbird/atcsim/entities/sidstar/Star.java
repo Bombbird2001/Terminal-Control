@@ -1,10 +1,8 @@
 package com.bombbird.atcsim.entities.sidstar;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.entities.Waypoint;
-import com.bombbird.atcsim.screens.GameScreen;
 
 public class Star extends SidStar {
     private Array<Integer> inboundHdg;

@@ -21,4 +21,8 @@ public class MathTools {
     public static float feetToPixel(float feet) {
         return nmToPixel(feetToNm(feet));
     }
+
+    public static float iasToTas(float ias, float altitude) {
+        return ias * (1 + altitude / 1000 * 0.02f);
+    }
 }

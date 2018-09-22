@@ -1,5 +1,6 @@
 package com.bombbird.atcsim.entities;
 
+import com.bombbird.atcsim.entities.sidstar.Sid;
 import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.utilities.FileLoader;
@@ -15,7 +16,7 @@ public class Airport {
     public String icao;
     private JSONObject metar;
     private HashMap<String, Star> stars;
-    private HashMap<String, Star> sids;
+    private HashMap<String, Sid> sids;
     public int elevation;
 
     public Airport(String icao, int elevation) {
@@ -25,6 +26,7 @@ public class Airport {
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
         stars = FileLoader.loadStars(icao);
+        sids = FileLoader.loadSids(icao);
         if (icao.equals("RCTP")) {
             setActive("05L", true, false);
             setActive("05R", true, true);
@@ -84,8 +86,8 @@ public class Airport {
         }
         if (windHdg != 0) { //Update runways if winds are not variable
             for (Runway runway : runways.values()) {
-                int rightHeading = runway.heading + 90;
-                int leftHeading = runway.heading - 90;
+                int rightHeading = runway.getHeading() + 90;
+                int leftHeading = runway.getHeading() - 90;
                 if (rightHeading > 360) {
                     rightHeading -= 360;
                     if (windHdg >= rightHeading && windHdg < leftHeading) {
@@ -118,6 +120,10 @@ public class Airport {
 
     public HashMap<String, Star> getStars() {
         return stars;
+    }
+
+    public HashMap<String, Sid> getSids() {
+        return sids;
     }
 
     public HashMap<String, Runway> getLandingRunways() {
