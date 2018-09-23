@@ -45,8 +45,11 @@ public class Aircraft extends Actor {
     String callsign;
     String icaoType;
     char wakeCat;
-    int[] maxVertSpd;
-    int minSpeed;
+    int v2;
+    int maxClimb;
+    int typDes;
+    int maxDes;
+    int apchSpd;
     private int controlState;
 
     //Aircraft position
@@ -77,9 +80,9 @@ public class Aircraft extends Actor {
     public String spdMode;
 
     //Winds
-    int[] winds;
+    private int[] winds;
 
-    Aircraft(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport airport) {
+    Aircraft(String callsign, String icaoType, Airport airport) {
         if (!loadedIcons) {
             skin.addRegions(iconAtlas);
             buttonStyleCtrl = new ImageButton.ImageButtonStyle();
@@ -97,9 +100,21 @@ public class Aircraft extends Actor {
         this.callsign = callsign;
         stage.addActor(this);
         this.icaoType = icaoType;
-        this.wakeCat = wakeCat;
-        this.maxVertSpd = maxVertSpd;
-        this.minSpeed = minSpeed;
+        int[] perfData = AircraftType.getAircraftInfo(icaoType);
+        if (perfData[0] == 0) {
+            wakeCat = 'M';
+        } else if (perfData[0] == 1) {
+            wakeCat = 'H';
+        } else if (perfData[0] == 2) {
+            wakeCat = 'J';
+        } else {
+            Gdx.app.log("Invalid wake category", "Invalid wake turbulence category set for " + callsign + ", " + icaoType + "!");
+        }
+        v2 = perfData[1];
+        maxClimb = perfData[2];
+        typDes = perfData[3];
+        maxDes = perfData[4];
+        apchSpd = perfData[5];
         this.airport = airport;
         latMode = "star";
         heading = 0;

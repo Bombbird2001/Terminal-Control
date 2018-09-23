@@ -14,8 +14,8 @@ public class Departure extends Aircraft {
     private int outboundHdg;
     private int sidIndex;
 
-    Departure(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport departure) {
-        super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed, departure);
+    Departure(String callsign, String icaoType, Airport departure) {
+        super(callsign, icaoType, departure);
         labelText[9] = departure.icao;
         onGround = true;
         sidIndex = 0;

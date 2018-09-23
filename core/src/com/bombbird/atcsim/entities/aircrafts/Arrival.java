@@ -15,8 +15,8 @@ public class Arrival extends Aircraft {
     private Star star;
     private int starIndex;
 
-    public Arrival(String callsign, String icaoType, char wakeCat, int[] maxVertSpd, int minSpeed, Airport arrival) {
-        super(callsign, icaoType, wakeCat, maxVertSpd, minSpeed, arrival);
+    public Arrival(String callsign, String icaoType, Airport arrival) {
+        super(callsign, icaoType, arrival);
         labelText[9] = arrival.icao;
         onGround = false;
         starIndex = 0;

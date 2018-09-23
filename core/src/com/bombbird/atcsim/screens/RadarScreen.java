@@ -110,8 +110,10 @@ public class RadarScreen extends GameScreen {
     }
 
     void newAircraft() {
-        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", 'H', new int[]{4000, -3000}, 147, airports.get("RCTP")));
-        aircrafts.put("UIA231", new Arrival("UIA231", "A321", 'M', new int[]{3000, -2500}, 124, airports.get("RCSS")));
+        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
+        aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
+        aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
+        aircrafts.put("EVA851", new Arrival("EVA851", "A321", airports.get("RCTP")));
     }
 
     private void loadUI() {

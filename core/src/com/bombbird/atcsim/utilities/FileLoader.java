@@ -307,4 +307,31 @@ public class FileLoader {
         }
         return sids;
     }
+
+    public static HashMap<String, int[]> loadAircraftData() {
+        HashMap<String, int[]> aircrafts = new HashMap<String, int[]>();
+        FileHandle handle = Gdx.files.internal("game/aircrafts/aircrafts.air");
+        String[] indivAircrafts = handle.readString().split("\\r?\\n");
+        for (String s: indivAircrafts) {
+            if (s.charAt(0) == '#') {
+                continue;
+            }
+            //For each aircraft
+            int index = 0;
+            String icao = "";
+            int[] perfData = new int[6];
+            for (String s1: s.split(",")) {
+                if (index == 0) {
+                    icao = s1; //Icao code of aircraft
+                } else if (index >= 1 && index <= 6) {
+                    perfData[index - 1] = Integer.parseInt(s1);
+                } else {
+                    Gdx.app.log("Load error", "Unexpected additional parameter in game/aircrafts.air");
+                }
+                index++;
+            }
+            aircrafts.put(icao, perfData);
+        }
+        return aircrafts;
+    }
 }
