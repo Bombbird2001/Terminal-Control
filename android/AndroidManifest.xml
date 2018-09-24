@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bombbird.atcsim" >
 
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="28" />
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="28" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"

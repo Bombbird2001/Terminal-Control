@@ -2,6 +2,7 @@ package com.bombbird.atcsim.entities;
 
 import com.bombbird.atcsim.screens.RadarScreen;
 import okhttp3.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -124,7 +125,8 @@ public class Metar {
     private void getMetar(final MediaType mediaType, final OkHttpClient client) {
         JSONObject jo = new JSONObject();
         jo.put("password", ""); //TODO: Remove before committing
-        jo.put("airports", RadarScreen.airports.keySet());
+        JSONArray apts = new JSONArray(RadarScreen.airports.keySet());
+        jo.put("airports", apts);
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
                 .url("") //TODO: Remove before committing
