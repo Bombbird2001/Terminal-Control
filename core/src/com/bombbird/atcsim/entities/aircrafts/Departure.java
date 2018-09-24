@@ -1,9 +1,11 @@
 package com.bombbird.atcsim.entities.aircrafts;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.sidstar.Sid;
+import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
 import java.util.HashMap;
@@ -13,12 +15,14 @@ public class Departure extends Aircraft {
     private Sid sid;
     private int outboundHdg;
     private int sidIndex;
+    private int contactAlt;
 
-    Departure(String callsign, String icaoType, Airport departure) {
+    public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         labelText[9] = departure.icao;
         onGround = true;
         sidIndex = 0;
+        contactAlt = 2000 + MathUtils.random(-500, 500);
 
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
@@ -41,7 +45,7 @@ public class Departure extends Aircraft {
         sid.printWpts();
 
         //Set initial IAS due to wind
-        ias = airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading() - 180);
+        ias = airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
 
         //Set initial altitude equal to runway elevation
         altitude = runway.getElevation();
@@ -49,11 +53,56 @@ public class Departure extends Aircraft {
         //Set initial position on runway
         x = runway.getPosition()[0];
         y = runway.getPosition()[1];
+        label.setPosition(x - 100, y + 25);
+
+        //Set takeoff heading
+        heading = runway.getHeading();
+
+        setControlState(0);
+
+        takeOff();
     }
 
     private void takeOff() {
         outboundHdg = sid.getOutboundHdg();
-        setTargetIas(140);
+        clearedIas = v2;
+        setTargetIas(v2);
+        clearedAltitude = 3000;
+        targetAltitude = clearedAltitude;
+        tkofLdg = true;
+    }
+
+    @Override
+    void updateTkofLdg() {
+        if (ias > v2 - 10) {
+            onGround = false;
+            clearedHeading = sid.getInitClimb()[0];
+        }
+        if (altitude - airport.elevation >= contactAlt) {
+            tkofLdg = false;
+            setControlState(2);
+        }
+        if (altitude > sid.getInitClimb()[1]) {
+            direct = sid.getWaypoint(0);
+            latMode = "sid";
+        }
+        if (altitude - airport.elevation > 1500) {
+            setTargetIas(250);
+            clearedIas = 250;
+        }
+    }
+
+    @Override
+    public void drawSidStar() {
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
+        sid.joinLines(sidIndex);
+    }
+
+    @Override
+    public void updateLabel() {
+        labelText[8] = sid.name;
+        super.updateLabel();
     }
 
     @Override

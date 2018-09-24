@@ -13,6 +13,7 @@ import com.bombbird.atcsim.entities.Metar;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.entities.aircrafts.Arrival;
+import com.bombbird.atcsim.entities.aircrafts.Departure;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 import com.bombbird.atcsim.utilities.FileLoader;
@@ -114,6 +115,7 @@ public class RadarScreen extends GameScreen {
         aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
         aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
         aircrafts.put("EVA851", new Arrival("EVA851", "A321", airports.get("RCTP")));
+        aircrafts.put("ANA788", new Departure("ANA788", "B788", airports.get("RCTP")));
     }
 
     private void loadUI() {

@@ -20,6 +20,7 @@ public class Arrival extends Aircraft {
         labelText[9] = arrival.icao;
         onGround = false;
         starIndex = 0;
+        latMode = "star";
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = airport.getStars();
@@ -34,7 +35,6 @@ public class Arrival extends Aircraft {
                 }
             }
         }
-        star.printWpts();
         direct = star.getWaypoint(starIndex);
         heading = star.getInboundHdg();
         System.out.println("Heading: " + heading);

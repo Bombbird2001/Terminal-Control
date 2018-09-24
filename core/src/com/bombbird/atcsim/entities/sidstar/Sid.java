@@ -5,8 +5,8 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.entities.Waypoint;
 
 public class Sid extends SidStar {
-    int[] initClimb;
-    Array<Integer> outboundHdg;
+    private int[] initClimb;
+    private Array<Integer> outboundHdg;
 
     public Sid(String name, Array<String> runways, int[] initClimb, Array<Integer> outboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions) {
         super(name, runways, waypoints, restrictions);
@@ -16,5 +16,9 @@ public class Sid extends SidStar {
 
     public int getOutboundHdg() {
         return outboundHdg.get(MathUtils.random(outboundHdg.size - 1));
+    }
+
+    public int[] getInitClimb() {
+        return initClimb;
     }
 }

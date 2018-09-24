@@ -32,6 +32,7 @@ public class Aircraft extends Actor {
     public static Skin skin = new Skin();
     private ImageButton icon;
     private static ImageButton.ImageButtonStyle buttonStyleCtrl;
+    private static ImageButton.ImageButtonStyle buttonStyleDept;
     private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
     private static ImageButton.ImageButtonStyle buttonStyleEnroute;
     private Image background;
@@ -40,6 +41,7 @@ public class Aircraft extends Actor {
     Airport airport;
     Runway runway;
     boolean onGround;
+    boolean tkofLdg;
 
     //Aircraft characteristics
     String callsign;
@@ -57,6 +59,7 @@ public class Aircraft extends Actor {
     float y;
     String latMode;
     double heading;
+    double targetHeading;
     int clearedHeading;
     private double angularVelocity;
     double track;
@@ -65,22 +68,20 @@ public class Aircraft extends Actor {
     //Altitude
     float altitude;
     public int clearedAltitude;
-    private int targetAltitude;
+    int targetAltitude;
     private float verticalSpeed;
+    public boolean expedite;
     public String altMode;
 
     //Speed
     public float ias;
-    private float tas;
-    private float gs;
+    float tas;
+    float gs;
     private Vector2 deltaPosition;
     public int clearedIas;
     private int targetIas;
     private float deltaIas;
     public String spdMode;
-
-    //Winds
-    private int[] winds;
 
     Aircraft(String callsign, String icaoType, Airport airport) {
         if (!loadedIcons) {
@@ -88,6 +89,9 @@ public class Aircraft extends Actor {
             buttonStyleCtrl = new ImageButton.ImageButtonStyle();
             buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
             buttonStyleCtrl.imageDown = skin.getDrawable("aircraftControlled");
+            buttonStyleDept = new ImageButton.ImageButtonStyle();
+            buttonStyleDept.imageUp = skin.getDrawable("aircraftDeparture");
+            buttonStyleDept.imageDown = skin.getDrawable("aircraftDeparture");
             buttonStyleUnctrl = new ImageButton.ImageButtonStyle();
             buttonStyleUnctrl.imageUp = skin.getDrawable("aircraftNotControlled");
             buttonStyleUnctrl.imageDown = skin.getDrawable("aircraftNotControlled");
@@ -96,11 +100,14 @@ public class Aircraft extends Actor {
             buttonStyleEnroute.imageDown = skin.getDrawable("aircraftEnroute");
             loadedIcons = true;
         }
-
         this.callsign = callsign;
         stage.addActor(this);
         this.icaoType = icaoType;
         int[] perfData = AircraftType.getAircraftInfo(icaoType);
+        if (perfData == null) {
+            //If aircraft type not found in file
+            Gdx.app.log("Aircraft not found", icaoType + " not found in game/aircrafts/aircrafts.air");
+        }
         if (perfData[0] == 0) {
             wakeCat = 'M';
         } else if (perfData[0] == 1) {
@@ -110,20 +117,23 @@ public class Aircraft extends Actor {
         } else {
             Gdx.app.log("Invalid wake category", "Invalid wake turbulence category set for " + callsign + ", " + icaoType + "!");
         }
-        v2 = perfData[1];
-        maxClimb = perfData[2];
-        typDes = perfData[3];
-        maxDes = perfData[4];
-        apchSpd = perfData[5];
+        float loadFactor = MathUtils.random(-1 , 1) / 20f;
+        v2 = (int)(perfData[1] * (1 + loadFactor));
+        maxClimb = (int)(perfData[2] * (1 - loadFactor));
+        typDes = (int)(perfData[3] * (1 - loadFactor));
+        maxDes = (int)(perfData[4] * (1 - loadFactor));
+        apchSpd = (int)(perfData[5] * (1 + loadFactor));
         this.airport = airport;
-        latMode = "star";
+        latMode = "vector";
         heading = 0;
+        targetHeading = 0;
         clearedHeading = (int) heading;
         track = 0;
         altitude = 10000;
         clearedAltitude = 10000;
         targetAltitude = 10000;
         verticalSpeed = 0;
+        expedite = false;
         altMode = "open";
         ias = 250;
         tas = MathTools.iasToTas(ias, altitude);
@@ -133,6 +143,7 @@ public class Aircraft extends Actor {
         targetIas = 250;
         deltaIas = 0;
         spdMode = "open";
+        tkofLdg = false;
 
         selected = false;
         loadLabel();
@@ -184,11 +195,9 @@ public class Aircraft extends Actor {
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
-        if (controlState == 1) {
+        if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(Color.GREEN);
             GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
-            shapeRenderer.setColor(Color.BROWN);
-            GameScreen.shapeRenderer.line(x, y, x + tas * MathUtils.cosDeg((float)(90 - heading + RadarScreen.magHdgDev)), y + tas * MathUtils.sinDeg((float)(90 - heading + RadarScreen.magHdgDev)));
         }
     }
 
@@ -197,19 +206,74 @@ public class Aircraft extends Actor {
         if (direct != null) {
             direct.setSelected(true);
         }
+        updateIas();
+        if (tkofLdg) {
+            updateTkofLdg();
+        }
         if (!onGround) {
             double[] info = updateTargetHeading();
-            updateHeading(info[0], 0);
+            targetHeading = info[0];
+            updateHeading(targetHeading, 0);
             updatePosition(info[1]);
-            return info[0];
+            updateAltitude();
+            return targetHeading;
         } else {
+            tas = MathTools.iasToTas(ias, altitude);
+            gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
             updatePosition(0);
             return 0;
         }
     }
 
-    private void updateIas() {
+    void updateTkofLdg() {
 
+    }
+
+    private void updateIas() {
+        float targetdeltaIas = (targetIas - ias) / 5;
+        if (targetdeltaIas > deltaIas + 0.05) {
+            deltaIas += 0.2 * Gdx.graphics.getDeltaTime();
+        } else if (targetdeltaIas < deltaIas - 0.05) {
+            deltaIas -= 0.2 * Gdx.graphics.getDeltaTime();
+        } else {
+            deltaIas = targetdeltaIas;
+        }
+        float max = 1.5f;
+        float min = -2.25f;
+        if (tkofLdg) {
+            max = 3;
+            min = -4.5f;
+        }
+        if (deltaIas > max) {
+            deltaIas = max;
+        } else if (deltaIas < min) {
+            deltaIas = min;
+        }
+        ias += deltaIas * Gdx.graphics.getDeltaTime();
+        if (Math.abs(targetIas - ias) < 1) {
+            ias = targetIas;
+        }
+    }
+
+    private void updateAltitude() {
+        float targetVertSpd = (targetAltitude - altitude) / 0.1f;
+        if (targetVertSpd > verticalSpeed + 100) {
+            verticalSpeed += 500 * Gdx.graphics.getDeltaTime();
+        } else if (targetVertSpd < verticalSpeed - 100) {
+            verticalSpeed -= 500 * Gdx.graphics.getDeltaTime();
+        }
+        if (verticalSpeed > maxClimb) {
+            verticalSpeed = maxClimb;
+        } else if (!expedite && verticalSpeed < -typDes) {
+            verticalSpeed = -typDes;
+        } else if (expedite && verticalSpeed < -maxDes) {
+            verticalSpeed = -maxDes;
+        }
+        altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
+        if (Math.abs(targetAltitude - altitude) < 50) {
+            altitude = targetAltitude;
+            verticalSpeed = 0;
+        }
     }
 
     private double[] updateTargetHeading() {
@@ -218,6 +282,7 @@ public class Aircraft extends Actor {
         double angleDiff;
 
         //Get wind data
+        int[] winds;
         if (altitude - airport.elevation <= 4000) {
             winds = airport.getWinds();
         } else {
@@ -354,12 +419,14 @@ public class Aircraft extends Actor {
 
     void setControlState(int controlState) {
         this.controlState = controlState;
-        if (controlState == -1) {
+        if (controlState == -1) { //En route aircraft - gray
             icon.setStyle(buttonStyleEnroute);
-        } else if (controlState == 0) {
+        } else if (controlState == 0) { //Uncontrolled aircraft - yellow
             icon.setStyle(buttonStyleUnctrl);
-        } else if (controlState == 1) {
+        } else if (controlState == 1) { //Controlled arrival - blue
             icon.setStyle(buttonStyleCtrl);
+        } else if (controlState == 2) { //Controlled departure - light green?
+            icon.setStyle(buttonStyleDept);
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
         }
@@ -395,6 +462,9 @@ public class Aircraft extends Actor {
         labelText[1] = icaoType + "/" + wakeCat;
         labelText[2] = Integer.toString((int)(altitude / 100));
         labelText[3] = Integer.toString(clearedAltitude / 100);
+        if ((int)heading == 0) {
+            heading += 360;
+        }
         labelText[4] = Integer.toString((int)heading);
         if (latMode.equals("vector")) {
             labelText[5] = Integer.toString(clearedHeading);
@@ -404,7 +474,7 @@ public class Aircraft extends Actor {
         labelText[6] = Integer.toString((int)gs);
         labelText[7] = Integer.toString(clearedIas);
         String updatedText;
-        if (controlState == 1) {
+        if (controlState == 1 || controlState == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
             label.setSize(290, 120);
             background.setSize(290, 120);
