@@ -19,12 +19,12 @@ public class Arrival extends Aircraft {
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         labelText[9] = arrival.icao;
-        onGround = false;
+        setOnGround(false);
         starIndex = 0;
-        latMode = "star";
+        setLatMode("star");
 
         //Gets a STAR for active runways
-        HashMap<String, Star> starList = airport.getStars();
+        HashMap<String, Star> starList = getAirport().getStars();
         boolean starSet = false;
         while (!starSet) {
             String starStr = (String) starList.keySet().toArray()[MathUtils.random(starList.size() - 1)];
@@ -36,36 +36,36 @@ public class Arrival extends Aircraft {
                 }
             }
         }
-        direct = star.getWaypoint(starIndex);
-        heading = star.getInboundHdg();
-        System.out.println("Heading: " + heading);
-        track = heading - RadarScreen.magHdgDev;
+        setDirect(star.getWaypoint(starIndex));
+        setHeading(star.getInboundHdg());
+        System.out.println("Heading: " + getHeading());
+        setTrack(getHeading() - RadarScreen.magHdgDev);
 
         setControlState(1);
 
         //Calculate spawn border
         int[] xBorder = {1310, 4450};
         int[] yBorder = {50, 3190};
-        float xDistRight = (xBorder[1] - direct.x)/MathUtils.cosDeg((float)(270 - track));
-        float xDistLeft = (xBorder[0] - direct.x)/MathUtils.cosDeg((float)(270 - track));
-        float yDistUp = (yBorder[1] - direct.y)/MathUtils.sinDeg((float)(270 - track));
-        float yDistDown = (yBorder[0] - direct.y)/MathUtils.sinDeg((float)(270 - track));
+        float xDistRight = (xBorder[1] - getDirect().x)/MathUtils.cosDeg((float)(270 - getTrack()));
+        float xDistLeft = (xBorder[0] - getDirect().x)/MathUtils.cosDeg((float)(270 - getTrack()));
+        float yDistUp = (yBorder[1] - getDirect().y)/MathUtils.sinDeg((float)(270 - getTrack()));
+        float yDistDown = (yBorder[0] - getDirect().y)/MathUtils.sinDeg((float)(270 - getTrack()));
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
         float dist = xDist > yDist ? yDist : xDist;
-        x = direct.x + dist * MathUtils.cosDeg((float)(270 - track));
-        y = direct.y + dist * MathUtils.sinDeg((float)(270 - track));
+        setX(getDirect().x + dist * MathUtils.cosDeg((float)(270 - getTrack())));
+        setY(getDirect().y + dist * MathUtils.sinDeg((float)(270 - getTrack())));
 
-        heading = update();
-        System.out.println("New heading: " + heading);
+        setHeading(update());
+        System.out.println("New heading: " + getHeading());
 
-        label.setPosition(x - 100, y + 25);
+        getLabel().setPosition(getX() - 100, getY() + 25);
     }
 
     @Override
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
+        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().x, getDirect().y);
         star.joinLines(starIndex, 0);
     }
 
@@ -77,12 +77,12 @@ public class Arrival extends Aircraft {
 
     @Override
     public void updateDirect() {
-        direct.setSelected(false);
+        getDirect().setSelected(false);
         starIndex++;
-        direct = star.getWaypoint(starIndex);
-        if (direct == null) {
-            latMode = "vector";
-            clearedHeading = (int)heading;
+        setDirect(star.getWaypoint(starIndex));
+        if (getDirect() == null) {
+            setLatMode("vector");
+            setClearedHeading((int) getHeading());
         }
     }
 
@@ -90,10 +90,10 @@ public class Arrival extends Aircraft {
     double findNextTargetHdg() {
         Waypoint nextWpt = star.getWaypoint(starIndex + 1);
         if (nextWpt == null) {
-            return track;
+            return getTrack();
         } else {
-            float deltaX = nextWpt.x - direct.x;
-            float deltaY = nextWpt.y - direct.y;
+            float deltaX = nextWpt.x - getDirect().x;
+            float deltaY = nextWpt.y - getDirect().y;
             double nextTarget;
             if (deltaX >= 0) {
                 nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);

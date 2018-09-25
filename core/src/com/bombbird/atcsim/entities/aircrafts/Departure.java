@@ -24,7 +24,7 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         labelText[9] = departure.icao;
-        onGround = true;
+        setOnGround(true);
         sidIndex = 0;
         contactAlt = 2000 + MathUtils.random(-400, 400);
         v2set = false;
@@ -34,16 +34,16 @@ public class Departure extends Aircraft {
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
         String rwy = (String) deptRwys.keySet().toArray()[MathUtils.random(deptRwys.size() - 1)];
-        runway = deptRwys.get(rwy);
+        setRunway(deptRwys.get(rwy));
 
         //Gets a random SID
-        HashMap<String, Sid> sidList = airport.getSids();
+        HashMap<String, Sid> sidList = getAirport().getSids();
         boolean sidSet = false;
         while (!sidSet) {
             String sidStr = (String) sidList.keySet().toArray()[MathUtils.random(sidList.size() - 1)];
             sid = sidList.get(sidStr);
             for (String runwayStr: sid.getRunways()) {
-                if (runwayStr.equals(runway.name)) {
+                if (runwayStr.equals(getRunway().name)) {
                     sidSet = true;
                     break;
                 }
@@ -53,18 +53,18 @@ public class Departure extends Aircraft {
         sid.printWpts();
 
         //Set initial IAS due to wind
-        ias = airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
+        setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
 
         //Set initial altitude equal to runway elevation
-        altitude = runway.getElevation();
+        setAltitude(getRunway().getElevation());
 
         //Set initial position on runway
-        x = runway.getPosition()[0];
-        y = runway.getPosition()[1];
-        label.setPosition(x - 100, y + 25);
+        setX(getRunway().getPosition()[0]);
+        setY(getRunway().getPosition()[1]);
+        getLabel().setPosition(getX() - 100, getY() + 25);
 
         //Set takeoff heading
-        heading = runway.getHeading();
+        setHeading(getRunway().getHeading());
 
         setControlState(0);
 
@@ -73,33 +73,33 @@ public class Departure extends Aircraft {
 
     private void takeOff() {
         outboundHdg = sid.getOutboundHdg();
-        clearedIas = v2;
-        setTargetIas(v2);
-        clearedAltitude = 3000;
-        targetAltitude = clearedAltitude;
-        clearedHeading = sid.getInitClimb()[0];
-        tkofLdg = true;
+        setClearedIas(getV2());
+        setTargetIas(getV2());
+        setClearedAltitude(3000);
+        setTargetAltitude(getClearedAltitude());
+        setClearedHeading(sid.getInitClimb()[0]);
+        setTkofLdg(true);
     }
 
     @Override
     void updateTkofLdg() {
-        if (ias > v2 - 10 && !v2set) {
-            onGround = false;
-            targetHeading = clearedHeading;
+        if (getIas() > getV2() - 10 && !v2set) {
+            setOnGround(false);
+            setTargetHeading(getClearedHeading());
             v2set = true;
         }
-        if (altitude - airport.elevation >= contactAlt) {
-            tkofLdg = false;
+        if (getAltitude() - getAirport().elevation >= contactAlt) {
+            setTkofLdg(false);
             setControlState(2);
         }
-        if (altitude > sid.getInitClimb()[1] && !sidSet) {
-            direct = sid.getWaypoint(0);
-            latMode = "sid";
+        if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
+            setDirect(sid.getWaypoint(0));
+            setLatMode("sid");
             sidSet = true;
         }
-        if (altitude - airport.elevation >= 1500 && !spdSet) {
+        if (getAltitude() - getAirport().elevation >= 1500 && !spdSet) {
             setTargetIas(250);
-            clearedIas = 250;
+            setClearedIas(250);
             spdSet = true;
         }
     }
@@ -107,7 +107,7 @@ public class Departure extends Aircraft {
     @Override
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
+        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().x, getDirect().y);
         sid.joinLines(sidIndex, outboundHdg);
     }
 
@@ -119,12 +119,12 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateDirect() {
-        direct.setSelected(false);
+        getDirect().setSelected(false);
         sidIndex++;
-        direct = sid.getWaypoint(sidIndex);
-        if (direct == null) {
-            latMode = "vector";
-            clearedHeading = (int)(outboundHdg + RadarScreen.magHdgDev);
+        setDirect(sid.getWaypoint(sidIndex));
+        if (getDirect() == null) {
+            setLatMode("vector");
+            setClearedHeading((int)(outboundHdg + RadarScreen.magHdgDev));
         }
     }
 
@@ -134,8 +134,8 @@ public class Departure extends Aircraft {
         if (nextWpt == null) {
             return outboundHdg;
         } else {
-            float deltaX = nextWpt.x - direct.x;
-            float deltaY = nextWpt.y - direct.y;
+            float deltaX = nextWpt.x - getDirect().x;
+            float deltaY = nextWpt.y - getDirect().y;
             double nextTarget;
             if (deltaX >= 0) {
                 nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);

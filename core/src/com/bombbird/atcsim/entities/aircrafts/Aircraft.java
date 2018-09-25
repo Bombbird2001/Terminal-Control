@@ -23,9 +23,9 @@ import static com.bombbird.atcsim.screens.GameScreen.*;
 
 public class Aircraft extends Actor {
     //Rendering parameters
-    Label label;
+    private Label label;
     private Label.LabelStyle labelStyle;
-    String[] labelText;
+    public String[] labelText;
     private boolean selected;
     private static boolean loadedIcons = false;
     public static TextureAtlas iconAtlas = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
@@ -38,122 +38,162 @@ public class Aircraft extends Actor {
     private Image background;
 
     //Aircraft information
-    Airport airport;
-    Runway runway;
-    boolean onGround;
-    boolean tkofLdg;
+    private Airport airport;
+    private Runway runway;
+    private boolean onGround;
+    private boolean tkofLdg;
 
     //Aircraft characteristics
-    String callsign;
-    String icaoType;
-    char wakeCat;
-    int v2;
-    int maxClimb;
-    int typDes;
-    int maxDes;
-    int apchSpd;
+    private String callsign;
+    private String icaoType;
+    private char wakeCat;
+    private int v2;
+    private int maxClimb;
+    private int typDes;
+    private int maxDes;
+    private int apchSpd;
     private int controlState;
 
     //Aircraft position
-    float x;
-    float y;
-    String latMode;
-    double heading;
-    double targetHeading;
-    int clearedHeading;
+    private float x;
+    private float y;
+    private String latMode;
+    private double heading;
+    private double targetHeading;
+    private int clearedHeading;
     private double angularVelocity;
-    double track;
-    Waypoint direct;
+    private double track;
+    private Waypoint direct;
 
     //Altitude
-    float altitude;
-    public int clearedAltitude;
-    int targetAltitude;
+    private float altitude;
+    private int clearedAltitude;
+    private int targetAltitude;
     private float verticalSpeed;
-    public boolean expedite;
-    public String altMode;
+    private boolean expedite;
+    private String altMode;
 
     //Speed
-    public float ias;
-    float tas;
-    float gs;
+    private float ias;
+    private float tas;
+    private float gs;
     private Vector2 deltaPosition;
-    public int clearedIas;
+    private int clearedIas;
     private int targetIas;
     private float deltaIas;
-    public String spdMode;
+    private String spdMode;
 
     Aircraft(String callsign, String icaoType, Airport airport) {
-        if (!loadedIcons) {
+        if (!isLoadedIcons()) {
             skin.addRegions(iconAtlas);
-            buttonStyleCtrl = new ImageButton.ImageButtonStyle();
-            buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
-            buttonStyleCtrl.imageDown = skin.getDrawable("aircraftControlled");
-            buttonStyleDept = new ImageButton.ImageButtonStyle();
-            buttonStyleDept.imageUp = skin.getDrawable("aircraftDeparture");
-            buttonStyleDept.imageDown = skin.getDrawable("aircraftDeparture");
-            buttonStyleUnctrl = new ImageButton.ImageButtonStyle();
-            buttonStyleUnctrl.imageUp = skin.getDrawable("aircraftNotControlled");
-            buttonStyleUnctrl.imageDown = skin.getDrawable("aircraftNotControlled");
-            buttonStyleEnroute = new ImageButton.ImageButtonStyle();
-            buttonStyleEnroute.imageUp = skin.getDrawable("aircraftEnroute");
-            buttonStyleEnroute.imageDown = skin.getDrawable("aircraftEnroute");
-            loadedIcons = true;
+            setButtonStyleCtrl(new ImageButton.ImageButtonStyle());
+            getButtonStyleCtrl().imageUp = skin.getDrawable("aircraftControlled");
+            getButtonStyleCtrl().imageDown = skin.getDrawable("aircraftControlled");
+            setButtonStyleDept(new ImageButton.ImageButtonStyle());
+            getButtonStyleDept().imageUp = skin.getDrawable("aircraftDeparture");
+            getButtonStyleDept().imageDown = skin.getDrawable("aircraftDeparture");
+            setButtonStyleUnctrl(new ImageButton.ImageButtonStyle());
+            getButtonStyleUnctrl().imageUp = skin.getDrawable("aircraftNotControlled");
+            getButtonStyleUnctrl().imageDown = skin.getDrawable("aircraftNotControlled");
+            setButtonStyleEnroute(new ImageButton.ImageButtonStyle());
+            getButtonStyleEnroute().imageUp = skin.getDrawable("aircraftEnroute");
+            getButtonStyleEnroute().imageDown = skin.getDrawable("aircraftEnroute");
+            setLoadedIcons(true);
         }
-        this.callsign = callsign;
+        this.setCallsign(callsign);
         stage.addActor(this);
-        this.icaoType = icaoType;
+        this.setIcaoType(icaoType);
         int[] perfData = AircraftType.getAircraftInfo(icaoType);
         if (perfData == null) {
             //If aircraft type not found in file
             Gdx.app.log("Aircraft not found", icaoType + " not found in game/aircrafts/aircrafts.air");
         }
         if (perfData[0] == 0) {
-            wakeCat = 'M';
+            setWakeCat('M');
         } else if (perfData[0] == 1) {
-            wakeCat = 'H';
+            setWakeCat('H');
         } else if (perfData[0] == 2) {
-            wakeCat = 'J';
+            setWakeCat('J');
         } else {
             Gdx.app.log("Invalid wake category", "Invalid wake turbulence category set for " + callsign + ", " + icaoType + "!");
         }
         float loadFactor = MathUtils.random(-1 , 1) / 20f;
-        v2 = (int)(perfData[1] * (1 + loadFactor));
-        maxClimb = (int)(perfData[2] * (1 - loadFactor));
-        typDes = (int)(perfData[3] * (1 - loadFactor));
-        maxDes = (int)(perfData[4] * (1 - loadFactor));
-        apchSpd = (int)(perfData[5] * (1 + loadFactor));
-        this.airport = airport;
-        latMode = "vector";
-        heading = 0;
-        targetHeading = 0;
-        clearedHeading = (int) heading;
-        track = 0;
-        altitude = 10000;
-        clearedAltitude = 10000;
-        targetAltitude = 10000;
-        verticalSpeed = 0;
-        expedite = false;
-        altMode = "open";
-        ias = 250;
-        tas = MathTools.iasToTas(ias, altitude);
-        gs = tas;
-        deltaPosition = new Vector2();
-        clearedIas = 250;
-        targetIas = 250;
-        deltaIas = 0;
-        spdMode = "open";
-        tkofLdg = false;
+        setV2((int)(perfData[1] * (1 + loadFactor)));
+        setMaxClimb((int)(perfData[2] * (1 - loadFactor)));
+        setTypDes((int)(perfData[3] * (1 - loadFactor)));
+        setMaxDes((int)(perfData[4] * (1 - loadFactor)));
+        setApchSpd((int)(perfData[5] * (1 + loadFactor)));
+        this.setAirport(airport);
+        setLatMode("vector");
+        setHeading(0);
+        setTargetHeading(0);
+        setClearedHeading((int) getHeading());
+        setTrack(0);
+        setAltitude(10000);
+        setClearedAltitude(10000);
+        setTargetAltitude(10000);
+        setVerticalSpeed(0);
+        setExpedite(false);
+        setAltMode("open");
+        setIas(250);
+        setTas(MathTools.iasToTas(getIas(), getAltitude()));
+        setGs(getTas());
+        setDeltaPosition(new Vector2());
+        setClearedIas(250);
+        setTargetIas(250);
+        setDeltaIas(0);
+        setSpdMode("open");
+        setTkofLdg(false);
 
-        selected = false;
+        setSelected(false);
         loadLabel();
     }
 
+    public static boolean isLoadedIcons() {
+        return loadedIcons;
+    }
+
+    public static void setLoadedIcons(boolean loadedIcons) {
+        Aircraft.loadedIcons = loadedIcons;
+    }
+
+    public static ImageButton.ImageButtonStyle getButtonStyleCtrl() {
+        return buttonStyleCtrl;
+    }
+
+    public static void setButtonStyleCtrl(ImageButton.ImageButtonStyle buttonStyleCtrl) {
+        Aircraft.buttonStyleCtrl = buttonStyleCtrl;
+    }
+
+    public static ImageButton.ImageButtonStyle getButtonStyleDept() {
+        return buttonStyleDept;
+    }
+
+    public static void setButtonStyleDept(ImageButton.ImageButtonStyle buttonStyleDept) {
+        Aircraft.buttonStyleDept = buttonStyleDept;
+    }
+
+    public static ImageButton.ImageButtonStyle getButtonStyleUnctrl() {
+        return buttonStyleUnctrl;
+    }
+
+    public static void setButtonStyleUnctrl(ImageButton.ImageButtonStyle buttonStyleUnctrl) {
+        Aircraft.buttonStyleUnctrl = buttonStyleUnctrl;
+    }
+
+    public static ImageButton.ImageButtonStyle getButtonStyleEnroute() {
+        return buttonStyleEnroute;
+    }
+
+    public static void setButtonStyleEnroute(ImageButton.ImageButtonStyle buttonStyleEnroute) {
+        Aircraft.buttonStyleEnroute = buttonStyleEnroute;
+    }
+
     private void loadLabel() {
-        icon = new ImageButton(buttonStyleUnctrl);
-        icon.setSize(40, 40);
-        icon.getImageCell().size(40, 40);
-        icon.addListener(new ChangeListener() {
+        setIcon(new ImageButton(getButtonStyleUnctrl()));
+        getIcon().setSize(40, 40);
+        getIcon().getImageCell().size(40, 40);
+        getIcon().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 aircrafts.get(actor.getName()).setSelected(true);
@@ -161,65 +201,65 @@ public class Aircraft extends Actor {
                 System.out.println("Aircraft clicked/tapped");
             }
         });
-        stage.addActor(icon);
+        stage.addActor(getIcon());
 
-        background = new Image();
-        background.setDrawable(skin.getDrawable("labelBackground"));
-        background.setPosition(x - 100, y + 25);
-        background.setSize(290, 120);
-        GameScreen.stage.addActor(background);
+        setBackground(new Image());
+        getBackground().setDrawable(skin.getDrawable("labelBackground"));
+        getBackground().setPosition(getX() - 100, getY() + 25);
+        getBackground().setSize(290, 120);
+        GameScreen.stage.addActor(getBackground());
 
-        icon.setName(callsign);
-        labelText = new String[10];
-        labelText[9] = "";
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont6;
-        labelStyle.fontColor = Color.WHITE;
-        label = new Label("Loading...", labelStyle);
-        label.setPosition(x - 100, y + 25);
-        label.setSize(290, 120);
-        label.addListener(new DragListener() {
+        getIcon().setName(getCallsign());
+        setLabelText(new String[10]);
+        getLabelText()[9] = "";
+        setLabelStyle(new Label.LabelStyle());
+        getLabelStyle().font = AtcSim.fonts.defaultFont6;
+        getLabelStyle().fontColor = Color.WHITE;
+        setLabel(new Label("Loading...", getLabelStyle()));
+        getLabel().setPosition(getX() - 100, getY() + 25);
+        getLabel().setSize(290, 120);
+        getLabel().addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
-                label.moveBy(x - label.getWidth() / 2, y - label.getHeight() / 2);
+                getLabel().moveBy(x - getLabel().getWidth() / 2, y - getLabel().getHeight() / 2);
                 event.handle();
             }
         });
-        GameScreen.stage.addActor(label);
+        GameScreen.stage.addActor(getLabel());
     }
 
     public void renderShape() {
-        if (selected && direct != null) {
+        if (isSelected() && getDirect() != null) {
             drawSidStar();
         }
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
-        if (controlState == 1 || controlState == 2) {
+        GameScreen.shapeRenderer.line(getLabel().getX() + getLabel().getWidth() / 2, getLabel().getY() + getLabel().getHeight() / 2, getX(), getY());
+        if (getControlState() == 1 || getControlState() == 2) {
             shapeRenderer.setColor(Color.GREEN);
-            GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
+            GameScreen.shapeRenderer.line(getX(), getY(), getX() + getGs() * MathUtils.cosDeg((float)(90 - getTrack())), getY() + getGs() * MathUtils.sinDeg((float)(90 - getTrack())));
         }
     }
 
     double update() {
-        tas = MathTools.iasToTas(ias, altitude);
-        if (direct != null) {
-            direct.setSelected(true);
+        setTas(MathTools.iasToTas(getIas(), getAltitude()));
+        if (getDirect() != null) {
+            getDirect().setSelected(true);
         }
         updateIas();
-        if (tkofLdg) {
+        if (isTkofLdg()) {
             updateTkofLdg();
         }
-        if (!onGround) {
+        if (!isOnGround()) {
             double[] info = updateTargetHeading();
-            targetHeading = info[0];
-            updateHeading(targetHeading, 0);
+            setTargetHeading(info[0]);
+            updateHeading(getTargetHeading(), 0);
             updatePosition(info[1]);
             updateAltitude();
-            return targetHeading;
+            return getTargetHeading();
         } else {
-            tas = MathTools.iasToTas(ias, altitude);
-            gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
+            setTas(MathTools.iasToTas(getIas(), getAltitude()));
+            setGs(getTas() - getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
             updatePosition(0);
             return 0;
         }
@@ -230,76 +270,76 @@ public class Aircraft extends Actor {
     }
 
     private void updateIas() {
-        float targetdeltaIas = (targetIas - ias) / 5;
-        if (targetdeltaIas > deltaIas + 0.05) {
-            deltaIas += 0.2 * Gdx.graphics.getDeltaTime();
-        } else if (targetdeltaIas < deltaIas - 0.05) {
-            deltaIas -= 0.2 * Gdx.graphics.getDeltaTime();
+        float targetdeltaIas = (getTargetIas() - getIas()) / 5;
+        if (targetdeltaIas > getDeltaIas() + 0.05) {
+            setDeltaIas(getDeltaIas() + 0.2f * Gdx.graphics.getDeltaTime());
+        } else if (targetdeltaIas < getDeltaIas() - 0.05) {
+            setDeltaIas(getDeltaIas() - 0.2f * Gdx.graphics.getDeltaTime());
         } else {
-            deltaIas = targetdeltaIas;
+            setDeltaIas(targetdeltaIas);
         }
         float max = 1.5f;
         float min = -2.25f;
-        if (tkofLdg) {
+        if (isTkofLdg()) {
             max = 3;
             min = -4.5f;
         }
-        if (deltaIas > max) {
-            deltaIas = max;
-        } else if (deltaIas < min) {
-            deltaIas = min;
+        if (getDeltaIas() > max) {
+            setDeltaIas(max);
+        } else if (getDeltaIas() < min) {
+            setDeltaIas(min);
         }
-        ias += deltaIas * Gdx.graphics.getDeltaTime();
-        if (Math.abs(targetIas - ias) < 1) {
-            ias = targetIas;
+        setIas(getIas() + getDeltaIas() * Gdx.graphics.getDeltaTime());
+        if (Math.abs(getTargetIas() - getIas()) < 1) {
+            setIas(getTargetIas());
         }
     }
 
     private void updateAltitude() {
-        float targetVertSpd = (targetAltitude - altitude) / 0.1f;
-        if (targetVertSpd > verticalSpeed + 100) {
-            verticalSpeed += 500 * Gdx.graphics.getDeltaTime();
-        } else if (targetVertSpd < verticalSpeed - 100) {
-            verticalSpeed -= 500 * Gdx.graphics.getDeltaTime();
+        float targetVertSpd = (getTargetAltitude() - getAltitude()) / 0.1f;
+        if (targetVertSpd > getVerticalSpeed() + 100) {
+            setVerticalSpeed(getVerticalSpeed() + 500 * Gdx.graphics.getDeltaTime());
+        } else if (targetVertSpd < getVerticalSpeed() - 100) {
+            setVerticalSpeed(getVerticalSpeed() - 500 * Gdx.graphics.getDeltaTime());
         }
-        if (verticalSpeed > maxClimb) {
-            verticalSpeed = maxClimb;
-        } else if (!expedite && verticalSpeed < -typDes) {
-            verticalSpeed = -typDes;
-        } else if (expedite && verticalSpeed < -maxDes) {
-            verticalSpeed = -maxDes;
+        if (getVerticalSpeed() > getMaxClimb()) {
+            setVerticalSpeed(getMaxClimb());
+        } else if (!isExpedite() && getVerticalSpeed() < -getTypDes()) {
+            setVerticalSpeed(-getTypDes());
+        } else if (isExpedite() && getVerticalSpeed() < -getMaxDes()) {
+            setVerticalSpeed(-getMaxDes());
         }
-        altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
-        if (Math.abs(targetAltitude - altitude) < 50) {
-            altitude = targetAltitude;
-            verticalSpeed = 0;
+        setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
+        if (Math.abs(getTargetAltitude() - getAltitude()) < 50) {
+            setAltitude(getTargetAltitude());
+            setVerticalSpeed(0);
         }
     }
 
     private double[] updateTargetHeading() {
-        deltaPosition.setZero();
+        getDeltaPosition().setZero();
         double targetHeading;
         double angleDiff;
 
         //Get wind data
         int[] winds;
-        if (altitude - airport.elevation <= 4000) {
-            winds = airport.getWinds();
+        if (getAltitude() - getAirport().elevation <= 4000) {
+            winds = getAirport().getWinds();
         } else {
             winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
         }
         float windHdg = winds[0] + 180;
         int windSpd = winds[1];
 
-        if (latMode.equals("vector")) {
-            targetHeading = clearedHeading;
-            double angle = 180 - windHdg + heading;
-            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
-            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
+        if (getLatMode().equals("vector")) {
+            targetHeading = getClearedHeading();
+            double angle = 180 - windHdg + getHeading();
+            setGs((float) Math.sqrt(Math.pow(getTas(), 2) + Math.pow(windSpd, 2) - 2 * getTas() * windSpd * MathUtils.cosDeg((float)angle)));
+            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / getGs()) * MathUtils.radiansToDegrees;
         } else {
             //Calculates distance between waypoint and plane
-            float deltaX = direct.x - x;
-            float deltaY = direct.y - y;
+            float deltaX = getDirect().x - getX();
+            float deltaY = getDirect().y - getY();
 
             //Find target track angle
             if (deltaX >= 0) {
@@ -311,11 +351,11 @@ public class Aircraft extends Actor {
             //Calculate required aircraft heading to account for winds
             //Using sine rule to determine angle between aircraft velocity and actual velocity
             double angle = windHdg - targetHeading;
-            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / tas) * MathUtils.radiansToDegrees;
+            angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / getTas()) * MathUtils.radiansToDegrees;
             targetHeading -= angleDiff;
 
             //Aaaand now the cosine rule to determine ground speed
-            gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)(180 - angle - angleDiff)));
+            setGs((float) Math.sqrt(Math.pow(getTas(), 2) + Math.pow(windSpd, 2) - 2 * getTas() * windSpd * MathUtils.cosDeg((float)(180 - angle - angleDiff))));
 
             //Add magnetic deviation to give magnetic heading
             targetHeading += RadarScreen.magHdgDev;
@@ -344,16 +384,16 @@ public class Aircraft extends Actor {
 
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
-        track = heading - RadarScreen.magHdgDev + angleDiff;
-        deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
-        deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
-        x += deltaPosition.x;
-        y += deltaPosition.y;
-        label.moveBy(deltaPosition.x, deltaPosition.y);
+        setTrack(getHeading() - RadarScreen.magHdgDev + angleDiff);
+        getDeltaPosition().x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(getGs()) / 3600 * MathUtils.cosDeg((float)(90 - getTrack()));
+        getDeltaPosition().y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(getGs()) / 3600 * MathUtils.sinDeg((float)(90 - getTrack()));
+        setX(getX() + getDeltaPosition().x);
+        setY(getY() + getDeltaPosition().y);
+        getLabel().moveBy(getDeltaPosition().x, getDeltaPosition().y);
     }
 
     private double findDeltaHeading(double targetHeading, int forceDirection) {
-        double deltaHeading = targetHeading - heading;
+        double deltaHeading = targetHeading - getHeading();
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
                 if (deltaHeading > 180) {
@@ -393,23 +433,23 @@ public class Aircraft extends Actor {
             targetAngularVelocity = deltaHeading / 3;
         }
         //Update angular velocity towards target angular velocity
-        if (targetAngularVelocity > angularVelocity + 0.1f) {
+        if (targetAngularVelocity > getAngularVelocity() + 0.1f) {
             //If need to turn right, start turning right
-            angularVelocity += 0.5f * Gdx.graphics.getDeltaTime();
-        } else if (targetAngularVelocity < angularVelocity - 0.1f) {
+            setAngularVelocity(getAngularVelocity() + 0.5f * Gdx.graphics.getDeltaTime());
+        } else if (targetAngularVelocity < getAngularVelocity() - 0.1f) {
             //If need to turn left, start turning left
-            angularVelocity -= 0.5f * Gdx.graphics.getDeltaTime();
+            setAngularVelocity(getAngularVelocity() - 0.5f * Gdx.graphics.getDeltaTime());
         } else {
             //If within +-0.1 of target, set equal to target
-            angularVelocity = targetAngularVelocity;
+            setAngularVelocity(targetAngularVelocity);
         }
 
         //Add angular velocity to heading
-        heading += angularVelocity * Gdx.graphics.getDeltaTime();
-        if (heading > 360) {
-            heading -= 360;
-        } else if (heading <= 0) {
-            heading += 360;
+        setHeading(getHeading() + getAngularVelocity() * Gdx.graphics.getDeltaTime());
+        if (getHeading() > 360) {
+            setHeading(getHeading() - 360);
+        } else if (getHeading() <= 0) {
+            setHeading(getHeading() + 360);
         }
     }
 
@@ -417,9 +457,9 @@ public class Aircraft extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         update();
         updateLabel();
-        icon.setPosition(x - 20, y - 20);
-        icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
-        icon.draw(batch, 1);
+        getIcon().setPosition(getX() - 20, getY() - 20);
+        getIcon().setColor(Color.BLACK); //Icon doesn't draw without this for some reason
+        getIcon().draw(batch, 1);
     }
 
     void drawSidStar() {
@@ -433,13 +473,13 @@ public class Aircraft extends Actor {
     void setControlState(int controlState) {
         this.controlState = controlState;
         if (controlState == -1) { //En route aircraft - gray
-            icon.setStyle(buttonStyleEnroute);
+            getIcon().setStyle(getButtonStyleEnroute());
         } else if (controlState == 0) { //Uncontrolled aircraft - yellow
-            icon.setStyle(buttonStyleUnctrl);
+            getIcon().setStyle(getButtonStyleUnctrl());
         } else if (controlState == 1) { //Controlled arrival - blue
-            icon.setStyle(buttonStyleCtrl);
+            getIcon().setStyle(getButtonStyleCtrl());
         } else if (controlState == 2) { //Controlled departure - light green?
-            icon.setStyle(buttonStyleDept);
+            getIcon().setStyle(getButtonStyleDept());
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
         }
@@ -450,57 +490,385 @@ public class Aircraft extends Actor {
     }
 
     private void moderateLabel() {
-        if (label.getX() < 0) {
-            label.setX(0);
-        } else if (label.getX() + label.getWidth() > 5760) {
-            label.setX(5760 - label.getWidth());
+        if (getLabel().getX() < 0) {
+            getLabel().setX(0);
+        } else if (getLabel().getX() + getLabel().getWidth() > 5760) {
+            getLabel().setX(5760 - getLabel().getWidth());
         }
-        if (label.getY() < 0) {
-            label.setY(0);
-        } else if (label.getY() + label.getHeight() > 3240) {
-            label.setY(3240 - label.getHeight());
+        if (getLabel().getY() < 0) {
+            getLabel().setY(0);
+        } else if (getLabel().getY() + getLabel().getHeight() > 3240) {
+            getLabel().setY(3240 - getLabel().getHeight());
         }
     }
 
     public void updateLabel() {
         String vertSpd;
-        if (verticalSpeed < -100) {
+        if (getVerticalSpeed() < -100) {
             vertSpd = " DOWN ";
-        } else if (verticalSpeed > 100) {
+        } else if (getVerticalSpeed() > 100) {
             vertSpd = " UP ";
         } else {
             vertSpd = " = ";
         }
-        labelText[0] = callsign;
-        labelText[1] = icaoType + "/" + wakeCat;
-        labelText[2] = Integer.toString((int)(altitude / 100));
-        labelText[3] = Integer.toString(clearedAltitude / 100);
-        if ((int)heading == 0) {
-            heading += 360;
+        getLabelText()[0] = getCallsign();
+        getLabelText()[1] = getIcaoType() + "/" + getWakeCat();
+        getLabelText()[2] = Integer.toString((int)(getAltitude() / 100));
+        getLabelText()[3] = Integer.toString(getClearedAltitude() / 100);
+        if ((int) getHeading() == 0) {
+            setHeading(getHeading() + 360);
         }
-        labelText[4] = Integer.toString((int)heading);
-        if (latMode.equals("vector")) {
-            labelText[5] = Integer.toString(clearedHeading);
+        getLabelText()[4] = Integer.toString((int) getHeading());
+        if (getLatMode().equals("vector")) {
+            getLabelText()[5] = Integer.toString(getClearedHeading());
         } else {
-            labelText[5] = direct.name;
+            getLabelText()[5] = getDirect().name;
         }
-        labelText[6] = Integer.toString((int)gs);
-        labelText[7] = Integer.toString(clearedIas);
+        getLabelText()[6] = Integer.toString((int) getGs());
+        getLabelText()[7] = Integer.toString(getClearedIas());
         String updatedText;
-        if (controlState == 1 || controlState == 2) {
-            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(290, 120);
-            background.setSize(290, 120);
+        if (getControlState() == 1 || getControlState() == 2) {
+            updatedText = getLabelText()[0] + " " + getLabelText()[1] + "\n" + getLabelText()[2] + vertSpd + getLabelText()[3] + "\n" + getLabelText()[4] + " " + getLabelText()[5] + " " + getLabelText()[8] + "\n" + getLabelText()[6] + " " + getLabelText()[7] + " " + getLabelText()[9];
+            getLabel().setSize(290, 120);
+            getBackground().setSize(290, 120);
         } else {
-            updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
-            label.setSize(120, 95);
-            background.setSize(120, 95);
+            updatedText = getLabelText()[0] + "\n" + getLabelText()[2] + " " + getLabelText()[4] + "\n" + getLabelText()[6];
+            getLabel().setSize(120, 95);
+            getBackground().setSize(120, 95);
         }
-        label.setText(updatedText);
-        background.setPosition(label.getX(), label.getY());
+        getLabel().setText(updatedText);
+        getBackground().setPosition(getLabel().getX(), getLabel().getY());
     }
 
     public void setTargetIas(int ias) {
         targetIas = ias;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public Label.LabelStyle getLabelStyle() {
+        return labelStyle;
+    }
+
+    public void setLabelStyle(Label.LabelStyle labelStyle) {
+        this.labelStyle = labelStyle;
+    }
+
+    public String[] getLabelText() {
+        return labelText;
+    }
+
+    public void setLabelText(String[] labelText) {
+        this.labelText = labelText;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public ImageButton getIcon() {
+        return icon;
+    }
+
+    public void setIcon(ImageButton icon) {
+        this.icon = icon;
+    }
+
+    public Image getBackground() {
+        return background;
+    }
+
+    public void setBackground(Image background) {
+        this.background = background;
+    }
+
+    public Airport getAirport() {
+        return airport;
+    }
+
+    public void setAirport(Airport airport) {
+        this.airport = airport;
+    }
+
+    public Runway getRunway() {
+        return runway;
+    }
+
+    public void setRunway(Runway runway) {
+        this.runway = runway;
+    }
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public boolean isTkofLdg() {
+        return tkofLdg;
+    }
+
+    public void setTkofLdg(boolean tkofLdg) {
+        this.tkofLdg = tkofLdg;
+    }
+
+    public String getCallsign() {
+        return callsign;
+    }
+
+    public void setCallsign(String callsign) {
+        this.callsign = callsign;
+    }
+
+    public String getIcaoType() {
+        return icaoType;
+    }
+
+    public void setIcaoType(String icaoType) {
+        this.icaoType = icaoType;
+    }
+
+    public char getWakeCat() {
+        return wakeCat;
+    }
+
+    public void setWakeCat(char wakeCat) {
+        this.wakeCat = wakeCat;
+    }
+
+    public int getV2() {
+        return v2;
+    }
+
+    public void setV2(int v2) {
+        this.v2 = v2;
+    }
+
+    public int getMaxClimb() {
+        return maxClimb;
+    }
+
+    public void setMaxClimb(int maxClimb) {
+        this.maxClimb = maxClimb;
+    }
+
+    public int getTypDes() {
+        return typDes;
+    }
+
+    public void setTypDes(int typDes) {
+        this.typDes = typDes;
+    }
+
+    public int getMaxDes() {
+        return maxDes;
+    }
+
+    public void setMaxDes(int maxDes) {
+        this.maxDes = maxDes;
+    }
+
+    public int getApchSpd() {
+        return apchSpd;
+    }
+
+    public void setApchSpd(int apchSpd) {
+        this.apchSpd = apchSpd;
+    }
+
+    public int getControlState() {
+        return controlState;
+    }
+
+    @Override
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
+    }
+
+    @Override
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public String getLatMode() {
+        return latMode;
+    }
+
+    public void setLatMode(String latMode) {
+        this.latMode = latMode;
+    }
+
+    public double getHeading() {
+        return heading;
+    }
+
+    public void setHeading(double heading) {
+        this.heading = heading;
+    }
+
+    public double getTargetHeading() {
+        return targetHeading;
+    }
+
+    public void setTargetHeading(double targetHeading) {
+        this.targetHeading = targetHeading;
+    }
+
+    public int getClearedHeading() {
+        return clearedHeading;
+    }
+
+    public void setClearedHeading(int clearedHeading) {
+        this.clearedHeading = clearedHeading;
+    }
+
+    public double getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    public void setAngularVelocity(double angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+
+    public double getTrack() {
+        return track;
+    }
+
+    public void setTrack(double track) {
+        this.track = track;
+    }
+
+    public Waypoint getDirect() {
+        return direct;
+    }
+
+    public void setDirect(Waypoint direct) {
+        this.direct = direct;
+    }
+
+    public float getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(float altitude) {
+        this.altitude = altitude;
+    }
+
+    public int getClearedAltitude() {
+        return clearedAltitude;
+    }
+
+    public void setClearedAltitude(int clearedAltitude) {
+        this.clearedAltitude = clearedAltitude;
+    }
+
+    public int getTargetAltitude() {
+        return targetAltitude;
+    }
+
+    public void setTargetAltitude(int targetAltitude) {
+        this.targetAltitude = targetAltitude;
+    }
+
+    public float getVerticalSpeed() {
+        return verticalSpeed;
+    }
+
+    public void setVerticalSpeed(float verticalSpeed) {
+        this.verticalSpeed = verticalSpeed;
+    }
+
+    public boolean isExpedite() {
+        return expedite;
+    }
+
+    public void setExpedite(boolean expedite) {
+        this.expedite = expedite;
+    }
+
+    public String getAltMode() {
+        return altMode;
+    }
+
+    public void setAltMode(String altMode) {
+        this.altMode = altMode;
+    }
+
+    public float getIas() {
+        return ias;
+    }
+
+    public void setIas(float ias) {
+        this.ias = ias;
+    }
+
+    public float getTas() {
+        return tas;
+    }
+
+    public void setTas(float tas) {
+        this.tas = tas;
+    }
+
+    public float getGs() {
+        return gs;
+    }
+
+    public void setGs(float gs) {
+        this.gs = gs;
+    }
+
+    public Vector2 getDeltaPosition() {
+        return deltaPosition;
+    }
+
+    public void setDeltaPosition(Vector2 deltaPosition) {
+        this.deltaPosition = deltaPosition;
+    }
+
+    public int getClearedIas() {
+        return clearedIas;
+    }
+
+    public void setClearedIas(int clearedIas) {
+        this.clearedIas = clearedIas;
+    }
+
+    public int getTargetIas() {
+        return targetIas;
+    }
+
+    public float getDeltaIas() {
+        return deltaIas;
+    }
+
+    public void setDeltaIas(float deltaIas) {
+        this.deltaIas = deltaIas;
+    }
+
+    public String getSpdMode() {
+        return spdMode;
+    }
+
+    public void setSpdMode(String spdMode) {
+        this.spdMode = spdMode;
     }
 }
