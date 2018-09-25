@@ -127,9 +127,7 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Quit game
                 dispose();
-                game.dispose();
                 Gdx.app.exit();
-                System.exit(0);
             }
         });
         stage.addActor(quitButton);
