@@ -39,6 +39,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private float lastInitialDist = 0;
     private float lastScale = 1;
 
+    //Double tap animation variables
+    private boolean zooming = false;
+    private boolean zoomedIn = false;
+
     //Create new camera
     OrthographicCamera camera;
     Viewport viewport;
@@ -116,13 +120,27 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             camera.translate(0, SCROLLCONSTANT * dt, 0);
         }
 
+        if (zooming) {
+            if (zoomedIn) {
+                camera.zoom += 0.05f;
+            } else {
+                camera.zoom -= 0.05f;
+            }
+        }
+
         //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.3f) {
             camera.zoom = 0.3f;
+            zooming = false;
+            zoomedIn = true;
         } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > 0.6f && !loading) {
             camera.zoom = 0.6f;
+            zooming = false;
+            zoomedIn = false;
         } else if (camera.zoom > 1.0f) {
             camera.zoom = 1.0f;
+            zooming = false;
+            zoomedIn = false;
         }
 
         //Setting new boundaries for camera position after zooming
@@ -255,6 +273,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+        if (count == 2 && !loading) {
+            zooming = true;
+            return true;
+        }
         return false;
     }
 
@@ -338,16 +360,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        /*
-        float screenHeightRatio = 3240f / Gdx.graphics.getHeight();
-        float screenWidthRatio = 5760f / Gdx.graphics.getWidth();
-        float screenRatio = (screenHeightRatio > screenWidthRatio) ? screenHeightRatio : screenWidthRatio;
-        int deltaX = (int)((screenX - lastX) * camera.zoom * screenRatio);
-        int deltaY = (int)((screenY - lastY) * camera.zoom * screenRatio);
-        camera.translate(-deltaX, deltaY);
-        lastX = screenX;
-        lastY = screenY;
-        */
         return false;
     }
 
