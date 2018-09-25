@@ -31,7 +31,7 @@ public class Waypoint extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (selected) {
+        if (selected && x <= 4500 && x >= 1260 && y <= 3240 && y >= 0) {
             label.draw(batch, 1);
         }
     }
@@ -41,7 +41,7 @@ public class Waypoint extends Actor {
     }
 
     public void renderShape() {
-        if (selected) {
+        if (selected && x <= 4500 && x >= 1260 && y <= 3240 && y >= 0) {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.circle(x, y, 12, 10);
         }

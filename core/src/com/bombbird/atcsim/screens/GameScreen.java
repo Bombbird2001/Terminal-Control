@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -35,8 +33,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
     InputProcessor inputProcessor1 = this;
     InputProcessor inputProcessor2;
-    private int lastX;
-    private int lastY;
+    GestureDetector gd = new GestureDetector(this);
+
+    //Pinch zoom constants
+    private float lastInitialDist = 0;
+    private float lastScale = 1;
 
     //Create new camera
     OrthographicCamera camera;
@@ -87,19 +88,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
-    void loadScroll() {
-        //Add scroll listener
-        stage.addListener(new InputListener() {
-            @Override
-            public boolean scrolled(InputEvent event, float x, float y, int amount) {
-                if (!loading) {
-                    camera.zoom += amount * 0.042f;
-                }
-                return false;
-            }
-        });
-    }
-
     private void handleInput(float dt) {
         float ZOOMCONSTANT = 0.6f;
         float SCROLLCONSTANT = 250.0f;
@@ -131,7 +119,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.3f) {
             camera.zoom = 0.3f;
-        } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > 0.6f) {
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > 0.6f && !loading) {
             camera.zoom = 0.6f;
         } else if (camera.zoom > 1.0f) {
             camera.zoom = 1.0f;
@@ -282,6 +270,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        if (loading) {
+            return false;
+        }
+        float screenHeightRatio = 3240f / Gdx.graphics.getHeight();
+        float screenWidthRatio = 5760f / Gdx.graphics.getWidth();
+        float screenRatio = (screenHeightRatio > screenWidthRatio) ? screenHeightRatio : screenWidthRatio;
+        camera.translate(-deltaX * camera.zoom * screenRatio, deltaY * camera.zoom * screenRatio);
         return false;
     }
 
@@ -292,14 +287,22 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
+        if (loading) {
+            return true;
+        }
+        if (initialDistance != lastInitialDist) {
+            //New zoom
+            lastInitialDist = initialDistance;
+            lastScale = camera.zoom;
+        }
+        float ratio = lastInitialDist / distance;
+        camera.zoom = lastScale * ratio;
+        camera.update();
+        return true;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        double deltaDist = Math.sqrt(Math.pow(pointer1.x - pointer2.x, 2) - Math.pow(pointer1.y - pointer2.y, 2));
-        double screenDist = Math.sqrt(Math.pow(AtcSim.WIDTH, 2) - Math.pow(AtcSim.HEIGHT, 2));
-        camera.zoom += screenDist / (screenDist - deltaDist);
         return false;
     }
 
@@ -325,8 +328,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        lastX = screenX;
-        lastY = screenY;
         return false;
     }
 
@@ -337,6 +338,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        /*
         float screenHeightRatio = 3240f / Gdx.graphics.getHeight();
         float screenWidthRatio = 5760f / Gdx.graphics.getWidth();
         float screenRatio = (screenHeightRatio > screenWidthRatio) ? screenHeightRatio : screenWidthRatio;
@@ -345,7 +347,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         camera.translate(-deltaX, deltaY);
         lastX = screenX;
         lastY = screenY;
-        return true;
+        */
+        return false;
     }
 
     @Override
@@ -355,6 +358,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean scrolled(int amount) {
-        return false;
+        if (!loading) {
+            camera.zoom += amount * 0.042f;
+        }
+        return true;
     }
 }

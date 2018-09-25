@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
+import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.Sid;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
@@ -16,13 +17,19 @@ public class Departure extends Aircraft {
     private int outboundHdg;
     private int sidIndex;
     private int contactAlt;
+    private boolean v2set;
+    private boolean sidSet;
+    private boolean spdSet;
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         labelText[9] = departure.icao;
         onGround = true;
         sidIndex = 0;
-        contactAlt = 2000 + MathUtils.random(-500, 500);
+        contactAlt = 2000 + MathUtils.random(-400, 400);
+        v2set = false;
+        sidSet = false;
+        spdSet = false;
 
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
@@ -42,6 +49,7 @@ public class Departure extends Aircraft {
                 }
             }
         }
+        if (airport.icao.equals("RCSS")) sid = sidList.get("MUKKA2H");
         sid.printWpts();
 
         //Set initial IAS due to wind
@@ -58,7 +66,7 @@ public class Departure extends Aircraft {
         //Set takeoff heading
         heading = runway.getHeading();
 
-        setControlState(0);
+        setControlState(2);
 
         takeOff();
     }
@@ -69,26 +77,30 @@ public class Departure extends Aircraft {
         setTargetIas(v2);
         clearedAltitude = 3000;
         targetAltitude = clearedAltitude;
+        clearedHeading = sid.getInitClimb()[0];
         tkofLdg = true;
     }
 
     @Override
     void updateTkofLdg() {
-        if (ias > v2 - 10) {
+        if (ias > v2 - 10 && !v2set) {
             onGround = false;
-            clearedHeading = sid.getInitClimb()[0];
+            targetHeading = clearedHeading;
+            v2set = true;
         }
         if (altitude - airport.elevation >= contactAlt) {
             tkofLdg = false;
             setControlState(2);
         }
-        if (altitude > sid.getInitClimb()[1]) {
+        if (altitude > sid.getInitClimb()[1] && !sidSet) {
             direct = sid.getWaypoint(0);
             latMode = "sid";
+            sidSet = true;
         }
-        if (altitude - airport.elevation > 1500) {
+        if (altitude - airport.elevation >= 1500 && !spdSet) {
             setTargetIas(250);
             clearedIas = 250;
+            spdSet = true;
         }
     }
 
@@ -96,7 +108,7 @@ public class Departure extends Aircraft {
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
-        sid.joinLines(sidIndex);
+        sid.joinLines(sidIndex, outboundHdg);
     }
 
     @Override
@@ -113,6 +125,24 @@ public class Departure extends Aircraft {
         if (direct == null) {
             latMode = "vector";
             clearedHeading = (int)(outboundHdg + RadarScreen.magHdgDev);
+        }
+    }
+
+    @Override
+    double findNextTargetHdg() {
+        Waypoint nextWpt = sid.getWaypoint(sidIndex + 1);
+        if (nextWpt == null) {
+            return outboundHdg;
+        } else {
+            float deltaX = nextWpt.x - direct.x;
+            float deltaY = nextWpt.y - direct.y;
+            double nextTarget;
+            if (deltaX >= 0) {
+                nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            } else {
+                nextTarget = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            }
+            return nextTarget;
         }
     }
 }

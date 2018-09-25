@@ -25,7 +25,7 @@ public class SidStar {
         }
     }
 
-    public void joinLines(int start) {
+    public void joinLines(int start, int outbound) {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         float previousX = -1;
         float previousY = -1;
@@ -33,13 +33,19 @@ public class SidStar {
         for (Waypoint waypoint: waypoints) {
             if (index >= start) {
                 waypoint.setSelected(true);
-                if (previousX != -1 && previousY != -1)
+                if (previousX != -1 && previousY != -1) {
                     GameScreen.shapeRenderer.line(previousX, previousY, waypoint.x, waypoint.y);
+                }
                 previousX = waypoint.x;
                 previousY = waypoint.y;
             }
             index++;
         }
+        drawOutbound(previousX, previousY, outbound);
+    }
+
+    void drawOutbound(float previousX, float previousY, int outbound) {
+
     }
 
     public Array<String> getRunways() {

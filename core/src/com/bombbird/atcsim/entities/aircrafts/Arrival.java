@@ -3,6 +3,7 @@ package com.bombbird.atcsim.entities.aircrafts;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
@@ -65,7 +66,7 @@ public class Arrival extends Aircraft {
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.x, direct.y);
-        star.joinLines(starIndex);
+        star.joinLines(starIndex, 0);
     }
 
     @Override
@@ -82,6 +83,24 @@ public class Arrival extends Aircraft {
         if (direct == null) {
             latMode = "vector";
             clearedHeading = (int)heading;
+        }
+    }
+
+    @Override
+    double findNextTargetHdg() {
+        Waypoint nextWpt = star.getWaypoint(starIndex + 1);
+        if (nextWpt == null) {
+            return track;
+        } else {
+            float deltaX = nextWpt.x - direct.x;
+            float deltaY = nextWpt.y - direct.y;
+            double nextTarget;
+            if (deltaX >= 0) {
+                nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            } else {
+                nextTarget = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            }
+            return nextTarget;
         }
     }
 }

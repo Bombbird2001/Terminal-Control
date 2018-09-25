@@ -38,6 +38,7 @@ public class RadarScreen extends GameScreen {
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         inputProcessor2 = stage;
         inputMultiplexer.addProcessor(inputProcessor2);
+        inputMultiplexer.addProcessor(gd);
         inputMultiplexer.addProcessor(inputProcessor1);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
@@ -116,6 +117,7 @@ public class RadarScreen extends GameScreen {
         aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
         aircrafts.put("EVA851", new Arrival("EVA851", "A321", airports.get("RCTP")));
         aircrafts.put("ANA788", new Departure("ANA788", "B788", airports.get("RCTP")));
+        aircrafts.put("UIA232", new Departure("UIA232", "A321", airports.get("RCSS")));
     }
 
     private void loadUI() {
@@ -142,9 +144,6 @@ public class RadarScreen extends GameScreen {
 
         //Load altitude restrictions
         restArray = FileLoader.loadRestricted();
-
-        //Load scroll listener
-        loadScroll();
     }
 
     @Override

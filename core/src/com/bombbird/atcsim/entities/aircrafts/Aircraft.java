@@ -300,11 +300,6 @@ public class Aircraft extends Actor {
             //Calculates distance between waypoint and plane
             float deltaX = direct.x - x;
             float deltaY = direct.y - y;
-            float distance = (float)Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-            //If within 25px of waypoint, target next waypoint
-            if (distance <= 25) {
-                updateDirect();
-            }
 
             //Find target track angle
             if (deltaX >= 0) {
@@ -324,6 +319,14 @@ public class Aircraft extends Actor {
 
             //Add magnetic deviation to give magnetic heading
             targetHeading += RadarScreen.magHdgDev;
+
+            //If within __px of waypoint, target next waypoint
+            //Distance determined by angle that needs to be turned
+            double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg(), 0)) / 1.5 + 15;
+            if (distance <= requiredDistance) {
+                updateDirect();
+            }
         }
 
         if (targetHeading > 360) {
@@ -331,7 +334,12 @@ public class Aircraft extends Actor {
         } else if (targetHeading <= 0) {
             targetHeading += 360;
         }
+
         return new double[] {targetHeading, angleDiff};
+    }
+
+    double findNextTargetHdg() {
+        return 0;
     }
 
     private void updatePosition(double angleDiff) {
@@ -344,7 +352,7 @@ public class Aircraft extends Actor {
         label.moveBy(deltaPosition.x, deltaPosition.y);
     }
 
-    private void updateHeading(double targetHeading, int forceDirection) {
+    private double findDeltaHeading(double targetHeading, int forceDirection) {
         double deltaHeading = targetHeading - heading;
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
@@ -367,6 +375,11 @@ public class Aircraft extends Actor {
             default:
                 Gdx.app.log("Direction error", "Invalid turn direction specified!");
         }
+        return deltaHeading;
+    }
+
+    private void updateHeading(double targetHeading, int forceDirection) {
+        double deltaHeading = findDeltaHeading(targetHeading, forceDirection);
         //Note: angular velocities unit is change in heading per second
         double targetAngularVelocity = 0;
         if (deltaHeading > 0) {
