@@ -23,7 +23,7 @@ public class Departure extends Aircraft {
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
-        labelText[9] = departure.icao;
+        labelText[9] = departure.getIcao();
         setOnGround(true);
         sidIndex = 0;
         contactAlt = 2000 + MathUtils.random(-400, 400);
@@ -43,7 +43,7 @@ public class Departure extends Aircraft {
             String sidStr = (String) sidList.keySet().toArray()[MathUtils.random(sidList.size() - 1)];
             sid = sidList.get(sidStr);
             for (String runwayStr: sid.getRunways()) {
-                if (runwayStr.equals(getRunway().name)) {
+                if (runwayStr.equals(getRunway().getName())) {
                     sidSet = true;
                     break;
                 }
@@ -88,7 +88,7 @@ public class Departure extends Aircraft {
             setTargetHeading(getClearedHeading());
             v2set = true;
         }
-        if (getAltitude() - getAirport().elevation >= contactAlt) {
+        if (getAltitude() - getAirport().getElevation() >= contactAlt) {
             setTkofLdg(false);
             setControlState(2);
         }
@@ -97,7 +97,7 @@ public class Departure extends Aircraft {
             setLatMode("sid");
             sidSet = true;
         }
-        if (getAltitude() - getAirport().elevation >= 1500 && !spdSet) {
+        if (getAltitude() - getAirport().getElevation() >= 1500 && !spdSet) {
             setTargetIas(250);
             setClearedIas(250);
             spdSet = true;
@@ -107,13 +107,13 @@ public class Departure extends Aircraft {
     @Override
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().x, getDirect().y);
+        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().getPosX(), getDirect().getPosY());
         sid.joinLines(sidIndex, outboundHdg);
     }
 
     @Override
     public void updateLabel() {
-        labelText[8] = sid.name;
+        labelText[8] = sid.getName();
         super.updateLabel();
     }
 
@@ -134,8 +134,8 @@ public class Departure extends Aircraft {
         if (nextWpt == null) {
             return outboundHdg;
         } else {
-            float deltaX = nextWpt.x - getDirect().x;
-            float deltaY = nextWpt.y - getDirect().y;
+            float deltaX = nextWpt.getPosX() - getDirect().getPosX();
+            float deltaY = nextWpt.getPosY() - getDirect().getPosY();
             double nextTarget;
             if (deltaX >= 0) {
                 nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);

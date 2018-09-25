@@ -6,22 +6,22 @@ import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
 
 public class SidStar {
-    public String name;
-    Array<String> runways;
-    Array<Waypoint> waypoints;
-    Array<int[]> restrictions;
+    private String name;
+    private Array<String> runways;
+    private Array<Waypoint> waypoints;
+    private Array<int[]> restrictions;
 
     SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
-        this.name = name;
-        this.runways = runways;
-        this.waypoints = waypoints;
-        this.restrictions = restrictions;
+        this.setName(name);
+        this.setRunways(runways);
+        this.setWaypoints(waypoints);
+        this.setRestrictions(restrictions);
     }
 
     public void printWpts() {
-        System.out.println(name);
-        for (Waypoint waypoint: waypoints) {
-            System.out.println(waypoint.name);
+        System.out.println(getName());
+        for (Waypoint waypoint: getWaypoints()) {
+            System.out.println(waypoint.getName());
         }
     }
 
@@ -30,14 +30,14 @@ public class SidStar {
         float previousX = -1;
         float previousY = -1;
         int index = 0;
-        for (Waypoint waypoint: waypoints) {
+        for (Waypoint waypoint: getWaypoints()) {
             if (index >= start) {
                 waypoint.setSelected(true);
                 if (previousX != -1 && previousY != -1) {
-                    GameScreen.shapeRenderer.line(previousX, previousY, waypoint.x, waypoint.y);
+                    GameScreen.shapeRenderer.line(previousX, previousY, waypoint.getPosX(), waypoint.getPosY());
                 }
-                previousX = waypoint.x;
-                previousY = waypoint.y;
+                previousX = waypoint.getPosX();
+                previousY = waypoint.getPosY();
             }
             index++;
         }
@@ -53,9 +53,37 @@ public class SidStar {
     }
 
     public Waypoint getWaypoint(int index) {
-        if (index >= waypoints.size) {
+        if (index >= getWaypoints().size) {
             return null;
         }
-        return waypoints.get(index);
+        return getWaypoints().get(index);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRunways(Array<String> runways) {
+        this.runways = runways;
+    }
+
+    public Array<Waypoint> getWaypoints() {
+        return waypoints;
+    }
+
+    public void setWaypoints(Array<Waypoint> waypoints) {
+        this.waypoints = waypoints;
+    }
+
+    public Array<int[]> getRestrictions() {
+        return restrictions;
+    }
+
+    public void setRestrictions(Array<int[]> restrictions) {
+        this.restrictions = restrictions;
     }
 }

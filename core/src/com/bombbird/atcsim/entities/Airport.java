@@ -13,20 +13,20 @@ public class Airport {
     private HashMap<String, Runway> runways;
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
-    public String icao;
+    private String icao;
     private JSONObject metar;
     private HashMap<String, Star> stars;
     private HashMap<String, Sid> sids;
-    public int elevation;
+    private int elevation;
 
     public Airport(String icao, int elevation) {
-        this.icao = icao;
-        this.elevation = elevation;
-        runways = FileLoader.loadRunways(icao);
-        landingRunways = new HashMap<String, Runway>();
-        takeoffRunways = new HashMap<String, Runway>();
-        stars = FileLoader.loadStars(icao);
-        sids = FileLoader.loadSids(icao);
+        this.setIcao(icao);
+        this.setElevation(elevation);
+        setRunways(FileLoader.loadRunways(icao));
+        setLandingRunways(new HashMap<String, Runway>());
+        setTakeoffRunways(new HashMap<String, Runway>());
+        setStars(FileLoader.loadStars(icao));
+        setSids(FileLoader.loadSids(icao));
         if (icao.equals("RCTP")) {
             setActive("05L", true, false);
             setActive("05R", true, true);
@@ -37,7 +37,7 @@ public class Airport {
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
         //Retrieves runway from hashtable
-        Runway runway = runways.get(rwy);
+        Runway runway = getRunways().get(rwy);
 
         //Set actor
         if ((landing || takeoff) && !runway.isActive()) {
@@ -50,17 +50,17 @@ public class Airport {
 
         if (!runway.isLanding() && landing) {
             //Add to landing runways if not landing before, but landing now
-            landingRunways.put(rwy, runway);
+            getLandingRunways().put(rwy, runway);
         } else if (runway.isLanding() && !landing) {
             //Remove if landing before, but not landing now
-            landingRunways.remove(rwy);
+            getLandingRunways().remove(rwy);
         }
         if (!runway.isTakeoff() && takeoff) {
             //Add to takeoff runways if not taking off before, but taking off now
-            takeoffRunways.put(rwy, runway);
+            getTakeoffRunways().put(rwy, runway);
         } else if (runway.isTakeoff() && !takeoff) {
             //Remove if taking off before, but not taking off now
-            takeoffRunways.remove(rwy);
+            getTakeoffRunways().remove(rwy);
         }
 
         //Set runway's internal active state
@@ -68,7 +68,7 @@ public class Airport {
     }
 
     public void renderRunways() {
-        for (Runway runway: runways.values()) {
+        for (Runway runway: getRunways().values()) {
             if (runway.isActive()) {
                 runway.renderShape();
             }
@@ -76,8 +76,8 @@ public class Airport {
     }
 
     void setMetar(JSONObject metar) {
-        this.metar = metar.getJSONObject(icao);
-        System.out.println("METAR of " + icao + ": " + this.metar.toString());
+        this.metar = metar.getJSONObject(getIcao());
+        System.out.println("METAR of " + getIcao() + ": " + this.metar.toString());
         //Update active runways if METAR is updated
         int windHdg = this.metar.getInt("windDirection");
         String ws = "";
@@ -85,31 +85,31 @@ public class Airport {
             ws = this.metar.getString("windshear");
         }
         if (windHdg != 0) { //Update runways if winds are not variable
-            for (Runway runway : runways.values()) {
+            for (Runway runway : getRunways().values()) {
                 int rightHeading = runway.getHeading() + 90;
                 int leftHeading = runway.getHeading() - 90;
                 if (rightHeading > 360) {
                     rightHeading -= 360;
                     if (windHdg >= rightHeading && windHdg < leftHeading) {
-                        setActive(runway.name, false, false);
+                        setActive(runway.getName(), false, false);
                     } else {
-                        setActive(runway.name, true, true);
+                        setActive(runway.getName(), true, true);
                     }
                 } else if (leftHeading < 0) {
                     leftHeading += 360;
                     if (windHdg >= rightHeading && windHdg < leftHeading) {
-                        setActive(runway.name, false, false);
+                        setActive(runway.getName(), false, false);
                     } else {
-                        setActive(runway.name, true, true);
+                        setActive(runway.getName(), true, true);
                     }
                 } else {
                     if (windHdg >= leftHeading && windHdg < rightHeading) {
-                        setActive(runway.name, true, true);
+                        setActive(runway.getName(), true, true);
                     } else {
-                        setActive(runway.name, false, false);
+                        setActive(runway.getName(), false, false);
                     }
                 }
-                runway.windshear = ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.name);
+                runway.setWindshear(ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
             }
         }
     }
@@ -135,6 +135,46 @@ public class Airport {
     }
 
     public int[] getWinds() {
-        return new int[] {metar.getInt("windDirection"), metar.getInt("windSpeed")};
+        return new int[] {getMetar().getInt("windDirection"), getMetar().getInt("windSpeed")};
+    }
+
+    public HashMap<String, Runway> getRunways() {
+        return runways;
+    }
+
+    public void setRunways(HashMap<String, Runway> runways) {
+        this.runways = runways;
+    }
+
+    public void setLandingRunways(HashMap<String, Runway> landingRunways) {
+        this.landingRunways = landingRunways;
+    }
+
+    public void setTakeoffRunways(HashMap<String, Runway> takeoffRunways) {
+        this.takeoffRunways = takeoffRunways;
+    }
+
+    public String getIcao() {
+        return icao;
+    }
+
+    public void setIcao(String icao) {
+        this.icao = icao;
+    }
+
+    public void setStars(HashMap<String, Star> stars) {
+        this.stars = stars;
+    }
+
+    public void setSids(HashMap<String, Sid> sids) {
+        this.sids = sids;
+    }
+
+    public int getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(int elevation) {
+        this.elevation = elevation;
     }
 }

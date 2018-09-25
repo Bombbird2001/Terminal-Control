@@ -18,7 +18,7 @@ public class Arrival extends Aircraft {
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
-        labelText[9] = arrival.icao;
+        labelText[9] = arrival.getIcao();
         setOnGround(false);
         starIndex = 0;
         setLatMode("star");
@@ -46,15 +46,15 @@ public class Arrival extends Aircraft {
         //Calculate spawn border
         int[] xBorder = {1310, 4450};
         int[] yBorder = {50, 3190};
-        float xDistRight = (xBorder[1] - getDirect().x)/MathUtils.cosDeg((float)(270 - getTrack()));
-        float xDistLeft = (xBorder[0] - getDirect().x)/MathUtils.cosDeg((float)(270 - getTrack()));
-        float yDistUp = (yBorder[1] - getDirect().y)/MathUtils.sinDeg((float)(270 - getTrack()));
-        float yDistDown = (yBorder[0] - getDirect().y)/MathUtils.sinDeg((float)(270 - getTrack()));
+        float xDistRight = (xBorder[1] - getDirect().getPosX())/MathUtils.cosDeg((float)(270 - getTrack()));
+        float xDistLeft = (xBorder[0] - getDirect().getPosX())/MathUtils.cosDeg((float)(270 - getTrack()));
+        float yDistUp = (yBorder[1] - getDirect().getPosY())/MathUtils.sinDeg((float)(270 - getTrack()));
+        float yDistDown = (yBorder[0] - getDirect().getPosY())/MathUtils.sinDeg((float)(270 - getTrack()));
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
         float dist = xDist > yDist ? yDist : xDist;
-        setX(getDirect().x + dist * MathUtils.cosDeg((float)(270 - getTrack())));
-        setY(getDirect().y + dist * MathUtils.sinDeg((float)(270 - getTrack())));
+        setX(getDirect().getPosX() + dist * MathUtils.cosDeg((float)(270 - getTrack())));
+        setY(getDirect().getPosY() + dist * MathUtils.sinDeg((float)(270 - getTrack())));
 
         setHeading(update());
         System.out.println("New heading: " + getHeading());
@@ -65,13 +65,13 @@ public class Arrival extends Aircraft {
     @Override
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().x, getDirect().y);
+        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().getPosX(), getDirect().getPosY());
         star.joinLines(starIndex, 0);
     }
 
     @Override
     public void updateLabel() {
-        labelText[8] = star.name;
+        labelText[8] = star.getName();
         super.updateLabel();
     }
 
@@ -92,8 +92,8 @@ public class Arrival extends Aircraft {
         if (nextWpt == null) {
             return getTrack();
         } else {
-            float deltaX = nextWpt.x - getDirect().x;
-            float deltaY = nextWpt.y - getDirect().y;
+            float deltaX = nextWpt.getPosX() - getDirect().getPosX();
+            float deltaY = nextWpt.getPosY() - getDirect().getPosY();
             double nextTarget;
             if (deltaX >= 0) {
                 nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);

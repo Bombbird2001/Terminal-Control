@@ -323,7 +323,7 @@ public class Aircraft extends Actor {
 
         //Get wind data
         int[] winds;
-        if (getAltitude() - getAirport().elevation <= 4000) {
+        if (getAltitude() - getAirport().getElevation() <= 4000) {
             winds = getAirport().getWinds();
         } else {
             winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
@@ -338,8 +338,8 @@ public class Aircraft extends Actor {
             angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / getGs()) * MathUtils.radiansToDegrees;
         } else {
             //Calculates distance between waypoint and plane
-            float deltaX = getDirect().x - getX();
-            float deltaY = getDirect().y - getY();
+            float deltaX = getDirect().getPosX() - getX();
+            float deltaY = getDirect().getPosY() - getY();
 
             //Find target track angle
             if (deltaX >= 0) {
@@ -522,7 +522,7 @@ public class Aircraft extends Actor {
         if (getLatMode().equals("vector")) {
             getLabelText()[5] = Integer.toString(getClearedHeading());
         } else {
-            getLabelText()[5] = getDirect().name;
+            getLabelText()[5] = getDirect().getName();
         }
         getLabelText()[6] = Integer.toString((int) getGs());
         getLabelText()[7] = Integer.toString(getClearedIas());
