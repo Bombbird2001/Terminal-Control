@@ -49,7 +49,7 @@ public class Departure extends Aircraft {
                 }
             }
         }
-        if (airport.icao.equals("RCSS")) sid = sidList.get("MUKKA2H");
+
         sid.printWpts();
 
         //Set initial IAS due to wind
@@ -66,7 +66,7 @@ public class Departure extends Aircraft {
         //Set takeoff heading
         heading = runway.getHeading();
 
-        setControlState(2);
+        setControlState(0);
 
         takeOff();
     }
