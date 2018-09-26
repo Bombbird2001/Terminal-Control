@@ -19,7 +19,7 @@ public class SidStar {
     }
 
     public void printWpts() {
-        System.out.println(getName());
+        System.out.println(name);
         for (Waypoint waypoint: getWaypoints()) {
             System.out.println(waypoint.getName());
         }

@@ -17,17 +17,15 @@ import com.bombbird.atcsim.entities.aircrafts.Departure;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 import com.bombbird.atcsim.utilities.FileLoader;
-import okhttp3.*;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RadarScreen extends GameScreen {
     public static String mainName;
     public static float magHdgDev;
     private Timer timer;
     private static Metar metar;
+    private static Aircraft selectedAircraft;
 
     RadarScreen(final AtcSim game, String name) {
         super(game);
@@ -36,11 +34,6 @@ public class RadarScreen extends GameScreen {
         //Set stage params
         stage = new Stage(new FitViewport(5760, 3240));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
-        inputProcessor2 = stage;
-        inputMultiplexer.addProcessor(inputProcessor2);
-        inputMultiplexer.addProcessor(gd);
-        inputMultiplexer.addProcessor(inputProcessor1);
-        Gdx.input.setInputProcessor(inputMultiplexer);
 
         //Set camera params
         camera = (OrthographicCamera) stage.getViewport().getCamera();
@@ -48,13 +41,27 @@ public class RadarScreen extends GameScreen {
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
 
+        //Set 2nd camera for UI
+        ui = new Ui();
+        uiCam = (OrthographicCamera) ui.getStage().getViewport().getCamera();
+        uiCam.setToOrtho(false, 5760, 3240);
+        uiViewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
+        uiViewport.apply();
+
+        //Set input processors
+        inputProcessor2 = stage;
+        inputProcessor3 = ui.getStage();
+        inputMultiplexer.addProcessor(inputProcessor3);
+        inputMultiplexer.addProcessor(inputProcessor2);
+        inputMultiplexer.addProcessor(gd);
+        inputMultiplexer.addProcessor(inputProcessor1);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
         //Set aircraft array
         aircrafts = new HashMap<String, Aircraft>();
 
         //Set timer for METAR
         timer = new Timer(true);
-
-        Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
     }
 
     private void loadAirports() {
@@ -193,8 +200,26 @@ public class RadarScreen extends GameScreen {
     public void dispose() {
         stage.clear();
         stage.dispose();
+        ui.dispose();
         skin.dispose();
         Aircraft.skin.dispose();
         Aircraft.iconAtlas.dispose();
+    }
+
+    public static Aircraft getSelectedAircraft() {
+        return selectedAircraft;
+    }
+
+    public static void setSelectedAircraft(Aircraft aircraft) {
+        if (selectedAircraft != null) {
+            selectedAircraft.setSelected(false);
+            if (selectedAircraft != aircraft) {
+                selectedAircraft.removeSelectedWaypoints();
+            }
+        }
+        if (aircraft != null) {
+            aircraft.setSelected(true);
+        }
+        selectedAircraft = aircraft;
     }
 }

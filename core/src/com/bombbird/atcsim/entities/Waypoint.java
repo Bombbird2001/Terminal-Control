@@ -16,10 +16,10 @@ public class Waypoint extends Actor {
     private boolean selected;
 
     public Waypoint(String name, int posX, int posY) {
-        this.setName(name);
-        this.setPosX(posX);
-        this.setPosY(posY);
-        setSelected(false);
+        this.name = name;
+        this.posX = posX;
+        this.posY = posY;
+        selected = false;
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -31,13 +31,13 @@ public class Waypoint extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (isSelected() && getPosX() <= 4500 && getPosX() >= 1260 && getPosY() <= 3240 && getPosY() >= 0) {
-            getLabel().draw(batch, 1);
+        if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
+            label.draw(batch, 1);
         }
     }
 
     public void renderShape() {
-        if (isSelected() && getPosX() <= 4500 && getPosX() >= 1260 && getPosY() <= 3240 && getPosY() >= 0) {
+        if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
         }

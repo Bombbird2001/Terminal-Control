@@ -33,6 +33,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
     InputProcessor inputProcessor1 = this;
     InputProcessor inputProcessor2;
+    InputProcessor inputProcessor3;
     GestureDetector gd = new GestureDetector(this);
 
     //Pinch zoom constants
@@ -46,6 +47,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create new camera
     OrthographicCamera camera;
     Viewport viewport;
+
+    //Create 2nd camera for UI
+    Ui ui;
+    OrthographicCamera uiCam;
+    Viewport uiViewport;
 
     //Create texture stuff
     Skin skin;
@@ -234,6 +240,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             stage.draw();
         }
         game.batch.end();
+        game.batch.setProjectionMatrix(uiCam.combined);
+        game.batch.begin();
+        ui.getStage().draw();
+        game.batch.end();
     }
 
     @Override
@@ -273,6 +283,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+        RadarScreen.setSelectedAircraft(null);
         if (count == 2 && !loading) {
             zooming = true;
             return true;

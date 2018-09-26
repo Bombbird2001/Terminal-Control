@@ -20,13 +20,13 @@ public class Airport {
     private int elevation;
 
     public Airport(String icao, int elevation) {
-        this.setIcao(icao);
-        this.setElevation(elevation);
-        setRunways(FileLoader.loadRunways(icao));
-        setLandingRunways(new HashMap<String, Runway>());
-        setTakeoffRunways(new HashMap<String, Runway>());
-        setStars(FileLoader.loadStars(icao));
-        setSids(FileLoader.loadSids(icao));
+        this.icao = icao;
+        this.elevation = elevation;
+        runways = FileLoader.loadRunways(icao);
+        landingRunways = new HashMap<String, Runway>();
+        takeoffRunways = new HashMap<String, Runway>();
+        stars = FileLoader.loadStars(icao);
+        sids = FileLoader.loadSids(icao);
         if (icao.equals("RCTP")) {
             setActive("05L", true, false);
             setActive("05R", true, true);
@@ -37,7 +37,7 @@ public class Airport {
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
         //Retrieves runway from hashtable
-        Runway runway = getRunways().get(rwy);
+        Runway runway = runways.get(rwy);
 
         //Set actor
         if ((landing || takeoff) && !runway.isActive()) {
@@ -50,17 +50,17 @@ public class Airport {
 
         if (!runway.isLanding() && landing) {
             //Add to landing runways if not landing before, but landing now
-            getLandingRunways().put(rwy, runway);
+            landingRunways.put(rwy, runway);
         } else if (runway.isLanding() && !landing) {
             //Remove if landing before, but not landing now
-            getLandingRunways().remove(rwy);
+            landingRunways.remove(rwy);
         }
         if (!runway.isTakeoff() && takeoff) {
             //Add to takeoff runways if not taking off before, but taking off now
-            getTakeoffRunways().put(rwy, runway);
+            takeoffRunways.put(rwy, runway);
         } else if (runway.isTakeoff() && !takeoff) {
             //Remove if taking off before, but not taking off now
-            getTakeoffRunways().remove(rwy);
+            takeoffRunways.remove(rwy);
         }
 
         //Set runway's internal active state
@@ -68,7 +68,7 @@ public class Airport {
     }
 
     public void renderRunways() {
-        for (Runway runway: getRunways().values()) {
+        for (Runway runway: runways.values()) {
             if (runway.isActive()) {
                 runway.renderShape();
             }
@@ -85,7 +85,7 @@ public class Airport {
             ws = this.metar.getString("windshear");
         }
         if (windHdg != 0) { //Update runways if winds are not variable
-            for (Runway runway : getRunways().values()) {
+            for (Runway runway : runways.values()) {
                 int rightHeading = runway.getHeading() + 90;
                 int leftHeading = runway.getHeading() - 90;
                 if (rightHeading > 360) {

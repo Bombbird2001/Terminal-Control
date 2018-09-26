@@ -63,6 +63,16 @@ public class Arrival extends Aircraft {
     }
 
     @Override
+    public void removeSelectedWaypoints() {
+        for (Waypoint waypoint: star.getWaypoints()) {
+            waypoint.setSelected(false);
+        }
+        if (getDirect() != null) {
+            getDirect().setSelected(true);
+        }
+    }
+
+    @Override
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(getX(), getY(), getDirect().getPosX(), getDirect().getPosY());
