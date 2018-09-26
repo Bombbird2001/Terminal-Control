@@ -173,7 +173,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
-    void newAircraft() {
+    public void newAircraft() {
 
     }
 
@@ -242,6 +242,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
         game.batch.end();
         if (!loading) {
+            ui.update();
             game.batch.setProjectionMatrix(uiCam.combined);
             uiStage.act();
             game.batch.begin();

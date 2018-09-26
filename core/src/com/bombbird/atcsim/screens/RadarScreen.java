@@ -41,6 +41,25 @@ public class RadarScreen extends GameScreen {
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
 
+        //Set aircraft array
+        aircrafts = new HashMap<String, Aircraft>();
+
+        //Set timer for METAR
+        timer = new Timer(true);
+    }
+
+    private void loadInputProcessors() {
+        //Set input processors
+        inputProcessor2 = stage;
+        inputProcessor3 = uiStage;
+        inputMultiplexer.addProcessor(inputProcessor3);
+        inputMultiplexer.addProcessor(inputProcessor2);
+        inputMultiplexer.addProcessor(gd);
+        inputMultiplexer.addProcessor(inputProcessor1);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    private void loadPanel() {
         //Set 2nd stage, camera for UI
         uiStage = new Stage(new FitViewport(5760, 3240));
         uiStage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
@@ -51,21 +70,6 @@ public class RadarScreen extends GameScreen {
         uiViewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
         uiViewport.apply();
         uiCam.zoom = 3;
-
-        //Set input processors
-        inputProcessor2 = stage;
-        inputProcessor3 = uiStage;
-        inputMultiplexer.addProcessor(inputProcessor3);
-        inputMultiplexer.addProcessor(inputProcessor2);
-        inputMultiplexer.addProcessor(gd);
-        inputMultiplexer.addProcessor(inputProcessor1);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
-        //Set aircraft array
-        aircrafts = new HashMap<String, Aircraft>();
-
-        //Set timer for METAR
-        timer = new Timer(true);
     }
 
     private void loadAirports() {
@@ -122,7 +126,7 @@ public class RadarScreen extends GameScreen {
         metar.updateMetar();
     }
 
-    void newAircraft() {
+    public void newAircraft() {
         aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
         aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
         aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
@@ -155,6 +159,12 @@ public class RadarScreen extends GameScreen {
 
         //Load altitude restrictions
         restArray = FileLoader.loadRestricted();
+
+        loadPanel();
+        ui.setNormalPane(true);
+        ui.setSelectedPane(false);
+
+        loadInputProcessors();
     }
 
     @Override
@@ -221,10 +231,19 @@ public class RadarScreen extends GameScreen {
             selectedAircraft.setSelected(false);
             if (selectedAircraft != aircraft) {
                 selectedAircraft.removeSelectedWaypoints();
+                ui.resetSelectedPane();
             }
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
+        }
+
+        if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
+            ui.setSelectedPane(true);
+            ui.setNormalPane(false);
+        } else {
+            ui.setNormalPane(true);
+            ui.setSelectedPane(false);
         }
         selectedAircraft = aircraft;
     }

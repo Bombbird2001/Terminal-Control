@@ -18,6 +18,7 @@ public class Airport {
     private HashMap<String, Star> stars;
     private HashMap<String, Sid> sids;
     private int elevation;
+    private String ws;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -80,9 +81,11 @@ public class Airport {
         System.out.println("METAR of " + getIcao() + ": " + this.metar.toString());
         //Update active runways if METAR is updated
         int windHdg = this.metar.getInt("windDirection");
-        String ws = "";
+        ws = "";
         if (this.metar.get("windshear") != JSONObject.NULL) {
             ws = this.metar.getString("windshear");
+        } else {
+            ws = "None";
         }
         if (windHdg != 0) { //Update runways if winds are not variable
             for (Runway runway : runways.values()) {
@@ -176,5 +179,21 @@ public class Airport {
 
     public void setElevation(int elevation) {
         this.elevation = elevation;
+    }
+
+    public int getGusts() {
+        if (metar.get("windGust") == JSONObject.NULL) {
+            return -1;
+        } else {
+            return metar.getInt("windGust");
+        }
+    }
+
+    public int getVisibility() {
+        return metar.getInt("visibility");
+    }
+
+    public String getWindshear() {
+        return ws;
     }
 }

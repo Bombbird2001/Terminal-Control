@@ -181,7 +181,7 @@ public class Aircraft extends Actor {
         GameScreen.stage.addActor(background);
 
         background2 = new ImageButton(buttonStyleBackgroundSmall);
-        background2.setPosition(x - 100, y + 25);
+        background2.setPosition(x - 50, y + 25);
         background2.setSize(130, 95);
         GameScreen.stage.addActor(background2);
 
@@ -190,7 +190,7 @@ public class Aircraft extends Actor {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont6;
         labelStyle.fontColor = Color.WHITE;
-        label = new Label("Loading...", getLabelStyle());
+        label = new Label("Loading...", labelStyle);
         label.setPosition(x - 100, y + 25);
         label.setSize(300, 120);
         GameScreen.stage.addActor(label);
@@ -203,7 +203,11 @@ public class Aircraft extends Actor {
         clickSpot.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
-                label.moveBy(x - label.getWidth() / 2, y - label.getHeight() / 2);
+                if (controlState == 1 || controlState == 2) {
+                    label.moveBy(x - clickSpot.getWidth() / 2, y - clickSpot.getHeight() / 2);
+                } else {
+                    label.moveBy(x - 65, y - 47.5f);
+                }
                 dragging = true;
                 event.handle();
             }
@@ -387,7 +391,6 @@ public class Aircraft extends Actor {
         x += deltaPosition.x;
         y += deltaPosition.y;
         label.moveBy(deltaPosition.x, deltaPosition.y);
-        //clickSpot.moveBy(deltaPosition.x, deltaPosition.y);
     }
 
     private double findDeltaHeading(double targetHeading, int forceDirection) {
@@ -481,6 +484,15 @@ public class Aircraft extends Actor {
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
         }
+        if (selected) {
+            if (controlState == -1 || controlState == 0) {
+                RadarScreen.ui.setNormalPane(true);
+                RadarScreen.ui.setSelectedPane(false);
+            } else {
+                RadarScreen.ui.setNormalPane(false);
+                RadarScreen.ui.setSelectedPane(true);
+            }
+        }
     }
 
     private void moderateLabel() {
@@ -526,13 +538,11 @@ public class Aircraft extends Actor {
             label.setSize(300, 120);
             background.setVisible(true);
             background2.setVisible(false);
-            clickSpot.setSize(300, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
-            label.setSize(225, 95);
+            label.setSize(130, 95);
             background.setVisible(false);
             background2.setVisible(true);
-            clickSpot.setSize(225, 95);
         }
         label.setText(updatedText);
         background.setPosition(label.getX() - 5, label.getY());

@@ -155,6 +155,7 @@ public class Metar {
                     } else {
                         metarObject = new JSONObject(responseText);
                         updateAirports();
+                        RadarScreen.ui.updateMetar();
                         radarScreen.loadingPercent = "100%";
                         radarScreen.loading = false;
                     }
