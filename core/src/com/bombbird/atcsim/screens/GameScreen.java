@@ -34,7 +34,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     InputProcessor inputProcessor1 = this;
     InputProcessor inputProcessor2;
     InputProcessor inputProcessor3;
-    GestureDetector gd = new GestureDetector(this);
+    GestureDetector gd = new GestureDetector(40, 0.2f,1.1f, 0.15f, this);
 
     //Pinch zoom constants
     private float lastInitialDist = 0;
@@ -49,7 +49,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     Viewport viewport;
 
     //Create 2nd camera for UI
-    Ui ui;
+    public static Ui ui;
+    public static Stage uiStage;
     OrthographicCamera uiCam;
     Viewport uiViewport;
 
@@ -240,10 +241,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             stage.draw();
         }
         game.batch.end();
-        game.batch.setProjectionMatrix(uiCam.combined);
-        game.batch.begin();
-        ui.getStage().draw();
-        game.batch.end();
+        if (!loading) {
+            game.batch.setProjectionMatrix(uiCam.combined);
+            uiStage.act();
+            game.batch.begin();
+            uiStage.draw();
+            game.batch.end();
+        }
     }
 
     @Override

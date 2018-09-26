@@ -41,16 +41,20 @@ public class RadarScreen extends GameScreen {
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
 
-        //Set 2nd camera for UI
+        //Set 2nd stage, camera for UI
+        uiStage = new Stage(new FitViewport(5760, 3240));
+        uiStage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         ui = new Ui();
-        uiCam = (OrthographicCamera) ui.getStage().getViewport().getCamera();
+
+        uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
         uiCam.setToOrtho(false, 5760, 3240);
         uiViewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
         uiViewport.apply();
+        uiCam.zoom = 3;
 
         //Set input processors
         inputProcessor2 = stage;
-        inputProcessor3 = ui.getStage();
+        inputProcessor3 = uiStage;
         inputMultiplexer.addProcessor(inputProcessor3);
         inputMultiplexer.addProcessor(inputProcessor2);
         inputMultiplexer.addProcessor(gd);
@@ -198,6 +202,8 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void dispose() {
+        uiStage.clear();
+        uiStage.dispose();
         stage.clear();
         stage.dispose();
         ui.dispose();

@@ -19,6 +19,7 @@ public class Departure extends Aircraft {
     private int contactAlt;
     private boolean v2set;
     private boolean sidSet;
+    private boolean contacted;
     private boolean spdSet;
 
     public Departure(String callsign, String icaoType, Airport departure) {
@@ -29,6 +30,7 @@ public class Departure extends Aircraft {
         contactAlt = 2000 + MathUtils.random(-400, 400);
         v2set = false;
         sidSet = false;
+        contacted = false;
         spdSet = false;
 
         //Gets a runway for takeoff
@@ -89,8 +91,8 @@ public class Departure extends Aircraft {
             v2set = true;
         }
         if (getAltitude() - getAirport().getElevation() >= contactAlt) {
-            setTkofLdg(false);
             setControlState(2);
+            contacted = true;
         }
         if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
             setDirect(sid.getWaypoint(0));
@@ -101,6 +103,9 @@ public class Departure extends Aircraft {
             setTargetIas(250);
             setClearedIas(250);
             spdSet = true;
+        }
+        if (v2set && contacted && sidSet && spdSet) {
+            setTkofLdg(false);
         }
     }
 

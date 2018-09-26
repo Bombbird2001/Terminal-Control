@@ -33,11 +33,13 @@ public class Aircraft extends Actor {
     private ImageButton icon;
     private ImageButton clickSpot;
     private ImageButton background;
-    private static ImageButton.ImageButtonStyle buttonStyleCtrl;
+    private ImageButton background2;
+    public static ImageButton.ImageButtonStyle buttonStyleCtrl;
     private static ImageButton.ImageButtonStyle buttonStyleDept;
     private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
     private static ImageButton.ImageButtonStyle buttonStyleEnroute;
     private static ImageButton.ImageButtonStyle buttonStyleBackground;
+    private static ImageButton.ImageButtonStyle buttonStyleBackgroundSmall;
     private boolean dragging;
 
     //Aircraft information
@@ -104,6 +106,9 @@ public class Aircraft extends Actor {
             buttonStyleBackground = new ImageButton.ImageButtonStyle();
             buttonStyleBackground.imageUp = skin.getDrawable("labelBackground");
             buttonStyleBackground.imageDown = skin.getDrawable("labelBackground");
+            buttonStyleBackgroundSmall = new ImageButton.ImageButtonStyle();
+            buttonStyleBackgroundSmall.imageUp = skin.getDrawable("labelBackgroundSmall");
+            buttonStyleBackgroundSmall.imageDown = skin.getDrawable("labelBackgroundSmall");
             loadedIcons = true;
         }
         this.callsign = callsign;
@@ -172,8 +177,13 @@ public class Aircraft extends Actor {
 
         background = new ImageButton(buttonStyleBackground);
         background.setPosition(x - 100, y + 25);
-        background.setSize(290, 120);
+        background.setSize(300, 120);
         GameScreen.stage.addActor(background);
+
+        background2 = new ImageButton(buttonStyleBackgroundSmall);
+        background2.setPosition(x - 100, y + 25);
+        background2.setSize(130, 95);
+        GameScreen.stage.addActor(background2);
 
         labelText = new String[10];
         labelText[9] = "";
@@ -182,14 +192,14 @@ public class Aircraft extends Actor {
         labelStyle.fontColor = Color.WHITE;
         label = new Label("Loading...", getLabelStyle());
         label.setPosition(x - 100, y + 25);
-        label.setSize(290, 120);
+        label.setSize(300, 120);
         GameScreen.stage.addActor(label);
 
         clickSpot = new ImageButton(buttonStyleUnctrl);
         clickSpot.setColor(0, 0, 0, 0);
         clickSpot.setName(callsign);
         clickSpot.setPosition(x - 100, y + 25);
-        clickSpot.setSize(290, 120);
+        clickSpot.setSize(300, 120);
         clickSpot.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
@@ -217,7 +227,11 @@ public class Aircraft extends Actor {
         }
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
+        if (controlState == 1 || controlState == 2) {
+            GameScreen.shapeRenderer.line(background.getX() + background.getWidth() / 2, background.getY() + background.getHeight() / 2, x, y);
+        } else {
+            GameScreen.shapeRenderer.line(background2.getX() + background2.getWidth() / 2, background2.getY() + background2.getHeight() / 2, x, y);
+        }
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(Color.GREEN);
             GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
@@ -509,18 +523,21 @@ public class Aircraft extends Actor {
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(290, 120);
-            background.setSize(300, 120);
+            label.setSize(300, 120);
+            background.setVisible(true);
+            background2.setVisible(false);
             clickSpot.setSize(300, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
-            label.setSize(120, 95);
-            background.setSize(130, 95);
-            clickSpot.setSize(130, 95);
+            label.setSize(225, 95);
+            background.setVisible(false);
+            background2.setVisible(true);
+            clickSpot.setSize(225, 95);
         }
         label.setText(updatedText);
-        background.setPosition(label.getX() - 10, label.getY());
-        clickSpot.setPosition(label.getX() - 10, label.getY());
+        background.setPosition(label.getX() - 5, label.getY());
+        background2.setPosition(label.getX() - 5, label.getY());
+        clickSpot.setPosition(label.getX() - 5, label.getY());
     }
 
     public void removeSelectedWaypoints() {
