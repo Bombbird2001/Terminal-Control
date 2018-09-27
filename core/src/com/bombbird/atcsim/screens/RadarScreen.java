@@ -1,5 +1,6 @@
 package com.bombbird.atcsim.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -40,6 +41,10 @@ public class RadarScreen extends GameScreen {
         camera.setToOrtho(false,5760, 3240);
         viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
+        camera.position.set(1890, 1620, 0);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            camera.position.set(2286, 1620, 0);
+        }
 
         //Set aircraft array
         aircrafts = new HashMap<String, Aircraft>();
@@ -69,7 +74,6 @@ public class RadarScreen extends GameScreen {
         uiCam.setToOrtho(false, 5760, 3240);
         uiViewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
         uiViewport.apply();
-        uiCam.zoom = 3;
     }
 
     private void loadAirports() {

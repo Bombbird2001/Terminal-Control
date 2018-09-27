@@ -47,6 +47,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create new camera
     OrthographicCamera camera;
     Viewport viewport;
+    private float lastZoom = 1;
 
     //Create 2nd camera for UI
     public static Ui ui;
@@ -101,7 +102,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     private void handleInput(float dt) {
         float ZOOMCONSTANT = 0.6f;
-        float SCROLLCONSTANT = 250.0f;
+        float SCROLLCONSTANT = 150;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             //Zoom in
             camera.zoom += ZOOMCONSTANT * dt;
@@ -112,19 +113,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             //Move left
-            camera.translate(-SCROLLCONSTANT * dt, 0, 0);
+            camera.translate(-SCROLLCONSTANT / camera.zoom * dt, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             //Move right
-            camera.translate(SCROLLCONSTANT * dt, 0, 0);
+            camera.translate(SCROLLCONSTANT / camera.zoom * dt, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             //Move down
-            camera.translate(0, -SCROLLCONSTANT * dt, 0);
+            camera.translate(0, -SCROLLCONSTANT / camera.zoom * dt, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             //Move up
-            camera.translate(0, SCROLLCONSTANT * dt, 0);
+            camera.translate(0, SCROLLCONSTANT / camera.zoom * dt, 0);
         }
 
         if (zooming) {
@@ -149,13 +150,16 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             zooming = false;
             zoomedIn = false;
         }
+        camera.translate(-990 * (camera.zoom - lastZoom), 0); //Ensure camera zooms into the current center
+        lastZoom = camera.zoom;
 
         //Setting new boundaries for camera position after zooming
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
         float yDeviation = -(effectiveViewportHeight - camera.viewportHeight) / 2f;
-        float leftLimit = effectiveViewportWidth / 2f;
+        float xOffset = camera.zoom * 990; //Since I shifted camera to the left by 990 px
+        float leftLimit = effectiveViewportWidth / 2f - xOffset;
         float rightLimit = leftLimit + 2 * xDeviation;
         float downLimit = effectiveViewportHeight / 2f;
         float upLimit = downLimit + 2 * yDeviation;
@@ -236,7 +240,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             } else if (loadedTime > 0.5) {
                 loadingText = "Loading..  ";
             }
-            AtcSim.fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 2550, 1550);
+            AtcSim.fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
         } else {
             stage.draw();
         }
@@ -253,9 +257,14 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        stage.getViewport().update(width, height, true);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        viewport.update(width, height, false);
+        stage.getViewport().update(width, height, false);
+        float xOffset = camera.zoom * 990;
+        camera.position.set(camera.viewportWidth / 2 - xOffset, camera.viewportHeight / 2, 0);
+
+        uiViewport.update(width, height, true);
+        uiStage.getViewport().update(width, height, true);
+        uiCam.position.set(uiCam.viewportWidth / 2, uiCam.viewportHeight / 2, 0);
     }
 
     @Override

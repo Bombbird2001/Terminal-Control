@@ -18,7 +18,6 @@ public class Arrival extends Aircraft {
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
-        labelText[9] = arrival.getIcao();
         setOnGround(false);
         starIndex = 0;
         setLatMode("star");
@@ -41,8 +40,6 @@ public class Arrival extends Aircraft {
         System.out.println("Heading: " + getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
 
-        setControlState(1);
-
         //Calculate spawn border
         int[] xBorder = {1310, 4450};
         int[] yBorder = {50, 3190};
@@ -56,10 +53,12 @@ public class Arrival extends Aircraft {
         setX(getDirect().getPosX() + dist * MathUtils.cosDeg((float)(270 - getTrack())));
         setY(getDirect().getPosY() + dist * MathUtils.sinDeg((float)(270 - getTrack())));
 
+        loadLabel();
+
+        setControlState(1);
+
         setHeading(update());
         System.out.println("New heading: " + getHeading());
-
-        getLabel().setPosition(getX() - 100, getY() + 25);
     }
 
     @Override

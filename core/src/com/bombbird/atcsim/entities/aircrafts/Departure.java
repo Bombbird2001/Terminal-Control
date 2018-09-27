@@ -24,7 +24,6 @@ public class Departure extends Aircraft {
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
-        labelText[9] = departure.getIcao();
         setOnGround(true);
         sidIndex = 0;
         contactAlt = 2000 + MathUtils.random(-400, 400);
@@ -63,12 +62,13 @@ public class Departure extends Aircraft {
         //Set initial position on runway
         setX(getRunway().getPosition()[0]);
         setY(getRunway().getPosition()[1]);
-        getLabel().setPosition(getX() - 100, getY() + 25);
+
+        loadLabel();
+
+        setControlState(0);
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());
-
-        setControlState(0);
 
         takeOff();
     }

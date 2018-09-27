@@ -42,7 +42,11 @@ public class Ui implements Disposable {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
-            metarText[1] = "Winds: " + Integer.toString(airport.getWinds()[0]) + "@" + Integer.toString(airport.getWinds()[1]) + "kts";
+            if (airport.getWinds()[0] != 0) {
+                metarText[1] = "Winds: " + Integer.toString(airport.getWinds()[0]) + "@" + Integer.toString(airport.getWinds()[1]) + "kts";
+            } else {
+                metarText[1] = "Winds: VRB@" + Integer.toString(airport.getWinds()[1]) + "kts";
+            }
             //Gusts
             if (airport.getGusts() != -1) {
                 metarText[2] = "Gusting to: " + Integer.toString(airport.getGusts()) + "kts";
@@ -60,12 +64,12 @@ public class Ui implements Disposable {
     private void loadNormalPane() {
         paneImageUnselected = new Image(paneTextureUnselected);
         paneImageUnselected.setPosition(0, 0);
-        paneImageUnselected.setSize(1260, 3240);
+        paneImageUnselected.setSize(1890, 3240);
         RadarScreen.uiStage.addActor(paneImageUnselected);
 
         labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont12;
-        labelStyle.fontColor = Color.BLACK;
+        labelStyle.font = AtcSim.fonts.defaultFont20;
+        labelStyle.fontColor = Color.WHITE;
 
         int index = 0;
         metarInfos = new Array<Label>();
@@ -78,7 +82,7 @@ public class Ui implements Disposable {
             metarText[4] = "Windshear: Loading";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
             System.out.println(StringUtils.join(metarText, "\n"));
-            metarInfo.setPosition(100, 2750 - index * 325);
+            metarInfo.setPosition(100, 2775 - index * 525);
             metarInfo.setSize(700, 300);
             RadarScreen.uiStage.addActor(metarInfo);
             metarInfos.add(metarInfo);
@@ -96,7 +100,7 @@ public class Ui implements Disposable {
     private void loadSelectedPane() {
         paneImage = new Image(paneTexture);
         paneImage.setPosition(0, 0);
-        paneImage.setSize(1260, 3240);
+        paneImage.setSize(1890, 3240);
         RadarScreen.uiStage.addActor(paneImage);
     }
 

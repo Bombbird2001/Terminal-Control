@@ -158,7 +158,6 @@ public class Aircraft extends Actor {
 
         selected = false;
         dragging = false;
-        loadLabel();
     }
 
     public static boolean isLoadedIcons() {
@@ -169,7 +168,7 @@ public class Aircraft extends Actor {
         Aircraft.loadedIcons = loadedIcons;
     }
 
-    private void loadLabel() {
+    public void loadLabel() {
         icon = new ImageButton(buttonStyleUnctrl);
         icon.setSize(20, 20);
         icon.getImageCell().size(20, 20);
@@ -186,7 +185,7 @@ public class Aircraft extends Actor {
         GameScreen.stage.addActor(background2);
 
         labelText = new String[10];
-        labelText[9] = "";
+        labelText[9] = airport.getIcao();
         labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont6;
         labelStyle.fontColor = Color.WHITE;
