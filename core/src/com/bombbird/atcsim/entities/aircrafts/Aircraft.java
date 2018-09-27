@@ -15,6 +15,7 @@ import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.Waypoint;
+import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 import com.bombbird.atcsim.utilities.MathTools;
@@ -549,8 +550,23 @@ public class Aircraft extends Actor {
         clickSpot.setPosition(label.getX() - 5, label.getY());
     }
 
-    public void removeSelectedWaypoints() {
+    public void removeSelectedWaypoints(Aircraft aircraft) {
+        if (aircraft != null) {
+            int index = 0;
+            for (Waypoint waypoint : aircraft.getSidStar().getWaypoints()) {
+                if (index >= aircraft.getSidStarIndex()) {
+                    waypoint.setSelected(true);
+                }
+            }
+        }
+    }
 
+    public SidStar getSidStar() {
+        return null;
+    }
+
+    public int getSidStarIndex() {
+        return -1;
     }
 
     public void setSelected(boolean selected) {

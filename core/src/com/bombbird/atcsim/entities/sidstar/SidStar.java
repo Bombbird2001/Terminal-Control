@@ -11,7 +11,7 @@ public class SidStar {
     private Array<Waypoint> waypoints;
     private Array<int[]> restrictions;
 
-    SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
+    public SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
         this.setName(name);
         this.setRunways(runways);
         this.setWaypoints(waypoints);

@@ -135,7 +135,7 @@ public class RadarScreen extends GameScreen {
         aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
         aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
         aircrafts.put("EVA851", new Arrival("EVA851", "A321", airports.get("RCTP")));
-        aircrafts.put("ANA788", new Departure("ANA788", "B788", airports.get("RCTP")));
+        aircrafts.put("ANA788", new Departure("ANA788", "B789", airports.get("RCTP")));
         aircrafts.put("UIA232", new Departure("UIA232", "A321", airports.get("RCSS")));
     }
 
@@ -234,7 +234,7 @@ public class RadarScreen extends GameScreen {
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
             if (selectedAircraft != aircraft) {
-                selectedAircraft.removeSelectedWaypoints();
+                selectedAircraft.removeSelectedWaypoints(aircraft);
                 ui.resetSelectedPane();
             }
         }

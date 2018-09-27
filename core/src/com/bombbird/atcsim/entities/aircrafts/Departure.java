@@ -6,6 +6,7 @@ import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.Sid;
+import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
@@ -110,10 +111,11 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    public void removeSelectedWaypoints() {
+    public void removeSelectedWaypoints(Aircraft aircraft) {
         for (Waypoint waypoint: sid.getWaypoints()) {
             waypoint.setSelected(false);
         }
+        super.removeSelectedWaypoints(aircraft);
         if (getDirect() != null) {
             getDirect().setSelected(true);
         }
@@ -159,5 +161,15 @@ public class Departure extends Aircraft {
             }
             return nextTarget;
         }
+    }
+
+    @Override
+    public SidStar getSidStar() {
+        return sid;
+    }
+
+    @Override
+    public int getSidStarIndex() {
+        return sidIndex;
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Waypoint;
+import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.entities.sidstar.Star;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
@@ -62,10 +63,11 @@ public class Arrival extends Aircraft {
     }
 
     @Override
-    public void removeSelectedWaypoints() {
+    public void removeSelectedWaypoints(Aircraft aircraft) {
         for (Waypoint waypoint: star.getWaypoints()) {
             waypoint.setSelected(false);
         }
+        super.removeSelectedWaypoints(aircraft);
         if (getDirect() != null) {
             getDirect().setSelected(true);
         }
@@ -111,5 +113,15 @@ public class Arrival extends Aircraft {
             }
             return nextTarget;
         }
+    }
+
+    @Override
+    public SidStar getSidStar() {
+        return star;
+    }
+
+    @Override
+    public int getSidStarIndex() {
+        return starIndex;
     }
 }
