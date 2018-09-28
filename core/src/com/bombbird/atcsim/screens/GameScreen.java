@@ -154,7 +154,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         lastZoom = camera.zoom;
 
         //Setting new boundaries for camera position after zooming
-        float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
+        float effectiveViewportWidth = (camera.viewportWidth - ui.getPaneWidth()) * camera.zoom; //Take width of pane into account
         float xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
         float yDeviation = -(effectiveViewportHeight - camera.viewportHeight) / 2f;
@@ -217,6 +217,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Render each of the range circles, obstacles using shaperenderer
         if (!loading) {
+            stage.getViewport().apply();
             //Render shapes only if METAR has finished loading
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             for (RangeCircle rangeCircle : rangeCircles) {
@@ -245,11 +246,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             stage.draw();
         }
         game.batch.end();
+
+        //Draw the UI overlay
+        uiCam.update();
         if (!loading) {
             ui.update();
             game.batch.setProjectionMatrix(uiCam.combined);
             uiStage.act();
             game.batch.begin();
+            uiStage.getViewport().apply();
             uiStage.draw();
             game.batch.end();
         }
@@ -257,6 +262,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void resize(int width, int height) {
+        AtcSim.WIDTH = width;
+        AtcSim.HEIGHT = height;
+
+        ui.updatePaneWidth();
+
         viewport.update(width, height, false);
         stage.getViewport().update(width, height, false);
         float xOffset = camera.zoom * 990;
@@ -264,7 +274,21 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         uiViewport.update(width, height, true);
         uiStage.getViewport().update(width, height, true);
-        uiCam.position.set(uiCam.viewportWidth / 2, uiCam.viewportHeight / 2, 0);
+        uiCam.position.set(uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f, 0);
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            boolean resizeAgain = false;
+            if (width < 960) {
+                width = 960;
+                resizeAgain = true;
+            }
+            if (height < 540) {
+                height = 540;
+                resizeAgain = true;
+            }
+            if (resizeAgain) {
+                resize(width, height);
+            }
+        }
     }
 
     @Override

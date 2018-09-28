@@ -496,10 +496,10 @@ public class Aircraft extends Actor {
     }
 
     private void moderateLabel() {
-        if (label.getX() < 0) {
-            label.setX(0);
-        } else if (label.getX() + label.getWidth() > 5760) {
-            label.setX(5760 - label.getWidth());
+        if (label.getX() < 936) {
+            label.setX(936);
+        } else if (label.getX() + label.getWidth() > 4824) {
+            label.setX(4824 - label.getWidth());
         }
         if (label.getY() < 0) {
             label.setY(0);
@@ -538,16 +538,19 @@ public class Aircraft extends Actor {
             label.setSize(300, 120);
             background.setVisible(true);
             background2.setVisible(false);
+            clickSpot.setSize(300, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
             label.setSize(130, 95);
             background.setVisible(false);
             background2.setVisible(true);
+            clickSpot.setSize(130, 95);
         }
         label.setText(updatedText);
         background.setPosition(label.getX() - 5, label.getY());
         background2.setPosition(label.getX() - 5, label.getY());
         clickSpot.setPosition(label.getX() - 5, label.getY());
+        //if (callsign.equals("UIA232")) System.out.println(clickSpot.getWidth() + " " + clickSpot.getHeight());
     }
 
     public void removeSelectedWaypoints(Aircraft aircraft) {

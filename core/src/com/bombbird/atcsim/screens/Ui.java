@@ -64,7 +64,7 @@ public class Ui implements Disposable {
     private void loadNormalPane() {
         paneImageUnselected = new Image(paneTextureUnselected);
         paneImageUnselected.setPosition(0, 0);
-        paneImageUnselected.setSize(1890, 3240);
+        paneImageUnselected.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
         RadarScreen.uiStage.addActor(paneImageUnselected);
 
         labelStyle = new Label.LabelStyle();
@@ -100,7 +100,7 @@ public class Ui implements Disposable {
     private void loadSelectedPane() {
         paneImage = new Image(paneTexture);
         paneImage.setPosition(0, 0);
-        paneImage.setSize(1890, 3240);
+        paneImage.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
         RadarScreen.uiStage.addActor(paneImage);
     }
 
@@ -110,6 +110,15 @@ public class Ui implements Disposable {
 
     public void resetSelectedPane() {
 
+    }
+
+    public void updatePaneWidth() {
+        paneImageUnselected.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
+        paneImage.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
+    }
+
+    public float getPaneWidth() {
+        return paneImage.getImageWidth();
     }
 
     @Override

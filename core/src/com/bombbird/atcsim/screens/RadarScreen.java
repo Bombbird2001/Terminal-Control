@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Metar;
@@ -33,13 +34,13 @@ public class RadarScreen extends GameScreen {
         mainName = name;
 
         //Set stage params
-        stage = new Stage(new FitViewport(5760, 3240));
+        stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
         stage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
 
         //Set camera params
         camera = (OrthographicCamera) stage.getViewport().getCamera();
         camera.setToOrtho(false,5760, 3240);
-        viewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, camera);
+        viewport = new ScalingViewport(Scaling.fillY, AtcSim.WIDTH, AtcSim.HEIGHT, camera);
         viewport.apply();
         camera.position.set(1890, 1620, 0);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
@@ -66,14 +67,16 @@ public class RadarScreen extends GameScreen {
 
     private void loadPanel() {
         //Set 2nd stage, camera for UI
-        uiStage = new Stage(new FitViewport(5760, 3240));
+        uiStage = new Stage(new ExtendViewport(1890, 3240));
         uiStage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         ui = new Ui();
 
         uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
-        uiCam.setToOrtho(false, 5760, 3240);
-        uiViewport = new FitViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
+        uiCam.setToOrtho(false, 1890, 3240);
+        uiViewport = new ExtendViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
         uiViewport.apply();
+        uiCam.position.set(2880, 1620, 0);
+        //uiCam.position.set(2880 - (5760 - (float)AtcSim.WIDTH * 3240f / (float)AtcSim.HEIGHT) / 2f, 1620, 0);
     }
 
     private void loadAirports() {

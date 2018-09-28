@@ -98,15 +98,9 @@ public class Departure extends Aircraft {
         if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
             setDirect(sid.getWaypoint(0));
             setLatMode("sid");
-            sidSet = true;
-        }
-        if (getAltitude() - getAirport().getElevation() >= 1500 && !spdSet) {
             setTargetIas(250);
             setClearedIas(250);
-            spdSet = true;
-        }
-        if (v2set && contacted && sidSet && spdSet) {
-            setTkofLdg(false);
+            sidSet = true;
         }
     }
 
