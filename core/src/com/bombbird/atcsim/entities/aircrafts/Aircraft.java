@@ -487,10 +487,10 @@ public class Aircraft extends Actor {
         if (selected) {
             if (controlState == -1 || controlState == 0) {
                 RadarScreen.ui.setNormalPane(true);
-                RadarScreen.ui.setSelectedPane(false);
+                RadarScreen.ui.setSelectedPane(false, null);
             } else {
                 RadarScreen.ui.setNormalPane(false);
-                RadarScreen.ui.setSelectedPane(true);
+                RadarScreen.ui.setSelectedPane(true, this);
             }
         }
     }

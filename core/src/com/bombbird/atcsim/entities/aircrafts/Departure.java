@@ -21,7 +21,6 @@ public class Departure extends Aircraft {
     private boolean v2set;
     private boolean sidSet;
     private boolean contacted;
-    private boolean spdSet;
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
@@ -31,7 +30,6 @@ public class Departure extends Aircraft {
         v2set = false;
         sidSet = false;
         contacted = false;
-        spdSet = false;
 
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
@@ -101,6 +99,9 @@ public class Departure extends Aircraft {
             setTargetIas(250);
             setClearedIas(250);
             sidSet = true;
+        }
+        if (contacted && v2set && sidSet) {
+            setTkofLdg(false);
         }
     }
 

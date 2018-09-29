@@ -67,16 +67,15 @@ public class RadarScreen extends GameScreen {
 
     private void loadPanel() {
         //Set 2nd stage, camera for UI
-        uiStage = new Stage(new ExtendViewport(1890, 3240));
+        uiStage = new Stage(new ExtendViewport(1920, 3240));
         uiStage.getViewport().update(AtcSim.WIDTH, AtcSim.HEIGHT, true);
         ui = new Ui();
 
         uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
-        uiCam.setToOrtho(false, 1890, 3240);
+        uiCam.setToOrtho(false, 1920, 3240);
         uiViewport = new ExtendViewport(AtcSim.WIDTH, AtcSim.HEIGHT, uiCam);
         uiViewport.apply();
         uiCam.position.set(2880, 1620, 0);
-        //uiCam.position.set(2880 - (5760 - (float)AtcSim.WIDTH * 3240f / (float)AtcSim.HEIGHT) / 2f, 1620, 0);
     }
 
     private void loadAirports() {
@@ -169,7 +168,7 @@ public class RadarScreen extends GameScreen {
 
         loadPanel();
         ui.setNormalPane(true);
-        ui.setSelectedPane(false);
+        ui.setSelectedPane(false, null);
 
         loadInputProcessors();
     }
@@ -246,11 +245,11 @@ public class RadarScreen extends GameScreen {
         }
 
         if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
-            ui.setSelectedPane(true);
+            ui.setSelectedPane(true, aircraft);
             ui.setNormalPane(false);
         } else {
             ui.setNormalPane(true);
-            ui.setSelectedPane(false);
+            ui.setSelectedPane(false, null);
         }
         selectedAircraft = aircraft;
     }

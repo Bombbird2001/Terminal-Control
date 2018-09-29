@@ -37,6 +37,8 @@ public class AtcSim extends Game {
 	public void dispose () {
 		batch.dispose();
 		fonts.dispose();
+		MainMenuScreen.buttonAtlas.dispose();
+		MainMenuScreen.skin.dispose();
 	}
 
 }

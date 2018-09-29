@@ -3,32 +3,56 @@ package com.bombbird.atcsim.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui implements Disposable {
-    //private TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("game/ui/ui.atlas"));
-    //private Skin skin = new Skin();
     private Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane.png"));
     private Texture paneTextureUnselected = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
     private Image paneImage;
     private Image paneImageUnselected;
+    private Texture boxBackground = new Texture(Gdx.files.internal("game/ui/SelectBoxBackground.png"));
 
+    private Label selectedHdg;
     private ImageButton imageButton;
-    private SelectBox<String> settingsMode;
+    private SelectBox<String> settingsBox;
+    private SelectBox<String> valueBox;
 
     //Resources for METAR info on default pane
     private Label.LabelStyle labelStyle;
     private Array<Label> metarInfos;
 
+    //Instructions panel info
+    private Aircraft selectedAircraft;
+
+    private String tab;
+    private String latMode;
+    private Array<String> latModes;
+    private int clearedHdg;
+    private Array<String> waypoints;
+    private Array<String> holdingWaypoints;
+
+    private String altMode;
+    private Array<String> altModes;
+    private int clearedAlt;
+
+    private String spdMode;
+    private Array<String> spdModes;
+    private int clearedSpd;
+
     public Ui() {
         loadNormalPane();
         loadSelectedPane();
+        loadSelectBox();
     }
 
     public void update() {
@@ -81,7 +105,6 @@ public class Ui implements Disposable {
             metarText[3] = "Visibility: Loading";
             metarText[4] = "Windshear: Loading";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            System.out.println(StringUtils.join(metarText, "\n"));
             metarInfo.setPosition(100, 2775 - index * 525);
             metarInfo.setSize(700, 300);
             RadarScreen.uiStage.addActor(metarInfo);
@@ -104,21 +127,86 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(paneImage);
     }
 
-    public void setSelectedPane(boolean show) {
+    public void setSelectedPane(boolean show, Aircraft aircraft) {
+        selectedAircraft = aircraft;
         paneImage.setVisible(show);
+        settingsBox.setVisible(show);
+        valueBox.setVisible(show);
+    }
+
+    private void loadSelectBox() {
+        ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+        scrollPaneStyle.background = MainMenuScreen.skin.getDrawable("Button_up");
+
+        List.ListStyle listStyle = new List.ListStyle();
+        listStyle.font = AtcSim.fonts.defaultFont20;
+        listStyle.fontColorSelected = Color.WHITE;
+        listStyle.fontColorUnselected = Color.BLACK;
+        Drawable button_down = MainMenuScreen.skin.getDrawable("Button_down");
+        button_down.setTopHeight(50);
+        button_down.setBottomHeight(50);
+        listStyle.selection = button_down;
+
+        SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
+        boxStyle.font = AtcSim.fonts.defaultFont20;
+        boxStyle.fontColor = Color.WHITE;
+        boxStyle.listStyle = listStyle;
+        boxStyle.scrollStyle = scrollPaneStyle;
+        boxStyle.background = new SpriteDrawable(new Sprite(boxBackground));
+
+        latModes = new Array<String>();
+        latModes.add("Fly heading", "Turn left heading", "Turn right heading", "STAR direct to");
+        latModes.add("SID direct to", "After waypoint fly heading", "Hold at waypoint");
+
+        settingsBox = new SelectBox<String>(boxStyle);
+        settingsBox.setItems(latModes);
+        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 770);
+        settingsBox.setSize(0.8f * getPaneWidth(), 270);
+        settingsBox.setSelectedIndex(0);
+        settingsBox.setAlignment(Align.center);
+        settingsBox.getList().setAlignment(Align.center);
+        RadarScreen.uiStage.addActor(settingsBox);
+
+        waypoints = new Array<String>();
+        holdingWaypoints = new Array<String>();
+
+        valueBox = new SelectBox<String>(boxStyle);
+        valueBox.setItems(waypoints);
+        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1170);
+        valueBox.setSize(0.8f * getPaneWidth(), 270);
+        //valueBox.setSelectedIndex(9);
+        valueBox.setAlignment(Align.center);
+        valueBox.getList().setAlignment(Align.center);
+        RadarScreen.uiStage.addActor(valueBox);
+    }
+
+    private void loadButtons() {
+
+    }
+
+    private void updateBoxes() {
+
     }
 
     public void resetSelectedPane() {
-
+        String tab = "Lateral";
+        String latMode = "star";
+        int clearedHdg = 360;
+        String altMode = "star";
+        int clearedAlt = 10000;
+        String spdMode = "star";
+        int clearedSpd = 250;
     }
 
     public void updatePaneWidth() {
         paneImageUnselected.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
         paneImage.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
+        settingsBox.setSize(0.8f * paneImage.getWidth(), 270);
+        valueBox.setSize(0.8f * paneImage.getWidth(), 270);
     }
 
     public float getPaneWidth() {
-        return paneImage.getImageWidth();
+        return paneImage.getWidth();
     }
 
     @Override

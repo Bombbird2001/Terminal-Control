@@ -27,8 +27,8 @@ public class MainMenuScreen implements Screen {
     private Viewport viewport;
 
     //Create texture stuff
-    private TextureAtlas buttonAtlas;
-    private Skin skin;
+    public static TextureAtlas buttonAtlas;
+    public static Skin skin;
 
     public MainMenuScreen(final AtcSim game) {
         this.game = game;
@@ -64,7 +64,7 @@ public class MainMenuScreen implements Screen {
         stage.addActor(headerLabel);
 
         //Set button textures
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("main_menu/mainmenubuttons.atlas"));
+        buttonAtlas = new TextureAtlas(Gdx.files.internal("game/ui/mainmenubuttons.atlas"));
         skin = new Skin();
         skin.addRegions(buttonAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
@@ -178,7 +178,5 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         stage.clear();
         stage.dispose();
-        skin.dispose();
-        buttonAtlas.dispose();
     }
 }

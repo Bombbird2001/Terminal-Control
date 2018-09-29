@@ -25,10 +25,6 @@ public class NewGameScreen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    //Create texture stuff
-    private TextureAtlas airportAtlas;
-    private Skin skin;
-
     NewGameScreen(final AtcSim game) {
         this.game = game;
 
@@ -67,13 +63,10 @@ public class NewGameScreen implements Screen {
 
         //Set button textures
         //Using main menu textures for now, will change later
-        airportAtlas = new TextureAtlas(Gdx.files.internal("new_game/backbuttons.atlas"));
-        skin = new Skin();
-        skin.addRegions(airportAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = AtcSim.fonts.defaultFont12;
-        buttonStyle.up = skin.getDrawable("Button_up");
-        buttonStyle.down = skin.getDrawable("Button_down");
+        buttonStyle.up = MainMenuScreen.skin.getDrawable("Button_up");
+        buttonStyle.down = MainMenuScreen.skin.getDrawable("Button_down");
 
         //Load airports
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
@@ -160,7 +153,5 @@ public class NewGameScreen implements Screen {
     public void dispose() {
         stage.clear();
         stage.dispose();
-        skin.dispose();
-        airportAtlas.dispose();
     }
 }
