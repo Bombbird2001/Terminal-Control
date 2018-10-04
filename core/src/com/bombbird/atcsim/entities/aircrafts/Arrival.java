@@ -55,8 +55,10 @@ public class Arrival extends Aircraft {
         setY(getDirect().getPosY() + dist * MathUtils.sinDeg((float)(270 - getTrack())));
 
         loadLabel();
+        setNavState(new NavState(1, this));
 
         setControlState(1);
+        setColor(new Color(0x00b3ffff));
 
         setHeading(update());
         System.out.println("New heading: " + getHeading());

@@ -319,11 +319,11 @@ public class FileLoader {
             //For each aircraft
             int index = 0;
             String icao = "";
-            int[] perfData = new int[6];
+            int[] perfData = new int[5];
             for (String s1: s.split(",")) {
                 if (index == 0) {
                     icao = s1; //Icao code of aircraft
-                } else if (index >= 1 && index <= 6) {
+                } else if (index >= 1 && index <= 5) {
                     perfData[index - 1] = Integer.parseInt(s1);
                 } else {
                     Gdx.app.log("Load error", "Unexpected additional parameter in game/aircrafts.air");

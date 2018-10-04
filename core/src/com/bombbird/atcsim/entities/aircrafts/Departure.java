@@ -63,8 +63,10 @@ public class Departure extends Aircraft {
         setY(getRunway().getPosition()[1]);
 
         loadLabel();
+        setNavState(new NavState(2, this));
 
         setControlState(0);
+        setColor(new Color(0x11ff00ff));
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());

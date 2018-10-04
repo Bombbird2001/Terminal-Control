@@ -36,17 +36,14 @@ public class Ui implements Disposable {
 
     private String tab;
     private String latMode;
-    private Array<String> latModes;
     private int clearedHdg;
     private Array<String> waypoints;
     private Array<String> holdingWaypoints;
 
     private String altMode;
-    private Array<String> altModes;
     private int clearedAlt;
 
     private String spdMode;
-    private Array<String> spdModes;
     private int clearedSpd;
 
     public Ui() {
@@ -132,6 +129,9 @@ public class Ui implements Disposable {
         paneImage.setVisible(show);
         settingsBox.setVisible(show);
         valueBox.setVisible(show);
+        if (show) {
+            updateBoxes(0);
+        }
     }
 
     private void loadSelectBox() {
@@ -154,15 +154,9 @@ public class Ui implements Disposable {
         boxStyle.scrollStyle = scrollPaneStyle;
         boxStyle.background = new SpriteDrawable(new Sprite(boxBackground));
 
-        latModes = new Array<String>();
-        latModes.add("Fly heading", "Turn left heading", "Turn right heading", "STAR direct to");
-        latModes.add("SID direct to", "After waypoint fly heading", "Hold at waypoint");
-
         settingsBox = new SelectBox<String>(boxStyle);
-        settingsBox.setItems(latModes);
-        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 770);
+        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 970);
         settingsBox.setSize(0.8f * getPaneWidth(), 270);
-        settingsBox.setSelectedIndex(0);
         settingsBox.setAlignment(Align.center);
         settingsBox.getList().setAlignment(Align.center);
         RadarScreen.uiStage.addActor(settingsBox);
@@ -172,9 +166,8 @@ public class Ui implements Disposable {
 
         valueBox = new SelectBox<String>(boxStyle);
         valueBox.setItems(waypoints);
-        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1170);
+        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1570);
         valueBox.setSize(0.8f * getPaneWidth(), 270);
-        //valueBox.setSelectedIndex(9);
         valueBox.setAlignment(Align.center);
         valueBox.getList().setAlignment(Align.center);
         RadarScreen.uiStage.addActor(valueBox);
@@ -184,18 +177,23 @@ public class Ui implements Disposable {
 
     }
 
-    private void updateBoxes() {
-
+    private void updateBoxes(int tab) {
+        if (selectedAircraft != null) {
+            if (tab == 0) {
+                //Lateral mode tab
+                settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
+            } else if (tab == 1) {
+                //Altitude mode tab
+                settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
+            } else {
+                //Speed mode tab
+                settingsBox.setItems(selectedAircraft.getNavState().getSpdModes());
+            }
+        }
     }
 
     public void resetSelectedPane() {
         String tab = "Lateral";
-        String latMode = "star";
-        int clearedHdg = 360;
-        String altMode = "star";
-        int clearedAlt = 10000;
-        String spdMode = "star";
-        int clearedSpd = 250;
     }
 
     public void updatePaneWidth() {

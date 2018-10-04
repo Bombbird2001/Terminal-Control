@@ -35,13 +35,14 @@ public class Aircraft extends Actor {
     private ImageButton clickSpot;
     private ImageButton background;
     private ImageButton background2;
-    public static ImageButton.ImageButtonStyle buttonStyleCtrl;
+    private static ImageButton.ImageButtonStyle buttonStyleCtrl;
     private static ImageButton.ImageButtonStyle buttonStyleDept;
     private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
     private static ImageButton.ImageButtonStyle buttonStyleEnroute;
     private static ImageButton.ImageButtonStyle buttonStyleBackground;
     private static ImageButton.ImageButtonStyle buttonStyleBackgroundSmall;
     private boolean dragging;
+    private Color color;
 
     //Aircraft information
     private Airport airport;
@@ -54,11 +55,13 @@ public class Aircraft extends Actor {
     private String icaoType;
     private char wakeCat;
     private int v2;
+    private int typClimb;
     private int maxClimb;
     private int typDes;
     private int maxDes;
     private int apchSpd;
     private int controlState;
+    private NavState navState;
 
     //Aircraft position
     private float x;
@@ -131,10 +134,11 @@ public class Aircraft extends Actor {
         }
         float loadFactor = MathUtils.random(-1 , 1) / 20f;
         v2 = (int)(perfData[1] * (1 + loadFactor));
-        maxClimb = (int)(perfData[2] * (1 - loadFactor));
+        typClimb = (int)(perfData[2] * (1 - loadFactor));
+        maxClimb = typClimb + 1000;
         typDes = (int)(perfData[3] * (1 - loadFactor));
-        maxDes = (int)(perfData[4] * (1 - loadFactor));
-        apchSpd = (int)(perfData[5] * (1 + loadFactor));
+        maxDes = typDes + 1000;
+        apchSpd = (int)(perfData[4] * (1 + loadFactor));
         this.airport = airport;
         latMode = "vector";
         heading = 0;
@@ -237,7 +241,7 @@ public class Aircraft extends Actor {
             GameScreen.shapeRenderer.line(background2.getX() + background2.getWidth() / 2, background2.getY() + background2.getHeight() / 2, x, y);
         }
         if (controlState == 1 || controlState == 2) {
-            shapeRenderer.setColor(Color.GREEN);
+            shapeRenderer.setColor(color);
             GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
         }
     }
@@ -259,7 +263,6 @@ public class Aircraft extends Actor {
             updateAltitude();
             return targetHeading;
         } else {
-            tas = MathTools.iasToTas(ias, altitude);
             gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
             updatePosition(0);
             return 0;
@@ -303,10 +306,12 @@ public class Aircraft extends Actor {
         } else if (targetVertSpd < verticalSpeed - 100) {
             verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
         }
-        if (verticalSpeed > maxClimb) {
-            verticalSpeed = maxClimb;
+        if (!expedite && verticalSpeed > typClimb) {
+            verticalSpeed = typClimb;
         } else if (!expedite && verticalSpeed < -typDes) {
             verticalSpeed = -typDes;
+        } else if (expedite && verticalSpeed > maxClimb) {
+            verticalSpeed = maxClimb;
         } else if (expedite && verticalSpeed < -maxDes) {
             verticalSpeed = -maxDes;
         }
@@ -366,7 +371,13 @@ public class Aircraft extends Actor {
             double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
             double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg(), 0)) / 1.5 + 15;
             if (distance <= requiredDistance) {
-                updateDirect();
+                if (navState.getLatMode().equals(getSidStar().getName() + " arrival") || navState.getLatMode().equals(getSidStar().getName() + " departure")) {
+                    updateDirect();
+                } else if (navState.getLatMode().equals("After waypoint, fly heading")) {
+                    latMode = "vectors";
+                    navState.setLatMode("Fly heading");
+                    //TODO: Set selected heading
+                }
             }
         }
 
@@ -688,12 +699,12 @@ public class Aircraft extends Actor {
         this.v2 = v2;
     }
 
-    public int getMaxClimb() {
-        return maxClimb;
+    public int getTypClimb() {
+        return typClimb;
     }
 
-    public void setMaxClimb(int maxClimb) {
-        this.maxClimb = maxClimb;
+    public void setTypClimb(int typClimb) {
+        this.typClimb = typClimb;
     }
 
     public int getTypDes() {
@@ -906,5 +917,31 @@ public class Aircraft extends Actor {
 
     public void setSpdMode(String spdMode) {
         this.spdMode = spdMode;
+    }
+
+    public NavState getNavState() {
+        return navState;
+    }
+
+    public void setNavState(NavState navState) {
+        this.navState = navState;
+    }
+
+    public int getMaxClimb() {
+        return maxClimb;
+    }
+
+    public void setMaxClimb(int maxClimb) {
+        this.maxClimb = maxClimb;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
