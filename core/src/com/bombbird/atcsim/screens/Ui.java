@@ -256,5 +256,6 @@ public class Ui implements Disposable {
     public void dispose() {
         paneTexture.dispose();
         paneTextureUnselected.dispose();
+        boxBackground.dispose();
     }
 }

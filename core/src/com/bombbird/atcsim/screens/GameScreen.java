@@ -30,11 +30,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private float loadedTime = 0;
 
     //Set input processors
-    InputMultiplexer inputMultiplexer = new InputMultiplexer();
-    InputProcessor inputProcessor1 = this;
-    InputProcessor inputProcessor2;
-    InputProcessor inputProcessor3;
-    GestureDetector gd = new GestureDetector(40, 0.2f,1.1f, 0.15f, this);
+    public InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    public InputProcessor inputProcessor1 = this;
+    public InputProcessor inputProcessor2;
+    public InputProcessor inputProcessor3;
+    public GestureDetector gd = new GestureDetector(40, 0.2f,1.1f, 0.15f, this);
 
     //Pinch zoom constants
     private float lastInitialDist = 0;
@@ -45,26 +45,26 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private boolean zoomedIn = false;
 
     //Create new camera
-    OrthographicCamera camera;
-    Viewport viewport;
+    public OrthographicCamera camera;
+    public Viewport viewport;
     private float lastZoom = 1;
 
     //Create 2nd camera for UI
     public static Ui ui;
     public static Stage uiStage;
-    OrthographicCamera uiCam;
-    Viewport uiViewport;
+    public OrthographicCamera uiCam;
+    public Viewport uiViewport;
 
     //Create texture stuff
-    Skin skin;
+    public Skin skin;
     public static ShapeRenderer shapeRenderer;
 
     //Create range circles
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    Array<Obstacle> obsArray;
-    Array<RestrictedArea> restArray;
+    public Array<Obstacle> obsArray;
+    public Array<RestrictedArea> restArray;
 
     //Create airports + wind data
     public static HashMap<String, Airport> airports;
@@ -75,7 +75,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public static HashMap<String, Waypoint> waypoints;
 
-    GameScreen(final AtcSim game) {
+    public GameScreen(final AtcSim game) {
         this.game = game;
         shapeRenderer = new ShapeRenderer();
 
@@ -101,6 +101,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     }
 
     private void handleInput(float dt) {
+        //Handles input from keyboard, mouse, moderates them
         float ZOOMCONSTANT = 0.6f;
         float SCROLLCONSTANT = 150;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -178,20 +179,21 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     }
 
     public void newAircraft() {
-
+        //Creates new aircraft; overridden in radarscreen subclass
     }
 
     @Override
     public void show() {
-
+        //Implements show method of screen; overridden in radarscreen class
     }
 
-    void renderShape() {
-
+    public void renderShape() {
+        //Renders shapes for aircraft trajectory line, obstacle and restricted areas; overridden in radarscreen class
     }
 
     @Override
     public void render(float delta) {
+        //Main rendering method for rendering to spritebatch
         if (!loading && !aircraftLoaded) {
             //Load the initial aircrafts if METAR has finished loading but aircrafts not loaded yet
             newAircraft();
@@ -262,6 +264,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void resize(int width, int height) {
+        //Implements resize method of screen, adjusts camera & viewport properties after resize for better UI
         AtcSim.WIDTH = width;
         AtcSim.HEIGHT = height;
 
@@ -293,21 +296,23 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public void pause() {
-
+        //Implements pause method of screen
     }
 
     @Override
     public void resume() {
-
+        //Implements pause method of screen
     }
 
     @Override
     public void hide() {
+        //Implements hide method of screen
         dispose();
     }
 
     @Override
     public void dispose() {
+        //Implements dispose method of screen, disposes resources after they're no longer needed
         shapeRenderer.dispose();
         stage.clear();
         stage.dispose();
@@ -316,11 +321,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+        //Implements touchdown method of gesturelistener
         return false;
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+        //Implements tap method of gesturelistener, tests for tap and double tap
         RadarScreen.setSelectedAircraft(null);
         if (count == 2 && !loading) {
             zooming = true;
@@ -331,16 +338,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean longPress(float x, float y) {
+        //Implements longpress method of gesturelistener
         return false;
     }
 
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
+        //Implements fling method of gesturelistener
         return false;
     }
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        //Implements pan method of gesturelistener, tests for panning to shift radar screen around
         if (loading) {
             return false;
         }
@@ -353,11 +363,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
+        //Implements panstop method of gesturelistener
         return false;
     }
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        //Implements zoom method of gesturelistener, tests for pinch zooming to adjust radar screen zoom level
         if (loading) {
             return true;
         }
@@ -374,51 +386,60 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        //Implements pinch method of gesturelistener
         return false;
     }
 
     @Override
     public void pinchStop() {
-
+        //Implements pinchstop method of gesturelistener
     }
 
     @Override
     public boolean keyDown(int keycode) {
+        //Implements keydown method of inputlistener
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        //Implements keyup method of inputlistener
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
+        //Implements keytyped method of inputlistener
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //Implements touchdown method of inputlistener
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        //Implements touchup method of inputlistener
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        //Implements touchdragged method of inputlistener
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        //Implements mousemoved method of inputlistener
         return false;
     }
 
     @Override
     public boolean scrolled(int amount) {
+        //Implements scrolled method of inputlistener, tests for scrolling to adjust radar screen zoom levels
         if (!loading) {
             camera.zoom += amount * 0.042f;
         }

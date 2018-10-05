@@ -29,7 +29,7 @@ public class RadarScreen extends GameScreen {
     private static Metar metar;
     private static Aircraft selectedAircraft;
 
-    RadarScreen(final AtcSim game, String name) {
+    public RadarScreen(final AtcSim game, String name) {
         super(game);
         mainName = name;
 
@@ -79,6 +79,7 @@ public class RadarScreen extends GameScreen {
     }
 
     private void loadAirports() {
+        //Load airport information form file, add to hashmap
         FileHandle handle = Gdx.files.internal("game/" + mainName +"/airport.arpt");
         int index = 0;
         for (String s: handle.readString().split("\\r?\\n")) {
@@ -103,6 +104,7 @@ public class RadarScreen extends GameScreen {
     }
 
     private void loadMetar() {
+        //Load METAR info for airports, sets it for each airport
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         calendar.add(Calendar.MINUTE, 15);
         int minute = calendar.get(Calendar.MINUTE);
@@ -133,6 +135,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void newAircraft() {
+        //Creates new aircrafts TODO: Auto-generate aircraft
         aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
         aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
         aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
@@ -142,6 +145,8 @@ public class RadarScreen extends GameScreen {
     }
 
     private void loadUI() {
+        //Loads the full UI of radarscreen
+
         //Reset stage
         stage.clear();
 
@@ -174,7 +179,7 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
-    void renderShape() {
+    public void renderShape() {
         //Draw obstacles
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
@@ -213,11 +218,13 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void show() {
+        //Implements show method of screen, loads UI after show is called
         loadUI();
     }
 
     @Override
     public void dispose() {
+        //Implements dispose method of screen, disposes resources after they're no longer needed
         uiStage.clear();
         uiStage.dispose();
         stage.clear();
