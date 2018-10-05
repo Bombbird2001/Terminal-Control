@@ -97,7 +97,7 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
             setDirect(sid.getWaypoint(0));
-            setLatMode("sid");
+            setLatMode("sidstar");
             setTargetIas(250);
             setClearedIas(250);
             sidSet = true;

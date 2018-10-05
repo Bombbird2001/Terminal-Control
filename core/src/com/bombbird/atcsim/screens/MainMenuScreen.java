@@ -56,7 +56,7 @@ public class MainMenuScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
-        Label headerLabel = new Label("ATC Sim", labelStyle);
+        Label headerLabel = new Label("Terminal Control", labelStyle);
         headerLabel.setWidth(buttonWidth);
         headerLabel.setHeight(buttonHeight);
         headerLabel.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.8f);

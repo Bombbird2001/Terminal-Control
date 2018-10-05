@@ -258,7 +258,7 @@ public class Aircraft extends Actor {
         if (!onGround) {
             double[] info = updateTargetHeading();
             targetHeading = info[0];
-            updateHeading(targetHeading, 0);
+            updateHeading(targetHeading);
             updatePosition(info[1]);
             updateAltitude();
             return targetHeading;
@@ -324,8 +324,8 @@ public class Aircraft extends Actor {
 
     private double[] updateTargetHeading() {
         getDeltaPosition().setZero();
-        double targetHeading;
-        double angleDiff;
+        double targetHeading = 0;
+        double angleDiff = 0;
 
         //Get wind data
         int[] winds;
@@ -342,7 +342,7 @@ public class Aircraft extends Actor {
             double angle = 180 - windHdg + heading;
             gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
             angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
-        } else {
+        } else if (latMode.equals("sidstar")) {
             //Calculates distance between waypoint and plane
             float deltaX = direct.getPosX() - x;
             float deltaY = direct.getPosY() - y;
@@ -369,7 +369,7 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg(), 0)) / 1.5 + 15;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.5 + 15;
             if (distance <= requiredDistance) {
                 if (navState.getLatMode().equals(getSidStar().getName() + " arrival") || navState.getLatMode().equals(getSidStar().getName() + " departure")) {
                     updateDirect();
@@ -404,8 +404,14 @@ public class Aircraft extends Actor {
         label.moveBy(deltaPosition.x, deltaPosition.y);
     }
 
-    private double findDeltaHeading(double targetHeading, int forceDirection) {
+    private double findDeltaHeading(double targetHeading) {
         double deltaHeading = targetHeading - heading;
+        int forceDirection = 0;
+        if (navState.getLatMode().equals("Turn left heading")) {
+            forceDirection = 1;
+        } else if (navState.getLatMode().equals("Turn right heading")) {
+            forceDirection = 2;
+        }
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
                 if (deltaHeading > 180) {
@@ -430,8 +436,8 @@ public class Aircraft extends Actor {
         return deltaHeading;
     }
 
-    private void updateHeading(double targetHeading, int forceDirection) {
-        double deltaHeading = findDeltaHeading(targetHeading, forceDirection);
+    private void updateHeading(double targetHeading) {
+        double deltaHeading = findDeltaHeading(targetHeading);
         //Note: angular velocities unit is change in heading per second
         double targetAngularVelocity = 0;
         if (deltaHeading > 0) {
@@ -538,7 +544,7 @@ public class Aircraft extends Actor {
         labelText[4] = Integer.toString((int) heading);
         if (latMode.equals("vector")) {
             labelText[5] = Integer.toString(clearedHeading);
-        } else {
+        } else if (latMode.equals("sidstar")) {
             labelText[5] = direct.getName();
         }
         labelText[6] = Integer.toString((int) gs);
@@ -561,7 +567,6 @@ public class Aircraft extends Actor {
         background.setPosition(label.getX() - 5, label.getY());
         background2.setPosition(label.getX() - 5, label.getY());
         clickSpot.setPosition(label.getX() - 5, label.getY());
-        //if (callsign.equals("UIA232")) System.out.println(clickSpot.getWidth() + " " + clickSpot.getHeight());
     }
 
     public void removeSelectedWaypoints(Aircraft aircraft) {

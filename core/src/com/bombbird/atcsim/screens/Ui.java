@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -34,7 +36,7 @@ public class Ui implements Disposable {
     //Instructions panel info
     private Aircraft selectedAircraft;
 
-    private String tab;
+    private int tab;
     private String latMode;
     private int clearedHdg;
     private Array<String> waypoints;
@@ -47,6 +49,7 @@ public class Ui implements Disposable {
     private int clearedSpd;
 
     public Ui() {
+        tab = 0;
         loadNormalPane();
         loadSelectedPane();
         loadSelectBox();
@@ -159,6 +162,15 @@ public class Ui implements Disposable {
         settingsBox.setSize(0.8f * getPaneWidth(), 270);
         settingsBox.setAlignment(Align.center);
         settingsBox.getList().setAlignment(Align.center);
+        settingsBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedAircraft != null) {
+                    updateMode();
+                    event.handle();
+                }
+            }
+        });
         RadarScreen.uiStage.addActor(settingsBox);
 
         waypoints = new Array<String>();
@@ -192,8 +204,41 @@ public class Ui implements Disposable {
         }
     }
 
+    private void updateMode() {
+        String newMode = settingsBox.getSelected();
+        if (tab == 0) {
+            //Lat mode tab
+            if (newMode.contains(selectedAircraft.getSidStar().getName())) {
+                selectedAircraft.setLatMode("sidstar");
+                System.out.println("Sidstar set");
+            } else if (newMode.equals("After waypoint, fly heading")) {
+                System.out.println("After waypoint fly heading");
+            } else if (newMode.equals("Hold at")) {
+                System.out.println("Hold at");
+            } else if (newMode.equals("Fly heading") || newMode.equals("Turn left heading") || newMode.equals("Turn right heading")) {
+                selectedAircraft.setLatMode("vector");
+                System.out.println("Vectors");
+            } else {
+                Gdx.app.log("Invalid lat mode", "Invalid latmode " + newMode + " set!");
+            }
+            selectedAircraft.getNavState().setLatMode(newMode);
+        } else if (tab == 1) {
+            //Alt mode tab
+            if (newMode.equals("Climb via SID") || newMode.equals("Descend via STAR")) {
+                selectedAircraft.setAltMode("sidstar");
+            } else {
+                selectedAircraft.setAltMode("open");
+                selectedAircraft.setExpedite(newMode.contains("Expedite"));
+            }
+            selectedAircraft.getNavState().setAltMode(newMode);
+        } else if (tab == 2) {
+            //Spd mode tab
+            selectedAircraft.getNavState().setSpdMode(newMode);
+        }
+    }
+
     public void resetSelectedPane() {
-        String tab = "Lateral";
+        tab = 0;
     }
 
     public void updatePaneWidth() {

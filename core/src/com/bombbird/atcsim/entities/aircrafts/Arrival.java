@@ -21,7 +21,7 @@ public class Arrival extends Aircraft {
         super(callsign, icaoType, arrival);
         setOnGround(false);
         starIndex = 0;
-        setLatMode("star");
+        setLatMode("sidstar");
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
