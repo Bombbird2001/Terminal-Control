@@ -75,6 +75,7 @@ public class Departure extends Aircraft {
     }
 
     private void takeOff() {
+        //Sets aircraft to takeoff mode
         outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
         setTargetIas(getV2());
