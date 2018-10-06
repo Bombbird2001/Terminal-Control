@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
@@ -72,6 +73,7 @@ public class Aircraft extends Actor {
     private int clearedHeading;
     private double angularVelocity;
     private double track;
+    private int sidStarIndex;
     private Waypoint direct;
 
     //Altitude
@@ -481,11 +483,14 @@ public class Aircraft extends Actor {
     }
 
     void drawSidStar() {
-
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.shapeRenderer.line(x, y, direct.getPosX(), direct.getPosY());
     }
 
     void updateDirect() {
-
+        direct.setSelected(false);
+        sidStarIndex++;
+        direct = getSidStar().getWaypoint(sidStarIndex);
     }
 
     void setControlState(int controlState) {
@@ -580,12 +585,16 @@ public class Aircraft extends Actor {
         }
     }
 
+    public Array<Waypoint> getRemainingWaypoints() {
+        return getSidStar().getRemainingWaypoints(sidStarIndex);
+    }
+
     public SidStar getSidStar() {
         return null;
     }
 
     public int getSidStarIndex() {
-        return -1;
+        return sidStarIndex;
     }
 
     public void setSelected(boolean selected) {
@@ -948,5 +957,9 @@ public class Aircraft extends Actor {
     @Override
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setSidStarIndex(int sidStarIndex) {
+        this.sidStarIndex = sidStarIndex;
     }
 }

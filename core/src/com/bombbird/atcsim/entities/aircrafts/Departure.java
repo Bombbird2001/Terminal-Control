@@ -16,7 +16,6 @@ public class Departure extends Aircraft {
     //Others
     private Sid sid;
     private int outboundHdg;
-    private int sidIndex;
     private int contactAlt;
     private boolean v2set;
     private boolean sidSet;
@@ -25,7 +24,6 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         setOnGround(true);
-        sidIndex = 0;
         contactAlt = 2000 + MathUtils.random(-400, 400);
         v2set = false;
         sidSet = false;
@@ -87,6 +85,7 @@ public class Departure extends Aircraft {
 
     @Override
     void updateTkofLdg() {
+        //Called to check for takeoff landing status
         if (getIas() > getV2() - 10 && !v2set) {
             setOnGround(false);
             setTargetHeading(getClearedHeading());
@@ -121,9 +120,9 @@ public class Departure extends Aircraft {
 
     @Override
     public void drawSidStar() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().getPosX(), getDirect().getPosY());
-        sid.joinLines(sidIndex, outboundHdg);
+        //Draws line joining aircraft and sid/star track
+        super.drawSidStar();
+        sid.joinLines(getSidStarIndex(), outboundHdg);
     }
 
     @Override
@@ -134,9 +133,8 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateDirect() {
-        getDirect().setSelected(false);
-        sidIndex++;
-        setDirect(sid.getWaypoint(sidIndex));
+        //Updates direct to next waypoint
+        super.updateDirect();
         if (getDirect() == null) {
             setLatMode("vector");
             setClearedHeading((int)(outboundHdg + RadarScreen.magHdgDev));
@@ -145,7 +143,8 @@ public class Departure extends Aircraft {
 
     @Override
     double findNextTargetHdg() {
-        Waypoint nextWpt = sid.getWaypoint(sidIndex + 1);
+        //Find targetheading from current waypoint to next waypoint
+        Waypoint nextWpt = sid.getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             return outboundHdg;
         } else {
@@ -164,10 +163,5 @@ public class Departure extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return sid;
-    }
-
-    @Override
-    public int getSidStarIndex() {
-        return sidIndex;
     }
 }
