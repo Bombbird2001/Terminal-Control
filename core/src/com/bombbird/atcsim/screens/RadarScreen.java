@@ -173,7 +173,7 @@ public class RadarScreen extends GameScreen {
 
         loadPanel();
         ui.setNormalPane(true);
-        ui.setSelectedPane(false, null);
+        ui.setSelectedPane(null);
 
         loadInputProcessors();
     }
@@ -250,16 +250,12 @@ public class RadarScreen extends GameScreen {
             aircraft.setSelected(true);
         }
 
-        if (selectedAircraft != aircraft) {
-            ui.resetSelectedPane();
-        }
-
         if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
-            ui.setSelectedPane(true, aircraft);
+            ui.setSelectedPane(aircraft);
             ui.setNormalPane(false);
         } else {
             ui.setNormalPane(true);
-            ui.setSelectedPane(false, null);
+            ui.setSelectedPane(null);
         }
         selectedAircraft = aircraft;
     }

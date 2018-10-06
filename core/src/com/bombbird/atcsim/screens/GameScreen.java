@@ -252,7 +252,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //Draw the UI overlay
         uiCam.update();
         if (!loading) {
-            ui.update();
             game.batch.setProjectionMatrix(uiCam.combined);
             uiStage.act();
             game.batch.begin();

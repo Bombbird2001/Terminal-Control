@@ -3,6 +3,7 @@ package com.bombbird.atcsim.entities.aircrafts;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.ILS;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.entities.sidstar.Star;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 
 public class Arrival extends Aircraft {
     //Others
-    private String ils;
+    private ILS ils;
     private Star star;
     private int starIndex;
 
@@ -38,6 +39,7 @@ public class Arrival extends Aircraft {
         }
         setDirect(star.getWaypoint(starIndex));
         setHeading(star.getInboundHdg());
+        setClearedHeading((int)getHeading());
         System.out.println("Heading: " + getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
 
