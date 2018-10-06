@@ -26,10 +26,6 @@ public class MainMenuScreen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    //Create texture stuff
-    public static TextureAtlas buttonAtlas;
-    public static Skin skin;
-
     public MainMenuScreen(final AtcSim game) {
         this.game = game;
 
@@ -64,13 +60,10 @@ public class MainMenuScreen implements Screen {
         stage.addActor(headerLabel);
 
         //Set button textures
-        buttonAtlas = new TextureAtlas(Gdx.files.internal("game/ui/mainmenubuttons.atlas"));
-        skin = new Skin();
-        skin.addRegions(buttonAtlas);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = AtcSim.fonts.defaultFont20;
-        buttonStyle.up = skin.getDrawable("Button_up");
-        buttonStyle.down = skin.getDrawable("Button_down");
+        buttonStyle.up = AtcSim.skin.getDrawable("Button_up");
+        buttonStyle.down = AtcSim.skin.getDrawable("Button_down");
 
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);

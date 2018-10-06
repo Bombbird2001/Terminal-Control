@@ -19,17 +19,17 @@ import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui implements Disposable {
-    private Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane.png"));
+    private Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
     private Texture paneTextureUnselected = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
     private Texture boxBackground = new Texture(Gdx.files.internal("game/ui/SelectBoxBackground.png"));
     private Image paneImage;
     private Image paneImageUnselected;
-    private SpriteDrawable spriteDrawable = new SpriteDrawable(new Sprite(boxBackground));
-    private SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(paneTexture));
+    private SpriteDrawable selectBoxBackgroundDrawable = new SpriteDrawable(new Sprite(boxBackground));
+    private SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
 
     private SelectBox<String> settingsBox;
     private SelectBox<String> valueBox;
-    private Label hdgBoxBackground;
+    private Label hdgBox;
     private TextButton hdg100add;
     private TextButton hdg100minus;
     private TextButton hdg10add;
@@ -49,12 +49,19 @@ public class Ui implements Disposable {
     private String clearedWpt;
     private Array<String> waypoints;
     private Array<String> holdingWaypoints;
+    private boolean latModeChanged;
+    private boolean wptChanged;
+    private boolean hdgChanged;
 
     private String altMode;
     private int clearedAlt;
+    private boolean altModeChanged;
+    private boolean altChanged;
 
     private String spdMode;
     private int clearedSpd;
+    private boolean spdModeChanged;
+    private boolean spdChanged;
 
     public Ui() {
         tab = 0;
@@ -164,7 +171,7 @@ public class Ui implements Disposable {
 
     private void showHdgBoxes(boolean show) {
         //Show/hide elements for heading box
-        hdgBoxBackground.setVisible(show);
+        hdgBox.setVisible(show);
         hdg100add.setVisible(show);
         hdg100minus.setVisible(show);
         hdg10add.setVisible(show);
@@ -176,13 +183,13 @@ public class Ui implements Disposable {
     private void loadSelectBox() {
         //Load the select boxes to be used
         ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        scrollPaneStyle.background = MainMenuScreen.skin.getDrawable("Button_up");
+        scrollPaneStyle.background = AtcSim.skin.getDrawable("ListBackground");
 
         List.ListStyle listStyle = new List.ListStyle();
         listStyle.font = AtcSim.fonts.defaultFont20;
         listStyle.fontColorSelected = Color.WHITE;
         listStyle.fontColorUnselected = Color.BLACK;
-        Drawable button_down = MainMenuScreen.skin.getDrawable("Button_down");
+        Drawable button_down = AtcSim.skin.getDrawable("Button_down");
         button_down.setTopHeight(50);
         button_down.setBottomHeight(50);
         listStyle.selection = button_down;
@@ -192,7 +199,7 @@ public class Ui implements Disposable {
         boxStyle.fontColor = Color.WHITE;
         boxStyle.listStyle = listStyle;
         boxStyle.scrollStyle = scrollPaneStyle;
-        boxStyle.background = spriteDrawable;
+        boxStyle.background = selectBoxBackgroundDrawable;
 
         //Settings box for setting lat/alt/spd modes
         settingsBox = new SelectBox<String>(boxStyle);
@@ -219,7 +226,7 @@ public class Ui implements Disposable {
         boxStyle2.fontColor = Color.WHITE;
         boxStyle2.listStyle = listStyle;
         boxStyle2.scrollStyle = scrollPaneStyle;
-        boxStyle2.background = spriteDrawable;
+        boxStyle2.background = selectBoxBackgroundDrawable;
 
         //Valuebox for setting waypoint selections
         valueBox = new SelectBox<String>(boxStyle2);
@@ -245,16 +252,16 @@ public class Ui implements Disposable {
         labelStyle.font = AtcSim.fonts.defaultFont40;
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = hdgBoxBackgroundDrawable;
-        hdgBoxBackground = new Label("360", labelStyle);
-        hdgBoxBackground.setPosition(0.1f * getPaneWidth(), 3240 - 2570);
-        hdgBoxBackground.setSize(0.8f * getPaneWidth(), 470);
-        hdgBoxBackground.setAlignment(Align.center);
-        RadarScreen.uiStage.addActor(hdgBoxBackground);
+        hdgBox = new Label("360", labelStyle);
+        hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2370);
+        hdgBox.setSize(0.8f * getPaneWidth(), 270);
+        hdgBox.setAlignment(Align.center);
+        RadarScreen.uiStage.addActor(hdgBox);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
-        textButtonStyle.down = spriteDrawable;
-        textButtonStyle.up = spriteDrawable;
+        textButtonStyle.down = selectBoxBackgroundDrawable;
+        textButtonStyle.up = selectBoxBackgroundDrawable;
         textButtonStyle.font = AtcSim.fonts.defaultFont40;
 
         //+100 button
@@ -273,7 +280,7 @@ public class Ui implements Disposable {
         //-100 button
         hdg100minus = new TextButton("-", textButtonStyle);
         hdg100minus.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg100minus.setPosition(0.1f * getPaneWidth(), 3240 - 2770);
+        hdg100minus.setPosition(0.1f * getPaneWidth(), 3240 - 2570);
         hdg100minus.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -299,7 +306,7 @@ public class Ui implements Disposable {
         //-10 button
         hdg10minus = new TextButton("-", textButtonStyle);
         hdg10minus.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg10minus.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2770);
+        hdg10minus.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2570);
         hdg10minus.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -325,7 +332,7 @@ public class Ui implements Disposable {
         //-5 button
         hdg5minus = new TextButton("-", textButtonStyle);
         hdg5minus.setSize((0.8f / 3f) * getPaneWidth(), 200);
-        hdg5minus.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), 3240 - 2770);
+        hdg5minus.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), 3240 - 2570);
         hdg5minus.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -338,9 +345,10 @@ public class Ui implements Disposable {
 
     private void updateBoxes(int tab) {
         //Update box values
-        //TODO: Update values of selectbox when aircraft navstate changes
         if (selectedAircraft != null) {
-            clearedWpt = selectedAircraft.getDirect().getName();
+            if (selectedAircraft.getDirect() != null) {
+                clearedWpt = selectedAircraft.getDirect().getName();
+            }
             clearedAlt = selectedAircraft.getClearedAltitude();
             clearedSpd = selectedAircraft.getClearedIas();
             clearedHdg = selectedAircraft.getClearedHeading();
@@ -353,7 +361,9 @@ public class Ui implements Disposable {
                 //Lateral mode tab
                 settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
                 valueBox.setItems(waypoints);
-                valueBox.setSelectedIndex(0);
+                if (waypoints.size > 0) {
+                    valueBox.setSelectedIndex(0);
+                }
             } else if (tab == 1) {
                 //Altitude mode tab
                 settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
@@ -364,6 +374,12 @@ public class Ui implements Disposable {
         }
     }
 
+    public void updateState() {
+        //TODO: Update values of selectbox when aircraft navstate changes
+        updateBoxes(tab);
+        updateChoice();
+    }
+
     private void updateChoice() {
         //Update selected choices, called upon selectbox/button change
         String newMode = settingsBox.getSelected();
@@ -372,8 +388,10 @@ public class Ui implements Disposable {
             latMode = newMode;
             if (!latMode.equals(selectedAircraft.getNavState().getLatMode())) {
                 settingsBox.getStyle().fontColor = Color.YELLOW;
+                latModeChanged = true;
             } else {
                 settingsBox.getStyle().fontColor = Color.WHITE;
+                latModeChanged = false;
             }
             showHdgBoxes(latMode.contains("heading"));
 
@@ -383,33 +401,41 @@ public class Ui implements Disposable {
             if (clearedWpt != null) {
                 if (clearedWpt.equals(selectedAircraft.getDirect().getName())) {
                     valueBox.getStyle().fontColor = Color.WHITE;
+                    wptChanged = true;
                 } else {
                     valueBox.getStyle().fontColor = Color.YELLOW;
+                    wptChanged = false;
                 }
             }
 
             //Hdg box
             if (clearedHdg != selectedAircraft.getClearedHeading()) {
-                hdgBoxBackground.getStyle().fontColor = Color.YELLOW;
+                hdgBox.getStyle().fontColor = Color.YELLOW;
+                hdgChanged = true;
             } else {
-                hdgBoxBackground.getStyle().fontColor = Color.WHITE;
+                hdgBox.getStyle().fontColor = Color.WHITE;
+                hdgChanged = false;
             }
-            hdgBoxBackground.setText(Integer.toString(clearedHdg));
+            hdgBox.setText(Integer.toString(clearedHdg));
         } else if (tab == 1) {
             //Alt mode tab
             altMode = newMode;
             if (!altMode.equals(selectedAircraft.getNavState().getAltMode())) {
                 settingsBox.getStyle().fontColor = Color.YELLOW;
+                altModeChanged = true;
             } else {
                 settingsBox.getStyle().fontColor = Color.WHITE;
+                altModeChanged = false;
             }
         } else if (tab == 2) {
             //Spd mode tab
             spdMode = newMode;
             if (!spdMode.equals(selectedAircraft.getNavState().getSpdMode())) {
                 settingsBox.getStyle().fontColor = Color.YELLOW;
+                spdModeChanged = true;
             } else {
                 settingsBox.getStyle().fontColor = Color.WHITE;
+                spdModeChanged = false;
             }
         }
     }
@@ -450,15 +476,22 @@ public class Ui implements Disposable {
     private void resetValues() {
         tab = 0;
         latMode = null;
+        latModeChanged = false;
         clearedWpt = null;
+        wptChanged = false;
         altMode = null;
+        altModeChanged = false;
         spdMode = null;
+        spdModeChanged = false;
         clearedHdg = 360;
+        hdgChanged = false;
         clearedAlt = 5000;
+        altChanged = false;
         clearedSpd = 250;
+        spdChanged = false;
         settingsBox.getStyle().fontColor = Color.WHITE;
         valueBox.getStyle().fontColor = Color.WHITE;
-        hdgBoxBackground.getStyle().fontColor = Color.WHITE;
+        hdgBox.getStyle().fontColor = Color.WHITE;
     }
 
     public void updatePaneWidth() {
@@ -470,8 +503,8 @@ public class Ui implements Disposable {
         settingsBox.setX(leftMargin);
         valueBox.setSize(paneSize, 270);
         valueBox.setX(leftMargin);
-        hdgBoxBackground.setSize(paneSize, 470);
-        hdgBoxBackground.setX(leftMargin);
+        hdgBox.setSize(paneSize, 270);
+        hdgBox.setX(leftMargin);
         hdg100add.setSize(paneSize / 3, 200);
         hdg100add.setX(leftMargin);
         hdg100minus.setSize(paneSize / 3, 200);
@@ -510,7 +543,7 @@ public class Ui implements Disposable {
 
     @Override
     public void dispose() {
-        paneTexture.dispose();
+        hdgBoxBackground.dispose();
         paneTextureUnselected.dispose();
         boxBackground.dispose();
     }

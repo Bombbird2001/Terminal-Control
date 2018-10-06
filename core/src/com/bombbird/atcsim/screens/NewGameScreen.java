@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -65,8 +64,8 @@ public class NewGameScreen implements Screen {
         //Using main menu textures for now, will change later
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = AtcSim.fonts.defaultFont12;
-        buttonStyle.up = MainMenuScreen.skin.getDrawable("Button_up");
-        buttonStyle.down = MainMenuScreen.skin.getDrawable("Button_down");
+        buttonStyle.up = AtcSim.skin.getDrawable("Button_up");
+        buttonStyle.down = AtcSim.skin.getDrawable("Button_down");
 
         //Load airports
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};

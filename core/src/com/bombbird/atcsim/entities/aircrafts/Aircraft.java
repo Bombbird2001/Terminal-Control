@@ -250,9 +250,6 @@ public class Aircraft extends Actor {
 
     double update() {
         tas = MathTools.iasToTas(ias, altitude);
-        if (direct != null) {
-            direct.setSelected(true);
-        }
         updateIas();
         if (tkofLdg) {
             updateTkofLdg();
@@ -393,7 +390,20 @@ public class Aircraft extends Actor {
     }
 
     double findNextTargetHdg() {
-        return 0;
+        Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
+        if (nextWpt == null) {
+            return -1;
+        } else {
+            float deltaX = nextWpt.getPosX() - getDirect().getPosX();
+            float deltaY = nextWpt.getPosY() - getDirect().getPosY();
+            double nextTarget;
+            if (deltaX >= 0) {
+                nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            } else {
+                nextTarget = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            }
+            return nextTarget;
+        }
     }
 
     private void updatePosition(double angleDiff) {
@@ -491,6 +501,12 @@ public class Aircraft extends Actor {
         direct.setSelected(false);
         sidStarIndex++;
         direct = getSidStar().getWaypoint(sidStarIndex);
+        if (direct != null) {
+            direct.setSelected(true);
+        }
+        if (selected) {
+            ui.updateState();
+        }
     }
 
     void setControlState(int controlState) {
@@ -574,14 +590,22 @@ public class Aircraft extends Actor {
         clickSpot.setPosition(label.getX() - 5, label.getY());
     }
 
-    public void removeSelectedWaypoints(Aircraft aircraft) {
+    public void updateSelectedWaypoints(Aircraft aircraft) {
+        Array<Waypoint> remainingWpts = getRemainingWaypoints();
         if (aircraft != null) {
-            int index = 0;
-            for (Waypoint waypoint : aircraft.getSidStar().getWaypoints()) {
-                if (index >= aircraft.getSidStarIndex()) {
-                    waypoint.setSelected(true);
-                }
+            for (Waypoint waypoint: remainingWpts) {
+                waypoint.setSelected(false);
             }
+            for (Waypoint waypoint: aircraft.getRemainingWaypoints()) {
+                waypoint.setSelected(true);
+            }
+        } else {
+            for (Waypoint waypoint: remainingWpts) {
+                waypoint.setSelected(false);
+            }
+        }
+        if (direct != null) {
+            direct.setSelected(true);
         }
     }
 

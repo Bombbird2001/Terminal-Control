@@ -243,7 +243,7 @@ public class RadarScreen extends GameScreen {
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
             if (selectedAircraft != aircraft) {
-                selectedAircraft.removeSelectedWaypoints(aircraft);
+                selectedAircraft.updateSelectedWaypoints(aircraft);
             }
         }
         if (aircraft != null) {

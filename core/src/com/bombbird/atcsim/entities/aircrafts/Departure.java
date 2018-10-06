@@ -108,17 +108,6 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    public void removeSelectedWaypoints(Aircraft aircraft) {
-        for (Waypoint waypoint: sid.getWaypoints()) {
-            waypoint.setSelected(false);
-        }
-        super.removeSelectedWaypoints(aircraft);
-        if (getDirect() != null) {
-            getDirect().setSelected(true);
-        }
-    }
-
-    @Override
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
@@ -143,20 +132,11 @@ public class Departure extends Aircraft {
 
     @Override
     double findNextTargetHdg() {
-        //Find targetheading from current waypoint to next waypoint
-        Waypoint nextWpt = sid.getWaypoint(getSidStarIndex() + 1);
-        if (nextWpt == null) {
+        double result = super.findNextTargetHdg();
+        if (result < -0.5) {
             return outboundHdg;
         } else {
-            float deltaX = nextWpt.getPosX() - getDirect().getPosX();
-            float deltaY = nextWpt.getPosY() - getDirect().getPosY();
-            double nextTarget;
-            if (deltaX >= 0) {
-                nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
-            } else {
-                nextTarget = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
-            }
-            return nextTarget;
+            return result;
         }
     }
 

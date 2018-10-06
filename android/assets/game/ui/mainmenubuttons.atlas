@@ -1,5 +1,5 @@
 mainmenubuttons.png
-size: 1000, 100
+size: 1500, 100
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -13,6 +13,13 @@ Button_down
 Button_up
   rotate: false
   xy: 500, 0
+  size: 500, 100
+  orig: 500, 100
+  offset: 0, 0
+  index: -1
+ListBackground
+  rotate: false
+  xy: 1000, 0
   size: 500, 100
   orig: 500, 100
   offset: 0, 0
