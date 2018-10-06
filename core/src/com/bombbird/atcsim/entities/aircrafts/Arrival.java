@@ -16,12 +16,10 @@ public class Arrival extends Aircraft {
     //Others
     private ILS ils;
     private Star star;
-    private int starIndex;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         setOnGround(false);
-        starIndex = 0;
         setLatMode("sidstar");
 
         //Gets a STAR for active runways
@@ -37,7 +35,7 @@ public class Arrival extends Aircraft {
                 }
             }
         }
-        setDirect(star.getWaypoint(starIndex));
+        setDirect(star.getWaypoint(getSidStarIndex()));
         setHeading(star.getInboundHdg());
         setClearedHeading((int)getHeading());
         System.out.println("Heading: " + getHeading());
@@ -79,9 +77,8 @@ public class Arrival extends Aircraft {
 
     @Override
     public void drawSidStar() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(getX(), getY(), getDirect().getPosX(), getDirect().getPosY());
-        star.joinLines(starIndex, 0);
+        super.drawSidStar();
+        star.joinLines(getSidStarIndex(), 0);
     }
 
     @Override
@@ -92,9 +89,7 @@ public class Arrival extends Aircraft {
 
     @Override
     public void updateDirect() {
-        getDirect().setSelected(false);
-        starIndex++;
-        setDirect(star.getWaypoint(starIndex));
+        super.updateDirect();
         if (getDirect() == null) {
             setLatMode("vector");
             setClearedHeading((int) getHeading());
@@ -103,7 +98,7 @@ public class Arrival extends Aircraft {
 
     @Override
     double findNextTargetHdg() {
-        Waypoint nextWpt = star.getWaypoint(starIndex + 1);
+        Waypoint nextWpt = star.getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             return getTrack();
         } else {
@@ -122,10 +117,5 @@ public class Arrival extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return star;
-    }
-
-    @Override
-    public int getSidStarIndex() {
-        return starIndex;
     }
 }

@@ -12,15 +12,15 @@ public class SidStar {
     private Array<int[]> restrictions;
 
     public SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
-        this.setName(name);
-        this.setRunways(runways);
-        this.setWaypoints(waypoints);
-        this.setRestrictions(restrictions);
+        this.name = name;
+        this.runways = runways;
+        this.waypoints = waypoints;
+        this.restrictions = restrictions;
     }
 
     public void printWpts() {
         System.out.println(name);
-        for (Waypoint waypoint: getWaypoints()) {
+        for (Waypoint waypoint: waypoints) {
             System.out.println(waypoint.getName());
         }
     }
@@ -30,7 +30,7 @@ public class SidStar {
         float previousX = -1;
         float previousY = -1;
         int index = 0;
-        for (Waypoint waypoint: getWaypoints()) {
+        for (Waypoint waypoint: waypoints) {
             if (index >= start) {
                 waypoint.setSelected(true);
                 if (previousX != -1 && previousY != -1) {
@@ -53,10 +53,10 @@ public class SidStar {
     }
 
     public Waypoint getWaypoint(int index) {
-        if (index >= getWaypoints().size) {
+        if (index >= waypoints.size) {
             return null;
         }
-        return getWaypoints().get(index);
+        return waypoints.get(index);
     }
 
     public String getName() {
@@ -67,23 +67,21 @@ public class SidStar {
         this.name = name;
     }
 
-    public void setRunways(Array<String> runways) {
-        this.runways = runways;
-    }
-
     public Array<Waypoint> getWaypoints() {
         return waypoints;
     }
 
-    public void setWaypoints(Array<Waypoint> waypoints) {
-        this.waypoints = waypoints;
+    public Array<Waypoint> getRemainingWaypoints(int index) {
+        //Returns array of waypoints starting from index
+        Array<Waypoint> newRange = new Array<Waypoint>(waypoints);
+        if (index > 0) {
+            newRange.removeRange(0, index - 1);
+        }
+        return newRange;
     }
 
     public Array<int[]> getRestrictions() {
+        //Returns array of altitude, speed restrictions
         return restrictions;
-    }
-
-    public void setRestrictions(Array<int[]> restrictions) {
-        this.restrictions = restrictions;
     }
 }

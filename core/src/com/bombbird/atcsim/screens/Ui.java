@@ -46,7 +46,7 @@ public class Ui implements Disposable {
     private int tab;
     private String latMode;
     private int clearedHdg;
-    private Waypoint clearedWpt;
+    private String clearedWpt;
     private Array<String> waypoints;
     private Array<String> holdingWaypoints;
 
@@ -145,12 +145,13 @@ public class Ui implements Disposable {
             selectedAircraft = aircraft;
             //Aircraft selected; show default lat mode pane first
             paneImage.setVisible(true);
+            updateBoxes(0);
             settingsBox.setVisible(true);
             String latMode1 = selectedAircraft.getNavState().getLatMode();
             settingsBox.setSelected(latMode1);
             valueBox.setVisible(latMode1.contains("waypoint") || latMode1.contains("arrival") || latMode1.contains("departure") || latMode1.contains("Hold at"));
+            valueBox.setSelected(selectedAircraft.getDirect().getName());
             showHdgBoxes(latMode1.contains("heading"));
-            updateBoxes(0);
         } else {
             //Aircraft unselected
             selectedAircraft = null;
@@ -213,13 +214,28 @@ public class Ui implements Disposable {
         waypoints = new Array<String>();
         holdingWaypoints = new Array<String>();
 
+        SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
+        boxStyle2.font = AtcSim.fonts.defaultFont20;
+        boxStyle2.fontColor = Color.WHITE;
+        boxStyle2.listStyle = listStyle;
+        boxStyle2.scrollStyle = scrollPaneStyle;
+        boxStyle2.background = spriteDrawable;
+
         //Valuebox for setting waypoint selections
-        valueBox = new SelectBox<String>(boxStyle);
-        valueBox.setItems(waypoints);
+        valueBox = new SelectBox<String>(boxStyle2);
         valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1570);
         valueBox.setSize(0.8f * getPaneWidth(), 270);
         valueBox.setAlignment(Align.center);
         valueBox.getList().setAlignment(Align.center);
+        valueBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedAircraft != null) {
+                    updateChoice();
+                    event.handle();
+                }
+            }
+        });
         RadarScreen.uiStage.addActor(valueBox);
     }
 
@@ -322,15 +338,22 @@ public class Ui implements Disposable {
 
     private void updateBoxes(int tab) {
         //Update box values
+        //TODO: Update values of selectbox when aircraft navstate changes
         if (selectedAircraft != null) {
-            clearedWpt = selectedAircraft.getDirect();
+            clearedWpt = selectedAircraft.getDirect().getName();
             clearedAlt = selectedAircraft.getClearedAltitude();
             clearedSpd = selectedAircraft.getClearedIas();
             clearedHdg = selectedAircraft.getClearedHeading();
+            waypoints.clear();
+            for (Waypoint waypoint: selectedAircraft.getRemainingWaypoints()) {
+                waypoints.add(waypoint.getName());
+            }
 
             if (tab == 0) {
                 //Lateral mode tab
                 settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
+                valueBox.setItems(waypoints);
+                valueBox.setSelectedIndex(0);
             } else if (tab == 1) {
                 //Altitude mode tab
                 settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
@@ -339,10 +362,6 @@ public class Ui implements Disposable {
                 settingsBox.setItems(selectedAircraft.getNavState().getSpdModes());
             }
         }
-    }
-
-    private void updateOptions() {
-        //TODO: Update values of selectbox when aircraft navstate changes
     }
 
     private void updateChoice() {
@@ -357,7 +376,19 @@ public class Ui implements Disposable {
                 settingsBox.getStyle().fontColor = Color.WHITE;
             }
             showHdgBoxes(latMode.contains("heading"));
+
+            //Valuebox (for waypoints)
+            clearedWpt = valueBox.getSelected();
             valueBox.setVisible(latMode.contains("waypoint") || latMode.contains("arrival") || latMode.contains("departure") || latMode.equals("Hold at"));
+            if (clearedWpt != null) {
+                if (clearedWpt.equals(selectedAircraft.getDirect().getName())) {
+                    valueBox.getStyle().fontColor = Color.WHITE;
+                } else {
+                    valueBox.getStyle().fontColor = Color.YELLOW;
+                }
+            }
+
+            //Hdg box
             if (clearedHdg != selectedAircraft.getClearedHeading()) {
                 hdgBoxBackground.getStyle().fontColor = Color.YELLOW;
             } else {
@@ -419,6 +450,7 @@ public class Ui implements Disposable {
     private void resetValues() {
         tab = 0;
         latMode = null;
+        clearedWpt = null;
         altMode = null;
         spdMode = null;
         clearedHdg = 360;
@@ -433,12 +465,25 @@ public class Ui implements Disposable {
         paneImageUnselected.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
         paneImage.setSize(1080 * (float)AtcSim.WIDTH / AtcSim.HEIGHT, 3240);
         float paneSize = 0.8f * paneImage.getWidth();
+        float leftMargin = 0.1f * paneImage.getWidth();
         settingsBox.setSize(paneSize, 270);
+        settingsBox.setX(leftMargin);
         valueBox.setSize(paneSize, 270);
+        valueBox.setX(leftMargin);
         hdgBoxBackground.setSize(paneSize, 470);
+        hdgBoxBackground.setX(leftMargin);
         hdg100add.setSize(paneSize / 3, 200);
+        hdg100add.setX(leftMargin);
         hdg100minus.setSize(paneSize / 3, 200);
+        hdg100minus.setX(leftMargin);
         hdg10add.setSize(paneSize / 3, 200);
+        hdg10add.setX(leftMargin + paneSize / 3);
+        hdg10minus.setSize(paneSize / 3, 200);
+        hdg10minus.setX(leftMargin + paneSize / 3);
+        hdg5add.setSize(paneSize / 3, 200);
+        hdg5add.setX(leftMargin + paneSize / 1.5f);
+        hdg5minus.setSize(paneSize / 3, 200);
+        hdg5minus.setX(leftMargin + paneSize / 1.5f);
     }
 
     private void updateClearedHdg(int deltaHdg) {
