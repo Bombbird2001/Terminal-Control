@@ -254,6 +254,9 @@ public class Aircraft extends Actor {
         if (tkofLdg) {
             updateTkofLdg();
         }
+        if (direct != null) {
+            direct.setSelected(true);
+        }
         if (!onGround) {
             double[] info = updateTargetHeading();
             targetHeading = info[0];
@@ -492,24 +495,45 @@ public class Aircraft extends Actor {
         icon.draw(batch, 1);
     }
 
-    void drawSidStar() {
+    public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(x, y, direct.getPosX(), direct.getPosY());
     }
 
-    void updateDirect() {
+    public void updateDirect() {
         direct.setSelected(false);
         sidStarIndex++;
         direct = getSidStar().getWaypoint(sidStarIndex);
         if (direct != null) {
             direct.setSelected(true);
         }
-        if (selected) {
+        if (selected && (controlState == 1 || controlState == 2)) {
             ui.updateState();
         }
     }
 
-    void setControlState(int controlState) {
+    public void updateVectorMode() {
+        //Switch aircraft latmode to vector mode
+        latMode = "vector";
+        navState.setLatMode("Fly heading");
+        if (selected && (controlState == 1 || controlState == 2)) {
+            ui.updateState();
+        }
+    }
+
+    public void removeSidStarMode() {
+        if (!navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false)) {
+            navState.getLatModes().removeValue(getSidStar().getName() + " departure", false);
+        } else {
+            navState.getLatModes().removeValue("After waypoint, fly heading", false);
+            navState.getLatModes().removeValue("Hold at", false);
+        }
+        if (selected && (controlState == 1 || controlState == 2)) {
+            ui.updateState();
+        }
+    }
+
+    public void setControlState(int controlState) {
         this.controlState = controlState;
         if (controlState == -1) { //En route aircraft - gray
             icon.setStyle(buttonStyleEnroute);

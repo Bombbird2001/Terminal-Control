@@ -47,7 +47,7 @@ public class Departure extends Aircraft {
                 }
             }
         }
-
+        
         sid.printWpts();
 
         //Set initial IAS due to wind
@@ -125,8 +125,9 @@ public class Departure extends Aircraft {
         //Updates direct to next waypoint
         super.updateDirect();
         if (getDirect() == null) {
-            setLatMode("vector");
             setClearedHeading((int)(outboundHdg + RadarScreen.magHdgDev));
+            updateVectorMode();
+            removeSidStarMode();
         }
     }
 

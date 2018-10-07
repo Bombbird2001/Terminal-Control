@@ -84,4 +84,8 @@ public class SidStar {
         //Returns array of altitude, speed restrictions
         return restrictions;
     }
+
+    public int findWptIndex(Waypoint waypoint) {
+        return waypoints.indexOf(waypoint, false);
+    }
 }

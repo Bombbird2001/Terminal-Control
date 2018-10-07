@@ -1,58 +1,55 @@
 package com.bombbird.atcsim.entities.aircrafts;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
+
 public class NavState {
-    private String[] latModes;
+    private Array<String> latModes;
     private String latMode;
-    private String[] altModes;
+    private Array<String> altModes;
     private String altMode;
-    private String[] spdModes;
+    private Array<String> spdModes;
     private String spdMode;
 
     NavState(int type, Aircraft aircraft) {
-        altModes = new String[5];
-        spdModes = new String[3];
+        altModes = new Array<String>(5);
+        spdModes = new Array<String>(3);
         if (type == 1) {
             //Arrival
-            latModes = new String[6];
-            latModes[0] = aircraft.getSidStar().getName() + " arrival";
-            latModes[1] = "After waypoint, fly heading";
-            latModes[2] = "Hold at";
-            latModes[3] = "Fly heading";
-            latModes[4] = "Turn left heading";
-            latModes[5] = "Turn right heading";
+            latModes = new Array<String>(6);
+            latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Hold at", "Fly heading");
+            latModes.add("Turn left heading", "Turn right heading");
 
-            altModes[0] = "Descend via STAR";
+            altModes.add("Descend via STAR");
 
-            spdModes[0] = "STAR speed restrictions";
+            spdModes.add("STAR speed restrictions");
         } else if (type == 2) {
             //Departure
-            latModes = new String[4];
-            latModes[0] = aircraft.getSidStar().getName() + " departure";
-            latModes[1] = "Fly heading";
-            latModes[2] = "Turn left heading";
-            latModes[3] = "Turn right heading";
+            latModes = new Array<String>(4);
+            latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
 
-            altModes[0] = "Climb via SID";
+            altModes.add("Climb via SID");
 
-            spdModes[0] = "SID speed restrictions";
+            spdModes.add("SID speed restrictions");
+        } else {
+            //Nani
+            Gdx.app.log("Navstate type error", "Unknown navstate type specified!");
+            latModes = new Array<String>(1);
         }
-        altModes[1] = "Climb to";
-        altModes[2] = "Expedite climb to";
-        altModes[3] = "Descend to";
-        altModes[4] = "Expedite descend to";
+        altModes.add("Climb to", "Expedite climb to", "Descend to", "Expedite descend to");
 
-        spdModes[1] = "No speed restrictions";
+        spdModes.add("No speed restrictions");
 
-        latMode = latModes[0];
-        altMode = altModes[0];
-        spdMode = spdModes[0];
+        latMode = latModes.get(0);
+        altMode = altModes.get(0);
+        spdMode = spdModes.get(0);
     }
 
-    public String[] getLatModes() {
+    public Array<String> getLatModes() {
         return latModes;
     }
 
-    public void setLatModes(String[] latModes) {
+    public void setLatModes(Array<String> latModes) {
         this.latModes = latModes;
     }
 
@@ -64,11 +61,11 @@ public class NavState {
         this.latMode = latMode;
     }
 
-    public String[] getAltModes() {
+    public Array<String> getAltModes() {
         return altModes;
     }
 
-    public void setAltModes(String[] altModes) {
+    public void setAltModes(Array<String> altModes) {
         this.altModes = altModes;
     }
 
@@ -80,11 +77,11 @@ public class NavState {
         this.altMode = altMode;
     }
 
-    public String[] getSpdModes() {
+    public Array<String> getSpdModes() {
         return spdModes;
     }
 
-    public void setSpdModes(String[] spdModes) {
+    public void setSpdModes(Array<String> spdModes) {
         this.spdModes = spdModes;
     }
 

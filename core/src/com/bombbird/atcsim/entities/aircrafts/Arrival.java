@@ -80,8 +80,9 @@ public class Arrival extends Aircraft {
     public void updateDirect() {
         super.updateDirect();
         if (getDirect() == null) {
-            setLatMode("vector");
             setClearedHeading((int) getHeading());
+            updateVectorMode();
+            removeSidStarMode();
         }
     }
 
