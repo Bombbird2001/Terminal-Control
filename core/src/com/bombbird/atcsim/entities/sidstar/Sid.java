@@ -17,7 +17,7 @@ public class Sid extends SidStar {
     }
 
     @Override
-    void drawOutbound(float previousX, float previousY, int outbound) {
+    public void drawOutbound(float previousX, float previousY, int outbound) {
         //Calculate spawn border
         if (outbound != -1) {
             int[] xBorder = {1260, 4500};

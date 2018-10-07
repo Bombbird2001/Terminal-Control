@@ -11,7 +11,7 @@ public class NavState {
     private Array<String> spdModes;
     private String spdMode;
 
-    NavState(int type, Aircraft aircraft) {
+    public NavState(int type, Aircraft aircraft) {
         altModes = new Array<String>(5);
         spdModes = new Array<String>(3);
         if (type == 1) {

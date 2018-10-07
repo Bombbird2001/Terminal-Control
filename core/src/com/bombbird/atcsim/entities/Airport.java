@@ -76,7 +76,7 @@ public class Airport {
         }
     }
 
-    void setMetar(JSONObject metar) {
+    public void setMetar(JSONObject metar) {
         this.metar = metar.getJSONObject(getIcao());
         System.out.println("METAR of " + getIcao() + ": " + this.metar.toString());
         //Update active runways if METAR is updated

@@ -80,7 +80,7 @@ public class Runway extends Actor {
         Runway.halfWidth = halfWidth;
     }
 
-    void setActive(boolean landing, boolean takeoff) {
+    public void setActive(boolean landing, boolean takeoff) {
         this.setLanding(landing);
         this.setTakeoff(takeoff);
         setActive(landing || takeoff);
@@ -91,12 +91,12 @@ public class Runway extends Actor {
         getLabel().draw(batch, 1);
     }
 
-    void renderShape() {
+    public void renderShape() {
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.polygon(getPolygon().getVertices());
     }
 
-    boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 

@@ -90,7 +90,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loadingPercent = "0%";
     }
 
-    void loadRange() {
+    public void loadRange() {
         //Load radar screen range circles
         rangeCircles[0] = new RangeCircle(10, -255);
         rangeCircles[1] = new RangeCircle(30, -900);

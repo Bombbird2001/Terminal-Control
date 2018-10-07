@@ -75,6 +75,8 @@ public class Aircraft extends Actor {
     private double track;
     private int sidStarIndex;
     private Waypoint direct;
+    private Waypoint afterWaypoint;
+    private int afterWptHdg;
 
     //Altitude
     private float altitude;
@@ -147,6 +149,7 @@ public class Aircraft extends Actor {
         targetHeading = 0;
         clearedHeading = (int)(heading);
         track = 0;
+        afterWptHdg = 360;
         altitude = 10000;
         clearedAltitude = 10000;
         targetAltitude = 10000;
@@ -248,7 +251,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    double update() {
+    public double update() {
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
         if (tkofLdg) {
@@ -271,7 +274,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    void updateTkofLdg() {
+    public void updateTkofLdg() {
 
     }
 
@@ -373,13 +376,7 @@ public class Aircraft extends Actor {
             double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
             double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.5 + 15;
             if (distance <= requiredDistance) {
-                if (navState.getLatMode().equals(getSidStar().getName() + " arrival") || navState.getLatMode().equals(getSidStar().getName() + " departure")) {
-                    updateDirect();
-                } else if (navState.getLatMode().equals("After waypoint, fly heading")) {
-                    latMode = "vectors";
-                    navState.setLatMode("Fly heading");
-                    //TODO: Set selected heading
-                }
+                updateDirect();
             }
         }
 
@@ -392,11 +389,14 @@ public class Aircraft extends Actor {
         return new double[] {targetHeading, angleDiff};
     }
 
-    double findNextTargetHdg() {
+    public double findNextTargetHdg() {
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             return -1;
         } else {
+            if (direct.equals(afterWaypoint)) {
+                return afterWptHdg;
+            }
             float deltaX = nextWpt.getPosX() - getDirect().getPosX();
             float deltaY = nextWpt.getPosY() - getDirect().getPosY();
             double nextTarget;
@@ -503,9 +503,16 @@ public class Aircraft extends Actor {
     public void updateDirect() {
         direct.setSelected(false);
         sidStarIndex++;
-        direct = getSidStar().getWaypoint(sidStarIndex);
-        if (direct != null) {
-            direct.setSelected(true);
+        if (direct.equals(afterWaypoint) && navState.getLatMode().equals("After waypoint, fly heading")) {
+            clearedHeading = afterWptHdg;
+            updateVectorMode();
+            navState.getLatModes().removeValue("After waypoint, fly heading", false);
+            navState.getLatModes().removeValue("Hold at", false);
+        } else {
+            direct = getSidStar().getWaypoint(sidStarIndex);
+            if (direct != null) {
+                direct.setSelected(true);
+            }
         }
         if (selected && (controlState == 1 || controlState == 2)) {
             ui.updateState();
@@ -590,7 +597,11 @@ public class Aircraft extends Actor {
         if (latMode.equals("vector")) {
             labelText[5] = Integer.toString(clearedHeading);
         } else if (latMode.equals("sidstar")) {
-            labelText[5] = direct.getName();
+            if (direct.equals(afterWaypoint) && navState.getLatMode().equals("After waypoint, fly heading")) {
+                labelText[5] = direct.getName() + Integer.toString(afterWptHdg);
+            } else {
+                labelText[5] = direct.getName();
+            }
         }
         labelText[6] = Integer.toString((int) gs);
         labelText[7] = Integer.toString(getClearedIas());
@@ -1009,5 +1020,21 @@ public class Aircraft extends Actor {
 
     public void setSidStarIndex(int sidStarIndex) {
         this.sidStarIndex = sidStarIndex;
+    }
+
+    public Waypoint getAfterWaypoint() {
+        return afterWaypoint;
+    }
+
+    public void setAfterWaypoint(Waypoint afterWaypoint) {
+        this.afterWaypoint = afterWaypoint;
+    }
+
+    public int getAfterWptHdg() {
+        return afterWptHdg;
+    }
+
+    public void setAfterWptHdg(int afterWptHdg) {
+        this.afterWptHdg = afterWptHdg;
     }
 }

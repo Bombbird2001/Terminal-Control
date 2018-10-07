@@ -84,7 +84,7 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    void updateTkofLdg() {
+    public void updateTkofLdg() {
         //Called to check for takeoff landing status
         if (getIas() > getV2() - 10 && !v2set) {
             setOnGround(false);
@@ -132,7 +132,7 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    double findNextTargetHdg() {
+    public double findNextTargetHdg() {
         double result = super.findNextTargetHdg();
         if (result < -0.5) {
             return outboundHdg;

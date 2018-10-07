@@ -44,7 +44,7 @@ public class SidStar {
         drawOutbound(previousX, previousY, outbound);
     }
 
-    void drawOutbound(float previousX, float previousY, int outbound) {
+    public void drawOutbound(float previousX, float previousY, int outbound) {
 
     }
 

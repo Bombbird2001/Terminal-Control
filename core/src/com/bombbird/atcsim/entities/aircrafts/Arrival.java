@@ -87,7 +87,7 @@ public class Arrival extends Aircraft {
     }
 
     @Override
-    double findNextTargetHdg() {
+    public double findNextTargetHdg() {
         double result = super.findNextTargetHdg();
         if (result < -0.5) {
             return getHeading();
