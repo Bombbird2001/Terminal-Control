@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.GameScreen;
+import com.bombbird.atcsim.screens.RadarScreen;
 
 public class SidStar {
     private String name;
@@ -80,12 +81,19 @@ public class SidStar {
         return newRange;
     }
 
-    public Array<int[]> getRestrictions() {
-        //Returns array of altitude, speed restrictions
-        return restrictions;
+    public int findWptIndex(String wptName) {
+        return waypoints.indexOf(RadarScreen.waypoints.get(wptName), false);
     }
 
-    public int findWptIndex(Waypoint waypoint) {
-        return waypoints.indexOf(waypoint, false);
+    public int getWptMinAlt(String wptName) {
+        return restrictions.get(findWptIndex(wptName))[0];
+    }
+
+    public int getWptMaxAlt(String wptName) {
+        return restrictions.get(findWptIndex(wptName))[1];
+    }
+
+    public int getWptMaxSpd(String wptName) {
+        return restrictions.get(findWptIndex(wptName))[2];
     }
 }

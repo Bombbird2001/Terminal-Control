@@ -24,6 +24,10 @@ public class Ui implements Disposable {
     private Image paneImage;
     private SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
 
+    private TextButton latTab;
+    private TextButton altTab;
+    private TextButton spdTab;
+
     private SelectBox<String> settingsBox;
     private SelectBox<String> valueBox;
     private Label hdgBox;
@@ -62,6 +66,7 @@ public class Ui implements Disposable {
     private int clearedAlt;
     private boolean altModeChanged;
     private boolean altChanged;
+    private Array<String> alts;
 
     private String spdMode;
     private int clearedSpd;
@@ -79,6 +84,7 @@ public class Ui implements Disposable {
     }
 
     public void updateMetar() {
+        //Updates text in METAR label
         for (Label label: metarInfos) {
             //Get airport: ICAO code is first 4 letters of label's text
             Airport airport = RadarScreen.airports.get(label.getText().toString().substring(0, 4));
@@ -143,7 +149,12 @@ public class Ui implements Disposable {
     public void setSelectedPane(Aircraft aircraft) {
         //Sets visibility of UI pane
         if (aircraft != null) {
-            selectedAircraft = aircraft;
+            if (!aircraft.equals(selectedAircraft)) {
+                tab = 0;
+                selectedAircraft = aircraft;
+            }
+            //Make tab buttons visible, then update them to show correct colour
+            showTabBoxes(true);
             //Aircraft selected; show default lat mode pane first
             settingsBox.setVisible(true);
             showChangesButtons(true);
@@ -151,11 +162,19 @@ public class Ui implements Disposable {
         } else {
             //Aircraft unselected
             selectedAircraft = null;
+            showTabBoxes(false);
             settingsBox.setVisible(false);
             valueBox.setVisible(false);
             showHdgBoxes(false);
             showChangesButtons(false);
         }
+    }
+
+    private void showTabBoxes(boolean show) {
+        //Show/hide tab selection buttons
+        latTab.setVisible(show);
+        altTab.setVisible(show);
+        spdTab.setVisible(show);
     }
 
     private void showHdgBoxes(boolean show) {
@@ -219,6 +238,7 @@ public class Ui implements Disposable {
 
         waypoints = new Array<String>();
         holdingWaypoints = new Array<String>();
+        alts = new Array<String>();
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = AtcSim.fonts.defaultFont20;
@@ -248,7 +268,7 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(valueBox);
     }
 
-    private void loadButtons() {
+    private void loadHdgElements() {
         //Label for heading
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont40;
@@ -343,15 +363,17 @@ public class Ui implements Disposable {
             }
         });
         RadarScreen.uiStage.addActor(hdg5minus);
+    }
 
-        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
-        textButtonStyle2.font = AtcSim.fonts.defaultFont20;
-        textButtonStyle2.fontColor = Color.BLACK;
-        textButtonStyle2.up = hdgBoxBackgroundDrawable;
-        textButtonStyle2.down = AtcSim.skin.getDrawable("Button_down");
+    private void loadChangeButtons() {
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.up = hdgBoxBackgroundDrawable;
+        textButtonStyle.down = AtcSim.skin.getDrawable("Button_down");
 
         //Transmit button
-        cfmChange = new TextButton("Transmit", textButtonStyle2);
+        cfmChange = new TextButton("Transmit", textButtonStyle);
         cfmChange.setSize(0.25f * getPaneWidth(), 370);
         cfmChange.setPosition(0.1f * getPaneWidth(), 3240 - 3070);
         cfmChange.addListener(new ChangeListener() {
@@ -364,7 +386,7 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(cfmChange);
 
         //Undo all changes button
-        resetAll = new TextButton("Undo all\nchanges", textButtonStyle2);
+        resetAll = new TextButton("Undo all\nchanges", textButtonStyle);
         resetAll.setSize(0.25f * getPaneWidth(), 370);
         resetAll.setPosition(0.65f * getPaneWidth(), 3240 - 3070);
         resetAll.addListener(new ChangeListener() {
@@ -377,14 +399,14 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(resetAll);
 
         //Separate buttonstyle for reset tab
-        TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
-        textButtonStyle3.font = AtcSim.fonts.defaultFont20;
-        textButtonStyle3.fontColor = Color.BLACK;
-        textButtonStyle3.up = hdgBoxBackgroundDrawable;
-        textButtonStyle3.down = AtcSim.skin.getDrawable("Button_down");
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        textButtonStyle2.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle2.fontColor = Color.BLACK;
+        textButtonStyle2.up = hdgBoxBackgroundDrawable;
+        textButtonStyle2.down = AtcSim.skin.getDrawable("Button_down");
 
         //Undo this tab button
-        resetTab = new TextButton("Undo\nthis tab", textButtonStyle3);
+        resetTab = new TextButton("Undo\nthis tab", textButtonStyle2);
         resetTab.setSize(0.25f * getPaneWidth(), 370);
         resetTab.setPosition(0.375f * getPaneWidth(), 3240 - 3070);
         resetTab.addListener(new ChangeListener() {
@@ -397,13 +419,127 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(resetTab);
     }
 
+    private void loadTabButtons() {
+        //Lat mode
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.up = hdgBoxBackgroundDrawable;
+        textButtonStyle.down = hdgBoxBackgroundDrawable;
+
+        latTab = new TextButton("Lateral", textButtonStyle);
+        latTab.setSize(0.25f * getPaneWidth(), 370);
+        latTab.setPosition(0.1f * getPaneWidth(), 3240 - 400);
+        latTab.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (tab != 0) {
+                    //Run only if tab is not lat
+                    tab = 0;
+                    updateTabButtons();
+                    updateElements();
+                    updateElementColours();
+                }
+                event.handle();
+            }
+        });
+        setTabColours(latTab, true);
+        RadarScreen.uiStage.addActor(latTab);
+
+        //Alt mode
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        textButtonStyle2.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle2.fontColor = Color.BLACK;
+        textButtonStyle2.up = hdgBoxBackgroundDrawable;
+        textButtonStyle2.down = hdgBoxBackgroundDrawable;
+
+        altTab = new TextButton("Altitude", textButtonStyle2);
+        altTab.setSize(0.25f * getPaneWidth(), 370);
+        altTab.setPosition(0.375f * getPaneWidth(), 3240 - 400);
+        altTab.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (tab != 1) {
+                    //Run only if tab is not alt
+                    tab = 1;
+                    updateTabButtons();
+                    updateElements();
+                    updateElementColours();
+                }
+                event.handle();
+            }
+        });
+        RadarScreen.uiStage.addActor(altTab);
+
+        //Spd mode
+        TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
+        textButtonStyle3.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle3.fontColor = Color.BLACK;
+        textButtonStyle3.up = hdgBoxBackgroundDrawable;
+        textButtonStyle3.down = hdgBoxBackgroundDrawable;
+
+        spdTab = new TextButton("Speed", textButtonStyle3);
+        spdTab.setSize(0.25f * getPaneWidth(), 370);
+        spdTab.setPosition(0.65f * getPaneWidth(), 3240 - 400);
+        spdTab.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (tab != 2) {
+                    //Run only if tab is not spd
+                    tab = 2;
+                    updateTabButtons();
+                    updateElements();
+                    updateElementColours();
+                }
+                event.handle();
+            }
+        });
+        RadarScreen.uiStage.addActor(spdTab);
+    }
+
+    private void updateTabButtons() {
+        if (tab == 0) {
+            setTabColours(latTab, true);
+            setTabColours(altTab, false);
+            setTabColours(spdTab, false);
+        } else if (tab == 1) {
+            setTabColours(latTab, false);
+            setTabColours(altTab, true);
+            setTabColours(spdTab, false);
+        } else if (tab == 2) {
+            setTabColours(latTab, false);
+            setTabColours(altTab, false);
+            setTabColours(spdTab, true);
+        } else {
+            Gdx.app.log("Invalid tab", "Unknown tab number " + Integer.toString(tab) + " set!");
+        }
+    }
+
+    private void setTabColours(TextButton textButton, boolean selected) {
+        if (selected) {
+            textButton.getStyle().down = AtcSim.skin.getDrawable("Button_down");
+            textButton.getStyle().up = AtcSim.skin.getDrawable("Button_down");
+            textButton.getStyle().fontColor = Color.WHITE;
+        } else {
+            textButton.getStyle().down = hdgBoxBackgroundDrawable;
+            textButton.getStyle().up = hdgBoxBackgroundDrawable;
+            textButton.getStyle().fontColor = Color.BLACK;
+        }
+    }
+
+    private void loadButtons() {
+        loadHdgElements();
+
+        loadChangeButtons();
+
+        loadTabButtons();
+    }
+
     public void updateState() {
         //Called when aircraft navstate changes not due to player, updates choices so that they are appropriate
         getChoices();
-        resetting = true;
         updateElements();
         compareWithAC();
-        resetting = false;
         updateElementColours();
     }
 
@@ -413,7 +549,7 @@ public class Ui implements Disposable {
             selectedAircraft.setLatMode("sidstar");
             selectedAircraft.setDirect(RadarScreen.waypoints.get(clearedWpt));
             selectedAircraft.updateSelectedWaypoints(null);
-            selectedAircraft.setSidStarIndex(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getDirect()));
+            selectedAircraft.setSidStarIndex(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getDirect().getName()));
             if (!selectedAircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
                 selectedAircraft.getNavState().getLatModes().add("After waypoint, fly heading");
             }
@@ -438,34 +574,27 @@ public class Ui implements Disposable {
         selectedAircraft.getNavState().setLatMode(latMode);
 
         //Alt mode
-        if (altModeChanged) {
-            if (altMode.equals("Climb via SID") || altMode.equals("Descend via STAR")) {
-                selectedAircraft.setAltMode("sidstar");
-            } else {
-                selectedAircraft.setAltMode("open");
-                selectedAircraft.setExpedite(altMode.contains("Expedite"));
-            }
-            selectedAircraft.getNavState().setAltMode(altMode);
+        if (altMode.equals("Climb via SID") || altMode.equals("Descend via STAR")) {
+            selectedAircraft.setAltMode("sidstar");
+        } else {
+            selectedAircraft.setAltMode("open");
+            selectedAircraft.setExpedite(altMode.contains("Expedite"));
         }
+        selectedAircraft.getNavState().setAltMode(altMode);
 
-        if (altChanged) {
-            selectedAircraft.setClearedAltitude(clearedAlt);
-        }
+        selectedAircraft.setClearedAltitude(clearedAlt);
 
         //Spd mode
-        if (spdModeChanged) {
-            selectedAircraft.getNavState().setSpdMode(spdMode);
-        }
+        selectedAircraft.getNavState().setSpdMode(spdMode);
 
-        if (spdChanged) {
-            selectedAircraft.setClearedIas(clearedSpd);
-        }
+        selectedAircraft.setClearedIas(clearedSpd);
 
         resetAll();
     }
 
     private void resetTab(int tab) {
         //Reset current tab to original aircraft state
+        resetting = true;
         if (tab == 0) {
             settingsBox.setSelected(selectedAircraft.getNavState().getLatMode());
             clearedHdg = selectedAircraft.getClearedHeading();
@@ -483,30 +612,30 @@ public class Ui implements Disposable {
         } else if (tab == 1) {
             settingsBox.setSelected(selectedAircraft.getNavState().getAltMode());
             clearedAlt = selectedAircraft.getClearedAltitude();
+            valueBox.setSelected(Integer.toString(clearedAlt));
         } else if (tab == 2) {
             settingsBox.setSelected(selectedAircraft.getNavState().getSpdMode());
             clearedSpd = selectedAircraft.getClearedIas();
+            valueBox.setSelected(Integer.toString(clearedSpd));
         }
         getChoices();
-        updateElements();
-        compareWithAC();
-        updateElementColours();
-    }
-
-    private void resetAll() {
-        //Reset all tabs to original aircraft state
-        resetting = true;
-        getACState();
         updateElements();
         compareWithAC();
         updateElementColours();
         resetting = false;
     }
 
+    private void resetAll() {
+        //Reset all tabs to original aircraft state
+        getACState();
+        updateTabButtons();
+        updateElements();
+        compareWithAC();
+        updateElementColours();
+    }
+
     private void getACState() {
         //Gets initial navstate from aircraft (when first selected)
-        tab = 0;
-
         latMode = selectedAircraft.getNavState().getLatMode();
         latModeChanged = false;
         clearedHdg = selectedAircraft.getClearedHeading();
@@ -546,13 +675,16 @@ public class Ui implements Disposable {
         } else if (tab == 1) {
             //Alt mode tab
             altMode = settingsBox.getSelected();
+            clearedAlt = Integer.parseInt(valueBox.getSelected());
         } else if (tab == 2) {
             //Spd mode tab
             spdMode = settingsBox.getSelected();
+            clearedSpd = Integer.parseInt(valueBox.getSelected());
         }
     }
 
     private void updateElements() {
+        resetting = true;
         settingsBox.setVisible(true);
         if (tab == 0) {
             //Lat mode tab
@@ -588,11 +720,33 @@ public class Ui implements Disposable {
             //Alt mode tab
             settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
             settingsBox.setSelected(altMode);
+            showHdgBoxes(false);
+            valueBox.setVisible(true);
+            alts.clear();
+            int lowestAlt = selectedAircraft.getLowestAlt();
+            if (lowestAlt % 1000 != 0) {
+                alts.add(Integer.toString(lowestAlt));
+                int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
+                while (altTracker <= selectedAircraft.getHighestAlt()) {
+                    alts.add(Integer.toString(altTracker));
+                    altTracker += 1000;
+                }
+            } else {
+                while (lowestAlt <= selectedAircraft.getHighestAlt()) {
+                    alts.add(Integer.toString(lowestAlt));
+                    lowestAlt += 1000;
+                }
+            }
+            valueBox.setItems(alts);
+            valueBox.setSelected(Integer.toString(clearedAlt));
         } else if (tab == 2) {
             //Spd mode tab
             settingsBox.setItems(selectedAircraft.getNavState().getSpdModes());
             settingsBox.setSelected(spdMode);
+            showHdgBoxes(false);
+            valueBox.setVisible(true);
         }
+        resetting = false;
     }
 
     private void compareWithAC() {
@@ -614,6 +768,7 @@ public class Ui implements Disposable {
     }
 
     private void updateElementColours() {
+        resetting = true;
         if (tab == 0) {
             //Lat mode selectbox colour
             if (latModeChanged) {
@@ -718,6 +873,7 @@ public class Ui implements Disposable {
                 resetTab.getStyle().fontColor = Color.WHITE;
             }
         }
+        resetting = false;
     }
 
     public void updatePaneWidth() {
@@ -811,5 +967,13 @@ public class Ui implements Disposable {
 
     public SelectBox<String> getValueBox() {
         return valueBox;
+    }
+
+    public int getTab() {
+        return tab;
+    }
+
+    public void setTab(int tab) {
+        this.tab = tab;
     }
 }

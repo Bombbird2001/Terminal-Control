@@ -85,6 +85,8 @@ public class Aircraft extends Actor {
     private float verticalSpeed;
     private boolean expedite;
     private String altMode;
+    private int lowestAlt;
+    private int highestAlt;
 
     //Speed
     private float ias;
@@ -97,7 +99,7 @@ public class Aircraft extends Actor {
     private String spdMode;
 
     Aircraft(String callsign, String icaoType, Airport airport) {
-        if (!isLoadedIcons()) {
+        if (!loadedIcons) {
             skin.addRegions(iconAtlas);
             buttonStyleCtrl = new ImageButton.ImageButtonStyle();
             buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
@@ -289,7 +291,7 @@ public class Aircraft extends Actor {
         }
         float max = 1.5f;
         float min = -2.25f;
-        if (isTkofLdg()) {
+        if (tkofLdg) {
             max = 3;
             min = -4.5f;
         }
@@ -514,10 +516,9 @@ public class Aircraft extends Actor {
                 direct.setSelected(true);
             }
         }
+        updateAltitudeSelections(sidStarIndex);
         if (selected && (controlState == 1 || controlState == 2)) {
-            ui.getSettingsBox().setSelected(navState.getLatMode());
-            ui.setClearedHdg(clearedHeading);
-            ui.getValueBox().setSelected(direct.getName());
+            updateUISelections();
             ui.updateState();
         }
     }
@@ -641,6 +642,29 @@ public class Aircraft extends Actor {
         }
         if (direct != null) {
             direct.setSelected(true);
+        }
+    }
+
+    public void updateAltitudeSelections(int index) {
+        if (clearedAltitude > highestAlt) {
+            clearedAltitude = highestAlt;
+        } else if (clearedAltitude < lowestAlt) {
+            clearedAltitude = lowestAlt;
+        }
+    }
+
+    private void updateUISelections() {
+        if (ui.getTab() == 0) {
+            //Nav tab mode selected
+            ui.getSettingsBox().setSelected(navState.getLatMode());
+            ui.setClearedHdg(clearedHeading);
+            ui.getValueBox().setSelected(direct.getName());
+        } else if (ui.getTab() == 1) {
+            //Alt mode tab selected
+            ui.getValueBox().setSelected(Integer.toString(clearedAltitude));
+        } else if (ui.getTab() == 2) {
+            //Spd mode tab selected
+            ui.getValueBox().setSelected(Integer.toString(clearedIas));
         }
     }
 
@@ -1036,5 +1060,21 @@ public class Aircraft extends Actor {
 
     public void setAfterWptHdg(int afterWptHdg) {
         this.afterWptHdg = afterWptHdg;
+    }
+
+    public int getLowestAlt() {
+        return lowestAlt;
+    }
+
+    public void setLowestAlt(int lowestAlt) {
+        this.lowestAlt = lowestAlt;
+    }
+
+    public int getHighestAlt() {
+        return highestAlt;
+    }
+
+    public void setHighestAlt(int highestAlt) {
+        this.highestAlt = highestAlt;
     }
 }

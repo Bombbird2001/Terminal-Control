@@ -4,10 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.ILS;
-import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.entities.sidstar.Star;
-import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
 import java.util.HashMap;
@@ -38,6 +36,7 @@ public class Arrival extends Aircraft {
         setDirect(star.getWaypoint(getSidStarIndex()));
         setHeading(star.getInboundHdg());
         setClearedHeading((int)getHeading());
+        updateAltitudeSelections(0);
         System.out.println("Heading: " + getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
 
@@ -94,6 +93,25 @@ public class Arrival extends Aircraft {
         } else {
             return result;
         }
+    }
+
+    @Override
+    public void updateAltitudeSelections(int index) {
+        if (index != -1) {
+            setHighestAlt(star.getWptMaxAlt(star.getWaypoint(index).getName()));
+            if (getHighestAlt() == -1) {
+                setHighestAlt(RadarScreen.maxArrAlt);
+            }
+            setLowestAlt(star.getWptMinAlt(star.getWaypoint(index).getName()));
+            if (getLowestAlt() == -1) {
+                //TODO Set lowest alt depending on status
+                setLowestAlt(2000);
+            }
+        } else {
+            setHighestAlt(RadarScreen.maxArrAlt);
+            setLowestAlt(2000);
+        }
+        super.updateAltitudeSelections(index);
     }
 
     @Override

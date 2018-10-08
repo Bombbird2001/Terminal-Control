@@ -4,10 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
-import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.Sid;
 import com.bombbird.atcsim.entities.sidstar.SidStar;
-import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 
 import java.util.HashMap;
@@ -78,6 +76,7 @@ public class Departure extends Aircraft {
         setClearedIas(getV2());
         setTargetIas(getV2());
         setClearedAltitude(3000);
+        updateAltitudeSelections(0);
         setTargetAltitude(getClearedAltitude());
         if (sid.getInitClimb()[0] != -1) {
             setClearedHeading(sid.getInitClimb()[0]);
@@ -143,6 +142,20 @@ public class Departure extends Aircraft {
         } else {
             return result;
         }
+    }
+
+    @Override
+    public void updateAltitudeSelections(int index) {
+        if (index != -1) {
+            setHighestAlt(sid.getWptMaxAlt(sid.getWaypoint(index).getName()));
+            if (getHighestAlt() == -1) {
+                setHighestAlt(RadarScreen.maxDeptAlt);
+            }
+        } else {
+            setHighestAlt(RadarScreen.maxDeptAlt);
+        }
+        setLowestAlt(getClearedAltitude());
+        super.updateAltitudeSelections(index);
     }
 
     @Override
