@@ -18,8 +18,6 @@ import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.datatransfer.StringSelection;
-
 public class Ui implements Disposable {
     private Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
     private Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
@@ -400,13 +398,13 @@ public class Ui implements Disposable {
     }
 
     public void updateState() {
-        //Called when aircraft navstate changes not due to player, updates choices so that they are appropriate TODO Fix bug where selected mode does not update
-        resetting = true;
+        //Called when aircraft navstate changes not due to player, updates choices so that they are appropriate
         getChoices();
+        resetting = true;
         updateElements();
         compareWithAC();
-        updateElementColours();
         resetting = false;
+        updateElementColours();
     }
 
     private void updateMode() {
@@ -536,16 +534,10 @@ public class Ui implements Disposable {
     }
 
     private void getChoices() {
+        //Gets the choices from the boxes, sets variables to them; called after selections in selectbox changes/heading value changes
         if (tab == 0) {
             //Lat mode tab
             latMode = settingsBox.getSelected();
-            if (!selectedAircraft.getNavState().getLatModes().contains(latMode, false)) {
-                //Original option removed, set to new one
-                latMode = selectedAircraft.getNavState().getLatMode();
-                System.out.println("Not found");
-            } else {
-                System.out.println("Found");
-            }
             if (latMode.contains("waypoint")) {
                 afterWpt = valueBox.getSelected();
             } else if (latMode.contains("arrival") || latMode.contains("departure")) {
@@ -803,5 +795,21 @@ public class Ui implements Disposable {
     public void dispose() {
         hdgBoxBackground.dispose();
         paneTexture.dispose();
+    }
+
+    public int getClearedHdg() {
+        return clearedHdg;
+    }
+
+    public void setClearedHdg(int clearedHdg) {
+        this.clearedHdg = clearedHdg;
+    }
+
+    public SelectBox<String> getSettingsBox() {
+        return settingsBox;
+    }
+
+    public SelectBox<String> getValueBox() {
+        return valueBox;
     }
 }

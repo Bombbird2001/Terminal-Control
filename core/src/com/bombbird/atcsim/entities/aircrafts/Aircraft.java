@@ -505,9 +505,9 @@ public class Aircraft extends Actor {
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getLatMode().equals("After waypoint, fly heading")) {
             clearedHeading = afterWptHdg;
-            updateVectorMode();
             navState.getLatModes().removeValue("After waypoint, fly heading", false);
             navState.getLatModes().removeValue("Hold at", false);
+            updateVectorMode();
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
             if (direct != null) {
@@ -515,6 +515,9 @@ public class Aircraft extends Actor {
             }
         }
         if (selected && (controlState == 1 || controlState == 2)) {
+            ui.getSettingsBox().setSelected(navState.getLatMode());
+            ui.setClearedHdg(clearedHeading);
+            ui.getValueBox().setSelected(direct.getName());
             ui.updateState();
         }
     }
@@ -523,9 +526,6 @@ public class Aircraft extends Actor {
         //Switch aircraft latmode to vector mode
         latMode = "vector";
         navState.setLatMode("Fly heading");
-        if (selected && (controlState == 1 || controlState == 2)) {
-            ui.updateState();
-        }
     }
 
     public void removeSidStarMode() {

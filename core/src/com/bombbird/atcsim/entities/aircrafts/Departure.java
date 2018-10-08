@@ -79,7 +79,11 @@ public class Departure extends Aircraft {
         setTargetIas(getV2());
         setClearedAltitude(3000);
         setTargetAltitude(getClearedAltitude());
-        setClearedHeading(sid.getInitClimb()[0]);
+        if (sid.getInitClimb()[0] != -1) {
+            setClearedHeading(sid.getInitClimb()[0]);
+        } else {
+            setClearedHeading(getRunway().getHeading());
+        }
         setTkofLdg(true);
     }
 
