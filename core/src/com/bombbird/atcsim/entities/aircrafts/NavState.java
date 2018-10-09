@@ -36,7 +36,7 @@ public class NavState {
             Gdx.app.log("Navstate type error", "Unknown navstate type specified!");
             latModes = new Array<String>(1);
         }
-        altModes.add("Climb to", "Expedite climb to", "Descend to", "Expedite descend to");
+        altModes.add("Climb/descend to", "Expedite climb/descent to");
 
         spdModes.add("No speed restrictions");
 

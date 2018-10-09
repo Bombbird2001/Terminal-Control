@@ -83,6 +83,7 @@ public class Aircraft extends Actor {
     private int clearedAltitude;
     private int targetAltitude;
     private float verticalSpeed;
+    private float targetVertSpd;
     private boolean expedite;
     private String altMode;
     private int lowestAlt;
@@ -97,6 +98,7 @@ public class Aircraft extends Actor {
     private int targetIas;
     private float deltaIas;
     private String spdMode;
+    private int climbSpd;
 
     Aircraft(String callsign, String icaoType, Airport airport) {
         if (!loadedIcons) {
@@ -516,7 +518,6 @@ public class Aircraft extends Actor {
                 direct.setSelected(true);
             }
         }
-        updateAltitudeSelections(sidStarIndex);
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
@@ -642,14 +643,6 @@ public class Aircraft extends Actor {
         }
         if (direct != null) {
             direct.setSelected(true);
-        }
-    }
-
-    public void updateAltitudeSelections(int index) {
-        if (clearedAltitude > highestAlt) {
-            clearedAltitude = highestAlt;
-        } else if (clearedAltitude < lowestAlt) {
-            clearedAltitude = lowestAlt;
         }
     }
 
@@ -921,6 +914,7 @@ public class Aircraft extends Actor {
     }
 
     public void setClearedAltitude(int clearedAltitude) {
+        //TODO Set cleared alt to target alt
         this.clearedAltitude = clearedAltitude;
     }
 
@@ -1076,5 +1070,17 @@ public class Aircraft extends Actor {
 
     public void setHighestAlt(int highestAlt) {
         this.highestAlt = highestAlt;
+    }
+
+    public int getClimbSpd() {
+        return climbSpd;
+    }
+
+    public void setClimbSpd(int climbSpd) {
+        this.climbSpd = climbSpd;
+    }
+
+    public int getMaxWptSpd(String wpt) {
+        return getSidStar().getWptMaxSpd(wpt);
     }
 }

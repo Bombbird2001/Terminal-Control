@@ -75,8 +75,10 @@ public class Departure extends Aircraft {
         outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
         setTargetIas(getV2());
-        setClearedAltitude(3000);
-        updateAltitudeSelections(0);
+        setClearedAltitude(sid.getInitClimb()[1]);
+        if (getClearedAltitude() == -1) {
+            setClearedAltitude(3000);
+        }
         setTargetAltitude(getClearedAltitude());
         if (sid.getInitClimb()[0] != -1) {
             setClearedHeading(sid.getInitClimb()[0]);
@@ -101,8 +103,10 @@ public class Departure extends Aircraft {
         if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
             setDirect(sid.getWaypoint(0));
             setLatMode("sidstar");
-            setTargetIas(250);
-            setClearedIas(250);
+            if (getClearedIas() == getV2()) {
+                setTargetIas(250);
+                setClearedIas(250);
+            }
             sidSet = true;
         }
         if (contacted && v2set && sidSet) {
@@ -142,20 +146,6 @@ public class Departure extends Aircraft {
         } else {
             return result;
         }
-    }
-
-    @Override
-    public void updateAltitudeSelections(int index) {
-        if (index != -1) {
-            setHighestAlt(sid.getWptMaxAlt(sid.getWaypoint(index).getName()));
-            if (getHighestAlt() == -1) {
-                setHighestAlt(RadarScreen.maxDeptAlt);
-            }
-        } else {
-            setHighestAlt(RadarScreen.maxDeptAlt);
-        }
-        setLowestAlt(getClearedAltitude());
-        super.updateAltitudeSelections(index);
     }
 
     @Override

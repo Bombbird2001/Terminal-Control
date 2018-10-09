@@ -27,6 +27,7 @@ public class RadarScreen extends GameScreen {
     public static float magHdgDev;
     public static int maxDeptAlt;
     public static int maxArrAlt;
+    public static int minArrAlt;
     private Timer timer;
     private static Metar metar;
     private static Aircraft selectedAircraft;
@@ -86,9 +87,10 @@ public class RadarScreen extends GameScreen {
         int index = 0;
         for (String s: handle.readString().split("\\r?\\n")) {
             switch (index) {
-                case 0: maxArrAlt = Integer.parseInt(s); break;
-                case 1: maxDeptAlt = Integer.parseInt(s); break;
-                case 2: magHdgDev = Float.parseFloat(s); break;
+                case 0: minArrAlt = Integer.parseInt(s); break;
+                case 1: maxArrAlt = Integer.parseInt(s); break;
+                case 2: maxDeptAlt = Integer.parseInt(s); break;
+                case 3: magHdgDev = Float.parseFloat(s); break;
                 default:
                     int index1 = 0;
                     String icao = "";

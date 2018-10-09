@@ -16,6 +16,8 @@ import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
+import com.bombbird.atcsim.entities.aircrafts.Arrival;
+import com.bombbird.atcsim.entities.aircrafts.Departure;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui implements Disposable {
@@ -72,6 +74,7 @@ public class Ui implements Disposable {
     private int clearedSpd;
     private boolean spdModeChanged;
     private boolean spdChanged;
+    private Array<String> spds;
 
     private boolean resetting;
 
@@ -239,6 +242,7 @@ public class Ui implements Disposable {
         waypoints = new Array<String>();
         holdingWaypoints = new Array<String>();
         alts = new Array<String>();
+        spds = new Array<String>();
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = AtcSim.fonts.defaultFont20;
@@ -588,6 +592,7 @@ public class Ui implements Disposable {
         selectedAircraft.getNavState().setSpdMode(spdMode);
 
         selectedAircraft.setClearedIas(clearedSpd);
+        selectedAircraft.setTargetIas(clearedSpd);
 
         resetAll();
     }
@@ -629,6 +634,7 @@ public class Ui implements Disposable {
         //Reset all tabs to original aircraft state
         getACState();
         updateTabButtons();
+        updateSidStarOptions();
         updateElements();
         compareWithAC();
         updateElementColours();
@@ -667,11 +673,15 @@ public class Ui implements Disposable {
         if (tab == 0) {
             //Lat mode tab
             latMode = settingsBox.getSelected();
+
             if (latMode.contains("waypoint")) {
+                valueBox.setItems(holdingWaypoints);
                 afterWpt = valueBox.getSelected();
             } else if (latMode.contains("arrival") || latMode.contains("departure")) {
+                valueBox.setItems(waypoints);
                 clearedWpt = valueBox.getSelected();
             }
+            updateSidStarOptions();
         } else if (tab == 1) {
             //Alt mode tab
             altMode = settingsBox.getSelected();
@@ -723,16 +733,36 @@ public class Ui implements Disposable {
             showHdgBoxes(false);
             valueBox.setVisible(true);
             alts.clear();
-            int lowestAlt = selectedAircraft.getLowestAlt();
+            int lowestAlt;
+            int highestAlt;
+            if (selectedAircraft instanceof Departure) {
+                lowestAlt = selectedAircraft.getLowestAlt();
+                lowestAlt += 1000 - lowestAlt % 1000;
+                highestAlt = RadarScreen.maxDeptAlt;
+            } else if (selectedAircraft instanceof Arrival) {
+                lowestAlt = RadarScreen.minArrAlt;
+                if (altMode.contains("STAR")) {
+                    //Set alt restrictions in box
+                    highestAlt = (int)selectedAircraft.getAltitude();
+                    highestAlt -= highestAlt % 1000;
+                } else {
+                    highestAlt = RadarScreen.maxArrAlt;
+                }
+                //TODO Set minimum alt for each ILS if cleared app
+            } else {
+                lowestAlt = 0;
+                highestAlt = 10000;
+                Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
+            }
             if (lowestAlt % 1000 != 0) {
                 alts.add(Integer.toString(lowestAlt));
                 int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
-                while (altTracker <= selectedAircraft.getHighestAlt()) {
+                while (altTracker <= highestAlt) {
                     alts.add(Integer.toString(altTracker));
                     altTracker += 1000;
                 }
             } else {
-                while (lowestAlt <= selectedAircraft.getHighestAlt()) {
+                while (lowestAlt <= highestAlt) {
                     alts.add(Integer.toString(lowestAlt));
                     lowestAlt += 1000;
                 }
@@ -745,6 +775,54 @@ public class Ui implements Disposable {
             settingsBox.setSelected(spdMode);
             showHdgBoxes(false);
             valueBox.setVisible(true);
+            spds.clear();
+            int lowestSpd;
+            int highestSpd;
+            if (spdMode.contains("SID") || spdMode.contains("STAR")) {
+                //Set spd restrictions in box
+                if (latMode.equals("After waypoint, fly heading")) {
+                    highestSpd = selectedAircraft.getMaxWptSpd(afterWpt);
+                } else {
+                    highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
+                }
+                if (highestSpd == -1) {
+                    highestSpd = 250;
+                }
+            } else {
+                highestSpd = selectedAircraft.getClimbSpd();
+            }
+            if (selectedAircraft instanceof Departure) {
+                if (selectedAircraft.getClearedIas() <= selectedAircraft.getV2()) {
+                    lowestSpd = selectedAircraft.getV2();
+                } else {
+                    lowestSpd = 200;
+                }
+            } else if (selectedAircraft instanceof Arrival) {
+                //TODO Set minimum apch spd for ILS
+                //lowestSpd = selectedAircraft.getApchSpd();
+                lowestSpd = 160;
+            } else {
+                lowestSpd = 0;
+                Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
+            }
+            if (lowestSpd % 10 != 0) {
+                spds.add(Integer.toString(lowestSpd));
+                int spdTracker = lowestSpd + (10 - lowestSpd % 10);
+                while (spdTracker <= 250) {
+                    spds.add(Integer.toString(spdTracker));
+                    spdTracker += 10;
+                }
+            } else {
+                while (lowestSpd <= 250) {
+                    spds.add(Integer.toString(lowestSpd));
+                    lowestSpd += 10;
+                }
+            }
+            if (highestSpd > 250) {
+                spds.add(Integer.toString(highestSpd));
+            }
+            valueBox.setItems(spds);
+            valueBox.setSelected(Integer.toString(clearedSpd));
         }
         resetting = false;
     }
@@ -814,7 +892,12 @@ public class Ui implements Disposable {
                 settingsBox.getStyle().fontColor = Color.WHITE;
             }
 
-            //Alt box colour: TODO
+            //Alt box colour
+            if (altChanged) {
+                valueBox.getStyle().fontColor = Color.YELLOW;
+            } else {
+                valueBox.getStyle().fontColor = Color.WHITE;
+            }
         } else if (tab == 2) {
             //Spd mode selectbox colour
             if (spdModeChanged) {
@@ -823,7 +906,12 @@ public class Ui implements Disposable {
                 settingsBox.getStyle().fontColor = Color.WHITE;
             }
 
-            //Spd box colour: TODO
+            //Spd box colour
+            if (spdChanged) {
+                valueBox.getStyle().fontColor = Color.YELLOW;
+            } else {
+                valueBox.getStyle().fontColor = Color.WHITE;
+            }
         }
 
         //Update transmit, reset all buttons
@@ -842,37 +930,53 @@ public class Ui implements Disposable {
                 cfmButtonChange = wptChanged;
             }
         }
-        if (!cfmButtonChange) {
-            //If lat did not change at all, test for alt changes
-            cfmButtonChange = altModeChanged || altChanged;
-            if (tab == 0) {
-                resetTab.getStyle().fontColor = Color.WHITE;
-            }
-        } else if (tab == 0) {
-            //If tab is at lat page, set yellow
-            resetTab.getStyle().fontColor = Color.YELLOW;
-        }
-        if (!cfmButtonChange) {
-            //If both lat, alt did not change, test for spd changes
-            cfmButtonChange = spdModeChanged || spdChanged;
-            if (tab == 1) {
-                resetTab.getStyle().fontColor = Color.WHITE;
-            }
-        } else if (tab == 1) {
-            //If tab is at alt page, set yellow
-            resetTab.getStyle().fontColor = Color.YELLOW;
-        }
+
         if (cfmButtonChange) {
             cfmChange.getStyle().fontColor = Color.YELLOW;
-            if (tab == 2) {
-                resetTab.getStyle().fontColor = Color.YELLOW;
-            }
-        } else {
-            cfmChange.getStyle().fontColor = Color.WHITE;
-            if (tab == 2) {
-                resetTab.getStyle().fontColor = Color.WHITE;
-            }
         }
+
+        if (tab == 0 && cfmButtonChange) {
+            //Set colour if lat mode tab
+            resetTab.getStyle().fontColor = Color.YELLOW;
+            resetting = false;
+            return;
+        } else {
+            resetTab.getStyle().fontColor = Color.WHITE;
+        }
+
+        cfmButtonChange = altModeChanged || altChanged;
+
+        if (cfmButtonChange) {
+            cfmChange.getStyle().fontColor = Color.YELLOW;
+        }
+
+        if (tab == 1 && cfmButtonChange) {
+            //Set colour if alt mode tab
+            resetTab.getStyle().fontColor = Color.YELLOW;
+            resetting = false;
+            return;
+        } else {
+            resetTab.getStyle().fontColor = Color.WHITE;
+        }
+
+        cfmButtonChange = spdModeChanged || spdChanged;
+
+        if (cfmButtonChange) {
+            cfmChange.getStyle().fontColor = Color.YELLOW;
+        }
+
+        if (tab == 2 && cfmButtonChange) {
+            //Set colour if spd mode tab
+            resetTab.getStyle().fontColor = Color.YELLOW;
+            resetting = false;
+            return;
+        } else {
+            resetTab.getStyle().fontColor = Color.WHITE;
+        }
+
+        //If reaches here, all modes didn't change: set transmit/reset all button to white
+        cfmChange.getStyle().fontColor = Color.WHITE;
+
         resetting = false;
     }
 
@@ -941,6 +1045,28 @@ public class Ui implements Disposable {
         updateElements();
         compareWithAC();
         updateElementColours();
+    }
+
+    private void updateSidStarOptions() {
+        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
+            selectedAircraft.getNavState().getAltModes().add("Descend via STAR");
+        } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
+            selectedAircraft.getNavState().getAltModes().add("Climb via SID");
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure")) {
+            if (!selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false)) {
+                selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false);
+            }
+        }
+
+        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
+            selectedAircraft.getNavState().getSpdModes().add("STAR speed restrictions");
+        } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
+            selectedAircraft.getNavState().getSpdModes().add("SID speed restrictions");
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure")) {
+            if (!selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false)) {
+                selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false);
+            }
+        }
     }
 
     public float getPaneWidth() {
