@@ -76,7 +76,7 @@ public class Departure extends Aircraft {
         setClearedIas(getV2());
         setTargetIas(getV2());
         setClearedAltitude(sid.getInitClimb()[1]);
-        if (getClearedAltitude() == -1) {
+        if (getClearedAltitude() < 3000) {
             setClearedAltitude(3000);
         }
         setTargetAltitude(getClearedAltitude());

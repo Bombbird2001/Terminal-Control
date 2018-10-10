@@ -17,6 +17,7 @@ import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
+import com.bombbird.atcsim.screens.Ui.Ui;
 
 import java.util.HashMap;
 

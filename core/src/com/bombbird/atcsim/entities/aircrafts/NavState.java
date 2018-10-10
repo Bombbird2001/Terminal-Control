@@ -2,6 +2,8 @@ package com.bombbird.atcsim.entities.aircrafts;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import com.bombbird.atcsim.entities.Waypoint;
 
 public class NavState {
     private Array<String> latModes;
@@ -10,6 +12,21 @@ public class NavState {
     private String altMode;
     private Array<String> spdModes;
     private String spdMode;
+
+    //Temp variables for delayed pilot response
+    private Array<String> tmpLatMode;
+    private Array<Integer> tmpHdg;
+    private Array<Integer> tmpAftHdg;
+    private Array<Waypoint> tmpWpt;
+    private Array<Waypoint> tmpAftWpt;
+
+    private Array<String> tmpAltMode;
+    private Array<Integer> tmpAlt;
+
+    private Array<String> tmpSpdMode;
+    private Array<Integer> tmpSpd;
+
+    private Array<Timer> timers;
 
     public NavState(int type, Aircraft aircraft) {
         altModes = new Array<String>(5);

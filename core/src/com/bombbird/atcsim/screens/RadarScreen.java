@@ -18,6 +18,7 @@ import com.bombbird.atcsim.entities.aircrafts.Arrival;
 import com.bombbird.atcsim.entities.aircrafts.Departure;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
+import com.bombbird.atcsim.screens.Ui.Ui;
 import com.bombbird.atcsim.utilities.FileLoader;
 
 import java.util.*;

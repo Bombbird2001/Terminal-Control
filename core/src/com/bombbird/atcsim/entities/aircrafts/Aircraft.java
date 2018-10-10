@@ -19,6 +19,7 @@ import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.screens.Ui.LatTab;
 import com.bombbird.atcsim.utilities.MathTools;
 
 import static com.bombbird.atcsim.screens.GameScreen.*;
@@ -511,6 +512,12 @@ public class Aircraft extends Actor {
             clearedHeading = afterWptHdg;
             navState.getLatModes().removeValue("After waypoint, fly heading", false);
             navState.getLatModes().removeValue("Hold at", false);
+            if (navState.getAltMode().contains("STAR")) {
+                navState.setAltMode("Climb/descend to");
+            }
+            if (navState.getSpdMode().contains("STAR")) {
+                navState.setSpdMode("No speed restrictions");
+            }
             updateVectorMode();
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
@@ -647,18 +654,13 @@ public class Aircraft extends Actor {
     }
 
     private void updateUISelections() {
-        if (ui.getTab() == 0) {
-            //Nav tab mode selected
-            ui.getSettingsBox().setSelected(navState.getLatMode());
-            ui.setClearedHdg(clearedHeading);
-            ui.getValueBox().setSelected(direct.getName());
-        } else if (ui.getTab() == 1) {
-            //Alt mode tab selected
-            ui.getValueBox().setSelected(Integer.toString(clearedAltitude));
-        } else if (ui.getTab() == 2) {
-            //Spd mode tab selected
-            ui.getValueBox().setSelected(Integer.toString(clearedIas));
-        }
+        ui.latTab.getSettingsBox().setSelected(navState.getLatMode());
+        LatTab.clearedHdg = clearedHeading;
+        ui.latTab.getValueBox().setSelected(direct.getName());
+
+        ui.altTab.getValueBox().setSelected(Integer.toString(clearedAltitude));
+
+        ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
     }
 
     public Array<Waypoint> getRemainingWaypoints() {
