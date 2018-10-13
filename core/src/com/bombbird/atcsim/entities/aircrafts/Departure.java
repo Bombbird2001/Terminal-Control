@@ -45,8 +45,6 @@ public class Departure extends Aircraft {
                 }
             }
         }
-        
-        sid.printWpts();
 
         //Set initial IAS due to wind
         setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
@@ -108,6 +106,8 @@ public class Departure extends Aircraft {
                 setClearedIas(250);
             }
             sidSet = true;
+            updateAltRestrictions();
+            updateTargetAltitude();
         }
         if (contacted && v2set && sidSet) {
             setTkofLdg(false);
@@ -145,6 +145,44 @@ public class Departure extends Aircraft {
             return outboundHdg;
         } else {
             return result;
+        }
+    }
+
+    @Override
+    public void updateAltRestrictions() {
+        if (getNavState().getLatMode().contains("departure")) {
+            //Aircraft on SID
+            int highestAlt = -1;
+            int lowestAlt = -1;
+            if (getDirect() != null) {
+                highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
+                lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
+            }
+            if (highestAlt > -1) {
+                setHighestAlt(highestAlt);
+            } else {
+                setHighestAlt(RadarScreen.maxDeptAlt);
+            }
+            if (lowestAlt > -1 && sidSet && getAltitude() < lowestAlt) {
+                //If there is a waypoint with minimum altitude
+                setLowestAlt(lowestAlt);
+            } else {
+                int nextFL;
+                if (((int) getAltitude()) % 1000 == 0) {
+                    nextFL = (int) getAltitude();
+                } else {
+                    nextFL = (int) getAltitude() + 1000 - ((int) getAltitude()) % 1000;
+                }
+                if (getLowestAlt() < nextFL) {
+                    //If lowest alt value is less than the next flight level after current altitude that divisible by 10 (e.g. if at 5500 ft, next is 6000ft)
+                    if (!sidSet) {
+                        //If still climbing on init climb
+                        setLowestAlt(sid.getInitClimb()[1]);
+                    } else {
+                        setLowestAlt(nextFL);
+                    }
+                }
+            }
         }
     }
 

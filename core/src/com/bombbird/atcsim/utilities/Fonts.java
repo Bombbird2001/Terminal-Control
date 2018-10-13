@@ -8,26 +8,24 @@ import com.badlogic.gdx.utils.Disposable;
 import com.bombbird.atcsim.AtcSim;
 
 public class Fonts implements Disposable {
-    private FreeTypeFontGenerator blockyFont;
-    public BitmapFont blockyFont24;
     private FreeTypeFontGenerator defaultFont;
     public BitmapFont defaultFont6;
     public BitmapFont defaultFont8;
     public BitmapFont defaultFont10;
     public BitmapFont defaultFont12;
     public BitmapFont defaultFont20;
+    public BitmapFont defaultFont30;
     public BitmapFont defaultFont40;
 
     public Fonts() {
         if (!AtcSim.ishtml) {
-            blockyFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/blocky.ttf"));
-            blockyFont24 = generateFont(blockyFont, 96);
             defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
             defaultFont6 = generateFont(defaultFont, 24);
             defaultFont8 = generateFont(defaultFont, 32);
             defaultFont10 = generateFont(defaultFont, 40);
             defaultFont12 = generateFont(defaultFont, 48);
             defaultFont20 = generateFont(defaultFont, 80);
+            defaultFont30 = generateFont(defaultFont, 120);
             defaultFont40 = generateFont(defaultFont, 160);
         } else {
             defaultFont6 = new BitmapFont();
@@ -57,8 +55,6 @@ public class Fonts implements Disposable {
     @Override
     public void dispose() {
         if (!AtcSim.ishtml) {
-            blockyFont.dispose();
-            blockyFont24.dispose();
             defaultFont.dispose();
         }
         defaultFont6.dispose();

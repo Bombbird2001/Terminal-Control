@@ -80,6 +80,7 @@ public class Aircraft extends Actor {
     private int afterWptHdg;
 
     //Altitude
+    private float prevAlt;
     private float altitude;
     private int clearedAltitude;
     private int targetAltitude;
@@ -199,7 +200,7 @@ public class Aircraft extends Actor {
         background2.setSize(130, 95);
         GameScreen.stage.addActor(background2);
 
-        labelText = new String[10];
+        labelText = new String[11];
         labelText[9] = airport.getIcao();
         labelStyle = new Label.LabelStyle();
         labelStyle.font = AtcSim.fonts.defaultFont6;
@@ -330,6 +331,10 @@ public class Aircraft extends Actor {
             altitude = targetAltitude;
             verticalSpeed = 0;
         }
+        if (prevAlt < altitude && (int)(prevAlt / 1000) <= (int)(altitude / 1000)) {
+            updateAltRestrictions();
+        }
+        prevAlt = altitude;
     }
 
     private double[] updateTargetHeading() {
@@ -379,7 +384,7 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.5 + 15;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) + 15;
             if (distance <= requiredDistance) {
                 updateDirect();
             }
@@ -525,6 +530,8 @@ public class Aircraft extends Actor {
                 direct.setSelected(true);
             }
         }
+        updateAltRestrictions();
+        updateTargetAltitude();
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
@@ -598,7 +605,8 @@ public class Aircraft extends Actor {
         labelText[0] = callsign;
         labelText[1] = icaoType + "/" + wakeCat;
         labelText[2] = Integer.toString((int)(altitude / 100));
-        labelText[3] = Integer.toString(clearedAltitude / 100);
+        labelText[3] = Integer.toString(targetAltitude / 100);
+        labelText[10] = Integer.toString(clearedAltitude / 100);
         if ((int) heading == 0) {
             heading += 360;
         }
@@ -616,7 +624,7 @@ public class Aircraft extends Actor {
         labelText[7] = Integer.toString(getClearedIas());
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
-            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
+            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + " => " + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
             label.setSize(300, 120);
             background.setVisible(true);
             background2.setVisible(false);
@@ -656,9 +664,13 @@ public class Aircraft extends Actor {
     private void updateUISelections() {
         ui.latTab.getSettingsBox().setSelected(navState.getLatMode());
         LatTab.clearedHdg = clearedHeading;
-        ui.latTab.getValueBox().setSelected(direct.getName());
+        if (direct != null) {
+            ui.latTab.getValueBox().setSelected(direct.getName());
+        }
 
-        ui.altTab.getValueBox().setSelected(Integer.toString(clearedAltitude));
+        if (this instanceof Departure && Integer.parseInt(ui.altTab.getValueBox().getSelected()) < lowestAlt) {
+            ui.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
+        }
 
         ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
     }
@@ -916,8 +928,8 @@ public class Aircraft extends Actor {
     }
 
     public void setClearedAltitude(int clearedAltitude) {
-        //TODO Set cleared alt to target alt
         this.clearedAltitude = clearedAltitude;
+        updateTargetAltitude();
     }
 
     public int getTargetAltitude() {
@@ -926,6 +938,30 @@ public class Aircraft extends Actor {
 
     public void setTargetAltitude(int targetAltitude) {
         this.targetAltitude = targetAltitude;
+    }
+
+    public void updateTargetAltitude() {
+        //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
+        if (getNavState().getAltMode().contains("/")) {
+            //No alt restrictions
+            targetAltitude = clearedAltitude;
+        } else {
+            //Restrictions
+            if (clearedAltitude > getHighestAlt()) {
+                targetAltitude = getHighestAlt();
+            } else if (clearedAltitude < getLowestAlt()) {
+                if (this instanceof Departure) {
+                    clearedAltitude = getLowestAlt();
+                }
+                targetAltitude = getLowestAlt();
+            } else {
+                targetAltitude = clearedAltitude;
+            }
+        }
+    }
+
+    public void updateAltRestrictions() {
+        //Overriden method that sets the altitude restrictions of the aircraft
     }
 
     public float getVerticalSpeed() {

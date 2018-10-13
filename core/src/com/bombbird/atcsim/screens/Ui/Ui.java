@@ -19,8 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 public class Ui implements Disposable {
     private static Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
     private static Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
+    private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/lightBoxBackground.png"));
+    private static Texture lightestBackground = new Texture(Gdx.files.internal("game/ui/lightestBoxBackground.png"));
     private Image paneImage;
     public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
+    public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
+    public static SpriteDrawable lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
 
     public LatTab latTab;
     public AltTab altTab;
@@ -99,7 +103,7 @@ public class Ui implements Disposable {
             metarText[3] = "Visibility: Loading";
             metarText[4] = "Windshear: Loading";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            metarInfo.setPosition(100, 2775 - index * 525);
+            metarInfo.setPosition(100, 2775 - index * 575);
             metarInfo.setSize(700, 300);
             RadarScreen.uiStage.addActor(metarInfo);
             metarInfos.add(metarInfo);
@@ -440,6 +444,8 @@ public class Ui implements Disposable {
     @Override
     public void dispose() {
         hdgBoxBackground.dispose();
+        lightBackground.dispose();
+        lightestBackground.dispose();
         paneTexture.dispose();
     }
 }

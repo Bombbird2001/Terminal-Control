@@ -40,7 +40,7 @@ public class LatTab extends Tab {
     private void loadHdgElements() {
         //Label for heading
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont40;
+        labelStyle.font = AtcSim.fonts.defaultFont30;
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
@@ -50,10 +50,16 @@ public class LatTab extends Tab {
         RadarScreen.uiStage.addActor(hdgBox);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.fontColor = Color.BLACK;
-        textButtonStyle.down = Ui.hdgBoxBackgroundDrawable;
-        textButtonStyle.up = Ui.hdgBoxBackgroundDrawable;
-        textButtonStyle.font = AtcSim.fonts.defaultFont40;
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.down = Ui.lightBoxBackground;
+        textButtonStyle.up = Ui.lightBoxBackground;
+        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+
+        TextButton.TextButtonStyle textButtonStyle1 = new TextButton.TextButtonStyle();
+        textButtonStyle1.fontColor = Color.WHITE;
+        textButtonStyle1.down = Ui.lightestBoxBackground;
+        textButtonStyle1.up = Ui.lightestBoxBackground;
+        textButtonStyle1.font = AtcSim.fonts.defaultFont20;
 
         //+100 button
         hdg100add = new TextButton("+", textButtonStyle);
@@ -82,7 +88,7 @@ public class LatTab extends Tab {
         RadarScreen.uiStage.addActor(hdg100minus);
 
         //+10 button
-        hdg10add = new TextButton("+", textButtonStyle);
+        hdg10add = new TextButton("+", textButtonStyle1);
         hdg10add.setSize(0.8f / 3f * getPaneWidth(), 200);
         hdg10add.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2100);
         hdg10add.addListener(new ChangeListener() {
@@ -95,7 +101,7 @@ public class LatTab extends Tab {
         RadarScreen.uiStage.addActor(hdg10add);
 
         //-10 button
-        hdg10minus = new TextButton("-", textButtonStyle);
+        hdg10minus = new TextButton("-", textButtonStyle1);
         hdg10minus.setSize(0.8f / 3f * getPaneWidth(), 200);
         hdg10minus.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2570);
         hdg10minus.addListener(new ChangeListener() {
@@ -356,10 +362,14 @@ public class LatTab extends Tab {
         hdgChanged = false;
         if (selectedAircraft.getDirect() != null) {
             clearedWpt = selectedAircraft.getDirect().getName();
+        } else {
+            clearedWpt = null;
         }
         wptChanged = false;
         if (selectedAircraft.getAfterWaypoint() != null) {
             afterWpt = selectedAircraft.getAfterWaypoint().getName();
+        } else {
+            afterWpt = null;
         }
         afterWptChanged = false;
         afterWptHdg = selectedAircraft.getAfterWptHdg();

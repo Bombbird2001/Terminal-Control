@@ -31,7 +31,6 @@ public class AltTab extends Tab {
         int highestAlt;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
-            lowestAlt += 1000 - lowestAlt % 1000;
             highestAlt = RadarScreen.maxDeptAlt;
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = RadarScreen.minArrAlt;
@@ -48,6 +47,8 @@ public class AltTab extends Tab {
             highestAlt = 10000;
             Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
         }
+
+        //Adds the possible altitudes between range to array
         if (lowestAlt % 1000 != 0) {
             alts.add(Integer.toString(lowestAlt));
             int altTracker = lowestAlt + (1000 - lowestAlt % 1000);

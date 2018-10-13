@@ -27,12 +27,12 @@ public class SpdTab extends Tab {
         }
         spds.clear();
         int lowestSpd;
-        int highestSpd;
+        int highestSpd = -1;
         if (spdMode.contains("SID") || spdMode.contains("STAR")) {
             //Set spd restrictions in box
             if (latMode.equals("After waypoint, fly heading")) {
                 highestSpd = selectedAircraft.getMaxWptSpd(afterWpt);
-            } else {
+            } else if (clearedWpt != null) {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
             }
             if (highestSpd == -1) {

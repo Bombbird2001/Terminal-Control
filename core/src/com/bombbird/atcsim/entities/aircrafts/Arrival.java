@@ -36,7 +36,6 @@ public class Arrival extends Aircraft {
         setDirect(star.getWaypoint(getSidStarIndex()));
         setHeading(star.getInboundHdg());
         setClearedHeading((int)getHeading());
-        System.out.println("Heading: " + getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
 
         //Calculate spawn border
@@ -59,7 +58,6 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
-        System.out.println("New heading: " + getHeading());
     }
 
     @Override
@@ -91,6 +89,29 @@ public class Arrival extends Aircraft {
             return getHeading();
         } else {
             return result;
+        }
+    }
+
+    @Override
+    public void updateAltRestrictions() {
+        if (getNavState().getLatMode().contains("arrival") || getNavState().getLatMode().contains("waypoint")) {
+            //Aircraft on STAR
+            int highestAlt = -1;
+            int lowestAlt = -1;
+            if (getDirect() != null) {
+                highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
+                lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
+            }
+            if (highestAlt > -1) {
+                setHighestAlt(highestAlt);
+            } else {
+                setHighestAlt(RadarScreen.maxArrAlt);
+            }
+            if (lowestAlt > -1) {
+                setLowestAlt(lowestAlt);
+            } else {
+                setLowestAlt(RadarScreen.minArrAlt);
+            }
         }
     }
 

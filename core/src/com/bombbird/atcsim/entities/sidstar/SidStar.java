@@ -19,13 +19,6 @@ public class SidStar {
         this.restrictions = restrictions;
     }
 
-    public void printWpts() {
-        System.out.println(name);
-        for (Waypoint waypoint: waypoints) {
-            System.out.println(waypoint.getName());
-        }
-    }
-
     public void joinLines(int start, int outbound) {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
         float previousX = -1;
