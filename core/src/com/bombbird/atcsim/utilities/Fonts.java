@@ -62,6 +62,7 @@ public class Fonts implements Disposable {
         defaultFont10.dispose();
         defaultFont12.dispose();
         defaultFont20.dispose();
+        defaultFont30.dispose();
         defaultFont40.dispose();
     }
 }
