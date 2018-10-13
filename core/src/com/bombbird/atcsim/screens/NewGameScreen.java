@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.utilities.Fonts;
 
 public class NewGameScreen implements Screen {
     //Init game (set in constructor)
@@ -51,7 +52,7 @@ public class NewGameScreen implements Screen {
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont20;
+        labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Choose airport:", labelStyle);
         headerLabel.setWidth(buttonWidth);
@@ -63,7 +64,7 @@ public class NewGameScreen implements Screen {
         //Set button textures
         //Using main menu textures for now, will change later
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = AtcSim.fonts.defaultFont12;
+        buttonStyle.font = Fonts.defaultFont12;
         buttonStyle.up = AtcSim.skin.getDrawable("Button_up");
         buttonStyle.down = AtcSim.skin.getDrawable("Button_down");
 

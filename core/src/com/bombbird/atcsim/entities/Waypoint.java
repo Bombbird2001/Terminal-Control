@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.utilities.Fonts;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
@@ -23,7 +23,7 @@ public class Waypoint extends Actor {
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont6;
+        labelStyle.font = Fonts.defaultFont6;
         labelStyle.fontColor = Color.GRAY;
         setLabel(new Label(name, labelStyle));
         getLabel().setPosition(posX - getLabel().getWidth() / 2, posY + 16);

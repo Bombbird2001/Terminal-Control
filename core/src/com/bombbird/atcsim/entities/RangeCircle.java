@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.utilities.Fonts;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
 
@@ -17,7 +17,7 @@ public class RangeCircle extends Actor{
         this.range = range;
         int xOffset = -60;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont10;
+        labelStyle.font = Fonts.defaultFont10;
         labelStyle.fontColor = Color.GRAY;
         labelUp = new Label(Integer.toString(range) + "nm", labelStyle);
         labelUp.setPosition(5760 / 2f + xOffset, 3240 / 2f - yOffset + 5);

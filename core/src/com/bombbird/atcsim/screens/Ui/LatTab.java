@@ -8,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.Fonts;
 
 public class LatTab extends Tab {
     private Label hdgBox;
@@ -40,7 +40,7 @@ public class LatTab extends Tab {
     private void loadHdgElements() {
         //Label for heading
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont30;
+        labelStyle.font = Fonts.defaultFont30;
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
@@ -53,13 +53,13 @@ public class LatTab extends Tab {
         textButtonStyle.fontColor = Color.WHITE;
         textButtonStyle.down = Ui.lightBoxBackground;
         textButtonStyle.up = Ui.lightBoxBackground;
-        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle.font = Fonts.defaultFont20;
 
         TextButton.TextButtonStyle textButtonStyle1 = new TextButton.TextButtonStyle();
         textButtonStyle1.fontColor = Color.WHITE;
         textButtonStyle1.down = Ui.lightestBoxBackground;
         textButtonStyle1.up = Ui.lightestBoxBackground;
-        textButtonStyle1.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle1.font = Fonts.defaultFont20;
 
         //+100 button
         hdg100add = new TextButton("+", textButtonStyle);

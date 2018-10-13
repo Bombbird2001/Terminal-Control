@@ -14,6 +14,7 @@ import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui implements Disposable {
@@ -90,7 +91,7 @@ public class Ui implements Disposable {
         RadarScreen.uiStage.addActor(paneImage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont20;
+        labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
 
         int index = 0;
@@ -165,7 +166,7 @@ public class Ui implements Disposable {
 
     private void loadChangeButtons() {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle.font = Fonts.defaultFont20;
         textButtonStyle.fontColor = Color.BLACK;
         textButtonStyle.up = hdgBoxBackgroundDrawable;
         textButtonStyle.down = AtcSim.skin.getDrawable("Button_down");
@@ -200,7 +201,7 @@ public class Ui implements Disposable {
     private void loadTabButtons() {
         //Lat mode
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle.font = Fonts.defaultFont20;
         textButtonStyle.fontColor = Color.BLACK;
         textButtonStyle.up = hdgBoxBackgroundDrawable;
         textButtonStyle.down = hdgBoxBackgroundDrawable;
@@ -227,7 +228,7 @@ public class Ui implements Disposable {
 
         //Alt mode
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
-        textButtonStyle2.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle2.font = Fonts.defaultFont20;
         textButtonStyle2.fontColor = Color.BLACK;
         textButtonStyle2.up = hdgBoxBackgroundDrawable;
         textButtonStyle2.down = hdgBoxBackgroundDrawable;
@@ -253,7 +254,7 @@ public class Ui implements Disposable {
 
         //Spd mode
         TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
-        textButtonStyle3.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle3.font = Fonts.defaultFont20;
         textButtonStyle3.fontColor = Color.BLACK;
         textButtonStyle3.up = hdgBoxBackgroundDrawable;
         textButtonStyle3.down = hdgBoxBackgroundDrawable;

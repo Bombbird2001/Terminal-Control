@@ -4,18 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.utils.Disposable;
 import com.bombbird.atcsim.AtcSim;
 
-public class Fonts implements Disposable {
-    private FreeTypeFontGenerator defaultFont;
-    public BitmapFont defaultFont6;
-    public BitmapFont defaultFont8;
-    public BitmapFont defaultFont10;
-    public BitmapFont defaultFont12;
-    public BitmapFont defaultFont20;
-    public BitmapFont defaultFont30;
-    public BitmapFont defaultFont40;
+public class Fonts {
+    private static FreeTypeFontGenerator defaultFont;
+    public static BitmapFont defaultFont6;
+    public static BitmapFont defaultFont8;
+    public static BitmapFont defaultFont10;
+    public static BitmapFont defaultFont12;
+    public static BitmapFont defaultFont20;
+    public static BitmapFont defaultFont30;
 
     public Fonts() {
         if (!AtcSim.ishtml) {
@@ -26,7 +24,6 @@ public class Fonts implements Disposable {
             defaultFont12 = generateFont(defaultFont, 48);
             defaultFont20 = generateFont(defaultFont, 80);
             defaultFont30 = generateFont(defaultFont, 120);
-            defaultFont40 = generateFont(defaultFont, 160);
         } else {
             defaultFont6 = new BitmapFont();
             defaultFont6.getData().setScale(0.45f);
@@ -38,8 +35,6 @@ public class Fonts implements Disposable {
             defaultFont12.getData().setScale(0.9f);
             defaultFont20 = new BitmapFont();
             defaultFont20.getData().setScale(1.5f);
-            defaultFont40 = new BitmapFont();
-            defaultFont40.getData().setScale(3);
         }
     }
 
@@ -52,8 +47,7 @@ public class Fonts implements Disposable {
         return generator.generateFont(parameter);
     }
 
-    @Override
-    public void dispose() {
+    public static void dispose() {
         if (!AtcSim.ishtml) {
             defaultFont.dispose();
         }
@@ -63,6 +57,5 @@ public class Fonts implements Disposable {
         defaultFont12.dispose();
         defaultFont20.dispose();
         defaultFont30.dispose();
-        defaultFont40.dispose();
     }
 }

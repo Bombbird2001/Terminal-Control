@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.Fonts;
 
 public class Tab {
     public SelectBox<String> settingsBox;
@@ -50,7 +51,7 @@ public class Tab {
         scrollPaneStyle.background = AtcSim.skin.getDrawable("ListBackground");
 
         List.ListStyle listStyle = new List.ListStyle();
-        listStyle.font = AtcSim.fonts.defaultFont20;
+        listStyle.font = Fonts.defaultFont20;
         listStyle.fontColorSelected = Color.WHITE;
         listStyle.fontColorUnselected = Color.BLACK;
         Drawable button_down = AtcSim.skin.getDrawable("Button_down");
@@ -59,7 +60,7 @@ public class Tab {
         listStyle.selection = button_down;
 
         SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
-        boxStyle.font = AtcSim.fonts.defaultFont20;
+        boxStyle.font = Fonts.defaultFont20;
         boxStyle.fontColor = Color.WHITE;
         boxStyle.listStyle = listStyle;
         boxStyle.scrollStyle = scrollPaneStyle;
@@ -86,7 +87,7 @@ public class Tab {
         RadarScreen.uiStage.addActor(settingsBox);
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
-        boxStyle2.font = AtcSim.fonts.defaultFont20;
+        boxStyle2.font = Fonts.defaultFont20;
         boxStyle2.fontColor = Color.WHITE;
         boxStyle2.listStyle = listStyle;
         boxStyle2.scrollStyle = scrollPaneStyle;
@@ -116,7 +117,7 @@ public class Tab {
     private void loadResetButton() {
         //Separate buttonstyle for reset tab
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
-        textButtonStyle2.font = AtcSim.fonts.defaultFont20;
+        textButtonStyle2.font = Fonts.defaultFont20;
         textButtonStyle2.fontColor = Color.BLACK;
         textButtonStyle2.up = Ui.hdgBoxBackgroundDrawable;
         textButtonStyle2.down = AtcSim.skin.getDrawable("Button_down");

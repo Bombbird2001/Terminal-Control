@@ -18,6 +18,7 @@ import com.bombbird.atcsim.entities.aircrafts.Aircraft;
 import com.bombbird.atcsim.entities.restrictions.Obstacle;
 import com.bombbird.atcsim.entities.restrictions.RestrictedArea;
 import com.bombbird.atcsim.screens.Ui.Ui;
+import com.bombbird.atcsim.utilities.Fonts;
 
 import java.util.HashMap;
 
@@ -244,7 +245,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             } else if (loadedTime > 0.5) {
                 loadingText = "Loading..  ";
             }
-            AtcSim.fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
+            Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
         } else {
             stage.draw();
         }

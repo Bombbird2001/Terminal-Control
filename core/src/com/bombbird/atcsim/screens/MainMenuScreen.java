@@ -5,17 +5,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.atcsim.AtcSim;
+import com.bombbird.atcsim.utilities.Fonts;
 
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
@@ -50,7 +49,7 @@ public class MainMenuScreen implements Screen {
 
         //Set label params
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont20;
+        labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
         Label headerLabel = new Label("Terminal Control", labelStyle);
         headerLabel.setWidth(buttonWidth);
@@ -61,7 +60,7 @@ public class MainMenuScreen implements Screen {
 
         //Set button textures
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = AtcSim.fonts.defaultFont20;
+        buttonStyle.font = Fonts.defaultFont20;
         buttonStyle.up = AtcSim.skin.getDrawable("Button_up");
         buttonStyle.down = AtcSim.skin.getDrawable("Button_down");
 

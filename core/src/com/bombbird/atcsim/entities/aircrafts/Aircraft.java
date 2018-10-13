@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.Waypoint;
@@ -20,6 +19,7 @@ import com.bombbird.atcsim.entities.sidstar.SidStar;
 import com.bombbird.atcsim.screens.GameScreen;
 import com.bombbird.atcsim.screens.RadarScreen;
 import com.bombbird.atcsim.screens.Ui.LatTab;
+import com.bombbird.atcsim.utilities.Fonts;
 import com.bombbird.atcsim.utilities.MathTools;
 
 import static com.bombbird.atcsim.screens.GameScreen.*;
@@ -203,7 +203,7 @@ public class Aircraft extends Actor {
         labelText = new String[11];
         labelText[9] = airport.getIcao();
         labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont6;
+        labelStyle.font = Fonts.defaultFont6;
         labelStyle.fontColor = Color.WHITE;
         label = new Label("Loading...", labelStyle);
         label.setPosition(x - 100, y + 25);

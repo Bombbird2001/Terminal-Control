@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.screens.RadarScreen;
+import com.bombbird.atcsim.utilities.Fonts;
 import com.bombbird.atcsim.utilities.MathTools;
 
 import static com.bombbird.atcsim.screens.GameScreen.shapeRenderer;
@@ -65,7 +65,7 @@ public class Runway extends Actor {
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont8;
+        labelStyle.font = Fonts.defaultFont8;
         labelStyle.fontColor = Color.WHITE;
         setLabel(new Label(name, labelStyle));
         getLabel().setPosition(textX, textY);

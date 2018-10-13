@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.screens.GameScreen;
+import com.bombbird.atcsim.utilities.Fonts;
 
 public class Obstacle extends Actor {
     private Polygon polygon;
@@ -17,7 +17,7 @@ public class Obstacle extends Actor {
         this.minAlt = minAlt;
         polygon = new Polygon(vertices);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = AtcSim.fonts.defaultFont12;
+        labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.GRAY;
         label = new Label(text, labelStyle);
         label.setPosition(textX, textY);

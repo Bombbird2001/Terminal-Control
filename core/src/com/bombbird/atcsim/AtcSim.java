@@ -17,21 +17,17 @@ public class AtcSim extends Game {
 	public static boolean ishtml;
 
 	//Create texture stuff
-	public static TextureAtlas buttonAtlas;
+	private static TextureAtlas buttonAtlas;
 	public static Skin skin;
 
 	//The one and only spritebatch
 	public SpriteBatch batch;
-
-	//Set font to be usable for all classes
-	public static Fonts fonts;
 	
 	@Override
 	public void create () {
 		WIDTH = Gdx.graphics.getWidth();
 		HEIGHT = Gdx.graphics.getHeight();
 		batch = new SpriteBatch();
-		fonts = new Fonts();
 
 		buttonAtlas = new TextureAtlas(Gdx.files.internal("game/ui/mainmenubuttons.atlas"));
 		skin = new Skin();
@@ -48,7 +44,7 @@ public class AtcSim extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		fonts.dispose();
+		Fonts.dispose();
 		buttonAtlas.dispose();
 		skin.dispose();
 	}
