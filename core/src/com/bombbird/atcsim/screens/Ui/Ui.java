@@ -20,8 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 public class Ui implements Disposable {
     private static Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
     private static Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
-    private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/lightBoxBackground.png"));
-    private static Texture lightestBackground = new Texture(Gdx.files.internal("game/ui/lightestBoxBackground.png"));
+    private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
+    private static Texture lightestBackground = new Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"));
     private Image paneImage;
     public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
     public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
