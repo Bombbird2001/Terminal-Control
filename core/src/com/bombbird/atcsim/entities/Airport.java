@@ -13,6 +13,7 @@ public class Airport {
     private HashMap<String, Runway> runways;
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
+    private HashMap<String, ILS> approaches;
     private String icao;
     private JSONObject metar;
     private HashMap<String, Star> stars;
@@ -26,6 +27,10 @@ public class Airport {
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
+        approaches = FileLoader.loadILS(this);
+        for (Runway runway: runways.values()) {
+            runway.setIls(approaches.get(runway.getName()));
+        }
         stars = FileLoader.loadStars(icao);
         sids = FileLoader.loadSids(icao);
         if (icao.equals("RCTP")) {
@@ -195,5 +200,13 @@ public class Airport {
 
     public String getWindshear() {
         return ws;
+    }
+
+    public HashMap<String, ILS> getApproaches() {
+        return approaches;
+    }
+
+    public void setApproaches(HashMap<String, ILS> approaches) {
+        this.approaches = approaches;
     }
 }

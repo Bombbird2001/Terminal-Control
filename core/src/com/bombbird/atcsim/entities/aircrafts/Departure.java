@@ -46,6 +46,10 @@ public class Departure extends Aircraft {
             }
         }
 
+        if (getAirport().getIcao().equals("RCSS")) {
+            sid = sidList.get("VIVID1A");
+        }
+
         //Set initial IAS due to wind
         setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
 
@@ -98,7 +102,7 @@ public class Departure extends Aircraft {
             setControlState(2);
             contacted = true;
         }
-        if (getAltitude() > sid.getInitClimb()[1] && !sidSet) {
+        if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
             setDirect(sid.getWaypoint(0));
             setLatMode("sidstar");
             if (getClearedIas() == getV2()) {
@@ -189,5 +193,9 @@ public class Departure extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return sid;
+    }
+
+    public boolean isSidSet() {
+        return sidSet;
     }
 }

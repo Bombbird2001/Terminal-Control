@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.atcsim.AtcSim;
 import com.bombbird.atcsim.entities.Airport;
+import com.bombbird.atcsim.entities.ILS;
 import com.bombbird.atcsim.entities.Metar;
 import com.bombbird.atcsim.entities.Waypoint;
 import com.bombbird.atcsim.entities.aircrafts.Aircraft;
@@ -218,6 +219,13 @@ public class RadarScreen extends GameScreen {
         //Draw restricted areas
         for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();
+        }
+
+        //Draw ILS arcs
+        for (Airport airport: airports.values()) {
+            for (ILS ils: airport.getApproaches().values()) {
+                ils.renderShape();
+            }
         }
 
         shapeRenderer.end();

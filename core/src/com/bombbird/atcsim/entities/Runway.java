@@ -41,6 +41,7 @@ public class Runway extends Actor {
     private Polygon polygon;
 
     //Set the ILS
+    private ILS ils;
     //TODO: Implement ILS
 
     //Set windshear properties
@@ -209,5 +210,13 @@ public class Runway extends Actor {
 
     public void setPxLength(float pxLength) {
         this.pxLength = pxLength;
+    }
+
+    public ILS getIls() {
+        return ils;
+    }
+
+    public void setIls(ILS ils) {
+        this.ils = ils;
     }
 }

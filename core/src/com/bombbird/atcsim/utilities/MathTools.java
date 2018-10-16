@@ -1,7 +1,7 @@
 package com.bombbird.atcsim.utilities;
 
 public class MathTools {
-    //Set some constant conversion methods
+    //Set some constant conversion/formula methods
     public static float nmToPixel(float nm) {
         return nm * 32.4f;
     }
@@ -24,5 +24,9 @@ public class MathTools {
 
     public static float iasToTas(float ias, float altitude) {
         return ias * (1 + altitude / 1000 * 0.02f);
+    }
+
+    public static float distanceBetween(float x, float y, float x2, float y2) {
+        return (float)Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
     }
 }

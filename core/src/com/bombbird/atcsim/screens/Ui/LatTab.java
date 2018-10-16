@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.atcsim.entities.Waypoint;
+import com.bombbird.atcsim.entities.aircrafts.Arrival;
+import com.bombbird.atcsim.entities.aircrafts.Departure;
 import com.bombbird.atcsim.screens.RadarScreen;
 import com.bombbird.atcsim.utilities.Fonts;
 
@@ -285,17 +287,19 @@ public class LatTab extends Tab {
     @Override
     public void updateMode() {
         if (latMode.contains(selectedAircraft.getSidStar().getName())) {
-            selectedAircraft.setLatMode("sidstar");
-            selectedAircraft.setDirect(RadarScreen.waypoints.get(clearedWpt));
-            selectedAircraft.updateSelectedWaypoints(null);
-            selectedAircraft.setSidStarIndex(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getDirect().getName()));
-            if (!selectedAircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
-                selectedAircraft.getNavState().getLatModes().add("After waypoint, fly heading");
+            if (selectedAircraft instanceof Arrival || (selectedAircraft instanceof Departure && ((Departure) selectedAircraft).isSidSet())) {
+                selectedAircraft.setLatMode("sidstar");
+                selectedAircraft.setDirect(RadarScreen.waypoints.get(clearedWpt));
+                selectedAircraft.updateSelectedWaypoints(null);
+                selectedAircraft.setSidStarIndex(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getDirect().getName()));
+                if (!selectedAircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
+                    selectedAircraft.getNavState().getLatModes().add("After waypoint, fly heading");
+                }
+                if (!selectedAircraft.getNavState().getLatModes().contains("Hold at", false)) {
+                    selectedAircraft.getNavState().getLatModes().add("Hold at");
+                }
+                System.out.println("Sidstar set");
             }
-            if (!selectedAircraft.getNavState().getLatModes().contains("Hold at", false)) {
-                selectedAircraft.getNavState().getLatModes().add("Hold at");
-            }
-            System.out.println("Sidstar set");
         } else if (latMode.equals("After waypoint, fly heading")) {
             selectedAircraft.setLatMode("sidstar");
             selectedAircraft.setAfterWaypoint(RadarScreen.waypoints.get(afterWpt));

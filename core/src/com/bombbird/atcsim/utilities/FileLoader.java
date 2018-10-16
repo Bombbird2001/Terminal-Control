@@ -3,6 +3,7 @@ package com.bombbird.atcsim.utilities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.atcsim.entities.Airport;
 import com.bombbird.atcsim.entities.ILS;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.sidstar.Sid;
@@ -120,7 +121,7 @@ public class FileLoader {
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
             //For each individual runway
-            String rwyInfo[] = s.split(" ");
+            String rwyInfo[] = s.split(",");
             int index = 0;
             String name = "";
             float x = 0;
@@ -336,8 +337,33 @@ public class FileLoader {
         return aircrafts;
     }
 
-    public static HashMap<String, ILS> loadILS() {
-        //TODO
-        return new HashMap<String, ILS>();
+    public static HashMap<String, ILS> loadILS(Airport airport) {
+        HashMap<String, ILS> approaches = new HashMap<String, ILS>();
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+        String[] indivApches = handle.readString().split("\\r?\\n");
+        for (String s: indivApches) {
+            //For each approach
+            int index = 0;
+            String name = "";
+            String rwy = "";
+            int heading = -1;
+            float x = -1;
+            float y = -1;
+            String minima = "";
+            for (String s1: s.split(",")) {
+                switch (index) {
+                    case 0: name = s1; break;
+                    case 1: rwy = s1; break;
+                    case 2: heading = Integer.parseInt(s1); break;
+                    case 3: x = Float.parseFloat(s1); break;
+                    case 4: y = Float.parseFloat(s1); break;
+                    case 5: minima = s1; break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+                }
+                index++;
+            }
+            approaches.put(rwy, new ILS(name, x, y, airport.getRunways().get(rwy), heading, minima));
+        }
+        return approaches;
     }
 }
