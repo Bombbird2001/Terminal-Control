@@ -26,8 +26,9 @@ public class Runway extends Actor {
     private float y;
     private int elevation;
 
-    //Set constant width
+    //Set dimensions
     private static float halfWidth = 2f;
+    private float pxLength;
 
     //Set heading of runway
     private int heading;
@@ -47,15 +48,15 @@ public class Runway extends Actor {
 
     public Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
         //Set the parameters
-        this.setName(name);
-        this.setX(x);
-        this.setY(y);
-        this.setHeading(heading);
-        this.setElevation(elevation);
-        setTrueHdg(heading - RadarScreen.magHdgDev);
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+        this.elevation = elevation;
+        trueHdg = heading - RadarScreen.magHdgDev;
 
         //Convert length in feet to pixels
-        float pxLength = MathTools.feetToPixel(length);
+        pxLength = MathTools.feetToPixel(length);
 
         //Calculate the position offsets
         float xOffsetW = getHalfWidth() * MathUtils.sinDeg(90 - getTrueHdg());
@@ -200,5 +201,13 @@ public class Runway extends Actor {
 
     public void setWindshear(boolean windshear) {
         this.windshear = windshear;
+    }
+
+    public float getPxLength() {
+        return pxLength;
+    }
+
+    public void setPxLength(float pxLength) {
+        this.pxLength = pxLength;
     }
 }

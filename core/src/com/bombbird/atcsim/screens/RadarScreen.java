@@ -169,18 +169,19 @@ public class RadarScreen extends GameScreen {
         //Load airports
         loadAirports();
 
-        //Load METARs
-        loadMetar();
-
         //Load obstacles
         obsArray = FileLoader.loadObstacles();
 
         //Load altitude restrictions
         restArray = FileLoader.loadRestricted();
 
+        //Load panels
         loadPanel();
         ui.setNormalPane(true);
         ui.setSelectedPane(null);
+
+        //Load METARs
+        loadMetar();
 
         loadInputProcessors();
     }

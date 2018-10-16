@@ -1,5 +1,6 @@
 package com.bombbird.atcsim.entities;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.atcsim.screens.RadarScreen;
 import okhttp3.*;
 import org.json.JSONArray;
@@ -87,7 +88,6 @@ public class Metar {
                     throw new IOException(response.toString());
                 } else {
                     String responseText = response.body().string();
-                    //System.out.println("Receive METAR decoded string: " + responseText);
                     JSONObject jo = new JSONObject(responseText);
                     sendMetar(mediaType, client, jo, calendar);
                     radarScreen.loadingPercent = "60%";
@@ -135,7 +135,11 @@ public class Metar {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+                metarObject = generateRandomWeather();
+                updateAirports();
+                RadarScreen.ui.updateMetar();
+                radarScreen.loadingPercent = "100%";
+                radarScreen.loading = false;
             }
 
             @Override
@@ -143,22 +147,36 @@ public class Metar {
                 if (!response.isSuccessful()) {
                     if (response.code() == 503) {
                         System.out.println("503 received: trying again");
+                        radarScreen.loadingPercent = "10%";
                         getMetar(mediaType, client);
+                        response.close();
+                    } else {
+                        //Generate offline weather
+                        response.close();
+                        metarObject = generateRandomWeather();
+                        updateAirports();
+                        RadarScreen.ui.updateMetar();
+                        radarScreen.loadingPercent = "100%";
+                        radarScreen.loading = false;
+                        System.out.println(response.body().string());
                     }
-                    throw new IOException(response.toString());
                 } else {
                     String responseText = response.body().string();
+                    System.out.println(responseText);
                     if (responseText.equals("Update")) {
+                        //Server requested for METAR update
                         System.out.println("Update requested");
                         radarScreen.loadingPercent = "20%";
                         getApiKey(mediaType, client);
                     } else {
+                        //METAR JSON text has been received
                         metarObject = new JSONObject(responseText);
                         updateAirports();
                         RadarScreen.ui.updateMetar();
                         radarScreen.loadingPercent = "100%";
                         radarScreen.loading = false;
                     }
+                    response.close();
                 }
             }
         });
@@ -168,5 +186,75 @@ public class Metar {
         for (Airport airport: RadarScreen.airports.values()) {
             airport.setMetar(metarObject);
         }
+    }
+
+    private JSONObject generateRandomWeather() {
+        JSONObject jsonObject = new JSONObject();
+        for (String airport: RadarScreen.airports.keySet()) {
+            //For each airport, create random weather and parse to JSON object
+            int rain = -1;
+            int visibility;
+            int windDir;
+            int windSpd;
+            int gust = -1;
+            String ws = null;
+            if (MathUtils.random(9) >= 8) {
+                //20% chance of rain
+                rain = MathUtils.random(9);
+            }
+            visibility = (MathUtils.random(9) + 1) * 1000;
+            windDir = (MathUtils.random(35)) * 10 + 10;
+            windSpd = MathUtils.random(29) + 1;
+            if (windSpd >= 15) {
+                if (MathUtils.random(2) == 2) {
+                    //Runway windshear
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String runway : RadarScreen.airports.get(airport).getRunways().keySet()) {
+                        //Random boolean for each runway
+                        if (RadarScreen.airports.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
+                            stringBuilder.append("R");
+                            stringBuilder.append(runway);
+                            stringBuilder.append(" ");
+                        }
+                    }
+                    if (stringBuilder.length() == RadarScreen.airports.get(airport).getRunways().size() * 3) {
+                        ws = "ALL RWY";
+                    } else {
+                        ws = stringBuilder.toString();
+                    }
+                }
+
+                if (MathUtils.random(2) == 2) {
+                    //Gusts
+                    gust = MathUtils.random(windSpd, 40);
+                }
+            }
+
+            JSONObject object = new JSONObject();
+            if (rain > -1) {
+                object.put("rain", rain);
+            } else {
+                object.put("rain", JSONObject.NULL);
+            }
+
+            object.put("visibility", visibility);
+            object.put("windDirection", windDir);
+            object.put("windSpeed", windSpd);
+
+            if (gust > -1) {
+                object.put("windGust", gust);
+            } else {
+                object.put("windGust", JSONObject.NULL);
+            }
+
+            if (ws != null && !ws.equals("")) {
+                object.put("windshear", ws);
+            } else {
+                object.put("windshear", JSONObject.NULL);
+            }
+
+            jsonObject.put(airport, object);
+        }
+        return jsonObject;
     }
 }

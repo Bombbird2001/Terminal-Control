@@ -3,6 +3,7 @@ package com.bombbird.atcsim.utilities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.atcsim.entities.ILS;
 import com.bombbird.atcsim.entities.Runway;
 import com.bombbird.atcsim.entities.sidstar.Sid;
 import com.bombbird.atcsim.entities.sidstar.Star;
@@ -333,5 +334,10 @@ public class FileLoader {
             aircrafts.put(icao, perfData);
         }
         return aircrafts;
+    }
+
+    public static HashMap<String, ILS> loadILS() {
+        //TODO
+        return new HashMap<String, ILS>();
     }
 }
