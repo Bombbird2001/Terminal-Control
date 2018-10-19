@@ -12,9 +12,8 @@ public class ILS extends Actor {
     private String name;
     private float x;
     private float y;
-    private Runway runway;
     private int heading;
-    private Array<Integer> minima;
+    private int minima;
     private boolean active;
 
     private static float distance1 = MathTools.nmToPixel(17);
@@ -23,24 +22,25 @@ public class ILS extends Actor {
     private static float distance2 = MathTools.nmToPixel(25);
     private static int angle2 = 10;
 
-    public ILS(String name, float x, float y, Runway runway, int heading, String minima) {
+    public ILS(String name, float x, float y, int heading, int minima) {
         this.name = name;
         this.x = x;
         this.y = y;
-        this.runway = runway;
         this.heading = heading;
-        this.minima = new Array<Integer>();
+        this.minima = minima;
         active = false;
-        for (String s: minima.split(">")) {
-            //Add all the minima to array
-            this.minima.add(Integer.parseInt(s));
-        }
     }
 
     public void renderShape() {
-        GameScreen.shapeRenderer.setColor(Color.BLUE);
-        GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
-        GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
+        //GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
+        //GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
+        if (name.contains("05") || name.contains("10")) {
+            GameScreen.shapeRenderer.setColor(Color.BLUE);
+        } else {
+            GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        }
+        GameScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+
     }
 
     public boolean isInsideILS(float planeX, float planeY) {

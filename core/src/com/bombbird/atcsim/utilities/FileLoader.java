@@ -349,7 +349,7 @@ public class FileLoader {
             int heading = -1;
             float x = -1;
             float y = -1;
-            String minima = "";
+            int minima = -1;
             for (String s1: s.split(",")) {
                 switch (index) {
                     case 0: name = s1; break;
@@ -357,12 +357,12 @@ public class FileLoader {
                     case 2: heading = Integer.parseInt(s1); break;
                     case 3: x = Float.parseFloat(s1); break;
                     case 4: y = Float.parseFloat(s1); break;
-                    case 5: minima = s1; break;
+                    case 5: minima = Integer.parseInt(s1); break;
                     default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
                 }
                 index++;
             }
-            approaches.put(rwy, new ILS(name, x, y, airport.getRunways().get(rwy), heading, minima));
+            approaches.put(rwy, new ILS(name, x, y, heading, minima));
         }
         return approaches;
     }

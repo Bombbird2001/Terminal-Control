@@ -46,10 +46,6 @@ public class Departure extends Aircraft {
             }
         }
 
-        if (getAirport().getIcao().equals("RCSS")) {
-            sid = sidList.get("VIVID1A");
-        }
-
         //Set initial IAS due to wind
         setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
 
