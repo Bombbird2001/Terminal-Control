@@ -298,19 +298,16 @@ public class LatTab extends Tab {
                 if (!selectedAircraft.getNavState().getLatModes().contains("Hold at", false)) {
                     selectedAircraft.getNavState().getLatModes().add("Hold at");
                 }
-                System.out.println("Sidstar set");
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
             selectedAircraft.setLatMode("sidstar");
             selectedAircraft.setAfterWaypoint(RadarScreen.waypoints.get(afterWpt));
             selectedAircraft.setAfterWptHdg(afterWptHdg);
-            System.out.println("After waypoint fly heading");
         } else if (latMode.equals("Hold at")) {
             System.out.println("Hold at");
         } else if (latMode.equals("Fly heading") || latMode.equals("Turn left heading") || latMode.equals("Turn right heading")) {
             selectedAircraft.setLatMode("vector");
             selectedAircraft.setClearedHeading(clearedHdg);
-            System.out.println("Vectors");
         } else {
             Gdx.app.log("Invalid lat mode", "Invalid latmode " + latMode + " set!");
         }
@@ -414,7 +411,7 @@ public class LatTab extends Tab {
             selectedAircraft.getNavState().getAltModes().add("Descend via STAR");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
             selectedAircraft.getNavState().getAltModes().add("Climb via SID");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure")) {
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint")) {
             if (!selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false)) {
                 selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false);
             }

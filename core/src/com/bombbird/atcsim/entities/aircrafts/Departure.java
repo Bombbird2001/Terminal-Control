@@ -94,7 +94,7 @@ public class Departure extends Aircraft {
             setTargetHeading(getClearedHeading());
             v2set = true;
         }
-        if (getAltitude() - getAirport().getElevation() >= contactAlt) {
+        if (getAltitude() - getAirport().getElevation() >= contactAlt && !contacted) {
             setControlState(2);
             contacted = true;
         }

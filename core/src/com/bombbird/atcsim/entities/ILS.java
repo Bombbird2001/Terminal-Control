@@ -32,8 +32,6 @@ public class ILS extends Actor {
     }
 
     public void renderShape() {
-        //GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
-        //GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
         if (name.contains("05") || name.contains("10")) {
             GameScreen.shapeRenderer.setColor(Color.BLUE);
         } else {

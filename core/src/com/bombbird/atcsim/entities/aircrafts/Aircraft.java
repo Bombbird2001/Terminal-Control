@@ -34,15 +34,12 @@ public class Aircraft extends Actor {
     public static TextureAtlas iconAtlas = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
     public static Skin skin = new Skin();
     private ImageButton icon;
-    private ImageButton clickSpot;
-    private ImageButton background;
-    private ImageButton background2;
+    private Button labelButton;
+    private Button clickSpot;
     private static ImageButton.ImageButtonStyle buttonStyleCtrl;
     private static ImageButton.ImageButtonStyle buttonStyleDept;
     private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
     private static ImageButton.ImageButtonStyle buttonStyleEnroute;
-    private static ImageButton.ImageButtonStyle buttonStyleBackground;
-    private static ImageButton.ImageButtonStyle buttonStyleBackgroundSmall;
     private boolean dragging;
     private Color color;
 
@@ -85,7 +82,6 @@ public class Aircraft extends Actor {
     private int clearedAltitude;
     private int targetAltitude;
     private float verticalSpeed;
-    private float targetVertSpd;
     private boolean expedite;
     private String altMode;
     private int lowestAlt;
@@ -117,12 +113,6 @@ public class Aircraft extends Actor {
             buttonStyleEnroute = new ImageButton.ImageButtonStyle();
             buttonStyleEnroute.imageUp = skin.getDrawable("aircraftEnroute");
             buttonStyleEnroute.imageDown = skin.getDrawable("aircraftEnroute");
-            buttonStyleBackground = new ImageButton.ImageButtonStyle();
-            buttonStyleBackground.imageUp = skin.getDrawable("labelBackground");
-            buttonStyleBackground.imageDown = skin.getDrawable("labelBackground");
-            buttonStyleBackgroundSmall = new ImageButton.ImageButtonStyle();
-            buttonStyleBackgroundSmall.imageUp = skin.getDrawable("labelBackgroundSmall");
-            buttonStyleBackgroundSmall.imageDown = skin.getDrawable("labelBackgroundSmall");
             loadedIcons = true;
         }
         this.callsign = callsign;
@@ -176,29 +166,11 @@ public class Aircraft extends Actor {
         dragging = false;
     }
 
-    public static boolean isLoadedIcons() {
-        return loadedIcons;
-    }
-
-    public static void setLoadedIcons(boolean loadedIcons) {
-        Aircraft.loadedIcons = loadedIcons;
-    }
-
     public void loadLabel() {
         icon = new ImageButton(buttonStyleUnctrl);
         icon.setSize(20, 20);
         icon.getImageCell().size(20, 20);
         stage.addActor(icon);
-
-        background = new ImageButton(buttonStyleBackground);
-        background.setPosition(x - 100, y + 25);
-        background.setSize(300, 120);
-        GameScreen.stage.addActor(background);
-
-        background2 = new ImageButton(buttonStyleBackgroundSmall);
-        background2.setPosition(x - 50, y + 25);
-        background2.setSize(130, 95);
-        GameScreen.stage.addActor(background2);
 
         labelText = new String[11];
         labelText[9] = airport.getIcao();
@@ -206,20 +178,19 @@ public class Aircraft extends Actor {
         labelStyle.font = Fonts.defaultFont6;
         labelStyle.fontColor = Color.WHITE;
         label = new Label("Loading...", labelStyle);
-        label.setPosition(x - 100, y + 25);
-        label.setSize(300, 120);
-        GameScreen.stage.addActor(label);
+        label.setPosition(x - label.getWidth() / 2, y + 25);
 
-        clickSpot = new ImageButton(buttonStyleUnctrl);
-        clickSpot.setColor(0, 0, 0, 0);
+        labelButton = new Button(skin.getDrawable("labelBackgroundSmall"), skin.getDrawable("labelBackgroundSmall"));
+        labelButton.setSize(label.getWidth() + 10, label.getHeight());
+
+        clickSpot = new Button(new Button.ButtonStyle());
+        clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
         clickSpot.setName(callsign);
-        clickSpot.setPosition(x - 100, y + 25);
-        clickSpot.setSize(300, 120);
         clickSpot.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
                 if (controlState == 1 || controlState == 2) {
-                    label.moveBy(x - clickSpot.getWidth() / 2, y - clickSpot.getHeight() / 2);
+                    label.moveBy(x - labelButton.getWidth() / 2, y - labelButton.getHeight() / 2);
                 } else {
                     label.moveBy(x - 65, y - 47.5f);
                 }
@@ -237,6 +208,9 @@ public class Aircraft extends Actor {
                 }
             }
         });
+
+        GameScreen.stage.addActor(labelButton);
+        GameScreen.stage.addActor(label);
         GameScreen.stage.addActor(clickSpot);
     }
 
@@ -246,11 +220,7 @@ public class Aircraft extends Actor {
         }
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        if (controlState == 1 || controlState == 2) {
-            GameScreen.shapeRenderer.line(background.getX() + background.getWidth() / 2, background.getY() + background.getHeight() / 2, x, y);
-        } else {
-            GameScreen.shapeRenderer.line(background2.getX() + background2.getWidth() / 2, background2.getY() + background2.getHeight() / 2, x, y);
-        }
+        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
             GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
@@ -625,21 +595,15 @@ public class Aircraft extends Actor {
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + " => " + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-            label.setSize(300, 120);
-            background.setVisible(true);
-            background2.setVisible(false);
-            clickSpot.setSize(300, 120);
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
-            label.setSize(130, 95);
-            background.setVisible(false);
-            background2.setVisible(true);
-            clickSpot.setSize(130, 95);
         }
         label.setText(updatedText);
-        background.setPosition(label.getX() - 5, label.getY());
-        background2.setPosition(label.getX() - 5, label.getY());
-        clickSpot.setPosition(label.getX() - 5, label.getY());
+        label.pack();
+        labelButton.setSize(label.getWidth() + 10, label.getHeight());
+        labelButton.setPosition(label.getX() - 5, label.getY());
+        clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
+        clickSpot.setPosition(labelButton.getX(), labelButton.getY());
     }
 
     public void updateSelectedWaypoints(Aircraft aircraft) {
@@ -729,14 +693,6 @@ public class Aircraft extends Actor {
 
     public void setIcon(ImageButton icon) {
         this.icon = icon;
-    }
-
-    public ImageButton getBackground() {
-        return background;
-    }
-
-    public void setBackground(ImageButton background) {
-        this.background = background;
     }
 
     public Airport getAirport() {
