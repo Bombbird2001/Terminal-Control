@@ -4,8 +4,8 @@ gwt {
     minHeapSize="1G"
 
     src = files(file("src/")) // Needs to be in front of "modules" below.
-    modules 'com.bombbird.atcsim.GdxDefinition'
-    devModules 'com.bombbird.atcsim.GdxDefinitionSuperdev'
+    modules 'com.bombbird.terminalcontrol.GdxDefinition'
+    devModules 'com.bombbird.terminalcontrol.GdxDefinitionSuperdev'
     project.webAppDirName = 'webapp'
 
     compiler {

@@ -4,7 +4,7 @@ sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
-	mainClassName = "com.bombbird.atcsim.IOSLauncher"
+	mainClassName = "com.bombbird.terminalcontrol.IOSLauncher"
 }
 
 launchIPhoneSimulator.dependsOn build
