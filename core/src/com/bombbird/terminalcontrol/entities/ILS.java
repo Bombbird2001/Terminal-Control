@@ -13,7 +13,6 @@ public class ILS extends Actor {
     private float y;
     private int heading;
     private int minima;
-    private boolean active;
 
     private static float distance1 = MathTools.nmToPixel(17);
     private static int angle1 = 35;
@@ -27,7 +26,6 @@ public class ILS extends Actor {
         this.y = y;
         this.heading = heading;
         this.minima = minima;
-        active = false;
     }
 
     public void renderShape() {

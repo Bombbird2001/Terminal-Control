@@ -207,7 +207,7 @@ public class Ui implements Disposable {
         textButtonStyle.down = hdgBoxBackgroundDrawable;
 
         latButton = new TextButton("Lateral", textButtonStyle);
-        latButton.setSize(0.25f * getPaneWidth(), 370);
+        latButton.setSize(0.25f * getPaneWidth(), 300);
         latButton.setPosition(0.1f * getPaneWidth(), 3240 - 400);
         latButton.addListener(new ChangeListener() {
             @Override
@@ -234,7 +234,7 @@ public class Ui implements Disposable {
         textButtonStyle2.down = hdgBoxBackgroundDrawable;
 
         altButton = new TextButton("Altitude", textButtonStyle2);
-        altButton.setSize(0.25f * getPaneWidth(), 370);
+        altButton.setSize(0.25f * getPaneWidth(), 300);
         altButton.setPosition(0.375f * getPaneWidth(), 3240 - 400);
         altButton.addListener(new ChangeListener() {
             @Override
@@ -260,7 +260,7 @@ public class Ui implements Disposable {
         textButtonStyle3.down = hdgBoxBackgroundDrawable;
 
         spdButton = new TextButton("Speed", textButtonStyle3);
-        spdButton.setSize(0.25f * getPaneWidth(), 370);
+        spdButton.setSize(0.25f * getPaneWidth(), 300);
         spdButton.setPosition(0.65f * getPaneWidth(), 3240 - 400);
         spdButton.addListener(new ChangeListener() {
             @Override

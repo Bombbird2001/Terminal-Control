@@ -119,4 +119,12 @@ public class Arrival extends Aircraft {
     public SidStar getSidStar() {
         return star;
     }
+
+    public ILS getIls() {
+        return ils;
+    }
+
+    public void setIls(ILS ils) {
+        this.ils = ils;
+    }
 }

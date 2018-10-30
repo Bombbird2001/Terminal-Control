@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.ILS;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -21,11 +22,15 @@ public class Tab {
     public static boolean notListening;
     public static Ui ui;
 
+    public static List.ListStyle listStyle;
+    public static ScrollPane.ScrollPaneStyle paneStyle;
+
     public static String latMode;
     public static int clearedHdg;
     public static String clearedWpt;
     public static int afterWptHdg;
     public static String afterWpt;
+    public static String clearedILS;
 
     public static String altMode;
     public static int clearedAlt;
@@ -38,19 +43,25 @@ public class Tab {
 
     public boolean visible;
 
+    private static boolean loadedStyles = false;
+
     public Tab(Ui Ui) {
         ui = Ui;
         notListening = false;
         visible = false;
+        if (!loadedStyles) {
+            loadStyles();
+            loadedStyles = true;
+        }
         loadSelect();
         loadResetButton();
     }
 
-    private void loadSelect() {
-        ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
-        scrollPaneStyle.background = TerminalControl.skin.getDrawable("ListBackground");
+    private void loadStyles() {
+        paneStyle = new ScrollPane.ScrollPaneStyle();
+        paneStyle.background = TerminalControl.skin.getDrawable("ListBackground");
 
-        List.ListStyle listStyle = new List.ListStyle();
+        listStyle = new List.ListStyle();
         listStyle.font = Fonts.defaultFont20;
         listStyle.fontColorSelected = Color.WHITE;
         listStyle.fontColorUnselected = Color.BLACK;
@@ -58,12 +69,14 @@ public class Tab {
         button_down.setTopHeight(50);
         button_down.setBottomHeight(50);
         listStyle.selection = button_down;
+    }
 
+    private void loadSelect() {
         SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
         boxStyle.font = Fonts.defaultFont20;
         boxStyle.fontColor = Color.WHITE;
         boxStyle.listStyle = listStyle;
-        boxStyle.scrollStyle = scrollPaneStyle;
+        boxStyle.scrollStyle = paneStyle;
         boxStyle.background = Ui.hdgBoxBackgroundDrawable;
 
         //Settings box for modes
@@ -90,7 +103,7 @@ public class Tab {
         boxStyle2.font = Fonts.defaultFont20;
         boxStyle2.fontColor = Color.WHITE;
         boxStyle2.listStyle = listStyle;
-        boxStyle2.scrollStyle = scrollPaneStyle;
+        boxStyle2.scrollStyle = paneStyle;
         boxStyle2.background = Ui.hdgBoxBackgroundDrawable;
 
         //Valuebox for waypoint/altitude/speed selections

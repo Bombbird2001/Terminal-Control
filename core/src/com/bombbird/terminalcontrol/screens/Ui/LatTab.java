@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
@@ -22,21 +24,57 @@ public class LatTab extends Tab {
     private TextButton hdg10minus;
     private TextButton hdg5add;
     private TextButton hdg5minus;
+    private SelectBox<String> ilsBox;
 
     private Array<String> waypoints;
     private Array<String> holdingWaypoints;
+    private Array<String> ils;
 
     private boolean latModeChanged;
     private boolean wptChanged;
     private boolean hdgChanged;
     private boolean afterWptChanged;
     private boolean afterWptHdgChanged;
+    private boolean ilsChanged;
 
     public LatTab(Ui ui) {
         super(ui);
         loadHdgElements();
+        loadILSBox();
         waypoints = new Array<String>();
         holdingWaypoints = new Array<String>();
+    }
+
+    private void loadILSBox() {
+        //Selectbox for selecting ILS
+        SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
+        boxStyle.font = Fonts.defaultFont20;
+        boxStyle.fontColor = Color.WHITE;
+        boxStyle.listStyle = listStyle;
+        boxStyle.scrollStyle = paneStyle;
+        boxStyle.background = Ui.hdgBoxBackgroundDrawable;
+
+        ils = new Array<String>();
+        ilsBox = new SelectBox<String>(boxStyle);
+        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1520);
+        ilsBox.setSize(0.8f * getPaneWidth(), 270);
+        ilsBox.setAlignment(Align.center);
+        ilsBox.getList().setAlignment(Align.center);
+        ilsBox.setItems(ils);
+        ilsBox.setVisible(false);
+        ilsBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!notListening) {
+                    getChoices();
+                    updateElements();
+                    compareWithAC();
+                    updateElementColours();
+                }
+                event.handle();
+            }
+        });
+        RadarScreen.uiStage.addActor(ilsBox);
     }
 
     private void loadHdgElements() {
@@ -186,7 +224,7 @@ public class LatTab extends Tab {
         settingsBox.setSelected(latMode);
 
         if (latMode.contains("waypoint") || latMode.contains("arrival") || latMode.contains("departure") || latMode.equals("Hold at")) {
-            //Make waypoint box visibile
+            //Make waypoint box visible
             if (visible) {
                 valueBox.setVisible(true);
             }
@@ -200,9 +238,21 @@ public class LatTab extends Tab {
             } else {
                 valueBox.setSelected(clearedWpt);
             }
+            ilsBox.setVisible(false);
         } else {
             //Otherwise hide it
             valueBox.setVisible(false);
+
+            //And set ILS box visible
+            ils.clear();
+            ils.add("Not cleared approach");
+            for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
+                if (selectedAircraft.getAirport().getLandingRunways().keySet().contains(approach.getName().substring(3))) {
+                    ils.add(approach.getName());
+                }
+            }
+            ilsBox.setItems(ils);
+            ilsBox.setVisible(selectedAircraft instanceof Arrival);
         }
 
         //Show heading box if heading mode, otherwise hide it
@@ -226,46 +276,41 @@ public class LatTab extends Tab {
             afterWptChanged = !afterWpt.equals(selectedAircraft.getAfterWaypoint().getName());
         }
         afterWptHdgChanged = !(afterWptHdg == selectedAircraft.getAfterWptHdg());
+        ilsChanged = false;
+        if (selectedAircraft instanceof Arrival) {
+            if (clearedILS == null) {
+                clearedILS = "Not cleared approach";
+            }
+            if (((Arrival) selectedAircraft).getIls() == null) {
+                //Not cleared approach yet
+                ilsChanged = !clearedILS.equals("Not cleared approach");
+            } else {
+                ilsChanged = !clearedILS.equals(((Arrival) selectedAircraft).getIls().getName());
+            }
+        }
     }
 
     @Override
     public void updateElementColours() {
         notListening = true;
         //Lat mode selectbox colour
-        if (latModeChanged) {
-            settingsBox.getStyle().fontColor = Color.YELLOW;
-        } else {
-            settingsBox.getStyle().fontColor = Color.WHITE;
-        }
+        settingsBox.getStyle().fontColor = latModeChanged ? Color.YELLOW : Color.WHITE;
 
         //Lat mode waypoint box colour
         if (latMode.equals("After waypoint, fly heading")) {
-            if (afterWptChanged) {
-                valueBox.getStyle().fontColor = Color.YELLOW;
-            } else {
-                valueBox.getStyle().fontColor = Color.WHITE;
-            }
+            valueBox.getStyle().fontColor = afterWptChanged ? Color.YELLOW : Color.WHITE;
         } else if (latMode.contains("arrival") || latMode.contains("departure")) {
-            if (wptChanged) {
-                valueBox.getStyle().fontColor = Color.YELLOW;
-            } else {
-                valueBox.getStyle().fontColor = Color.WHITE;
-            }
+            valueBox.getStyle().fontColor = wptChanged ? Color.YELLOW : Color.WHITE;
         }
+
+        //Lat mode ILS box colour
+        ilsBox.getStyle().fontColor = ilsChanged ? Color.YELLOW : Color.WHITE;
 
         //Lat mode hdg box colour
         if (latMode.equals("After waypoint, fly heading")) {
-            if (afterWptHdgChanged) {
-                hdgBox.getStyle().fontColor = Color.YELLOW;
-            } else {
-                hdgBox.getStyle().fontColor = Color.WHITE;
-            }
+            hdgBox.getStyle().fontColor = afterWptHdgChanged ? Color.YELLOW : Color.WHITE;
         } else if (latMode.contains("heading")) {
-            if (hdgChanged) {
-                hdgBox.getStyle().fontColor = Color.YELLOW;
-            } else {
-                hdgBox.getStyle().fontColor = Color.WHITE;
-            }
+            hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
         }
 
         if (latModeChanged) {
@@ -276,7 +321,7 @@ public class LatTab extends Tab {
             } else if (latMode.contains("arrival") || latMode.contains("departure")) {
                 tabChanged = wptChanged;
             } else if (latMode.contains("heading")) {
-                tabChanged = hdgChanged;
+                tabChanged = hdgChanged || ilsChanged;
             }
         }
         super.updateElementColours();
@@ -308,6 +353,9 @@ public class LatTab extends Tab {
         } else if (latMode.equals("Fly heading") || latMode.equals("Turn left heading") || latMode.equals("Turn right heading")) {
             selectedAircraft.setLatMode("vector");
             selectedAircraft.setClearedHeading(clearedHdg);
+            if (selectedAircraft instanceof Arrival) {
+                ((Arrival) selectedAircraft).setIls(selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
+            }
         } else {
             Gdx.app.log("Invalid lat mode", "Invalid latmode " + latMode + " set!");
         }
@@ -353,6 +401,7 @@ public class LatTab extends Tab {
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
         hdg5minus.setVisible(show);
+        ilsBox.setVisible(show);
     }
 
     @Override
@@ -375,6 +424,12 @@ public class LatTab extends Tab {
         afterWptChanged = false;
         afterWptHdg = selectedAircraft.getAfterWptHdg();
         afterWptHdgChanged = false;
+        ilsChanged = false;
+        if (selectedAircraft instanceof Arrival) {
+            if (((Arrival) selectedAircraft).getIls() != null) {
+                clearedILS = ((Arrival) selectedAircraft).getIls().getName();
+            }
+        }
     }
 
     @Override
@@ -390,6 +445,9 @@ public class LatTab extends Tab {
             clearedWpt = valueBox.getSelected();
         } else if (latMode.equals("Hold at")) {
             valueBox.setItems(holdingWaypoints);
+        } else if (latMode.contains("heading")) {
+            ilsBox.setItems(ils);
+            clearedILS = ilsBox.getSelected();
         }
         updateSidStarOptions();
         notListening = false;
