@@ -359,9 +359,6 @@ public class Aircraft extends Actor {
                 updateDirect();
             }
         }
-        if (callsign.equals("EVA226")) {
-            System.out.println(latMode + " Heading: " + heading + " Anglediff: " + angleDiff + " Ground speed: " + gs);
-        }
 
         if (targetHeading > 360) {
             targetHeading -= 360;
@@ -395,9 +392,6 @@ public class Aircraft extends Actor {
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
         track = heading - RadarScreen.magHdgDev + angleDiff;
-        if (callsign.equals("EVA226")) {
-            System.out.println("Track: " + track + " FPS: " + 1 / Gdx.graphics.getDeltaTime());
-        }
         deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
