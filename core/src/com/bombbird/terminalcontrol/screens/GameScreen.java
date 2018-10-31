@@ -17,7 +17,7 @@ import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
-import com.bombbird.terminalcontrol.screens.Ui.Ui;
+import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.Ui;
+package com.bombbird.terminalcontrol.screens.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -344,17 +344,26 @@ public class LatTab extends Tab {
                     selectedAircraft.getNavState().getLatModes().add("Hold at");
                 }
             }
+            if (selectedAircraft instanceof Arrival) {
+                selectedAircraft.setIls(null);
+            }
         } else if (latMode.equals("After waypoint, fly heading")) {
             selectedAircraft.setLatMode("sidstar");
             selectedAircraft.setAfterWaypoint(RadarScreen.waypoints.get(afterWpt));
             selectedAircraft.setAfterWptHdg(afterWptHdg);
+            if (selectedAircraft instanceof Arrival) {
+                selectedAircraft.setIls(null);
+            }
         } else if (latMode.equals("Hold at")) {
             System.out.println("Hold at");
+            if (selectedAircraft instanceof Arrival) {
+                selectedAircraft.setIls(null);
+            }
         } else if (latMode.equals("Fly heading") || latMode.equals("Turn left heading") || latMode.equals("Turn right heading")) {
             selectedAircraft.setLatMode("vector");
             selectedAircraft.setClearedHeading(clearedHdg);
             if (selectedAircraft instanceof Arrival) {
-                ((Arrival) selectedAircraft).setIls(selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
+                selectedAircraft.setIls(selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
             }
         } else {
             Gdx.app.log("Invalid lat mode", "Invalid latmode " + latMode + " set!");
@@ -426,8 +435,10 @@ public class LatTab extends Tab {
         afterWptHdgChanged = false;
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
-            if (((Arrival) selectedAircraft).getIls() != null) {
-                clearedILS = ((Arrival) selectedAircraft).getIls().getName();
+            if (selectedAircraft.getIls() != null) {
+                clearedILS = selectedAircraft.getIls().getName();
+            } else {
+                clearedILS = "Not cleared approach";
             }
         }
     }

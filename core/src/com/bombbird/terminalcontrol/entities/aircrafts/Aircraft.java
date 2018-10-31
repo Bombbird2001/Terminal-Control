@@ -13,12 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.screens.Ui.LatTab;
+import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
@@ -75,6 +76,7 @@ public class Aircraft extends Actor {
     private Waypoint direct;
     private Waypoint afterWaypoint;
     private int afterWptHdg;
+    private ILS ils;
 
     //Altitude
     private float prevAlt;
@@ -280,7 +282,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    private void updateAltitude() {
+    public void updateAltitude() {
         float targetVertSpd = (targetAltitude - altitude) / 0.1f;
         if (targetVertSpd > verticalSpeed + 100) {
             verticalSpeed = verticalSpeed + 500 * Gdx.graphics.getDeltaTime();
@@ -322,15 +324,24 @@ public class Aircraft extends Actor {
         float windHdg = winds[0] + 180;
         int windSpd = winds[1];
 
-        if (latMode.equals("vector")) {
+        if (latMode.equals("vector") && (ils == null || !ils.isInsideILS(x, y))) {
             targetHeading = clearedHeading;
             double angle = 180 - windHdg + heading;
             gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
             angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
-        } else if (latMode.equals("sidstar")) {
-            //Calculates distance between waypoint and plane
-            float deltaX = direct.getPosX() - x;
-            float deltaY = direct.getPosY() - y;
+        } else if (latMode.equals("sidstar") || (latMode.equals("vector") && ils != null && ils.isInsideILS(x, y))) {
+            float deltaX;
+            float deltaY;
+            if (latMode.equals("sidstar")) {
+                //Calculates x, y between waypoint, and plane
+                deltaX = direct.getPosX() - x;
+                deltaY = direct.getPosY() - y;
+            } else {
+                //Calculates x, y between point 1nm ahead of plane, and plane
+                Vector2 position = this.getIls().getPointAhead(this);
+                deltaX = position.x - x;
+                deltaY = position.y - y;
+            }
 
             //Find target track angle
             if (deltaX >= 0) {
@@ -1076,5 +1087,13 @@ public class Aircraft extends Actor {
 
     public int getMaxWptSpd(String wpt) {
         return getSidStar().getWptMaxSpd(wpt);
+    }
+
+    public ILS getIls() {
+        return ils;
+    }
+
+    public void setIls(ILS ils) {
+        this.ils = ils;
     }
 }

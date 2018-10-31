@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.ILS;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -12,13 +11,14 @@ import java.util.HashMap;
 
 public class Arrival extends Aircraft {
     //Others
-    private ILS ils;
     private Star star;
+    private boolean gsCap;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         setOnGround(false);
         setLatMode("sidstar");
+        gsCap = false;
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -116,15 +116,22 @@ public class Arrival extends Aircraft {
     }
 
     @Override
+    public void updateAltitude() {
+        if (getIls() != null) {
+            if (!gsCap) {
+                if (Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
+                    gsCap = true;
+                }
+            } else {
+                setAltitude(getIls().getGSAlt(this));
+                return;
+            }
+        }
+        super.updateAltitude();
+    }
+
+    @Override
     public SidStar getSidStar() {
         return star;
-    }
-
-    public ILS getIls() {
-        return ils;
-    }
-
-    public void setIls(ILS ils) {
-        this.ils = ils;
     }
 }

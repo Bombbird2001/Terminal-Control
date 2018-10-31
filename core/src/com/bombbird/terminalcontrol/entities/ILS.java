@@ -2,7 +2,9 @@ package com.bombbird.terminalcontrol.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
@@ -28,9 +30,12 @@ public class ILS extends Actor {
         this.minima = minima;
     }
 
+    /** Draws ILS line using shapeRenderer */
     public void renderShape() {
         if (name.contains("05") || name.contains("10")) {
             GameScreen.shapeRenderer.setColor(Color.BLUE);
+            GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
+            GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
         } else {
             GameScreen.shapeRenderer.setColor(Color.YELLOW);
         }
@@ -38,10 +43,12 @@ public class ILS extends Actor {
 
     }
 
+    /** Tests if coordinates input is inside either ILS arc */
     public boolean isInsideILS(float planeX, float planeY) {
         return isInsideArc(planeX, planeY, distance1, angle1) || isInsideArc(planeX, planeY, distance2, angle2);
     }
 
+    /** Tests if coordinates input is inside the arc of the ILS given the arc angle and distance */
     private boolean isInsideArc(float planeX, float planeY, float distance, int angle) {
         float deltaX = planeX - x;
         float deltaY = planeY - y;
@@ -98,6 +105,31 @@ public class ILS extends Actor {
         inDist = dist <= distance;
 
         return inAngle && inDist;
+    }
+
+    /** Gets the coordinates of the point on the localiser 1nm ahead of aircraft */
+    public Vector2 getPointAhead(Aircraft aircraft) {
+        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - 1);
+    }
+
+    /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
+    public Vector2 getPointAtDist(float dist) {
+        return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+    }
+
+    /** Gets the glide slope altitude (in feet) at distance away from ILS origin */
+    public float getGSAltAtDist(float dist) {
+        return MathTools.nmToFeet(dist) * (float) Math.tan(Math.toRadians(3));
+    }
+
+    /** Gets the glide slope altitude (in feet) of aircraft */
+    public float getGSAlt(Aircraft aircraft) {
+        return getGSAltAtDist(getDistFrom(aircraft.getX(), aircraft.getY()));
+    }
+
+    /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
+    public float getDistFrom(float planeX, float planeY) {
+        return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY));
     }
 
     @Override
