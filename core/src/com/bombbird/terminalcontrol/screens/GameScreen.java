@@ -139,6 +139,12 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             }
         }
 
+        moderateZoom();
+
+        moderateCamPos();
+    }
+
+    private void moderateZoom() {
         //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.3f) {
             camera.zoom = 0.3f;
@@ -153,9 +159,12 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             zooming = false;
             zoomedIn = false;
         }
+
         camera.translate(-990 * (camera.zoom - lastZoom), 0); //Ensure camera zooms into the current center
         lastZoom = camera.zoom;
+    }
 
+    private void moderateCamPos() {
         //Setting new boundaries for camera position after zooming
         float effectiveViewportWidth = (camera.viewportWidth - ui.getPaneWidth()) * camera.zoom; //Take width of pane into account
         float xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f;
@@ -281,16 +290,18 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         uiCam.position.set(uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f, 0);
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
-            if (width < 960) {
-                width = 960;
+            int newWidth = width;
+            int newHeight = height;
+            if (newWidth < 960) {
+                newWidth = 960;
                 resizeAgain = true;
             }
-            if (height < 540) {
-                height = 540;
+            if (newHeight < 540) {
+                newHeight = 540;
                 resizeAgain = true;
             }
             if (resizeAgain) {
-                resize(width, height);
+                resize(newWidth, newHeight);
             }
         }
     }

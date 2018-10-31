@@ -37,10 +37,10 @@ public class Aircraft extends Actor {
     private ImageButton icon;
     private Button labelButton;
     private Button clickSpot;
-    private static ImageButton.ImageButtonStyle buttonStyleCtrl;
-    private static ImageButton.ImageButtonStyle buttonStyleDept;
-    private static ImageButton.ImageButtonStyle buttonStyleUnctrl;
-    private static ImageButton.ImageButtonStyle buttonStyleEnroute;
+    private static final ImageButton.ImageButtonStyle buttonStyleCtrl = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle buttonStyleDept = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle buttonStyleUnctrl = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle buttonStyleEnroute = new ImageButton.ImageButtonStyle();
     private boolean dragging;
     private Color color;
 
@@ -103,16 +103,12 @@ public class Aircraft extends Actor {
     Aircraft(String callsign, String icaoType, Airport airport) {
         if (!loadedIcons) {
             skin.addRegions(iconAtlas);
-            buttonStyleCtrl = new ImageButton.ImageButtonStyle();
             buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
             buttonStyleCtrl.imageDown = skin.getDrawable("aircraftControlled");
-            buttonStyleDept = new ImageButton.ImageButtonStyle();
             buttonStyleDept.imageUp = skin.getDrawable("aircraftDeparture");
             buttonStyleDept.imageDown = skin.getDrawable("aircraftDeparture");
-            buttonStyleUnctrl = new ImageButton.ImageButtonStyle();
             buttonStyleUnctrl.imageUp = skin.getDrawable("aircraftNotControlled");
             buttonStyleUnctrl.imageDown = skin.getDrawable("aircraftNotControlled");
-            buttonStyleEnroute = new ImageButton.ImageButtonStyle();
             buttonStyleEnroute.imageUp = skin.getDrawable("aircraftEnroute");
             buttonStyleEnroute.imageDown = skin.getDrawable("aircraftEnroute");
             loadedIcons = true;
@@ -253,7 +249,7 @@ public class Aircraft extends Actor {
     }
 
     public void updateTkofLdg() {
-
+        //Overriden method for arrival/departure
     }
 
     private void updateIas() {

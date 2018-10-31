@@ -39,7 +39,7 @@ public class SidStar {
     }
 
     public void drawOutbound(float previousX, float previousY, int outbound) {
-
+        //Overriden method for SID
     }
 
     public Array<String> getRunways() {

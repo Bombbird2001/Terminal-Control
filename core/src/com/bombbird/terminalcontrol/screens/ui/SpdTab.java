@@ -79,7 +79,7 @@ public class SpdTab extends Tab {
     @Override
     public void compareWithAC() {
         spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getSpdMode());
-        spdChanged = !(clearedSpd == selectedAircraft.getClearedIas());
+        spdChanged = clearedSpd != selectedAircraft.getClearedIas();
     }
 
     @Override

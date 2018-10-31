@@ -153,17 +153,17 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void pause() {
-
+        //Implements pause method of screen
     }
 
     @Override
     public void resume() {
-
+        //Implements resume method of screen
     }
 
     @Override
     public void hide() {
-
+        //Implements hide method of screen
     }
 
     @Override

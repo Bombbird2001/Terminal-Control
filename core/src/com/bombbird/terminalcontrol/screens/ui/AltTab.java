@@ -70,7 +70,7 @@ public class AltTab extends Tab {
     @Override
     public void compareWithAC() {
         altModeChanged = !altMode.equals(selectedAircraft.getNavState().getAltMode());
-        altChanged = !(clearedAlt == selectedAircraft.getClearedAltitude());
+        altChanged = clearedAlt != selectedAircraft.getClearedAltitude();
     }
 
     @Override

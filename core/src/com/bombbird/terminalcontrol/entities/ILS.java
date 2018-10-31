@@ -16,11 +16,11 @@ public class ILS extends Actor {
     private int heading;
     private int minima;
 
-    private static float distance1 = MathTools.nmToPixel(17);
-    private static int angle1 = 35;
+    private static final float distance1 = MathTools.nmToPixel(17);
+    private static final int angle1 = 35;
 
-    private static float distance2 = MathTools.nmToPixel(25);
-    private static int angle2 = 10;
+    private static final float distance2 = MathTools.nmToPixel(25);
+    private static final int angle2 = 10;
 
     public ILS(String name, float x, float y, int heading, int minima) {
         this.name = name;

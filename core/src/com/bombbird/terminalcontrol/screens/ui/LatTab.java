@@ -102,82 +102,37 @@ public class LatTab extends Tab {
         textButtonStyle1.font = Fonts.defaultFont20;
 
         //+100 button
-        hdg100add = new TextButton("+", textButtonStyle);
-        hdg100add.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg100add.setPosition(0.1f * getPaneWidth(), 3240 - 2100);
-        hdg100add.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(100);
-                event.handle();
-            }
-        });
-        RadarScreen.uiStage.addActor(hdg100add);
+        hdg100add = newButton(100, textButtonStyle);
 
         //-100 button
-        hdg100minus = new TextButton("-", textButtonStyle);
-        hdg100minus.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg100minus.setPosition(0.1f * getPaneWidth(), 3240 - 2570);
-        hdg100minus.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(-100);
-                event.handle();
-            }
-        });
-        RadarScreen.uiStage.addActor(hdg100minus);
+        hdg100minus = newButton(-100, textButtonStyle);
 
         //+10 button
-        hdg10add = new TextButton("+", textButtonStyle1);
-        hdg10add.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg10add.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2100);
-        hdg10add.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(10);
-                event.handle();
-            }
-        });
-        RadarScreen.uiStage.addActor(hdg10add);
+        hdg10add = newButton(10, textButtonStyle1);
 
         //-10 button
-        hdg10minus = new TextButton("-", textButtonStyle1);
-        hdg10minus.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg10minus.setPosition((0.1f + 0.8f / 3) * getPaneWidth(), 3240 - 2570);
-        hdg10minus.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(-10);
-                event.handle();
-            }
-        });
-        RadarScreen.uiStage.addActor(hdg10minus);
+        hdg10minus = newButton(-10, textButtonStyle1);
 
         //+5 button
-        hdg5add = new TextButton("+", textButtonStyle);
-        hdg5add.setSize(0.8f / 3f * getPaneWidth(), 200);
-        hdg5add.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), 3240 - 2100);
-        hdg5add.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(5);
-                event.handle();
-            }
-        });
-        RadarScreen.uiStage.addActor(hdg5add);
+        hdg5add = newButton(5, textButtonStyle);
 
         //-5 button
-        hdg5minus = new TextButton("-", textButtonStyle);
-        hdg5minus.setSize((0.8f / 3f) * getPaneWidth(), 200);
-        hdg5minus.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), 3240 - 2570);
-        hdg5minus.addListener(new ChangeListener() {
+        hdg5minus = newButton(-5, textButtonStyle);
+    }
+
+    private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
+        TextButton button = new TextButton((value > 0) ? "+" : "-", buttonStyle);
+        button.setSize((0.8f / 3f) * getPaneWidth(), 200);
+        button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2100) : (3240 - 2570));
+        button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                updateClearedHdg(-5);
+                updateClearedHdg(value);
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(hdg5minus);
+        RadarScreen.uiStage.addActor(button);
+        return button;
     }
 
     private void updateClearedHdg(int deltaHdg) {
@@ -268,24 +223,24 @@ public class LatTab extends Tab {
     @Override
     public void compareWithAC() {
         latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLatMode());
-        hdgChanged = !(clearedHdg == selectedAircraft.getClearedHeading());
+        hdgChanged = clearedHdg != selectedAircraft.getClearedHeading();
         if (clearedWpt != null && selectedAircraft.getDirect() != null) {
             wptChanged = !clearedWpt.equals(selectedAircraft.getDirect().getName());
         }
         if (afterWpt != null && selectedAircraft.getAfterWaypoint() != null) {
             afterWptChanged = !afterWpt.equals(selectedAircraft.getAfterWaypoint().getName());
         }
-        afterWptHdgChanged = !(afterWptHdg == selectedAircraft.getAfterWptHdg());
+        afterWptHdgChanged = afterWptHdg != selectedAircraft.getAfterWptHdg();
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
             if (clearedILS == null) {
                 clearedILS = "Not cleared approach";
             }
-            if (((Arrival) selectedAircraft).getIls() == null) {
+            if (selectedAircraft.getIls() == null) {
                 //Not cleared approach yet
                 ilsChanged = !clearedILS.equals("Not cleared approach");
             } else {
-                ilsChanged = !clearedILS.equals(((Arrival) selectedAircraft).getIls().getName());
+                ilsChanged = !clearedILS.equals(selectedAircraft.getIls().getName());
             }
         }
     }
