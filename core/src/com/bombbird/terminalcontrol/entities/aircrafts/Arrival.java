@@ -12,13 +12,12 @@ import java.util.HashMap;
 public class Arrival extends Aircraft {
     //Others
     private Star star;
-    private boolean gsCap;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         setOnGround(false);
         setLatMode("sidstar");
-        gsCap = false;
+        setGsCap(false);
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -54,18 +53,35 @@ public class Arrival extends Aircraft {
         loadLabel();
         setNavState(new NavState(1, this));
 
+        if (callsign.equals("EVA226")) {
+            getNavState().setAltMode("Climb/descend to");
+            getNavState().setLatMode("Fly heading");
+            getNavState().setSpdMode("No speed restrictions");
+            setLatMode("vector");
+            setAltMode("open");
+            setHeading(54);
+            setClearedHeading(54);
+            setTrack(getHeading() - RadarScreen.magHdgDev);
+            setAltitude(4000);
+            setClearedAltitude(4000);
+            setX(2394);
+            setY(1296);
+        }
+
         setControlState(1);
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
     }
 
+    /** Overrides method in Aircraft class to join the lines between each STAR waypoint */
     @Override
     public void drawSidStar() {
         super.drawSidStar();
         star.joinLines(getSidStarIndex(), 0);
     }
 
+    /** Overrides method in Aircraft class to update label + update STAR name */
     @Override
     public void updateLabel() {
         labelText[8] = star.getName();
@@ -118,16 +134,35 @@ public class Arrival extends Aircraft {
     @Override
     public void updateAltitude() {
         if (getIls() != null) {
-            if (!gsCap) {
-                if (Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
-                    gsCap = true;
+            if (!isGsCap()) {
+                if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
+                    setGsCap(true);
                 }
             } else {
                 setAltitude(getIls().getGSAlt(this));
+                if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1400) {
+                    //Contact the tower
+                    setControlState(0);
+                    //TODO Add contact tower transmission
+                }
+                if (getAltitude() <= getIls().getRwy().getElevation()) {
+                    setTkofLdg(true);
+                    setOnGround(true);
+                }
                 return;
             }
         }
         super.updateAltitude();
+    }
+
+    @Override
+    public void updateTkofLdg() {
+        setAltitude(getIls().getRwy().getElevation());
+        setTargetIas(0);
+        if (getGs() <= 35) {
+            //TODO Remove aircraft
+            removeAircraft();
+        }
     }
 
     @Override

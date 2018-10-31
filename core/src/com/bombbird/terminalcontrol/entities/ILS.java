@@ -14,7 +14,10 @@ public class ILS extends Actor {
     private float x;
     private float y;
     private int heading;
+    private float gsOffset;
     private int minima;
+    //TODO Set go around altitude
+    private Runway rwy;
 
     private static final float distance1 = MathTools.nmToPixel(17);
     private static final int angle1 = 35;
@@ -22,17 +25,19 @@ public class ILS extends Actor {
     private static final float distance2 = MathTools.nmToPixel(25);
     private static final int angle2 = 10;
 
-    public ILS(String name, float x, float y, int heading, int minima) {
+    public ILS(String name, float x, float y, int heading, float gsOffset, int minima, Runway rwy) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.heading = heading;
+        this.gsOffset = gsOffset;
         this.minima = minima;
+        this.rwy = rwy;
     }
 
     /** Draws ILS line using shapeRenderer */
     public void renderShape() {
-        if (name.contains("05") || name.contains("10")) {
+        if (name.contains("05L") || name.contains("10")) {
             GameScreen.shapeRenderer.setColor(Color.BLUE);
             GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
             GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
@@ -43,7 +48,7 @@ public class ILS extends Actor {
 
     }
 
-    /** Tests if coordinates input is inside either ILS arc */
+    /** Tests if coordinates input is inside either of the 2 ILS arcs */
     public boolean isInsideILS(float planeX, float planeY) {
         return isInsideArc(planeX, planeY, distance1, angle1) || isInsideArc(planeX, planeY, distance2, angle2);
     }
@@ -113,13 +118,13 @@ public class ILS extends Actor {
     }
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
-    public Vector2 getPointAtDist(float dist) {
+    private Vector2 getPointAtDist(float dist) {
         return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
     }
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin */
-    public float getGSAltAtDist(float dist) {
-        return MathTools.nmToFeet(dist) * (float) Math.tan(Math.toRadians(3));
+    private float getGSAltAtDist(float dist) {
+        return MathTools.nmToFeet(dist + gsOffset) * (float) Math.tan(Math.toRadians(3)) + rwy.getElevation();
     }
 
     /** Gets the glide slope altitude (in feet) of aircraft */
@@ -128,7 +133,7 @@ public class ILS extends Actor {
     }
 
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
-    public float getDistFrom(float planeX, float planeY) {
+    private float getDistFrom(float planeX, float planeY) {
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY));
     }
 
@@ -140,5 +145,13 @@ public class ILS extends Actor {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Runway getRwy() {
+        return rwy;
+    }
+
+    public void setRwy(Runway rwy) {
+        this.rwy = rwy;
     }
 }

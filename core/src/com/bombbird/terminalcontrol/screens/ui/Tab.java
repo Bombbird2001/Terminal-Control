@@ -76,7 +76,7 @@ public class Tab {
         boxStyle.fontColor = Color.WHITE;
         boxStyle.listStyle = listStyle;
         boxStyle.scrollStyle = paneStyle;
-        boxStyle.background = Ui.hdgBoxBackgroundDrawable;
+        boxStyle.background = Ui.lightBoxBackground;
 
         //Settings box for modes
         settingsBox = new SelectBox<String>(boxStyle);
@@ -103,7 +103,7 @@ public class Tab {
         boxStyle2.fontColor = Color.WHITE;
         boxStyle2.listStyle = listStyle;
         boxStyle2.scrollStyle = paneStyle;
-        boxStyle2.background = Ui.hdgBoxBackgroundDrawable;
+        boxStyle2.background = Ui.lightBoxBackground;
 
         //Valuebox for waypoint/altitude/speed selections
         valueBox = new SelectBox<String>(boxStyle2);
@@ -131,7 +131,7 @@ public class Tab {
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
         textButtonStyle2.font = Fonts.defaultFont20;
         textButtonStyle2.fontColor = Color.BLACK;
-        textButtonStyle2.up = Ui.hdgBoxBackgroundDrawable;
+        textButtonStyle2.up = Ui.lightBoxBackground;
         textButtonStyle2.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Undo this tab button

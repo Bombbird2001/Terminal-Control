@@ -48,9 +48,14 @@ public class SpdTab extends Tab {
                 lowestSpd = 200;
             }
         } else if (selectedAircraft instanceof Arrival) {
-            //TODO Set minimum apch spd for ILS
-            //lowestSpd = selectedAircraft.getApchSpd();
             lowestSpd = 160;
+            if (selectedAircraft.getIls() != null && selectedAircraft.getIls().isInsideILS(selectedAircraft.getX(), selectedAircraft.getY())) {
+                lowestSpd = selectedAircraft.getApchSpd();
+            } else if (selectedAircraft.getApchSpd() > lowestSpd) {
+                while (selectedAircraft.getApchSpd() > lowestSpd) {
+                    lowestSpd += 10;
+                }
+            }
         } else {
             lowestSpd = 0;
             Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");

@@ -15,17 +15,21 @@ public class Departure extends Aircraft {
     private Sid sid;
     private int outboundHdg;
     private int contactAlt;
+    private int handOverAlt;
     private boolean v2set;
     private boolean sidSet;
     private boolean contacted;
+    private int cruiseAlt;
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = 2000 + MathUtils.random(-400, 400);
+        handOverAlt = 11500 + MathUtils.random(-500, 500);
         v2set = false;
         sidSet = false;
         contacted = false;
+        cruiseAlt = MathUtils.random(30, 39) * 1000;
 
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
@@ -160,8 +164,10 @@ public class Departure extends Aircraft {
             }
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
-            } else {
+            } else if (contacted && getControlState() == 2) {
                 setHighestAlt(RadarScreen.maxDeptAlt);
+            } else {
+                setHighestAlt(cruiseAlt);
             }
             if (lowestAlt > -1 && sidSet && getAltitude() < lowestAlt) {
                 //If there is a waypoint with minimum altitude
@@ -183,6 +189,16 @@ public class Departure extends Aircraft {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void updateAltitude() {
+        super.updateAltitude();
+        if (getControlState() == 2 && getAltitude() >= handOverAlt) {
+            setControlState(0);
+            updateAltRestrictions();
+            setClearedAltitude(cruiseAlt);
         }
     }
 

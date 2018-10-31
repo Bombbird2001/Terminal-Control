@@ -168,7 +168,7 @@ public class Ui implements Disposable {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = Fonts.defaultFont20;
         textButtonStyle.fontColor = Color.BLACK;
-        textButtonStyle.up = hdgBoxBackgroundDrawable;
+        textButtonStyle.up = lightBoxBackground;
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Transmit button
@@ -203,8 +203,8 @@ public class Ui implements Disposable {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = Fonts.defaultFont20;
         textButtonStyle.fontColor = Color.BLACK;
-        textButtonStyle.up = hdgBoxBackgroundDrawable;
-        textButtonStyle.down = hdgBoxBackgroundDrawable;
+        textButtonStyle.up = lightBoxBackground;
+        textButtonStyle.down = lightBoxBackground;
 
         latButton = new TextButton("Lateral", textButtonStyle);
         latButton.setSize(0.25f * getPaneWidth(), 300);
@@ -230,8 +230,8 @@ public class Ui implements Disposable {
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
         textButtonStyle2.font = Fonts.defaultFont20;
         textButtonStyle2.fontColor = Color.BLACK;
-        textButtonStyle2.up = hdgBoxBackgroundDrawable;
-        textButtonStyle2.down = hdgBoxBackgroundDrawable;
+        textButtonStyle2.up = lightBoxBackground;
+        textButtonStyle2.down = lightBoxBackground;
 
         altButton = new TextButton("Altitude", textButtonStyle2);
         altButton.setSize(0.25f * getPaneWidth(), 300);
@@ -256,8 +256,8 @@ public class Ui implements Disposable {
         TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
         textButtonStyle3.font = Fonts.defaultFont20;
         textButtonStyle3.fontColor = Color.BLACK;
-        textButtonStyle3.up = hdgBoxBackgroundDrawable;
-        textButtonStyle3.down = hdgBoxBackgroundDrawable;
+        textButtonStyle3.up = lightBoxBackground;
+        textButtonStyle3.down = lightBoxBackground;
 
         spdButton = new TextButton("Speed", textButtonStyle3);
         spdButton.setSize(0.25f * getPaneWidth(), 300);
@@ -303,8 +303,8 @@ public class Ui implements Disposable {
             textButton.getStyle().up = TerminalControl.skin.getDrawable("Button_down");
             textButton.getStyle().fontColor = Color.WHITE;
         } else {
-            textButton.getStyle().down = hdgBoxBackgroundDrawable;
-            textButton.getStyle().up = hdgBoxBackgroundDrawable;
+            textButton.getStyle().down = lightBoxBackground;
+            textButton.getStyle().up = lightBoxBackground;
             textButton.getStyle().fontColor = Color.BLACK;
         }
     }

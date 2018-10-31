@@ -52,11 +52,11 @@ public class LatTab extends Tab {
         boxStyle.fontColor = Color.WHITE;
         boxStyle.listStyle = listStyle;
         boxStyle.scrollStyle = paneStyle;
-        boxStyle.background = Ui.hdgBoxBackgroundDrawable;
+        boxStyle.background = Ui.lightBoxBackground;
 
         ils = new Array<String>();
         ilsBox = new SelectBox<String>(boxStyle);
-        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1520);
+        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1570);
         ilsBox.setSize(0.8f * getPaneWidth(), 270);
         ilsBox.setAlignment(Align.center);
         ilsBox.getList().setAlignment(Align.center);
@@ -207,6 +207,7 @@ public class LatTab extends Tab {
                 }
             }
             ilsBox.setItems(ils);
+            ilsBox.setSelected(clearedILS);
             ilsBox.setVisible(selectedAircraft instanceof Arrival);
         }
 
@@ -339,6 +340,8 @@ public class LatTab extends Tab {
         float leftMargin = 0.1f * paneWidth;
         hdgBox.setSize(paneSize, 270);
         hdgBox.setX(leftMargin);
+        ilsBox.setSize(paneSize, 270);
+        ilsBox.setX(leftMargin);
         hdg100add.setSize(paneSize / 3, 200);
         hdg100add.setX(leftMargin);
         hdg100minus.setSize(paneSize / 3, 200);

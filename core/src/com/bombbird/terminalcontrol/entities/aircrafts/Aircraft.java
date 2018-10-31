@@ -88,6 +88,7 @@ public class Aircraft extends Actor {
     private String altMode;
     private int lowestAlt;
     private int highestAlt;
+    private boolean gsCap;
 
     //Speed
     private float ias;
@@ -265,7 +266,11 @@ public class Aircraft extends Actor {
         float min = -2.25f;
         if (tkofLdg) {
             max = 3;
-            min = -4.5f;
+            if (gs >= 60) {
+                min = -4.5f;
+            } else {
+                min = -1.5f;
+            }
         }
         if (deltaIas > max) {
             deltaIas = max;
@@ -334,6 +339,9 @@ public class Aircraft extends Actor {
                 deltaY = direct.getPosY() - y;
             } else {
                 //Calculates x, y between point 1nm ahead of plane, and plane
+                if (!getIls().getRwy().equals(runway)) {
+                    runway = getIls().getRwy();
+                }
                 Vector2 position = this.getIls().getPointAhead(this);
                 deltaX = position.x - x;
                 deltaY = position.y - y;
@@ -404,6 +412,9 @@ public class Aircraft extends Actor {
         x += deltaPosition.x;
         y += deltaPosition.y;
         label.moveBy(deltaPosition.x, deltaPosition.y);
+        if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
+            removeAircraft();
+        }
     }
 
     private double findDeltaHeading(double targetHeading) {
@@ -541,7 +552,7 @@ public class Aircraft extends Actor {
             icon.setStyle(buttonStyleUnctrl);
         } else if (controlState == 1) { //Controlled arrival - blue
             icon.setStyle(buttonStyleCtrl);
-        } else if (controlState == 2) { //Controlled departure - light green?
+        } else if (controlState == 2) { //Controlled departure - green
             icon.setStyle(buttonStyleDept);
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
@@ -572,7 +583,7 @@ public class Aircraft extends Actor {
 
     public void updateLabel() {
         String vertSpd;
-        if (getVerticalSpeed() < -100) {
+        if (getVerticalSpeed() < -100 || gsCap) {
             vertSpd = " DOWN ";
         } else if (getVerticalSpeed() > 100) {
             vertSpd = " UP ";
@@ -582,7 +593,7 @@ public class Aircraft extends Actor {
         labelText[0] = callsign;
         labelText[1] = icaoType + "/" + wakeCat;
         labelText[2] = Integer.toString((int)(altitude / 100));
-        labelText[3] = Integer.toString(targetAltitude / 100);
+        labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
         labelText[10] = Integer.toString(clearedAltitude / 100);
         if ((int) heading == 0) {
             heading += 360;
@@ -923,6 +934,15 @@ public class Aircraft extends Actor {
         }
     }
 
+    public void removeAircraft() {
+        label.remove();
+        icon.remove();
+        labelButton.remove();
+        clickSpot.remove();
+        remove();
+        RadarScreen.aircrafts.remove(callsign);
+    }
+
     public void updateAltRestrictions() {
         //Overriden method that sets the altitude restrictions of the aircraft
     }
@@ -1091,5 +1111,13 @@ public class Aircraft extends Actor {
 
     public void setIls(ILS ils) {
         this.ils = ils;
+    }
+
+    public boolean isGsCap() {
+        return gsCap;
+    }
+
+    public void setGsCap(boolean gsCap) {
+        this.gsCap = gsCap;
     }
 }
