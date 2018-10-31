@@ -243,23 +243,21 @@ public class Metar {
 
     private String randomWS(int windSpd, String airport) {
         String ws = null;
-        if (windSpd >= 15) {
-            if (MathUtils.random(2) == 2) {
-                //Runway windshear
-                StringBuilder stringBuilder = new StringBuilder();
-                for (String runway : RadarScreen.airports.get(airport).getRunways().keySet()) {
-                    //Random boolean for each runway
-                    if (RadarScreen.airports.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
-                        stringBuilder.append("R");
-                        stringBuilder.append(runway);
-                        stringBuilder.append(" ");
-                    }
+        if (windSpd >= 15 && MathUtils.random(2) == 2) {
+            //Runway windshear
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String runway : RadarScreen.airports.get(airport).getRunways().keySet()) {
+                //Random boolean for each runway
+                if (RadarScreen.airports.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
+                    stringBuilder.append("R");
+                    stringBuilder.append(runway);
+                    stringBuilder.append(" ");
                 }
-                if (stringBuilder.length() > 3 && stringBuilder.length() == RadarScreen.airports.get(airport).getRunways().size() * 3) {
-                    ws = "ALL RWY";
-                } else {
-                    ws = stringBuilder.toString();
-                }
+            }
+            if (stringBuilder.length() > 3 && stringBuilder.length() == RadarScreen.airports.get(airport).getRunways().size() * 3) {
+                ws = "ALL RWY";
+            } else {
+                ws = stringBuilder.toString();
             }
         }
         return ws;

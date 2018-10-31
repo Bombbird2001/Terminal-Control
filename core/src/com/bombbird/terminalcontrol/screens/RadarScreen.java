@@ -52,9 +52,6 @@ public class RadarScreen extends GameScreen {
             camera.position.set(2286, 1620, 0);
         }
 
-        //Set aircraft array
-        aircrafts = new HashMap<String, Aircraft>();
-
         //Set timer for METAR
         timer = new Timer(true);
     }

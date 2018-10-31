@@ -59,7 +59,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Create texture stuff
     public Skin skin;
-    public static ShapeRenderer shapeRenderer;
+    public static final ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     //Create range circles
     private RangeCircle[] rangeCircles;
@@ -68,24 +68,20 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public Array<Obstacle> obsArray;
     public Array<RestrictedArea> restArray;
 
-    //Create airports + wind data
-    public static HashMap<String, Airport> airports;
+    //Create airports
+    public static final HashMap<String, Airport> airports = new HashMap<String, Airport>();
 
-    //Array of planes
-    public static HashMap<String, Aircraft> aircrafts;
+    //HashMap of planes
+    public static final HashMap<String, Aircraft> aircrafts = new HashMap<String, Aircraft>();
 
     //Create waypoints
     public static HashMap<String, Waypoint> waypoints;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
-        shapeRenderer = new ShapeRenderer();
 
         //Initiate range circles
         rangeCircles = new RangeCircle[3];
-
-        //Initiate airports
-        airports = new HashMap<String, Airport>();
 
         loading = false;
         aircraftLoaded = false;
