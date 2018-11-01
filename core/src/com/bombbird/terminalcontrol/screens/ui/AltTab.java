@@ -69,8 +69,8 @@ public class AltTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        altModeChanged = !altMode.equals(selectedAircraft.getNavState().getAltMode());
-        altChanged = clearedAlt != selectedAircraft.getClearedAltitude();
+        altModeChanged = !altMode.equals(selectedAircraft.getNavState().getDispAltMode().last());
+        altChanged = clearedAlt != selectedAircraft.getNavState().getClearedAlt().last();
     }
 
     @Override
@@ -97,15 +97,7 @@ public class AltTab extends Tab {
 
     @Override
     public void updateMode() {
-        if (altMode.equals("Climb via SID") || altMode.equals("Descend via STAR")) {
-            selectedAircraft.setAltMode("sidstar");
-        } else {
-            selectedAircraft.setAltMode("open");
-            selectedAircraft.setExpedite(altMode.contains("Expedite"));
-        }
-        selectedAircraft.getNavState().setAltMode(altMode);
-
-        selectedAircraft.setClearedAltitude(clearedAlt);
+        selectedAircraft.getNavState().sendAlt(altMode, clearedAlt);
     }
 
     @Override
@@ -117,9 +109,9 @@ public class AltTab extends Tab {
 
     @Override
     public void getACState() {
-        altMode = selectedAircraft.getNavState().getAltMode();
+        altMode = selectedAircraft.getNavState().getDispAltMode().last();
         altModeChanged = false;
-        clearedAlt = selectedAircraft.getClearedAltitude();
+        clearedAlt = selectedAircraft.getNavState().getClearedAlt().last();
         altChanged = false;
     }
 

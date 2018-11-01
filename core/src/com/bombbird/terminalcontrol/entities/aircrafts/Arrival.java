@@ -17,7 +17,6 @@ public class Arrival extends Aircraft {
         super(callsign, icaoType, arrival);
         setOnGround(false);
         setLatMode("sidstar");
-        setGsCap(false);
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -32,7 +31,7 @@ public class Arrival extends Aircraft {
                 }
             }
         }
-        setDirect(star.getWaypoint(getSidStarIndex()));
+        setDirect(star.getWaypoint(0));
         setHeading(star.getInboundHdg());
         setClearedHeading((int)getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
@@ -54,9 +53,12 @@ public class Arrival extends Aircraft {
         setNavState(new NavState(1, this));
 
         if (callsign.equals("EVA226")) {
-            getNavState().setAltMode("Climb/descend to");
-            getNavState().setLatMode("Fly heading");
-            getNavState().setSpdMode("No speed restrictions");
+            getNavState().getDispAltMode().removeFirst();
+            getNavState().getDispAltMode().addFirst("Climb/descend to");
+            getNavState().getDispLatMode().removeFirst();
+            getNavState().getDispLatMode().addFirst("Fly heading");
+            getNavState().getDispSpdMode().removeFirst();
+            getNavState().getDispSpdMode().addFirst("No speed restrictions");
             setLatMode("vector");
             setAltMode("open");
             setHeading(54);
@@ -110,7 +112,7 @@ public class Arrival extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getLatMode().contains("arrival") || getNavState().getLatMode().contains("waypoint")) {
+        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint")) {
             //Aircraft on STAR
             int highestAlt = -1;
             int lowestAlt = -1;
@@ -160,7 +162,6 @@ public class Arrival extends Aircraft {
         setAltitude(getIls().getRwy().getElevation());
         setTargetIas(0);
         if (getGs() <= 35) {
-            //TODO Remove aircraft
             removeAircraft();
         }
     }

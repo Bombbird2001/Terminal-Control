@@ -83,8 +83,8 @@ public class SpdTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getSpdMode());
-        spdChanged = clearedSpd != selectedAircraft.getClearedIas();
+        spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getDispSpdMode().last());
+        spdChanged = clearedSpd != selectedAircraft.getNavState().getClearedSpd().last();
     }
 
     @Override
@@ -111,9 +111,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void updateMode() {
-        selectedAircraft.getNavState().setSpdMode(spdMode);
-        selectedAircraft.setClearedIas(clearedSpd);
-        selectedAircraft.setTargetIas(clearedSpd);
+        selectedAircraft.getNavState().sendSpd(spdMode, clearedSpd);
     }
 
     @Override
@@ -125,9 +123,9 @@ public class SpdTab extends Tab {
 
     @Override
     public void getACState() {
-        spdMode = selectedAircraft.getNavState().getSpdMode();
+        spdMode = selectedAircraft.getNavState().getDispSpdMode().last();
         spdModeChanged = false;
-        clearedSpd = selectedAircraft.getClearedIas();
+        clearedSpd = selectedAircraft.getNavState().getClearedSpd().last();
         spdChanged = false;
     }
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -38,6 +39,8 @@ public class Ui implements Disposable {
     private TextButton cfmChange;
     private TextButton resetAll;
 
+    private Label label;
+
     //Array for METAR info on default pane
     private Array<Label> metarInfos;
 
@@ -49,6 +52,7 @@ public class Ui implements Disposable {
     public Ui() {
         tab = 0;
         loadNormalPane();
+        loadAircraftLabel();
         latTab = new LatTab(this);
         altTab = new AltTab(this);
         spdTab = new SpdTab(this);
@@ -81,6 +85,17 @@ public class Ui implements Disposable {
             metarText[4] = "Windshear: " + airport.getWindshear();
             label.setText(StringUtils.join(metarText, "\n"));
         }
+    }
+
+    private void loadAircraftLabel() {
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont30;
+        labelStyle.fontColor = Color.BLACK;
+        label = new Label("No aircraft selected", labelStyle);
+        label.setSize(0.8f * getPaneWidth(), 270);
+        label.setPosition(0.1f * getPaneWidth(), 3240 - 695);
+        label.setAlignment(Align.center);
+        RadarScreen.uiStage.addActor(label);
     }
 
     private void loadNormalPane() {
@@ -324,16 +339,20 @@ public class Ui implements Disposable {
     }
 
     private void updateMode() {
-        //Lat mode
-        latTab.updateMode();
+        if (latTab.tabChanged || altTab.tabChanged || spdTab.tabChanged) {
+            //Lat mode
+            latTab.updateMode();
 
-        //Alt mode
-        altTab.updateMode();
+            //Alt mode
+            altTab.updateMode();
 
-        //Spd mode
-        spdTab.updateMode();
+            //Spd mode
+            spdTab.updateMode();
 
-        resetAll();
+            selectedAircraft.getNavState().updateState();
+
+            resetAll();
+        }
     }
 
     private void resetTab(int tab) {
@@ -412,6 +431,8 @@ public class Ui implements Disposable {
         latTab.updatePaneWidth(paneImage.getWidth());
         altTab.updatePaneWidth(paneImage.getWidth());
         spdTab.updatePaneWidth(paneImage.getWidth());
+        label.setSize(0.8f * paneImage.getWidth(), 270);
+        label.setX(0.1f * paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {
@@ -436,6 +457,10 @@ public class Ui implements Disposable {
             altTab.setVisibility(false);
             spdTab.setVisibility(false);
         }
+        if (selectedAircraft != null) {
+            label.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
+        }
+        label.setVisible(show);
     }
 
     public float getPaneWidth() {

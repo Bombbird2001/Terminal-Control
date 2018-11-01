@@ -42,7 +42,6 @@ public class Runway extends Actor {
 
     //Set the ILS
     private ILS ils;
-    //TODO: Implement ILS
 
     //Set windshear properties
     private boolean windshear;

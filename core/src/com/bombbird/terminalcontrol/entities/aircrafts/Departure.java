@@ -49,6 +49,7 @@ public class Departure extends Aircraft {
                 }
             }
         }
+        setDirect(sid.getWaypoint(0));
 
         //Set initial IAS due to wind
         setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
@@ -103,7 +104,6 @@ public class Departure extends Aircraft {
             contacted = true;
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
-            setDirect(sid.getWaypoint(0));
             setLatMode("sidstar");
             if (getClearedIas() == getV2()) {
                 setTargetIas(250);
@@ -154,7 +154,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getLatMode().contains("departure")) {
+        if (getNavState().getDispLatMode().first().contains("departure")) {
             //Aircraft on SID
             int highestAlt = -1;
             int lowestAlt = -1;

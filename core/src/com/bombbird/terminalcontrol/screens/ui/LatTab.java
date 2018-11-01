@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.screens.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
-import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -56,8 +54,8 @@ public class LatTab extends Tab {
 
         ils = new Array<String>();
         ilsBox = new SelectBox<String>(boxStyle);
-        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1570);
-        ilsBox.setSize(0.8f * getPaneWidth(), 270);
+        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
+        ilsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         ilsBox.setAlignment(Align.center);
         ilsBox.getList().setAlignment(Align.center);
         ilsBox.setItems(ils);
@@ -184,7 +182,7 @@ public class LatTab extends Tab {
                 valueBox.setVisible(true);
             }
             waypoints.clear();
-            for (Waypoint waypoint: selectedAircraft.getRemainingWaypoints()) {
+            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getNavState().getLastSidStarIndex())) {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
@@ -223,25 +221,28 @@ public class LatTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLatMode());
-        hdgChanged = clearedHdg != selectedAircraft.getClearedHeading();
-        if (clearedWpt != null && selectedAircraft.getDirect() != null) {
-            wptChanged = !clearedWpt.equals(selectedAircraft.getDirect().getName());
+        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getDispLatMode().last());
+        hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
+        Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
+        if (clearedWpt != null && lastDirect != null) {
+            wptChanged = !clearedWpt.equals(lastDirect.getName());
         }
-        if (afterWpt != null && selectedAircraft.getAfterWaypoint() != null) {
-            afterWptChanged = !afterWpt.equals(selectedAircraft.getAfterWaypoint().getName());
+        Waypoint lastAfterWpt = selectedAircraft.getNavState().getClearedAftWpt().last();
+        if (afterWpt != null && lastAfterWpt != null) {
+            afterWptChanged = !afterWpt.equals(lastAfterWpt.getName());
         }
-        afterWptHdgChanged = afterWptHdg != selectedAircraft.getAfterWptHdg();
+        afterWptHdgChanged = afterWptHdg != selectedAircraft.getNavState().getClearedAftWptHdg().last();
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
             if (clearedILS == null) {
                 clearedILS = "Not cleared approach";
             }
-            if (selectedAircraft.getIls() == null) {
+            ILS lastILS = selectedAircraft.getNavState().getClearedIls().last();
+            if (lastILS == null) {
                 //Not cleared approach yet
                 ilsChanged = !clearedILS.equals("Not cleared approach");
             } else {
-                ilsChanged = !clearedILS.equals(selectedAircraft.getIls().getName());
+                ilsChanged = !clearedILS.equals(lastILS.getName());
             }
         }
     }
@@ -287,44 +288,7 @@ public class LatTab extends Tab {
 
     @Override
     public void updateMode() {
-        if (latMode.contains(selectedAircraft.getSidStar().getName())) {
-            if (selectedAircraft instanceof Arrival || (selectedAircraft instanceof Departure && ((Departure) selectedAircraft).isSidSet())) {
-                selectedAircraft.setLatMode("sidstar");
-                selectedAircraft.setDirect(RadarScreen.waypoints.get(clearedWpt));
-                selectedAircraft.updateSelectedWaypoints(null);
-                selectedAircraft.setSidStarIndex(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getDirect().getName()));
-                if (!selectedAircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
-                    selectedAircraft.getNavState().getLatModes().add("After waypoint, fly heading");
-                }
-                if (!selectedAircraft.getNavState().getLatModes().contains("Hold at", false)) {
-                    selectedAircraft.getNavState().getLatModes().add("Hold at");
-                }
-            }
-            if (selectedAircraft instanceof Arrival) {
-                selectedAircraft.setIls(null);
-            }
-        } else if (latMode.equals("After waypoint, fly heading")) {
-            selectedAircraft.setLatMode("sidstar");
-            selectedAircraft.setAfterWaypoint(RadarScreen.waypoints.get(afterWpt));
-            selectedAircraft.setAfterWptHdg(afterWptHdg);
-            if (selectedAircraft instanceof Arrival) {
-                selectedAircraft.setIls(null);
-            }
-        } else if (latMode.equals("Hold at")) {
-            System.out.println("Hold at");
-            if (selectedAircraft instanceof Arrival) {
-                selectedAircraft.setIls(null);
-            }
-        } else if (latMode.equals("Fly heading") || latMode.equals("Turn left heading") || latMode.equals("Turn right heading")) {
-            selectedAircraft.setLatMode("vector");
-            selectedAircraft.setClearedHeading(clearedHdg);
-            if (selectedAircraft instanceof Arrival) {
-                selectedAircraft.setIls(selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
-            }
-        } else {
-            Gdx.app.log("Invalid lat mode", "Invalid latmode " + latMode + " set!");
-        }
-        selectedAircraft.getNavState().setLatMode(latMode);
+        selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, afterWptHdg, clearedHdg, clearedILS);
     }
 
     @Override
@@ -340,7 +304,7 @@ public class LatTab extends Tab {
         float leftMargin = 0.1f * paneWidth;
         hdgBox.setSize(paneSize, 270);
         hdgBox.setX(leftMargin);
-        ilsBox.setSize(paneSize, 270);
+        ilsBox.setSize(paneSize, boxHeight);
         ilsBox.setX(leftMargin);
         hdg100add.setSize(paneSize / 3, 200);
         hdg100add.setX(leftMargin);
@@ -371,30 +335,31 @@ public class LatTab extends Tab {
         ilsBox.setVisible(show);
     }
 
+    /** Gets the current lateral nav state of aircraft of the latest transmission, sets variable to them */
     @Override
     public void getACState() {
-        latMode = selectedAircraft.getNavState().getLatMode();
+        latMode = selectedAircraft.getNavState().getDispLatMode().last();
         latModeChanged = false;
-        clearedHdg = selectedAircraft.getClearedHeading();
+        clearedHdg = selectedAircraft.getNavState().getClearedHdg().last();
         hdgChanged = false;
-        if (selectedAircraft.getDirect() != null) {
-            clearedWpt = selectedAircraft.getDirect().getName();
+        if (selectedAircraft.getNavState().getClearedDirect().last() != null) {
+            clearedWpt = selectedAircraft.getNavState().getClearedDirect().last().getName();
         } else {
             clearedWpt = null;
         }
         wptChanged = false;
-        if (selectedAircraft.getAfterWaypoint() != null) {
-            afterWpt = selectedAircraft.getAfterWaypoint().getName();
+        if (selectedAircraft.getNavState().getClearedAftWpt().last() != null) {
+            afterWpt = selectedAircraft.getNavState().getClearedAftWpt().last().getName();
         } else {
             afterWpt = null;
         }
         afterWptChanged = false;
-        afterWptHdg = selectedAircraft.getAfterWptHdg();
+        afterWptHdg = selectedAircraft.getNavState().getClearedAftWptHdg().last();
         afterWptHdgChanged = false;
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
-            if (selectedAircraft.getIls() != null) {
-                clearedILS = selectedAircraft.getIls().getName();
+            if (selectedAircraft.getNavState().getClearedIls().last() != null) {
+                clearedILS = selectedAircraft.getNavState().getClearedIls().last().getName();
             } else {
                 clearedILS = "Not cleared approach";
             }

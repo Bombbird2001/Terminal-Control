@@ -114,7 +114,7 @@ public class ILS extends Actor {
 
     /** Gets the coordinates of the point on the localiser 1nm ahead of aircraft */
     public Vector2 getPointAhead(Aircraft aircraft) {
-        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - 1);
+        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - 0.75f);
     }
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */

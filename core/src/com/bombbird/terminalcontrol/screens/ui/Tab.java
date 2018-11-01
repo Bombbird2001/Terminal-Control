@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -20,6 +21,8 @@ public class Tab {
     public Aircraft selectedAircraft;
     public static boolean notListening;
     public static Ui ui;
+
+    public static final float boxHeight = 320;
 
     public static List.ListStyle listStyle;
     public static ScrollPane.ScrollPaneStyle paneStyle;
@@ -42,6 +45,8 @@ public class Tab {
 
     public boolean visible;
 
+    public Queue<Object[]> infoQueue;
+
     private static boolean loadedStyles = false;
 
     public Tab(Ui Ui) {
@@ -54,6 +59,7 @@ public class Tab {
         }
         loadSelect();
         loadResetButton();
+        infoQueue = new Queue<Object[]>();
     }
 
     private void loadStyles() {
@@ -65,8 +71,8 @@ public class Tab {
         listStyle.fontColorSelected = Color.WHITE;
         listStyle.fontColorUnselected = Color.BLACK;
         Drawable button_down = TerminalControl.skin.getDrawable("Button_down");
-        button_down.setTopHeight(50);
-        button_down.setBottomHeight(50);
+        button_down.setTopHeight(75);
+        button_down.setBottomHeight(75);
         listStyle.selection = button_down;
     }
 
@@ -80,8 +86,8 @@ public class Tab {
 
         //Settings box for modes
         settingsBox = new SelectBox<String>(boxStyle);
-        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 970);
-        settingsBox.setSize(0.8f * getPaneWidth(), 270);
+        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1020);
+        settingsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         settingsBox.setAlignment(Align.center);
         settingsBox.getList().setAlignment(Align.center);
         settingsBox.addListener(new ChangeListener() {
@@ -107,8 +113,8 @@ public class Tab {
 
         //Valuebox for waypoint/altitude/speed selections
         valueBox = new SelectBox<String>(boxStyle2);
-        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1570);
-        valueBox.setSize(0.8f * getPaneWidth(), 270);
+        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
+        valueBox.setSize(0.8f * getPaneWidth(), boxHeight);
         valueBox.setAlignment(Align.center);
         valueBox.getList().setAlignment(Align.center);
         valueBox.addListener(new ChangeListener() {
@@ -192,9 +198,9 @@ public class Tab {
         //Overriden method for updating width of each element
         float paneSize = 0.8f * paneWidth;
         float leftMargin = 0.1f * paneWidth;
-        settingsBox.setSize(paneSize, 270);
+        settingsBox.setSize(paneSize, boxHeight);
         settingsBox.setX(leftMargin);
-        valueBox.setSize(paneSize, 270);
+        valueBox.setSize(paneSize, boxHeight);
         valueBox.setX(leftMargin);
         resetTab.setSize(paneWidth / 4, 370);
         resetTab.setX(leftMargin + 0.275f * paneWidth);

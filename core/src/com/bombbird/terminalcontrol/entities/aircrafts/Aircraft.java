@@ -77,6 +77,7 @@ public class Aircraft extends Actor {
     private Waypoint afterWaypoint;
     private int afterWptHdg;
     private ILS ils;
+    private boolean locCap;
 
     //Altitude
     private float prevAlt;
@@ -144,6 +145,7 @@ public class Aircraft extends Actor {
         targetHeading = 0;
         clearedHeading = (int)(heading);
         track = 0;
+        sidStarIndex = 0;
         afterWptHdg = 360;
         altitude = 10000;
         clearedAltitude = 10000;
@@ -158,8 +160,10 @@ public class Aircraft extends Actor {
         clearedIas = 250;
         targetIas = 250;
         deltaIas = 0;
-        spdMode = "open";
+        spdMode = "sidstar"; //TODO Implement SIDSTAR speed restrictions
         tkofLdg = false;
+        gsCap = false;
+        locCap = false;
 
         selected = false;
         dragging = false;
@@ -329,16 +333,20 @@ public class Aircraft extends Actor {
             targetHeading = clearedHeading;
             double angle = 180 - windHdg + heading;
             gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
+            locCap = false;
             angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
-        } else if (latMode.equals("sidstar") || (latMode.equals("vector") && ils != null && ils.isInsideILS(x, y))) {
+        } else if (latMode.equals("sidstar") || (latMode.equals("vector") && locCap)) {
             float deltaX;
             float deltaY;
             if (latMode.equals("sidstar")) {
                 //Calculates x, y between waypoint, and plane
                 deltaX = direct.getPosX() - x;
                 deltaY = direct.getPosY() - y;
+                if (locCap) {
+                    locCap = false;
+                }
             } else {
-                //Calculates x, y between point 1nm ahead of plane, and plane
+                //Calculates x, y between point 0.75nm ahead of plane, and plane
                 if (!getIls().getRwy().equals(runway)) {
                     runway = getIls().getRwy();
                 }
@@ -369,7 +377,7 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) + 15;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) + 10;
             if (distance <= requiredDistance) {
                 updateDirect();
             }
@@ -385,6 +393,9 @@ public class Aircraft extends Actor {
     }
 
     public double findNextTargetHdg() {
+        if (navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
+            return afterWptHdg;
+        }
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             return -1;
@@ -412,6 +423,9 @@ public class Aircraft extends Actor {
         x += deltaPosition.x;
         y += deltaPosition.y;
         label.moveBy(deltaPosition.x, deltaPosition.y);
+        if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
+            locCap = true;
+        }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             removeAircraft();
         }
@@ -420,9 +434,9 @@ public class Aircraft extends Actor {
     private double findDeltaHeading(double targetHeading) {
         double deltaHeading = targetHeading - heading;
         int forceDirection = 0;
-        if (navState.getLatMode().equals("Turn left heading")) {
+        if (navState.getDispLatMode().first().equals("Turn left heading")) {
             forceDirection = 1;
-        } else if (navState.getLatMode().equals("Turn right heading")) {
+        } else if (navState.getDispLatMode().first().equals("Turn right heading")) {
             forceDirection = 2;
         }
         switch (forceDirection) {
@@ -501,19 +515,23 @@ public class Aircraft extends Actor {
     public void updateDirect() {
         direct.setSelected(false);
         sidStarIndex++;
-        if (direct.equals(afterWaypoint) && navState.getLatMode().equals("After waypoint, fly heading")) {
+        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
             clearedHeading = afterWptHdg;
             navState.getLatModes().removeValue("After waypoint, fly heading", false);
             navState.getLatModes().removeValue("Hold at", false);
-            if (navState.getAltMode().contains("STAR")) {
-                navState.setAltMode("Climb/descend to");
+            if (navState.getDispAltMode().first().contains("STAR")) {
+                navState.getDispAltMode().removeFirst();
+                navState.getDispAltMode().addFirst("Climb/descend to");
             }
-            if (navState.getSpdMode().contains("STAR")) {
-                navState.setSpdMode("No speed restrictions");
+            if (navState.getDispSpdMode().first().contains("STAR")) {
+                navState.getDispSpdMode().removeFirst();
+                navState.getDispSpdMode().addFirst("No speed restrictions");
             }
             updateVectorMode();
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
+            navState.getClearedDirect().removeFirst();
+            navState.getClearedDirect().addFirst(direct);
             if (direct != null) {
                 direct.setSelected(true);
             }
@@ -529,15 +547,16 @@ public class Aircraft extends Actor {
     public void updateVectorMode() {
         //Switch aircraft latmode to vector mode
         latMode = "vector";
-        navState.setLatMode("Fly heading");
+        navState.getDispLatMode().removeFirst();
+        navState.getDispLatMode().addFirst("Fly heading");
     }
 
     public void removeSidStarMode() {
-        if (!navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false)) {
-            navState.getLatModes().removeValue(getSidStar().getName() + " departure", false);
+        if (!navState.getDispLatMode().removeValue(getSidStar().getName() + " arrival", false)) {
+            navState.getDispLatMode().removeValue(getSidStar().getName() + " departure", false);
         } else {
-            navState.getLatModes().removeValue("After waypoint, fly heading", false);
-            navState.getLatModes().removeValue("Hold at", false);
+            navState.getDispLatMode().removeValue("After waypoint, fly heading", false);
+            navState.getDispLatMode().removeValue("Hold at", false);
         }
         if (selected && (controlState == 1 || controlState == 2)) {
             ui.updateState();
@@ -594,15 +613,19 @@ public class Aircraft extends Actor {
         labelText[1] = icaoType + "/" + wakeCat;
         labelText[2] = Integer.toString((int)(altitude / 100));
         labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
-        labelText[10] = Integer.toString(clearedAltitude / 100);
+        labelText[10] = Integer.toString(getNavState().getClearedAlt().first() / 100);
         if ((int) heading == 0) {
             heading += 360;
         }
         labelText[4] = Integer.toString(MathUtils.round((float) heading));
         if (latMode.equals("vector")) {
-            labelText[5] = Integer.toString(clearedHeading);
+            if (locCap) {
+                labelText[5] = "LOC";
+            } else {
+                labelText[5] = Integer.toString(clearedHeading);
+            }
         } else if (latMode.equals("sidstar")) {
-            if (direct.equals(afterWaypoint) && navState.getLatMode().equals("After waypoint, fly heading")) {
+            if (direct.equals(afterWaypoint) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
                 labelText[5] = direct.getName() + Integer.toString(afterWptHdg);
             } else {
                 labelText[5] = direct.getName();
@@ -610,6 +633,11 @@ public class Aircraft extends Actor {
         }
         labelText[6] = Integer.toString((int) gs);
         labelText[7] = Integer.toString(getClearedIas());
+        if (getIls() != null) {
+            labelText[8] = getIls().getName();
+        } else {
+            labelText[8] = getSidStar().getName();
+        }
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + " => " + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
@@ -644,7 +672,7 @@ public class Aircraft extends Actor {
     }
 
     private void updateUISelections() {
-        ui.latTab.getSettingsBox().setSelected(navState.getLatMode());
+        ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
         LatTab.clearedHdg = clearedHeading;
         if (direct != null) {
             ui.latTab.getValueBox().setSelected(direct.getName());
@@ -683,14 +711,6 @@ public class Aircraft extends Actor {
 
     public void setLabel(Label label) {
         this.label = label;
-    }
-
-    public Label.LabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    public void setLabelStyle(Label.LabelStyle labelStyle) {
-        this.labelStyle = labelStyle;
     }
 
     public String[] getLabelText() {
@@ -916,7 +936,7 @@ public class Aircraft extends Actor {
 
     public void updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
-        if (getNavState().getAltMode().contains("/")) {
+        if (navState.getDispAltMode().first().contains("/")) {
             //No alt restrictions
             targetAltitude = clearedAltitude;
         } else {
