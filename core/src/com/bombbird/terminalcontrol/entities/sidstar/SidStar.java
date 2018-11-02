@@ -1,6 +1,6 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.screens.GameScreen;
@@ -19,27 +19,35 @@ public class SidStar {
         this.restrictions = restrictions;
     }
 
-    public void joinLines(int start, int outbound) {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        float previousX = -1;
-        float previousY = -1;
-        int index = 0;
-        for (Waypoint waypoint: waypoints) {
-            if (index >= start) {
-                waypoint.setSelected(true);
-                if (previousX != -1 && previousY != -1) {
-                    GameScreen.shapeRenderer.line(previousX, previousY, waypoint.getPosX(), waypoint.getPosY());
-                }
-                previousX = waypoint.getPosX();
-                previousY = waypoint.getPosY();
+    public void joinLines(int start, int end, int outbound, boolean dontRemove) {
+        Waypoint prevPt = null;
+        int index = start;
+        if (!dontRemove) {
+            for (Waypoint waypoint : waypoints) {
+                waypoint.setSelected(false);
             }
+        }
+        while (index < end) {
+            Waypoint waypoint = getWaypoint(index);
+            waypoint.setSelected(true);
+            if (prevPt != null) {
+                GameScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
+            }
+            prevPt = waypoint;
             index++;
         }
-        drawOutbound(previousX, previousY, outbound);
+        if (prevPt != null) {
+            drawOutbound(prevPt.getPosX(), prevPt.getPosY(), outbound);
+        }
     }
 
-    public void drawOutbound(float previousX, float previousY, int outbound) {
-        //Overriden method for SID
+    private void drawOutbound(float previousX, float previousY, int outbound) {
+        if (outbound != -1) {
+            float outboundTrack = outbound - RadarScreen.magHdgDev;
+            float x = previousX + 6610 * MathUtils.cosDeg(90 - outboundTrack);
+            float y = previousY + 6610 * MathUtils.sinDeg(90 - outboundTrack);
+            GameScreen.shapeRenderer.line(previousX, previousY, x, y);
+        }
     }
 
     public Array<String> getRunways() {
@@ -65,11 +73,17 @@ public class SidStar {
         return waypoints;
     }
 
-    public Array<Waypoint> getRemainingWaypoints(int index) {
+    public Array<Waypoint> getRemainingWaypoints(int start, int end) {
         //Returns array of waypoints starting from index
         Array<Waypoint> newRange = new Array<Waypoint>(waypoints);
-        if (index > 0) {
-            newRange.removeRange(0, index - 1);
+        if (end >= start) {
+            if (start > 0) {
+                newRange.removeRange(0, start - 1);
+            }
+            int newEnd = end - start;
+            if (newEnd < newRange.size - 1) {
+                newRange.removeRange(newEnd + 1, newRange.size - 1);
+            }
         }
         return newRange;
     }

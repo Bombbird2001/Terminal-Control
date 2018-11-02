@@ -18,10 +18,11 @@ public class Star extends SidStar {
     }
 
     public float distBetRemainPts(int nextWptIndex) {
+        int currentIndex = nextWptIndex;
         float dist = 0;
-        while (nextWptIndex < getWaypoints().size - 1) {
-            dist += distBetween(nextWptIndex, nextWptIndex + 1);
-            nextWptIndex++;
+        while (currentIndex < getWaypoints().size - 1) {
+            dist += distBetween(currentIndex, currentIndex + 1);
+            currentIndex++;
         }
         return dist;
     }

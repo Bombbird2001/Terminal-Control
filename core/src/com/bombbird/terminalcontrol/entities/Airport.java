@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.GameScreen;

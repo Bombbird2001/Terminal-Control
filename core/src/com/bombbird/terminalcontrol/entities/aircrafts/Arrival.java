@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 import java.util.HashMap;
@@ -52,7 +53,12 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(1, this));
-        setAltitude(2000 + (distToGo() - 25) / 325 * 60 * getTypDes());
+        System.out.println(getCallsign() + ": " + distToGo() + " nm");
+        float initAlt = 3000 + (distToGo() - 20) / 300 * 60 * getTypDes();
+        if (initAlt > 26000) {
+            initAlt = 26000;
+        }
+        setAltitude(initAlt);
         updateAltRestrictions();
         setClearedAltitude(11000);
 
@@ -85,6 +91,7 @@ public class Arrival extends Aircraft {
         initRadarPos();
     }
 
+    /** Calculates remaining distance on STAR from current aircraft position */
     private float distToGo() {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
         dist += ((Star) getSidStar()).distBetRemainPts(getSidStarIndex());
@@ -95,7 +102,28 @@ public class Arrival extends Aircraft {
     @Override
     public void drawSidStar() {
         super.drawSidStar();
-        star.joinLines(getSidStarIndex(), 0);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.getWaypoints().size, -1, false);
+    }
+
+    /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint */
+    @Override
+    public void uiDrawSidStar() {
+        super.uiDrawSidStar();
+        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1, true);
+    }
+
+    /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there */
+    @Override
+    public void drawAftWpt() {
+        super.drawAftWpt();
+        star.joinLines(getSidStarIndex(), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last(), false);
+    }
+
+    /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there */
+    @Override
+    public void uiDrawAftWpt() {
+        super.uiDrawAftWpt();
+        star.joinLines(getSidStarIndex(), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg, true);
     }
 
     /** Overrides method in Aircraft class to update label + update STAR name */

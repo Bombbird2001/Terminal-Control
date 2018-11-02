@@ -1,9 +1,11 @@
-package com.bombbird.terminalcontrol.entities;
+package com.bombbird.terminalcontrol.entities.aircrafts.approaches;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -16,8 +18,11 @@ public class ILS extends Actor {
     private int heading;
     private float gsOffset;
     private int minima;
+    private int gsAlt;
     //TODO Set go around altitude
     private Runway rwy;
+
+    private Array<Vector2> gsRings = new Array<Vector2>();
 
     private static final float distance1 = MathTools.nmToPixel(17);
     private static final int angle1 = 35;
@@ -25,27 +30,38 @@ public class ILS extends Actor {
     private static final float distance2 = MathTools.nmToPixel(25);
     private static final int angle2 = 10;
 
-    public ILS(String name, float x, float y, int heading, float gsOffset, int minima, Runway rwy) {
+    public ILS(String name, float x, float y, int heading, float gsOffset, int minima, int gsAlt, Runway rwy) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.heading = heading;
         this.gsOffset = gsOffset;
         this.minima = minima;
+        this.gsAlt = gsAlt;
         this.rwy = rwy;
+
+        calculateGsRings();
+    }
+
+    public void calculateGsRings() {
+        for (int i = 2; i <= gsAlt / 1000; i++) {
+            gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev)));
+        }
     }
 
     /** Draws ILS line using shapeRenderer */
     public void renderShape() {
-        if (name.contains("05L") || name.contains("10")) {
-            GameScreen.shapeRenderer.setColor(Color.BLUE);
-            GameScreen.shapeRenderer.arc(x, y, distance1, 270 - (heading - RadarScreen.magHdgDev + angle1 / 2f), angle1, 5);
-            GameScreen.shapeRenderer.arc(x, y, distance2, 270 - (heading - RadarScreen.magHdgDev + angle2 / 2f), angle2, 5);
-        } else {
-            GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        if (rwy.isLanding()) {
+            GameScreen.shapeRenderer.setColor(Color.CYAN);
+            GameScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+            drawGsCircles();
         }
-        GameScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+    }
 
+    public void drawGsCircles() {
+        for (Vector2 vector2: gsRings) {
+            GameScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
+        }
     }
 
     /** Tests if coordinates input is inside either of the 2 ILS arcs */
@@ -132,6 +148,11 @@ public class ILS extends Actor {
         return getGSAltAtDist(getDistFrom(aircraft.getX(), aircraft.getY()));
     }
 
+    /** Gets the distance (in nautical miles) from GS origin for a specified altitude */
+    public float getDistAtGsAlt(float altitude) {
+        return MathTools.feetToNm((altitude - rwy.getElevation()) / (float) Math.tan(Math.toRadians(3))) - gsOffset;
+    }
+
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
     private float getDistFrom(float planeX, float planeY) {
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY));
@@ -153,5 +174,31 @@ public class ILS extends Actor {
 
     public void setRwy(Runway rwy) {
         this.rwy = rwy;
+    }
+
+    @Override
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public float getGsOffset() {
+        return gsOffset;
+    }
+
+    public int getMinima() {
+        return minima;
+    }
+
+    public int getGsAlt() {
+        return gsAlt;
     }
 }

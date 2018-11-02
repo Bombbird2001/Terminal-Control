@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.ILS;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Metar;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -30,7 +30,7 @@ public class RadarScreen extends GameScreen {
     public static int maxDeptAlt;
     public static int maxArrAlt;
     public static int minArrAlt;
-    public static float radarSweepDelay = 4.5f; //TODO Change radar sweep delay in UI
+    public static float radarSweepDelay = 2f; //TODO Change radar sweep delay in UI
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;

@@ -23,7 +23,7 @@ public class Ui implements Disposable {
     private static Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
     private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
     private static Texture lightestBackground = new Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"));
-    private Image paneImage;
+    private Button paneImage;
     public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
     public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
     public static SpriteDrawable lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
@@ -99,10 +99,20 @@ public class Ui implements Disposable {
     }
 
     private void loadNormalPane() {
-        //Loads default pane shown when no aircraft selected
-        paneImage = new Image(paneTexture);
+        Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
+        SpriteDrawable drawable = new SpriteDrawable(new Sprite(paneTexture));
+        buttonStyle.up = drawable;
+        buttonStyle.down = drawable;
+        paneImage = new Button(buttonStyle);
         paneImage.setPosition(0, 0);
         paneImage.setSize(1080 * (float) TerminalControl.WIDTH / TerminalControl.HEIGHT, 3240);
+        paneImage.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Prevents click from being sent to other elements
+                event.handle();
+            }
+        });
         RadarScreen.uiStage.addActor(paneImage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();

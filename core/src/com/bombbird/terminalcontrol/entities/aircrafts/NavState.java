@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.Timer;
-import com.bombbird.terminalcontrol.entities.ILS;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 

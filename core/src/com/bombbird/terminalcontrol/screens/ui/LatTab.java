@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.entities.ILS;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -182,7 +182,7 @@ public class LatTab extends Tab {
                 valueBox.setVisible(true);
             }
             waypoints.clear();
-            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getNavState().getLastSidStarIndex())) {
+            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName()), selectedAircraft.getSidStar().getWaypoints().size - 1)) {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
@@ -420,5 +420,29 @@ public class LatTab extends Tab {
         }
         ui.updateElements();
         notListening = false;
+    }
+
+    public boolean isLatModeChanged() {
+        return latModeChanged;
+    }
+
+    public boolean isWptChanged() {
+        return wptChanged;
+    }
+
+    public boolean isHdgChanged() {
+        return hdgChanged;
+    }
+
+    public boolean isAfterWptChanged() {
+        return afterWptChanged;
+    }
+
+    public boolean isAfterWptHdgChanged() {
+        return afterWptHdgChanged;
+    }
+
+    public boolean isIlsChanged() {
+        return ilsChanged;
     }
 }

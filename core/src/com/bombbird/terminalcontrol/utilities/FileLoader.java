@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.ILS;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.Waypoint;
@@ -351,6 +352,9 @@ public class FileLoader {
             float y = -1;
             float gsOffset = 0;
             int minima = -1;
+            int gsAlt = 0;
+            boolean arrayCreated = false;
+            Array<Integer[]> nonPrecAlts = null;
             for (String s1: s.split(",")) {
                 switch (index) {
                     case 0: name = s1; break;
@@ -360,11 +364,27 @@ public class FileLoader {
                     case 4: y = Float.parseFloat(s1); break;
                     case 5: gsOffset = Float.parseFloat(s1); break;
                     case 6: minima = Integer.parseInt(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+                    case 7: gsAlt = Integer.parseInt(s1); break;
+                    default:
+                        if (!arrayCreated) {
+                            nonPrecAlts = new Array<Integer[]>();
+                            arrayCreated = true;
+                        }
+                        Integer[] info = new Integer[2];
+                        int index1 = 0;
+                        for (String s2: s1.split(">")) {
+                            info[index1] = Integer.parseInt(s2);
+                            index1++;
+                        }
+                        nonPrecAlts.add(info);
                 }
                 index++;
             }
-            approaches.put(rwy, new ILS(name, x, y, heading, gsOffset, minima, airport.getRunways().get(rwy)));
+            if (name.contains("ILS")) {
+                approaches.put(rwy, new ILS(name, x, y, heading, gsOffset, minima, gsAlt, airport.getRunways().get(rwy)));
+            } else {
+                approaches.put(rwy, new LDA(name, x, y, heading, gsOffset, minima, gsAlt, nonPrecAlts, airport.getRunways().get(rwy)));
+            }
         }
         return approaches;
     }

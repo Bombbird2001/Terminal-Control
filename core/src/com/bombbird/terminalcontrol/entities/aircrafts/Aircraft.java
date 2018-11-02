@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.ILS;
+import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
@@ -232,10 +232,9 @@ public class Aircraft extends Actor {
         GameScreen.stage.addActor(clickSpot);
     }
 
+    /** Renders shapes using shapeRenderer; all rendering should be called here */
     public void renderShape() {
-        if (direct != null && selected) {
-            drawSidStar();
-        }
+        drawLatLines();
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
@@ -245,14 +244,79 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Draws the lines displaying the lateral status of aircraft */
+    private void drawLatLines() {
+        if (selected) {
+            //Draws cleared status
+            if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().first().contains("departure") && direct != null) {
+                drawSidStar();
+            } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading") && direct != null) {
+                drawAftWpt();
+            } else if (navState.getDispLatMode().last().contains("heading")) {
+                drawHdgLine();
+            }
+
+            //Draws selected status (from UI)
+            if (controlState == 1 || controlState == 2) {
+                //System.out.println("arrival/departure: " + (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) + " hdgChanged: " + ui.latTab.isHdgChanged() + " latModeChanged: " + ui.latTab.isLatModeChanged() + " wptChanged: " + ui.latTab.isWptChanged());
+                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
+                    uiDrawSidStar();
+                } else if (LatTab.latMode.equals("After waypoint, fly heading") && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
+                    uiDrawAftWpt();
+                } else if (LatTab.latMode.contains("heading") && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                    uiDrawHdgLine();
+                }
+            }
+
+            for (Aircraft aircraft: RadarScreen.aircrafts.values()) {
+                if (aircraft.navState.getClearedDirect().last() != null) {
+                    String latState = aircraft.navState.getDispLatMode().last();
+                    if (latState.contains("waypoint") || latState.contains("arrival") || latState.contains("departure")) {
+                        aircraft.navState.getClearedDirect().last().setSelected(true);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawSidStar() {
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+    }
+
+    public void uiDrawSidStar() {
+        GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        GameScreen.shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+    }
+
+    public void drawAftWpt() {
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
+    }
+
+    public void uiDrawAftWpt() {
+        GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        GameScreen.shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+    }
+
+    private void drawHdgLine() {
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)));
+    }
+
+    private void uiDrawHdgLine() {
+        GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        GameScreen.shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)));
+    }
+
     public double update() {
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
         if (tkofLdg) {
             updateTkofLdg();
         }
-        if (direct != null) {
-            direct.setSelected(true);
+        if (navState.getClearedDirect().last() != null) {
+            navState.getClearedDirect().last().setSelected(true);
         }
         if (!onGround) {
             double[] info = updateTargetHeading();
@@ -409,16 +473,13 @@ public class Aircraft extends Actor {
     }
 
     public double findNextTargetHdg() {
-        if (navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
+        if (navState.getDispLatMode().first().equals("After waypoint, fly heading") && direct.equals(afterWaypoint)) {
             return afterWptHdg;
         }
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             return -1;
         } else {
-            if (direct.equals(afterWaypoint)) {
-                return afterWptHdg;
-            }
             float deltaX = nextWpt.getPosX() - getDirect().getPosX();
             float deltaY = nextWpt.getPosY() - getDirect().getPosY();
             double nextTarget;
@@ -522,11 +583,7 @@ public class Aircraft extends Actor {
         icon.draw(batch, 1);
     }
 
-    public void drawSidStar() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
-    }
-
+    /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
     public void updateDirect() {
         direct.setSelected(false);
         sidStarIndex++;
@@ -561,6 +618,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Switches aircraft latMode to vector, sets active nav state latMode to vector */
     public void updateVectorMode() {
         //Switch aircraft latmode to vector mode
         latMode = "vector";
@@ -568,18 +626,20 @@ public class Aircraft extends Actor {
         navState.getDispLatMode().addFirst("Fly heading");
     }
 
+    /** Removes the SID/STAR options from aircraft UI after there are no waypoints left*/
     public void removeSidStarMode() {
-        if (!navState.getDispLatMode().removeValue(getSidStar().getName() + " arrival", false)) {
-            navState.getDispLatMode().removeValue(getSidStar().getName() + " departure", false);
+        if (!navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false)) {
+            navState.getLatModes().removeValue(getSidStar().getName() + " departure", false);
         } else {
-            navState.getDispLatMode().removeValue("After waypoint, fly heading", false);
-            navState.getDispLatMode().removeValue("Hold at", false);
+            navState.getLatModes().removeValue("After waypoint, fly heading", false);
+            navState.getLatModes().removeValue("Hold at", false);
         }
         if (selected && (controlState == 1 || controlState == 2)) {
             ui.updateState();
         }
     }
 
+    /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected */
     public void setControlState(int controlState) {
         this.controlState = controlState;
         if (controlState == -1) { //En route aircraft - gray
@@ -604,6 +664,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Updates the position of the label to prevent it from going out of bounds */
     private void moderateLabel() {
         if (label.getX() < 936) {
             label.setX(936);
@@ -617,6 +678,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Updates the label on the radar given aircraft's radar data and other data */
     public void updateLabel() {
         String vertSpd;
         if (radarVs < -100 || gsCap) {
@@ -628,9 +690,9 @@ public class Aircraft extends Actor {
         }
         labelText[0] = callsign;
         labelText[1] = icaoType + "/" + wakeCat;
-        labelText[2] = Integer.toString((int)(radarAlt / 100));
+        labelText[2] = Integer.toString(MathUtils.round(radarAlt / 100));
         labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
-        labelText[10] = Integer.toString(getNavState().getClearedAlt().first() / 100);
+        labelText[10] = Integer.toString(navState.getClearedAlt().last() / 100);
         if ((int) radarHdg == 0) {
             radarHdg += 360;
         }
@@ -639,23 +701,23 @@ public class Aircraft extends Actor {
             if (locCap) {
                 labelText[5] = "LOC";
             } else {
-                labelText[5] = Integer.toString(clearedHeading);
+                labelText[5] = Integer.toString(navState.getClearedHdg().last());
             }
         } else if (latMode.equals("sidstar")) {
-            if (direct.equals(afterWaypoint) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
-                labelText[5] = direct.getName() + Integer.toString(afterWptHdg);
+            if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
+                labelText[5] = navState.getClearedDirect().last().getName() + Integer.toString(navState.getClearedAftWptHdg().last());
             } else {
-                labelText[5] = direct.getName();
+                labelText[5] = navState.getClearedDirect().last().getName();
             }
         }
         labelText[6] = Integer.toString((int) radarGs);
-        labelText[7] = Integer.toString(clearedIas);
-        if (ils != null) {
-            labelText[8] = ils.getName();
+        labelText[7] = Integer.toString(navState.getClearedSpd().last());
+        if (navState.getClearedIls().last() != null) {
+            labelText[8] = navState.getClearedIls().last().getName();
         } else {
             labelText[8] = getSidStar().getName();
         }
-        String exped = expedite ? " =>> " : " => ";
+        String exped = navState.getClearedExpedite().last() ? " =>> " : " => ";
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
@@ -670,18 +732,24 @@ public class Aircraft extends Actor {
         clickSpot.setPosition(labelButton.getX(), labelButton.getY());
     }
 
+    /** Updates the waypoints that are shown given a new input aircraft (that is selected) */
     public void updateSelectedWaypoints(Aircraft aircraft) {
         Array<Waypoint> remainingWpts = getRemainingWaypoints();
-        if (aircraft != null) {
-            for (Waypoint waypoint: remainingWpts) {
-                waypoint.setSelected(false);
-            }
-            for (Waypoint waypoint: aircraft.getRemainingWaypoints()) {
-                waypoint.setSelected(true);
-            }
-        } else {
-            for (Waypoint waypoint: remainingWpts) {
-                waypoint.setSelected(false);
+        if (remainingWpts != null) {
+            if (aircraft != null) {
+                for (Waypoint waypoint : remainingWpts) {
+                    waypoint.setSelected(false);
+                }
+                Array<Waypoint> newWpts = aircraft.getRemainingWaypoints();
+                if (newWpts != null) {
+                    for (Waypoint waypoint : newWpts) {
+                        waypoint.setSelected(true);
+                    }
+                }
+            } else {
+                for (Waypoint waypoint : remainingWpts) {
+                    waypoint.setSelected(false);
+                }
             }
         }
         if (direct != null) {
@@ -689,6 +757,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Updates the selections in the UI when it is active and aircraft state chanegs that requires selections to change in order to be valid */
     private void updateUISelections() {
         ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
         LatTab.clearedHdg = clearedHeading;
@@ -703,6 +772,7 @@ public class Aircraft extends Actor {
         ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
     }
 
+    /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep */
     public void updateRadarInfo() {
         label.moveBy(x - radarX, y - radarY);
         radarX = x;
@@ -715,7 +785,13 @@ public class Aircraft extends Actor {
     }
 
     public Array<Waypoint> getRemainingWaypoints() {
-        return getSidStar().getRemainingWaypoints(sidStarIndex);
+        if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().last().contains("departure")) {
+            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().getWaypoints().size - 1);
+        } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
+            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(navState.getClearedAftWpt().last().getName()));
+        } else {
+            return null;
+        }
     }
 
     public SidStar getSidStar() {
@@ -963,6 +1039,7 @@ public class Aircraft extends Actor {
         this.targetAltitude = targetAltitude;
     }
 
+    /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleaed altitude itself */
     public void updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
         if (navState.getDispAltMode().first().contains("/")) {
@@ -975,6 +1052,8 @@ public class Aircraft extends Actor {
             } else if (clearedAltitude < lowestAlt) {
                 if (this instanceof Departure) {
                     clearedAltitude = lowestAlt;
+                    navState.getClearedAlt().removeFirst();
+                    navState.getClearedAlt().addFirst(clearedAltitude);
                 }
                 targetAltitude = lowestAlt;
             } else {
@@ -983,6 +1062,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Removes the aircraft completely from game, including its labels, other elements */
     public void removeAircraft() {
         label.remove();
         icon.remove();

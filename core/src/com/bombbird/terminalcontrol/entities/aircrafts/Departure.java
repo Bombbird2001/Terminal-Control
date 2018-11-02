@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.ui.LatTab;
 
 import java.util.HashMap;
 
@@ -128,13 +129,22 @@ public class Departure extends Aircraft {
         }
     }
 
+    /** Overrides method in Aircraft class to join the lines between each SID waypoint */
     @Override
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
-        sid.joinLines(getSidStarIndex(), outboundHdg);
+        sid.joinLines(getSidStarIndex(), getSidStar().getWaypoints().size, outboundHdg, false);
     }
 
+    /** Overrides method in Aircraft class to join lines between each cleared SID waypoint */
+    @Override
+    public void uiDrawSidStar() {
+        super.uiDrawSidStar();
+        sid.joinLines(sid.findWptIndex(LatTab.clearedWpt), sid.getWaypoints().size, -1, true);
+    }
+
+    /** Overrides method in Aircraft class to update label + update SID name */
     @Override
     public void updateLabel() {
         labelText[8] = sid.getName();
