@@ -431,6 +431,12 @@ public class Ui implements Disposable {
         latTab.updatePaneWidth(paneImage.getWidth());
         altTab.updatePaneWidth(paneImage.getWidth());
         spdTab.updatePaneWidth(paneImage.getWidth());
+        latButton.setSize(paneImage.getWidth() / 4, 300);
+        latButton.setX(0.1f * paneImage.getWidth());
+        altButton.setSize(paneImage.getWidth() / 4, 300);
+        altButton.setX(0.375f * paneImage.getWidth());
+        spdButton.setSize(paneImage.getWidth() / 4, 300);
+        spdButton.setX(0.65f * paneImage.getWidth());
         label.setSize(0.8f * paneImage.getWidth(), 270);
         label.setX(0.1f * paneImage.getWidth());
     }

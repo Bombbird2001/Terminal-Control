@@ -34,7 +34,7 @@ public class AltTab extends Tab {
             highestAlt = RadarScreen.maxDeptAlt;
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = RadarScreen.minArrAlt;
-            if (altMode.contains("STAR")) {
+            if (altMode.contains("STAR") && selectedAircraft.getAltitude() < 13000) {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;

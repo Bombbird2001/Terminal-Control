@@ -102,7 +102,16 @@ public class Aircraft extends Actor {
     private String spdMode;
     private int climbSpd;
 
-    Aircraft(String callsign, String icaoType, Airport airport) {
+    //Radar returns (for sweep delay)
+    private float radarX;
+    private float radarY;
+    private double radarHdg;
+    private double radarTrack;
+    private float radarGs;
+    private float radarAlt;
+    private float radarVs;
+
+    public Aircraft(String callsign, String icaoType, Airport airport) {
         if (!loadedIcons) {
             skin.addRegions(iconAtlas);
             buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
@@ -169,6 +178,16 @@ public class Aircraft extends Actor {
         dragging = false;
     }
 
+    public void initRadarPos() {
+        radarX = x;
+        radarY = y;
+        radarHdg = heading;
+        radarTrack = track;
+        radarGs = gs;
+        radarAlt = altitude;
+        radarVs = verticalSpeed;
+    }
+
     public void loadLabel() {
         icon = new ImageButton(buttonStyleUnctrl);
         icon.setSize(20, 20);
@@ -192,11 +211,7 @@ public class Aircraft extends Actor {
         clickSpot.addListener(new DragListener() {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
-                if (controlState == 1 || controlState == 2) {
-                    label.moveBy(x - labelButton.getWidth() / 2, y - labelButton.getHeight() / 2);
-                } else {
-                    label.moveBy(x - 65, y - 47.5f);
-                }
+                label.moveBy(x - labelButton.getWidth() / 2, y - labelButton.getHeight() / 2);
                 dragging = true;
                 event.handle();
             }
@@ -223,10 +238,10 @@ public class Aircraft extends Actor {
         }
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, x, y);
+        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
-            GameScreen.shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
+            GameScreen.shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
         }
     }
 
@@ -307,6 +322,7 @@ public class Aircraft extends Actor {
         if (Math.abs(targetAltitude - altitude) < 50) {
             altitude = targetAltitude;
             verticalSpeed = 0;
+            expedite = false;
         }
         if (prevAlt < altitude && (int)(prevAlt / 1000) <= (int)(altitude / 1000)) {
             updateAltRestrictions();
@@ -314,7 +330,7 @@ public class Aircraft extends Actor {
         prevAlt = altitude;
     }
 
-    private double[] updateTargetHeading() {
+    public double[] updateTargetHeading() {
         getDeltaPosition().setZero();
         double targetHeading = 0;
         double angleDiff = 0;
@@ -422,7 +438,6 @@ public class Aircraft extends Actor {
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
         y += deltaPosition.y;
-        label.moveBy(deltaPosition.x, deltaPosition.y);
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
         }
@@ -502,14 +517,14 @@ public class Aircraft extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         update();
         updateLabel();
-        icon.setPosition(x - 10, y - 10);
+        icon.setPosition(radarX - 10, radarY - 10);
         icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
         icon.draw(batch, 1);
     }
 
     public void drawSidStar() {
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(x, y, direct.getPosX(), direct.getPosY());
+        GameScreen.shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
     }
 
     public void updateDirect() {
@@ -527,6 +542,8 @@ public class Aircraft extends Actor {
                 navState.getDispSpdMode().removeFirst();
                 navState.getDispSpdMode().addFirst("No speed restrictions");
             }
+            navState.getClearedHdg().removeLast();
+            navState.getClearedHdg().addLast(afterWptHdg);
             updateVectorMode();
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
@@ -602,22 +619,22 @@ public class Aircraft extends Actor {
 
     public void updateLabel() {
         String vertSpd;
-        if (getVerticalSpeed() < -100 || gsCap) {
+        if (radarVs < -100 || gsCap) {
             vertSpd = " DOWN ";
-        } else if (getVerticalSpeed() > 100) {
+        } else if (radarVs > 100) {
             vertSpd = " UP ";
         } else {
             vertSpd = " = ";
         }
         labelText[0] = callsign;
         labelText[1] = icaoType + "/" + wakeCat;
-        labelText[2] = Integer.toString((int)(altitude / 100));
+        labelText[2] = Integer.toString((int)(radarAlt / 100));
         labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
         labelText[10] = Integer.toString(getNavState().getClearedAlt().first() / 100);
-        if ((int) heading == 0) {
-            heading += 360;
+        if ((int) radarHdg == 0) {
+            radarHdg += 360;
         }
-        labelText[4] = Integer.toString(MathUtils.round((float) heading));
+        labelText[4] = Integer.toString(MathUtils.round((float) radarHdg));
         if (latMode.equals("vector")) {
             if (locCap) {
                 labelText[5] = "LOC";
@@ -631,16 +648,17 @@ public class Aircraft extends Actor {
                 labelText[5] = direct.getName();
             }
         }
-        labelText[6] = Integer.toString((int) gs);
-        labelText[7] = Integer.toString(getClearedIas());
-        if (getIls() != null) {
-            labelText[8] = getIls().getName();
+        labelText[6] = Integer.toString((int) radarGs);
+        labelText[7] = Integer.toString(clearedIas);
+        if (ils != null) {
+            labelText[8] = ils.getName();
         } else {
             labelText[8] = getSidStar().getName();
         }
+        String exped = expedite ? " =>> " : " => ";
         String updatedText;
         if (getControlState() == 1 || getControlState() == 2) {
-            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + " => " + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
+            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
         }
@@ -683,6 +701,17 @@ public class Aircraft extends Actor {
         }
 
         ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
+    }
+
+    public void updateRadarInfo() {
+        label.moveBy(x - radarX, y - radarY);
+        radarX = x;
+        radarY = y;
+        radarHdg = heading;
+        radarTrack = track;
+        radarAlt = altitude;
+        radarGs = gs;
+        radarVs = verticalSpeed;
     }
 
     public Array<Waypoint> getRemainingWaypoints() {
@@ -941,13 +970,13 @@ public class Aircraft extends Actor {
             targetAltitude = clearedAltitude;
         } else {
             //Restrictions
-            if (clearedAltitude > getHighestAlt()) {
-                targetAltitude = getHighestAlt();
-            } else if (clearedAltitude < getLowestAlt()) {
+            if (clearedAltitude > highestAlt) {
+                targetAltitude = highestAlt;
+            } else if (clearedAltitude < lowestAlt) {
                 if (this instanceof Departure) {
-                    clearedAltitude = getLowestAlt();
+                    clearedAltitude = lowestAlt;
                 }
-                targetAltitude = getLowestAlt();
+                targetAltitude = lowestAlt;
             } else {
                 targetAltitude = clearedAltitude;
             }

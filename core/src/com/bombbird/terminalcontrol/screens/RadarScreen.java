@@ -30,8 +30,15 @@ public class RadarScreen extends GameScreen {
     public static int maxDeptAlt;
     public static int maxArrAlt;
     public static int minArrAlt;
+    public static float radarSweepDelay = 4.5f; //TODO Change radar sweep delay in UI
+
+    //Timer for getting METAR every quarter of hour
     private Timer timer;
     private static Metar metar;
+
+    //Timer for updating aircraft radar returns every given amount of time
+    private com.badlogic.gdx.utils.Timer radarTimer;
+
     private static Aircraft selectedAircraft;
 
     public RadarScreen(final TerminalControl game, String name) {
@@ -54,6 +61,9 @@ public class RadarScreen extends GameScreen {
 
         //Set timer for METAR
         timer = new Timer(true);
+
+        //Set timer for radar delay
+        radarTimer = new com.badlogic.gdx.utils.Timer();
     }
 
     private void loadInputProcessors() {
@@ -182,6 +192,23 @@ public class RadarScreen extends GameScreen {
         loadMetar();
 
         loadInputProcessors();
+
+        loadUpdateTimer();
+    }
+
+    private void loadUpdateTimer() {
+        radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                updateRadarInfo();
+            }
+        }, radarSweepDelay, radarSweepDelay);
+    }
+
+    private void updateRadarInfo() {
+        for (Aircraft aircraft: aircrafts.values()) {
+            aircraft.updateRadarInfo();
+        }
     }
 
     @Override
@@ -189,6 +216,11 @@ public class RadarScreen extends GameScreen {
         //Draw obstacles
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
+        }
+
+        //Draw restricted areas
+        for (RestrictedArea restrictedArea: restArray) {
+            restrictedArea.renderShape();
         }
 
         //Additional adjustments for certain airports
@@ -211,11 +243,6 @@ public class RadarScreen extends GameScreen {
         //Draw aircrafts
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.renderShape();
-        }
-
-        //Draw restricted areas
-        for (RestrictedArea restrictedArea: restArray) {
-            restrictedArea.renderShape();
         }
 
         //Draw ILS arcs
@@ -246,10 +273,6 @@ public class RadarScreen extends GameScreen {
         skin.dispose();
         Aircraft.skin.dispose();
         Aircraft.iconAtlas.dispose();
-    }
-
-    public static Aircraft getSelectedAircraft() {
-        return selectedAircraft;
     }
 
     public static void setSelectedAircraft(Aircraft aircraft) {

@@ -69,8 +69,11 @@ public class Departure extends Aircraft {
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());
+        setTrack(getHeading() - RadarScreen.magHdgDev);
 
         takeOff();
+
+        initRadarPos();
     }
 
     private void takeOff() {
@@ -79,10 +82,17 @@ public class Departure extends Aircraft {
         setClearedIas(getV2());
         setTargetIas(getV2());
         setClearedAltitude(sid.getInitClimb()[1]);
-        if (getClearedAltitude() < 3000) {
-            setClearedAltitude(3000);
+        int clearedAltitude = sid.getInitClimb()[1];
+        if (clearedAltitude < 3000) {
+            clearedAltitude = 3000;
         }
-        setTargetAltitude(getClearedAltitude());
+        if (clearedAltitude % 1000 != 0) {
+            clearedAltitude += 1000 - getClearedAltitude() % 1000;
+        }
+        updateAltRestrictions();
+        setClearedAltitude(clearedAltitude);
+        getNavState().getClearedAlt().removeFirst();
+        getNavState().getClearedAlt().addFirst(clearedAltitude);
         if (sid.getInitClimb()[0] != -1) {
             setClearedHeading(sid.getInitClimb()[0]);
         } else {

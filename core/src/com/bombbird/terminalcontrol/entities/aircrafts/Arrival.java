@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.MathTools;
 
 import java.util.HashMap;
 
@@ -51,6 +52,9 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(1, this));
+        setAltitude(2000 + (distToGo() - 25) / 325 * 60 * getTypDes());
+        updateAltRestrictions();
+        setClearedAltitude(11000);
 
         if (callsign.equals("EVA226")) {
             getNavState().getDispAltMode().removeFirst();
@@ -63,17 +67,28 @@ public class Arrival extends Aircraft {
             setAltMode("open");
             setHeading(54);
             setClearedHeading(54);
-            setTrack(getHeading() - RadarScreen.magHdgDev);
             setAltitude(4000);
             setClearedAltitude(4000);
             setX(2394);
             setY(1296);
         }
 
+        getNavState().getClearedAlt().removeLast();
+        getNavState().getClearedAlt().addLast(getClearedAltitude());
+
         setControlState(1);
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
+        setTrack(getHeading() - RadarScreen.magHdgDev + updateTargetHeading()[1]);
+
+        initRadarPos();
+    }
+
+    private float distToGo() {
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
+        dist += ((Star) getSidStar()).distBetRemainPts(getSidStarIndex());
+        return dist;
     }
 
     /** Overrides method in Aircraft class to join the lines between each STAR waypoint */
