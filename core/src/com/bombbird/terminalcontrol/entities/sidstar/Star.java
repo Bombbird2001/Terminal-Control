@@ -10,11 +10,9 @@ public class Star extends SidStar {
     private Array<Waypoint> holdingPoints;
     private Array<int[]> holdingInfo;
 
-    public Star(String name, Array<String>runways, Array<Integer> inboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions, Array<Waypoint> holdingPoints, Array<int[]> holdingInfo) {
+    public Star(String name, Array<String>runways, Array<Integer> inboundHdg, Array<Waypoint> waypoints, Array<int[]> restrictions) {
         super(name, runways, waypoints, restrictions);
         this.inboundHdg = inboundHdg;
-        this.holdingPoints = holdingPoints;
-        this.holdingInfo = holdingInfo;
     }
 
     public float distBetRemainPts(int nextWptIndex) {

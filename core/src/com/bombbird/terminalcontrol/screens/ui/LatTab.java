@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -413,7 +413,7 @@ public class LatTab extends Tab {
             selectedAircraft.getNavState().getSpdModes().add("STAR speed restrictions");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
             selectedAircraft.getNavState().getSpdModes().add("SID speed restrictions");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure")) {
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint")) {
             if (!selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false)) {
                 selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false);
             }

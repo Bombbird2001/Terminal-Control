@@ -13,11 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -86,7 +86,6 @@ public class Aircraft extends Actor {
     private int targetAltitude;
     private float verticalSpeed;
     private boolean expedite;
-    private String altMode;
     private int lowestAlt;
     private int highestAlt;
     private boolean gsCap;
@@ -99,7 +98,6 @@ public class Aircraft extends Actor {
     private int clearedIas;
     private int targetIas;
     private float deltaIas;
-    private String spdMode;
     private int climbSpd;
 
     //Radar returns (for sweep delay)
@@ -161,7 +159,6 @@ public class Aircraft extends Actor {
         targetAltitude = 10000;
         verticalSpeed = 0;
         expedite = false;
-        altMode = "open";
         ias = 250;
         tas = MathTools.iasToTas(ias, altitude);
         gs = tas;
@@ -169,10 +166,10 @@ public class Aircraft extends Actor {
         clearedIas = 250;
         targetIas = 250;
         deltaIas = 0;
-        spdMode = "sidstar"; //TODO Implement SIDSTAR speed restrictions
         tkofLdg = false;
         gsCap = false;
         locCap = false;
+        climbSpd = MathUtils.random(270, 290);
 
         selected = false;
         dragging = false;
@@ -226,10 +223,11 @@ public class Aircraft extends Actor {
                 }
             }
         });
+        clickSpot.setDebug(true);
 
-        GameScreen.stage.addActor(labelButton);
-        GameScreen.stage.addActor(label);
-        GameScreen.stage.addActor(clickSpot);
+        stage.addActor(labelButton);
+        stage.addActor(label);
+        stage.addActor(clickSpot);
     }
 
     /** Renders shapes using shapeRenderer; all rendering should be called here */
@@ -237,11 +235,12 @@ public class Aircraft extends Actor {
         drawLatLines();
         moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
+        shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
-            GameScreen.shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
+            shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
         }
+        clickSpot.drawDebug(shapeRenderer);
     }
 
     /** Draws the lines displaying the lateral status of aircraft */
@@ -280,33 +279,33 @@ public class Aircraft extends Actor {
     }
 
     public void drawSidStar() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
     public void uiDrawSidStar() {
-        GameScreen.shapeRenderer.setColor(Color.YELLOW);
-        GameScreen.shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
     }
 
     public void drawAftWpt() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
     }
 
     public void uiDrawAftWpt() {
-        GameScreen.shapeRenderer.setColor(Color.YELLOW);
-        GameScreen.shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
     }
 
     private void drawHdgLine() {
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
-        GameScreen.shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)));
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)));
     }
 
     private void uiDrawHdgLine() {
-        GameScreen.shapeRenderer.setColor(Color.YELLOW);
-        GameScreen.shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)));
+        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)));
     }
 
     public double update() {
@@ -316,7 +315,8 @@ public class Aircraft extends Actor {
             updateTkofLdg();
         }
         if (navState.getClearedDirect().last() != null) {
-            navState.getClearedDirect().last().setSelected(true);
+            //TODO Fix bug where direct is displayed inappropriately
+            navState.getClearedDirect().last().setSelected(navState.getClearedDirect().last().isSelected() || navState.getDispLatMode().last().contains(getSidStar().getName()));
         }
         if (!onGround) {
             double[] info = updateTargetHeading();
@@ -324,11 +324,20 @@ public class Aircraft extends Actor {
             updateHeading(targetHeading);
             updatePosition(info[1]);
             updateAltitude();
+            updateSpd();
             return targetHeading;
         } else {
             gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
             updatePosition(0);
             return 0;
+        }
+    }
+
+    /** Overriden method that updates the target speed of the aircraft depending on situation */
+    public void updateSpd() {
+        if (selected && (controlState == 1 || controlState == 2)) {
+            updateUISelections();
+            ui.updateState();
         }
     }
 
@@ -426,13 +435,18 @@ public class Aircraft extends Actor {
                     locCap = false;
                 }
             } else {
-                //Calculates x, y between point 0.75nm ahead of plane, and plane
                 if (!getIls().getRwy().equals(runway)) {
                     runway = getIls().getRwy();
                 }
-                Vector2 position = this.getIls().getPointAhead(this);
-                deltaX = position.x - x;
-                deltaY = position.y - y;
+                if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY())) <= ((LDA) getIls()).getLineUpDist()) {
+                    deltaX = 100 * MathUtils.cosDeg(90 - runway.getTrueHdg());
+                    deltaY = 100 * MathUtils.sinDeg(90 - runway.getTrueHdg());
+                } else {
+                    //Calculates x, y between point 0.75nm ahead of plane, and plane
+                    Vector2 position = this.getIls().getPointAhead(this);
+                    deltaX = position.x - x;
+                    deltaY = position.y - y;
+                }
             }
 
             //Find target track angle
@@ -457,7 +471,7 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) + 10;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f + 10;
             if (distance <= requiredDistance) {
                 updateDirect();
             }
@@ -495,6 +509,11 @@ public class Aircraft extends Actor {
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
         track = heading - RadarScreen.magHdgDev + angleDiff;
+        if (getIls() != null && getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, getIls().getRwy().getX(), getIls().getRwy().getY())) <= ((LDA) getIls()).getLineUpDist()) {
+            //Set track && heading to runway
+            track = getIls().getRwy().getTrueHdg();
+            heading = track + angleDiff;
+        }
         deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
@@ -599,19 +618,17 @@ public class Aircraft extends Actor {
                 navState.getDispSpdMode().removeFirst();
                 navState.getDispSpdMode().addFirst("No speed restrictions");
             }
-            navState.getClearedHdg().removeLast();
-            navState.getClearedHdg().addLast(afterWptHdg);
+            navState.getClearedHdg().removeFirst();
+            navState.getClearedHdg().addFirst(afterWptHdg);
             updateVectorMode();
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
             navState.getClearedDirect().removeFirst();
             navState.getClearedDirect().addFirst(direct);
-            if (direct != null) {
-                direct.setSelected(true);
-            }
         }
         updateAltRestrictions();
         updateTargetAltitude();
+        updateClearedSpd();
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
@@ -681,7 +698,7 @@ public class Aircraft extends Actor {
     /** Updates the label on the radar given aircraft's radar data and other data */
     public void updateLabel() {
         String vertSpd;
-        if (radarVs < -100 || gsCap) {
+        if (radarVs < -100) {
             vertSpd = " DOWN ";
         } else if (radarVs > 100) {
             vertSpd = " UP ";
@@ -752,12 +769,9 @@ public class Aircraft extends Actor {
                 }
             }
         }
-        if (direct != null) {
-            direct.setSelected(true);
-        }
     }
 
-    /** Updates the selections in the UI when it is active and aircraft state chanegs that requires selections to change in order to be valid */
+    /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
     private void updateUISelections() {
         ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
         LatTab.clearedHdg = clearedHeading;
@@ -1028,6 +1042,7 @@ public class Aircraft extends Actor {
 
     public void setClearedAltitude(int clearedAltitude) {
         this.clearedAltitude = clearedAltitude;
+        updateAltRestrictions();
         updateTargetAltitude();
     }
 
@@ -1039,7 +1054,7 @@ public class Aircraft extends Actor {
         this.targetAltitude = targetAltitude;
     }
 
-    /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleaed altitude itself */
+    /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself */
     public void updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
         if (navState.getDispAltMode().first().contains("/")) {
@@ -1059,6 +1074,23 @@ public class Aircraft extends Actor {
             } else {
                 targetAltitude = clearedAltitude;
             }
+        }
+    }
+
+    private void updateClearedSpd() {
+        int highestSpd = -1;
+        if (direct != null) {
+            highestSpd = getSidStar().getWptMaxSpd(direct.getName());
+        }
+        if (highestSpd == -1) {
+            if (altitude > 10000) {
+                highestSpd = climbSpd;
+            } else {
+                highestSpd = 250;
+            }
+        }
+        if (clearedIas > highestSpd) {
+            clearedIas = highestSpd;
         }
     }
 
@@ -1090,14 +1122,6 @@ public class Aircraft extends Actor {
 
     public void setExpedite(boolean expedite) {
         this.expedite = expedite;
-    }
-
-    public String getAltMode() {
-        return altMode;
-    }
-
-    public void setAltMode(String altMode) {
-        this.altMode = altMode;
     }
 
     public float getIas() {
@@ -1150,14 +1174,6 @@ public class Aircraft extends Actor {
 
     public void setDeltaIas(float deltaIas) {
         this.deltaIas = deltaIas;
-    }
-
-    public String getSpdMode() {
-        return spdMode;
-    }
-
-    public void setSpdMode(String spdMode) {
-        this.spdMode = spdMode;
     }
 
     public NavState getNavState() {
@@ -1239,7 +1255,14 @@ public class Aircraft extends Actor {
     }
 
     public void setIls(ILS ils) {
+        if (this.ils != ils) {
+            gsCap = false;
+            locCap = false;
+        }
         this.ils = ils;
+        if (ils == null) {
+            locCap = false;
+        }
     }
 
     public boolean isGsCap() {
@@ -1248,5 +1271,9 @@ public class Aircraft extends Actor {
 
     public void setGsCap(boolean gsCap) {
         this.gsCap = gsCap;
+    }
+
+    public boolean isLocCap() {
+        return locCap;
     }
 }

@@ -151,14 +151,25 @@ public class Departure extends Aircraft {
         super.updateLabel();
     }
 
+    /** Overrides method in Aircraft class to check if there is no direct waypoint next, sets to outbound heading if so */
     @Override
     public void updateDirect() {
         //Updates direct to next waypoint
         super.updateDirect();
         if (getDirect() == null) {
             setClearedHeading((int)(outboundHdg + RadarScreen.magHdgDev));
+            getNavState().getClearedHdg().removeFirst();
+            getNavState().getClearedHdg().addFirst(getClearedHeading());
             updateVectorMode();
             removeSidStarMode();
+        }
+    }
+
+    @Override
+    public void updateSpd() {
+        if (contacted && getControlState() == 0) {
+            setClearedIas(getClimbSpd());
+            super.updateSpd();
         }
     }
 

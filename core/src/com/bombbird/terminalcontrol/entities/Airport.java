@@ -1,6 +1,8 @@
 package com.bombbird.terminalcontrol.entities;
 
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
+import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.GameScreen;
@@ -14,6 +16,8 @@ public class Airport {
     private HashMap<String, Runway> runways;
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
+    private HashMap<String, HoldProcedure> holdProcedures;
+    private HashMap<String, MissedApproach> missedApproaches;
     private HashMap<String, ILS> approaches;
     private String icao;
     private JSONObject metar;
@@ -28,6 +32,8 @@ public class Airport {
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
+        holdProcedures = FileLoader.loadHoldInfo(this);
+        missedApproaches = FileLoader.loadMissedInfo(this);
         approaches = FileLoader.loadILS(this);
         for (Runway runway: runways.values()) {
             runway.setIls(approaches.get(runway.getName()));
@@ -123,7 +129,7 @@ public class Airport {
         }
     }
 
-    public JSONObject getMetar() {
+    private JSONObject getMetar() {
         return metar;
     }
 
@@ -151,10 +157,6 @@ public class Airport {
         return runways;
     }
 
-    public void setRunways(HashMap<String, Runway> runways) {
-        this.runways = runways;
-    }
-
     public void setLandingRunways(HashMap<String, Runway> landingRunways) {
         this.landingRunways = landingRunways;
     }
@@ -167,24 +169,8 @@ public class Airport {
         return icao;
     }
 
-    public void setIcao(String icao) {
-        this.icao = icao;
-    }
-
-    public void setStars(HashMap<String, Star> stars) {
-        this.stars = stars;
-    }
-
-    public void setSids(HashMap<String, Sid> sids) {
-        this.sids = sids;
-    }
-
     public int getElevation() {
         return elevation;
-    }
-
-    public void setElevation(int elevation) {
-        this.elevation = elevation;
     }
 
     public int getGusts() {
@@ -207,7 +193,11 @@ public class Airport {
         return approaches;
     }
 
-    public void setApproaches(HashMap<String, ILS> approaches) {
-        this.approaches = approaches;
+    public HashMap<String, HoldProcedure> getHoldProcedures() {
+        return holdProcedures;
+    }
+
+    public HashMap<String, MissedApproach> getMissedApproaches() {
+        return missedApproaches;
     }
 }

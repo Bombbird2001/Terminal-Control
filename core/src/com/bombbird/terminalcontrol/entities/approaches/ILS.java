@@ -1,12 +1,14 @@
-package com.bombbird.terminalcontrol.entities.aircrafts.approaches;
+package com.bombbird.terminalcontrol.entities.approaches;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
@@ -19,8 +21,8 @@ public class ILS extends Actor {
     private float gsOffset;
     private int minima;
     private int gsAlt;
-    //TODO Set go around altitude
     private Runway rwy;
+    private MissedApproach missedApchProc;
 
     private Array<Vector2> gsRings = new Array<Vector2>();
 
@@ -30,7 +32,7 @@ public class ILS extends Actor {
     private static final float distance2 = MathTools.nmToPixel(25);
     private static final int angle2 = 10;
 
-    public ILS(String name, float x, float y, int heading, float gsOffset, int minima, int gsAlt, Runway rwy) {
+    public ILS(String name, Airport airport, float x, float y, int heading, float gsOffset, int minima, int gsAlt, Runway rwy) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -40,9 +42,12 @@ public class ILS extends Actor {
         this.gsAlt = gsAlt;
         this.rwy = rwy;
 
+        missedApchProc = airport.getMissedApproaches().get(name);
+
         calculateGsRings();
     }
 
+    /** Calculates positions of the GS rings; overriden for LDAs */
     public void calculateGsRings() {
         for (int i = 2; i <= gsAlt / 1000; i++) {
             gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev)));
@@ -172,10 +177,6 @@ public class ILS extends Actor {
         return rwy;
     }
 
-    public void setRwy(Runway rwy) {
-        this.rwy = rwy;
-    }
-
     @Override
     public float getX() {
         return x;
@@ -200,5 +201,9 @@ public class ILS extends Actor {
 
     public int getGsAlt() {
         return gsAlt;
+    }
+
+    public MissedApproach getMissedApchProc() {
+        return missedApchProc;
     }
 }

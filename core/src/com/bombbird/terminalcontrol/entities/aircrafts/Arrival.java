@@ -1,8 +1,11 @@
 package com.bombbird.terminalcontrol.entities.aircrafts;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 public class Arrival extends Aircraft {
     //Others
     private Star star;
+    private Queue<int[]> nonPrecAlts;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
@@ -33,6 +37,11 @@ public class Arrival extends Aircraft {
                 }
             }
         }
+
+        if (getAirport().getIcao().equals("RCSS")) {
+            star = starList.get("KUDOS1B");
+        }
+
         setDirect(star.getWaypoint(0));
         setHeading(star.getInboundHdg());
         setClearedHeading((int)getHeading());
@@ -53,14 +62,19 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(1, this));
-        System.out.println(getCallsign() + ": " + distToGo() + " nm");
         float initAlt = 3000 + (distToGo() - 20) / 300 * 60 * getTypDes();
         if (initAlt > 26000) {
             initAlt = 26000;
+        } else if (initAlt < 6000) {
+            initAlt = 6000;
         }
         setAltitude(initAlt);
         updateAltRestrictions();
-        setClearedAltitude(11000);
+        if (initAlt > 11000) {
+            setClearedAltitude(11000);
+        } else {
+            setClearedAltitude((int) initAlt - (int) initAlt % 1000);
+        }
 
         if (callsign.equals("EVA226")) {
             getNavState().getDispAltMode().removeFirst();
@@ -70,7 +84,6 @@ public class Arrival extends Aircraft {
             getNavState().getDispSpdMode().removeFirst();
             getNavState().getDispSpdMode().addFirst("No speed restrictions");
             setLatMode("vector");
-            setAltMode("open");
             setHeading(54);
             setClearedHeading(54);
             setAltitude(4000);
@@ -133,13 +146,24 @@ public class Arrival extends Aircraft {
         super.updateLabel();
     }
 
+    /** Overrides method in Aircraft class to check if there is no direct waypoint next, sets to current heading if so */
     @Override
     public void updateDirect() {
         super.updateDirect();
         if (getDirect() == null) {
             setClearedHeading((int) getHeading());
+            getNavState().getClearedHdg().removeFirst();
+            getNavState().getClearedHdg().addFirst(getClearedHeading());
             updateVectorMode();
             removeSidStarMode();
+        }
+    }
+
+    @Override
+    public void updateSpd() {
+        if (getDirect() != null && distToGo() <= 20 && getClearedIas() > 220) {
+            setClearedIas(220);
+            super.updateSpd();
         }
     }
 
@@ -179,30 +203,69 @@ public class Arrival extends Aircraft {
     @Override
     public void updateAltitude() {
         if (getIls() != null) {
-            if (!isGsCap()) {
-                if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
-                    setGsCap(true);
+            if (!(getIls() instanceof LDA)) {
+                if (!isGsCap()) {
+                    super.updateAltitude();
+                    if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
+                        setGsCap(true);
+                    }
+                } else {
+                    setVerticalSpeed(-MathTools.nmToFeet((float) Math.tan(Math.toRadians(3)) * 140f / 60f));
+                    setAltitude(getIls().getGSAlt(this));
+                    if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1400) {
+                        //Contact the tower
+                        setControlState(0);
+                        //TODO Add contact tower transmission
+                    }
                 }
+            } else if (nonPrecAlts != null && nonPrecAlts.size > 0) {
+                //Set target altitude to current restricted altitude
+                setTargetAltitude(nonPrecAlts.first()[0]);
+                while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
+                    nonPrecAlts.removeFirst();
+                }
+                super.updateAltitude();
             } else {
-                setAltitude(getIls().getGSAlt(this));
-                if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1400) {
-                    //Contact the tower
-                    setControlState(0);
-                    //TODO Add contact tower transmission
-                }
-                if (getAltitude() <= getIls().getRwy().getElevation()) {
-                    setTkofLdg(true);
-                    setOnGround(true);
-                }
-                return;
+                //TODO Fix bug where aircraft enters this mode prematurely
+                //Set final descent towards runway
+                setTargetAltitude(getIls().getRwy().getElevation());
+                float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
+                float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
+                setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
+                setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
+                System.out.println("Vert spd: " + getVerticalSpeed());
             }
+            if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
+                setTkofLdg(true);
+                setOnGround(true);
+            }
+        } else {
+            super.updateAltitude();
         }
-        super.updateAltitude();
+    }
+
+    @Override
+    public void updateTargetAltitude() {
+        if (getIls() instanceof LDA && isLocCap()) {
+            if (nonPrecAlts == null) {
+                nonPrecAlts = new Queue<int[]>();
+                Queue<int[]> copy = ((LDA) getIls()).getNonPrecAlts();
+                for (int[] data: copy) {
+                    nonPrecAlts.addLast(data);
+                }
+            }
+        } else {
+            if (nonPrecAlts != null) {
+                nonPrecAlts = null;
+            }
+            super.updateTargetAltitude();
+        }
     }
 
     @Override
     public void updateTkofLdg() {
         setAltitude(getIls().getRwy().getElevation());
+        setVerticalSpeed(0);
         setTargetIas(0);
         if (getGs() <= 35) {
             removeAircraft();

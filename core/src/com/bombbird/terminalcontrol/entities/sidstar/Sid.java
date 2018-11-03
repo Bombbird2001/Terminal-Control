@@ -3,8 +3,6 @@ package com.bombbird.terminalcontrol.entities.sidstar;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Waypoint;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class Sid extends SidStar {
     private int[] initClimb;

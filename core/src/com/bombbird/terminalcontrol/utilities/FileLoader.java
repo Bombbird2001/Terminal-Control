@@ -3,10 +3,13 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.Waypoint;
@@ -166,8 +169,6 @@ public class FileLoader {
             Array<Integer> inboundHdg = new Array<Integer>();
             Array<Waypoint> waypoints = new Array<Waypoint>();
             Array<int[]> restrictions = new Array<int[]>();
-            Array<Waypoint> holdingPoints = new Array<Waypoint>();
-            Array<int[]> holdingInfo = new Array<int[]>();
             Array<String> runways = new Array<String>();
 
             int index = 0;
@@ -211,29 +212,11 @@ public class FileLoader {
                             restrictions.add(altSpdRestrictions);
                         }
                         break;
-                    case 4: //Add holding points to STAR
-                        for (String s2: s1.split(">")) {
-                            //For each holding point in STAR
-                            int index1 = 0;
-                            int[] info = new int[5];
-                            for (String s3: s2.split(" ")) {
-                                if (index1 == 0) {
-                                    holdingPoints.add(GameScreen.waypoints.get(s3)); // Get waypoint
-                                } else if (index1 > 0 && index1 < 6) {
-                                    info[index1 - 1] = Integer.parseInt(s3);
-                                } else {
-                                    Gdx.app.log("Load error", "Unexpected additional holding point parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
-                                }
-                                index1++;
-                            }
-                            holdingInfo.add(info);
-                        }
-                        break;
                     default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
                 }
                 index++;
             }
-            stars.put(name, new Star(name, runways, inboundHdg, waypoints, restrictions, holdingPoints, holdingInfo));
+            stars.put(name, new Star(name, runways, inboundHdg, waypoints, restrictions));
         }
         return stars;
     }
@@ -353,8 +336,9 @@ public class FileLoader {
             float gsOffset = 0;
             int minima = -1;
             int gsAlt = 0;
-            boolean arrayCreated = false;
-            Array<Integer[]> nonPrecAlts = null;
+            float lineUpDist = 0;
+            boolean queueCreated = false;
+            Queue<int[]> nonPrecAlts = null;
             for (String s1: s.split(",")) {
                 switch (index) {
                     case 0: name = s1; break;
@@ -365,27 +349,74 @@ public class FileLoader {
                     case 5: gsOffset = Float.parseFloat(s1); break;
                     case 6: minima = Integer.parseInt(s1); break;
                     case 7: gsAlt = Integer.parseInt(s1); break;
-                    default:
-                        if (!arrayCreated) {
-                            nonPrecAlts = new Array<Integer[]>();
-                            arrayCreated = true;
+                    case 8: lineUpDist = Float.parseFloat(s1); break;
+                    case 9:
+                        if (!queueCreated) {
+                            nonPrecAlts = new Queue<int[]>();
+                            queueCreated = true;
                         }
-                        Integer[] info = new Integer[2];
-                        int index1 = 0;
-                        for (String s2: s1.split(">")) {
-                            info[index1] = Integer.parseInt(s2);
-                            index1++;
+                        for (String s3: s1.split("-")) {
+                            int[] info = new int[2];
+                            int index1 = 0;
+                            for (String s2 : s3.split(">")) {
+                                info[index1] = Integer.parseInt(s2);
+                                index1++;
+                            }
+                            nonPrecAlts.addLast(info);
                         }
-                        nonPrecAlts.add(info);
+                        break;
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
                 }
                 index++;
             }
             if (name.contains("ILS")) {
-                approaches.put(rwy, new ILS(name, x, y, heading, gsOffset, minima, gsAlt, airport.getRunways().get(rwy)));
+                approaches.put(rwy, new ILS(name, airport, x, y, heading, gsOffset, minima, gsAlt, airport.getRunways().get(rwy)));
             } else {
-                approaches.put(rwy, new LDA(name, x, y, heading, gsOffset, minima, gsAlt, nonPrecAlts, airport.getRunways().get(rwy)));
+                approaches.put(rwy, new LDA(name, airport, x, y, heading, gsOffset, minima, gsAlt, nonPrecAlts, airport.getRunways().get(rwy), lineUpDist));
             }
         }
         return approaches;
+    }
+
+    public static HashMap<String, HoldProcedure> loadHoldInfo(Airport airport) {
+        HashMap<String, HoldProcedure> holdProcedures = new HashMap<String, HoldProcedure>();
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/hold" + airport.getIcao() + ".hold");
+        String[] indivHold = handle.readString().split("\\r?\\n");
+        for (String hold: indivHold) {
+            boolean nameSet = false;
+            String name = "";
+            String toParse = "";
+            for (String info: hold.split(":")) {
+                if (!nameSet) {
+                    name = info;
+                    nameSet = true;
+                } else {
+                    toParse = info;
+                }
+            }
+            holdProcedures.put(name, new HoldProcedure(name, airport, toParse));
+        }
+        return holdProcedures;
+    }
+
+    public static HashMap<String, MissedApproach> loadMissedInfo(Airport airport) {
+        HashMap<String, MissedApproach> missedApproaches = new HashMap<String, MissedApproach>();
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/missedApch" + airport.getIcao() + ".miss");
+        String[] indivMissed = handle.readString().split("\\r?\\n");
+        for (String missed: indivMissed) {
+            boolean nameSet = false;
+            String name = "";
+            String toParse = "";
+            for (String info: missed.split(":")) {
+                if (!nameSet) {
+                    name = info;
+                    nameSet = true;
+                } else {
+                    toParse = info;
+                }
+            }
+            missedApproaches.put(name, new MissedApproach(name, airport, toParse));
+        }
+        return missedApproaches;
     }
 }

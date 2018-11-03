@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.Timer;
-import com.bombbird.terminalcontrol.entities.aircrafts.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
@@ -27,16 +27,13 @@ public class NavState {
     private Queue<String> latModeQueue;
     private Queue<Integer> clearedHdg;
     private Queue<Waypoint> clearedDirect;
-    private int lastSidStarIndex = 0;
     private Queue<Waypoint> clearedAftWpt;
     private Queue<Integer> clearedAftWptHdg;
     private Queue<ILS> clearedIls;
 
-    private Queue<String> altModeQueue;
     private Queue<Integer> clearedAlt;
     private Queue<Boolean> clearedExpedite;
 
-    private Queue<String> spdModeQueue;
     private Queue<Integer> clearedSpd;
 
     private int length = 1;
@@ -93,15 +90,11 @@ public class NavState {
         clearedIls = new Queue<ILS>();
         clearedIls.addLast(aircraft.getIls());
 
-        altModeQueue = new Queue<String>();
-        altModeQueue.addLast(aircraft.getAltMode());
         clearedAlt = new Queue<Integer>();
         clearedAlt.addLast(aircraft.getClearedAltitude());
         clearedExpedite = new Queue<Boolean>();
         clearedExpedite.addLast(aircraft.isExpedite());
 
-        spdModeQueue = new Queue<String>();
-        spdModeQueue.addLast(aircraft.getSpdMode());
         clearedSpd = new Queue<Integer>();
         clearedSpd.addLast(aircraft.getClearedIas());
     }
@@ -125,15 +118,11 @@ public class NavState {
                 clearedIls.removeFirst();
                 aircraft.setIls(clearedIls.first());
 
-                altModeQueue.removeFirst();
-                aircraft.setAltMode(altModeQueue.first());
                 clearedAlt.removeFirst();
                 aircraft.setClearedAltitude(clearedAlt.first());
                 clearedExpedite.removeFirst();
                 aircraft.setExpedite(clearedExpedite.first());
 
-                spdModeQueue.removeFirst();
-                aircraft.setSpdMode(spdModeQueue.first());
                 clearedSpd.removeFirst();
                 aircraft.setClearedIas(clearedSpd.first());
                 aircraft.setTargetIas(clearedSpd.first());
@@ -154,7 +143,6 @@ public class NavState {
                 latModeQueue.addLast("sidstar");
                 clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
                 aircraft.updateSelectedWaypoints(null);
-                lastSidStarIndex = aircraft.getSidStar().findWptIndex(clearedWpt);
                 if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
                     aircraft.getNavState().getLatModes().add("After waypoint, fly heading");
                 }
@@ -187,12 +175,6 @@ public class NavState {
 
     /** Adds new altitude instructions to queue, called after sendLat */
     public void sendAlt(String altMode, int clearedAlt) {
-        if (altMode.equals("Climb via SID") || altMode.equals("Descend via STAR")) {
-            altModeQueue.addLast("sidstar");
-        } else {
-            altModeQueue.addLast("open");
-            clearedExpedite.addLast(altMode.contains("Expedite"));
-        }
         this.clearedAlt.addLast(clearedAlt);
         dispAltMode.addLast(altMode);
         fillUp(clearedExpedite);
@@ -200,11 +182,6 @@ public class NavState {
 
     /** Adds new speed instructions to queue, called after sendAlt */
     public void sendSpd(String spdMode, int clearedSpd) {
-        if (spdMode.equals("No speed restrictions")) {
-            spdModeQueue.addLast("open");
-        } else {
-            spdModeQueue.addLast("sidstar");
-        }
         this.clearedSpd.addLast(clearedSpd);
         dispSpdMode.addLast(spdMode);
     }
@@ -245,10 +222,6 @@ public class NavState {
 
     public Queue<Waypoint> getClearedDirect() {
         return clearedDirect;
-    }
-
-    public int getLastSidStarIndex() {
-        return lastSidStarIndex;
     }
 
     public Queue<Waypoint> getClearedAftWpt() {

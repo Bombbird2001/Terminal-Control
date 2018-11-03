@@ -36,7 +36,11 @@ public class SpdTab extends Tab {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
             }
             if (highestSpd == -1) {
-                highestSpd = 250;
+                if (selectedAircraft.getAltitude() > 10000) {
+                    highestSpd = selectedAircraft.getClimbSpd();
+                } else {
+                    highestSpd = 250;
+                }
             }
         } else {
             highestSpd = selectedAircraft.getClimbSpd();
