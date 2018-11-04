@@ -32,20 +32,23 @@ public class Airport {
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
-        holdProcedures = FileLoader.loadHoldInfo(this);
-        missedApproaches = FileLoader.loadMissedInfo(this);
-        approaches = FileLoader.loadILS(this);
-        for (Runway runway: runways.values()) {
-            runway.setIls(approaches.get(runway.getName()));
-        }
-        stars = FileLoader.loadStars(icao);
-        sids = FileLoader.loadSids(icao);
         if (icao.equals("RCTP")) {
             setActive("05L", true, false);
             setActive("05R", true, true);
         } else if (icao.equals("RCSS")) {
             setActive("10", true, true);
         }
+    }
+
+    public void loadOthers() {
+        holdProcedures = FileLoader.loadHoldInfo(this);
+        missedApproaches = FileLoader.loadMissedInfo(this);
+        approaches = FileLoader.loadILS(this);
+        for (Runway runway: runways.values()) {
+            runway.setIls(approaches.get(runway.getName()));
+        }
+        stars = FileLoader.loadStars(this);
+        sids = FileLoader.loadSids(this);
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {

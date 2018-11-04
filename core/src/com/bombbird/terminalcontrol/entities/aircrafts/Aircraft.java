@@ -95,7 +95,6 @@ public class Aircraft extends Actor {
     private float gs;
     private Vector2 deltaPosition;
     private int clearedIas;
-    private int targetIas;
     private float deltaIas;
     private int climbSpd;
 
@@ -162,7 +161,6 @@ public class Aircraft extends Actor {
         gs = tas;
         deltaPosition = new Vector2();
         clearedIas = 250;
-        targetIas = 250;
         deltaIas = 0;
         tkofLdg = false;
         gsCap = false;
@@ -313,7 +311,6 @@ public class Aircraft extends Actor {
             updateTkofLdg();
         }
         if (navState.getClearedDirect().last() != null) {
-            //TODO Fix bug where direct is displayed inappropriately
             navState.getClearedDirect().last().setSelected(navState.getClearedDirect().last().isSelected() || navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading"));
         }
         if (!onGround) {
@@ -344,7 +341,7 @@ public class Aircraft extends Actor {
     }
 
     private void updateIas() {
-        float targetdeltaIas = (getTargetIas() - getIas()) / 5;
+        float targetdeltaIas = (clearedIas - ias) / 5;
         if (targetdeltaIas > deltaIas + 0.05) {
             deltaIas += 0.2f * Gdx.graphics.getDeltaTime();
         } else if (targetdeltaIas < deltaIas - 0.05) {
@@ -368,8 +365,8 @@ public class Aircraft extends Actor {
             deltaIas = min;
         }
         ias = ias + deltaIas * Gdx.graphics.getDeltaTime();
-        if (Math.abs(targetIas - ias) < 1) {
-            ias = targetIas;
+        if (Math.abs(clearedIas - ias) < 1) {
+            ias = clearedIas;
         }
     }
 
@@ -729,7 +726,7 @@ public class Aircraft extends Actor {
         labelText[2] = Integer.toString(MathUtils.round(radarAlt / 100));
         labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
         labelText[10] = Integer.toString(navState.getClearedAlt().last() / 100);
-        if ((int) radarHdg == 0) {
+        if ((MathUtils.round((float) radarHdg) == 0)) {
             radarHdg += 360;
         }
         labelText[4] = Integer.toString(MathUtils.round((float) radarHdg));
@@ -840,10 +837,6 @@ public class Aircraft extends Actor {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-    }
-
-    public void setTargetIas(int ias) {
-        targetIas = ias;
     }
 
     public Label getLabel() {
@@ -1176,10 +1169,6 @@ public class Aircraft extends Actor {
 
     public void setClearedIas(int clearedIas) {
         this.clearedIas = clearedIas;
-    }
-
-    public int getTargetIas() {
-        return targetIas;
     }
 
     public float getDeltaIas() {

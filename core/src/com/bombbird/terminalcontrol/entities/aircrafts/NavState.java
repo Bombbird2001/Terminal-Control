@@ -104,7 +104,9 @@ public class NavState {
                 validateInputs();
 
                 clearedHdg.removeFirst();
-                aircraft.setClearedHeading(clearedHdg.first());
+                if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                    aircraft.setClearedHeading(clearedHdg.first());
+                }
                 clearedDirect.removeFirst();
                 aircraft.setDirect(clearedDirect.first());
                 aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
@@ -121,8 +123,9 @@ public class NavState {
                 aircraft.setExpedite(clearedExpedite.first());
 
                 clearedSpd.removeFirst();
-                aircraft.setClearedIas(clearedSpd.first());
-                aircraft.setTargetIas(clearedSpd.first());
+                if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                    aircraft.setClearedIas(clearedSpd.first());
+                }
 
                 dispLatMode.removeFirst();
                 dispAltMode.removeFirst();
@@ -163,14 +166,12 @@ public class NavState {
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
-            if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
-                if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
-                    aircraft.getNavState().getLatModes().add("After waypoint, fly heading");
-                }
-                if (!aircraft.getNavState().getLatModes().contains("Hold at", false)) {
-                    aircraft.getNavState().getLatModes().add("Hold at");
-                }
+            clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
+            if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
+                aircraft.getNavState().getLatModes().add("After waypoint, fly heading");
+            }
+            if (!aircraft.getNavState().getLatModes().contains("Hold at", false)) {
+                aircraft.getNavState().getLatModes().add("Hold at");
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
             clearedAftWpt.addLast(RadarScreen.waypoints.get(afterWpt));

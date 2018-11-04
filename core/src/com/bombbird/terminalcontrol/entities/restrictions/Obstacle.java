@@ -8,19 +8,41 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
+import java.util.ArrayList;
+
 public class Obstacle extends Actor {
     private Polygon polygon;
     private int minAlt;
     private Label label;
 
-    public Obstacle(float[] vertices, int minAlt, String text, int textX, int textY) {
-        this.minAlt = minAlt;
-        polygon = new Polygon(vertices);
+    public Obstacle(String toParse) {
+        parseInfo(toParse);
+    }
+
+    private void parseInfo(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.GRAY;
-        label = new Label(text, labelStyle);
-        label.setPosition(textX, textY);
+
+        String[] obsInfo = toParse.split(", ");
+        int index = 0;
+        ArrayList<Float> vertices = new ArrayList<Float>();
+        for (String s1: obsInfo) {
+            switch (index) {
+                case 0: minAlt = Integer.parseInt(s1); break;
+                case 1: label = new Label(s1, labelStyle); break;
+                case 2: label.setX(Integer.parseInt(s1)); break;
+                case 3: label.setY(Integer.parseInt(s1)); break;
+                default: vertices.add(Float.parseFloat(s1));
+            }
+            index++;
+        }
+        int i = 0;
+        float[] verts = new float[vertices.size()];
+        for (float f: vertices) {
+            verts[i++] = f;
+        }
+        polygon = new Polygon(verts);
     }
 
     @Override

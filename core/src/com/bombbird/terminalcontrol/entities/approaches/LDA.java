@@ -14,18 +14,34 @@ public class LDA extends ILS {
     private Vector2 gsRing;
     private float lineUpDist;
 
-    public LDA(String name, Airport airport, float x, float y, int heading, float gsOffset, int minima, int gsAlt, Queue<int[]> nonPrecAlts, Runway rwy, float lineUpDist) {
-        super(name, airport, x, y, heading, gsOffset, minima, gsAlt, rwy);
-        this.nonPrecAlts = nonPrecAlts;
-        this.lineUpDist = lineUpDist;
+    public LDA(Airport airport, String toParse) {
+        super(airport, toParse);
+    }
 
-        calculateFAFRing();
+    /** Overrides method in ILS to also load the non precision approach altitudes */
+    @Override
+    public void parseInfo(String toParse) {
+        super.parseInfo(toParse);
+
+        nonPrecAlts = new Queue<int[]>();
+
+        String[] info = toParse.split(",");
+        lineUpDist = Float.parseFloat(info[8]);
+
+        for (String s3: info[9].split("-")) {
+            int[] altDist = new int[2];
+            int index1 = 0;
+            for (String s2 : s3.split(">")) {
+                altDist[index1] = Integer.parseInt(s2);
+                index1++;
+            }
+            nonPrecAlts.addLast(altDist);
+        }
     }
 
     /** Calculates position of FAF on LOC course */
     private void calculateFAFRing() {
         gsRing = new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.cosDeg(270 - getHeading() + RadarScreen.magHdgDev), getY() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.sinDeg(270 - getHeading() + RadarScreen.magHdgDev));
-
     }
 
     /** Overrides method in ILS to ignore it */

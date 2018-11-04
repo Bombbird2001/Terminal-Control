@@ -112,7 +112,9 @@ public class RadarScreen extends GameScreen {
                         }
                         index1++;
                     }
-                    airports.put(icao, new Airport(icao, elevation));
+                    Airport airport = new Airport(icao, elevation);
+                    airport.loadOthers();
+                    airports.put(icao, airport);
             }
             index++;
         }

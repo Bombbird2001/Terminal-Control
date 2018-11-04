@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.approaches;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +15,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class ILS extends Actor {
+    private Airport airport;
     private String name;
     private float x;
     private float y;
@@ -32,19 +34,35 @@ public class ILS extends Actor {
     private static final float distance2 = MathTools.nmToPixel(25);
     private static final int angle2 = 10;
 
-    public ILS(String name, Airport airport, float x, float y, int heading, float gsOffset, int minima, int gsAlt, Runway rwy) {
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.heading = heading;
-        this.gsOffset = gsOffset;
-        this.minima = minima;
-        this.gsAlt = gsAlt;
-        this.rwy = rwy;
+    public ILS(Airport airport, String toParse) {
+        this.airport = airport;
+        parseInfo(toParse);
 
         missedApchProc = airport.getMissedApproaches().get(name);
 
         calculateGsRings();
+    }
+
+    /** Parses the input string into info for the ILS */
+    public void parseInfo(String toParse) {
+        int index = 0;
+        for (String s1: toParse.split(",")) {
+            switch (index) {
+                case 0: name = s1; break;
+                case 1: rwy = airport.getRunways().get(s1); break;
+                case 2: heading = Integer.parseInt(s1); break;
+                case 3: x = Float.parseFloat(s1); break;
+                case 4: y = Float.parseFloat(s1); break;
+                case 5: gsOffset = Float.parseFloat(s1); break;
+                case 6: minima = Integer.parseInt(s1); break;
+                case 7: gsAlt = Integer.parseInt(s1); break;
+                default:
+                    if (!(this instanceof LDA)) {
+                        Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+                    }
+            }
+            index++;
+        }
     }
 
     /** Calculates positions of the GS rings; overriden for LDAs */

@@ -50,10 +50,12 @@ public class Departure extends Aircraft {
                 }
             }
         }
+
         setDirect(sid.getWaypoint(0));
 
-        //Set initial IAS due to wind
-        setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()));
+        //Set initial IAS due to wind + 10 knots ground speed
+        setGs(10);
+        setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()) + 10);
 
         //Set initial altitude equal to runway elevation
         setAltitude(getRunway().getElevation());
@@ -81,7 +83,6 @@ public class Departure extends Aircraft {
         //Sets aircraft to takeoff mode
         outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
-        setTargetIas(getV2());
         setClearedAltitude(sid.getInitClimb()[1]);
         int clearedAltitude = sid.getInitClimb()[1];
         if (clearedAltitude < 3000) {
@@ -117,7 +118,6 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
             if (getClearedIas() == getV2()) {
-                setTargetIas(250);
                 setClearedIas(250);
             }
             sidSet = true;
@@ -230,6 +230,7 @@ public class Departure extends Aircraft {
             setControlState(0);
             updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
+            setExpedite(false);
         }
     }
 

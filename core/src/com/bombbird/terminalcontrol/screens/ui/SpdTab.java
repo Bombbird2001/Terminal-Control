@@ -46,11 +46,7 @@ public class SpdTab extends Tab {
             highestSpd = selectedAircraft.getClimbSpd();
         }
         if (selectedAircraft instanceof Departure) {
-            if (selectedAircraft.getClearedIas() <= selectedAircraft.getV2()) {
-                lowestSpd = selectedAircraft.getV2();
-            } else {
-                lowestSpd = 200;
-            }
+            lowestSpd = 200;
         } else if (selectedAircraft instanceof Arrival) {
             lowestSpd = 160;
             if (selectedAircraft.getIls() != null && selectedAircraft.getIls().isInsideILS(selectedAircraft.getX(), selectedAircraft.getY())) {

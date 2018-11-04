@@ -192,16 +192,11 @@ public class Metar {
         JSONObject jsonObject = new JSONObject();
         for (String airport: RadarScreen.airports.keySet()) {
             //For each airport, create random weather and parse to JSON object
-            int rain = -1;
             int visibility;
             int windDir;
             int windSpd;
             int gust = -1;
             String ws;
-            if (MathUtils.random(9) >= 8) {
-                //20% chance of rain
-                rain = MathUtils.random(9);
-            }
             visibility = (MathUtils.random(9) + 1) * 1000;
             windDir = (MathUtils.random(35)) * 10 + 10;
             windSpd = MathUtils.random(29) + 1;
@@ -214,11 +209,7 @@ public class Metar {
             }
 
             JSONObject object = new JSONObject();
-            if (rain > -1) {
-                object.put("rain", rain);
-            } else {
-                object.put("rain", JSONObject.NULL);
-            }
+            object.put("rain", JSONObject.NULL);
 
             object.put("visibility", visibility);
             object.put("windDirection", windDir);

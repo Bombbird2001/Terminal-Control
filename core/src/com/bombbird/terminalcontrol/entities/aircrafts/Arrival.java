@@ -258,7 +258,7 @@ public class Arrival extends Aircraft {
     public void updateTkofLdg() {
         setAltitude(getIls().getRwy().getElevation());
         setVerticalSpeed(0);
-        setTargetIas(0);
+        setClearedIas(0);
         if (getGs() <= 35) {
             removeAircraft();
         }

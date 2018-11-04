@@ -2,21 +2,28 @@ package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class SidStar {
+    private Airport airport;
     private String name;
     private Array<String> runways;
     private Array<Waypoint> waypoints;
     private Array<int[]> restrictions;
 
-    public SidStar(String name, Array<String> runways, Array<Waypoint> waypoints, Array<int[]> restrictions) {
-        this.name = name;
-        this.runways = runways;
-        this.waypoints = waypoints;
-        this.restrictions = restrictions;
+    public SidStar(Airport airport, String toParse) {
+        this.airport = airport;
+        parseInfo(toParse);
+    }
+
+    /** Overriden method in SID, STAR to parse relevant information */
+    public void parseInfo(String toParse) {
+        runways = new Array<String>();
+        waypoints = new Array<Waypoint>();
+        restrictions = new Array<int[]>();
     }
 
     public void joinLines(int start, int end, int outbound, boolean dontRemove) {
@@ -102,5 +109,13 @@ public class SidStar {
 
     public int getWptMaxSpd(String wptName) {
         return restrictions.get(findWptIndex(wptName))[2];
+    }
+
+    public Array<int[]> getRestrictions() {
+        return restrictions;
+    }
+
+    public Airport getAirport() {
+        return airport;
     }
 }

@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
@@ -47,17 +48,8 @@ public class Runway extends Actor {
     //Set windshear properties
     private boolean windshear;
 
-    public Runway(String name, float x, float y, float length, int heading, float textX, float textY, int elevation) {
-        //Set the parameters
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.heading = heading;
-        this.elevation = elevation;
-        trueHdg = heading - RadarScreen.magHdgDev;
-
-        //Convert length in feet to pixels
-        pxLength = MathTools.feetToPixel(length);
+    public Runway(String toParse) {
+        parseInfo(toParse);
 
         //Calculate the position offsets
         float xOffsetW = getHalfWidth() * MathUtils.sinDeg(90 - getTrueHdg());
@@ -65,21 +57,39 @@ public class Runway extends Actor {
         float xOffsetL = pxLength * MathUtils.cosDeg(90 - getTrueHdg());
         float yOffsetL = pxLength * MathUtils.sinDeg(90 - getTrueHdg());
 
-        //Set the label
+        //Create polygon
+        setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
+    }
+
+    private void parseInfo(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont8;
         labelStyle.fontColor = Color.WHITE;
-        setLabel(new Label(name, labelStyle));
-        getLabel().setPosition(textX, textY);
-        setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
+
+        String rwyInfo[] = toParse.split(",");
+        int index = 0;
+        for (String s1: rwyInfo) {
+            switch (index) {
+                case 0: name = s1;
+                        label = new Label(name, labelStyle);
+                        break;
+                case 1: x = Float.parseFloat(s1); break;
+                case 2: y = Float.parseFloat(s1); break;
+                case 3: pxLength = MathTools.feetToPixel(Integer.parseInt(s1)); break;
+                case 4: heading = Integer.parseInt(s1);
+                        trueHdg = heading - RadarScreen.magHdgDev;
+                        break;
+                case 5: label.setX(Float.parseFloat(s1)); break;
+                case 6: label.setY(Float.parseFloat(s1)); break;
+                case 7: elevation = Integer.parseInt(s1); break;
+                default: Gdx.app.log("Load error", "Unexpected additional parameter in data for runway " + name);
+            }
+            index++;
+        }
     }
 
     public static float getHalfWidth() {
         return halfWidth;
-    }
-
-    public static void setHalfWidth(float halfWidth) {
-        Runway.halfWidth = halfWidth;
     }
 
     public void setActive(boolean landing, boolean takeoff) {
@@ -90,7 +100,7 @@ public class Runway extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        getLabel().draw(batch, 1);
+        label.draw(batch, 1);
     }
 
     public void renderShape() {

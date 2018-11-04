@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
@@ -18,7 +17,6 @@ import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileLoader {
@@ -28,29 +26,7 @@ public class FileLoader {
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             //For each individual obstacle:
-            String[] obsInfo = s.split(", ");
-            int index = 0;
-            int minAlt = 0;
-            String text = "";
-            int textX = 0;
-            int textY = 0;
-            ArrayList<Float> vertices = new ArrayList<Float>();
-            for (String s1: obsInfo) {
-                switch (index) {
-                    case 0: minAlt = Integer.parseInt(s1); break;
-                    case 1: text = s1; break;
-                    case 2: textX = Integer.parseInt(s1); break;
-                    case 3: textY = Integer.parseInt(s1); break;
-                    default: vertices.add(Float.parseFloat(s1));
-                }
-                index++;
-            }
-            int i = 0;
-            float[] verts = new float[vertices.size()];
-            for (float f: vertices) {
-                verts[i++] = f;
-            }
-            Obstacle obs = new Obstacle(verts, minAlt, text, textX, textY);
+            Obstacle obs = new Obstacle(s);
             obsArray.add(obs);
             GameScreen.stage.addActor(obs);
         }
@@ -63,29 +39,7 @@ public class FileLoader {
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             //For each individual restricted area
-            String[] restInfo = s.split(", ");
-            int index = 0;
-            int minAlt = 0;
-            String text = "";
-            int textX = 0;
-            int textY = 0;
-            float centreX = 0;
-            float centreY = 0;
-            float radius = 0;
-            for (String s1: restInfo) {
-                switch (index) {
-                    case 0: minAlt = Integer.parseInt(s1); break;
-                    case 1: text = s1; break;
-                    case 2: textX = Integer.parseInt(s1); break;
-                    case 3: textY = Integer.parseInt(s1); break;
-                    case 4: centreX = Float.parseFloat(s1); break;
-                    case 5: centreY = Float.parseFloat(s1); break;
-                    case 6: radius = Float.parseFloat(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/restricted.rest");
-                }
-                index++;
-            }
-            RestrictedArea area = new RestrictedArea(centreX, centreY, radius, minAlt, text, textX, textY);
+            RestrictedArea area = new RestrictedArea(s);
             restArray.add(area);
             GameScreen.stage.addActor(area);
         }
@@ -125,171 +79,34 @@ public class FileLoader {
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
             //For each individual runway
-            String rwyInfo[] = s.split(",");
-            int index = 0;
-            String name = "";
-            float x = 0;
-            float y = 0;
-            int length = 0;
-            int heading = 0;
-            float textX = 0;
-            float textY = 0;
-            int elevation = 0;
-            for (String s1: rwyInfo) {
-                switch (index) {
-                    case 0: name = s1; break;
-                    case 1: x = Float.parseFloat(s1); break;
-                    case 2: y = Float.parseFloat(s1); break;
-                    case 3: length = Integer.parseInt(s1); break;
-                    case 4: heading = Integer.parseInt(s1); break;
-                    case 5: textX = Float.parseFloat(s1); break;
-                    case 6: textY = Float.parseFloat(s1); break;
-                    case 7: elevation = Integer.parseInt(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/runway" + icao + ".rest");
-                }
-                index++;
-            }
-            Runway runway = new Runway(name, x, y, length, heading, textX, textY, elevation);
-            runways.put(name, runway);
+            Runway runway = new Runway(s);
+            runways.put(runway.getName(), runway);
         }
         return runways;
     }
 
-    public static HashMap<String, Star> loadStars(String icao) {
+    public static HashMap<String, Star> loadStars(Airport airport) {
         //Load STARs
         HashMap<String, Star> stars = new HashMap<String, Star>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + icao + ".star");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + airport.getIcao() + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
             //For each individual STAR
-            String starInfo[] = s.split(",");
-
-            //Info for the STAR
-            String name = "";
-            Array<Integer> inboundHdg = new Array<Integer>();
-            Array<Waypoint> waypoints = new Array<Waypoint>();
-            Array<int[]> restrictions = new Array<int[]>();
-            Array<String> runways = new Array<String>();
-
-            int index = 0;
-            for (String s1: starInfo) {
-                switch (index) {
-                    case 0: name = s1; break; //First part is the name of the STAR
-                    case 1: //Add STAR runways
-                        for (String s2: s1.split(">")) {
-                            runways.add(s2);
-                        }
-                        break;
-                    case 2: //Second part is the inbound track(s) of the STAR
-                        for (String s2: s1.split(">")) {
-                            inboundHdg.add(Integer.parseInt(s2));
-                        }
-                        break;
-                    case 3: //Add waypoints to STAR
-                        for (String s2: s1.split(">")) {
-                            //For each waypoint on the STAR
-                            int index1 = 0;
-                            int[] altSpdRestrictions = new int[3];
-                            for (String s3: s2.split(" ")) {
-                                switch (index1) {
-                                    case 0:
-                                        waypoints.add(GameScreen.waypoints.get(s3));
-                                        break; //First part is the name of the waypoint
-                                    case 1:
-                                        altSpdRestrictions[0] = Integer.parseInt(s3);
-                                        break; //1 is min alt
-                                    case 2:
-                                        altSpdRestrictions[1] = Integer.parseInt(s3);
-                                        break; //2 is max alt
-                                    case 3:
-                                        altSpdRestrictions[2] = Integer.parseInt(s3);
-                                        break; //3 is max speed
-                                    default:
-                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
-                                }
-                                index1++;
-                            }
-                            restrictions.add(altSpdRestrictions);
-                        }
-                        break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/star" + icao + ".star");
-                }
-                index++;
-            }
-            stars.put(name, new Star(name, runways, inboundHdg, waypoints, restrictions));
+            Star star = new Star(airport, s);
+            stars.put(star.getName(), star);
         }
         return stars;
     }
 
-    public static HashMap<String, Sid> loadSids(String icao) {
+    public static HashMap<String, Sid> loadSids(Airport airport) {
         //Load SIDs
         HashMap<String, Sid> sids = new HashMap<String, Sid>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/sid" + airport.getIcao() + ".sid");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
             //For each individual SID
-            String[] sidInfo = s.split(",");
-
-            //Info for the SID
-            String name = "";
-            Array<String> runways = new Array<String>();
-            int[] initClimb = new int[3];
-            Array<Integer> outboundHdg = new Array<Integer>();
-            Array<Waypoint> waypoints = new Array<Waypoint>();
-            Array<int[]> restrictions = new Array<int[]>();
-
-            int index = 0;
-            for (String s1: sidInfo) {
-                switch (index) {
-                    case 0: name = s1; break; //First part is the name of the SID
-                    case 1: //Add SID runways
-                        for (String s2: s1.split(">")) {
-                            runways.add(s2);
-                        }
-                        break;
-                    case 2: //Second part is the initial climb of the SID
-                        String[] info = s1.split(" ");
-                        for (int i = 0; i < 3; i++) {
-                            initClimb[i] = Integer.parseInt(info[i]);
-                        }
-                        break;
-                    case 3: //Add waypoints to SID
-                        for (String s2: s1.split(">")) {
-                            //For each waypoint on the STAR
-                            int index1 = 0;
-                            int[] altSpdRestrictions = new int[3];
-                            for (String s3: s2.split(" ")) {
-                                switch (index1) {
-                                    case 0:
-                                        waypoints.add(GameScreen.waypoints.get(s3));
-                                        break; //First part is the name of the waypoint
-                                    case 1:
-                                        altSpdRestrictions[0] = Integer.parseInt(s3);
-                                        break; //1 is min alt
-                                    case 2:
-                                        altSpdRestrictions[1] = Integer.parseInt(s3);
-                                        break; //2 is max alt
-                                    case 3:
-                                        altSpdRestrictions[2] = Integer.parseInt(s3);
-                                        break; //3 is max speed
-                                    default:
-                                        Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
-                                }
-                                index1++;
-                            }
-                            restrictions.add(altSpdRestrictions);
-                        }
-                        break;
-                    case 4: //Outbound heading after last waypoint
-                        for (String s2: s1.split(">")) {
-                            outboundHdg.add(Integer.parseInt(s2));
-                        }
-                        break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/sid" + icao + ".sid");
-                }
-                index++;
-            }
-            sids.put(name, new Sid(name, runways, initClimb, outboundHdg, waypoints, restrictions));
+            Sid sid = new Sid(airport, s);
+            sids.put(sid.getName(), sid);
         }
         return sids;
     }
@@ -327,52 +144,12 @@ public class FileLoader {
         String[] indivApches = handle.readString().split("\\r?\\n");
         for (String s: indivApches) {
             //For each approach
-            int index = 0;
-            String name = "";
-            String rwy = "";
-            int heading = -1;
-            float x = -1;
-            float y = -1;
-            float gsOffset = 0;
-            int minima = -1;
-            int gsAlt = 0;
-            float lineUpDist = 0;
-            boolean queueCreated = false;
-            Queue<int[]> nonPrecAlts = null;
-            for (String s1: s.split(",")) {
-                switch (index) {
-                    case 0: name = s1; break;
-                    case 1: rwy = s1; break;
-                    case 2: heading = Integer.parseInt(s1); break;
-                    case 3: x = Float.parseFloat(s1); break;
-                    case 4: y = Float.parseFloat(s1); break;
-                    case 5: gsOffset = Float.parseFloat(s1); break;
-                    case 6: minima = Integer.parseInt(s1); break;
-                    case 7: gsAlt = Integer.parseInt(s1); break;
-                    case 8: lineUpDist = Float.parseFloat(s1); break;
-                    case 9:
-                        if (!queueCreated) {
-                            nonPrecAlts = new Queue<int[]>();
-                            queueCreated = true;
-                        }
-                        for (String s3: s1.split("-")) {
-                            int[] info = new int[2];
-                            int index1 = 0;
-                            for (String s2 : s3.split(">")) {
-                                info[index1] = Integer.parseInt(s2);
-                                index1++;
-                            }
-                            nonPrecAlts.addLast(info);
-                        }
-                        break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
-                }
-                index++;
-            }
-            if (name.contains("ILS")) {
-                approaches.put(rwy, new ILS(name, airport, x, y, heading, gsOffset, minima, gsAlt, airport.getRunways().get(rwy)));
+            if (s.split(",").length == 8) {
+                ILS ils = new ILS(airport, s);
+                approaches.put(ils.getRwy().getName(), ils);
             } else {
-                approaches.put(rwy, new LDA(name, airport, x, y, heading, gsOffset, minima, gsAlt, nonPrecAlts, airport.getRunways().get(rwy), lineUpDist));
+                LDA lda = new LDA(airport, s);
+                approaches.put(lda.getRwy().getName(), lda);
             }
         }
         return approaches;
