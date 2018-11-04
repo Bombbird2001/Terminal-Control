@@ -4,7 +4,7 @@ jdk:
 android:
   components:
     - android-28
-    - build-tools-28.0.1
+    - build-tools-28.0.3
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
@@ -13,4 +13,4 @@ before_script:
 script:
   - ./gradlew desktop:dist
 before_install:
-    - yes | sdkmanager "build-tools;28.0.1"
+    - yes | sdkmanager "build-tools;28.0.3"
