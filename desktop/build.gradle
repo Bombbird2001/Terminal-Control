@@ -4,7 +4,7 @@ sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.bombbird.terminalcontrol.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets");
+project.ext.assetsDir = new File("../android/assetsFull")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -23,7 +23,8 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
-task dist(type: Jar) {
+task distLite(type: Jar) {
+    project.ext.assetsDir = new File("../android/assetsLite")
     from files(sourceSets.main.output.classesDir)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
@@ -34,7 +35,21 @@ task dist(type: Jar) {
     }
 }
 
-dist.dependsOn classes
+distLite.dependsOn classes
+
+task distFull(type: Jar) {
+    project.ext.assetsDir = new File("../android/assetsFull")
+    from files(sourceSets.main.output.classesDir)
+    from files(sourceSets.main.output.resourcesDir)
+    from {configurations.compile.collect {zipTree(it)}}
+    from files(project.assetsDir);
+
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+}
+
+distFull.dependsOn classes
 
 eclipse {
     project {

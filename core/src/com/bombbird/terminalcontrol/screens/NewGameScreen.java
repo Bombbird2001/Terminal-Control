@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -70,14 +71,28 @@ public class NewGameScreen implements Screen {
 
         //Load airports
         String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
-        for (String airport: airports) {
+        for (final String airport: airports) {
             final TextButton airportButton = new TextButton(airport, buttonStyle);
             airportButton.setName(airport.substring(0, 4));
             airportButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     String name = actor.getName();
-                    game.setScreen(new RadarScreen(game, name));
+                    FileHandle handle = Gdx.files.internal("game/available.arpt");
+                    String[] airports = handle.readString().split("\\r?\\n");
+                    boolean found = false;
+                    for (String arpt: airports) {
+                        if (arpt.equals(name)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        game.setScreen(new RadarScreen(game, name));
+                    } else {
+                        Gdx.app.log("Directory not found", "Directory not found for " + name);
+                        //TODO Set popup to ask user to get full version
+                    }
                 }
             });
             scrollTable.add(airportButton).width(buttonWidth * 1.2f).height(buttonHeight);

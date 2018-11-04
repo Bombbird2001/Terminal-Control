@@ -1,5 +1,5 @@
 android {
-    buildToolsVersion "28.0.1"
+    buildToolsVersion "28.0.3"
     compileSdkVersion 28
     sourceSets {
         main {
@@ -8,10 +8,14 @@ android {
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-
+        lite {
+            assets.srcDirs = ['assetsLite']
+        }
+        full {
+            assets.srcDirs = ['assetsFull']
+        }
     }
     packagingOptions {
         exclude 'META-INF/robovm/ios/robovm.xml'
@@ -28,6 +32,24 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+        lite {
+            dimension "version"
+            applicationIdSuffix ".lite"
+            versionNameSuffix "-lite"
+        }
+        full {
+            dimension "version"
+            applicationIdSuffix ".full"
+            versionNameSuffix "-full"
+        }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
