@@ -24,7 +24,6 @@ public class NavState {
 
     private Timer timer;
 
-    private Queue<String> latModeQueue;
     private Queue<Integer> clearedHdg;
     private Queue<Waypoint> clearedDirect;
     private Queue<Waypoint> clearedAftWpt;
@@ -77,8 +76,6 @@ public class NavState {
 
         timer = new Timer();
 
-        latModeQueue = new Queue<String>();
-        latModeQueue.addLast(aircraft.getLatMode());
         clearedHdg = new Queue<Integer>();
         clearedHdg.addLast(aircraft.getClearedHeading());
         clearedDirect = new Queue<Waypoint>();
@@ -104,13 +101,13 @@ public class NavState {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                latModeQueue.removeFirst();
-                aircraft.setLatMode(latModeQueue.first());
+                validateInputs();
+
                 clearedHdg.removeFirst();
                 aircraft.setClearedHeading(clearedHdg.first());
                 clearedDirect.removeFirst();
                 aircraft.setDirect(clearedDirect.first());
-                aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect().getName()));
+                aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
                 clearedAftWpt.removeFirst();
                 aircraft.setAfterWaypoint(clearedAftWpt.first());
                 clearedAftWptHdg.removeFirst();
@@ -136,13 +133,38 @@ public class NavState {
         }, timeDelay);
     }
 
+    /** Called before updating aircraft mode to ensure inputs are valid in case aircraft state changes during the pilot delay*/
+    private void validateInputs() {
+        String currentDispLatMode = dispLatMode.first();
+        String clearedDispLatMode = dispLatMode.get(1);
+        String currentDirect = clearedDirect.first() == null ? null : clearedDirect.first().getName();
+        String newDirect = clearedDirect.get(1) == null ? null : clearedDirect.get(1).getName();
+        if (currentDispLatMode.contains("heading") && !currentDispLatMode.equals("After waypoint, fly heading") && (clearedDispLatMode.equals("After waypoint, fky heading") || clearedDispLatMode.equals("Hold at"))) {
+            //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
+            dispLatMode.removeFirst();
+            dispLatMode.removeFirst();
+            dispLatMode.addFirst(currentDispLatMode);
+            dispLatMode.addFirst(currentDispLatMode);
+
+            //Updates cleared heading to aftWptHdg to ensure aircraft flies the new requested after waypoint heading
+            int initHdg = clearedHdg.removeFirst();
+            clearedHdg.removeFirst();
+            clearedHdg.addFirst(clearedAftWptHdg.get(1));
+            clearedHdg.addFirst(initHdg);
+        } else if (currentDispLatMode.contains(aircraft.getSidStar().getName()) && aircraft.getSidStar().findWptIndex(newDirect) < aircraft.getSidStar().findWptIndex(currentDirect)) {
+            //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
+            clearedDirect.removeFirst();
+            clearedDirect.removeFirst();
+            clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
+            clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
+        }
+    }
+
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
             if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                latModeQueue.addLast("sidstar");
                 clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
-                aircraft.updateSelectedWaypoints(null);
                 if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
                     aircraft.getNavState().getLatModes().add("After waypoint, fly heading");
                 }
@@ -151,13 +173,11 @@ public class NavState {
                 }
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
-            latModeQueue.addLast("sidstar");
             clearedAftWpt.addLast(RadarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode.equals("Hold at")) {
             System.out.println("Hold at");
         } else {
-            latModeQueue.addLast("vector");
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {
                 clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
@@ -165,7 +185,6 @@ public class NavState {
         }
         dispLatMode.addLast(latMode);
         length++;
-        fillUp(latModeQueue);
         fillUp(this.clearedHdg);
         fillUp(clearedDirect);
         fillUp(clearedAftWpt);

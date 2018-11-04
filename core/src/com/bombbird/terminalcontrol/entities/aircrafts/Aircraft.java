@@ -66,7 +66,6 @@ public class Aircraft extends Actor {
     //Aircraft position
     private float x;
     private float y;
-    private String latMode;
     private double heading;
     private double targetHeading;
     private int clearedHeading;
@@ -147,7 +146,6 @@ public class Aircraft extends Actor {
         maxDes = typDes + 1000;
         apchSpd = (int)(perfData[4] * (1 + loadFactor));
         this.airport = airport;
-        latMode = "vector";
         heading = 0;
         targetHeading = 0;
         clearedHeading = (int)(heading);
@@ -316,7 +314,7 @@ public class Aircraft extends Actor {
         }
         if (navState.getClearedDirect().last() != null) {
             //TODO Fix bug where direct is displayed inappropriately
-            navState.getClearedDirect().last().setSelected(navState.getClearedDirect().last().isSelected() || navState.getDispLatMode().last().contains(getSidStar().getName()));
+            navState.getClearedDirect().last().setSelected(navState.getClearedDirect().last().isSelected() || navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading"));
         }
         if (!onGround) {
             double[] info = updateTargetHeading();
@@ -404,7 +402,7 @@ public class Aircraft extends Actor {
     }
 
     public double[] updateTargetHeading() {
-        getDeltaPosition().setZero();
+        deltaPosition.setZero();
         double targetHeading = 0;
         double angleDiff = 0;
 
@@ -418,16 +416,27 @@ public class Aircraft extends Actor {
         float windHdg = winds[0] + 180;
         int windSpd = winds[1];
 
-        if (latMode.equals("vector") && (ils == null || !ils.isInsideILS(x, y))) {
+        boolean sidstar = navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading");
+        boolean vector = !sidstar && navState.getDispLatMode().first().contains("heading");
+
+        if (this instanceof Departure) {
+            //Check if aircraft has climbed past initial climb
+            sidstar = sidstar && ((Departure) this).isSidSet();
+            if (!sidstar) {
+                //Otherwise continue climbing on current heading
+                return new double[] {clearedHeading, 0};
+            }
+        }
+        if (vector && (ils == null || !ils.isInsideILS(x, y))) {
             targetHeading = clearedHeading;
             double angle = 180 - windHdg + heading;
             gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
             locCap = false;
             angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
-        } else if (latMode.equals("sidstar") || (latMode.equals("vector") && locCap)) {
+        } else if (sidstar || (vector && locCap)) {
             float deltaX;
             float deltaY;
-            if (latMode.equals("sidstar")) {
+            if (sidstar) {
                 //Calculates x, y between waypoint, and plane
                 deltaX = direct.getPosX() - x;
                 deltaY = direct.getPosY() - y;
@@ -468,12 +477,14 @@ public class Aircraft extends Actor {
             //Add magnetic deviation to give magnetic heading
             targetHeading += RadarScreen.magHdgDev;
 
-            //If within __px of waypoint, target next waypoint
-            //Distance determined by angle that needs to be turned
-            double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f + 10;
-            if (distance <= requiredDistance) {
-                updateDirect();
+            if (sidstar) {
+                //If within __px of waypoint, target next waypoint
+                //Distance determined by angle that needs to be turned
+                double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
+                double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f + 10;
+                if (distance <= requiredDistance) {
+                    updateDirect();
+                }
             }
         }
 
@@ -509,7 +520,7 @@ public class Aircraft extends Actor {
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
         track = heading - RadarScreen.magHdgDev + angleDiff;
-        if (getIls() != null && getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, getIls().getRwy().getX(), getIls().getRwy().getY())) <= ((LDA) getIls()).getLineUpDist()) {
+        if (!onGround && getIls() != null && getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, getIls().getRwy().getX(), getIls().getRwy().getY())) <= ((LDA) getIls()).getLineUpDist()) {
             //Set track && heading to runway
             track = getIls().getRwy().getTrueHdg();
             heading = track + angleDiff;
@@ -621,24 +632,32 @@ public class Aircraft extends Actor {
             navState.getClearedHdg().removeFirst();
             navState.getClearedHdg().addFirst(afterWptHdg);
             updateVectorMode();
+            direct = null;
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
             navState.getClearedDirect().removeFirst();
             navState.getClearedDirect().addFirst(direct);
+            if (direct != null) {
+                direct.setSelected(true);
+            }
         }
+        navState.getClearedDirect().removeFirst();
+        navState.getClearedDirect().addFirst(direct);
         updateAltRestrictions();
         updateTargetAltitude();
         updateClearedSpd();
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
+            updateSelectedWaypoints(this);
+        } else {
+            updateSelectedWaypoints(null);
         }
     }
 
     /** Switches aircraft latMode to vector, sets active nav state latMode to vector */
     public void updateVectorMode() {
         //Switch aircraft latmode to vector mode
-        latMode = "vector";
         navState.getDispLatMode().removeFirst();
         navState.getDispLatMode().addFirst("Fly heading");
     }
@@ -714,13 +733,13 @@ public class Aircraft extends Actor {
             radarHdg += 360;
         }
         labelText[4] = Integer.toString(MathUtils.round((float) radarHdg));
-        if (latMode.equals("vector")) {
+        if (navState.getDispLatMode().first().contains("heading") && !navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
             if (locCap) {
                 labelText[5] = "LOC";
             } else {
                 labelText[5] = Integer.toString(navState.getClearedHdg().last());
             }
-        } else if (latMode.equals("sidstar")) {
+        } else if (navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
             if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
                 labelText[5] = navState.getClearedDirect().last().getName() + Integer.toString(navState.getClearedAftWptHdg().last());
             } else {
@@ -768,6 +787,9 @@ public class Aircraft extends Actor {
                     waypoint.setSelected(false);
                 }
             }
+        }
+        if (navState.getClearedDirect().first() != null) {
+            navState.getClearedDirect().first().setSelected(navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading"));
         }
     }
 
@@ -970,14 +992,6 @@ public class Aircraft extends Actor {
     @Override
     public void setY(float y) {
         this.y = y;
-    }
-
-    public String getLatMode() {
-        return latMode;
-    }
-
-    public void setLatMode(String latMode) {
-        this.latMode = latMode;
     }
 
     public double getHeading() {

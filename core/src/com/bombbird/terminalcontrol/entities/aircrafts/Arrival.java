@@ -22,7 +22,6 @@ public class Arrival extends Aircraft {
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         setOnGround(false);
-        setLatMode("sidstar");
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -36,10 +35,6 @@ public class Arrival extends Aircraft {
                     break;
                 }
             }
-        }
-
-        if (getAirport().getIcao().equals("RCSS")) {
-            star = starList.get("KUDOS1B");
         }
 
         setDirect(star.getWaypoint(0));
@@ -83,7 +78,6 @@ public class Arrival extends Aircraft {
             getNavState().getDispLatMode().addFirst("Fly heading");
             getNavState().getDispSpdMode().removeFirst();
             getNavState().getDispSpdMode().addFirst("No speed restrictions");
-            setLatMode("vector");
             setHeading(54);
             setClearedHeading(54);
             setAltitude(4000);
@@ -150,7 +144,7 @@ public class Arrival extends Aircraft {
     @Override
     public void updateDirect() {
         super.updateDirect();
-        if (getDirect() == null) {
+        if (getNavState().getDispLatMode().first().contains(getSidStar().getName()) && getDirect() == null) {
             setClearedHeading((int) getHeading());
             getNavState().getClearedHdg().removeFirst();
             getNavState().getClearedHdg().addFirst(getClearedHeading());
@@ -200,6 +194,7 @@ public class Arrival extends Aircraft {
         }
     }
 
+    /** Overrides update altitude method in Aircraft for when arrival is on glide slope or non precision approach */
     @Override
     public void updateAltitude() {
         if (getIls() != null) {
@@ -212,53 +207,50 @@ public class Arrival extends Aircraft {
                 } else {
                     setVerticalSpeed(-MathTools.nmToFeet((float) Math.tan(Math.toRadians(3)) * 140f / 60f));
                     setAltitude(getIls().getGSAlt(this));
-                    if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1400) {
-                        //Contact the tower
-                        setControlState(0);
-                        //TODO Add contact tower transmission
+                }
+                if (nonPrecAlts != null) {
+                    nonPrecAlts = null;
+                }
+            } else {
+                if (nonPrecAlts == null) {
+                    nonPrecAlts = new Queue<int[]>();
+                    Queue<int[]> copy = ((LDA) getIls()).getNonPrecAlts();
+                    for (int[] data: copy) {
+                        nonPrecAlts.addLast(data);
                     }
                 }
-            } else if (nonPrecAlts != null && nonPrecAlts.size > 0) {
-                //Set target altitude to current restricted altitude
-                setTargetAltitude(nonPrecAlts.first()[0]);
-                while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
-                    nonPrecAlts.removeFirst();
+                if (nonPrecAlts != null && nonPrecAlts.size > 0) {
+                    //Set target altitude to current restricted altitude
+                    setTargetAltitude(nonPrecAlts.first()[0]);
+                    while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
+                        nonPrecAlts.removeFirst();
+                    }
+                    super.updateAltitude();
+                } else {
+                    //Set final descent towards runway
+                    setTargetAltitude(getIls().getRwy().getElevation());
+                    float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
+                    float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
+                    setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
+                    setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
                 }
-                super.updateAltitude();
-            } else {
-                //TODO Fix bug where aircraft enters this mode prematurely
-                //Set final descent towards runway
-                setTargetAltitude(getIls().getRwy().getElevation());
-                float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
-                float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
-                setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
-                setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
-                System.out.println("Vert spd: " + getVerticalSpeed());
+            }
+            if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1400) {
+                //Contact the tower
+                setControlState(0);
+                //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
                 setTkofLdg(true);
                 setOnGround(true);
+                setHeading(getIls().getRwy().getHeading());
             }
         } else {
-            super.updateAltitude();
-        }
-    }
-
-    @Override
-    public void updateTargetAltitude() {
-        if (getIls() instanceof LDA && isLocCap()) {
-            if (nonPrecAlts == null) {
-                nonPrecAlts = new Queue<int[]>();
-                Queue<int[]> copy = ((LDA) getIls()).getNonPrecAlts();
-                for (int[] data: copy) {
-                    nonPrecAlts.addLast(data);
-                }
-            }
-        } else {
+            //If GS/NPA not active yet
             if (nonPrecAlts != null) {
                 nonPrecAlts = null;
             }
-            super.updateTargetAltitude();
+            super.updateAltitude();
         }
     }
 

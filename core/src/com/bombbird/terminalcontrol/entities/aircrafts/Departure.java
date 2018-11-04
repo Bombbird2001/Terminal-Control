@@ -99,6 +99,7 @@ public class Departure extends Aircraft {
         } else {
             setClearedHeading(getRunway().getHeading());
         }
+        setHeading(getClearedHeading());
         setTkofLdg(true);
     }
 
@@ -115,7 +116,6 @@ public class Departure extends Aircraft {
             contacted = true;
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
-            setLatMode("sidstar");
             if (getClearedIas() == getV2()) {
                 setTargetIas(250);
                 setClearedIas(250);
