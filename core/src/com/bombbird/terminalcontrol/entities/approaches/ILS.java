@@ -151,7 +151,7 @@ public class ILS extends Actor {
         return inAngle && inDist;
     }
 
-    /** Gets the coordinates of the point on the localiser 1nm ahead of aircraft */
+    /** Gets the coordinates of the point on the localiser 0.75nm ahead of aircraft */
     public Vector2 getPointAhead(Aircraft aircraft) {
         return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - 0.75f);
     }

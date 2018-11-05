@@ -22,7 +22,7 @@ android {
     }
     defaultConfig {
         applicationId "com.bombbird.terminalcontrol"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -38,13 +38,15 @@ android {
     productFlavors {
         lite {
             dimension "version"
-            applicationIdSuffix ".lite"
+            applicationId "com.bombbird.terminalcontrollite"
             versionNameSuffix "-lite"
+            resValue "string", "app_name", "Terminal Control: Lite"
         }
         full {
             dimension "version"
-            applicationIdSuffix ".full"
+            applicationId "com.bombbird.terminalcontrolfull"
             versionNameSuffix "-full"
+            resValue "string", "app_name", "Terminal Control"
         }
     }
 

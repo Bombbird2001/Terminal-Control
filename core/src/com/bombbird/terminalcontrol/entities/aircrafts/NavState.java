@@ -28,6 +28,7 @@ public class NavState {
     private Queue<Waypoint> clearedDirect;
     private Queue<Waypoint> clearedAftWpt;
     private Queue<Integer> clearedAftWptHdg;
+    private Queue<Waypoint> clearedHold;
     private Queue<ILS> clearedIls;
 
     private Queue<Integer> clearedAlt;
@@ -84,8 +85,10 @@ public class NavState {
         clearedAftWpt.addLast(aircraft.getAfterWaypoint());
         clearedAftWptHdg = new Queue<Integer>();
         clearedAftWptHdg.addLast(aircraft.getAfterWptHdg());
+        clearedHold = new Queue<Waypoint>();
+        clearedHold.addFirst(null);
         clearedIls = new Queue<ILS>();
-        clearedIls.addLast(aircraft.getIls());
+        clearedIls.addLast(null);
 
         clearedAlt = new Queue<Integer>();
         clearedAlt.addLast(aircraft.getClearedAltitude());
@@ -103,6 +106,10 @@ public class NavState {
             public void run() {
                 validateInputs();
 
+                dispLatMode.removeFirst();
+                dispAltMode.removeFirst();
+                dispSpdMode.removeFirst();
+
                 clearedHdg.removeFirst();
                 if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
                     aircraft.setClearedHeading(clearedHdg.first());
@@ -114,6 +121,8 @@ public class NavState {
                 aircraft.setAfterWaypoint(clearedAftWpt.first());
                 clearedAftWptHdg.removeFirst();
                 aircraft.setAfterWptHdg(clearedAftWptHdg.first());
+                clearedHold.removeFirst();
+                aircraft.setHoldWpt(clearedHold.first());
                 clearedIls.removeFirst();
                 aircraft.setIls(clearedIls.first());
 
@@ -126,10 +135,6 @@ public class NavState {
                 if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
                     aircraft.setClearedIas(clearedSpd.first());
                 }
-
-                dispLatMode.removeFirst();
-                dispAltMode.removeFirst();
-                dispSpdMode.removeFirst();
 
                 length--;
             }
@@ -164,7 +169,7 @@ public class NavState {
     }
 
     /** Adds new lateral instructions to queue */
-    public void sendLat(String latMode, String clearedWpt, String afterWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
+    public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
             clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
             if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
@@ -177,7 +182,7 @@ public class NavState {
             clearedAftWpt.addLast(RadarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode.equals("Hold at")) {
-            System.out.println("Hold at");
+            clearedHold.addLast(RadarScreen.waypoints.get(holdWpt));
         } else {
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {
@@ -190,7 +195,9 @@ public class NavState {
         fillUp(clearedDirect);
         fillUp(clearedAftWpt);
         fillUp(clearedAftWptHdg);
+        fillUp(clearedHold);
         fillUp(clearedIls);
+        aircraft.updateSelectedWaypoints(aircraft);
     }
 
     /** Adds new altitude instructions to queue, called after sendLat */
@@ -266,5 +273,9 @@ public class NavState {
 
     public Queue<Integer> getClearedSpd() {
         return clearedSpd;
+    }
+
+    public Queue<Waypoint> getClearedHold() {
+        return clearedHold;
     }
 }

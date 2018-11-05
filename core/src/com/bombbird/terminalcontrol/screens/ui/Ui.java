@@ -39,7 +39,7 @@ public class Ui implements Disposable {
     private TextButton cfmChange;
     private TextButton resetAll;
 
-    private Label label;
+    private TextButton labelButton;
 
     //Array for METAR info on default pane
     private Array<Label> metarInfos;
@@ -88,14 +88,21 @@ public class Ui implements Disposable {
     }
 
     private void loadAircraftLabel() {
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont30;
-        labelStyle.fontColor = Color.BLACK;
-        label = new Label("No aircraft selected", labelStyle);
-        label.setSize(0.8f * getPaneWidth(), 270);
-        label.setPosition(0.1f * getPaneWidth(), 3240 - 695);
-        label.setAlignment(Align.center);
-        RadarScreen.uiStage.addActor(label);
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = Fonts.defaultFont30;
+        buttonStyle.fontColor = Color.BLACK;
+        labelButton = new TextButton("No aircraft selected", buttonStyle);
+        labelButton.setSize(0.8f * getPaneWidth(), 270);
+        labelButton.setPosition(0.1f * getPaneWidth(), 3240 - 695);
+        labelButton.align(Align.center);
+        labelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Prevents click from being sent to other elements
+                event.handle();
+            }
+        });
+        RadarScreen.uiStage.addActor(labelButton);
     }
 
     private void loadNormalPane() {
@@ -447,8 +454,8 @@ public class Ui implements Disposable {
         altButton.setX(0.375f * paneImage.getWidth());
         spdButton.setSize(paneImage.getWidth() / 4, 300);
         spdButton.setX(0.65f * paneImage.getWidth());
-        label.setSize(0.8f * paneImage.getWidth(), 270);
-        label.setX(0.1f * paneImage.getWidth());
+        labelButton.setSize(0.8f * paneImage.getWidth(), 270);
+        labelButton.setX(0.1f * paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {
@@ -474,9 +481,9 @@ public class Ui implements Disposable {
             spdTab.setVisibility(false);
         }
         if (selectedAircraft != null) {
-            label.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
+            labelButton.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
         }
-        label.setVisible(show);
+        labelButton.setVisible(show);
     }
 
     public float getPaneWidth() {

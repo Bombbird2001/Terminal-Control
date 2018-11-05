@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bombbird.terminalcontrol" >
 
-    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="28" />
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="28" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.sidstar.Star;
 
 public class SpdTab extends Tab {
 
@@ -32,8 +33,10 @@ public class SpdTab extends Tab {
             //Set spd restrictions in box
             if (latMode.equals("After waypoint, fly heading")) {
                 highestSpd = selectedAircraft.getMaxWptSpd(afterWpt);
-            } else if (clearedWpt != null) {
+            } else if (latMode.contains(selectedAircraft.getSidStar().getName()) && clearedWpt != null) {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
+            } else if (selectedAircraft.isHolding()) {
+                highestSpd = ((Star)selectedAircraft.getSidStar()).getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
             }
             if (highestSpd == -1) {
                 if (selectedAircraft.getAltitude() > 10000) {

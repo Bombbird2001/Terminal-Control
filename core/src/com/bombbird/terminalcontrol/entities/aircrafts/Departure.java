@@ -118,7 +118,7 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
             if (getClearedIas() == getV2()) {
-                setClearedIas(250);
+                setClearedIas(220);
             }
             sidSet = true;
             updateAltRestrictions();
@@ -134,7 +134,7 @@ public class Departure extends Aircraft {
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
-        sid.joinLines(getSidStarIndex(), getSidStar().getWaypoints().size, outboundHdg, false);
+        sid.joinLines(sid.findWptIndex(getNavState().getClearedDirect().last().getName()), sid.getWaypoints().size, outboundHdg, false);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint */
@@ -166,21 +166,9 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    public void updateSpd() {
-        if (contacted && getControlState() == 0) {
-            setClearedIas(getClimbSpd());
-            super.updateSpd();
-        }
-    }
-
-    @Override
     public double findNextTargetHdg() {
         double result = super.findNextTargetHdg();
-        if (result < -0.5) {
-            return outboundHdg;
-        } else {
-            return result;
-        }
+        return result < 0 ? outboundHdg : result;
     }
 
     @Override
@@ -226,8 +214,12 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude() {
         super.updateAltitude();
+        if (getClearedIas() < 250 && getAltitude() >= 7000) {
+            setClearedIas(250);
+        }
         if (getControlState() == 2 && getAltitude() >= handOverAlt) {
             setControlState(0);
+            setClearedIas(getClimbSpd());
             updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
             setExpedite(false);

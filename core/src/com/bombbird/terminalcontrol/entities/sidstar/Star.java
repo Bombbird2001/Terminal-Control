@@ -94,10 +94,6 @@ public class Star extends SidStar {
     }
 
     public HoldProcedure getHoldProcedure() {
-        return holdProcedure;
-    }
-
-    public void setHoldProcedure(HoldProcedure holdProcedure) {
-        this.holdProcedure = holdProcedure;
+        return getAirport().getHoldProcedures().get(getName());
     }
 }

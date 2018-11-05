@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -18,6 +19,7 @@ public class Arrival extends Aircraft {
     //Others
     private Star star;
     private Queue<int[]> nonPrecAlts;
+    private HoldProcedure holdProcedure;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
@@ -39,6 +41,8 @@ public class Arrival extends Aircraft {
 
         setDirect(star.getWaypoint(0));
         setHeading(star.getInboundHdg());
+        holdProcedure = getAirport().getHoldProcedures().get(star.getName());
+
         setClearedHeading((int)getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
 
@@ -123,14 +127,14 @@ public class Arrival extends Aircraft {
     @Override
     public void drawAftWpt() {
         super.drawAftWpt();
-        star.joinLines(getSidStarIndex(), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last(), false);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last(), false);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there */
     @Override
     public void uiDrawAftWpt() {
         super.uiDrawAftWpt();
-        star.joinLines(getSidStarIndex(), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg, true);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg, true);
     }
 
     /** Overrides method in Aircraft class to update label + update STAR name */
@@ -164,11 +168,7 @@ public class Arrival extends Aircraft {
     @Override
     public double findNextTargetHdg() {
         double result = super.findNextTargetHdg();
-        if (result < -0.5) {
-            return getHeading();
-        } else {
-            return result;
-        }
+        return result < 0 ? getHeading() : result;
     }
 
     @Override
@@ -267,5 +267,9 @@ public class Arrival extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return star;
+    }
+
+    public HoldProcedure getHoldProcedure() {
+        return holdProcedure;
     }
 }
