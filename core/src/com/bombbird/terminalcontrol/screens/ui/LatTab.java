@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
+import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -25,7 +26,6 @@ public class LatTab extends Tab {
     private SelectBox<String> ilsBox;
 
     private Array<String> waypoints;
-    private Array<String> holdingWaypoints;
     private Array<String> ils;
 
     private boolean latModeChanged;
@@ -41,7 +41,6 @@ public class LatTab extends Tab {
         loadHdgElements();
         loadILSBox();
         waypoints = new Array<String>();
-        holdingWaypoints = new Array<String>();
     }
 
     private void loadILSBox() {
@@ -190,6 +189,9 @@ public class LatTab extends Tab {
             if (latMode.contains("waypoint")) {
                 valueBox.setSelected(afterWpt);
             } else {
+                if (!waypoints.contains(clearedWpt, false)) {
+                    clearedWpt = waypoints.first();
+                }
                 valueBox.setSelected(clearedWpt);
             }
             ilsBox.setVisible(false);
@@ -197,15 +199,23 @@ public class LatTab extends Tab {
             if (visible) {
                 valueBox.setVisible(true);
             }
-            holdingWaypoints.clear();
-            for (Waypoint waypoint: ((Arrival) selectedAircraft).getHoldProcedure().getWaypoints()) {
-                if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
-                    //Check if holding point is after current aircraft location
-                    holdingWaypoints.add(waypoint.getName());
+            waypoints.clear();
+            if (selectedAircraft.isHolding()) {
+                waypoints.add(selectedAircraft.getHoldWpt().getName());
+            } else {
+                for (Waypoint waypoint : ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
+                    if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+                        //Check if holding point is after current aircraft direct
+                        waypoints.add(waypoint.getName());
+                    }
                 }
             }
-            valueBox.setItems(holdingWaypoints);
+            if (!waypoints.contains(holdWpt, false)) {
+                holdWpt = waypoints.first();
+            }
+            valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);
+            ilsBox.setVisible(false);
         } else {
             //Otherwise hide it
             valueBox.setVisible(false);
@@ -376,6 +386,12 @@ public class LatTab extends Tab {
         afterWptChanged = false;
         afterWptHdg = selectedAircraft.getNavState().getClearedAftWptHdg().last();
         afterWptHdgChanged = false;
+        if (selectedAircraft.getNavState().getClearedHold().last() != null) {
+            holdWpt = selectedAircraft.getNavState().getClearedHold().last().getName();
+        } else {
+            holdWpt = null;
+        }
+        holdWptChanged = false;
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
             if (selectedAircraft.getNavState().getClearedIls().last() != null) {
@@ -398,7 +414,11 @@ public class LatTab extends Tab {
             valueBox.setItems(waypoints);
             clearedWpt = valueBox.getSelected();
         } else if (latMode.equals("Hold at")) {
-            valueBox.setItems(holdingWaypoints);
+            valueBox.setItems(waypoints);
+            holdWpt = valueBox.getSelected();
+            if (holdWpt == null) {
+                holdWpt = valueBox.getItems().first();
+            }
         } else if (latMode.contains("heading")) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();
@@ -419,26 +439,22 @@ public class LatTab extends Tab {
 
     private void updateSidStarOptions() {
         notListening = true;
-        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
+        if ((latMode.equals("Hold at") || latMode.contains("arrival")) && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
             selectedAircraft.getNavState().getAltModes().add("Descend via STAR");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
             selectedAircraft.getNavState().getAltModes().add("Climb via SID");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint")) {
-            if (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false)) {
-                ui.altTab.settingsBox.setSelected("Climb/descend to");
-                altMode = "Climb/descend to";
-            }
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && !latMode.equals("Hold at") && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
+            ui.altTab.settingsBox.setSelected("Climb/descend to");
+            altMode = "Climb/descend to";
         }
 
-        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
+        if ((latMode.equals("Hold at") || latMode.contains("arrival")) && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
             selectedAircraft.getNavState().getSpdModes().add("STAR speed restrictions");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
             selectedAircraft.getNavState().getSpdModes().add("SID speed restrictions");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint")) {
-            if (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false)) {
-                ui.spdTab.settingsBox.setSelected("No speed restrictions");
-                spdMode = "No speed restrictions";
-            }
+        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && !latMode.equals("Hold at") && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
+            ui.spdTab.settingsBox.setSelected("No speed restrictions");
+            spdMode = "No speed restrictions";
         }
         ui.updateElements();
         notListening = false;
@@ -466,5 +482,9 @@ public class LatTab extends Tab {
 
     public boolean isIlsChanged() {
         return ilsChanged;
+    }
+
+    public boolean isHoldWptChanged() {
+        return holdWptChanged;
     }
 }

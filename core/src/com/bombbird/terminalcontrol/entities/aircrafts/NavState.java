@@ -172,17 +172,20 @@ public class NavState {
     public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
             clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
-            if (!aircraft.getNavState().getLatModes().contains("After waypoint, fly heading", false)) {
-                aircraft.getNavState().getLatModes().add("After waypoint, fly heading");
-            }
-            if (!aircraft.getNavState().getLatModes().contains("Hold at", false)) {
-                aircraft.getNavState().getLatModes().add("Hold at");
+            if (latMode.contains("arrival")) {
+                if (!latModes.contains("After waypoint, fly heading", false)) {
+                    latModes.add("After waypoint, fly heading");
+                }
+                if (!latModes.contains("Hold at", false)) {
+                    latModes.add("Hold at");
+                }
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
             clearedAftWpt.addLast(RadarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode.equals("Hold at")) {
             clearedHold.addLast(RadarScreen.waypoints.get(holdWpt));
+            latModes.removeValue("After waypoint, fly heading", false);
         } else {
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {

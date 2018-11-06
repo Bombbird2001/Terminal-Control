@@ -35,8 +35,8 @@ public class SpdTab extends Tab {
                 highestSpd = selectedAircraft.getMaxWptSpd(afterWpt);
             } else if (latMode.contains(selectedAircraft.getSidStar().getName()) && clearedWpt != null) {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
-            } else if (selectedAircraft.isHolding()) {
-                highestSpd = ((Star)selectedAircraft.getSidStar()).getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
+            } else if (latMode.equals("Hold at") && selectedAircraft.isHolding()) {
+                highestSpd = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
             }
             if (highestSpd == -1) {
                 if (selectedAircraft.getAltitude() > 10000) {

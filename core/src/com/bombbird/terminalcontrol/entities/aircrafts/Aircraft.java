@@ -80,6 +80,8 @@ public class Aircraft extends Actor {
     private Waypoint holdWpt;
     private boolean holding;
     private boolean init;
+    private float[][] holdTargetPt;
+    private boolean[] holdTargetPtSelected;
 
     //Altitude
     private float prevAlt;
@@ -236,8 +238,8 @@ public class Aircraft extends Actor {
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
         if (controlState == 1 || controlState == 2) {
-            shapeRenderer.setColor(color); //TODO Change back
-            shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
+            shapeRenderer.setColor(color);
+            shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
         }
         clickSpot.drawDebug(shapeRenderer);
     }
@@ -252,6 +254,8 @@ public class Aircraft extends Actor {
                 drawAftWpt();
             } else if (navState.getDispLatMode().last().contains("heading")) {
                 drawHdgLine();
+            } else if (navState.getDispLatMode().last().equals("Hold at")) {
+                drawHoldPattern();
             }
 
             //Draws selected status (from UI)
@@ -263,6 +267,8 @@ public class Aircraft extends Actor {
                     uiDrawAftWpt();
                 } else if (LatTab.latMode.contains("heading") && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
+                } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
+                    uiDrawHoldPattern();
                 }
             }
 
@@ -289,7 +295,7 @@ public class Aircraft extends Actor {
 
     public void drawAftWpt() {
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
+        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
     public void uiDrawAftWpt() {
@@ -305,6 +311,20 @@ public class Aircraft extends Actor {
     private void uiDrawHdgLine() {
         shapeRenderer.setColor(Color.YELLOW);
         shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)));
+    }
+
+    public void drawHoldPattern() {
+        shapeRenderer.setColor(Color.WHITE);
+        if (navState.getClearedDirect().size > 0 && navState.getClearedDirect().last() != null) {
+            shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+        }
+        ((Star) getSidStar()).getHoldProcedure().renderShape(navState.getClearedHold().last());
+    }
+
+    public void uiDrawHoldPattern() {
+        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        ((Star) getSidStar()).getHoldProcedure().renderShape(RadarScreen.waypoints.get(LatTab.holdWpt));
     }
 
     public double update() {
@@ -333,16 +353,12 @@ public class Aircraft extends Actor {
 
     /** Overriden method that updates the target speed of the aircraft depending on situation */
     public void updateSpd() {
-        if (holding) {
-            int maxSpd = ((Star) getSidStar()).getHoldProcedure().getMaxSpdAtWpt(holdWpt);
-            if (clearedIas > maxSpd) {
-                clearedIas = maxSpd;
-            }
-        }
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
         }
+        navState.getClearedSpd().removeFirst();
+        navState.getClearedSpd().addFirst(clearedIas);
     }
 
     public void updateTkofLdg() {
@@ -407,9 +423,10 @@ public class Aircraft extends Actor {
         prevAlt = altitude;
     }
 
+    /** Called to update the heading aircraft should turn towards to follow instructed lateral mode, returns the heading it should fly as well as the resulting difference in angle of the track due to winds */
     public double[] updateTargetHeading() {
         deltaPosition.setZero();
-        double info[] = new double[] {0, 0};
+        double info[];
         double targetHeading;
         double angleDiff;
 
@@ -423,9 +440,8 @@ public class Aircraft extends Actor {
         int windHdg = winds[0] + 180;
         int windSpd = winds[1];
 
-        boolean sidstar = navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading");
+        boolean sidstar = navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading") || navState.getDispLatMode().first().equals("Hold at");
         boolean vector = !sidstar && navState.getDispLatMode().first().contains("heading");
-        boolean hold = navState.getDispLatMode().first().equals("Hold at") && holding;
 
         if (this instanceof Departure) {
             //Check if aircraft has climbed past initial climb
@@ -437,8 +453,8 @@ public class Aircraft extends Actor {
         }
 
         if (vector && !locCap) {
-            info = calculateVectorHdg(windHdg, windSpd);
-        } else if (sidstar) {
+            info = calculateVectorHdg(clearedHeading, windHdg, windSpd);
+        } else if (sidstar && !holding) {
             info = calculatePointTargetHdg(new float[] {direct.getPosX(), direct.getPosY()}, windHdg, windSpd);
 
             if (locCap) {
@@ -461,13 +477,63 @@ public class Aircraft extends Actor {
                 float deltaY = 100 * MathUtils.sinDeg(90 - runway.getTrueHdg());
                 info = calculatePointTargetHdg(deltaX, deltaY, windHdg, windSpd);
             } else {
-                //Calculates x, y between point 0.75nm ahead of plane, and plane
+                //Calculates x, y of point 0.75nm ahead of plane
                 Vector2 position = this.getIls().getPointAhead(this);
                 info = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
-        } else if (hold) {
-
+        } else if (holding) {
+            if (!navState.getDispLatMode().first().equals("Hold at")) {
+                holding = false;
+            }
+            Star star = (Star) getSidStar(); //For convenience
+            if (holdTargetPt == null) {
+                float[] point = star.getHoldProcedure().getOppPtAtWpt(holdWpt);
+                holdTargetPt = new float[][] {{holdWpt.getPosX(), holdWpt.getPosY()}, point};
+                holdTargetPtSelected = new boolean[] {false, false};
+            }
+            if (!init) {
+                //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
+                int type = star.getHoldProcedure().getEntryProcAtWpt(holdWpt);
+                if (type == 1) {
+                    //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
+                    info = calculateVectorHdg(star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180, windHdg, windSpd);
+                    if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= star.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
+                        //Once it has flown leg dist, turn back towards entry fix
+                        info = calculatePointTargetHdg(new float[] {holdWpt.getPosX(), holdWpt.getPosY()}, windHdg, windSpd);
+                        //Once it reaches entry fix, init has ended
+                        if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
+                            init = true;
+                        }
+                    }
+                } else {
+                    //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
+                    info = calculatePointTargetHdg(holdTargetPt[1], windHdg, windSpd);
+                    holdTargetPtSelected[1] = true;
+                    double deltaHdg = findDeltaHeading(star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180);
+                    boolean left = star.getHoldProcedure().isLeftAtWpt(holdWpt);
+                    if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
+                        //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
+                        init = true;
+                    }
+                }
+            } else {
+                float track = star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - RadarScreen.magHdgDev;
+                if (holdTargetPtSelected[1]) {
+                    track += 180;
+                }
+                float[] target = holdTargetPtSelected[0] ? holdTargetPt[0] : holdTargetPt[1];
+                //Just keep turning and turning and turning
+                float distance = MathTools.distanceBetween(x, y, target[0], target[1]);
+                if (distance <= 10) {
+                    //If reached target point
+                    holdTargetPtSelected[0] = !holdTargetPtSelected[0];
+                    holdTargetPtSelected[1] = !holdTargetPtSelected[1];
+                }
+                distance -= MathTools.nmToPixel(0.5f);
+                info = calculatePointTargetHdg(new float[] {target[0] + distance * MathUtils.cosDeg(270 - track), target[1] + distance * MathUtils.sinDeg(270 - track)}, windHdg, windSpd);
+            }
         } else {
+            info = new double[] {0, 0};
             Gdx.app.log("Update target heading", "Something went wrong");
         }
 
@@ -483,10 +549,10 @@ public class Aircraft extends Actor {
         return new double[] {targetHeading, angleDiff};
     }
 
-    private double[] calculateVectorHdg(int windHdg, int windSpd) {
+    private double[] calculateVectorHdg(int heading, int windHdg, int windSpd) {
         double angleDiff;
 
-        targetHeading = clearedHeading;
+        targetHeading = heading;
         double angle = 180 - windHdg + heading;
         gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)angle));
         angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
@@ -570,8 +636,14 @@ public class Aircraft extends Actor {
             forceDirection = 1;
         } else if (navState.getDispLatMode().first().equals("Turn right heading")) {
             forceDirection = 2;
-        } else if (navState.getDispLatMode().first().equals("Hold at")) {
-
+        } else if (navState.getDispLatMode().first().equals("Hold at") && holding && !init) {
+            Star star = (Star) getSidStar();
+            int type = star.getHoldProcedure().getEntryProcAtWpt(holdWpt);
+            if (type == 1) {
+                forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
+            } else {
+                forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
+            }
         }
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
@@ -603,10 +675,10 @@ public class Aircraft extends Actor {
         double targetAngularVelocity = 0;
         if (deltaHeading > 0) {
             //Aircraft needs to turn right
-            targetAngularVelocity = 2.5;
+            targetAngularVelocity = ias > 250 ? 1.5 : 3;
         } else if (deltaHeading < 0) {
             //Aircraft needs to turn left
-            targetAngularVelocity = -2.5;
+            targetAngularVelocity = ias > 250 ? -1.5 : -3;
         }
         if (Math.abs(deltaHeading) <= 10) {
             targetAngularVelocity = deltaHeading / 3;
@@ -636,7 +708,7 @@ public class Aircraft extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         update();
         updateLabel();
-        icon.setPosition(x - 10, y - 10); //TODO Change back
+        icon.setPosition(radarX - 10, radarY - 10);
         icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
         icon.draw(batch, 1);
     }
@@ -662,9 +734,12 @@ public class Aircraft extends Actor {
             updateVectorMode();
             direct = null;
         } else if (direct.equals(holdWpt) && navState.getDispLatMode().first().equals("Hold at")) {
-            navState.getLatModes().removeValue("After waypoint, fly heading", false);
             holding = true;
-            direct = null;
+            int spdRestr = ((Star) getSidStar()).getHoldProcedure().getMaxSpdAtWpt(holdWpt);
+            if (clearedIas > spdRestr) {
+                clearedIas = spdRestr;
+            }
+            direct = getSidStar().getWaypoint(sidStarIndex);
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
             navState.getClearedDirect().removeFirst();

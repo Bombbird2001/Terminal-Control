@@ -21,6 +21,7 @@ public class Departure extends Aircraft {
     private boolean sidSet;
     private boolean contacted;
     private int cruiseAlt;
+    private boolean higherSpdSet;
 
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
@@ -31,6 +32,7 @@ public class Departure extends Aircraft {
         sidSet = false;
         contacted = false;
         cruiseAlt = MathUtils.random(30, 39) * 1000;
+        higherSpdSet = false;
 
         //Gets a runway for takeoff
         HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
@@ -212,11 +214,19 @@ public class Departure extends Aircraft {
     }
 
     @Override
+    public void updateSpd() {
+        if (!higherSpdSet && getAltitude() >= 7000) {
+            if (getClearedIas() < 250) {
+                setClearedIas(250);
+                super.updateSpd();
+            }
+            higherSpdSet = true;
+        }
+    }
+
+    @Override
     public void updateAltitude() {
         super.updateAltitude();
-        if (getClearedIas() < 250 && getAltitude() >= 7000) {
-            setClearedIas(250);
-        }
         if (getControlState() == 2 && getAltitude() >= handOverAlt) {
             setControlState(0);
             setClearedIas(getClimbSpd());

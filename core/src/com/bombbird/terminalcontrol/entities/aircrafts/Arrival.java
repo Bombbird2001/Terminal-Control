@@ -6,9 +6,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
-import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
+import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
@@ -19,7 +19,7 @@ public class Arrival extends Aircraft {
     //Others
     private Star star;
     private Queue<int[]> nonPrecAlts;
-    private HoldProcedure holdProcedure;
+    private boolean lowerSpdSet;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
@@ -39,9 +39,12 @@ public class Arrival extends Aircraft {
             }
         }
 
+        if (callsign.equals("UIA231")) {
+            star = starList.get("KUDOS1S");
+        }
+
         setDirect(star.getWaypoint(0));
         setHeading(star.getInboundHdg());
-        holdProcedure = getAirport().getHoldProcedures().get(star.getName());
 
         setClearedHeading((int)getHeading());
         setTrack(getHeading() - RadarScreen.magHdgDev);
@@ -120,7 +123,7 @@ public class Arrival extends Aircraft {
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1, true);
+        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1, getNavState().getDispLatMode().last().contains("arrival"));
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there */
@@ -135,6 +138,24 @@ public class Arrival extends Aircraft {
     public void uiDrawAftWpt() {
         super.uiDrawAftWpt();
         star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg, true);
+    }
+
+    /** Overrides method in Aircraft class to join lines between waypoints till holdWpt */
+    @Override
+    public void drawHoldPattern() {
+        super.drawHoldPattern();
+        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null) {
+            star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1, false);
+        }
+    }
+
+    /** Overrides method in Aircraft class to join lines between waypoints till selected holdWpt */
+    @Override
+    public void uiDrawHoldPattern() {
+        super.uiDrawHoldPattern();
+        GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1, true);
     }
 
     /** Overrides method in Aircraft class to update label + update STAR name */
@@ -159,9 +180,12 @@ public class Arrival extends Aircraft {
 
     @Override
     public void updateSpd() {
-        if (getDirect() != null && distToGo() <= 20 && getClearedIas() > 220) {
-            setClearedIas(220);
-            super.updateSpd();
+        if (!lowerSpdSet && getDirect() != null && distToGo() <= 20) {
+            if (getClearedIas() > 220) {
+                setClearedIas(220);
+                super.updateSpd();
+            }
+            lowerSpdSet = true;
         }
     }
 
@@ -181,16 +205,8 @@ public class Arrival extends Aircraft {
                 highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
                 lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
             }
-            if (highestAlt > -1) {
-                setHighestAlt(highestAlt);
-            } else {
-                setHighestAlt(RadarScreen.maxArrAlt);
-            }
-            if (lowestAlt > -1) {
-                setLowestAlt(lowestAlt);
-            } else {
-                setLowestAlt(RadarScreen.minArrAlt);
-            }
+            setHighestAlt(highestAlt > -1 ? highestAlt : RadarScreen.maxArrAlt);
+            setLowestAlt(lowestAlt > -1 ? lowestAlt : RadarScreen.minArrAlt);
         }
     }
 
@@ -267,9 +283,5 @@ public class Arrival extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return star;
-    }
-
-    public HoldProcedure getHoldProcedure() {
-        return holdProcedure;
     }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class AltTab extends Tab {
@@ -28,17 +29,23 @@ public class AltTab extends Tab {
         }
         alts.clear();
         int lowestAlt;
-        int highestAlt;
+        int highestAlt = -1;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
             highestAlt = RadarScreen.maxDeptAlt;
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = RadarScreen.minArrAlt;
-            if (altMode.contains("STAR") && selectedAircraft.getAltitude() < 13000) {
+            if (latMode.equals("Hold at")) {
+                Star star = (Star) selectedAircraft.getSidStar();
+                int[] restr = star.getHoldProcedure().getAltRestAtWpt(RadarScreen.waypoints.get(LatTab.holdWpt));
+                lowestAlt = restr[0];
+                highestAlt = restr[1];
+            } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < 13000) {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
-            } else {
+            }
+            if (highestAlt == -1) {
                 highestAlt = RadarScreen.maxArrAlt;
             }
             //TODO Set minimum alt for each ILS if cleared app

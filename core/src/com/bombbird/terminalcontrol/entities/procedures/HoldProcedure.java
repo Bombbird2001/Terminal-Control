@@ -1,16 +1,18 @@
 package com.bombbird.terminalcontrol.entities.procedures;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class HoldProcedure {
     //Constant turn diameter
-    private static final float turnDiameterNm = 2.8f;
+    private static final float turnDiameterNm = 3f;
 
     private String name;
     private Airport airport;
@@ -52,7 +54,7 @@ public class HoldProcedure {
                     case 0: waypoints.add(RadarScreen.waypoints.get(wptInfo)); break;
                     case 1: altRest[0] = Integer.parseInt(wptInfo); break;
                     case 2: altRest[1] = Integer.parseInt(wptInfo); break;
-                    case 3: maxSpd.add(Integer.parseInt(wptInfo));
+                    case 3: maxSpd.add(Integer.parseInt(wptInfo)); break;
                     case 4: left.add(wptInfo.equals("LEFT")); break;
                     case 5: entryProcedure.add(Integer.parseInt(wptInfo)); break;
                     case 6: inboundHdg.add(Integer.parseInt(wptInfo)); break;
@@ -76,8 +78,13 @@ public class HoldProcedure {
 
             float xOffset1 = legPxDist * MathUtils.cosDeg(270 - inboundTrack);
             float yOffset1 = legPxDist * MathUtils.sinDeg(270 - inboundTrack);
-            float xOffset2 = turnDiameterNm * MathUtils.cosDeg(-inboundTrack);
-            float yOffset2 = turnDiameterNm * MathUtils.sinDeg(-inboundTrack);
+            float xOffset2 = MathTools.nmToPixel(turnDiameterNm) * MathUtils.cosDeg(-inboundTrack);
+            float yOffset2 = MathTools.nmToPixel(turnDiameterNm) * MathUtils.sinDeg(-inboundTrack);
+
+            if (left.get(index)) {
+                xOffset2 = -xOffset2;
+                yOffset2 = -yOffset2;
+            }
 
             oppPoint.add(new float[] {waypoint.getPosX() + xOffset1 + xOffset2, waypoint.getPosY() + yOffset1 + yOffset2});
 
@@ -85,29 +92,29 @@ public class HoldProcedure {
         }
     }
 
-    /** Gets the point at a distance (nautical mile) away inbound the fix or the opposite fix */
-    public float[] getInboundPoint(String waypoint, boolean opposite, float dist) {
-        int index = waypoints.indexOf(RadarScreen.waypoints.get(waypoint), false);
+    /** Renders the visuals for the holding pattern */
+    public void renderShape(Waypoint waypoint) {
+        int index = waypoints.indexOf(waypoint, false);
+        float radiusPx = MathTools.nmToPixel(turnDiameterNm / 2f);
 
-        float[] point = new float[2];
-        float ptX;
-        float ptY;
-        float inboundTrack = inboundHdg.get(index) - RadarScreen.magHdgDev;
+        float track1 = inboundHdg.get(index) - RadarScreen.magHdgDev;
+        track1 += left.get(index) ? -90 : 90;
+        float[] midpoint1 = new float[] {waypoint.getPosX() + radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + radiusPx * MathUtils.sinDeg(90 - track1)};
+        float[] end1 = new float[] {waypoint.getPosX() + 2 * radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + 2 * radiusPx * MathUtils.sinDeg(90 - track1)};
 
-        if (opposite) {
-            ptX = oppPoint.get(index)[0];
-            ptY = oppPoint.get(index)[1];
-            inboundTrack += 180;
-        } else {
-            ptX = waypoints.get(index).getPosX();
-            ptY = waypoints.get(index).getPosY();
-        }
+        float track2 = track1 + 180;
+        float[] midpoint2 = new float[] {oppPoint.get(index)[0] + radiusPx * MathUtils.cosDeg(90 - track2), oppPoint.get(index)[1] + radiusPx * MathUtils.sinDeg(90 - track2)};
+        float[] end2 = new float[] {oppPoint.get(index)[0] + 2 * radiusPx * MathUtils.cosDeg(90 - track2), oppPoint.get(index)[1] + 2 * radiusPx * MathUtils.sinDeg(90 - track2)};
 
-        float distPx = MathTools.nmToPixel(dist);
-        point[0] = ptX + distPx * MathUtils.cosDeg(270 - inboundTrack);
-        point[1] = ptY + distPx * MathUtils.sinDeg(270 - inboundTrack);
+        GameScreen.shapeRenderer.arc(midpoint1[0], midpoint1[1], radiusPx, 270 - (track1 + (left.get(index) ? 0 : -180)), 180);
+        GameScreen.shapeRenderer.arc(midpoint2[0], midpoint2[1], radiusPx, 270 - (track2 + (left.get(index) ? 0 : -180)), 180);
 
-        return point;
+        GameScreen.shapeRenderer.line(waypoint.getPosX(), waypoint.getPosY(), end2[0], end2[1]);
+        GameScreen.shapeRenderer.line(end1[0], end1[1], oppPoint.get(index)[0], oppPoint.get(index)[1]);
+
+        GameScreen.shapeRenderer.setColor(Color.BLACK);
+        GameScreen.shapeRenderer.line(waypoint.getPosX(), waypoint.getPosY(), end1[0], end1[1]);
+        GameScreen.shapeRenderer.line(oppPoint.get(index)[0], oppPoint.get(index)[1], end2[0], end2[1]);
     }
 
     public Array<Waypoint> getWaypoints() {
@@ -115,7 +122,30 @@ public class HoldProcedure {
     }
 
     public int getMaxSpdAtWpt(Waypoint waypoint) {
-        int index = waypoints.indexOf(waypoint, false);
-        return maxSpd.get(index);
+        return maxSpd.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public int getEntryProcAtWpt(Waypoint waypoint) {
+        return entryProcedure.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public int getInboundHdgAtWpt(Waypoint waypoint) {
+        return inboundHdg.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public int getLegDistAtWpt(Waypoint waypoint) {
+        return legDist.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public float[] getOppPtAtWpt(Waypoint waypoint) {
+        return oppPoint.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public boolean isLeftAtWpt(Waypoint waypoint) {
+        return left.get(waypoints.indexOf(waypoint, false));
+    }
+
+    public int[] getAltRestAtWpt(Waypoint waypoint) {
+        return altRestrictions.get(waypoints.indexOf(waypoint, false));
     }
 }

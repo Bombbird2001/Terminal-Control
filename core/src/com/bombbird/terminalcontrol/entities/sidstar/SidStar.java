@@ -30,7 +30,7 @@ public class SidStar {
         Waypoint prevPt = null;
         int index = start;
         if (!dontRemove) {
-            for (Waypoint waypoint : waypoints) {
+            for (Waypoint waypoint: waypoints) {
                 waypoint.setSelected(false);
             }
         }
