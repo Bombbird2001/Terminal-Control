@@ -33,10 +33,10 @@ public class SpdTab extends Tab {
             //Set spd restrictions in box
             if (latMode.equals("After waypoint, fly heading")) {
                 highestSpd = selectedAircraft.getMaxWptSpd(afterWpt);
-            } else if (latMode.contains(selectedAircraft.getSidStar().getName()) && clearedWpt != null) {
-                highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
             } else if (latMode.equals("Hold at") && selectedAircraft.isHolding()) {
                 highestSpd = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
+            } else if (clearedWpt != null) {
+                highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
             }
             if (highestSpd == -1) {
                 if (selectedAircraft.getAltitude() > 10000) {
@@ -66,12 +66,12 @@ public class SpdTab extends Tab {
         if (lowestSpd % 10 != 0) {
             spds.add(Integer.toString(lowestSpd));
             int spdTracker = lowestSpd + (10 - lowestSpd % 10);
-            while (spdTracker <= 250) {
+            while (spdTracker <= highestSpd) {
                 spds.add(Integer.toString(spdTracker));
                 spdTracker += 10;
             }
         } else {
-            while (lowestSpd <= 250) {
+            while (lowestSpd <= highestSpd) {
                 spds.add(Integer.toString(lowestSpd));
                 lowestSpd += 10;
             }

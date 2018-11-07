@@ -40,7 +40,11 @@ public class Arrival extends Aircraft {
         }
 
         if (callsign.equals("UIA231")) {
-            star = starList.get("KUDOS1S");
+            star = starList.get("KUDOS1B");
+        }
+
+        if (callsign.equals("EVA226")) {
+            star = starList.get("BAKER1A");
         }
 
         setDirect(star.getWaypoint(0));
@@ -145,7 +149,7 @@ public class Arrival extends Aircraft {
     public void drawHoldPattern() {
         super.drawHoldPattern();
         GameScreen.shapeRenderer.setColor(Color.WHITE);
-        if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null) {
+        if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
             star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1, false);
         }
     }
@@ -165,17 +169,17 @@ public class Arrival extends Aircraft {
         super.updateLabel();
     }
 
-    /** Overrides method in Aircraft class to check if there is no direct waypoint next, sets to current heading if so */
+    /** Overrides method in Aircraft class to set to current heading*/
     @Override
-    public void updateDirect() {
-        super.updateDirect();
-        if (getNavState().getDispLatMode().first().contains(getSidStar().getName()) && getDirect() == null) {
-            setClearedHeading((int) getHeading());
-            getNavState().getClearedHdg().removeFirst();
-            getNavState().getClearedHdg().addFirst(getClearedHeading());
-            updateVectorMode();
-            removeSidStarMode();
-        }
+    public void setAfterLastWpt() {
+        getNavState().getLatModes().removeValue(star.getName() + " arrival", false);
+        getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
+        getNavState().getLatModes().removeValue("Hold at", false);
+        setClearedHeading((int) getHeading());
+        getNavState().getClearedHdg().removeFirst();
+        getNavState().getClearedHdg().addFirst(getClearedHeading());
+        updateVectorMode();
+        removeSidStarMode();
     }
 
     @Override

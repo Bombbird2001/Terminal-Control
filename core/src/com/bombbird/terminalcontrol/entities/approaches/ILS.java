@@ -28,11 +28,11 @@ public class ILS extends Actor {
 
     private Array<Vector2> gsRings = new Array<Vector2>();
 
-    private static final float distance1 = MathTools.nmToPixel(17);
-    private static final int angle1 = 35;
+    private static final float distance1 = MathTools.nmToPixel(10);
+    private static final int angle1 = 6;
 
     private static final float distance2 = MathTools.nmToPixel(25);
-    private static final int angle2 = 10;
+    private static final int angle2 = 3;
 
     public ILS(Airport airport, String toParse) {
         this.airport = airport;

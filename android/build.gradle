@@ -7,14 +7,15 @@ android {
             java.srcDirs = ['src']
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
             jniLibs.srcDirs = ['libs']
         }
         lite {
             assets.srcDirs = ['assetsLite']
+            res.srcDirs = ['resLite']
         }
         full {
             assets.srcDirs = ['assetsFull']
+            res.srcDirs = ['resFull']
         }
     }
     packagingOptions {
@@ -28,6 +29,9 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -39,13 +43,11 @@ android {
         lite {
             dimension "version"
             applicationId "com.bombbird.terminalcontrollite"
-            versionNameSuffix "-lite"
             resValue "string", "app_name", "Terminal Control: Lite"
         }
         full {
             dimension "version"
-            applicationId "com.bombbird.terminalcontrolfull"
-            versionNameSuffix "-full"
+            applicationId "com.bombbird.terminalcontrol"
             resValue "string", "app_name", "Terminal Control"
         }
     }

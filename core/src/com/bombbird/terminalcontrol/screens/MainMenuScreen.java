@@ -127,6 +127,10 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
+        if (Fonts.defaultFont6 == null) {
+            //Regenerate fonts that were disposed
+            Fonts.generateAllFonts();
+        }
         loadUI();
     }
 

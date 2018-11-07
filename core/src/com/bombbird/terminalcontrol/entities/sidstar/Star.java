@@ -12,7 +12,6 @@ import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class Star extends SidStar {
     private Array<Integer> inboundHdg;
-    private HoldProcedure holdProcedure;
 
     public Star(Airport airport, String toParse) {
         super(airport, toParse);

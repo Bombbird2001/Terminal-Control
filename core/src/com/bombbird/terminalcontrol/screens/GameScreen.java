@@ -59,7 +59,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Create texture stuff
     public Skin skin;
-    public static final ShapeRenderer shapeRenderer = new ShapeRenderer();
+    public static ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     //Create range circles
     private RangeCircle[] rangeCircles;
@@ -325,6 +325,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         stage.clear();
         stage.dispose();
         skin.dispose();
+
+        shapeRenderer = null;
+        stage = null;
+        skin = null;
     }
 
     @Override

@@ -16,6 +16,7 @@ public class LDA extends ILS {
 
     public LDA(Airport airport, String toParse) {
         super(airport, toParse);
+        calculateFAFRing();
     }
 
     /** Overrides method in ILS to also load the non precision approach altitudes */
@@ -50,7 +51,6 @@ public class LDA extends ILS {
     }
 
     /** Overrides method in ILS to draw FAF point on LOC course */
-
     @Override
     public void drawGsCircles() {
         GameScreen.shapeRenderer.circle(gsRing.x, gsRing.y, 8);

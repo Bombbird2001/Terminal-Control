@@ -34,7 +34,7 @@ public class FileLoader {
     }
 
     public static Array<RestrictedArea> loadRestricted() {
-        FileHandle restrictions = Gdx.files.internal("game/" + RadarScreen.mainName + "/restricted.rest");
+        FileHandle restrictions = Gdx.files.internal("game/" + RadarScreen.mainName + "/restricted.restr");
         Array<RestrictedArea> restArray = new Array<RestrictedArea>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {

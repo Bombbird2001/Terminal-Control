@@ -80,6 +80,7 @@ public class Aircraft extends Actor {
     private Waypoint holdWpt;
     private boolean holding;
     private boolean init;
+    private boolean type1leg;
     private float[][] holdTargetPt;
     private boolean[] holdTargetPtSelected;
 
@@ -497,12 +498,14 @@ public class Aircraft extends Actor {
                 if (type == 1) {
                     //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
                     info = calculateVectorHdg(star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180, windHdg, windSpd);
-                    if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= star.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
+                    if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= star.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
                         //Once it has flown leg dist, turn back towards entry fix
+                        type1leg = true;
                         info = calculatePointTargetHdg(new float[] {holdWpt.getPosX(), holdWpt.getPosY()}, windHdg, windSpd);
                         //Once it reaches entry fix, init has ended
                         if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
                             init = true;
+                            holdTargetPtSelected[1] = true;
                         }
                     }
                 } else {
@@ -534,7 +537,7 @@ public class Aircraft extends Actor {
             }
         } else {
             info = new double[] {0, 0};
-            Gdx.app.log("Update target heading", "Something went wrong");
+            Gdx.app.log("Update target heading", "Oops, something went wrong");
         }
 
         targetHeading = info[0];
@@ -742,10 +745,12 @@ public class Aircraft extends Actor {
             direct = getSidStar().getWaypoint(sidStarIndex);
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
-            navState.getClearedDirect().removeFirst();
-            navState.getClearedDirect().addFirst(direct);
             if (direct != null) {
                 direct.setSelected(true);
+            } else {
+                navState.getDispLatMode().removeFirst();
+                navState.getDispLatMode().addFirst("Fly heading");
+                setAfterLastWpt();
             }
         }
         navState.getClearedDirect().removeFirst();
@@ -760,6 +765,11 @@ public class Aircraft extends Actor {
         } else {
             updateSelectedWaypoints(null);
         }
+    }
+
+    /** Overriden method that sets aircraft heading after the last waypoint is reached */
+    public void setAfterLastWpt() {
+
     }
 
     /** Switches aircraft latMode to vector, sets active nav state latMode to vector */
@@ -847,7 +857,9 @@ public class Aircraft extends Actor {
                 labelText[5] = Integer.toString(navState.getClearedHdg().last());
             }
         } else if (navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
-            if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
+            if (navState.getClearedHold().last() != null && navState.getClearedHold().last().equals(holdWpt)) {
+                labelText[5] = holdWpt.getName();
+            } else if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
                 labelText[5] = navState.getClearedDirect().last().getName() + Integer.toString(navState.getClearedAftWptHdg().last());
             } else {
                 labelText[5] = navState.getClearedDirect().last().getName();
@@ -1403,17 +1415,4 @@ public class Aircraft extends Actor {
 
     public boolean isHolding() {
         return holding;
-    }
-
-    public void setHolding(boolean holding) {
-        this.holding = holding;
-    }
-
-    public boolean isInit() {
-        return init;
-    }
-
-    public void setInit(boolean init) {
-        this.init = init;
-    }
-}
+    }}

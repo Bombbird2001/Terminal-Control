@@ -165,6 +165,20 @@ public class NavState {
             clearedDirect.removeFirst();
             clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
             clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
+        } else if (aircraft.getDirect() == null && currentDispLatMode.equals("Fly heading") && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || clearedDispLatMode.equals("After waypoint, fly heading") || clearedDispLatMode.equals("Hold at"))) {
+            //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
+            dispLatMode.removeFirst();
+            dispLatMode.removeFirst();
+            dispLatMode.addFirst("Fly heading");
+            dispLatMode.addFirst("Fly heading");
+
+            //And set all the cleared heading to current aircraft cleared heading
+            int currentHdg = aircraft.getClearedHeading();
+            int size = clearedHdg.size;
+            clearedHdg.clear();
+            for (int i = 0; i < size; i++) {
+                clearedHdg.addLast(currentHdg);
+            }
         }
     }
 
