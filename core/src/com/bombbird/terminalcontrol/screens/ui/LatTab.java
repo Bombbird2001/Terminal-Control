@@ -82,7 +82,7 @@ public class LatTab extends Tab {
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
-        hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2370);
+        hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
         hdgBox.setSize(0.8f * getPaneWidth(), 270);
         hdgBox.setAlignment(Align.center);
         RadarScreen.uiStage.addActor(hdgBox);
@@ -120,8 +120,8 @@ public class LatTab extends Tab {
 
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
         TextButton button = new TextButton((value > 0) ? "+" : "-", buttonStyle);
-        button.setSize((0.8f / 3f) * getPaneWidth(), 200);
-        button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2100) : (3240 - 2570));
+        button.setSize((0.8f / 3f) * getPaneWidth(), 300);
+        button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2000) : (3240 - 2570));
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -234,7 +234,7 @@ public class LatTab extends Tab {
         }
 
         //Show heading box if heading mode, otherwise hide it
-        showHdgBoxes(latMode.contains("heading") && visible);
+        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null));
         if (latMode.equals("After waypoint, fly heading")) {
             hdgBox.setText(Integer.toString(afterWptHdg));
         } else if (latMode.contains("heading")) {
@@ -286,6 +286,8 @@ public class LatTab extends Tab {
             valueBox.getStyle().fontColor = afterWptChanged ? Color.YELLOW : Color.WHITE;
         } else if (latMode.contains("arrival") || latMode.contains("departure")) {
             valueBox.getStyle().fontColor = wptChanged ? Color.YELLOW : Color.WHITE;
+        } else if (latMode.equals("Hold at")) {
+            valueBox.getStyle().fontColor = holdWptChanged ? Color.YELLOW : Color.WHITE;
         }
 
         //Lat mode ILS box colour
@@ -336,17 +338,17 @@ public class LatTab extends Tab {
         hdgBox.setX(leftMargin);
         ilsBox.setSize(paneSize, boxHeight);
         ilsBox.setX(leftMargin);
-        hdg100add.setSize(paneSize / 3, 200);
+        hdg100add.setSize(paneSize / 3, 300);
         hdg100add.setX(leftMargin);
-        hdg100minus.setSize(paneSize / 3, 200);
+        hdg100minus.setSize(paneSize / 3, 300);
         hdg100minus.setX(leftMargin);
-        hdg10add.setSize(paneSize / 3, 200);
+        hdg10add.setSize(paneSize / 3, 300);
         hdg10add.setX(leftMargin + paneSize / 3);
-        hdg10minus.setSize(paneSize / 3, 200);
+        hdg10minus.setSize(paneSize / 3, 300);
         hdg10minus.setX(leftMargin + paneSize / 3);
-        hdg5add.setSize(paneSize / 3, 200);
+        hdg5add.setSize(paneSize / 3, 300);
         hdg5add.setX(leftMargin + paneSize / 1.5f);
-        hdg5minus.setSize(paneSize / 3, 200);
+        hdg5minus.setSize(paneSize / 3, 300);
         hdg5minus.setX(leftMargin + paneSize / 1.5f);
         super.updatePaneWidth(paneWidth);
         notListening = false;
@@ -437,6 +439,17 @@ public class LatTab extends Tab {
         hdg5minus.setVisible(show);
     }
 
+    public void updateHdgBoxIls(boolean ilsCap) {
+        boolean showing = hdgBox.isVisible();
+        hdgBox.setVisible(showing && !ilsCap);
+        hdg100add.setVisible(showing && !ilsCap);
+        hdg100minus.setVisible(showing && !ilsCap);
+        hdg10add.setVisible(showing && !ilsCap);
+        hdg10minus.setVisible(showing && !ilsCap);
+        hdg5add.setVisible(showing && !ilsCap);
+        hdg5minus.setVisible(showing && !ilsCap);
+    }
+
     private void updateSidStarOptions() {
         notListening = true;
         if ((latMode.equals("Hold at") || latMode.contains("arrival")) && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
@@ -478,10 +491,6 @@ public class LatTab extends Tab {
 
     public boolean isAfterWptHdgChanged() {
         return afterWptHdgChanged;
-    }
-
-    public boolean isIlsChanged() {
-        return ilsChanged;
     }
 
     public boolean isHoldWptChanged() {

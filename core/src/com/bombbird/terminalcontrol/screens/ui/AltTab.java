@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
@@ -47,6 +48,9 @@ public class AltTab extends Tab {
             }
             if (highestAlt == -1) {
                 highestAlt = RadarScreen.maxArrAlt;
+            }
+            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
+                highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
             //TODO Set minimum alt for each ILS if cleared app
         } else {

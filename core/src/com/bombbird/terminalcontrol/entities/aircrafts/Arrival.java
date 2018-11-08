@@ -182,6 +182,7 @@ public class Arrival extends Aircraft {
         removeSidStarMode();
     }
 
+    /** Overrides updateSpd method in Aircraft, for setting the aircraft speed to 220 knots when within 20nm track miles if clearedIas > 220 knots */
     @Override
     public void updateSpd() {
         if (!lowerSpdSet && getDirect() != null && distToGo() <= 20) {
@@ -193,12 +194,14 @@ public class Arrival extends Aircraft {
         }
     }
 
+    /** Overrides findNextTargetHdg method in Aircraft, for finding the next heading aircraft should fly in order to reach next waypoint */
     @Override
     public double findNextTargetHdg() {
         double result = super.findNextTargetHdg();
         return result < 0 ? getHeading() : result;
     }
 
+    /** Overrides updateAltRestrictions method in Aircraft, for setting aircraft altitude restrictions when descending via the STAR */
     @Override
     public void updateAltRestrictions() {
         if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint")) {
@@ -214,7 +217,7 @@ public class Arrival extends Aircraft {
         }
     }
 
-    /** Overrides update altitude method in Aircraft for when arrival is on glide slope or non precision approach */
+    /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach */
     @Override
     public void updateAltitude() {
         if (getIls() != null) {
@@ -223,6 +226,7 @@ public class Arrival extends Aircraft {
                     super.updateAltitude();
                     if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
                         setGsCap(true);
+                        setMissedAlt();
                     }
                 } else {
                     setVerticalSpeed(-MathTools.nmToFeet((float) Math.tan(Math.toRadians(3)) * 140f / 60f));
@@ -232,6 +236,9 @@ public class Arrival extends Aircraft {
                     nonPrecAlts = null;
                 }
             } else {
+                if (isLocCap() && getClearedAltitude() != getIls().getMissedApchProc().getClimbAlt()) {
+                    setMissedAlt();
+                }
                 if (nonPrecAlts == null) {
                     nonPrecAlts = new Queue<int[]>();
                     Queue<int[]> copy = ((LDA) getIls()).getNonPrecAlts();
@@ -274,6 +281,15 @@ public class Arrival extends Aircraft {
         }
     }
 
+    /** Sets the cleared altitude for aircrafts on approach, updates UI altitude selections if selected */
+    private void setMissedAlt() {
+        setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
+        if (isSelected()) {
+            GameScreen.ui.updateState();
+        }
+    }
+
+    /** Updates the aircraft status when aircraft's tkOfLdg mode is active */
     @Override
     public void updateTkofLdg() {
         setAltitude(getIls().getRwy().getElevation());
@@ -281,6 +297,24 @@ public class Arrival extends Aircraft {
         setClearedIas(0);
         if (getGs() <= 35) {
             removeAircraft();
+        }
+    }
+
+    /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
+    @Override
+    public void updateGoAround() {
+
+    }
+
+    /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft */
+    @Override
+    public void initializeGoAround() {
+        super.initializeGoAround();
+        setClearedHeading(getIls().getHeading());
+        setClearedIas(getIls().getMissedApchProc().getClimbSpd());
+        setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
+        if (isSelected() && getControlState() == 2) {
+            GameScreen.ui.updateState();
         }
     }
 

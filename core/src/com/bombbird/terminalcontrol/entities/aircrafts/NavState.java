@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class NavState {
@@ -36,12 +37,15 @@ public class NavState {
 
     private Queue<Integer> clearedSpd;
 
+    private Queue<Boolean> goAround;
+
     private int length = 1;
 
     public NavState(int type, Aircraft aircraft) {
         this.aircraft = aircraft;
         altModes = new Array<String>(5);
         spdModes = new Array<String>(3);
+
         if (type == 1) {
             //Arrival
             latModes = new Array<String>(6);
@@ -97,6 +101,9 @@ public class NavState {
 
         clearedSpd = new Queue<Integer>();
         clearedSpd.addLast(aircraft.getClearedIas());
+
+        goAround = new Queue<Boolean>();
+        goAround.addLast(false);
     }
 
     /** Schedules a new task of setting aircraft's instructions after time delay; should be called after sending lat, alt and spd */
@@ -104,38 +111,40 @@ public class NavState {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                validateInputs();
+                if (goAround.get(1) == aircraft.isGoAround()) {
+                    //Do not send inputs if aircraft went around during delay
+                    validateInputs();
 
-                dispLatMode.removeFirst();
-                dispAltMode.removeFirst();
-                dispSpdMode.removeFirst();
+                    dispLatMode.removeFirst();
+                    dispAltMode.removeFirst();
+                    dispSpdMode.removeFirst();
 
-                clearedHdg.removeFirst();
-                if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                    aircraft.setClearedHeading(clearedHdg.first());
+                    clearedHdg.removeFirst();
+                    if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                        aircraft.setClearedHeading(clearedHdg.first());
+                    }
+                    clearedDirect.removeFirst();
+                    aircraft.setDirect(clearedDirect.first());
+                    aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
+                    clearedAftWpt.removeFirst();
+                    aircraft.setAfterWaypoint(clearedAftWpt.first());
+                    clearedAftWptHdg.removeFirst();
+                    aircraft.setAfterWptHdg(clearedAftWptHdg.first());
+                    clearedHold.removeFirst();
+                    aircraft.setHoldWpt(clearedHold.first());
+                    clearedIls.removeFirst();
+                    aircraft.setIls(clearedIls.first());
+
+                    clearedAlt.removeFirst();
+                    aircraft.setClearedAltitude(clearedAlt.first());
+                    clearedExpedite.removeFirst();
+                    aircraft.setExpedite(clearedExpedite.first());
+
+                    clearedSpd.removeFirst();
+                    if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                        aircraft.setClearedIas(clearedSpd.first());
+                    }
                 }
-                clearedDirect.removeFirst();
-                aircraft.setDirect(clearedDirect.first());
-                aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
-                clearedAftWpt.removeFirst();
-                aircraft.setAfterWaypoint(clearedAftWpt.first());
-                clearedAftWptHdg.removeFirst();
-                aircraft.setAfterWptHdg(clearedAftWptHdg.first());
-                clearedHold.removeFirst();
-                aircraft.setHoldWpt(clearedHold.first());
-                clearedIls.removeFirst();
-                aircraft.setIls(clearedIls.first());
-
-                clearedAlt.removeFirst();
-                aircraft.setClearedAltitude(clearedAlt.first());
-                clearedExpedite.removeFirst();
-                aircraft.setExpedite(clearedExpedite.first());
-
-                clearedSpd.removeFirst();
-                if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                    aircraft.setClearedIas(clearedSpd.first());
-                }
-
                 length--;
             }
         }, timeDelay);
@@ -173,12 +182,40 @@ public class NavState {
             dispLatMode.addFirst("Fly heading");
 
             //And set all the cleared heading to current aircraft cleared heading
-            int currentHdg = aircraft.getClearedHeading();
-            int size = clearedHdg.size;
-            clearedHdg.clear();
-            for (int i = 0; i < size; i++) {
-                clearedHdg.addLast(currentHdg);
+            replaceAllClearedHdg();
+        } else if (aircraft.isLocCap() && clearedHdg.get(1) != aircraft.getIls().getHeading()) {
+            //Case 4: Aircraft captured LOC during delay: Replace all set headings to ILS heading
+            replaceAllClearedHdg();
+
+            if (aircraft.getIls() instanceof LDA) {
+                //Case 4b: Aircraft on LDA has captured LOC and is performing non precision approach: Replace all set altitude to missed approach altitude
+                replaceAllClearedAlt();
             }
+        }
+
+        if (aircraft.isGsCap() || (aircraft.getIls() instanceof LDA && aircraft.isLocCap())) {
+            //Case 5: Aircraft captured GS during delay: Replace all set altitude to missed approach altitude
+            replaceAllClearedAlt();
+        }
+    }
+
+    /** Gets the current cleared aircraft heading and sets all subsequently cleared headings to that value */
+    private void replaceAllClearedHdg() {
+        int currentHdg = aircraft.getClearedHeading();
+        int size = clearedHdg.size;
+        clearedHdg.clear();
+        for (int i = 0; i < size; i++) {
+            clearedHdg.addLast(currentHdg);
+        }
+    }
+
+    /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value */
+    private void replaceAllClearedAlt() {
+        int currentAlt = aircraft.getClearedAltitude();
+        int size = clearedAlt.size;
+        clearedAlt.clear();
+        for (int i = 0; i < size; i++) {
+            clearedAlt.addLast(currentAlt);
         }
     }
 
@@ -207,6 +244,7 @@ public class NavState {
             }
         }
         dispLatMode.addLast(latMode);
+        goAround.addLast(aircraft.isGoAround());
         length++;
         fillUp(this.clearedHdg);
         fillUp(clearedDirect);
@@ -221,6 +259,7 @@ public class NavState {
     public void sendAlt(String altMode, int clearedAlt) {
         this.clearedAlt.addLast(clearedAlt);
         dispAltMode.addLast(altMode);
+        clearedExpedite.addLast(altMode.contains("Expedite"));
         fillUp(clearedExpedite);
     }
 

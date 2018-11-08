@@ -62,6 +62,7 @@ public class Aircraft extends Actor {
     private int apchSpd;
     private int controlState;
     private NavState navState;
+    private boolean goAround;
 
     //Aircraft position
     private float x;
@@ -172,6 +173,7 @@ public class Aircraft extends Actor {
         gsCap = false;
         locCap = false;
         climbSpd = MathUtils.random(270, 290);
+        goAround = false;
 
         selected = false;
         dragging = false;
@@ -253,7 +255,7 @@ public class Aircraft extends Actor {
                 drawSidStar();
             } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading") && direct != null) {
                 drawAftWpt();
-            } else if (navState.getDispLatMode().last().contains("heading")) {
+            } else if (navState.getDispLatMode().last().contains("heading") && !locCap) {
                 drawHdgLine();
             } else if (navState.getDispLatMode().last().equals("Hold at")) {
                 drawHoldPattern();
@@ -266,7 +268,7 @@ public class Aircraft extends Actor {
                     uiDrawSidStar();
                 } else if (LatTab.latMode.equals("After waypoint, fly heading") && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode.contains("heading") && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
                 } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
@@ -328,6 +330,7 @@ public class Aircraft extends Actor {
         ((Star) getSidStar()).getHoldProcedure().renderShape(RadarScreen.waypoints.get(LatTab.holdWpt));
     }
 
+    /** The main update function, called during aircraft draw */
     public double update() {
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
@@ -344,6 +347,9 @@ public class Aircraft extends Actor {
             updatePosition(info[1]);
             updateAltitude();
             updateSpd();
+            if (goAround) {
+                updateGoAround();
+            }
             return targetHeading;
         } else {
             gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
@@ -362,10 +368,22 @@ public class Aircraft extends Actor {
         navState.getClearedSpd().addFirst(clearedIas);
     }
 
+    /** Overriden method for arrival/departure */
     public void updateTkofLdg() {
-        //Overriden method for arrival/departure
+        //No default implementation
     }
 
+    /** Overriden method for arrivals during go around */
+    public void updateGoAround() {
+        //No default implementation
+    }
+
+    /** Sets the aircraft to go around mode */
+    public void initializeGoAround() {
+        goAround = true;
+    }
+
+    /** Updates the aircraft speed */
     private void updateIas() {
         float targetdeltaIas = (clearedIas - ias) / 5;
         if (targetdeltaIas > deltaIas + 0.05) {
@@ -458,10 +476,6 @@ public class Aircraft extends Actor {
         } else if (sidstar && !holding) {
             info = calculatePointTargetHdg(new float[] {direct.getPosX(), direct.getPosY()}, windHdg, windSpd);
 
-            if (locCap) {
-                locCap = false;
-            }
-
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
@@ -470,6 +484,7 @@ public class Aircraft extends Actor {
                 updateDirect();
             }
         } else if (locCap) {
+            clearedHeading = ils.getHeading();
             if (!getIls().getRwy().equals(runway)) {
                 runway = getIls().getRwy();
             }
@@ -626,6 +641,7 @@ public class Aircraft extends Actor {
         y += deltaPosition.y;
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
+            ui.updateState();
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             removeAircraft();
@@ -1415,4 +1431,9 @@ public class Aircraft extends Actor {
 
     public boolean isHolding() {
         return holding;
-    }}
+    }
+
+    public boolean isGoAround() {
+        return goAround;
+    }
+}
