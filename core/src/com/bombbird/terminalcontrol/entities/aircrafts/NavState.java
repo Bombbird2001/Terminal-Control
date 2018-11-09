@@ -111,7 +111,7 @@ public class NavState {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                if (goAround.get(1) == aircraft.isGoAround()) {
+                if (goAround.get(1) || !aircraft.isGoAround()) {
                     //Do not send inputs if aircraft went around during delay
                     validateInputs();
 
@@ -199,8 +199,13 @@ public class NavState {
         }
     }
 
-    /** Gets the current cleared aircraft heading and sets all subsequently cleared headings to that value */
+    /** Gets the current cleared aircraft heading and sets all subsequently cleared headings to that value, sets lat mode to fly heading */
     private void replaceAllClearedHdg() {
+        int latSize = dispLatMode.size;
+        dispLatMode.clear();
+        for (int i = 0; i < latSize; i++) {
+            dispLatMode.addLast("Fly heading");
+        }
         int currentHdg = aircraft.getClearedHeading();
         int size = clearedHdg.size;
         clearedHdg.clear();
@@ -209,8 +214,13 @@ public class NavState {
         }
     }
 
-    /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value */
+    /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value, sets alt mode to climb/descend (no expedite) */
     private void replaceAllClearedAlt() {
+        int altSize = dispAltMode.size;
+        dispAltMode.clear();
+        for (int i = 0; i < altSize; i++) {
+            dispAltMode.addLast("Climb/descend to");
+        }
         int currentAlt = aircraft.getClearedAltitude();
         int size = clearedAlt.size;
         clearedAlt.clear();

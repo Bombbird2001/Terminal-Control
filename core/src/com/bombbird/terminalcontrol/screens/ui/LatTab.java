@@ -173,6 +173,11 @@ public class LatTab extends Tab {
     @Override
     public void updateElements() {
         notListening = true;
+        if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getSidStar().getWaypoints().size) {
+            selectedAircraft.getNavState().getLatModes().removeValue(selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " arrival" : " departure"), false);
+            selectedAircraft.getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
+            selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
+        }
         settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
         settingsBox.setSelected(latMode);
 

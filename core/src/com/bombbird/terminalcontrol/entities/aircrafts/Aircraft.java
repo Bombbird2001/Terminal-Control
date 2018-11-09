@@ -257,6 +257,7 @@ public class Aircraft extends Actor {
                 drawAftWpt();
             } else if (navState.getDispLatMode().last().contains("heading") && !locCap) {
                 drawHdgLine();
+                updateSelectedWaypoints(this);
             } else if (navState.getDispLatMode().last().equals("Hold at")) {
                 drawHoldPattern();
             }
@@ -270,6 +271,7 @@ public class Aircraft extends Actor {
                     uiDrawAftWpt();
                 } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
+                    updateSelectedWaypoints(this);
                 } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
                 }
@@ -348,7 +350,7 @@ public class Aircraft extends Actor {
             updateAltitude();
             updateSpd();
             if (goAround) {
-                updateGoAround();
+                updateGoAround(); //TODO Implement standard MAP in future versions
             }
             return targetHeading;
         } else {
@@ -376,11 +378,6 @@ public class Aircraft extends Actor {
     /** Overriden method for arrivals during go around */
     public void updateGoAround() {
         //No default implementation
-    }
-
-    /** Sets the aircraft to go around mode */
-    public void initializeGoAround() {
-        goAround = true;
     }
 
     /** Updates the aircraft speed */
@@ -627,6 +624,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Updates the lateral position of the aircraft and its label, removes aircraft if it goes out of radar range */
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
         track = heading - RadarScreen.magHdgDev + angleDiff;
@@ -641,15 +639,17 @@ public class Aircraft extends Actor {
         y += deltaPosition.y;
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
-            ui.updateState();
+            if (selected) {
+                ui.updateState();
+            }
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             removeAircraft();
         }
     }
 
+    /** Finds the deltaHeading with the appropriate force direction under different circumstances */
     private double findDeltaHeading(double targetHeading) {
-        double deltaHeading = targetHeading - heading;
         int forceDirection = 0;
         if (navState.getDispLatMode().first().equals("Turn left heading")) {
             forceDirection = 1;
@@ -658,12 +658,18 @@ public class Aircraft extends Actor {
         } else if (navState.getDispLatMode().first().equals("Hold at") && holding && !init) {
             Star star = (Star) getSidStar();
             int type = star.getHoldProcedure().getEntryProcAtWpt(holdWpt);
-            if (type == 1) {
+            if (type == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= star.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
-            } else {
+            } else if (type == 2 || type == 3) {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
         }
+        return findDeltaHeading(targetHeading, forceDirection);
+    }
+
+    /** Finds the deltaHeading given a forced direction */
+    private double findDeltaHeading(double targetHeading, int forceDirection) {
+        double deltaHeading = targetHeading - heading;
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
                 if (deltaHeading > 180) {
@@ -688,6 +694,7 @@ public class Aircraft extends Actor {
         return deltaHeading;
     }
 
+    /** Updates the aircraft heading given an input targetHeading */
     private void updateHeading(double targetHeading) {
         double deltaHeading = findDeltaHeading(targetHeading);
         //Note: angular velocities unit is change in heading per second
@@ -733,7 +740,7 @@ public class Aircraft extends Actor {
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
-    public void updateDirect() {
+    private void updateDirect() {
         direct.setSelected(false);
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
@@ -783,9 +790,16 @@ public class Aircraft extends Actor {
         }
     }
 
+    /*
+    /** Overriden method that sets next aircraft action after reaching direct
+    public void updateGoAroundDirect() {
+        //No default implementation
+    }
+    */
+
     /** Overriden method that sets aircraft heading after the last waypoint is reached */
     public void setAfterLastWpt() {
-
+        //No default implementation
     }
 
     /** Switches aircraft latMode to vector, sets active nav state latMode to vector */
@@ -1435,5 +1449,9 @@ public class Aircraft extends Actor {
 
     public boolean isGoAround() {
         return goAround;
+    }
+
+    public void setGoAround(boolean goAround) {
+        this.goAround = goAround;
     }
 }

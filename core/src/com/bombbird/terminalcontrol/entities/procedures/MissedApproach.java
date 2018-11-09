@@ -9,6 +9,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 public class MissedApproach {
     private String name;
     private Airport airport;
+    private ILS ils;
     private int climbAlt;
     private int climbSpd;
     private String transition;
@@ -21,6 +22,10 @@ public class MissedApproach {
         procedure = new Queue<String>();
 
         parseInfo(info);
+    }
+
+    public void loadIls() {
+        ils = airport.getApproaches().get(name);
     }
 
     private void parseInfo(String info) {
@@ -59,5 +64,13 @@ public class MissedApproach {
 
     public HoldProcedure getHoldProcedure() {
         return airport.getHoldProcedures().get(name);
+    }
+
+    public ILS getIls() {
+        return ils;
+    }
+
+    public Queue<String> getProcedure() {
+        return procedure;
     }
 }

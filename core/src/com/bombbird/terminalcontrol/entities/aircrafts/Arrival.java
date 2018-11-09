@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.GameScreen;
@@ -21,9 +22,19 @@ public class Arrival extends Aircraft {
     private Queue<int[]> nonPrecAlts;
     private boolean lowerSpdSet;
 
+    //For go around
+    //private boolean transSet;
+    private MissedApproach missedApproach;
+    //private float lastDistFromRwy;
+    //private Queue<String> goAroundQueue;
+    //private int goAroundDir;
+
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
         setOnGround(false);
+        lowerSpdSet = false;
+        //transSet = false;
+        //goAroundDir = 0;
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -37,10 +48,6 @@ public class Arrival extends Aircraft {
                     break;
                 }
             }
-        }
-
-        if (callsign.equals("UIA231")) {
-            star = starList.get("KUDOS1B");
         }
 
         if (callsign.equals("EVA226")) {
@@ -272,6 +279,9 @@ public class Arrival extends Aircraft {
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
             }
+            if (getCallsign().equals("EVA226") && getAltitude() <= 800) {
+                initializeGoAround();
+            }
         } else {
             //If GS/NPA not active yet
             if (nonPrecAlts != null) {
@@ -303,16 +313,63 @@ public class Arrival extends Aircraft {
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
     @Override
     public void updateGoAround() {
-
+        if (getAltitude() >= 1600 && getControlState() == 0) {
+            setControlState(1);
+            setGoAround(false);
+        }
+        /*
+        //Check if aircraft has passed initial climb phase
+        float dist = MathTools.distanceBetween(getX(), getY(), missedApproach.getIls().getX(), missedApproach.getIls().getY());
+        if (!transSet) {
+            if (missedApproach.getTransition().equals("ALT")) {
+                //Check if aircraft has climbed above this altitude
+                if (getAltitude() > missedApproach.getTransInfo() && dist > lastDistFromRwy) {
+                    transSet = true;
+                }
+            } else if (missedApproach.getTransition().equals("DIST")) {
+                //Check if aircraft has flew past this distance from end of runway
+                if (dist > missedApproach.getTransInfo() && dist > lastDistFromRwy) {
+                    //Make sure aircraft is flying from (not towards) the end of the runway
+                    transSet = true;
+                }
+            }
+        }
+        */
     }
 
-    /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft */
+
+    /*
+    /** Overrides updateGoAroundDirect method in Aircraft, called to update aircraft action after reaching the next waypoint in the waypoint queue
     @Override
-    public void initializeGoAround() {
-        super.initializeGoAround();
+    public void updateGoAroundDirect() {
+        if (goAroundQueue.size > 0) {
+            String[] info = goAroundQueue.first().split(" ");
+            if (info[0].equals("ANY")) {
+                goAroundDir = 0;
+            } else if (info[0].equals("LEFT")) {
+                goAroundDir = 1;
+            } else if (info[0].equals("RIGHT")) {
+                goAroundDir = 2;
+            } else {
+                Gdx.app.log("Go around direction", "Invalid go around direction " + info[0] + " specified!");
+            }
+
+        } else {
+            //Last waypoint reached, check for holding pattern TODO
+        }
+    }
+    */
+
+    /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft */
+    private void initializeGoAround() {
+        setGoAround(true);
+        missedApproach = getIls().getMissedApchProc();
         setClearedHeading(getIls().getHeading());
-        setClearedIas(getIls().getMissedApchProc().getClimbSpd());
-        setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
+        setClearedIas(missedApproach.getClimbSpd());
+        setClearedAltitude(missedApproach.getClimbAlt());
+        //lastDistFromRwy = MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY());
+        //goAroundQueue = missedApproach.getProcedure();
+        setIls(null);
         if (isSelected() && getControlState() == 2) {
             GameScreen.ui.updateState();
         }
@@ -322,4 +379,10 @@ public class Arrival extends Aircraft {
     public SidStar getSidStar() {
         return star;
     }
+
+    /*
+    public boolean isTransSet() {
+        return transSet;
+    }
+    */
 }

@@ -49,6 +49,10 @@ public class Airport {
         }
         stars = FileLoader.loadStars(this);
         sids = FileLoader.loadSids(this);
+
+        for (MissedApproach missedApproach: missedApproaches.values()) {
+            missedApproach.loadIls();
+        }
     }
 
     private void setActive(String rwy, boolean landing, boolean takeoff) {
