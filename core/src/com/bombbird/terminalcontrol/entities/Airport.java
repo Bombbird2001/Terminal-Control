@@ -47,6 +47,7 @@ public class Airport {
         for (Runway runway: runways.values()) {
             runway.setIls(approaches.get(runway.getName()));
         }
+        setOppRwys();
         stars = FileLoader.loadStars(this);
         sids = FileLoader.loadSids(this);
 
@@ -55,18 +56,32 @@ public class Airport {
         }
     }
 
+    private void setOppRwys() {
+        for (Runway runway: runways.values()) {
+            if (runway.getOppRwy() == null) {
+                int oppNumber = Integer.parseInt(runway.getName().substring(0, 2)) + 18;
+                if (oppNumber > 36) {
+                    oppNumber -= 36;
+                }
+                String oppExtra = "";
+                String extra = runway.getName().length() == 3 ? String.valueOf(runway.getName().charAt(2)) : "";
+                if ("L".equals(extra)) {
+                    oppExtra = "R";
+                } else if ("R".equals(extra)) {
+                    oppExtra = "L";
+                } else {
+                    oppExtra = extra;
+                }
+                String oppRwyStr = Integer.toString(oppNumber) + oppExtra;
+                runways.get(oppRwyStr).setOppRwy(runway);
+                runway.setOppRwy(runways.get(oppRwyStr));
+            }
+        }
+    }
+
     private void setActive(String rwy, boolean landing, boolean takeoff) {
         //Retrieves runway from hashtable
         Runway runway = runways.get(rwy);
-
-        //Set actor
-        if ((landing || takeoff) && !runway.isActive()) {
-            //Add if active now but not before
-            GameScreen.stage.addActor(runway);
-        } else if (!landing && !takeoff && runway.isActive()) {
-            //Remove if not active but active before
-            GameScreen.stage.getActors().removeValue(runway, true);
-        }
 
         if (!runway.isLanding() && landing) {
             //Add to landing runways if not landing before, but landing now
@@ -107,7 +122,7 @@ public class Airport {
             ws = "None";
         }
         if (windHdg != 0) { //Update runways if winds are not variable
-            for (Runway runway : runways.values()) {
+            for (Runway runway: runways.values()) {
                 int rightHeading = runway.getHeading() + 90;
                 int leftHeading = runway.getHeading() - 90;
                 if (rightHeading > 360) {

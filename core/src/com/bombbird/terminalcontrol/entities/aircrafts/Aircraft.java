@@ -15,12 +15,13 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
+import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
@@ -257,7 +258,6 @@ public class Aircraft extends Actor {
                 drawAftWpt();
             } else if (navState.getDispLatMode().last().contains("heading") && !locCap) {
                 drawHdgLine();
-                updateSelectedWaypoints(this);
             } else if (navState.getDispLatMode().last().equals("Hold at")) {
                 drawHoldPattern();
             }
@@ -271,18 +271,8 @@ public class Aircraft extends Actor {
                     uiDrawAftWpt();
                 } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
-                    updateSelectedWaypoints(this);
                 } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
-                }
-            }
-
-            for (Aircraft aircraft: RadarScreen.aircrafts.values()) {
-                if (aircraft.navState.getClearedDirect().last() != null) {
-                    String latState = aircraft.navState.getDispLatMode().last();
-                    if (latState.contains("waypoint") || latState.contains("arrival") || latState.contains("departure")) {
-                        aircraft.navState.getClearedDirect().last().setSelected(true);
-                    }
                 }
             }
         }
@@ -338,9 +328,6 @@ public class Aircraft extends Actor {
         updateIas();
         if (tkofLdg) {
             updateTkofLdg();
-        }
-        if (navState.getClearedDirect().last() != null) {
-            navState.getClearedDirect().last().setSelected(navState.getClearedDirect().last().isSelected() || navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading"));
         }
         if (!onGround) {
             double[] info = updateTargetHeading();
@@ -741,7 +728,6 @@ public class Aircraft extends Actor {
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
     private void updateDirect() {
-        direct.setSelected(false);
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
             clearedHeading = afterWptHdg;
@@ -768,9 +754,7 @@ public class Aircraft extends Actor {
             direct = getSidStar().getWaypoint(sidStarIndex);
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
-            if (direct != null) {
-                direct.setSelected(true);
-            } else {
+            if (direct == null) {
                 navState.getDispLatMode().removeFirst();
                 navState.getDispLatMode().addFirst("Fly heading");
                 setAfterLastWpt();
@@ -784,9 +768,6 @@ public class Aircraft extends Actor {
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
             ui.updateState();
-            updateSelectedWaypoints(this);
-        } else {
-            updateSelectedWaypoints(null);
         }
     }
 
@@ -886,10 +867,10 @@ public class Aircraft extends Actor {
             } else {
                 labelText[5] = Integer.toString(navState.getClearedHdg().last());
             }
+        } else if (navState.getClearedHold().last() != null && navState.getClearedHold().last().equals(holdWpt)) {
+            labelText[5] = holdWpt.getName();
         } else if (navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
-            if (navState.getClearedHold().last() != null && navState.getClearedHold().last().equals(holdWpt)) {
-                labelText[5] = holdWpt.getName();
-            } else if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
+            if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
                 labelText[5] = navState.getClearedDirect().last().getName() + Integer.toString(navState.getClearedAftWptHdg().last());
             } else {
                 labelText[5] = navState.getClearedDirect().last().getName();
@@ -915,37 +896,6 @@ public class Aircraft extends Actor {
         labelButton.setPosition(label.getX() - 5, label.getY());
         clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
         clickSpot.setPosition(labelButton.getX(), labelButton.getY());
-    }
-
-    /** Updates the waypoints that are shown given a new input aircraft (that is selected) */
-    public void updateSelectedWaypoints(Aircraft aircraft) {
-        Array<Waypoint> remainingWpts = getRemainingWaypoints();
-        if (remainingWpts != null) {
-            if (aircraft != null) {
-                for (Waypoint waypoint: remainingWpts) {
-                    waypoint.setSelected(false);
-                }
-                if (aircraft.navState.getDispLatMode().last().contains(aircraft.getSidStar().getName())) {
-                    Array<Waypoint> newWpts = aircraft.getRemainingWaypoints();
-                    if (newWpts != null) {
-                        for (Waypoint waypoint : newWpts) {
-                            waypoint.setSelected(true);
-                        }
-                    }
-                }
-            } else {
-                for (Waypoint waypoint: remainingWpts) {
-                    waypoint.setSelected(false);
-                }
-            }
-        } else {
-            for (Waypoint waypoint: getSidStar().getWaypoints()) {
-                waypoint.setSelected(false);
-            }
-        }
-        if (navState.getClearedDirect().last() != null) {
-            navState.getClearedDirect().last().setSelected(navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading"));
-        }
     }
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
@@ -976,13 +926,27 @@ public class Aircraft extends Actor {
     }
 
     public Array<Waypoint> getRemainingWaypoints() {
-        if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().last().contains("departure")) {
+        if (navState.getDispLatMode().last().contains(getSidStar().getName())) {
             return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().getWaypoints().size - 1);
-        } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
+        } else if ("After waypoint, fly heading".equals(navState.getDispLatMode().last())) {
             return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(navState.getClearedAftWpt().last().getName()));
-        } else {
-            return null;
+        } else if ("Hold at".equals(navState.getDispLatMode().last())) {
+            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(navState.getClearedHold().last().getName()));
         }
+        return null;
+    }
+
+    public Array<Waypoint> getUiRemainingWaypoints() {
+        if (selected) {
+            if (Tab.latMode.contains(getSidStar().getName())) {
+                return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(Tab.clearedWpt), getSidStar().getWaypoints().size - 1);
+            } else if ("After waypoint, fly heading".equals(Tab.latMode)) {
+                return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(Tab.afterWpt));
+            } else if ("Hold at".equals(Tab.latMode)) {
+                return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(Tab.holdWpt));
+            }
+        }
+        return null;
     }
 
     public SidStar getSidStar() {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;

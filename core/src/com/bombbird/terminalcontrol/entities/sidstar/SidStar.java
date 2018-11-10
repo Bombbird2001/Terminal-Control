@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.sidstar;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
@@ -29,14 +29,8 @@ public class SidStar {
     public void joinLines(int start, int end, int outbound, boolean dontRemove) {
         Waypoint prevPt = null;
         int index = start;
-        if (!dontRemove) {
-            for (Waypoint waypoint: waypoints) {
-                waypoint.setSelected(false);
-            }
-        }
         while (index < end) {
             Waypoint waypoint = getWaypoint(index);
-            waypoint.setSelected(true);
             if (prevPt != null) {
                 GameScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
             }

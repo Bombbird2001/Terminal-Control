@@ -11,7 +11,7 @@ import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.GameScreen;

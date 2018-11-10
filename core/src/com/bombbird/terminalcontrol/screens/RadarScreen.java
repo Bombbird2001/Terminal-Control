@@ -13,12 +13,13 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Metar;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 
@@ -38,6 +39,9 @@ public class RadarScreen extends GameScreen {
 
     //Timer for updating aircraft radar returns every given amount of time
     private com.badlogic.gdx.utils.Timer radarTimer;
+
+    //Waypoint manager for managing waypoint selected status
+    private WaypointManager waypointManager;
 
     private static Aircraft selectedAircraft;
 
@@ -64,6 +68,8 @@ public class RadarScreen extends GameScreen {
 
         //Set timer for radar delay
         radarTimer = new com.badlogic.gdx.utils.Timer();
+
+        waypointManager = new WaypointManager();
     }
 
     private void loadInputProcessors() {
@@ -215,6 +221,9 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void renderShape() {
+        //Updates waypoints status before rendering
+        waypointManager.update();
+
         //Draw obstacles
         for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
@@ -280,9 +289,6 @@ public class RadarScreen extends GameScreen {
     public static void setSelectedAircraft(Aircraft aircraft) {
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
-            if (!selectedAircraft.equals(aircraft)) {
-                selectedAircraft.updateSelectedWaypoints(aircraft);
-            }
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
@@ -296,5 +302,9 @@ public class RadarScreen extends GameScreen {
             ui.setSelectedPane(null);
         }
         selectedAircraft = aircraft;
+    }
+
+    public static Aircraft getSelectedAircraft() {
+        return selectedAircraft;
     }
 }

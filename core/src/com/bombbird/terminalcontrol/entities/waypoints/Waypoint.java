@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities;
+package com.bombbird.terminalcontrol.entities.waypoints;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;

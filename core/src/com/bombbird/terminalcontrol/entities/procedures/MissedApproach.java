@@ -2,9 +2,7 @@ package com.bombbird.terminalcontrol.entities.procedures;
 
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class MissedApproach {
     private String name;

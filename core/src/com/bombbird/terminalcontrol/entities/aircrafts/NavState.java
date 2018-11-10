@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
@@ -229,6 +229,14 @@ public class NavState {
         }
     }
 
+    public void voidAllIls() {
+        int size = clearedIls.size;
+        clearedIls.clear();
+        for (int i = 0; i < size; i++) {
+            clearedIls.addLast(null);
+        }
+    }
+
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
@@ -262,7 +270,6 @@ public class NavState {
         fillUp(clearedAftWptHdg);
         fillUp(clearedHold);
         fillUp(clearedIls);
-        aircraft.updateSelectedWaypoints(aircraft);
     }
 
     /** Adds new altitude instructions to queue, called after sendLat */

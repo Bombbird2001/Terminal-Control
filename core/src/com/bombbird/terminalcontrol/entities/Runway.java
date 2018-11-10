@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
@@ -17,6 +18,9 @@ import static com.bombbird.terminalcontrol.screens.GameScreen.shapeRenderer;
 public class Runway extends Actor {
     //Name of runway
     private String name;
+
+    //The opposite runway
+    private Runway oppRwy;
 
     //Set landing/takeoff status
     private boolean active;
@@ -52,13 +56,15 @@ public class Runway extends Actor {
         parseInfo(toParse);
 
         //Calculate the position offsets
-        float xOffsetW = getHalfWidth() * MathUtils.sinDeg(90 - getTrueHdg());
-        float yOffsetW = -getHalfWidth() * MathUtils.cosDeg(90 - getTrueHdg());
+        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - getTrueHdg());
+        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - getTrueHdg());
         float xOffsetL = pxLength * MathUtils.cosDeg(90 - getTrueHdg());
         float yOffsetL = pxLength * MathUtils.sinDeg(90 - getTrueHdg());
 
         //Create polygon
         setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
+
+        GameScreen.stage.addActor(this);
     }
 
     private void parseInfo(String toParse) {
@@ -88,14 +94,11 @@ public class Runway extends Actor {
         }
     }
 
-    public static float getHalfWidth() {
-        return halfWidth;
-    }
-
     public void setActive(boolean landing, boolean takeoff) {
         this.setLanding(landing);
         this.setTakeoff(takeoff);
         setActive(landing || takeoff);
+        setVisible(landing || takeoff);
     }
 
     @Override
@@ -228,5 +231,13 @@ public class Runway extends Actor {
 
     public void setIls(ILS ils) {
         this.ils = ils;
+    }
+
+    public Runway getOppRwy() {
+        return oppRwy;
+    }
+
+    public void setOppRwy(Runway oppRwy) {
+        this.oppRwy = oppRwy;
     }
 }

@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.Waypoint;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -442,17 +442,6 @@ public class LatTab extends Tab {
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
         hdg5minus.setVisible(show);
-    }
-
-    public void updateHdgBoxIls(boolean ilsCap) {
-        boolean showing = hdgBox.isVisible();
-        hdgBox.setVisible(showing && !ilsCap);
-        hdg100add.setVisible(showing && !ilsCap);
-        hdg100minus.setVisible(showing && !ilsCap);
-        hdg10add.setVisible(showing && !ilsCap);
-        hdg10minus.setVisible(showing && !ilsCap);
-        hdg5add.setVisible(showing && !ilsCap);
-        hdg5minus.setVisible(showing && !ilsCap);
     }
 
     private void updateSidStarOptions() {

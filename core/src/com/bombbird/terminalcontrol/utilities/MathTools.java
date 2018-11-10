@@ -36,4 +36,9 @@ public class MathTools {
     public static float distanceBetween(float x, float y, float x2, float y2) {
         return (float)Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
     }
+
+    /** Converts feet to metres */
+    public static float feetToMetre(float feet) {
+        return feet / 3.28084f;
+    }
 }
