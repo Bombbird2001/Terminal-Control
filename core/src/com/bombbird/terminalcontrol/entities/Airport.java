@@ -63,7 +63,7 @@ public class Airport {
                 if (oppNumber > 36) {
                     oppNumber -= 36;
                 }
-                String oppExtra = "";
+                String oppExtra;
                 String extra = runway.getName().length() == 3 ? String.valueOf(runway.getName().charAt(2)) : "";
                 if ("L".equals(extra)) {
                     oppExtra = "R";
@@ -73,6 +73,9 @@ public class Airport {
                     oppExtra = extra;
                 }
                 String oppRwyStr = Integer.toString(oppNumber) + oppExtra;
+                if (oppNumber < 10) {
+                    oppRwyStr = "0" + oppRwyStr;
+                }
                 runways.get(oppRwyStr).setOppRwy(runway);
                 runway.setOppRwy(runways.get(oppRwyStr));
             }

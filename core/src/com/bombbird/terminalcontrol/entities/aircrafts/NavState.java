@@ -111,7 +111,25 @@ public class NavState {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                if (goAround.get(1) || !aircraft.isGoAround()) {
+                if (!goAround.get(1) && aircraft.isGoAround()) {
+                    dispLatMode.removeIndex(1);
+                    dispAltMode.removeIndex(1);
+                    dispSpdMode.removeIndex(1);
+
+                    clearedHdg.removeIndex(1);
+                    clearedDirect.removeIndex(1);
+                    clearedAftWpt.removeIndex(1);
+                    clearedAftWptHdg.removeIndex(1);
+                    clearedHold.removeIndex(1);
+                    clearedIls.removeIndex(1);
+
+                    clearedAlt.removeIndex(1);
+                    clearedExpedite.removeIndex(1);
+
+                    clearedSpd.removeIndex(1);
+
+                    goAround.removeIndex(1);
+                } else {
                     //Do not send inputs if aircraft went around during delay
                     validateInputs();
 
@@ -144,6 +162,8 @@ public class NavState {
                     if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
                         aircraft.setClearedIas(clearedSpd.first());
                     }
+
+                    goAround.removeFirst();
                 }
                 length--;
             }

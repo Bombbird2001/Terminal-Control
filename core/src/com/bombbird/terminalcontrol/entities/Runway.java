@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -52,8 +54,12 @@ public class Runway extends Actor {
     //Set windshear properties
     private boolean windshear;
 
+    //Array of aircraft on approach
+    private Array<Aircraft> aircraftsOnAppr;
+
     public Runway(String toParse) {
         parseInfo(toParse);
+        aircraftsOnAppr = new Array<Aircraft>();
 
         //Calculate the position offsets
         float xOffsetW = halfWidth * MathUtils.sinDeg(90 - getTrueHdg());
@@ -67,6 +73,7 @@ public class Runway extends Actor {
         GameScreen.stage.addActor(this);
     }
 
+    /** Parses the input string into relevant data for the runway */
     private void parseInfo(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont8;
@@ -94,6 +101,7 @@ public class Runway extends Actor {
         }
     }
 
+    /** Sets runway status for landing, takeoffs */
     public void setActive(boolean landing, boolean takeoff) {
         this.setLanding(landing);
         this.setTakeoff(takeoff);
@@ -101,14 +109,39 @@ public class Runway extends Actor {
         setVisible(landing || takeoff);
     }
 
+    /** Draws the runway label */
     @Override
     public void draw(Batch batch, float parentAlpha) {
         label.draw(batch, 1);
     }
 
+    /** Renders the runway rectangle */
     public void renderShape() {
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.polygon(getPolygon().getVertices());
+    }
+
+    /** Called to remove aircraft from the array of aircrafts on approach, should be called during go arounds/cancelling approaches */
+    public void removeFromArray(Aircraft aircraft) {
+        aircraftsOnAppr.removeValue(aircraft, false);
+    }
+
+    /** Called to add the aircraft to the array, automatically determines the position of the aircraft in the array, should be called during initial aircraft LOC capture, returns aircraft index in array */
+    public void addToArray(Aircraft aircraft) {
+        aircraftsOnAppr.add(aircraft);
+        if (aircraftsOnAppr.size > 1) {
+            int thisIndex = aircraftsOnAppr.size - 1;
+            while (MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), x, y) < MathTools.distanceBetween(aircraftsOnAppr.get(thisIndex - 1).getX(), aircraftsOnAppr.get(thisIndex  - 1).getY(), x, y) && !aircraftsOnAppr.get(thisIndex - 1).isOnGround()) {
+                aircraftsOnAppr.swap(thisIndex - 1, thisIndex);
+                thisIndex -= 1;
+            }
+        }
+    }
+
+    /** Called during an (unlikely) event that for some reason the current aircraft overtakes the aircraft in front of it */
+    public void swapAircrafts(Aircraft aircraft) {
+        int thisIndex = aircraftsOnAppr.indexOf(aircraft, false);
+        aircraftsOnAppr.swap(thisIndex, thisIndex - 1);
     }
 
     public boolean isActive() {
@@ -145,7 +178,7 @@ public class Runway extends Actor {
         this.name = name;
     }
 
-    public void setActive(boolean active) {
+    private void setActive(boolean active) {
         this.active = active;
     }
 
@@ -239,5 +272,9 @@ public class Runway extends Actor {
 
     public void setOppRwy(Runway oppRwy) {
         this.oppRwy = oppRwy;
+    }
+
+    public Array<Aircraft> getAircraftsOnAppr() {
+        return aircraftsOnAppr;
     }
 }

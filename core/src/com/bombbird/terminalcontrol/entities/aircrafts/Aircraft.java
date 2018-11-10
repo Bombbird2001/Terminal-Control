@@ -1380,6 +1380,9 @@ public class Aircraft extends Actor {
     }
 
     public void setIls(ILS ils) {
+        if (ils == null && locCap) {
+            getIls().getRwy().removeFromArray(this);
+        }
         if (this.ils != ils) {
             gsCap = false;
             locCap = false;

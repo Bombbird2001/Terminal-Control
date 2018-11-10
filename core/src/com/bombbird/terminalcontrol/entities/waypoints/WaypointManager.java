@@ -5,10 +5,6 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class WaypointManager {
 
-    public WaypointManager() {
-
-    }
-
     public void update() {
         unselectAll();
         updateSelected();
