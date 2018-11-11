@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.SeparationChecker;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Metar;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -43,6 +44,9 @@ public class RadarScreen extends GameScreen {
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
 
+    //Separation checker for checking separation between aircrafts & terrain
+    public static SeparationChecker separationChecker;
+
     private static Aircraft selectedAircraft;
 
     public RadarScreen(final TerminalControl game, String name) {
@@ -69,8 +73,7 @@ public class RadarScreen extends GameScreen {
         //Set timer for radar delay
         radarTimer = new com.badlogic.gdx.utils.Timer();
 
-        waypointManager = new WaypointManager();
-    }
+        waypointManager = new WaypointManager(); }
 
     private void loadInputProcessors() {
         //Set input processors
@@ -185,6 +188,9 @@ public class RadarScreen extends GameScreen {
         //Load airports
         loadAirports();
 
+        //Load separation checker
+        separationChecker = new SeparationChecker();
+
         //Load obstacles
         obsArray = FileLoader.loadObstacles();
 
@@ -221,8 +227,11 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void renderShape() {
-        //Updates waypoints status before rendering
+        //Updates waypoints status
         waypointManager.update();
+
+        //Updates aircraft separation status
+        separationChecker.update();
 
         //Draw obstacles
         for (Obstacle obstacle: obsArray) {

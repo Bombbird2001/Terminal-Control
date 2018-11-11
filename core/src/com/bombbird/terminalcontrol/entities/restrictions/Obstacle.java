@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -55,5 +56,11 @@ public class Obstacle extends Actor {
         GameScreen.shapeRenderer.polygon(polygon.getVertices());
     }
 
-    //TODO: Test for conflict with aircraft
+    public int getMinAlt() {
+        return minAlt;
+    }
+
+    public boolean isIn(Aircraft aircraft) {
+        return polygon.contains(aircraft.getX(), aircraft.getY());
+    }
 }

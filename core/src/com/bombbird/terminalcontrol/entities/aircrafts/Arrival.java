@@ -238,7 +238,7 @@ public class Arrival extends Aircraft {
                     super.updateAltitude();
                     if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
                         setGsCap(true);
-                        setMissedAlt(); //TODO Fix bug where altitude is set to go around alt when GS not captured
+                        setMissedAlt(); //TODO Reproduce & fix bug where altitude is set to go around alt when GS not captured
                     }
                 } else {
                     setVerticalSpeed(-MathTools.nmToFeet((float) Math.tan(Math.toRadians(3)) * 140f / 60f));
@@ -336,7 +336,7 @@ public class Arrival extends Aircraft {
 
         if (MathUtils.random(1f) < chance) {
             willGoAround = true;
-            goAroundAlt = MathUtils.random(500, 1300);
+            goAroundAlt = MathUtils.random(500, 1100);
         }
     }
 
@@ -348,8 +348,8 @@ public class Arrival extends Aircraft {
             System.out.println(getCallsign() + " performed a go around due to windshear!");
             return true;
         }
-        if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) <= 4 - getIls().getGsOffset()) {
-            //If distance from runway end is less than 6nm
+        if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 4) {
+            //If distance from runway is less than 4nm
             if (!(getIls() instanceof LDA) && !isGsCap()) {
                 //If ILS GS has not been captured
                 System.out.println(getCallsign() + " performed a go around due to being too high!");

@@ -71,6 +71,7 @@ public class Runway extends Actor {
         setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
 
         GameScreen.stage.addActor(this);
+        setVisible(false);
     }
 
     /** Parses the input string into relevant data for the runway */

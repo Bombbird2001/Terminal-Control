@@ -2,12 +2,12 @@ package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
@@ -47,16 +47,11 @@ public class MainMenuScreen implements Screen {
         //Reset stage
         stage.clear();
 
-        //Set label params
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont20;
-        labelStyle.fontColor = Color.WHITE;
-        Label headerLabel = new Label("Terminal Control", labelStyle);
-        headerLabel.setWidth(buttonWidth);
-        headerLabel.setHeight(buttonHeight);
-        headerLabel.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.8f);
-        headerLabel.setAlignment(Align.center);
-        stage.addActor(headerLabel);
+        //Set title icon
+        Image image = new Image(new Texture(Gdx.files.internal("game/ui/MainMenuIcon.png")));
+        image.scaleBy(0.5f);
+        image.setPosition(2880 / 2.0f - 1.5f * image.getWidth() / 2.0f, 1620 * 0.825f);
+        stage.addActor(image);
 
         //Set button textures
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();

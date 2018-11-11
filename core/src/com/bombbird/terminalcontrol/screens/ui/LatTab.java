@@ -119,7 +119,7 @@ public class LatTab extends Tab {
     }
 
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
-        TextButton button = new TextButton((value > 0) ? "+" : "-", buttonStyle);
+        TextButton button = new TextButton(((value > 0) ? "+" : "") + Integer.toString(value), buttonStyle);
         button.setSize((0.8f / 3f) * getPaneWidth(), 300);
         button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2000) : (3240 - 2570));
         button.addListener(new ChangeListener() {

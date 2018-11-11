@@ -64,6 +64,7 @@ public class Aircraft extends Actor {
     private int controlState;
     private NavState navState;
     private boolean goAround;
+    private boolean conflict;
 
     //Aircraft position
     private float x;
@@ -175,6 +176,7 @@ public class Aircraft extends Actor {
         locCap = false;
         climbSpd = MathUtils.random(270, 290);
         goAround = false;
+        conflict = false;
 
         selected = false;
         dragging = false;
@@ -414,7 +416,7 @@ public class Aircraft extends Actor {
         } else if (expedite && verticalSpeed < -maxDes) {
             verticalSpeed = -maxDes;
         }
-        altitude = altitude + verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
+        altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
         if (Math.abs(targetAltitude - altitude) < 50) {
             altitude = targetAltitude;
             verticalSpeed = 0;
@@ -422,6 +424,9 @@ public class Aircraft extends Actor {
         }
         if (prevAlt < altitude && (int)(prevAlt / 1000) <= (int)(altitude / 1000)) {
             updateAltRestrictions();
+        }
+        if ((int)(prevAlt / 1000) != (int)(altitude / 1000)) {
+            RadarScreen.separationChecker.updateAircraftPositions();
         }
         prevAlt = altitude;
     }
@@ -1420,5 +1425,13 @@ public class Aircraft extends Actor {
 
     public void setGoAround(boolean goAround) {
         this.goAround = goAround;
+    }
+
+    public boolean isConflict() {
+        return conflict;
+    }
+
+    public void setConflict(boolean conflict) {
+        this.conflict = conflict;
     }
 }

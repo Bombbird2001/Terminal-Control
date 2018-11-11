@@ -65,8 +65,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    public Array<Obstacle> obsArray;
-    public Array<RestrictedArea> restArray;
+    public static Array<Obstacle> obsArray;
+    public static Array<RestrictedArea> restArray;
 
     //Create airports
     public static final HashMap<String, Airport> airports = new HashMap<String, Airport>();

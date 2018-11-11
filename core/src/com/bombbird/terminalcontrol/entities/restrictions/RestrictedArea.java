@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -66,5 +67,11 @@ public class RestrictedArea extends Actor {
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
     }
 
-    //TODO: Test for conflict with aircraft
+    public int getMinAlt() {
+        return minAlt;
+    }
+
+    public boolean isIn(Aircraft aircraft) {
+        return circle.contains(aircraft.getX(), aircraft.getY());
+    }
 }
