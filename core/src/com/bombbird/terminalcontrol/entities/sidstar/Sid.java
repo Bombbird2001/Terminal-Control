@@ -47,7 +47,7 @@ public class Sid extends SidStar {
                         for (String s3: s2.split(" ")) {
                             switch (index1) {
                                 case 0:
-                                    getWaypoints().add(GameScreen.waypoints.get(s3));
+                                    getWaypoints().add(GameScreen.WAYPOINTS.get(s3));
                                     break; //First part is the name of the waypoint
                                 case 1:
                                     altSpdRestrictions[0] = Integer.parseInt(s3);
@@ -59,7 +59,7 @@ public class Sid extends SidStar {
                                     altSpdRestrictions[2] = Integer.parseInt(s3);
                                     break; //3 is max speed
                                 default:
-                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");
+                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.MAIN_NAME + "/sid" + getAirport().getIcao() + ".sid");
                             }
                             index1++;
                         }
@@ -71,7 +71,7 @@ public class Sid extends SidStar {
                         outboundHdg.add(Integer.parseInt(s2));
                     }
                     break;
-                default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");
+                default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + RadarScreen.MAIN_NAME + "/sid" + getAirport().getIcao() + ".sid");
             }
             index++;
         }

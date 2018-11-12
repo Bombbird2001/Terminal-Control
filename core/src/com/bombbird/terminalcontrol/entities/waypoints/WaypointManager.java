@@ -14,7 +14,7 @@ public class WaypointManager {
 
     /** Unselect all waypoints first */
     private void unselectAll() {
-        for (Waypoint waypoint: RadarScreen.waypoints.values()) {
+        for (Waypoint waypoint: RadarScreen.WAYPOINTS.values()) {
             waypoint.setSelected(false);
         }
     }
@@ -38,7 +38,7 @@ public class WaypointManager {
     private void updateChangeSelected() {
         //Only one aircraft selected at a time
         Aircraft aircraft = RadarScreen.getSelectedAircraft();
-        if (aircraft != null && RadarScreen.ui.latTab.tabChanged && aircraft.getUiRemainingWaypoints() != null) {
+        if (aircraft != null && RadarScreen.UI.latTab.tabChanged && aircraft.getUiRemainingWaypoints() != null) {
             for (Waypoint waypoint: aircraft.getUiRemainingWaypoints()) {
                 waypoint.setSelected(true);
             }
@@ -47,7 +47,7 @@ public class WaypointManager {
 
     /** Updates the waypoints selected based on whether the aircrafts' next direct is it */
     private void updateAircraftDirects() {
-        for (Aircraft aircraft: RadarScreen.aircrafts.values()) {
+        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
             if (aircraft.isHolding()) {
                 aircraft.getHoldWpt().setSelected(true);
             } else if (aircraft.getDirect() != null) {

@@ -64,7 +64,7 @@ public class Ui implements Disposable {
         //Updates text in METAR label
         for (Label label: metarInfos) {
             //Get airport: ICAO code is first 4 letters of label's text
-            Airport airport = RadarScreen.airports.get(label.getText().toString().substring(0, 4));
+            Airport airport = RadarScreen.AIRPORTS.get(label.getText().toString().substring(0, 4));
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
@@ -102,7 +102,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(labelButton);
+        RadarScreen.UI_STAGE.addActor(labelButton);
     }
 
     private void loadNormalPane() {
@@ -120,7 +120,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(paneImage);
+        RadarScreen.UI_STAGE.addActor(paneImage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
@@ -128,7 +128,7 @@ public class Ui implements Disposable {
 
         int index = 0;
         metarInfos = new Array<Label>();
-        for (Airport airport: RadarScreen.airports.values()) {
+        for (Airport airport: RadarScreen.AIRPORTS.values()) {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             metarText[1] = "Winds: Loading";
@@ -138,7 +138,7 @@ public class Ui implements Disposable {
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
             metarInfo.setPosition(100, 2775 - index * 575);
             metarInfo.setSize(700, 300);
-            RadarScreen.uiStage.addActor(metarInfo);
+            RadarScreen.UI_STAGE.addActor(metarInfo);
             metarInfos.add(metarInfo);
             index++;
         }
@@ -214,7 +214,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(cfmChange);
+        RadarScreen.UI_STAGE.addActor(cfmChange);
 
         //Undo all changes button
         resetAll = new TextButton("Undo all\nchanges", textButtonStyle);
@@ -227,7 +227,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(resetAll);
+        RadarScreen.UI_STAGE.addActor(resetAll);
     }
 
     private void loadTabButtons() {
@@ -256,7 +256,7 @@ public class Ui implements Disposable {
             }
         });
         setTabColours(latButton, true);
-        RadarScreen.uiStage.addActor(latButton);
+        RadarScreen.UI_STAGE.addActor(latButton);
 
         //Alt mode
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
@@ -282,7 +282,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(altButton);
+        RadarScreen.UI_STAGE.addActor(altButton);
 
         //Spd mode
         TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
@@ -308,7 +308,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(spdButton);
+        RadarScreen.UI_STAGE.addActor(spdButton);
     }
 
     private void updateTabButtons() {

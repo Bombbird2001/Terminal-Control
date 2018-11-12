@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-import static com.bombbird.terminalcontrol.screens.GameScreen.shapeRenderer;
+import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class Waypoint extends Actor {
     private String name;
@@ -38,8 +38,8 @@ public class Waypoint extends Actor {
 
     public void renderShape() {
         if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
-            shapeRenderer.setColor(Color.WHITE);
-            shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
+            SHAPE_RENDERER.setColor(Color.WHITE);
+            SHAPE_RENDERER.circle(getPosX(), getPosY(), 12, 10);
         }
     }
 

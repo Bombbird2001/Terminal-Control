@@ -72,7 +72,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(ilsBox);
+        RadarScreen.UI_STAGE.addActor(ilsBox);
     }
 
     private void loadHdgElements() {
@@ -85,7 +85,7 @@ public class LatTab extends Tab {
         hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
         hdgBox.setSize(0.8f * getPaneWidth(), 270);
         hdgBox.setAlignment(Align.center);
-        RadarScreen.uiStage.addActor(hdgBox);
+        RadarScreen.UI_STAGE.addActor(hdgBox);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.WHITE;
@@ -129,7 +129,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(button);
+        RadarScreen.UI_STAGE.addActor(button);
         return button;
     }
 

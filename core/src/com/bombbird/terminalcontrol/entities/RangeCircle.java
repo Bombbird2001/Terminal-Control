@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-import static com.bombbird.terminalcontrol.screens.GameScreen.shapeRenderer;
+import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class RangeCircle extends Actor{
     private int range;
@@ -32,7 +32,7 @@ public class RangeCircle extends Actor{
     }
 
     public void renderShape() {
-        shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(2880, 1620, range / 10f * 324, 60);
+        SHAPE_RENDERER.setColor(Color.GRAY);
+        SHAPE_RENDERER.circle(2880, 1620, range / 10f * 324, 60);
     }
 }

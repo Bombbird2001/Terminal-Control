@@ -51,7 +51,7 @@ public class HoldProcedure {
             int[] altRest = new int[2];
             for (String wptInfo: indivWpt.split(" ")) {
                 switch (index) {
-                    case 0: waypoints.add(RadarScreen.waypoints.get(wptInfo)); break;
+                    case 0: waypoints.add(RadarScreen.WAYPOINTS.get(wptInfo)); break;
                     case 1: altRest[0] = Integer.parseInt(wptInfo); break;
                     case 2: altRest[1] = Integer.parseInt(wptInfo); break;
                     case 3: maxSpd.add(Integer.parseInt(wptInfo)); break;
@@ -59,7 +59,7 @@ public class HoldProcedure {
                     case 5: entryProcedure.add(Integer.parseInt(wptInfo)); break;
                     case 6: inboundHdg.add(Integer.parseInt(wptInfo)); break;
                     case 7: legDist.add(Integer.parseInt(wptInfo)); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/hold" + airport.getIcao() + ".hold");
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.MAIN_NAME + "/hold" + airport.getIcao() + ".hold");
                 }
                 index++;
             }
@@ -73,7 +73,7 @@ public class HoldProcedure {
 
         int index = 0;
         for (Waypoint waypoint: waypoints) {
-            float inboundTrack = inboundHdg.get(index) - RadarScreen.magHdgDev;
+            float inboundTrack = inboundHdg.get(index) - RadarScreen.MAG_HDG_DEV;
             float legPxDist = MathTools.nmToPixel(legDist.get(index));
 
             float xOffset1 = legPxDist * MathUtils.cosDeg(270 - inboundTrack);
@@ -97,7 +97,7 @@ public class HoldProcedure {
         int index = waypoints.indexOf(waypoint, false);
         float radiusPx = MathTools.nmToPixel(turnDiameterNm / 2f);
 
-        float track1 = inboundHdg.get(index) - RadarScreen.magHdgDev;
+        float track1 = inboundHdg.get(index) - RadarScreen.MAG_HDG_DEV;
         track1 += left.get(index) ? -90 : 90;
         float[] midpoint1 = new float[] {waypoint.getPosX() + radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + radiusPx * MathUtils.sinDeg(90 - track1)};
         float[] end1 = new float[] {waypoint.getPosX() + 2 * radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + 2 * radiusPx * MathUtils.sinDeg(90 - track1)};
@@ -106,15 +106,15 @@ public class HoldProcedure {
         float[] midpoint2 = new float[] {oppPoint.get(index)[0] + radiusPx * MathUtils.cosDeg(90 - track2), oppPoint.get(index)[1] + radiusPx * MathUtils.sinDeg(90 - track2)};
         float[] end2 = new float[] {oppPoint.get(index)[0] + 2 * radiusPx * MathUtils.cosDeg(90 - track2), oppPoint.get(index)[1] + 2 * radiusPx * MathUtils.sinDeg(90 - track2)};
 
-        GameScreen.shapeRenderer.arc(midpoint1[0], midpoint1[1], radiusPx, 270 - (track1 + (left.get(index) ? 0 : -180)), 180);
-        GameScreen.shapeRenderer.arc(midpoint2[0], midpoint2[1], radiusPx, 270 - (track2 + (left.get(index) ? 0 : -180)), 180);
+        GameScreen.SHAPE_RENDERER.arc(midpoint1[0], midpoint1[1], radiusPx, 270 - (track1 + (left.get(index) ? 0 : -180)), 180);
+        GameScreen.SHAPE_RENDERER.arc(midpoint2[0], midpoint2[1], radiusPx, 270 - (track2 + (left.get(index) ? 0 : -180)), 180);
 
-        GameScreen.shapeRenderer.line(waypoint.getPosX(), waypoint.getPosY(), end2[0], end2[1]);
-        GameScreen.shapeRenderer.line(end1[0], end1[1], oppPoint.get(index)[0], oppPoint.get(index)[1]);
+        GameScreen.SHAPE_RENDERER.line(waypoint.getPosX(), waypoint.getPosY(), end2[0], end2[1]);
+        GameScreen.SHAPE_RENDERER.line(end1[0], end1[1], oppPoint.get(index)[0], oppPoint.get(index)[1]);
 
-        GameScreen.shapeRenderer.setColor(Color.BLACK);
-        GameScreen.shapeRenderer.line(waypoint.getPosX(), waypoint.getPosY(), end1[0], end1[1]);
-        GameScreen.shapeRenderer.line(oppPoint.get(index)[0], oppPoint.get(index)[1], end2[0], end2[1]);
+        GameScreen.SHAPE_RENDERER.setColor(Color.BLACK);
+        GameScreen.SHAPE_RENDERER.line(waypoint.getPosX(), waypoint.getPosY(), end1[0], end1[1]);
+        GameScreen.SHAPE_RENDERER.line(oppPoint.get(index)[0], oppPoint.get(index)[1], end2[0], end2[1]);
     }
 
     public Array<Waypoint> getWaypoints() {

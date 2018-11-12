@@ -11,7 +11,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-import static com.bombbird.terminalcontrol.screens.GameScreen.shapeRenderer;
+import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class RestrictedArea extends Actor {
     private Circle circle;
@@ -42,7 +42,7 @@ public class RestrictedArea extends Actor {
                 case 4: centreX = Float.parseFloat(s1); break;
                 case 5: centreY = Float.parseFloat(s1); break;
                 case 6: radius = Float.parseFloat(s1) * 2; break;
-                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/restricted.rest");
+                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.MAIN_NAME + "/restricted.rest");
             }
             index++;
         }
@@ -57,14 +57,14 @@ public class RestrictedArea extends Actor {
     }
 
     public void renderShape() {
-        shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.circle(circle.x, circle.y, circle.radius);
-        shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.GRAY);
-        shapeRenderer.circle(circle.x, circle.y, circle.radius);
+        SHAPE_RENDERER.end();
+        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
+        SHAPE_RENDERER.setColor(Color.BLACK);
+        SHAPE_RENDERER.circle(circle.x, circle.y, circle.radius);
+        SHAPE_RENDERER.end();
+        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Line);
+        SHAPE_RENDERER.setColor(Color.GRAY);
+        SHAPE_RENDERER.circle(circle.x, circle.y, circle.radius);
     }
 
     public int getMinAlt() {

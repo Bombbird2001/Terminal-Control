@@ -58,7 +58,7 @@ public class Metar {
     }
 
     private void receiveMetar(final MediaType mediaType, final OkHttpClient client) {
-        String str = RadarScreen.airports.keySet().toString();
+        String str = RadarScreen.AIRPORTS.keySet().toString();
         Request request = new Request.Builder()
                 .addHeader("X-API-KEY", apiKey)
                 .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
@@ -125,7 +125,7 @@ public class Metar {
     private void getMetar(final MediaType mediaType, final OkHttpClient client) {
         JSONObject jo = new JSONObject();
         jo.put("password", ""); //TODO: Remove before committing
-        JSONArray apts = new JSONArray(RadarScreen.airports.keySet());
+        JSONArray apts = new JSONArray(RadarScreen.AIRPORTS.keySet());
         jo.put("airports", apts);
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
@@ -137,7 +137,7 @@ public class Metar {
             public void onFailure(Call call, IOException e) {
                 metarObject = generateRandomWeather();
                 updateAirports();
-                RadarScreen.ui.updateMetar();
+                RadarScreen.UI.updateMetar();
                 radarScreen.loadingPercent = "100%";
                 radarScreen.loading = false;
             }
@@ -155,7 +155,7 @@ public class Metar {
                         response.close();
                         metarObject = generateRandomWeather();
                         updateAirports();
-                        RadarScreen.ui.updateMetar();
+                        RadarScreen.UI.updateMetar();
                         radarScreen.loadingPercent = "100%";
                         radarScreen.loading = false;
                         System.out.println(response.body().string());
@@ -172,7 +172,7 @@ public class Metar {
                         //METAR JSON text has been received
                         metarObject = new JSONObject(responseText);
                         updateAirports();
-                        RadarScreen.ui.updateMetar();
+                        RadarScreen.UI.updateMetar();
                         radarScreen.loadingPercent = "100%";
                         radarScreen.loading = false;
                     }
@@ -183,14 +183,14 @@ public class Metar {
     }
 
     private void updateAirports() {
-        for (Airport airport: RadarScreen.airports.values()) {
+        for (Airport airport: RadarScreen.AIRPORTS.values()) {
             airport.setMetar(metarObject);
         }
     }
 
     private JSONObject generateRandomWeather() {
         JSONObject jsonObject = new JSONObject();
-        for (String airport: RadarScreen.airports.keySet()) {
+        for (String airport: RadarScreen.AIRPORTS.keySet()) {
             //For each airport, create random weather and parse to JSON object
             int visibility;
             int windDir;
@@ -237,15 +237,15 @@ public class Metar {
         if (windSpd >= 15 && MathUtils.random(2) == 2) {
             //Runway windshear
             StringBuilder stringBuilder = new StringBuilder();
-            for (String runway : RadarScreen.airports.get(airport).getRunways().keySet()) {
+            for (String runway : RadarScreen.AIRPORTS.get(airport).getRunways().keySet()) {
                 //Random boolean for each runway
-                if (RadarScreen.airports.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
+                if (RadarScreen.AIRPORTS.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
                     stringBuilder.append("R");
                     stringBuilder.append(runway);
                     stringBuilder.append(" ");
                 }
             }
-            if (stringBuilder.length() > 3 && stringBuilder.length() == RadarScreen.airports.get(airport).getRunways().size() * 3) {
+            if (stringBuilder.length() > 3 && stringBuilder.length() == RadarScreen.AIRPORTS.get(airport).getRunways().size() * 3) {
                 ws = "ALL RWY";
             } else {
                 ws = stringBuilder.toString();

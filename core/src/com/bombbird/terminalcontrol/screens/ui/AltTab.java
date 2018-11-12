@@ -33,21 +33,21 @@ public class AltTab extends Tab {
         int highestAlt = -1;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
-            highestAlt = RadarScreen.maxDeptAlt;
+            highestAlt = RadarScreen.MAX_ALT;
         } else if (selectedAircraft instanceof Arrival) {
-            lowestAlt = RadarScreen.minArrAlt;
+            lowestAlt = RadarScreen.MIN_ALT;
             if (latMode.equals("Hold at")) {
                 Star star = (Star) selectedAircraft.getSidStar();
-                int[] restr = star.getHoldProcedure().getAltRestAtWpt(RadarScreen.waypoints.get(LatTab.holdWpt));
+                int[] restr = star.getHoldProcedure().getAltRestAtWpt(RadarScreen.WAYPOINTS.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
-            } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < 13000) {
+            } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < RadarScreen.MAX_ALT) {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
             }
             if (highestAlt == -1) {
-                highestAlt = RadarScreen.maxArrAlt;
+                highestAlt = RadarScreen.MAX_ALT;
             }
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();

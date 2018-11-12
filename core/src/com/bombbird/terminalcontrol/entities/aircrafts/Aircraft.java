@@ -29,19 +29,20 @@ import static com.bombbird.terminalcontrol.screens.GameScreen.*;
 
 public class Aircraft extends Actor {
     //Rendering parameters
+    public static TextureAtlas ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
+    public static Skin SKIN = new Skin();
+    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_CTRL = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
+    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
+    private static boolean LOADED_ICONS = false;
+
     private Label label;
-    public String[] labelText;
+    private String[] labelText;
     private boolean selected;
-    private static boolean loadedIcons = false;
-    public static TextureAtlas iconAtlas = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
-    public static Skin skin = new Skin();
     private ImageButton icon;
     private Button labelButton;
     private Button clickSpot;
-    private static final ImageButton.ImageButtonStyle buttonStyleCtrl = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle buttonStyleDept = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle buttonStyleUnctrl = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle buttonStyleEnroute = new ImageButton.ImageButtonStyle();
     private boolean dragging;
     private Color color;
 
@@ -117,20 +118,20 @@ public class Aircraft extends Actor {
     private float radarVs;
 
     public Aircraft(String callsign, String icaoType, Airport airport) {
-        if (!loadedIcons) {
-            skin.addRegions(iconAtlas);
-            buttonStyleCtrl.imageUp = skin.getDrawable("aircraftControlled");
-            buttonStyleCtrl.imageDown = skin.getDrawable("aircraftControlled");
-            buttonStyleDept.imageUp = skin.getDrawable("aircraftDeparture");
-            buttonStyleDept.imageDown = skin.getDrawable("aircraftDeparture");
-            buttonStyleUnctrl.imageUp = skin.getDrawable("aircraftNotControlled");
-            buttonStyleUnctrl.imageDown = skin.getDrawable("aircraftNotControlled");
-            buttonStyleEnroute.imageUp = skin.getDrawable("aircraftEnroute");
-            buttonStyleEnroute.imageDown = skin.getDrawable("aircraftEnroute");
-            loadedIcons = true;
+        if (!LOADED_ICONS) {
+            SKIN.addRegions(ICON_ATLAS);
+            BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
+            BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
+            BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
+            BUTTON_STYLE_DEPT.imageDown = SKIN.getDrawable("aircraftDeparture");
+            BUTTON_STYLE_UNCTRL.imageUp = SKIN.getDrawable("aircraftNotControlled");
+            BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
+            BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
+            BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
+            LOADED_ICONS = true;
         }
         this.callsign = callsign;
-        stage.addActor(this);
+        STAGE.addActor(this);
         this.icaoType = icaoType;
         int[] perfData = AircraftType.getAircraftInfo(icaoType);
         if (perfData == null) {
@@ -193,10 +194,10 @@ public class Aircraft extends Actor {
     }
 
     public void loadLabel() {
-        icon = new ImageButton(buttonStyleUnctrl);
+        icon = new ImageButton(BUTTON_STYLE_UNCTRL);
         icon.setSize(20, 20);
         icon.getImageCell().size(20, 20);
-        stage.addActor(icon);
+        STAGE.addActor(icon);
 
         labelText = new String[11];
         labelText[9] = airport.getIcao();
@@ -206,7 +207,7 @@ public class Aircraft extends Actor {
         label = new Label("Loading...", labelStyle);
         label.setPosition(x - label.getWidth() / 2, y + 25);
 
-        labelButton = new Button(skin.getDrawable("labelBackgroundSmall"), skin.getDrawable("labelBackgroundSmall"));
+        labelButton = new Button(SKIN.getDrawable("labelBackgroundSmall"), SKIN.getDrawable("labelBackgroundSmall"));
         labelButton.setSize(label.getWidth() + 10, label.getHeight());
 
         clickSpot = new Button(new Button.ButtonStyle());
@@ -224,7 +225,7 @@ public class Aircraft extends Actor {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!dragging) {
-                    RadarScreen.setSelectedAircraft(RadarScreen.aircrafts.get(actor.getName()));
+                    RadarScreen.setSelectedAircraft(RadarScreen.AIRCRAFTS.get(actor.getName()));
                 } else {
                     dragging = false;
                 }
@@ -232,22 +233,22 @@ public class Aircraft extends Actor {
         });
         clickSpot.setDebug(true);
 
-        stage.addActor(labelButton);
-        stage.addActor(label);
-        stage.addActor(clickSpot);
+        STAGE.addActor(labelButton);
+        STAGE.addActor(label);
+        STAGE.addActor(clickSpot);
     }
 
     /** Renders shapes using shapeRenderer; all rendering should be called here */
     public void renderShape() {
         drawLatLines();
         moderateLabel();
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
+        SHAPE_RENDERER.setColor(Color.WHITE);
+        SHAPE_RENDERER.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
         if (controlState == 1 || controlState == 2) {
-            shapeRenderer.setColor(color);
-            shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
+            SHAPE_RENDERER.setColor(color);
+            SHAPE_RENDERER.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
         }
-        clickSpot.drawDebug(shapeRenderer);
+        clickSpot.drawDebug(SHAPE_RENDERER);
     }
 
     /** Draws the lines displaying the lateral status of aircraft */
@@ -267,13 +268,13 @@ public class Aircraft extends Actor {
             //Draws selected status (from UI)
             if (controlState == 1 || controlState == 2) {
                 //System.out.println("arrival/departure: " + (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) + " hdgChanged: " + ui.latTab.isHdgChanged() + " latModeChanged: " + ui.latTab.isLatModeChanged() + " wptChanged: " + ui.latTab.isWptChanged());
-                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
+                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (UI.latTab.isWptChanged() || UI.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
-                } else if (LatTab.latMode.equals("After waypoint, fly heading") && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode.equals("After waypoint, fly heading") && (UI.latTab.isAfterWptChanged() || UI.latTab.isAfterWptHdgChanged() || UI.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (UI.latTab.isHdgChanged() || UI.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
-                } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
+                } else if (LatTab.latMode.equals("Hold at") && (UI.latTab.isLatModeChanged() || UI.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
                 }
             }
@@ -281,47 +282,47 @@ public class Aircraft extends Actor {
     }
 
     public void drawSidStar() {
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+        SHAPE_RENDERER.setColor(Color.WHITE);
+        SHAPE_RENDERER.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
     public void uiDrawSidStar() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        SHAPE_RENDERER.setColor(Color.YELLOW);
+        SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
     }
 
     public void drawAftWpt() {
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+        SHAPE_RENDERER.setColor(Color.WHITE);
+        SHAPE_RENDERER.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
     public void uiDrawAftWpt() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        SHAPE_RENDERER.setColor(Color.YELLOW);
+        SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
     }
 
     private void drawHdgLine() {
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.magHdgDev)));
+        SHAPE_RENDERER.setColor(Color.WHITE);
+        SHAPE_RENDERER.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.MAG_HDG_DEV)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.MAG_HDG_DEV)));
     }
 
     private void uiDrawHdgLine() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.magHdgDev)));
+        SHAPE_RENDERER.setColor(Color.YELLOW);
+        SHAPE_RENDERER.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.MAG_HDG_DEV)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.MAG_HDG_DEV)));
     }
 
     public void drawHoldPattern() {
-        shapeRenderer.setColor(Color.WHITE);
+        SHAPE_RENDERER.setColor(Color.WHITE);
         if (navState.getClearedDirect().size > 0 && navState.getClearedDirect().last() != null) {
-            shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+            SHAPE_RENDERER.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
         }
         ((Star) getSidStar()).getHoldProcedure().renderShape(navState.getClearedHold().last());
     }
 
     public void uiDrawHoldPattern() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, RadarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), RadarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
-        ((Star) getSidStar()).getHoldProcedure().renderShape(RadarScreen.waypoints.get(LatTab.holdWpt));
+        SHAPE_RENDERER.setColor(Color.YELLOW);
+        SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
+        ((Star) getSidStar()).getHoldProcedure().renderShape(RadarScreen.WAYPOINTS.get(LatTab.holdWpt));
     }
 
     /** The main update function, called during aircraft draw */
@@ -353,7 +354,7 @@ public class Aircraft extends Actor {
     public void updateSpd() {
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
-            ui.updateState();
+            UI.updateState();
         }
         navState.getClearedSpd().removeFirst();
         navState.getClearedSpd().addFirst(clearedIas);
@@ -420,13 +421,17 @@ public class Aircraft extends Actor {
         if (Math.abs(targetAltitude - altitude) < 50) {
             altitude = targetAltitude;
             verticalSpeed = 0;
-            expedite = false;
+            if ("Expedite climb/descent to".equals(navState.getDispAltMode().first())) {
+                navState.getDispAltMode().removeFirst();
+                navState.getDispAltMode().addFirst("Climb/descend to");
+                expedite = false;
+            }
         }
         if (prevAlt < altitude && (int)(prevAlt / 1000) <= (int)(altitude / 1000)) {
             updateAltRestrictions();
         }
         if ((int)(prevAlt / 1000) != (int)(altitude / 1000)) {
-            RadarScreen.separationChecker.updateAircraftPositions();
+            RadarScreen.SEPARATION_CHECKER.updateAircraftPositions();
         }
         prevAlt = altitude;
     }
@@ -443,7 +448,7 @@ public class Aircraft extends Actor {
         if (altitude - airport.getElevation() <= 4000) {
             winds = airport.getWinds();
         } else {
-            winds = RadarScreen.airports.get(RadarScreen.mainName).getWinds();
+            winds = RadarScreen.AIRPORTS.get(RadarScreen.MAIN_NAME).getWinds();
         }
         int windHdg = winds[0] + 180;
         int windSpd = winds[1];
@@ -524,7 +529,7 @@ public class Aircraft extends Actor {
                     }
                 }
             } else {
-                float track = star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - RadarScreen.magHdgDev;
+                float track = star.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - RadarScreen.MAG_HDG_DEV;
                 if (holdTargetPtSelected[1]) {
                     track += 180;
                 }
@@ -591,7 +596,7 @@ public class Aircraft extends Actor {
         gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float)(180 - angle - angleDiff)));
 
         //Add magnetic deviation to give magnetic heading
-        targetHeading += RadarScreen.magHdgDev;
+        targetHeading += RadarScreen.MAG_HDG_DEV;
 
         return new double[] {targetHeading, angleDiff};
     }
@@ -619,7 +624,7 @@ public class Aircraft extends Actor {
     /** Updates the lateral position of the aircraft and its label, removes aircraft if it goes out of radar range */
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds
-        track = heading - RadarScreen.magHdgDev + angleDiff;
+        track = heading - RadarScreen.MAG_HDG_DEV + angleDiff;
         if (!onGround && getIls() != null && getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, getIls().getRwy().getX(), getIls().getRwy().getY())) <= ((LDA) getIls()).getLineUpDist()) {
             //Set track && heading to runway
             track = getIls().getRwy().getTrueHdg();
@@ -632,7 +637,7 @@ public class Aircraft extends Actor {
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
             if (selected) {
-                ui.updateState();
+                UI.updateState();
             }
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
@@ -772,7 +777,7 @@ public class Aircraft extends Actor {
         updateClearedSpd();
         if (selected && (controlState == 1 || controlState == 2)) {
             updateUISelections();
-            ui.updateState();
+            UI.updateState();
         }
     }
 
@@ -804,7 +809,7 @@ public class Aircraft extends Actor {
             navState.getLatModes().removeValue("Hold at", false);
         }
         if (selected && (controlState == 1 || controlState == 2)) {
-            ui.updateState();
+            UI.updateState();
         }
     }
 
@@ -812,23 +817,23 @@ public class Aircraft extends Actor {
     public void setControlState(int controlState) {
         this.controlState = controlState;
         if (controlState == -1) { //En route aircraft - gray
-            icon.setStyle(buttonStyleEnroute);
+            icon.setStyle(BUTTON_STYLE_ENROUTE);
         } else if (controlState == 0) { //Uncontrolled aircraft - yellow
-            icon.setStyle(buttonStyleUnctrl);
+            icon.setStyle(BUTTON_STYLE_UNCTRL);
         } else if (controlState == 1) { //Controlled arrival - blue
-            icon.setStyle(buttonStyleCtrl);
+            icon.setStyle(BUTTON_STYLE_CTRL);
         } else if (controlState == 2) { //Controlled departure - green
-            icon.setStyle(buttonStyleDept);
+            icon.setStyle(BUTTON_STYLE_DEPT);
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
         }
         if (selected) {
             if (controlState == -1 || controlState == 0) {
-                RadarScreen.ui.setNormalPane(true);
-                RadarScreen.ui.setSelectedPane(null);
+                RadarScreen.UI.setNormalPane(true);
+                RadarScreen.UI.setSelectedPane(null);
             } else {
-                RadarScreen.ui.setNormalPane(false);
-                RadarScreen.ui.setSelectedPane(this);
+                RadarScreen.UI.setNormalPane(false);
+                RadarScreen.UI.setSelectedPane(this);
             }
         }
     }
@@ -905,17 +910,17 @@ public class Aircraft extends Actor {
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
     private void updateUISelections() {
-        ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
+        UI.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
         LatTab.clearedHdg = clearedHeading;
         if (direct != null) {
-            ui.latTab.getValueBox().setSelected(direct.getName());
+            UI.latTab.getValueBox().setSelected(direct.getName());
         }
 
-        if (this instanceof Departure && Integer.parseInt(ui.altTab.getValueBox().getSelected()) < lowestAlt) {
-            ui.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
+        if (this instanceof Departure && Integer.parseInt(UI.altTab.getValueBox().getSelected()) < lowestAlt) {
+            UI.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
         }
 
-        ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
+        UI.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
     }
 
     /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep */
@@ -1235,7 +1240,7 @@ public class Aircraft extends Actor {
         labelButton.remove();
         clickSpot.remove();
         remove();
-        RadarScreen.aircrafts.remove(callsign);
+        RadarScreen.AIRCRAFTS.remove(callsign);
     }
 
     public void updateAltRestrictions() {
@@ -1433,5 +1438,13 @@ public class Aircraft extends Actor {
 
     public void setConflict(boolean conflict) {
         this.conflict = conflict;
+    }
+
+    public float getRadarX() {
+        return radarX;
+    }
+
+    public float getRadarY() {
+        return radarY;
     }
 }

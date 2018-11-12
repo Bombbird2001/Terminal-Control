@@ -23,9 +23,10 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import java.util.HashMap;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
+    public static Stage STAGE;
+
     //Init game (set in constructor)
     private final TerminalControl game;
-    public static Stage stage;
     private boolean aircraftLoaded;
     public boolean loading;
     public String loadingPercent;
@@ -52,30 +53,30 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private float lastZoom = 1;
 
     //Create 2nd camera for UI
-    public static Ui ui;
-    public static Stage uiStage;
+    public static Ui UI;
+    public static Stage UI_STAGE;
     public OrthographicCamera uiCam;
     public Viewport uiViewport;
 
     //Create texture stuff
     public Skin skin;
-    public static ShapeRenderer shapeRenderer = new ShapeRenderer();
+    public static ShapeRenderer SHAPE_RENDERER = new ShapeRenderer();
 
     //Create range circles
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    public static Array<Obstacle> obsArray;
-    public static Array<RestrictedArea> restArray;
+    public static Array<Obstacle> OBS_ARRAY;
+    public static Array<RestrictedArea> REST_ARRAY;
 
     //Create airports
-    public static final HashMap<String, Airport> airports = new HashMap<String, Airport>();
+    public static final HashMap<String, Airport> AIRPORTS = new HashMap<String, Airport>();
 
     //HashMap of planes
-    public static final HashMap<String, Aircraft> aircrafts = new HashMap<String, Aircraft>();
+    public static final HashMap<String, Aircraft> AIRCRAFTS = new HashMap<String, Aircraft>();
 
     //Create waypoints
-    public static HashMap<String, Waypoint> waypoints;
+    public static HashMap<String, Waypoint> WAYPOINTS;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -88,18 +89,18 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loadingPercent = "0%";
     }
 
+    /** Load radar screen range circles */
     public void loadRange() {
-        //Load radar screen range circles
         rangeCircles[0] = new RangeCircle(10, -255);
         rangeCircles[1] = new RangeCircle(30, -900);
         rangeCircles[2] = new RangeCircle(50, -1548);
         for (RangeCircle circle: rangeCircles) {
-            stage.addActor(circle);
+            STAGE.addActor(circle);
         }
     }
 
+    /** Handles input from keyboard, mouse, moderates them */
     private void handleInput(float dt) {
-        //Handles input from keyboard, mouse, moderates them
         float ZOOMCONSTANT = 0.6f;
         float SCROLLCONSTANT = 150;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -140,8 +141,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         moderateCamPos();
     }
 
+    /** Prevents user from over or under zooming */
     private void moderateZoom() {
-        //Make sure user doesn't zoom in too much or zoom out of bounds
         if (camera.zoom < 0.3f) {
             camera.zoom = 0.3f;
             zooming = false;
@@ -160,9 +161,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         lastZoom = camera.zoom;
     }
 
+    /** Moderates the position of the camera to prevent it from going out of boundary */
     private void moderateCamPos() {
         //Setting new boundaries for camera position after zooming
-        float effectiveViewportWidth = (camera.viewportWidth - ui.getPaneWidth()) * camera.zoom; //Take width of pane into account
+        float effectiveViewportWidth = (camera.viewportWidth - UI.getPaneWidth()) * camera.zoom; //Take width of pane into account
         float xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
         float yDeviation = -(effectiveViewportHeight - camera.viewportHeight) / 2f;
@@ -185,22 +187,25 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
+    /** Creates new aircraft; overridden in radarScreen subclass */
     public void newAircraft() {
-        //Creates new aircraft; overridden in radarscreen subclass
+        //No default implementation
     }
 
+    /** Implements show method of screen; overridden in radarScreen class */
     @Override
     public void show() {
-        //Implements show method of screen; overridden in radarscreen class
+        //No default implementation
     }
 
+    /** Renders shapes for aircraft trajectory line, obstacle and restricted areas; overridden in radarScreen class */
     public void renderShape() {
-        //Renders shapes for aircraft trajectory line, obstacle and restricted areas; overridden in radarscreen class
+        //No default implementation
     }
 
+    /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
-        //Main rendering method for rendering to spritebatch
         if (!loading && !aircraftLoaded) {
             //Load the initial aircrafts if METAR has finished loading but aircrafts not loaded yet
             newAircraft();
@@ -219,21 +224,21 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         //Set rendering for stage camera
         game.batch.setProjectionMatrix(camera.combined);
-        shapeRenderer.setProjectionMatrix(camera.combined);
+        SHAPE_RENDERER.setProjectionMatrix(camera.combined);
 
         //Update stage
-        stage.act(delta);
+        STAGE.act(delta);
 
         //Render each of the range circles, obstacles using shaperenderer
         if (!loading) {
-            stage.getViewport().apply();
+            STAGE.getViewport().apply();
             //Render shapes only if METAR has finished loading
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Line);
             for (RangeCircle rangeCircle : rangeCircles) {
                 rangeCircle.renderShape();
             }
             renderShape();
-            shapeRenderer.end();
+            SHAPE_RENDERER.end();
         }
 
         //Draw to the spritebatch
@@ -252,7 +257,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             }
             Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
         } else {
-            stage.draw();
+            STAGE.draw();
         }
         game.batch.end();
 
@@ -260,29 +265,29 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         uiCam.update();
         if (!loading) {
             game.batch.setProjectionMatrix(uiCam.combined);
-            uiStage.act();
+            UI_STAGE.act();
             game.batch.begin();
-            uiStage.getViewport().apply();
-            uiStage.draw();
+            UI_STAGE.getViewport().apply();
+            UI_STAGE.draw();
             game.batch.end();
         }
     }
 
+    /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
     @Override
     public void resize(int width, int height) {
-        //Implements resize method of screen, adjusts camera & viewport properties after resize for better UI
         TerminalControl.WIDTH = width;
         TerminalControl.HEIGHT = height;
 
-        ui.updatePaneWidth();
+        UI.updatePaneWidth();
 
         viewport.update(width, height, false);
-        stage.getViewport().update(width, height, false);
+        STAGE.getViewport().update(width, height, false);
         float xOffset = camera.zoom * 990;
         camera.position.set(camera.viewportWidth / 2 - xOffset, camera.viewportHeight / 2, 0);
 
         uiViewport.update(width, height, true);
-        uiStage.getViewport().update(width, height, true);
+        UI_STAGE.getViewport().update(width, height, true);
         uiCam.position.set(uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f, 0);
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
@@ -302,44 +307,46 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
+    /** Implements pause method of screen */
     @Override
     public void pause() {
-        //Implements pause method of screen
+        //No default implementation
     }
 
+    /** Implements resume method of screen */
     @Override
     public void resume() {
-        //Implements pause method of screen
+        //No default implementation
     }
 
+    /** Implements hide method of screen */
     @Override
     public void hide() {
-        //Implements hide method of screen
         dispose();
     }
 
+    /** Implements dispose method of screen, disposes resources after they're no longer needed */
     @Override
     public void dispose() {
-        //Implements dispose method of screen, disposes resources after they're no longer needed
-        shapeRenderer.dispose();
-        stage.clear();
-        stage.dispose();
+        SHAPE_RENDERER.dispose();
+        STAGE.clear();
+        STAGE.dispose();
         skin.dispose();
 
-        shapeRenderer = null;
-        stage = null;
+        SHAPE_RENDERER = null;
+        STAGE = null;
         skin = null;
     }
 
+    /** Implements touchdown method of gestureListener */
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        //Implements touchdown method of gesturelistener
         return false;
     }
 
+    /** Implements tap method of gestureListener, tests for tap and double tap */
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        //Implements tap method of gesturelistener, tests for tap and double tap
         RadarScreen.setSelectedAircraft(null);
         if (count == 2 && !loading) {
             zooming = true;
@@ -348,21 +355,21 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         return false;
     }
 
+    /** Implements longPress method of gestureListener */
     @Override
     public boolean longPress(float x, float y) {
-        //Implements longpress method of gesturelistener
         return false;
     }
 
+    /** Implements fling method of gestureListener */
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
-        //Implements fling method of gesturelistener
         return false;
     }
 
+    /** Implements pan method of gestureListener, tests for panning to shift radar screen around */
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        //Implements pan method of gesturelistener, tests for panning to shift radar screen around
         if (loading) {
             return false;
         }
@@ -373,15 +380,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         return false;
     }
 
+    /** Implements panStop method of gestureListener */
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-        //Implements panstop method of gesturelistener
         return false;
     }
 
+    /** Implements zoom method of gestureListener, tests for pinch zooming to adjust radar screen zoom level */
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        //Implements zoom method of gesturelistener, tests for pinch zooming to adjust radar screen zoom level
         if (loading) {
             return true;
         }
@@ -396,62 +403,63 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         return true;
     }
 
+    /** Implements pinch method of gestureListener */
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        //Implements pinch method of gesturelistener
         return false;
     }
 
+    /** Implements pinchStop method of gestureListener */
     @Override
     public void pinchStop() {
-        //Implements pinchstop method of gesturelistener
+        //No default implementation
     }
 
+    /** Implements keyDown method of inputListener */
     @Override
     public boolean keyDown(int keycode) {
-        //Implements keydown method of inputlistener
         return false;
     }
 
+    /** Implements keyUp method of inputListener */
     @Override
     public boolean keyUp(int keycode) {
-        //Implements keyup method of inputlistener
         return false;
     }
 
+    /** Implements keyTyped method of inputListener */
     @Override
     public boolean keyTyped(char character) {
-        //Implements keytyped method of inputlistener
         return false;
     }
 
+    /** Implements touchdown method of inputListener */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //Implements touchdown method of inputlistener
         return false;
     }
 
+    /** Implements touchUp method of inputListener */
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        //Implements touchup method of inputlistener
         return false;
     }
 
+    /** Implements touchDragged method of inputListener */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        //Implements touchdragged method of inputlistener
         return false;
     }
 
+    /** Implements mouseMoved method of inputListener */
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        //Implements mousemoved method of inputlistener
         return false;
     }
 
+    /** Implements scrolled method of inputListener, tests for scrolling to adjust radar screen zoom levels */
     @Override
     public boolean scrolled(int amount) {
-        //Implements scrolled method of inputlistener, tests for scrolling to adjust radar screen zoom levels
         if (!loading) {
             camera.zoom += amount * 0.042f;
         }

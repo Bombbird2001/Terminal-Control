@@ -32,7 +32,7 @@ public class SidStar {
         while (index < end) {
             Waypoint waypoint = getWaypoint(index);
             if (prevPt != null) {
-                GameScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
+                GameScreen.SHAPE_RENDERER.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
             }
             prevPt = waypoint;
             index++;
@@ -44,10 +44,10 @@ public class SidStar {
 
     private void drawOutbound(float previousX, float previousY, int outbound) {
         if (outbound != -1) {
-            float outboundTrack = outbound - RadarScreen.magHdgDev;
+            float outboundTrack = outbound - RadarScreen.MAG_HDG_DEV;
             float x = previousX + 6610 * MathUtils.cosDeg(90 - outboundTrack);
             float y = previousY + 6610 * MathUtils.sinDeg(90 - outboundTrack);
-            GameScreen.shapeRenderer.line(previousX, previousY, x, y);
+            GameScreen.SHAPE_RENDERER.line(previousX, previousY, x, y);
         }
     }
 
@@ -90,7 +90,7 @@ public class SidStar {
     }
 
     public int findWptIndex(String wptName) {
-        return waypoints.indexOf(RadarScreen.waypoints.get(wptName), false);
+        return waypoints.indexOf(RadarScreen.WAYPOINTS.get(wptName), false);
     }
 
     public int getWptMinAlt(String wptName) {

@@ -52,8 +52,8 @@ public class Obstacle extends Actor {
     }
 
     public void renderShape() {
-        GameScreen.shapeRenderer.setColor(Color.GRAY);
-        GameScreen.shapeRenderer.polygon(polygon.getVertices());
+        GameScreen.SHAPE_RENDERER.setColor(Color.GRAY);
+        GameScreen.SHAPE_RENDERER.polygon(polygon.getVertices());
     }
 
     public int getMinAlt() {

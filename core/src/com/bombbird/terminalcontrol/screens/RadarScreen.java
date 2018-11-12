@@ -27,16 +27,17 @@ import com.bombbird.terminalcontrol.utilities.FileLoader;
 import java.util.*;
 
 public class RadarScreen extends GameScreen {
-    public static String mainName;
-    public static float magHdgDev;
-    public static int maxDeptAlt;
-    public static int maxArrAlt;
-    public static int minArrAlt;
-    public static float radarSweepDelay = 2f; //TODO Change radar sweep delay in UI
+    public static String MAIN_NAME;
+    public static float MAG_HDG_DEV;
+    public static int MAX_ALT;
+    public static int MIN_ALT;
+    public static int SEPARATION_MINIMA;
+    public static int AIRAC;
+    public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in UI
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
-    private static Metar metar;
+    private static Metar METAR;
 
     //Timer for updating aircraft radar returns every given amount of time
     private com.badlogic.gdx.utils.Timer radarTimer;
@@ -45,20 +46,21 @@ public class RadarScreen extends GameScreen {
     private WaypointManager waypointManager;
 
     //Separation checker for checking separation between aircrafts & terrain
-    public static SeparationChecker separationChecker;
+    public static SeparationChecker SEPARATION_CHECKER;
 
-    private static Aircraft selectedAircraft;
+    private static Aircraft SELECTED_AIRCRAFT;
 
-    public RadarScreen(final TerminalControl game, String name) {
+    public RadarScreen(final TerminalControl game, String name, int airac) {
         super(game);
-        mainName = name;
+        MAIN_NAME = name;
+        AIRAC = airac;
 
         //Set stage params
-        stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
-        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+        STAGE = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
+        STAGE.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
 
         //Set camera params
-        camera = (OrthographicCamera) stage.getViewport().getCamera();
+        camera = (OrthographicCamera) STAGE.getViewport().getCamera();
         camera.setToOrtho(false,5760, 3240);
         viewport = new ScalingViewport(Scaling.fillY, TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
         viewport.apply();
@@ -77,8 +79,8 @@ public class RadarScreen extends GameScreen {
 
     private void loadInputProcessors() {
         //Set input processors
-        inputProcessor2 = stage;
-        inputProcessor3 = uiStage;
+        inputProcessor2 = STAGE;
+        inputProcessor3 = UI_STAGE;
         inputMultiplexer.addProcessor(inputProcessor3);
         inputMultiplexer.addProcessor(inputProcessor2);
         inputMultiplexer.addProcessor(gd);
@@ -88,11 +90,11 @@ public class RadarScreen extends GameScreen {
 
     private void loadPanel() {
         //Set 2nd stage, camera for UI
-        uiStage = new Stage(new ExtendViewport(1920, 3240));
-        uiStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-        ui = new Ui();
+        UI_STAGE = new Stage(new ExtendViewport(1920, 3240));
+        UI_STAGE.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+        UI = new Ui();
 
-        uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
+        uiCam = (OrthographicCamera) UI_STAGE.getViewport().getCamera();
         uiCam.setToOrtho(false, 1920, 3240);
         uiViewport = new ExtendViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, uiCam);
         uiViewport.apply();
@@ -101,14 +103,14 @@ public class RadarScreen extends GameScreen {
 
     private void loadAirports() {
         //Load airport information form file, add to hashmap
-        FileHandle handle = Gdx.files.internal("game/" + mainName +"/airport.arpt");
+        FileHandle handle = Gdx.files.internal("game/" + MAIN_NAME +"/" + Integer.toString(AIRAC) + "/airport.arpt");
         int index = 0;
         for (String s: handle.readString().split("\\r?\\n")) {
             switch (index) {
-                case 0: minArrAlt = Integer.parseInt(s); break;
-                case 1: maxArrAlt = Integer.parseInt(s); break;
-                case 2: maxDeptAlt = Integer.parseInt(s); break;
-                case 3: magHdgDev = Float.parseFloat(s); break;
+                case 0: MIN_ALT = Integer.parseInt(s); break;
+                case 1: MAX_ALT = Integer.parseInt(s); break;
+                case 2: SEPARATION_MINIMA = Integer.parseInt(s); break;
+                case 3: MAG_HDG_DEV = Float.parseFloat(s); break;
                 default:
                     int index1 = 0;
                     String icao = "";
@@ -117,13 +119,13 @@ public class RadarScreen extends GameScreen {
                         switch (index1) {
                             case 0: icao = s1; break;
                             case 1: elevation = Integer.parseInt(s1); break;
-                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
+                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + MAIN_NAME + "/airport.arpt");
                         }
                         index1++;
                     }
                     Airport airport = new Airport(icao, elevation);
                     airport.loadOthers();
-                    airports.put(icao, airport);
+                    AIRPORTS.put(icao, airport);
             }
             index++;
         }
@@ -147,34 +149,34 @@ public class RadarScreen extends GameScreen {
         calendar.set(Calendar.SECOND, 0);
         System.out.println(calendar.getTime().toString());
 
-        metar = new Metar(this);
+        METAR = new Metar(this);
 
         //Update the METAR every quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                metar.updateMetar();
+                METAR.updateMetar();
             }
         }, calendar.getTime(), 900000);
 
-        metar.updateMetar();
+        METAR.updateMetar();
     }
 
     public void newAircraft() {
         //Creates new aircrafts TODO: Auto-generate aircraft
-        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
-        aircrafts.put("UIA231", new Arrival("UIA231", "A321", airports.get("RCSS")));
-        aircrafts.put("CAL753", new Arrival("CAL753", "A333", airports.get("RCTP")));
-        aircrafts.put("EVA851", new Arrival("EVA851", "A321", airports.get("RCTP")));
-        aircrafts.put("ANA788", new Departure("ANA788", "B789", airports.get("RCTP")));
-        aircrafts.put("UIA232", new Departure("UIA232", "A321", airports.get("RCSS")));
+        AIRCRAFTS.put("EVA226", new Arrival("EVA226", "B77W", AIRPORTS.get("RCTP")));
+        AIRCRAFTS.put("UIA231", new Arrival("UIA231", "A321", AIRPORTS.get("RCSS")));
+        AIRCRAFTS.put("CAL753", new Arrival("CAL753", "A333", AIRPORTS.get("RCTP")));
+        AIRCRAFTS.put("EVA851", new Arrival("EVA851", "A321", AIRPORTS.get("RCTP")));
+        AIRCRAFTS.put("ANA788", new Departure("ANA788", "B789", AIRPORTS.get("RCTP")));
+        AIRCRAFTS.put("UIA232", new Departure("UIA232", "A321", AIRPORTS.get("RCSS")));
     }
 
     private void loadUI() {
         //Loads the full UI of radarscreen
 
         //Reset stage
-        stage.clear();
+        STAGE.clear();
 
         //Show loading screen
         loading = true;
@@ -183,24 +185,25 @@ public class RadarScreen extends GameScreen {
         loadRange();
 
         //Load waypoints
-        waypoints = FileLoader.loadWaypoints();
+        WAYPOINTS = FileLoader.loadWaypoints();
 
         //Load airports
         loadAirports();
 
         //Load separation checker
-        separationChecker = new SeparationChecker();
+        SEPARATION_CHECKER = new SeparationChecker();
+        STAGE.addActor(SEPARATION_CHECKER);
 
         //Load obstacles
-        obsArray = FileLoader.loadObstacles();
+        OBS_ARRAY = FileLoader.loadObstacles();
 
         //Load altitude restrictions
-        restArray = FileLoader.loadRestricted();
+        REST_ARRAY = FileLoader.loadRestricted();
 
         //Load panels
         loadPanel();
-        ui.setNormalPane(true);
-        ui.setSelectedPane(null);
+        UI.setNormalPane(true);
+        UI.setSelectedPane(null);
 
         //Load METARs
         loadMetar();
@@ -216,11 +219,11 @@ public class RadarScreen extends GameScreen {
             public void run() {
                 updateRadarInfo();
             }
-        }, radarSweepDelay, radarSweepDelay);
+        }, RADAR_SWEEP_DELAY, RADAR_SWEEP_DELAY);
     }
 
     private void updateRadarInfo() {
-        for (Aircraft aircraft: aircrafts.values()) {
+        for (Aircraft aircraft: AIRCRAFTS.values()) {
             aircraft.updateRadarInfo();
         }
     }
@@ -231,49 +234,49 @@ public class RadarScreen extends GameScreen {
         waypointManager.update();
 
         //Updates aircraft separation status
-        separationChecker.update();
+        SEPARATION_CHECKER.update();
 
         //Draw obstacles
-        for (Obstacle obstacle: obsArray) {
+        for (Obstacle obstacle: OBS_ARRAY) {
             obstacle.renderShape();
         }
 
         //Draw restricted areas
-        for (RestrictedArea restrictedArea: restArray) {
+        for (RestrictedArea restrictedArea: REST_ARRAY) {
             restrictedArea.renderShape();
         }
 
         //Additional adjustments for certain airports
-        shapeRenderer.setColor(Color.BLACK);
-        if (mainName.equals("RCTP")) {
-            shapeRenderer.line(4500, 2416, 4500, 2124);
-            shapeRenderer.line(1256, 2050, 1256, 1180);
+        SHAPE_RENDERER.setColor(Color.BLACK);
+        if (MAIN_NAME.equals("RCTP")) {
+            SHAPE_RENDERER.line(4500, 2416, 4500, 2124);
+            SHAPE_RENDERER.line(1256, 2050, 1256, 1180);
         }
 
         //Draw runway(s) for each airport
-        for (Airport airport: airports.values()) {
+        for (Airport airport: AIRPORTS.values()) {
             airport.renderRunways();
         }
 
         //Draw waypoints
-        for (Waypoint waypoint: waypoints.values()) {
+        for (Waypoint waypoint: WAYPOINTS.values()) {
             waypoint.renderShape();
         }
 
         //Draw aircrafts
-        for (Aircraft aircraft: aircrafts.values()) {
+        for (Aircraft aircraft: AIRCRAFTS.values()) {
             aircraft.renderShape();
         }
 
         //Draw ILS arcs
-        for (Airport airport: airports.values()) {
+        for (Airport airport: AIRPORTS.values()) {
             for (ILS ils: airport.getApproaches().values()) {
                 ils.renderShape();
             }
         }
 
-        shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        SHAPE_RENDERER.end();
+        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
     }
 
     @Override
@@ -285,35 +288,35 @@ public class RadarScreen extends GameScreen {
     @Override
     public void dispose() {
         //Implements dispose method of screen, disposes resources after they're no longer needed
-        uiStage.clear();
-        uiStage.dispose();
-        stage.clear();
-        stage.dispose();
-        ui.dispose();
+        UI_STAGE.clear();
+        UI_STAGE.dispose();
+        STAGE.clear();
+        STAGE.dispose();
+        UI.dispose();
         skin.dispose();
-        Aircraft.skin.dispose();
-        Aircraft.iconAtlas.dispose();
+        Aircraft.SKIN.dispose();
+        Aircraft.ICON_ATLAS.dispose();
     }
 
     public static void setSelectedAircraft(Aircraft aircraft) {
-        if (selectedAircraft != null) {
-            selectedAircraft.setSelected(false);
+        if (SELECTED_AIRCRAFT != null) {
+            SELECTED_AIRCRAFT.setSelected(false);
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
         }
 
         if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
-            ui.setSelectedPane(aircraft);
-            ui.setNormalPane(false);
+            UI.setSelectedPane(aircraft);
+            UI.setNormalPane(false);
         } else {
-            ui.setNormalPane(true);
-            ui.setSelectedPane(null);
+            UI.setNormalPane(true);
+            UI.setSelectedPane(null);
         }
-        selectedAircraft = aircraft;
+        SELECTED_AIRCRAFT = aircraft;
     }
 
     public static Aircraft getSelectedAircraft() {
-        return selectedAircraft;
+        return SELECTED_AIRCRAFT;
     }
 }

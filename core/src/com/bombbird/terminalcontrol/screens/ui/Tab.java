@@ -103,7 +103,7 @@ public class Tab {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(settingsBox);
+        RadarScreen.UI_STAGE.addActor(settingsBox);
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = Fonts.defaultFont20;
@@ -130,7 +130,7 @@ public class Tab {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(valueBox);
+        RadarScreen.UI_STAGE.addActor(valueBox);
     }
 
     private void loadResetButton() {
@@ -152,7 +152,7 @@ public class Tab {
                 event.handle();
             }
         });
-        RadarScreen.uiStage.addActor(resetTab);
+        RadarScreen.UI_STAGE.addActor(resetTab);
     }
 
     public void updateElements() {

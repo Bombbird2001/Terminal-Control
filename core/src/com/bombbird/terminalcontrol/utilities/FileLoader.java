@@ -21,33 +21,33 @@ import java.util.HashMap;
 
 public class FileLoader {
     public static Array<Obstacle> loadObstacles() {
-        FileHandle obstacles = Gdx.files.internal("game/" + RadarScreen.mainName + "/obstacle.obs");
+        FileHandle obstacles = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/obstacle.obs");
         Array<Obstacle> obsArray = new Array<Obstacle>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             //For each individual obstacle:
             Obstacle obs = new Obstacle(s);
             obsArray.add(obs);
-            GameScreen.stage.addActor(obs);
+            GameScreen.STAGE.addActor(obs);
         }
         return obsArray;
     }
 
     public static Array<RestrictedArea> loadRestricted() {
-        FileHandle restrictions = Gdx.files.internal("game/" + RadarScreen.mainName + "/restricted.restr");
+        FileHandle restrictions = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/restricted.restr");
         Array<RestrictedArea> restArray = new Array<RestrictedArea>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             //For each individual restricted area
             RestrictedArea area = new RestrictedArea(s);
             restArray.add(area);
-            GameScreen.stage.addActor(area);
+            GameScreen.STAGE.addActor(area);
         }
         return restArray;
     }
 
     public static HashMap<String, Waypoint> loadWaypoints() {
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/waypoint.way");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/waypoint.way");
         String wayptStr = handle.readString();
         String[] indivWpt = wayptStr.split("\\r?\\n");
         HashMap <String, Waypoint> waypoints = new HashMap<String, Waypoint>(indivWpt.length + 1, 0.999f);
@@ -62,20 +62,20 @@ public class FileLoader {
                     case 0: name = s1; break;
                     case 1: x = Integer.parseInt(s1); break;
                     case 2: y = Integer.parseInt(s1); break;
-                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/restricted.rest");
+                    default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/restricted.rest");
                 }
                 index++;
             }
             Waypoint waypoint = new Waypoint(name, x, y);
             waypoints.put(name, waypoint);
-            GameScreen.stage.addActor(waypoint);
+            GameScreen.STAGE.addActor(waypoint);
         }
         return waypoints;
     }
 
     public static HashMap<String, Runway> loadRunways(String icao) {
         HashMap<String, Runway> runways = new HashMap<String, Runway>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/runway" + icao + ".rwy");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/runway" + icao + ".rwy");
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
             //For each individual runway
@@ -88,7 +88,7 @@ public class FileLoader {
     public static HashMap<String, Star> loadStars(Airport airport) {
         //Load STARs
         HashMap<String, Star> stars = new HashMap<String, Star>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/star" + airport.getIcao() + ".star");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/star" + airport.getIcao() + ".star");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
             //For each individual STAR
@@ -101,7 +101,7 @@ public class FileLoader {
     public static HashMap<String, Sid> loadSids(Airport airport) {
         //Load SIDs
         HashMap<String, Sid> sids = new HashMap<String, Sid>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/sid" + airport.getIcao() + ".sid");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/sid" + airport.getIcao() + ".sid");
         String[] indivStars = handle.readString().split("\\r?\\n");
         for (String s: indivStars) {
             //For each individual SID
@@ -140,7 +140,7 @@ public class FileLoader {
 
     public static HashMap<String, ILS> loadILS(Airport airport) {
         HashMap<String, ILS> approaches = new HashMap<String, ILS>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/ils" + airport.getIcao() + ".ils");
         String[] indivApches = handle.readString().split("\\r?\\n");
         for (String s: indivApches) {
             //For each approach
@@ -157,7 +157,7 @@ public class FileLoader {
 
     public static HashMap<String, HoldProcedure> loadHoldInfo(Airport airport) {
         HashMap<String, HoldProcedure> holdProcedures = new HashMap<String, HoldProcedure>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/hold" + airport.getIcao() + ".hold");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/hold" + airport.getIcao() + ".hold");
         String[] indivHold = handle.readString().split("\\r?\\n");
         for (String hold: indivHold) {
             boolean nameSet = false;
@@ -178,7 +178,7 @@ public class FileLoader {
 
     public static HashMap<String, MissedApproach> loadMissedInfo(Airport airport) {
         HashMap<String, MissedApproach> missedApproaches = new HashMap<String, MissedApproach>();
-        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.mainName + "/missedApch" + airport.getIcao() + ".miss");
+        FileHandle handle = Gdx.files.internal("game/" + RadarScreen.MAIN_NAME + "/" + Integer.toString(RadarScreen.AIRAC) + "/missedApch" + airport.getIcao() + ".miss");
         String[] indivMissed = handle.readString().split("\\r?\\n");
         for (String missed: indivMissed) {
             boolean nameSet = false;

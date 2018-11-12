@@ -192,8 +192,8 @@ public class NavState {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
             clearedDirect.removeFirst();
-            clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
-            clearedDirect.addFirst(RadarScreen.waypoints.get(currentDirect));
+            clearedDirect.addFirst(RadarScreen.WAYPOINTS.get(currentDirect));
+            clearedDirect.addFirst(RadarScreen.WAYPOINTS.get(currentDirect));
         } else if (aircraft.getDirect() == null && currentDispLatMode.equals("Fly heading") && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || clearedDispLatMode.equals("After waypoint, fly heading") || clearedDispLatMode.equals("Hold at"))) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             dispLatMode.removeFirst();
@@ -260,7 +260,7 @@ public class NavState {
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
-            clearedDirect.addLast(RadarScreen.waypoints.get(clearedWpt));
+            clearedDirect.addLast(RadarScreen.WAYPOINTS.get(clearedWpt));
             if (latMode.contains("arrival")) {
                 if (!latModes.contains("After waypoint, fly heading", false)) {
                     latModes.add("After waypoint, fly heading");
@@ -270,10 +270,10 @@ public class NavState {
                 }
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
-            clearedAftWpt.addLast(RadarScreen.waypoints.get(afterWpt));
+            clearedAftWpt.addLast(RadarScreen.WAYPOINTS.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode.equals("Hold at")) {
-            clearedHold.addLast(RadarScreen.waypoints.get(holdWpt));
+            clearedHold.addLast(RadarScreen.WAYPOINTS.get(holdWpt));
             latModes.removeValue("After waypoint, fly heading", false);
         } else {
             this.clearedHdg.addLast(clearedHdg);

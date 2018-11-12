@@ -26,8 +26,8 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure) {
         super(callsign, icaoType, departure);
         setOnGround(true);
-        contactAlt = RadarScreen.minArrAlt + MathUtils.random(-800, 0);
-        handOverAlt = RadarScreen.maxDeptAlt - 1500 + MathUtils.random(-500, 500);
+        contactAlt = RadarScreen.MIN_ALT + MathUtils.random(-800, 0);
+        handOverAlt = RadarScreen.MAX_ALT - 1500 + MathUtils.random(-500, 500);
         v2set = false;
         sidSet = false;
         contacted = false;
@@ -74,7 +74,7 @@ public class Departure extends Aircraft {
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());
-        setTrack(getHeading() - RadarScreen.magHdgDev);
+        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV);
 
         takeOff();
 
@@ -149,7 +149,7 @@ public class Departure extends Aircraft {
     /** Overrides method in Aircraft class to update label + update SID name */
     @Override
     public void updateLabel() {
-        labelText[8] = sid.getName();
+        getLabelText()[8] = sid.getName();
         super.updateLabel();
     }
 
@@ -157,7 +157,7 @@ public class Departure extends Aircraft {
     @Override
     public void setAfterLastWpt() {
         getNavState().getLatModes().removeValue(sid.getName() + " deaprture", false);
-        setClearedHeading((int)(outboundHdg + RadarScreen.magHdgDev));
+        setClearedHeading((int)(outboundHdg + RadarScreen.MAG_HDG_DEV));
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());
         updateVectorMode();
@@ -183,7 +183,7 @@ public class Departure extends Aircraft {
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
             } else if (contacted && getControlState() == 2) {
-                setHighestAlt(RadarScreen.maxDeptAlt);
+                setHighestAlt(RadarScreen.MAX_ALT);
             } else {
                 setHighestAlt(cruiseAlt);
             }

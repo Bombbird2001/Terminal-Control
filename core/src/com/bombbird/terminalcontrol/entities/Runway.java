@@ -15,7 +15,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
-import static com.bombbird.terminalcontrol.screens.GameScreen.shapeRenderer;
+import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class Runway extends Actor {
     //Name of runway
@@ -70,7 +70,7 @@ public class Runway extends Actor {
         //Create polygon
         setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
 
-        GameScreen.stage.addActor(this);
+        GameScreen.STAGE.addActor(this);
         setVisible(false);
     }
 
@@ -91,7 +91,7 @@ public class Runway extends Actor {
                 case 2: y = Float.parseFloat(s1); break;
                 case 3: pxLength = MathTools.feetToPixel(Integer.parseInt(s1)); break;
                 case 4: heading = Integer.parseInt(s1);
-                        trueHdg = heading - RadarScreen.magHdgDev;
+                        trueHdg = heading - RadarScreen.MAG_HDG_DEV;
                         break;
                 case 5: label.setX(Float.parseFloat(s1)); break;
                 case 6: label.setY(Float.parseFloat(s1)); break;
@@ -118,8 +118,8 @@ public class Runway extends Actor {
 
     /** Renders the runway rectangle */
     public void renderShape() {
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.polygon(getPolygon().getVertices());
+        SHAPE_RENDERER.setColor(Color.WHITE);
+        SHAPE_RENDERER.polygon(getPolygon().getVertices());
     }
 
     /** Called to remove aircraft from the array of aircrafts on approach, should be called during go arounds/cancelling approaches */

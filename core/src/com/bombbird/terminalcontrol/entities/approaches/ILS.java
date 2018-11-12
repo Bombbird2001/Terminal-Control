@@ -58,7 +58,7 @@ public class ILS extends Actor {
                 case 7: gsAlt = Integer.parseInt(s1); break;
                 default:
                     if (!(this instanceof LDA)) {
-                        Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
+                        Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.MAIN_NAME + "/ils" + airport.getIcao() + ".ils");
                     }
             }
             index++;
@@ -68,22 +68,22 @@ public class ILS extends Actor {
     /** Calculates positions of the GS rings; overriden for LDAs */
     public void calculateGsRings() {
         for (int i = 2; i <= gsAlt / 1000; i++) {
-            gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev)));
+            gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + RadarScreen.MAG_HDG_DEV), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + RadarScreen.MAG_HDG_DEV)));
         }
     }
 
     /** Draws ILS line using shapeRenderer */
     public void renderShape() {
         if (rwy.isLanding()) {
-            GameScreen.shapeRenderer.setColor(Color.CYAN);
-            GameScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+            GameScreen.SHAPE_RENDERER.setColor(Color.CYAN);
+            GameScreen.SHAPE_RENDERER.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + RadarScreen.MAG_HDG_DEV), y + distance2 * MathUtils.sinDeg(270 - heading + RadarScreen.MAG_HDG_DEV));
             drawGsCircles();
         }
     }
 
     public void drawGsCircles() {
         for (Vector2 vector2: gsRings) {
-            GameScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
+            GameScreen.SHAPE_RENDERER.circle(vector2.x, vector2.y, 8);
         }
     }
 
@@ -114,7 +114,7 @@ public class ILS extends Actor {
             }
         }
 
-        planeHdg += RadarScreen.magHdgDev;
+        planeHdg += RadarScreen.MAG_HDG_DEV;
 
         if (planeHdg <= 0) {
             planeHdg += 360;
@@ -158,7 +158,7 @@ public class ILS extends Actor {
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
     private Vector2 getPointAtDist(float dist) {
-        return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + RadarScreen.magHdgDev), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + RadarScreen.magHdgDev));
+        return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + RadarScreen.MAG_HDG_DEV), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + RadarScreen.MAG_HDG_DEV));
     }
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin */

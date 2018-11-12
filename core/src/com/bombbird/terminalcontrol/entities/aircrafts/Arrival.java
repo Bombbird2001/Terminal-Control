@@ -63,7 +63,7 @@ public class Arrival extends Aircraft {
         setHeading(star.getInboundHdg());
 
         setClearedHeading((int)getHeading());
-        setTrack(getHeading() - RadarScreen.magHdgDev);
+        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV);
 
         //Calculate spawn border
         int[] xBorder = {1310, 4450};
@@ -116,7 +116,7 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
-        setTrack(getHeading() - RadarScreen.magHdgDev + updateTargetHeading()[1]);
+        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV + updateTargetHeading()[1]);
 
         initRadarPos();
     }
@@ -160,7 +160,7 @@ public class Arrival extends Aircraft {
     @Override
     public void drawHoldPattern() {
         super.drawHoldPattern();
-        GameScreen.shapeRenderer.setColor(Color.WHITE);
+        GameScreen.SHAPE_RENDERER.setColor(Color.WHITE);
         if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
             star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1, false);
         }
@@ -170,14 +170,14 @@ public class Arrival extends Aircraft {
     @Override
     public void uiDrawHoldPattern() {
         super.uiDrawHoldPattern();
-        GameScreen.shapeRenderer.setColor(Color.YELLOW);
+        GameScreen.SHAPE_RENDERER.setColor(Color.YELLOW);
         star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1, true);
     }
 
     /** Overrides method in Aircraft class to update label + update STAR name */
     @Override
     public void updateLabel() {
-        labelText[8] = star.getName();
+        getLabelText()[8] = star.getName();
         super.updateLabel();
     }
 
@@ -224,8 +224,8 @@ public class Arrival extends Aircraft {
                 highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
                 lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
             }
-            setHighestAlt(highestAlt > -1 ? highestAlt : RadarScreen.maxArrAlt);
-            setLowestAlt(lowestAlt > -1 ? lowestAlt : RadarScreen.minArrAlt);
+            setHighestAlt(highestAlt > -1 ? highestAlt : RadarScreen.MAX_ALT);
+            setLowestAlt(lowestAlt > -1 ? lowestAlt : RadarScreen.MIN_ALT);
         }
     }
 
@@ -381,7 +381,7 @@ public class Arrival extends Aircraft {
     private void setMissedAlt() {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
         if (isSelected()) {
-            GameScreen.ui.updateState();
+            GameScreen.UI.updateState();
         }
     }
 
@@ -470,7 +470,7 @@ public class Arrival extends Aircraft {
         setIls(null);
         getNavState().voidAllIls();
         if (isSelected() && getControlState() == 2) {
-            GameScreen.ui.updateState();
+            GameScreen.UI.updateState();
         }
     }
 

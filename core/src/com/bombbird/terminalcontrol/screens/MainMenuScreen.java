@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
+import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class MainMenuScreen implements Screen {
@@ -40,6 +42,7 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /** Loads the UI elements to be rendered on screen */
     private void loadUI() {
         int buttonWidth = 1000;
         int buttonHeight = 200;
@@ -85,6 +88,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Load game -> Saved games screen
+                game.setScreen(new LoadGameScreen(game));
+                dispose();
             }
         });
         stage.addActor(loadGameButton);
@@ -120,6 +125,7 @@ public class MainMenuScreen implements Screen {
         stage.addActor(quitButton);
     }
 
+    /** Implements show method of screen */
     @Override
     public void show() {
         if (Fonts.defaultFont6 == null) {
@@ -129,6 +135,7 @@ public class MainMenuScreen implements Screen {
         loadUI();
     }
 
+    /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0.3f, 0, 0);
@@ -143,6 +150,7 @@ public class MainMenuScreen implements Screen {
         game.batch.end();
     }
 
+    /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -150,21 +158,25 @@ public class MainMenuScreen implements Screen {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
     }
 
+    /** Implements pause method of screen */
     @Override
     public void pause() {
-        //Implements pause method of screen
+        //No default implementation
     }
 
+    /** Implements resume method of screen */
     @Override
     public void resume() {
-        //Implements resume method of screen
+        //No default implementation
     }
 
+    /** Implements hide method of screen */
     @Override
     public void hide() {
-        //Implements hide method of screen
+        //No default implementation
     }
 
+    /** Implements dispose method of screen, disposes resources after they're no longer needed */
     @Override
     public void dispose() {
         stage.clear();
