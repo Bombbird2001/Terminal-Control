@@ -20,6 +20,7 @@ public class Obstacle extends Actor {
         parseInfo(toParse);
     }
 
+    /** Parses the input string into relevant data */
     private void parseInfo(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont12;
@@ -46,21 +47,24 @@ public class Obstacle extends Actor {
         polygon = new Polygon(verts);
     }
 
+    /** Draws the obstacle label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
         label.draw(batch, 1);
     }
 
+    /** Renders the polygon of obstacle to screen */
     public void renderShape() {
         GameScreen.SHAPE_RENDERER.setColor(Color.GRAY);
         GameScreen.SHAPE_RENDERER.polygon(polygon.getVertices());
     }
 
-    public int getMinAlt() {
-        return minAlt;
-    }
-
+    /** Checks whether the input aircraft is inside the polygon area */
     public boolean isIn(Aircraft aircraft) {
         return polygon.contains(aircraft.getX(), aircraft.getY());
+    }
+
+    public int getMinAlt() {
+        return minAlt;
     }
 }

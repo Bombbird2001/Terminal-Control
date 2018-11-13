@@ -22,6 +22,7 @@ public class RestrictedArea extends Actor {
         parseData(toParse);
     }
 
+    /** Parses input string into relevant information */
     private void parseData(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont12;
@@ -51,11 +52,13 @@ public class RestrictedArea extends Actor {
         circle = new Circle(centreX, centreY, radius);
     }
 
+    /** Draws the area label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
         label.draw(batch, 1);
     }
 
+    /** Renders the circle for restricted areas on screen */
     public void renderShape() {
         SHAPE_RENDERER.end();
         SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
@@ -67,11 +70,12 @@ public class RestrictedArea extends Actor {
         SHAPE_RENDERER.circle(circle.x, circle.y, circle.radius);
     }
 
-    public int getMinAlt() {
-        return minAlt;
-    }
-
+    /** Checks if input aircraft is in the circle */
     public boolean isIn(Aircraft aircraft) {
         return circle.contains(aircraft.getX(), aircraft.getY());
+    }
+
+    public int getMinAlt() {
+        return minAlt;
     }
 }

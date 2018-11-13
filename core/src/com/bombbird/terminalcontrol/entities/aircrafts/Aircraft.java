@@ -1216,6 +1216,7 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Updates the cleared IAS under certain circumstances */
     private void updateClearedSpd() {
         int highestSpd = -1;
         if (direct != null) {
@@ -1243,8 +1244,14 @@ public class Aircraft extends Actor {
         RadarScreen.AIRCRAFTS.remove(callsign);
     }
 
+    /** Overriden method that sets the altitude restrictions of the aircraft */
     public void updateAltRestrictions() {
-        //Overriden method that sets the altitude restrictions of the aircraft
+        //No default implementation
+    }
+
+    /** Overriden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
+    public void resetApchSpdSet() {
+        //No default implementation
     }
 
     public float getVerticalSpeed() {
@@ -1396,6 +1403,7 @@ public class Aircraft extends Actor {
         if (this.ils != ils) {
             gsCap = false;
             locCap = false;
+            resetApchSpdSet();
         }
         this.ils = ils;
     }

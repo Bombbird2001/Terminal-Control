@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.GameScreen;
@@ -37,7 +40,7 @@ public class SeparationChecker extends Actor {
     private Label newLabel() {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.fontColor = Color.RED;
-        labelStyle.font = Fonts.defaultFont12;
+        labelStyle.font = Fonts.defaultFont6;
         return new Label("", labelStyle);
     }
 
@@ -52,6 +55,7 @@ public class SeparationChecker extends Actor {
         }
         checkAircraftSep();
         checkRestrSep();
+        renderShape();
     }
 
     /** Updates the levels each aircraft belongs to */
@@ -83,8 +87,29 @@ public class SeparationChecker extends Actor {
                 for (int k = j + 1; k < planesToCheck.size; k++) {
                     Aircraft plane1 = planesToCheck.get(j);
                     Aircraft plane2 = planesToCheck.get(k);
+
+                    //Split up exception cases to make it easier to read
+                    if (plane1.getAltitude() < 1400 || plane2.getAltitude() < 1400 || plane1.getAltitude() > 20000 || plane2.getAltitude() > 20000) {
+                        //If either plane is below 1400 feet or above 20000 feet
+                        continue;
+                    }
+                    if (plane1.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.isLocCap() && plane2.isLocCap()) {
+                        //If both planes are on different ILS and both have captured LOC
+                        continue;
+                    }
+
                     float dist = MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY()));
-                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < RadarScreen.SEPARATION_MINIMA) {
+                    float minima = RadarScreen.SEPARATION_MINIMA;
+                    if (plane1.getIls() != null && plane1.getIls().equals(plane2.getIls())) {
+                        Runway runway = plane1.getIls().getRwy();
+                        if (MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), runway.getX(), runway.getY())) < 10 &&
+                                MathTools.pixelToNm(MathTools.distanceBetween(plane2.getX(), plane2.getY(), runway.getX(), runway.getY())) < 10) {
+                            //If both planes on the same LOC but are both less than 10nm from runway threshold, separation minima is reduced to 2.5nm
+                            minima = 2.5f;
+                            //TODO If visibility is poor, reduced separation doesn't apply
+                        }
+                    }
+                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < minima) {
                         //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
                         //Aircrafts have infringed minima of 1000 feet and 3nm apart
                         plane1.setConflict(true);
@@ -93,7 +118,7 @@ public class SeparationChecker extends Actor {
                         GameScreen.SHAPE_RENDERER.line(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY());
                         boolean found = false;
                         for (Label label: labels) {
-                            if (label.getName().equals(plane1.getCallsign() + plane2.getCallsign()) || "".equals(label.getName())) {
+                            if ("".equals(label.getName())) {
                                 setLabel(label, plane1, plane2, dist);
                                 found = true;
                                 break;
@@ -113,7 +138,8 @@ public class SeparationChecker extends Actor {
     /** Called to update the label with aircraft data */
     private void setLabel(Label label, Aircraft plane1, Aircraft plane2, float dist) {
         label.setText(Float.toString(Math.round(dist * 100) / 100f));
-        label.setName(plane1.getCallsign() + plane2.getCallsign());
+        label.pack();
+        label.setName("Taken");
         label.setVisible(true);
         label.setPosition((plane1.getRadarX() + plane2.getRadarX() - label.getWidth()) / 2, (plane1.getRadarY() + plane2.getRadarY() - label.getHeight()) / 2);
     }
@@ -121,6 +147,11 @@ public class SeparationChecker extends Actor {
     /** Checks that each aircraft is separated from each obstacles/restricted area */
     private void checkRestrSep() {
         for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+            if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
+                    (aircraft instanceof Departure && aircraft.getAltitude() <= 4000 + aircraft.getAirport().getElevation())) {
+                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is a departure that is below 4000ft AGL
+                continue;
+            }
             for (Obstacle obstacle: RadarScreen.OBS_ARRAY) {
                 if (aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
@@ -131,6 +162,12 @@ public class SeparationChecker extends Actor {
                     aircraft.setConflict(true);
                 }
             }
+        }
+    }
+
+    /** Renders the separation rings if aircraft is in conflict */
+    private void renderShape() {
+        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
             if (aircraft.isConflict()) {
                 RadarScreen.SHAPE_RENDERER.setColor(Color.RED);
                 RadarScreen.SHAPE_RENDERER.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);

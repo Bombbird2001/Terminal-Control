@@ -21,6 +21,8 @@ public class Arrival extends Aircraft {
     private Star star;
     private Queue<int[]> nonPrecAlts;
     private boolean lowerSpdSet;
+    private boolean ilsSpdSet;
+    private boolean finalSpdSet;
 
     //For go around
     private boolean willGoAround;
@@ -36,6 +38,8 @@ public class Arrival extends Aircraft {
         super(callsign, icaoType, arrival);
         setOnGround(false);
         lowerSpdSet = false;
+        ilsSpdSet = false;
+        finalSpdSet = false;
         willGoAround = false;
         goAroundAlt = 0;
         //transSet = false;
@@ -93,6 +97,7 @@ public class Arrival extends Aircraft {
         } else {
             setClearedAltitude((int) initAlt - (int) initAlt % 1000);
         }
+        setClearedIas(getClimbSpd());
 
         if (callsign.equals("EVA226")) {
             getNavState().getDispAltMode().removeFirst();
@@ -105,6 +110,7 @@ public class Arrival extends Aircraft {
             setClearedHeading(54);
             setAltitude(4000);
             setClearedAltitude(4000);
+            setClearedIas(220);
             setX(2394);
             setY(1296);
         }
@@ -197,12 +203,30 @@ public class Arrival extends Aircraft {
     /** Overrides updateSpd method in Aircraft, for setting the aircraft speed to 220 knots when within 20nm track miles if clearedIas > 220 knots */
     @Override
     public void updateSpd() {
+        if (getAltitude() < 10000 && getClearedIas() > 250) {
+            setClearedIas(250);
+            super.updateSpd();
+        }
         if (!lowerSpdSet && getDirect() != null && distToGo() <= 20) {
             if (getClearedIas() > 220) {
                 setClearedIas(220);
                 super.updateSpd();
             }
             lowerSpdSet = true;
+        }
+        if (!ilsSpdSet && isLocCap()) {
+            if (getClearedIas() > 200) {
+                setClearedIas(200);
+                super.updateSpd();
+            }
+            ilsSpdSet = true;
+        }
+        if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 5) {
+            if (getClearedIas() > 160) {
+                setClearedIas(160);
+                super.updateSpd();
+            }
+            finalSpdSet = true;
         }
     }
 
@@ -285,6 +309,7 @@ public class Arrival extends Aircraft {
             if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1200) {
                 //Contact the tower
                 setControlState(0);
+                setClearedIas(getApchSpd());
                 //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
@@ -397,6 +422,13 @@ public class Arrival extends Aircraft {
         }
     }
 
+    /** Overrides resetApchSpdSet method in Aircraft, called to reset the ilsSpdSet & finalSpdSet booleans */
+    @Override
+    public void resetApchSpdSet() {
+        ilsSpdSet = false;
+        finalSpdSet = false;
+    }
+
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
     @Override
     public void updateGoAround() {
@@ -469,6 +501,8 @@ public class Arrival extends Aircraft {
         //goAroundQueue = missedApproach.getProcedure();
         setIls(null);
         getNavState().voidAllIls();
+        ilsSpdSet = false;
+        finalSpdSet = false;
         if (isSelected() && getControlState() == 2) {
             GameScreen.UI.updateState();
         }
