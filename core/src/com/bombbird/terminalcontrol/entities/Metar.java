@@ -85,7 +85,10 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
+                    //If requests fails due to timeout
+                    System.out.println(response.body().string());
+                    response.close();
+                    receiveMetar(mediaType, client);
                 } else {
                     String responseText = response.body().string();
                     JSONObject jo = new JSONObject(responseText);

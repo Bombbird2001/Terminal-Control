@@ -30,7 +30,7 @@ import static com.bombbird.terminalcontrol.screens.GameScreen.*;
 public class Aircraft extends Actor {
     //Rendering parameters
     public static TextureAtlas ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
-    public static Skin SKIN = new Skin();
+    public static Skin SKIN = new Skin(ICON_ATLAS);
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_CTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
@@ -119,7 +119,6 @@ public class Aircraft extends Actor {
 
     public Aircraft(String callsign, String icaoType, Airport airport) {
         if (!LOADED_ICONS) {
-            SKIN.addRegions(ICON_ATLAS);
             BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
             BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
             BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
@@ -133,27 +132,14 @@ public class Aircraft extends Actor {
         this.callsign = callsign;
         STAGE.addActor(this);
         this.icaoType = icaoType;
-        int[] perfData = AircraftType.getAircraftInfo(icaoType);
-        if (perfData == null) {
-            //If aircraft type not found in file
-            Gdx.app.log("Aircraft not found", icaoType + " not found in game/aircrafts/aircrafts.air");
-        }
-        if (perfData[0] == 0) {
-            wakeCat = 'M';
-        } else if (perfData[0] == 1) {
-            wakeCat = 'H';
-        } else if (perfData[0] == 2) {
-            wakeCat = 'J';
-        } else {
-            Gdx.app.log("Invalid wake category", "Invalid wake turbulence category set for " + callsign + ", " + icaoType + "!");
-        }
+        wakeCat = AircraftType.getWakeCat(icaoType);
         float loadFactor = MathUtils.random(-1 , 1) / 20f;
-        v2 = (int)(perfData[1] * (1 + loadFactor));
-        typClimb = (int)(perfData[2] * (1 - loadFactor));
+        v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
+        typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
         maxClimb = typClimb + 1000;
-        typDes = (int)(perfData[3] * (1 - loadFactor));
+        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor));
         maxDes = typDes + 1000;
-        apchSpd = (int)(perfData[4] * (1 + loadFactor));
+        apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor));
         this.airport = airport;
         heading = 0;
         targetHeading = 0;

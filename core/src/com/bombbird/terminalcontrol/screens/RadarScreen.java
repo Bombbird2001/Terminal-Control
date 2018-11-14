@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.SeparationChecker;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Metar;
@@ -34,6 +35,11 @@ public class RadarScreen extends GameScreen {
     public static int SEPARATION_MINIMA;
     public static int AIRAC;
     public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in UI
+
+    //Score of current game
+    public float planesToControl = 4; //To keep track of how well the user is coping; number of planes to control is approximately this number
+    private static int score = 0; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
+    private static int highScore = 0; //High score of player
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
@@ -163,18 +169,28 @@ public class RadarScreen extends GameScreen {
     }
 
     public void newAircraft() {
-        //Creates new aircrafts TODO: Auto-generate aircraft
+        //Creates new aircrafts TODO: Auto-generate aircraft; remove this function after it is done
         AIRCRAFTS.put("EVA226", new Arrival("EVA226", "B77W", AIRPORTS.get("RCTP")));
         AIRCRAFTS.put("UIA231", new Arrival("UIA231", "A321", AIRPORTS.get("RCSS")));
         AIRCRAFTS.put("CAL753", new Arrival("CAL753", "A333", AIRPORTS.get("RCTP")));
         AIRCRAFTS.put("EVA851", new Arrival("EVA851", "A321", AIRPORTS.get("RCTP")));
-        AIRCRAFTS.put("ANA788", new Departure("ANA788", "B789", AIRPORTS.get("RCTP")));
-        AIRCRAFTS.put("UIA232", new Departure("UIA232", "A321", AIRPORTS.get("RCSS")));
+        //AIRCRAFTS.put("ANA788", new Departure("ANA788", "B789", AIRPORTS.get("RCTP"), AIRPORTS.get("RCTP").getRunways().get("05L")));
+        //AIRCRAFTS.put("UIA232", new Departure("UIA232", "A321", AIRPORTS.get("RCSS"), AIRPORTS.get("RCSS").getRunways().get("10")));
     }
 
-    private void loadUI() {
-        //Loads the full UI of radarscreen
+    /** Creates a new departure at the given airport */
+    public static void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
+        AIRCRAFTS.put(callsign, new Departure(callsign, icaoType, airport, runway));
+    }
 
+    /** Creates a new arrival for the given airport */
+    public static void newArrival() {
+        //TODO Auto-generate arrivals
+    }
+
+
+    /** Loads the full UI for RadarScreen */
+    private void loadUI() {
         //Reset stage
         STAGE.clear();
 
@@ -318,5 +334,29 @@ public class RadarScreen extends GameScreen {
 
     public static Aircraft getSelectedAircraft() {
         return SELECTED_AIRCRAFT;
+    }
+
+    public float getPlanesToControl() {
+        return planesToControl;
+    }
+
+    public void setPlanesToControl(float planesToControl) {
+        this.planesToControl = planesToControl;
+    }
+
+    public static int getScore() {
+        return score;
+    }
+
+    public static void setScore(int score) {
+        RadarScreen.score = score;
+        if (score > highScore) {
+            highScore = score;
+        }
+        UI.updateScoreLabels();
+    }
+
+    public static int getHighScore() {
+        return highScore;
     }
 }

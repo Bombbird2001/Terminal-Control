@@ -310,6 +310,7 @@ public class Arrival extends Aircraft {
                 //Contact the tower
                 setControlState(0);
                 setClearedIas(getApchSpd());
+                RadarScreen.setScore(RadarScreen.getScore() + 1);
                 //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
@@ -373,8 +374,8 @@ public class Arrival extends Aircraft {
             System.out.println(getCallsign() + " performed a go around due to windshear!");
             return true;
         }
-        if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 4) {
-            //If distance from runway is less than 4nm
+        if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 3) {
+            //If distance from runway is less than 3nm
             if (!(getIls() instanceof LDA) && !isGsCap()) {
                 //If ILS GS has not been captured
                 System.out.println(getCallsign() + " performed a go around due to being too high!");

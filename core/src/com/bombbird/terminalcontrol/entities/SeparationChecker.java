@@ -119,14 +119,14 @@ public class SeparationChecker extends Actor {
                         boolean found = false;
                         for (Label label: labels) {
                             if ("".equals(label.getName())) {
-                                setLabel(label, plane1, plane2, dist);
+                                setLabel(label, plane1, plane2);
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
                             Label label = newLabel();
-                            setLabel(label, plane1, plane2, dist);
+                            setLabel(label, plane1, plane2);
                             labels.add(label);
                         }
                     }
@@ -136,7 +136,8 @@ public class SeparationChecker extends Actor {
     }
 
     /** Called to update the label with aircraft data */
-    private void setLabel(Label label, Aircraft plane1, Aircraft plane2, float dist) {
+    private void setLabel(Label label, Aircraft plane1, Aircraft plane2) {
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY()));
         label.setText(Float.toString(Math.round(dist * 100) / 100f));
         label.pack();
         label.setName("Taken");
@@ -169,6 +170,7 @@ public class SeparationChecker extends Actor {
     private void renderShape() {
         for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
             if (aircraft.isConflict()) {
+                RadarScreen.setScore(0);
                 RadarScreen.SHAPE_RENDERER.setColor(Color.RED);
                 RadarScreen.SHAPE_RENDERER.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
             }

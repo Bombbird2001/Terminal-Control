@@ -25,6 +25,10 @@ public class Airport {
     private HashMap<String, Sid> sids;
     private int elevation;
     private String ws;
+    private TakeoffManager takeoffManager;
+    private int landings;
+    private int takeoffs;
+    private int airborne;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -32,10 +36,13 @@ public class Airport {
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
-        if (icao.equals("RCTP")) {
+        landings = 0;
+        takeoffs = 0;
+        airborne = 0;
+        if ("RCTP".equals(icao)) {
             setActive("05L", true, false);
             setActive("05R", true, true);
-        } else if (icao.equals("RCSS")) {
+        } else if ("RCSS".equals(icao)) {
             setActive("10", true, true);
         }
     }
@@ -54,6 +61,8 @@ public class Airport {
         for (MissedApproach missedApproach: missedApproaches.values()) {
             missedApproach.loadIls();
         }
+
+        takeoffManager = new TakeoffManager(this);
     }
 
     private void setOppRwys() {
@@ -106,6 +115,8 @@ public class Airport {
     }
 
     public void renderRunways() {
+        takeoffManager.update();
+
         for (Runway runway: runways.values()) {
             if (runway.isActive()) {
                 runway.renderShape();
@@ -224,5 +235,29 @@ public class Airport {
 
     public HashMap<String, MissedApproach> getMissedApproaches() {
         return missedApproaches;
+    }
+
+    public int getLandings() {
+        return landings;
+    }
+
+    public void setLandings(int landings) {
+        this.landings = landings;
+    }
+
+    public int getTakeoffs() {
+        return takeoffs;
+    }
+
+    public void setTakeoffs(int takeoffs) {
+        this.takeoffs = takeoffs;
+    }
+
+    public int getAirborne() {
+        return airborne;
+    }
+
+    public void setAirborne(int airborne) {
+        this.airborne = airborne;
     }
 }

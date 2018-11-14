@@ -23,7 +23,7 @@ public class Departure extends Aircraft {
     private int cruiseAlt;
     private boolean higherSpdSet;
 
-    public Departure(String callsign, String icaoType, Airport departure) {
+    public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = RadarScreen.MIN_ALT + MathUtils.random(-800, 0);
@@ -34,10 +34,8 @@ public class Departure extends Aircraft {
         cruiseAlt = MathUtils.random(30, 39) * 1000;
         higherSpdSet = false;
 
-        //Gets a runway for takeoff
-        HashMap<String, Runway> deptRwys = departure.getTakeoffRunways();
-        String rwy = (String) deptRwys.keySet().toArray()[MathUtils.random(deptRwys.size() - 1)];
-        setRunway(deptRwys.get(rwy));
+        //Sets requested runway for takeoff
+        setRunway(runway);
 
         //Gets a random SID
         HashMap<String, Sid> sidList = getAirport().getSids();
@@ -56,7 +54,7 @@ public class Departure extends Aircraft {
         setDirect(sid.getWaypoint(0));
 
         //Set initial IAS due to wind + 10 knots ground speed
-        setGs(10);
+        setGs(5);
         setIas(getAirport().getWinds()[1] * MathUtils.cosDeg(getAirport().getWinds()[0] - getRunway().getHeading()) + 10);
 
         //Set initial altitude equal to runway elevation
@@ -111,6 +109,7 @@ public class Departure extends Aircraft {
         //Called to check for takeoff landing status
         if (getIas() > getV2() - 10 && !v2set) {
             setOnGround(false);
+            getAirport().setAirborne(getAirport().getAirborne() + 1);
             setTargetHeading(getClearedHeading());
             v2set = true;
         }
@@ -230,6 +229,7 @@ public class Departure extends Aircraft {
             updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
             setExpedite(false);
+            RadarScreen.setScore(RadarScreen.getScore() + 1);
         }
     }
 

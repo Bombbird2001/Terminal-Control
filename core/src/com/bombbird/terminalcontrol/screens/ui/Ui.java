@@ -41,6 +41,9 @@ public class Ui implements Disposable {
 
     private TextButton labelButton;
 
+    //Label that displays score & high score
+    private Label scoreLabel;
+
     //Array for METAR info on default pane
     private Array<Label> metarInfos;
 
@@ -122,6 +125,14 @@ public class Ui implements Disposable {
         });
         RadarScreen.UI_STAGE.addActor(paneImage);
 
+        Label.LabelStyle labelStyle2 = new Label.LabelStyle();
+        labelStyle2.font = Fonts.defaultFont30;
+        labelStyle2.fontColor = Color.WHITE;
+
+        scoreLabel = new Label("Score: " + Integer.toString(RadarScreen.getScore()) + "\nHigh score: " + Integer.toString(RadarScreen.getHighScore()) , labelStyle2);
+        scoreLabel.setPosition(100, 2875);
+        RadarScreen.UI_STAGE.addActor(scoreLabel);
+
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
@@ -136,7 +147,7 @@ public class Ui implements Disposable {
             metarText[3] = "Visibility: Loading";
             metarText[4] = "Windshear: Loading";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            metarInfo.setPosition(100, 2775 - index * 575);
+            metarInfo.setPosition(100, 2300 - index * 575);
             metarInfo.setSize(700, 300);
             RadarScreen.UI_STAGE.addActor(metarInfo);
             metarInfos.add(metarInfo);
@@ -149,6 +160,7 @@ public class Ui implements Disposable {
         for (Label label: metarInfos) {
             label.setVisible(show);
         }
+        scoreLabel.setVisible(show);
     }
 
     public void setSelectedPane(Aircraft aircraft) {
@@ -484,6 +496,10 @@ public class Ui implements Disposable {
             labelButton.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
         }
         labelButton.setVisible(show);
+    }
+
+    public void updateScoreLabels() {
+        scoreLabel.setText("Score: " + Integer.toString(RadarScreen.getScore()) + "\nHigh score: " + Integer.toString(RadarScreen.getHighScore()));
     }
 
     public float getPaneWidth() {

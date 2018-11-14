@@ -5,6 +5,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class WaypointManager {
 
+    /** Main update function; checks whether a waypoint should be selected or not */
     public void update() {
         unselectAll();
         updateSelected();
@@ -50,8 +51,8 @@ public class WaypointManager {
         for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
             if (aircraft.isHolding()) {
                 aircraft.getHoldWpt().setSelected(true);
-            } else if (aircraft.getDirect() != null) {
-                aircraft.getDirect().setSelected(true);
+            } else if (aircraft.getNavState().getClearedDirect().last() != null) {
+                aircraft.getNavState().getClearedDirect().last().setSelected(true);
             }
         }
     }
