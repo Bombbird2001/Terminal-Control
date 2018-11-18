@@ -108,11 +108,9 @@ public class TakeoffManager {
                 //Previous is super, minimum 180 sec
                 return timers.get(runway) >= 180 + additionalTime;
             }
-        } else if (nextAircraft.get(runway)[1].equals("H")) {
-            if (prevAircraft.get(runway).getWakeCat() == 'J') {
-                //Previous is super, minimum 120 sec
-                return timers.get(runway) >= 120 + additionalTime;
-            }
+        } else if (nextAircraft.get(runway)[1].equals("H") && prevAircraft.get(runway).getWakeCat() == 'J') {
+            //Previous is super, minimum 120 sec
+            return timers.get(runway) >= 120 + additionalTime;
         }
         return timers.get(runway) >= 90 + additionalTime;
     }
