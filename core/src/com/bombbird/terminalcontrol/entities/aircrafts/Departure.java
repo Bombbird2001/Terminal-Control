@@ -83,6 +83,7 @@ public class Departure extends Aircraft {
         //Sets aircraft to takeoff mode
         outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
+        super.updateSpd();
         setClearedAltitude(sid.getInitClimb()[1]);
         int clearedAltitude = sid.getInitClimb()[1];
         if (clearedAltitude < 3000) {
@@ -120,6 +121,7 @@ public class Departure extends Aircraft {
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
             if (getClearedIas() == getV2()) {
                 setClearedIas(220);
+                super.updateSpd();
             }
             sidSet = true;
             updateAltRestrictions();
@@ -135,14 +137,14 @@ public class Departure extends Aircraft {
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
-        sid.joinLines(sid.findWptIndex(getNavState().getClearedDirect().last().getName()), sid.getWaypoints().size, outboundHdg, false);
+        sid.joinLines(sid.findWptIndex(getNavState().getClearedDirect().last().getName()), sid.getWaypoints().size, outboundHdg);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        sid.joinLines(sid.findWptIndex(LatTab.clearedWpt), sid.getWaypoints().size, -1, true);
+        sid.joinLines(sid.findWptIndex(LatTab.clearedWpt), sid.getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to update label + update SID name */
@@ -226,6 +228,7 @@ public class Departure extends Aircraft {
         if (getControlState() == 2 && getAltitude() >= handOverAlt) {
             setControlState(0);
             setClearedIas(getClimbSpd());
+            super.updateSpd();
             updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
             setExpedite(false);

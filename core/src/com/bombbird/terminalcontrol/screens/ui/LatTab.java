@@ -99,11 +99,11 @@ public class LatTab extends Tab {
         textButtonStyle1.up = Ui.lightestBoxBackground;
         textButtonStyle1.font = Fonts.defaultFont20;
 
-        //+100 button
-        hdg100add = newButton(100, textButtonStyle);
+        //+90 button
+        hdg100add = newButton(90, textButtonStyle);
 
-        //-100 button
-        hdg100minus = newButton(-100, textButtonStyle);
+        //-90 button
+        hdg100minus = newButton(-90, textButtonStyle);
 
         //+10 button
         hdg10add = newButton(10, textButtonStyle1);
@@ -232,6 +232,10 @@ public class LatTab extends Tab {
                 if (selectedAircraft.getAirport().getLandingRunways().keySet().contains(approach.getName().substring(3))) {
                     ils.add(approach.getName());
                 }
+            }
+            if (!ils.contains(clearedILS, false)) {
+                ils.clear();
+                ils.add(clearedILS);
             }
             ilsBox.setItems(ils);
             ilsBox.setSelected(clearedILS);

@@ -70,17 +70,9 @@ public class Arrival extends Aircraft {
         setTrack(getHeading() - RadarScreen.MAG_HDG_DEV);
 
         //Calculate spawn border
-        int[] xBorder = {1310, 4450};
-        int[] yBorder = {50, 3190};
-        float xDistRight = (xBorder[1] - getDirect().getPosX())/MathUtils.cosDeg((float)(270 - getTrack()));
-        float xDistLeft = (xBorder[0] - getDirect().getPosX())/MathUtils.cosDeg((float)(270 - getTrack()));
-        float yDistUp = (yBorder[1] - getDirect().getPosY())/MathUtils.sinDeg((float)(270 - getTrack()));
-        float yDistDown = (yBorder[0] - getDirect().getPosY())/MathUtils.sinDeg((float)(270 - getTrack()));
-        float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
-        float yDist = yDistUp > 0 ? yDistUp : yDistDown;
-        float dist = xDist > yDist ? yDist : xDist;
-        setX(getDirect().getPosX() + dist * MathUtils.cosDeg((float)(270 - getTrack())));
-        setY(getDirect().getPosY() + dist * MathUtils.sinDeg((float)(270 - getTrack())));
+        float[] point = MathTools.pointsAtBorder(new float[] {1310, 4450}, new float[] {50, 3190}, getDirect().getPosX(), getDirect().getPosY(), 180 + (float) getTrack());
+        setX(point[0]);
+        setY(point[1]);
 
         loadLabel();
         setNavState(new NavState(1, this));
@@ -111,14 +103,19 @@ public class Arrival extends Aircraft {
             setAltitude(4000);
             setClearedAltitude(4000);
             setClearedIas(220);
+            getNavState().getClearedSpd().removeFirst();
+            getNavState().getClearedSpd().addFirst(220);
             setX(2394);
             setY(1296);
         }
 
+        getNavState().getClearedSpd().removeFirst();
+        getNavState().getClearedSpd().addFirst(getClearedIas());
+
         getNavState().getClearedAlt().removeLast();
         getNavState().getClearedAlt().addLast(getClearedAltitude());
 
-        setControlState(1);
+        setControlState(0);
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
@@ -138,28 +135,28 @@ public class Arrival extends Aircraft {
     @Override
     public void drawSidStar() {
         super.drawSidStar();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.getWaypoints().size, -1, false);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1, getNavState().getDispLatMode().last().contains("arrival"));
+        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there */
     @Override
     public void drawAftWpt() {
         super.drawAftWpt();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last(), false);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last());
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there */
     @Override
     public void uiDrawAftWpt() {
         super.uiDrawAftWpt();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg, true);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till holdWpt */
@@ -168,7 +165,7 @@ public class Arrival extends Aircraft {
         super.drawHoldPattern();
         GameScreen.SHAPE_RENDERER.setColor(Color.WHITE);
         if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
-            star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1, false);
+            star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1);
         }
     }
 
@@ -177,7 +174,7 @@ public class Arrival extends Aircraft {
     public void uiDrawHoldPattern() {
         super.uiDrawHoldPattern();
         GameScreen.SHAPE_RENDERER.setColor(Color.YELLOW);
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1, true);
+        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1);
     }
 
     /** Overrides method in Aircraft class to update label + update STAR name */
@@ -310,7 +307,10 @@ public class Arrival extends Aircraft {
                 //Contact the tower
                 setControlState(0);
                 setClearedIas(getApchSpd());
-                RadarScreen.setScore(RadarScreen.getScore() + 1);
+                float points = 0.6f - RadarScreen.getPlanesToControl() / 40;
+                points = MathUtils.clamp(points, 0.1f, 0.5f);
+                RadarScreen.setPlanesToControl(RadarScreen.getPlanesToControl() + points);
+                RadarScreen.setArrivals(RadarScreen.getArrivals() - 1);
                 //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
@@ -328,6 +328,9 @@ public class Arrival extends Aircraft {
             }
             goAroundSet = false;
             super.updateAltitude();
+        }
+        if (getControlState() != 1 && getAltitude() <= 23000 && getAltitude() > getAirport().getElevation() + 1200) {
+            setControlState(1);
         }
     }
 
@@ -418,6 +421,8 @@ public class Arrival extends Aircraft {
         setVerticalSpeed(0);
         setClearedIas(0);
         if (getGs() <= 35) {
+            RadarScreen.setScore(RadarScreen.getScore() + 1);
+            getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);
         }
@@ -483,6 +488,8 @@ public class Arrival extends Aircraft {
     /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft */
     private void initializeGoAround() {
         setGoAround(true);
+        setGoAroundWindow(true);
+
         missedApproach = getIls().getMissedApchProc();
 
         setClearedHeading(getIls().getHeading());

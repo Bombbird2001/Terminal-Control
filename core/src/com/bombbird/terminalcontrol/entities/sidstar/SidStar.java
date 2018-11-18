@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class SidStar {
     private Airport airport;
@@ -26,7 +27,7 @@ public class SidStar {
         restrictions = new Array<int[]>();
     }
 
-    public void joinLines(int start, int end, int outbound, boolean dontRemove) {
+    public void joinLines(int start, int end, int outbound) {
         Waypoint prevPt = null;
         int index = start;
         while (index < end) {
@@ -45,9 +46,8 @@ public class SidStar {
     private void drawOutbound(float previousX, float previousY, int outbound) {
         if (outbound != -1) {
             float outboundTrack = outbound - RadarScreen.MAG_HDG_DEV;
-            float x = previousX + 6610 * MathUtils.cosDeg(90 - outboundTrack);
-            float y = previousY + 6610 * MathUtils.sinDeg(90 - outboundTrack);
-            GameScreen.SHAPE_RENDERER.line(previousX, previousY, x, y);
+            float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
+            GameScreen.SHAPE_RENDERER.line(previousX, previousY, point[0], point[1]);
         }
     }
 

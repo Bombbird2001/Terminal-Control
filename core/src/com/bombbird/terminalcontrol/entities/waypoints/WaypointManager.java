@@ -51,7 +51,7 @@ public class WaypointManager {
         for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
             if (aircraft.isHolding()) {
                 aircraft.getHoldWpt().setSelected(true);
-            } else if (aircraft.getNavState().getClearedDirect().last() != null) {
+            } else if (aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName()) && aircraft.getNavState().getClearedDirect().last() != null) {
                 aircraft.getNavState().getClearedDirect().last().setSelected(true);
             }
         }

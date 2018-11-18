@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.screens.GameScreen;
+import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
@@ -27,7 +27,6 @@ public class Airport {
     private String ws;
     private TakeoffManager takeoffManager;
     private int landings;
-    private int takeoffs;
     private int airborne;
 
     public Airport(String icao, int elevation) {
@@ -37,7 +36,6 @@ public class Airport {
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
         landings = 0;
-        takeoffs = 0;
         airborne = 0;
         if ("RCTP".equals(icao)) {
             setActive("05L", true, false);
@@ -192,15 +190,7 @@ public class Airport {
     public HashMap<String, Runway> getRunways() {
         return runways;
     }
-
-    public void setLandingRunways(HashMap<String, Runway> landingRunways) {
-        this.landingRunways = landingRunways;
-    }
-
-    public void setTakeoffRunways(HashMap<String, Runway> takeoffRunways) {
-        this.takeoffRunways = takeoffRunways;
-    }
-
+    
     public String getIcao() {
         return icao;
     }
@@ -243,14 +233,6 @@ public class Airport {
 
     public void setLandings(int landings) {
         this.landings = landings;
-    }
-
-    public int getTakeoffs() {
-        return takeoffs;
-    }
-
-    public void setTakeoffs(int takeoffs) {
-        this.takeoffs = takeoffs;
     }
 
     public int getAirborne() {

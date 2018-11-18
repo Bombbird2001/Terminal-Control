@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.utilities;
 
+import com.badlogic.gdx.math.MathUtils;
+
 public class MathTools {
     //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel */
@@ -40,5 +42,22 @@ public class MathTools {
     /** Converts feet to metres */
     public static float feetToMetre(float feet) {
         return feet / 3.28084f;
+    }
+
+    /** Calculates the shortest distance required to reach the border supplied with a given track */
+    public static float distanceFromBorder(float[] xBorder, float[] yBorder, float x, float y, float track) {
+        float xDistRight = (xBorder[1] - x) / MathUtils.cosDeg(90 - track);
+        float xDistLeft = (xBorder[0] - x) / MathUtils.cosDeg(90 - track);
+        float yDistUp = (yBorder[1] - y) / MathUtils.sinDeg(90 - track);
+        float yDistDown = (yBorder[0] - y) / MathUtils.sinDeg(90 - track);
+        float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
+        float yDist = yDistUp > 0 ? yDistUp : yDistDown;
+        return xDist > yDist ? yDist : xDist;
+    }
+
+    /** Calculates the point where the line from a point at a specified track meets the radar screen's border */
+    public static float[] pointsAtBorder(float[] xBorder, float[] yBorder, float x, float y, float track) {
+        float dist = distanceFromBorder(xBorder, yBorder, x, y, track);
+        return new float[] {x + dist * MathUtils.cosDeg(90 - track), y + dist * MathUtils.sinDeg(90 - track)};
     }
 }

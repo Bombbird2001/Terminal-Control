@@ -65,7 +65,10 @@ public class Aircraft extends Actor {
     private int controlState;
     private NavState navState;
     private boolean goAround;
+    private boolean goAroundWindow;
+    private int goAroundTime;
     private boolean conflict;
+    private boolean warning;
 
     //Aircraft position
     private float x;
@@ -163,12 +166,15 @@ public class Aircraft extends Actor {
         locCap = false;
         climbSpd = MathUtils.random(270, 290);
         goAround = false;
+        goAroundWindow = false;
+        goAroundTime = 0;
         conflict = false;
 
         selected = false;
         dragging = false;
     }
 
+    /** Sets the initial radar position for aircraft */
     public void initRadarPos() {
         radarX = x;
         radarY = y;
@@ -179,6 +185,7 @@ public class Aircraft extends Actor {
         radarVs = verticalSpeed;
     }
 
+    /** Loads the aircraft data labels */
     public void loadLabel() {
         icon = new ImageButton(BUTTON_STYLE_UNCTRL);
         icon.setSize(20, 20);
@@ -267,36 +274,45 @@ public class Aircraft extends Actor {
         }
     }
 
+    /** Draws the cleared sidStar when selected */
     public void drawSidStar() {
         SHAPE_RENDERER.setColor(Color.WHITE);
         SHAPE_RENDERER.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
+    /** Draws the sidStar for the UI */
     public void uiDrawSidStar() {
         SHAPE_RENDERER.setColor(Color.YELLOW);
         SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
     }
 
+    /** Draws the cleared after waypoint + cleared outbound heading when selected */
     public void drawAftWpt() {
         SHAPE_RENDERER.setColor(Color.WHITE);
         SHAPE_RENDERER.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
+    /** Draws the after waypoint + outbound heading for UI */
     public void uiDrawAftWpt() {
         SHAPE_RENDERER.setColor(Color.YELLOW);
         SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
     }
 
+    /** Draws the cleared heading when selected */
     private void drawHdgLine() {
         SHAPE_RENDERER.setColor(Color.WHITE);
-        SHAPE_RENDERER.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (navState.getClearedHdg().last() - RadarScreen.MAG_HDG_DEV)), radarY + 6610 * MathUtils.sinDeg(90 - (navState.getClearedHdg().last() - RadarScreen.MAG_HDG_DEV)));
+        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, navState.getClearedHdg().last() - RadarScreen.MAG_HDG_DEV);
+        SHAPE_RENDERER.line(radarX, radarY, point[0], point[1]);
     }
 
+    /** Draws the heading for the UI */
     private void uiDrawHdgLine() {
         SHAPE_RENDERER.setColor(Color.YELLOW);
-        SHAPE_RENDERER.line(radarX, radarY, radarX + 6610 * MathUtils.cosDeg(90 - (LatTab.clearedHdg - RadarScreen.MAG_HDG_DEV)), radarY + 6610 * MathUtils.sinDeg(90 - (LatTab.clearedHdg - RadarScreen.MAG_HDG_DEV)));
+        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, LatTab.clearedHdg - RadarScreen.MAG_HDG_DEV);
+        SHAPE_RENDERER.line(radarX, radarY, point[0], point[1]);
     }
 
+    /** Draws the cleared holding pattern when selected */
     public void drawHoldPattern() {
         SHAPE_RENDERER.setColor(Color.WHITE);
         if (navState.getClearedDirect().size > 0 && navState.getClearedDirect().last() != null) {
@@ -305,6 +321,7 @@ public class Aircraft extends Actor {
         ((Star) getSidStar()).getHoldProcedure().renderShape(navState.getClearedHold().last());
     }
 
+    /** Draws the holding pattern for the UI */
     public void uiDrawHoldPattern() {
         SHAPE_RENDERER.setColor(Color.YELLOW);
         SHAPE_RENDERER.line(radarX, radarY, RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosX(), RadarScreen.WAYPOINTS.get(LatTab.clearedWpt).getPosY());
@@ -327,6 +344,13 @@ public class Aircraft extends Actor {
             updateSpd();
             if (goAround) {
                 updateGoAround(); //TODO Implement standard MAP in future versions
+            }
+            if (goAroundWindow) {
+                goAroundTime -= Gdx.graphics.getDeltaTime();
+                if (goAroundTime < 0) {
+                    goAroundWindow = false;
+                    goAroundTime = 0;
+                }
             }
             return targetHeading;
         } else {
@@ -394,17 +418,18 @@ public class Aircraft extends Actor {
         } else if (targetVertSpd < verticalSpeed - 100) {
             verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
         }
-        if (!expedite && verticalSpeed > typClimb) {
+        float multiplier = altitude > 20000 ? 0.75f : 1;
+        if (!expedite && verticalSpeed > typClimb * multiplier) {
             verticalSpeed = typClimb;
-        } else if (!expedite && verticalSpeed < -typDes) {
+        } else if (!expedite && verticalSpeed < -typDes * multiplier) {
             verticalSpeed = -typDes;
-        } else if (expedite && verticalSpeed > maxClimb) {
+        } else if (expedite && verticalSpeed > maxClimb * multiplier) {
             verticalSpeed = maxClimb;
-        } else if (expedite && verticalSpeed < -maxDes) {
+        } else if (expedite && verticalSpeed < -maxDes * multiplier) {
             verticalSpeed = -maxDes;
         }
         altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
-        if (Math.abs(targetAltitude - altitude) < 50) {
+        if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
             altitude = targetAltitude;
             verticalSpeed = 0;
             if ("Expedite climb/descent to".equals(navState.getDispAltMode().first())) {
@@ -923,11 +948,11 @@ public class Aircraft extends Actor {
 
     public Array<Waypoint> getRemainingWaypoints() {
         if (navState.getDispLatMode().last().contains(getSidStar().getName())) {
-            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().getWaypoints().size - 1);
+            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().getWaypoints().size - 1);
         } else if ("After waypoint, fly heading".equals(navState.getDispLatMode().last())) {
-            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(navState.getClearedAftWpt().last().getName()));
+            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().findWptIndex(navState.getClearedAftWpt().last().getName()));
         } else if ("Hold at".equals(navState.getDispLatMode().last())) {
-            return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(navState.getClearedHold().last().getName()));
+            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().findWptIndex(navState.getClearedHold().last().getName()));
         }
         return null;
     }
@@ -1440,5 +1465,24 @@ public class Aircraft extends Actor {
 
     public float getRadarY() {
         return radarY;
+    }
+
+    public boolean isWarning() {
+        return warning;
+    }
+
+    public void setWarning(boolean warning) {
+        this.warning = warning;
+    }
+
+    public boolean isGoAroundWindow() {
+        return goAroundWindow;
+    }
+
+    public void setGoAroundWindow(boolean goAroundWindow) {
+        this.goAroundWindow = goAroundWindow;
+        if (goAroundWindow) {
+            goAroundTime = 120;
+        }
     }
 }

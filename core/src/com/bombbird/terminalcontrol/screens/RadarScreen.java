@@ -10,11 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.entities.Runway;
-import com.bombbird.terminalcontrol.entities.SeparationChecker;
+import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.Metar;
+import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -32,14 +30,18 @@ public class RadarScreen extends GameScreen {
     public static float MAG_HDG_DEV;
     public static int MAX_ALT;
     public static int MIN_ALT;
+    public static int TRANS_ALT;
+    public static int TRANS_LVL;
     public static int SEPARATION_MINIMA;
     public static int AIRAC;
     public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in UI
 
     //Score of current game
-    public float planesToControl = 4; //To keep track of how well the user is coping; number of planes to control is approximately this number
+    private static float planesToControl = 2; //To keep track of how well the user is coping; number of arrivals to control is approximately this number
     private static int score = 0; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
     private static int highScore = 0; //High score of player
+
+    private static int arrivals = 0;
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
@@ -53,6 +55,9 @@ public class RadarScreen extends GameScreen {
 
     //Separation checker for checking separation between aircrafts & terrain
     public static SeparationChecker SEPARATION_CHECKER;
+
+    //Manages arrival traffic to prevent conflict prior to handover
+    private static ArrivalManager ARRIVAL_MANAGER;
 
     private static Aircraft SELECTED_AIRCRAFT;
 
@@ -81,7 +86,8 @@ public class RadarScreen extends GameScreen {
         //Set timer for radar delay
         radarTimer = new com.badlogic.gdx.utils.Timer();
 
-        waypointManager = new WaypointManager(); }
+        waypointManager = new WaypointManager();
+    }
 
     private void loadInputProcessors() {
         //Set input processors
@@ -116,7 +122,9 @@ public class RadarScreen extends GameScreen {
                 case 0: MIN_ALT = Integer.parseInt(s); break;
                 case 1: MAX_ALT = Integer.parseInt(s); break;
                 case 2: SEPARATION_MINIMA = Integer.parseInt(s); break;
-                case 3: MAG_HDG_DEV = Float.parseFloat(s); break;
+                case 3: TRANS_ALT = Integer.parseInt(s); break;
+                case 4: TRANS_LVL = Integer.parseInt(s); break;
+                case 5: MAG_HDG_DEV = Float.parseFloat(s); break;
                 default:
                     int index1 = 0;
                     String icao = "";
@@ -168,14 +176,18 @@ public class RadarScreen extends GameScreen {
         METAR.updateMetar();
     }
 
+    /** Generates initial aircrafts (to prevent user getting overwhelmed at the start) */
     public void newAircraft() {
-        //Creates new aircrafts TODO: Auto-generate aircraft; remove this function after it is done
         AIRCRAFTS.put("EVA226", new Arrival("EVA226", "B77W", AIRPORTS.get("RCTP")));
-        AIRCRAFTS.put("UIA231", new Arrival("UIA231", "A321", AIRPORTS.get("RCSS")));
-        AIRCRAFTS.put("CAL753", new Arrival("CAL753", "A333", AIRPORTS.get("RCTP")));
-        AIRCRAFTS.put("EVA851", new Arrival("EVA851", "A321", AIRPORTS.get("RCTP")));
-        //AIRCRAFTS.put("ANA788", new Departure("ANA788", "B789", AIRPORTS.get("RCTP"), AIRPORTS.get("RCTP").getRunways().get("05L")));
-        //AIRCRAFTS.put("UIA232", new Departure("UIA232", "A321", AIRPORTS.get("RCSS"), AIRPORTS.get("RCSS").getRunways().get("10")));
+        arrivals++;
+
+        //Spawn another 2 aircrafts after 1.5 minute
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                planesToControl += 2;
+            }
+        }, 90000);
     }
 
     /** Creates a new departure at the given airport */
@@ -183,11 +195,16 @@ public class RadarScreen extends GameScreen {
         AIRCRAFTS.put(callsign, new Departure(callsign, icaoType, airport, runway));
     }
 
-    /** Creates a new arrival for the given airport */
-    public static void newArrival() {
-        //TODO Auto-generate arrivals
+    /** Creates a new arrival for random airport */
+    private static void newArrival() {
+        if (arrivals < planesToControl) {
+            String[] aircraftInfo = RandomGenerator.randomPlane();
+            Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], RandomGenerator.randomAirport());
+            ARRIVAL_MANAGER.checkArrival(arrival);
+            AIRCRAFTS.put(aircraftInfo[0], arrival);
+            arrivals++;
+        }
     }
-
 
     /** Loads the full UI for RadarScreen */
     private void loadUI() {
@@ -209,6 +226,9 @@ public class RadarScreen extends GameScreen {
         //Load separation checker
         SEPARATION_CHECKER = new SeparationChecker();
         STAGE.addActor(SEPARATION_CHECKER);
+
+        //Load arrival manager
+        ARRIVAL_MANAGER = new ArrivalManager();
 
         //Load obstacles
         OBS_ARRAY = FileLoader.loadObstacles();
@@ -246,6 +266,9 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void renderShape() {
+        //Check whether new aircrafts needs to be generated
+        newArrival();
+
         //Updates waypoints status
         waypointManager.update();
 
@@ -336,12 +359,12 @@ public class RadarScreen extends GameScreen {
         return SELECTED_AIRCRAFT;
     }
 
-    public float getPlanesToControl() {
+    public static float getPlanesToControl() {
         return planesToControl;
     }
 
-    public void setPlanesToControl(float planesToControl) {
-        this.planesToControl = planesToControl;
+    public static void setPlanesToControl(float planesToControl) {
+        RadarScreen.planesToControl = planesToControl;
     }
 
     public static int getScore() {
@@ -358,5 +381,13 @@ public class RadarScreen extends GameScreen {
 
     public static int getHighScore() {
         return highScore;
+    }
+
+    public static int getArrivals() {
+        return arrivals;
+    }
+
+    public static void setArrivals(int arrivals) {
+        RadarScreen.arrivals = arrivals;
     }
 }

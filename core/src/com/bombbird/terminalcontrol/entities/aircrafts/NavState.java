@@ -100,7 +100,7 @@ public class NavState {
         clearedExpedite.addLast(aircraft.isExpedite());
 
         clearedSpd = new Queue<Integer>();
-        clearedSpd.addLast(aircraft.getClearedIas());
+        clearedSpd.addLast(aircraft.getClimbSpd());
 
         goAround = new Queue<Boolean>();
         goAround.addLast(false);
