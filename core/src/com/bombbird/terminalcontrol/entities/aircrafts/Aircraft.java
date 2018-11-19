@@ -136,7 +136,7 @@ public class Aircraft extends Actor {
         STAGE.addActor(this);
         this.icaoType = icaoType;
         wakeCat = AircraftType.getWakeCat(icaoType);
-        float loadFactor = MathUtils.random(-1 , 1) / 20f;
+        float loadFactor = MathUtils.random(-1 , 1) / 40f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
         maxClimb = typClimb + 1000;

@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,8 @@ public class Ui implements Disposable {
     public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
     public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
     public static SpriteDrawable lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
+
+    private GameScreen gameScreen;
 
     public LatTab latTab;
     public AltTab altTab;
@@ -44,6 +47,9 @@ public class Ui implements Disposable {
     //Label that displays score & high score
     private Label scoreLabel;
 
+    //TextButton that pauses the game
+    private TextButton pauseButton;
+
     //Array for METAR info on default pane
     private Array<Label> metarInfos;
 
@@ -52,7 +58,8 @@ public class Ui implements Disposable {
 
     private int tab;
 
-    public Ui() {
+    public Ui(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
         tab = 0;
         loadNormalPane();
         loadAircraftLabel();
@@ -130,8 +137,26 @@ public class Ui implements Disposable {
         labelStyle2.fontColor = Color.WHITE;
 
         scoreLabel = new Label("Score: " + Integer.toString(RadarScreen.getScore()) + "\nHigh score: " + Integer.toString(RadarScreen.getHighScore()) , labelStyle2);
-        scoreLabel.setPosition(100, 2875);
+        scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
         RadarScreen.UI_STAGE.addActor(scoreLabel);
+
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.font = Fonts.defaultFont30;
+        textButtonStyle.up = lightestBoxBackground;
+        textButtonStyle.down = lightestBoxBackground;
+        pauseButton = new TextButton("||", textButtonStyle);
+        pauseButton.setPosition(paneImage.getWidth() * 0.75f, 2900);
+        pauseButton.setSize(0.2f * paneImage.getWidth(), 200);
+        pauseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Set game state to paused
+                gameScreen.setGameState(GameScreen.State.PAUSE);
+                event.handle();
+            }
+        });
+        RadarScreen.UI_STAGE.addActor(pauseButton);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
@@ -147,8 +172,8 @@ public class Ui implements Disposable {
             metarText[3] = "Visibility: Loading";
             metarText[4] = "Windshear: Loading";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            metarInfo.setPosition(100, 2300 - index * 575);
-            metarInfo.setSize(700, 300);
+            metarInfo.setPosition(paneImage.getWidth() / 19.2f, 2300 - index * 575);
+            metarInfo.setSize(paneImage.getWidth() / 2.74f, 300);
             RadarScreen.UI_STAGE.addActor(metarInfo);
             metarInfos.add(metarInfo);
             index++;
@@ -468,6 +493,11 @@ public class Ui implements Disposable {
         spdButton.setX(0.65f * paneImage.getWidth());
         labelButton.setSize(0.8f * paneImage.getWidth(), 270);
         labelButton.setX(0.1f * paneImage.getWidth());
+        scoreLabel.setX(paneImage.getWidth() / 19.2f);
+        pauseButton.setX(0.75f * paneImage.getWidth());
+        for (Label label: metarInfos) {
+            label.setX(paneImage.getWidth() / 19.2f);
+        }
     }
 
     private void updateTabVisibility(boolean show) {

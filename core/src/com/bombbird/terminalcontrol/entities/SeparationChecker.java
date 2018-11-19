@@ -123,7 +123,7 @@ public class SeparationChecker extends Actor {
                             GameScreen.SHAPE_RENDERER.setColor(Color.RED);
                             GameScreen.SHAPE_RENDERER.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
                         } else {
-                            //Aircrafts within 1500 feet, 4.5nm of each other
+                            //Aircrafts within 1000 feet, 4.5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
                             GameScreen.SHAPE_RENDERER.setColor(Color.YELLOW);

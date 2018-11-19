@@ -78,6 +78,16 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public static HashMap<String, Waypoint> WAYPOINTS;
 
+    //Game state
+    public enum State {
+        PAUSE,
+        RUN
+    }
+    private static State state = State.RUN;
+
+    //Overlay screen when paused
+    private PauseScreen pauseScreen = new PauseScreen(this);
+
     public GameScreen(final TerminalControl game) {
         this.game = game;
 
@@ -101,31 +111,35 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     /** Handles input from keyboard, mouse, moderates them */
     private void handleInput(float dt) {
-        float ZOOMCONSTANT = 0.6f;
-        float SCROLLCONSTANT = 150;
+        float ZOOM_CONSTANT = 0.6f;
+        float SCROLL_CONSTANT = 150;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             //Zoom in
-            camera.zoom += ZOOMCONSTANT * dt;
+            camera.zoom += ZOOM_CONSTANT * dt;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
             //Zoom out
-            camera.zoom -= ZOOMCONSTANT * dt;
+            camera.zoom -= ZOOM_CONSTANT * dt;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             //Move left
-            camera.translate(-SCROLLCONSTANT / camera.zoom * dt, 0, 0);
+            camera.translate(-SCROLL_CONSTANT / camera.zoom * dt, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             //Move right
-            camera.translate(SCROLLCONSTANT / camera.zoom * dt, 0, 0);
+            camera.translate(SCROLL_CONSTANT / camera.zoom * dt, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             //Move down
-            camera.translate(0, -SCROLLCONSTANT / camera.zoom * dt, 0);
+            camera.translate(0, -SCROLL_CONSTANT / camera.zoom * dt, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             //Move up
-            camera.translate(0, SCROLLCONSTANT / camera.zoom * dt, 0);
+            camera.translate(0, SCROLL_CONSTANT / camera.zoom * dt, 0);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            //On android, change to pause screen if not paused, un-pause if paused
+            setGameState(state == State.PAUSE ? State.RUN : State.PAUSE);
         }
 
         if (zooming) {
@@ -216,60 +230,73 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //Test for input, update camera
-        if (!loading) {
-            handleInput(delta);
-        }
-        camera.update();
+        switch (state) {
+            case RUN:
+                //Test for input, update camera
+                if (!loading) {
+                    handleInput(delta);
+                }
+                camera.update();
 
-        //Set rendering for stage camera
-        game.batch.setProjectionMatrix(camera.combined);
-        SHAPE_RENDERER.setProjectionMatrix(camera.combined);
+                //Set rendering for stage camera
+                game.batch.setProjectionMatrix(camera.combined);
+                SHAPE_RENDERER.setProjectionMatrix(camera.combined);
 
-        //Update stage
-        STAGE.act(delta);
+                //Update stage
+                STAGE.act(delta);
 
-        //Render each of the range circles, obstacles using shaperenderer
-        if (!loading) {
-            STAGE.getViewport().apply();
-            //Render shapes only if METAR has finished loading
-            SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Line);
-            for (RangeCircle rangeCircle : rangeCircles) {
-                rangeCircle.renderShape();
-            }
-            renderShape();
-            SHAPE_RENDERER.end();
-        }
+                //Render each of the range circles, obstacles using shaperenderer
+                if (!loading) {
+                    STAGE.getViewport().apply();
+                    //Render shapes only if METAR has finished loading
+                    SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Line);
+                    for (RangeCircle rangeCircle : rangeCircles) {
+                        rangeCircle.renderShape();
+                    }
+                    renderShape();
+                    SHAPE_RENDERER.end();
+                }
 
-        //Draw to the spritebatch
-        game.batch.begin();
-        String loadingText = "Loading.   ";
-        if (loading) {
-            //Write loading text if loading
-            loadedTime += Gdx.graphics.getDeltaTime();
-            if (loadedTime > 1.5) {
-                loadedTime = 0;
-                loadingText = "Loading.   ";
-            } else if (loadedTime > 1) {
-                loadingText = "Loading... ";
-            } else if (loadedTime > 0.5) {
-                loadingText = "Loading..  ";
-            }
-            Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
-        } else {
-            STAGE.draw();
-        }
-        game.batch.end();
+                //Draw to the spritebatch
+                game.batch.begin();
+                String loadingText = "Loading.   ";
+                if (loading) {
+                    //Write loading text if loading
+                    loadedTime += Gdx.graphics.getDeltaTime();
+                    if (loadedTime > 1.5) {
+                        loadedTime = 0;
+                        loadingText = "Loading.   ";
+                    } else if (loadedTime > 1) {
+                        loadingText = "Loading... ";
+                    } else if (loadedTime > 0.5) {
+                        loadingText = "Loading..  ";
+                    }
+                    Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
+                } else {
+                    STAGE.draw();
+                }
+                game.batch.end();
 
-        //Draw the UI overlay
-        uiCam.update();
-        if (!loading) {
-            game.batch.setProjectionMatrix(uiCam.combined);
-            UI_STAGE.act();
-            game.batch.begin();
-            UI_STAGE.getViewport().apply();
-            UI_STAGE.draw();
-            game.batch.end();
+                //Draw the UI overlay
+                uiCam.update();
+                if (!loading) {
+                    game.batch.setProjectionMatrix(uiCam.combined);
+                    UI_STAGE.act();
+                    game.batch.begin();
+                    UI_STAGE.getViewport().apply();
+                    UI_STAGE.draw();
+                    game.batch.end();
+                }
+                break;
+            case PAUSE:
+                game.batch.setProjectionMatrix(pauseScreen.getCamera().combined);
+                pauseScreen.getStage().act();
+                game.batch.begin();
+                pauseScreen.getStage().getViewport().apply();
+                pauseScreen.draw();
+                game.batch.end();
+                break;
+            default: Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
         }
     }
 
@@ -289,6 +316,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         uiViewport.update(width, height, true);
         UI_STAGE.getViewport().update(width, height, true);
         uiCam.position.set(uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f, 0);
+
+        pauseScreen.getViewport().update(width, height, true);
+        pauseScreen.getStage().getViewport().update(width, height, true);
+        pauseScreen.getCamera().position.set(pauseScreen.getCamera().viewportWidth / 2f, pauseScreen.getCamera().viewportHeight / 2f, 0);
+
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
             int newWidth = width;
@@ -310,13 +342,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Implements pause method of screen */
     @Override
     public void pause() {
-        //No default implementation
+        setGameState(State.PAUSE);
     }
 
     /** Implements resume method of screen */
     @Override
     public void resume() {
-        //No default implementation
+        setGameState(State.RUN);
     }
 
     /** Implements hide method of screen */
@@ -464,5 +496,16 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             camera.zoom += amount * 0.042f;
         }
         return true;
+    }
+
+    /** Sets the current game state to the input state */
+    public void setGameState(State s) {
+        GameScreen.state = s;
+        pauseScreen.setVisible(s == State.PAUSE);
+        if (s == State.RUN) {
+            Gdx.input.setInputProcessor(inputMultiplexer);
+        } else {
+            Gdx.input.setInputProcessor(pauseScreen.getStage());
+        }
     }
 }

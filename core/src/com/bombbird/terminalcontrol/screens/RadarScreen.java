@@ -104,7 +104,7 @@ public class RadarScreen extends GameScreen {
         //Set 2nd stage, camera for UI
         UI_STAGE = new Stage(new ExtendViewport(1920, 3240));
         UI_STAGE.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-        UI = new Ui();
+        UI = new Ui(this);
 
         uiCam = (OrthographicCamera) UI_STAGE.getViewport().getCamera();
         uiCam.setToOrtho(false, 1920, 3240);
@@ -181,13 +181,20 @@ public class RadarScreen extends GameScreen {
         AIRCRAFTS.put("EVA226", new Arrival("EVA226", "B77W", AIRPORTS.get("RCTP")));
         arrivals++;
 
-        //Spawn another 2 aircrafts after 1.5 minute
+        //Spawn another 2 aircrafts after 1.5 minute intervals
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                planesToControl += 2;
+                planesToControl += 1;
             }
         }, 90000);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                planesToControl += 1;
+            }
+        }, 180000);
     }
 
     /** Creates a new departure at the given airport */
