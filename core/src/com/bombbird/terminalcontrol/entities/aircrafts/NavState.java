@@ -306,10 +306,17 @@ public class NavState {
         dispSpdMode.addLast(spdMode);
     }
 
+    /** Fills up input queue to ideal length, with its last element */
     private void fillUp(Queue queue) {
         while (queue.size < length) {
             queue.addLast(queue.last());
         }
+    }
+
+    /** Stops all timer tasks */
+    public void clearAll() {
+        timer.stop();
+        timer.clear();
     }
 
     public Array<String> getLatModes() {
@@ -370,5 +377,9 @@ public class NavState {
 
     public Queue<Waypoint> getClearedHold() {
         return clearedHold;
+    }
+
+    public Timer getTimer() {
+        return timer;
     }
 }

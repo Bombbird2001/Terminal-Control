@@ -1,16 +1,16 @@
 package com.bombbird.terminalcontrol.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class PauseScreen {
@@ -37,12 +37,15 @@ public class PauseScreen {
         camera.position.set(2880, 1620, 0);
 
         loadButtons();
+
+        System.out.println("Local: " + Gdx.files.getLocalStoragePath());
+        System.out.println("External: " + Gdx.files.getExternalStoragePath());
     }
 
     /** Loads the buttons for screen */
     private void loadButtons() {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont20;
+        textButtonStyle.font = Fonts.defaultFont30;
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
@@ -67,6 +70,18 @@ public class PauseScreen {
         quitButton = new TextButton("Quit", textButtonStyle);
         quitButton.setSize(1200, 300);
         quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000);
+        quitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go back to main menu screen
+                for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+                    //Clears timer for all aircrafts' navState
+                    aircraft.getNavState().clearAll();
+                }
+                dispose();
+                gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game));
+            }
+        });
         stage.addActor(quitButton);
     }
 
@@ -80,6 +95,14 @@ public class PauseScreen {
         resumeButton.setVisible(visible);
         settingsButton.setVisible(visible);
         quitButton.setVisible(visible);
+    }
+
+    /** Disposes of unneeded resources */
+    private void dispose() {
+        stage.clear();
+        stage.dispose();
+
+        stage = null;
     }
 
     public Stage getStage() {

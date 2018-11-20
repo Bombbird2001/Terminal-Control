@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -26,7 +25,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public static Stage STAGE;
 
     //Init game (set in constructor)
-    private final TerminalControl game;
+    public final TerminalControl game;
     private boolean aircraftLoaded;
     public boolean loading;
     public String loadingPercent;
@@ -59,7 +58,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public Viewport uiViewport;
 
     //Create texture stuff
-    public Skin skin;
     public static ShapeRenderer SHAPE_RENDERER = new ShapeRenderer();
 
     //Create range circles
@@ -363,11 +361,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         SHAPE_RENDERER.dispose();
         STAGE.clear();
         STAGE.dispose();
-        skin.dispose();
 
         SHAPE_RENDERER = null;
         STAGE = null;
-        skin = null;
     }
 
     /** Implements touchdown method of gestureListener */
@@ -502,10 +498,17 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public void setGameState(State s) {
         GameScreen.state = s;
         pauseScreen.setVisible(s == State.PAUSE);
+        setTimersPaused(s == State.PAUSE);
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
+
         } else {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
         }
+    }
+
+    /** Overriden method that sets whether the timers are paused or not */
+    public void setTimersPaused(boolean paused) {
+        //No default implementation
     }
 }

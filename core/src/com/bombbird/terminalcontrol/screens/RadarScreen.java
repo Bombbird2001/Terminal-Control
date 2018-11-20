@@ -256,6 +256,7 @@ public class RadarScreen extends GameScreen {
         loadUpdateTimer();
     }
 
+    /** Runs the update radar info method after every interval of radar sweep */
     private void loadUpdateTimer() {
         radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
@@ -326,6 +327,21 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
+    public void setTimersPaused(boolean paused) {
+        if (paused) {
+            radarTimer.stop();
+            for (Aircraft aircraft: AIRCRAFTS.values()) {
+                aircraft.getNavState().getTimer().stop();
+            }
+        } else {
+            radarTimer.start();
+            for (Aircraft aircraft: AIRCRAFTS.values()) {
+                aircraft.getNavState().getTimer().start();
+            }
+        }
+    }
+
+    @Override
     public void show() {
         //Implements show method of screen, loads UI after show is called
         loadUI();
@@ -334,14 +350,19 @@ public class RadarScreen extends GameScreen {
     @Override
     public void dispose() {
         //Implements dispose method of screen, disposes resources after they're no longer needed
+        super.dispose();
+
+        timer.cancel();
+        radarTimer.stop();
+        radarTimer.clear();
+
         UI_STAGE.clear();
         UI_STAGE.dispose();
-        STAGE.clear();
-        STAGE.dispose();
         UI.dispose();
-        skin.dispose();
         Aircraft.SKIN.dispose();
         Aircraft.ICON_ATLAS.dispose();
+
+        UI_STAGE = null;
     }
 
     public static void setSelectedAircraft(Aircraft aircraft) {

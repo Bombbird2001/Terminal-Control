@@ -186,6 +186,7 @@ public class Ui implements Disposable {
             label.setVisible(show);
         }
         scoreLabel.setVisible(show);
+        pauseButton.setVisible(show);
     }
 
     public void setSelectedPane(Aircraft aircraft) {

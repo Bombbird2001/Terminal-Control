@@ -65,6 +65,8 @@ public class NewGameScreen extends SelectGameScreen {
             });
             getScrollTable().add(airportButton).width(BUTTON_WIDTH * 1.2f).height(BUTTON_HEIGHT);
             getScrollTable().row();
+            getScrollTable().add(newFillerImage()).width(BUTTON_WIDTH * 1.2f).height(0.025f * BUTTON_HEIGHT);
+            getScrollTable().row();
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
         scrollPane.setupFadeScrollBars(1, 1.5f);
