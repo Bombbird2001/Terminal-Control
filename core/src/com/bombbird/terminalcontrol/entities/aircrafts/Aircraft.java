@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -90,6 +91,7 @@ public class Aircraft extends Actor {
     private boolean type1leg;
     private float[][] holdTargetPt;
     private boolean[] holdTargetPtSelected;
+    private Queue<Image> trailDots;
 
     //Altitude
     private float prevAlt;
@@ -164,11 +166,12 @@ public class Aircraft extends Actor {
         tkofLdg = false;
         gsCap = false;
         locCap = false;
-        climbSpd = MathUtils.random(270, 290);
+        climbSpd = MathUtils.random(270, 285);
         goAround = false;
         goAroundWindow = false;
         goAroundTime = 0;
         conflict = false;
+        trailDots = new Queue<Image>();
 
         selected = false;
         dragging = false;
@@ -745,6 +748,15 @@ public class Aircraft extends Actor {
         icon.setPosition(radarX - 10, radarY - 10);
         icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
         icon.draw(batch, 1);
+
+        int index = 0;
+        int size = trailDots.size;
+        for (Image trail: trailDots) {
+            if (selected || (size - index <= 5 && (controlState == 1 || controlState == 2))) {
+                trail.draw(batch, parentAlpha);
+            }
+            index++;
+        }
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
@@ -1263,6 +1275,21 @@ public class Aircraft extends Actor {
     /** Overriden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
     public void resetApchSpdSet() {
         //No default implementation
+    }
+
+    /** Appends a new image to end of queue for drawing trail dots */
+    public void addTrailDot() {
+        Image image;
+        if (this instanceof Arrival) {
+            image = new Image(SKIN.getDrawable("DotsArrival"));
+        } else if (this instanceof Departure) {
+            image = new Image(SKIN.getDrawable("DotsDeparture"));
+        } else {
+            image = new Image();
+            Gdx.app.log("Trail dot error", "Aircraft not instance of arrival or departure, trail image not found!");
+        }
+        image.setPosition(x - image.getWidth() / 2, y - image.getHeight() / 2);
+        trailDots.addLast(image);
     }
 
     public float getVerticalSpeed() {

@@ -256,7 +256,7 @@ public class RadarScreen extends GameScreen {
         loadUpdateTimer();
     }
 
-    /** Runs the update radar info method after every interval of radar sweep */
+    /** Runs the update radar info method after every interval of radar sweep + adds trail dots every 5 seconds*/
     private void loadUpdateTimer() {
         radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
@@ -264,11 +264,26 @@ public class RadarScreen extends GameScreen {
                 updateRadarInfo();
             }
         }, RADAR_SWEEP_DELAY, RADAR_SWEEP_DELAY);
+
+        radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                addTrailDot();
+            }
+        }, 10, 10);
     }
 
+    /** Sets the radar return of aircraft to current aircraft information */
     private void updateRadarInfo() {
         for (Aircraft aircraft: AIRCRAFTS.values()) {
             aircraft.updateRadarInfo();
+        }
+    }
+
+    /** Adds a new trail dot value to the aircraft's trail queue */
+    private void addTrailDot() {
+        for (Aircraft aircraft: AIRCRAFTS.values()) {
+            aircraft.addTrailDot();
         }
     }
 
