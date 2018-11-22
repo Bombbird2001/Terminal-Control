@@ -940,7 +940,7 @@ public class Aircraft extends Actor {
             UI.latTab.getValueBox().setSelected(direct.getName());
         }
 
-        if (this instanceof Departure && Integer.parseInt(UI.altTab.getValueBox().getSelected()) < lowestAlt) {
+        if (this instanceof Departure && !UI.altTab.valueBox.getSelected().contains("FL") && Integer.parseInt(UI.altTab.valueBox.getSelected()) < lowestAlt) {
             UI.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
         }
 

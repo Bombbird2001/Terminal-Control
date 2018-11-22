@@ -22,10 +22,15 @@ public class FileSaver {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
         jsonObject.put("airports", saveAirports());
+        jsonObject.put("MAIN_NAME", RadarScreen.MAIN_NAME);
+        jsonObject.put("AIRAC", RadarScreen.AIRAC);
         jsonObject.put("score", RadarScreen.getScore());
         jsonObject.put("highScore", RadarScreen.getHighScore());
         jsonObject.put("planesToControl", (double) RadarScreen.getPlanesToControl());
         jsonObject.put("arrivals", RadarScreen.getArrivals());
+        jsonObject.put("radarTime", (double) RadarScreen.getRadarTime());
+        jsonObject.put("trailTime", (double) RadarScreen.getTrailTime());
+        jsonObject.put("arrivalManager", getArrivalManager());
 
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
@@ -346,5 +351,16 @@ public class FileSaver {
         takeoffManager.put("timers", timers);
 
         return takeoffManager;
+    }
+
+    /** Returns the arrival manager as JSONObject */
+    private static JSONObject getArrivalManager() {
+        JSONObject arrivalManager = new JSONObject();
+
+        for (Waypoint waypoint: RadarScreen.getArrivalManager().getEntryPoint().keySet()) {
+            arrivalManager.put(waypoint.getName(), RadarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : RadarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
+        }
+
+        return arrivalManager;
     }
 }

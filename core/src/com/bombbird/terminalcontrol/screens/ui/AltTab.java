@@ -76,7 +76,7 @@ public class AltTab extends Tab {
             }
         }
         valueBox.setItems(alts);
-        valueBox.setSelected(Integer.toString(clearedAlt));
+        valueBox.setSelected(clearedAlt / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(clearedAlt / 100) : Integer.toString(clearedAlt));
         notListening = false;
     }
 

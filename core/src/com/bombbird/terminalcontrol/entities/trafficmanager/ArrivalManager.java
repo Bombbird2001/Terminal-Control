@@ -42,4 +42,8 @@ public class ArrivalManager {
         }
         entryPoint.put(entryPt, arrival);
     }
+
+    public HashMap<Waypoint, Aircraft> getEntryPoint() {
+        return entryPoint;
+    }
 }

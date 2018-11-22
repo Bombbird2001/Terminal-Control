@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
+import com.bombbird.terminalcontrol.utilities.FileSaver;
 
 import java.util.*;
 
@@ -46,8 +47,10 @@ public class RadarScreen extends GameScreen {
     private Timer timer;
     private static Metar METAR;
 
-    //Timer for updating aircraft radar returns every given amount of time
-    private com.badlogic.gdx.utils.Timer radarTimer;
+    //Timer for updating aircraft radar returns, trails and save every given amount of time
+    private static float radarTime;
+    private static float trailTime;
+    private static float saveTime;
 
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
@@ -82,8 +85,10 @@ public class RadarScreen extends GameScreen {
         //Set timer for METAR
         timer = new Timer(true);
 
-        //Set timer for radar delay
-        radarTimer = new com.badlogic.gdx.utils.Timer();
+        //Set timer for radar delay, trails and autosave
+        radarTime = RADAR_SWEEP_DELAY;
+        trailTime = 10f;
+        saveTime = 60f;
 
         waypointManager = new WaypointManager();
     }
@@ -250,25 +255,27 @@ public class RadarScreen extends GameScreen {
         loadMetar();
 
         loadInputProcessors();
-
-        loadUpdateTimer();
     }
 
-    /** Runs the update radar info method after every interval of radar sweep + adds trail dots every 5 seconds*/
-    private void loadUpdateTimer() {
-        radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
-            @Override
-            public void run() {
-                updateRadarInfo();
-            }
-        }, RADAR_SWEEP_DELAY, RADAR_SWEEP_DELAY);
+    /** Updates the time values for each timer & runs tasks when time is reached */
+    private void updateTimers() {
+        radarTime -= Gdx.graphics.getDeltaTime();
+        if (radarTime <= 0) {
+            updateRadarInfo();
+            radarTime += RADAR_SWEEP_DELAY;
+        }
 
-        radarTimer.scheduleTask(new com.badlogic.gdx.utils.Timer.Task() {
-            @Override
-            public void run() {
-                addTrailDot();
-            }
-        }, 10, 10);
+        trailTime -= Gdx.graphics.getDeltaTime();
+        if (trailTime <= 0) {
+            addTrailDot();
+            trailTime += 10f;
+        }
+
+        saveTime -= Gdx.graphics.getDeltaTime();
+        if (saveTime <= 0) {
+            FileSaver.saveGame();
+            saveTime += 60f;
+        }
     }
 
     /** Sets the radar return of aircraft to current aircraft information */
@@ -287,6 +294,9 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void renderShape() {
+        //Update timers
+        updateTimers();
+
         //Check whether new aircrafts needs to be generated
         newArrival();
 
@@ -340,15 +350,6 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
-    public void setTimersPaused(boolean paused) {
-        if (paused) {
-            radarTimer.stop();
-        } else {
-            radarTimer.start();
-        }
-    }
-
-    @Override
     public void show() {
         //Implements show method of screen, loads UI after show is called
         loadUI();
@@ -360,8 +361,6 @@ public class RadarScreen extends GameScreen {
         super.dispose();
 
         timer.cancel();
-        radarTimer.stop();
-        radarTimer.clear();
 
         UI_STAGE.clear();
         UI_STAGE.dispose();
@@ -424,5 +423,17 @@ public class RadarScreen extends GameScreen {
 
     public static void setArrivals(int arrivals) {
         RadarScreen.arrivals = arrivals;
+    }
+
+    public static ArrivalManager getArrivalManager() {
+        return ARRIVAL_MANAGER;
+    }
+
+    public static float getRadarTime() {
+        return radarTime;
+    }
+
+    public static float getTrailTime() {
+        return trailTime;
     }
 }

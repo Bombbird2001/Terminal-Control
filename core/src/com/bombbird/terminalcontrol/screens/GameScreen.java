@@ -498,17 +498,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public void setGameState(State s) {
         GameScreen.state = s;
         pauseScreen.setVisible(s == State.PAUSE);
-        setTimersPaused(s == State.PAUSE);
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
 
         } else {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
         }
-    }
-
-    /** Overriden method that sets whether the timers are paused or not */
-    public void setTimersPaused(boolean paused) {
-        //No default implementation
     }
 }
