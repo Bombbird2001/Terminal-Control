@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
@@ -67,7 +66,7 @@ public class Arrival extends Aircraft {
         setHeading(star.getInboundHdg());
 
         setClearedHeading((int)getHeading());
-        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV);
+        setTrack(getHeading() - TerminalControl.radarScreen.magHdgDev);
 
         //Calculate spawn border
         float[] point = MathTools.pointsAtBorder(new float[] {1310, 4450}, new float[] {50, 3190}, getDirect().getPosX(), getDirect().getPosY(), 180 + (float) getTrack());
@@ -119,7 +118,7 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
-        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV + updateTargetHeading()[1]);
+        setTrack(getHeading() - radarScreen.magHdgDev + updateTargetHeading()[1]);
 
         initRadarPos();
     }
@@ -163,7 +162,7 @@ public class Arrival extends Aircraft {
     @Override
     public void drawHoldPattern() {
         super.drawHoldPattern();
-        GameScreen.SHAPE_RENDERER.setColor(Color.WHITE);
+        radarScreen.shapeRenderer.setColor(Color.WHITE);
         if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
             star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1);
         }
@@ -173,7 +172,7 @@ public class Arrival extends Aircraft {
     @Override
     public void uiDrawHoldPattern() {
         super.uiDrawHoldPattern();
-        GameScreen.SHAPE_RENDERER.setColor(Color.YELLOW);
+        radarScreen.shapeRenderer.setColor(Color.YELLOW);
         star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1);
     }
 
@@ -245,8 +244,8 @@ public class Arrival extends Aircraft {
                 highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
                 lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
             }
-            setHighestAlt(highestAlt > -1 ? highestAlt : RadarScreen.MAX_ALT);
-            setLowestAlt(lowestAlt > -1 ? lowestAlt : RadarScreen.MIN_ALT);
+            setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
+            setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
         }
     }
 
@@ -307,10 +306,10 @@ public class Arrival extends Aircraft {
                 //Contact the tower
                 setControlState(0);
                 setClearedIas(getApchSpd());
-                float points = 0.6f - RadarScreen.getPlanesToControl() / 40;
-                points = MathUtils.clamp(points, 0.1f, 0.5f);
-                RadarScreen.setPlanesToControl(RadarScreen.getPlanesToControl() + points);
-                RadarScreen.setArrivals(RadarScreen.getArrivals() - 1);
+                float points = 0.6f - radarScreen.getPlanesToControl() / 40;
+                points = MathUtils.clamp(points, 0.1f, 0.4f);
+                radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
+                radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
@@ -410,7 +409,7 @@ public class Arrival extends Aircraft {
     private void setMissedAlt() {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
         if (isSelected()) {
-            GameScreen.UI.updateState();
+            ui.updateState();
         }
     }
 
@@ -421,7 +420,7 @@ public class Arrival extends Aircraft {
         setVerticalSpeed(0);
         setClearedIas(0);
         if (getGs() <= 35) {
-            RadarScreen.setScore(RadarScreen.getScore() + 1);
+            radarScreen.setScore(radarScreen.getScore() + 1);
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);
@@ -512,7 +511,7 @@ public class Arrival extends Aircraft {
         ilsSpdSet = false;
         finalSpdSet = false;
         if (isSelected() && getControlState() == 2) {
-            GameScreen.UI.updateState();
+            ui.updateState();
         }
     }
 

@@ -27,53 +27,60 @@ import com.bombbird.terminalcontrol.utilities.FileSaver;
 import java.util.*;
 
 public class RadarScreen extends GameScreen {
-    public static String MAIN_NAME;
-    public static float MAG_HDG_DEV;
-    public static int MAX_ALT;
-    public static int MIN_ALT;
-    public static int TRANS_LVL;
-    public static int SEPARATION_MINIMA;
-    public static int AIRAC;
+    public int saveId;
+    public String mainName;
+    public float magHdgDev;
+    public int maxAlt;
+    public int minAlt;
+    public int transLvl;
+    public int separationMinima;
+    public int airac;
     public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in UI
 
     //Score of current game
-    private static float planesToControl = 2; //To keep track of how well the user is coping; number of arrivals to control is approximately this number
-    private static int score = 0; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
-    private static int highScore = 0; //High score of player
+    private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately this number
+    private int score; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
+    private int highScore; //High score of player
 
-    private static int arrivals = 0;
+    private int arrivals;
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
-    private static Metar METAR;
+    private Metar metar;
 
     //Timer for updating aircraft radar returns, trails and save every given amount of time
-    private static float radarTime;
-    private static float trailTime;
-    private static float saveTime;
+    private float radarTime;
+    private float trailTime;
+    private float saveTime;
 
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
 
     //Separation checker for checking separation between aircrafts & terrain
-    public static SeparationChecker SEPARATION_CHECKER;
+    public SeparationChecker separationChecker;
 
     //Manages arrival traffic to prevent conflict prior to handover
-    private static ArrivalManager ARRIVAL_MANAGER;
+    private ArrivalManager arrivalManager;
 
-    private static Aircraft SELECTED_AIRCRAFT;
+    private Aircraft selectedAircraft;
 
-    public RadarScreen(final TerminalControl game, String name, int airac) {
+    public RadarScreen(final TerminalControl game, String name, int airac, int saveID) {
         super(game);
-        MAIN_NAME = name;
-        AIRAC = airac;
+        mainName = name;
+        this.airac = airac;
+        saveId = saveID;
+
+        planesToControl = 2f;
+        score = 0;
+        highScore = 0;
+        arrivals = 0;
 
         //Set stage params
-        STAGE = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
-        STAGE.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+        stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
+        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
 
         //Set camera params
-        camera = (OrthographicCamera) STAGE.getViewport().getCamera();
+        camera = (OrthographicCamera) stage.getViewport().getCamera();
         camera.setToOrtho(false,5760, 3240);
         viewport = new ScalingViewport(Scaling.fillY, TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
         viewport.apply();
@@ -89,14 +96,12 @@ public class RadarScreen extends GameScreen {
         radarTime = RADAR_SWEEP_DELAY;
         trailTime = 10f;
         saveTime = 60f;
-
-        waypointManager = new WaypointManager();
     }
 
     private void loadInputProcessors() {
         //Set input processors
-        inputProcessor2 = STAGE;
-        inputProcessor3 = UI_STAGE;
+        inputProcessor2 = stage;
+        inputProcessor3 = uiStage;
         inputMultiplexer.addProcessor(inputProcessor3);
         inputMultiplexer.addProcessor(inputProcessor2);
         inputMultiplexer.addProcessor(gd);
@@ -106,11 +111,11 @@ public class RadarScreen extends GameScreen {
 
     private void loadPanel() {
         //Set 2nd stage, camera for UI
-        UI_STAGE = new Stage(new ExtendViewport(1920, 3240));
-        UI_STAGE.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-        UI = new Ui(this);
+        uiStage = new Stage(new ExtendViewport(1920, 3240));
+        uiStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+        ui = new Ui();
 
-        uiCam = (OrthographicCamera) UI_STAGE.getViewport().getCamera();
+        uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
         uiCam.setToOrtho(false, 1920, 3240);
         uiViewport = new ExtendViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, uiCam);
         uiViewport.apply();
@@ -119,15 +124,15 @@ public class RadarScreen extends GameScreen {
 
     private void loadAirports() {
         //Load airport information form file, add to hashmap
-        FileHandle handle = Gdx.files.internal("game/" + MAIN_NAME +"/" + Integer.toString(AIRAC) + "/airport.arpt");
+        FileHandle handle = Gdx.files.internal("game/" + mainName +"/" + airac + "/airport.arpt");
         int index = 0;
         for (String s: handle.readString().split("\\r?\\n")) {
             switch (index) {
-                case 0: MIN_ALT = Integer.parseInt(s); break;
-                case 1: MAX_ALT = Integer.parseInt(s); break;
-                case 2: TRANS_LVL = Integer.parseInt(s); break;
-                case 3: SEPARATION_MINIMA = Integer.parseInt(s); break;
-                case 4: MAG_HDG_DEV = Float.parseFloat(s); break;
+                case 0: minAlt = Integer.parseInt(s); break;
+                case 1: maxAlt = Integer.parseInt(s); break;
+                case 2: transLvl = Integer.parseInt(s); break;
+                case 3: separationMinima = Integer.parseInt(s); break;
+                case 4: magHdgDev = Float.parseFloat(s); break;
                 default:
                     int index1 = 0;
                     String icao = "";
@@ -136,13 +141,13 @@ public class RadarScreen extends GameScreen {
                         switch (index1) {
                             case 0: icao = s1; break;
                             case 1: elevation = Integer.parseInt(s1); break;
-                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + MAIN_NAME + "/airport.arpt");
+                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
                         }
                         index1++;
                     }
                     Airport airport = new Airport(icao, elevation);
                     airport.loadOthers();
-                    AIRPORTS.put(icao, airport);
+                    airports.put(icao, airport);
             }
             index++;
         }
@@ -166,22 +171,22 @@ public class RadarScreen extends GameScreen {
         calendar.set(Calendar.SECOND, 0);
         System.out.println(calendar.getTime().toString());
 
-        METAR = new Metar(this);
+        metar = new Metar(this);
 
         //Update the METAR every quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                METAR.updateMetar();
+                metar.updateMetar();
             }
         }, calendar.getTime(), 900000);
 
-        METAR.updateMetar();
+        metar.updateMetar();
     }
 
     /** Generates initial aircrafts (to prevent user getting overwhelmed at the start) */
     public void newAircraft() {
-        AIRCRAFTS.put("EVA226", new Arrival("EVA226", "B77W", AIRPORTS.get("RCTP")));
+        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
         arrivals++;
 
         //Spawn another 2 aircrafts after 1.5 minute intervals
@@ -201,17 +206,21 @@ public class RadarScreen extends GameScreen {
     }
 
     /** Creates a new departure at the given airport */
-    public static void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
-        AIRCRAFTS.put(callsign, new Departure(callsign, icaoType, airport, runway));
+    public void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
+        aircrafts.put(callsign, new Departure(callsign, icaoType, airport, runway));
     }
 
     /** Creates a new arrival for random airport */
-    private static void newArrival() {
+    private void newArrival() {
         if (arrivals < planesToControl) {
             String[] aircraftInfo = RandomGenerator.randomPlane();
+            while (aircrafts.get(aircraftInfo[0]) != null) {
+                //Ensures there are no duplicates
+                aircraftInfo = RandomGenerator.randomPlane();
+            }
             Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], RandomGenerator.randomAirport());
-            ARRIVAL_MANAGER.checkArrival(arrival);
-            AIRCRAFTS.put(aircraftInfo[0], arrival);
+            arrivalManager.checkArrival(arrival);
+            aircrafts.put(aircraftInfo[0], arrival);
             arrivals++;
         }
     }
@@ -219,7 +228,7 @@ public class RadarScreen extends GameScreen {
     /** Loads the full UI for RadarScreen */
     private void loadUI() {
         //Reset stage
-        STAGE.clear();
+        stage.clear();
 
         //Show loading screen
         loading = true;
@@ -228,28 +237,31 @@ public class RadarScreen extends GameScreen {
         loadRange();
 
         //Load waypoints
-        WAYPOINTS = FileLoader.loadWaypoints();
+        waypoints = FileLoader.loadWaypoints();
 
         //Load airports
         loadAirports();
 
         //Load separation checker
-        SEPARATION_CHECKER = new SeparationChecker();
-        STAGE.addActor(SEPARATION_CHECKER);
+        separationChecker = new SeparationChecker();
+        stage.addActor(separationChecker);
+
+        //Load waypoint manager
+        waypointManager = new WaypointManager();
 
         //Load arrival manager
-        ARRIVAL_MANAGER = new ArrivalManager();
+        arrivalManager = new ArrivalManager();
 
         //Load obstacles
-        OBS_ARRAY = FileLoader.loadObstacles();
+        obsArray = FileLoader.loadObstacles();
 
         //Load altitude restrictions
-        REST_ARRAY = FileLoader.loadRestricted();
+        restArray = FileLoader.loadRestricted();
 
         //Load panels
         loadPanel();
-        UI.setNormalPane(true);
-        UI.setSelectedPane(null);
+        ui.setNormalPane(true);
+        ui.setSelectedPane(null);
 
         //Load METARs
         loadMetar();
@@ -280,14 +292,14 @@ public class RadarScreen extends GameScreen {
 
     /** Sets the radar return of aircraft to current aircraft information */
     private void updateRadarInfo() {
-        for (Aircraft aircraft: AIRCRAFTS.values()) {
+        for (Aircraft aircraft: aircrafts.values()) {
             aircraft.updateRadarInfo();
         }
     }
 
     /** Adds a new trail dot value to the aircraft's trail queue */
     private void addTrailDot() {
-        for (Aircraft aircraft: AIRCRAFTS.values()) {
+        for (Aircraft aircraft: aircrafts.values()) {
             aircraft.addTrailDot();
         }
     }
@@ -304,49 +316,49 @@ public class RadarScreen extends GameScreen {
         waypointManager.update();
 
         //Updates aircraft separation status
-        SEPARATION_CHECKER.update();
+        separationChecker.update();
 
         //Draw obstacles
-        for (Obstacle obstacle: OBS_ARRAY) {
+        for (Obstacle obstacle: obsArray) {
             obstacle.renderShape();
         }
 
         //Draw restricted areas
-        for (RestrictedArea restrictedArea: REST_ARRAY) {
+        for (RestrictedArea restrictedArea: restArray) {
             restrictedArea.renderShape();
         }
 
         //Additional adjustments for certain airports
-        SHAPE_RENDERER.setColor(Color.BLACK);
-        if (MAIN_NAME.equals("RCTP")) {
-            SHAPE_RENDERER.line(4500, 2416, 4500, 2124);
-            SHAPE_RENDERER.line(1256, 2050, 1256, 1180);
+        shapeRenderer.setColor(Color.BLACK);
+        if (mainName.equals("RCTP")) {
+            shapeRenderer.line(4500, 2416, 4500, 2124);
+            shapeRenderer.line(1256, 2050, 1256, 1180);
         }
 
         //Draw runway(s) for each airport
-        for (Airport airport: AIRPORTS.values()) {
+        for (Airport airport: airports.values()) {
             airport.renderRunways();
         }
 
         //Draw waypoints
-        for (Waypoint waypoint: WAYPOINTS.values()) {
+        for (Waypoint waypoint: waypoints.values()) {
             waypoint.renderShape();
         }
 
         //Draw aircrafts
-        for (Aircraft aircraft: AIRCRAFTS.values()) {
+        for (Aircraft aircraft: aircrafts.values()) {
             aircraft.renderShape();
         }
 
         //Draw ILS arcs
-        for (Airport airport: AIRPORTS.values()) {
+        for (Airport airport: airports.values()) {
             for (ILS ils: airport.getApproaches().values()) {
                 ils.renderShape();
             }
         }
 
-        SHAPE_RENDERER.end();
-        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     }
 
     @Override
@@ -361,79 +373,77 @@ public class RadarScreen extends GameScreen {
         super.dispose();
 
         timer.cancel();
-
-        UI_STAGE.clear();
-        UI_STAGE.dispose();
-        UI.dispose();
-        Aircraft.SKIN.dispose();
-        Aircraft.ICON_ATLAS.dispose();
-
-        UI_STAGE = null;
     }
 
-    public static void setSelectedAircraft(Aircraft aircraft) {
-        if (SELECTED_AIRCRAFT != null) {
-            SELECTED_AIRCRAFT.setSelected(false);
+    /** Disposes of static final variables after user quits app */
+    public static void disposeStatic() {
+        Aircraft.SKIN.dispose();
+        Aircraft.ICON_ATLAS.dispose();
+    }
+
+    public void setSelectedAircraft(Aircraft aircraft) {
+        if (selectedAircraft != null) {
+            selectedAircraft.setSelected(false);
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
         }
 
         if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
-            UI.setSelectedPane(aircraft);
-            UI.setNormalPane(false);
+            ui.setSelectedPane(aircraft);
+            ui.setNormalPane(false);
         } else {
-            UI.setNormalPane(true);
-            UI.setSelectedPane(null);
+            ui.setNormalPane(true);
+            ui.setSelectedPane(null);
         }
-        SELECTED_AIRCRAFT = aircraft;
+        selectedAircraft = aircraft;
     }
 
-    public static Aircraft getSelectedAircraft() {
-        return SELECTED_AIRCRAFT;
+    public Aircraft getSelectedAircraft() {
+        return selectedAircraft;
     }
 
-    public static float getPlanesToControl() {
+    public float getPlanesToControl() {
         return planesToControl;
     }
 
-    public static void setPlanesToControl(float planesToControl) {
-        RadarScreen.planesToControl = planesToControl;
+    public void setPlanesToControl(float planesToControl) {
+        this.planesToControl = planesToControl;
     }
 
-    public static int getScore() {
+    public int getScore() {
         return score;
     }
 
-    public static void setScore(int score) {
-        RadarScreen.score = score;
+    public void setScore(int score) {
+        this.score = score;
         if (score > highScore) {
             highScore = score;
         }
-        UI.updateScoreLabels();
+        ui.updateScoreLabels();
     }
 
-    public static int getHighScore() {
+    public int getHighScore() {
         return highScore;
     }
 
-    public static int getArrivals() {
+    public int getArrivals() {
         return arrivals;
     }
 
-    public static void setArrivals(int arrivals) {
-        RadarScreen.arrivals = arrivals;
+    public void setArrivals(int arrivals) {
+        this.arrivals = arrivals;
     }
 
-    public static ArrivalManager getArrivalManager() {
-        return ARRIVAL_MANAGER;
+    public ArrivalManager getArrivalManager() {
+        return arrivalManager;
     }
 
-    public static float getRadarTime() {
+    public float getRadarTime() {
         return radarTime;
     }
 
-    public static float getTrailTime() {
+    public float getTrailTime() {
         return trailTime;
     }
 }

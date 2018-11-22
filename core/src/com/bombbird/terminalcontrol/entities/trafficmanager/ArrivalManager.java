@@ -1,11 +1,11 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public class ArrivalManager {
     public ArrivalManager() {
         entryPoint = new HashMap<Waypoint, Aircraft>();
 
-        for (Airport airport: RadarScreen.AIRPORTS.values()) {
+        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
             for (Star star: airport.getStars().values()) {
                 entryPoint.put(star.getWaypoint(0), null);
             }

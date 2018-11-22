@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
@@ -20,10 +20,14 @@ public class SeparationChecker extends Actor {
     private Array<Array<Aircraft>> flightLevels;
     private Array<Label> labels;
 
+    private RadarScreen radarScreen;
+
     public SeparationChecker() {
-        flightLevels = new Array<Array<Aircraft>>(true, RadarScreen.MAX_ALT / 1000);
+        radarScreen = TerminalControl.radarScreen;
+
+        flightLevels = new Array<Array<Aircraft>>(true, radarScreen.maxAlt / 1000);
         labels = new Array<Label>();
-        for (int i = 0; i < RadarScreen.MAX_ALT / 1000; i++) {
+        for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
             flightLevels.add(new Array<Aircraft>());
         }
     }
@@ -46,7 +50,7 @@ public class SeparationChecker extends Actor {
 
     /** Updates the state of aircraft separation */
     public void update() {
-        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             aircraft.setWarning(false);
             aircraft.setConflict(false);
         }
@@ -64,8 +68,8 @@ public class SeparationChecker extends Actor {
         for (Array<Aircraft> array: flightLevels) {
             array.clear();
         }
-        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
-            if (((int)(aircraft.getAltitude() / 1000)) < RadarScreen.MAX_ALT / 1000) {
+        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
+            if (((int)(aircraft.getAltitude() / 1000)) < radarScreen.maxAlt / 1000) {
                 flightLevels.get((int)(aircraft.getAltitude() / 1000)).add(aircraft);
             }
         }
@@ -104,7 +108,7 @@ public class SeparationChecker extends Actor {
                     }
 
                     float dist = MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY()));
-                    float minima = RadarScreen.SEPARATION_MINIMA;
+                    float minima = radarScreen.separationMinima;
                     if (plane1.getIls() != null && plane1.getIls().equals(plane2.getIls())) {
                         Runway runway = plane1.getIls().getRwy();
                         if (MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), runway.getX(), runway.getY())) < 10 &&
@@ -120,14 +124,14 @@ public class SeparationChecker extends Actor {
                             //Aircrafts have infringed minima of 1000 feet and 3nm apart
                             plane1.setConflict(true);
                             plane2.setConflict(true);
-                            GameScreen.SHAPE_RENDERER.setColor(Color.RED);
-                            GameScreen.SHAPE_RENDERER.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                            radarScreen.shapeRenderer.setColor(Color.RED);
+                            radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
                         } else {
                             //Aircrafts within 1000 feet, 4.5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
-                            GameScreen.SHAPE_RENDERER.setColor(Color.YELLOW);
-                            GameScreen.SHAPE_RENDERER.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                            radarScreen.shapeRenderer.setColor(Color.YELLOW);
+                            radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
                         }
                         boolean found = false;
                         for (Label label : labels) {
@@ -161,19 +165,19 @@ public class SeparationChecker extends Actor {
 
     /** Checks that each aircraft is separated from each obstacles/restricted area */
     private void checkRestrSep() {
-        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
                     (aircraft instanceof Departure && aircraft.getAltitude() <= 4000 + aircraft.getAirport().getElevation()) ||
                     aircraft.isGoAroundWindow()) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is a departure that is below 4000ft AGL
                 continue;
             }
-            for (Obstacle obstacle: RadarScreen.OBS_ARRAY) {
+            for (Obstacle obstacle: radarScreen.obsArray) {
                 if (aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
                 }
             }
-            for (RestrictedArea restrictedArea: RadarScreen.REST_ARRAY) {
+            for (RestrictedArea restrictedArea: radarScreen.restArray) {
                 if (aircraft.getAltitude() < restrictedArea.getMinAlt() - 50 && restrictedArea.isIn(aircraft)) {
                     aircraft.setConflict(true);
                 }
@@ -183,14 +187,14 @@ public class SeparationChecker extends Actor {
 
     /** Renders the separation rings if aircraft is in conflict */
     private void renderShape() {
-        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isConflict()) {
-                RadarScreen.setScore(0);
-                RadarScreen.SHAPE_RENDERER.setColor(Color.RED);
-                RadarScreen.SHAPE_RENDERER.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
+                radarScreen.setScore(0);
+                radarScreen.shapeRenderer.setColor(Color.RED);
+                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
             } else if (aircraft.isWarning()) {
-                RadarScreen.SHAPE_RENDERER.setColor(Color.YELLOW);
-                RadarScreen.SHAPE_RENDERER.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
+                radarScreen.shapeRenderer.setColor(Color.YELLOW);
+                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
             }
         }
     }

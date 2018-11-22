@@ -3,19 +3,18 @@ package com.bombbird.terminalcontrol.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
-
-import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class Runway extends Actor {
     //Name of runway
@@ -57,7 +56,13 @@ public class Runway extends Actor {
     //Array of aircraft on approach
     private Array<Aircraft> aircraftsOnAppr;
 
+    private RadarScreen radarScreen;
+    private ShapeRenderer shapeRenderer;
+
     public Runway(String toParse) {
+        radarScreen = TerminalControl.radarScreen;
+        shapeRenderer = radarScreen.shapeRenderer;
+
         parseInfo(toParse);
         aircraftsOnAppr = new Array<Aircraft>();
 
@@ -70,7 +75,7 @@ public class Runway extends Actor {
         //Create polygon
         setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
 
-        GameScreen.STAGE.addActor(this);
+        radarScreen.stage.addActor(this);
         setVisible(false);
     }
 
@@ -80,7 +85,7 @@ public class Runway extends Actor {
         labelStyle.font = Fonts.defaultFont8;
         labelStyle.fontColor = Color.WHITE;
 
-        String rwyInfo[] = toParse.split(",");
+        String[] rwyInfo = toParse.split(",");
         int index = 0;
         for (String s1: rwyInfo) {
             switch (index) {
@@ -91,7 +96,7 @@ public class Runway extends Actor {
                 case 2: y = Float.parseFloat(s1); break;
                 case 3: pxLength = MathTools.feetToPixel(Integer.parseInt(s1)); break;
                 case 4: heading = Integer.parseInt(s1);
-                        trueHdg = heading - RadarScreen.MAG_HDG_DEV;
+                        trueHdg = heading - radarScreen.magHdgDev;
                         break;
                 case 5: label.setX(Float.parseFloat(s1)); break;
                 case 6: label.setY(Float.parseFloat(s1)); break;
@@ -118,8 +123,8 @@ public class Runway extends Actor {
 
     /** Renders the runway rectangle */
     public void renderShape() {
-        SHAPE_RENDERER.setColor(Color.WHITE);
-        SHAPE_RENDERER.polygon(getPolygon().getVertices());
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.polygon(getPolygon().getVertices());
     }
 
     /** Called to remove aircraft from the array of aircrafts on approach, should be called during go arounds/cancelling approaches */

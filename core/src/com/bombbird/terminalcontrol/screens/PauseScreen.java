@@ -76,6 +76,7 @@ public class PauseScreen {
                 //Go back to main menu screen
                 FileSaver.saveGame(); //Save the game first
                 dispose();
+                TerminalControl.radarScreen = null;
                 gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game));
             }
         });

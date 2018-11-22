@@ -4,7 +4,9 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -19,23 +21,26 @@ import org.json.JSONObject;
 public class FileSaver {
     /** Saves current game state */
     public static void saveGame() {
+        RadarScreen radarScreen = TerminalControl.radarScreen;
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
         jsonObject.put("airports", saveAirports());
-        jsonObject.put("MAIN_NAME", RadarScreen.MAIN_NAME);
-        jsonObject.put("AIRAC", RadarScreen.AIRAC);
-        jsonObject.put("score", RadarScreen.getScore());
-        jsonObject.put("highScore", RadarScreen.getHighScore());
-        jsonObject.put("planesToControl", (double) RadarScreen.getPlanesToControl());
-        jsonObject.put("arrivals", RadarScreen.getArrivals());
-        jsonObject.put("radarTime", (double) RadarScreen.getRadarTime());
-        jsonObject.put("trailTime", (double) RadarScreen.getTrailTime());
+        jsonObject.put("SAVE_ID", radarScreen.saveId);
+        jsonObject.put("MAIN_NAME", radarScreen.mainName);
+        jsonObject.put("AIRAC", radarScreen.airac);
+        jsonObject.put("score", radarScreen.getScore());
+        jsonObject.put("highScore", radarScreen.getHighScore());
+        jsonObject.put("planesToControl", (double) radarScreen.getPlanesToControl());
+        jsonObject.put("arrivals", radarScreen.getArrivals());
+        jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
+        jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("arrivalManager", getArrivalManager());
 
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             //If desktop, save to external roaming appData
-            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/Test.json");
+            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available
             if (Gdx.files.isLocalStorageAvailable()) {
@@ -48,12 +53,14 @@ public class FileSaver {
         if (handle != null) {
             handle.writeString(jsonObject.toString(), false);
         }
+
+        saveID(radarScreen.saveId);
     }
 
     /** Saves all aircraft information */
     private static JSONArray saveAircraft() {
         JSONArray aircrafts = new JSONArray();
-        for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
+        for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
             JSONObject aircraftInfo = new JSONObject();
             String type;
             if (aircraft instanceof Arrival) {
@@ -294,7 +301,7 @@ public class FileSaver {
     /** Saves current information for all airports */
     private static JSONArray saveAirports() {
         JSONArray airports = new JSONArray();
-        for (Airport airport: RadarScreen.AIRPORTS.values()) {
+        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
             JSONObject airportInfo = new JSONObject();
 
             //Landing runways
@@ -357,10 +364,41 @@ public class FileSaver {
     private static JSONObject getArrivalManager() {
         JSONObject arrivalManager = new JSONObject();
 
-        for (Waypoint waypoint: RadarScreen.getArrivalManager().getEntryPoint().keySet()) {
-            arrivalManager.put(waypoint.getName(), RadarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : RadarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
+        for (Waypoint waypoint: TerminalControl.radarScreen.getArrivalManager().getEntryPoint().keySet()) {
+            arrivalManager.put(waypoint.getName(), TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
         }
 
         return arrivalManager;
+    }
+
+    /** Saves the input ID into saves.saves file */
+    private static void saveID(int id) {
+        FileHandle handle;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            handle = Gdx.files.local("saves/saves.saves");
+        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+        } else {
+            handle = Gdx.files.local("saves/saves.saves");
+            Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
+        }
+
+        Array<String> ids = null;
+        if (handle.exists()) {
+            ids = new Array<String>(handle.readString().split(","));
+        }
+        if (ids != null) {
+            if (!ids.contains(Integer.toString(id), false)) {
+                //If does not contain, add to array
+                ids.add(Integer.toString(id));
+            } else {
+                return; //If contains ID, no action required
+            }
+        } else {
+            ids = new Array<String>();
+            ids.add(Integer.toString(id));
+        }
+
+        handle.writeString(ids.toString(","), false);
     }
 }

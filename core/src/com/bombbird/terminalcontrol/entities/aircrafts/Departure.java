@@ -26,8 +26,8 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
         setOnGround(true);
-        contactAlt = RadarScreen.MIN_ALT + MathUtils.random(-800, 0);
-        handOverAlt = RadarScreen.MAX_ALT - 1500 + MathUtils.random(-500, 500);
+        contactAlt = radarScreen.minAlt + MathUtils.random(-800, 0);
+        handOverAlt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
         v2set = false;
         sidSet = false;
         contacted = false;
@@ -72,7 +72,7 @@ public class Departure extends Aircraft {
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());
-        setTrack(getHeading() - RadarScreen.MAG_HDG_DEV);
+        setTrack(getHeading() - radarScreen.magHdgDev);
 
         takeOff();
 
@@ -158,7 +158,7 @@ public class Departure extends Aircraft {
     @Override
     public void setAfterLastWpt() {
         getNavState().getLatModes().removeValue(sid.getName() + " deaprture", false);
-        setClearedHeading((int)(outboundHdg + RadarScreen.MAG_HDG_DEV));
+        setClearedHeading((int)(outboundHdg + radarScreen.magHdgDev));
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());
         updateVectorMode();
@@ -184,7 +184,7 @@ public class Departure extends Aircraft {
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
             } else if (contacted && getControlState() == 2) {
-                setHighestAlt(RadarScreen.MAX_ALT);
+                setHighestAlt(radarScreen.maxAlt);
             } else {
                 setHighestAlt(cruiseAlt);
             }
@@ -232,7 +232,7 @@ public class Departure extends Aircraft {
             updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
             setExpedite(false);
-            RadarScreen.setScore(RadarScreen.getScore() + 1);
+            radarScreen.setScore(radarScreen.getScore() + 1);
         }
     }
 

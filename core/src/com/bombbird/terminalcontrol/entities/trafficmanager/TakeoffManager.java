@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.trafficmanager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -19,7 +20,11 @@ public class TakeoffManager {
     private HashMap<String, Aircraft> prevAircraft;
     private HashMap<String, Float> timers;
 
+    private RadarScreen radarScreen;
+
     public TakeoffManager(Airport airport) {
+        radarScreen = TerminalControl.radarScreen;
+
         this.airport = airport;
         nextAircraft = new HashMap<String, String[]>();
         prevAircraft = new HashMap<String, Aircraft>();
@@ -36,6 +41,11 @@ public class TakeoffManager {
         for (String rwy: timers.keySet()) {
             timers.put(rwy, timers.get(rwy) + Gdx.graphics.getDeltaTime());
             if (nextAircraft.get(rwy) == null) {
+                String[] aircraftInfo = RandomGenerator.randomPlane();
+                while (radarScreen.aircrafts.get(aircraftInfo[0]) != null) {
+                    //Ensure there are no duplicates
+                    aircraftInfo = RandomGenerator.randomPlane();
+                }
                 nextAircraft.put(rwy, RandomGenerator.randomPlane());
             }
         }
@@ -69,8 +79,8 @@ public class TakeoffManager {
         }
         if (runway != null) {
             String callsign = nextAircraft.get(runway.getName())[0];
-            RadarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
-            prevAircraft.put(runway.getName(), RadarScreen.AIRCRAFTS.get(callsign));
+            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
+            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
             nextAircraft.put(runway.getName(), null);
             timers.put(runway.getName(), 0f);
         }
@@ -88,8 +98,8 @@ public class TakeoffManager {
         }
         if (runway != null) {
             String callsign = nextAircraft.get(runway.getName())[0];
-            RadarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
-            prevAircraft.put(runway.getName(), RadarScreen.AIRCRAFTS.get(callsign));
+            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
+            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
             nextAircraft.put(runway.getName(), null);
             timers.put(runway.getName(), 0f);
         }

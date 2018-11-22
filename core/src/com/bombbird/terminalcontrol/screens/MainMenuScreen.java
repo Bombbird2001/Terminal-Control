@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
+import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class MainMenuScreen implements Screen {
@@ -118,6 +119,8 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Quit game
+                RadarScreen.disposeStatic();
+                Ui.disposeStatic();
                 dispose();
                 Gdx.app.exit();
             }

@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.screens.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
@@ -33,21 +34,21 @@ public class AltTab extends Tab {
         int highestAlt = -1;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
-            highestAlt = RadarScreen.MAX_ALT;
+            highestAlt = TerminalControl.radarScreen.maxAlt;
         } else if (selectedAircraft instanceof Arrival) {
-            lowestAlt = RadarScreen.MIN_ALT;
+            lowestAlt = TerminalControl.radarScreen.minAlt;
             if (latMode.equals("Hold at")) {
                 Star star = (Star) selectedAircraft.getSidStar();
-                int[] restr = star.getHoldProcedure().getAltRestAtWpt(RadarScreen.WAYPOINTS.get(LatTab.holdWpt));
+                int[] restr = star.getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
-            } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < RadarScreen.MAX_ALT) {
+            } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
             }
             if (highestAlt == -1) {
-                highestAlt = RadarScreen.MAX_ALT;
+                highestAlt = TerminalControl.radarScreen.maxAlt;
             }
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
@@ -64,19 +65,19 @@ public class AltTab extends Tab {
             alts.add(Integer.toString(lowestAlt));
             int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
             while (altTracker <= highestAlt) {
-                String toAdd = altTracker / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(altTracker / 100) : Integer.toString(altTracker);
+                String toAdd = altTracker / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + altTracker / 100 : Integer.toString(altTracker);
                 alts.add(toAdd);
                 altTracker += 1000;
             }
         } else {
             while (lowestAlt <= highestAlt) {
-                String toAdd = lowestAlt / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(lowestAlt / 100) : Integer.toString(lowestAlt);
+                String toAdd = lowestAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + lowestAlt / 100 : Integer.toString(lowestAlt);
                 alts.add(toAdd);
                 lowestAlt += 1000;
             }
         }
         valueBox.setItems(alts);
-        valueBox.setSelected(clearedAlt / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(clearedAlt / 100) : Integer.toString(clearedAlt));
+        valueBox.setSelected(clearedAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + clearedAlt / 100 : Integer.toString(clearedAlt));
         notListening = false;
     }
 

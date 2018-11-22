@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.GameScreen;
@@ -14,7 +15,11 @@ public class SidStar {
     private Array<Waypoint> waypoints;
     private Array<int[]> restrictions;
 
+    private RadarScreen radarScreen;
+
     public SidStar(Airport airport, String toParse) {
+        radarScreen = TerminalControl.radarScreen;
+
         this.airport = airport;
         parseInfo(toParse);
     }
@@ -32,7 +37,7 @@ public class SidStar {
         while (index < end) {
             Waypoint waypoint = getWaypoint(index);
             if (prevPt != null) {
-                GameScreen.SHAPE_RENDERER.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
+                radarScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
             }
             prevPt = waypoint;
             index++;
@@ -44,9 +49,9 @@ public class SidStar {
 
     private void drawOutbound(float previousX, float previousY, int outbound) {
         if (outbound != -1) {
-            float outboundTrack = outbound - RadarScreen.MAG_HDG_DEV;
+            float outboundTrack = outbound - radarScreen.magHdgDev;
             float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
-            GameScreen.SHAPE_RENDERER.line(previousX, previousY, point[0], point[1]);
+            radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1]);
         }
     }
 
@@ -89,7 +94,7 @@ public class SidStar {
     }
 
     public int findWptIndex(String wptName) {
-        return waypoints.indexOf(RadarScreen.WAYPOINTS.get(wptName), false);
+        return waypoints.indexOf(radarScreen.waypoints.get(wptName), false);
     }
 
     public int getWptMinAlt(String wptName) {

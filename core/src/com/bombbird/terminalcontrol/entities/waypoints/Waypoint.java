@@ -2,11 +2,11 @@ package com.bombbird.terminalcontrol.entities.waypoints;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
-
-import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class Waypoint extends Actor {
     private String name;
@@ -14,6 +14,8 @@ public class Waypoint extends Actor {
     private int posY;
     private Label label;
     private boolean selected;
+
+    private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
 
     public Waypoint(String name, int posX, int posY) {
         this.name = name;
@@ -38,8 +40,8 @@ public class Waypoint extends Actor {
 
     public void renderShape() {
         if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
-            SHAPE_RENDERER.setColor(Color.WHITE);
-            SHAPE_RENDERER.circle(getPosX(), getPosY(), 12, 10);
+            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
         }
     }
 

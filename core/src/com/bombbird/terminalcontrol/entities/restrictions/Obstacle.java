@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.ArrayList;
@@ -55,8 +55,8 @@ public class Obstacle extends Actor {
 
     /** Renders the polygon of obstacle to screen */
     public void renderShape() {
-        GameScreen.SHAPE_RENDERER.setColor(Color.GRAY);
-        GameScreen.SHAPE_RENDERER.polygon(polygon.getVertices());
+        TerminalControl.radarScreen.shapeRenderer.setColor(Color.GRAY);
+        TerminalControl.radarScreen.shapeRenderer.polygon(polygon.getVertices());
     }
 
     /** Checks whether the input aircraft is inside the polygon area */

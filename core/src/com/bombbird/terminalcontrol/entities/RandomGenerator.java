@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
@@ -16,13 +17,13 @@ public class RandomGenerator {
 
     /** Generates a random airport given the RadarScreen mainName variable */
     public static Airport randomAirport() {
-        if ("RCTP".equals(RadarScreen.MAIN_NAME)) {
+        if ("RCTP".equals(TerminalControl.radarScreen.mainName)) {
             if (MathUtils.random(9) < 9) {
-                return RadarScreen.AIRPORTS.get("RCTP");
+                return TerminalControl.radarScreen.airports.get("RCTP");
             }
-            return RadarScreen.AIRPORTS.get("RCSS");
+            return TerminalControl.radarScreen.airports.get("RCSS");
         }
-        Gdx.app.log("Unknown mainName", "Unknowm mainName " + RadarScreen.MAIN_NAME + " set!");
-        return RadarScreen.AIRPORTS.get("RCTP");
+        Gdx.app.log("Unknown mainName", "Unknowm mainName " + TerminalControl.radarScreen.mainName + " set!");
+        return TerminalControl.radarScreen.airports.get("RCTP");
     }
 }

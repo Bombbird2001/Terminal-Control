@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -72,7 +73,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(ilsBox);
+        TerminalControl.radarScreen.uiStage.addActor(ilsBox);
     }
 
     private void loadHdgElements() {
@@ -85,7 +86,7 @@ public class LatTab extends Tab {
         hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
         hdgBox.setSize(0.8f * getPaneWidth(), 270);
         hdgBox.setAlignment(Align.center);
-        RadarScreen.UI_STAGE.addActor(hdgBox);
+        TerminalControl.radarScreen.uiStage.addActor(hdgBox);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.WHITE;
@@ -129,7 +130,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(button);
+        TerminalControl.radarScreen.uiStage.addActor(button);
         return button;
     }
 

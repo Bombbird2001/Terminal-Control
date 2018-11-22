@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 
@@ -15,6 +16,9 @@ public class TerminalControl extends Game {
 
 	//Is html? (freetype not supported in html)
 	public static boolean ishtml;
+
+	//Active gameScreen instance
+	public static RadarScreen radarScreen = null;
 
 	//Create texture stuff
 	private static TextureAtlas buttonAtlas;

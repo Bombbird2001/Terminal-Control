@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
-import com.badlogic.gdx.utils.Timer;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
@@ -41,7 +41,11 @@ public class NavState {
 
     private int length = 1;
 
+    private RadarScreen radarScreen;
+
     public NavState(int type, Aircraft aircraft) {
+        radarScreen = TerminalControl.radarScreen;
+
         this.aircraft = aircraft;
         altModes = new Array<String>(5);
         spdModes = new Array<String>(3);
@@ -192,8 +196,8 @@ public class NavState {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
             clearedDirect.removeFirst();
-            clearedDirect.addFirst(RadarScreen.WAYPOINTS.get(currentDirect));
-            clearedDirect.addFirst(RadarScreen.WAYPOINTS.get(currentDirect));
+            clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
+            clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
         } else if (aircraft.getDirect() == null && currentDispLatMode.equals("Fly heading") && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || clearedDispLatMode.equals("After waypoint, fly heading") || clearedDispLatMode.equals("Hold at"))) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             dispLatMode.removeFirst();
@@ -260,7 +264,7 @@ public class NavState {
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS) {
         if (latMode.contains(aircraft.getSidStar().getName())) {
-            clearedDirect.addLast(RadarScreen.WAYPOINTS.get(clearedWpt));
+            clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
             if (latMode.contains("arrival")) {
                 if (!latModes.contains("After waypoint, fly heading", false)) {
                     latModes.add("After waypoint, fly heading");
@@ -270,10 +274,10 @@ public class NavState {
                 }
             }
         } else if (latMode.equals("After waypoint, fly heading")) {
-            clearedAftWpt.addLast(RadarScreen.WAYPOINTS.get(afterWpt));
+            clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode.equals("Hold at")) {
-            clearedHold.addLast(RadarScreen.WAYPOINTS.get(holdWpt));
+            clearedHold.addLast(radarScreen.waypoints.get(holdWpt));
             latModes.removeValue("After waypoint, fly heading", false);
         } else {
             this.clearedHdg.addLast(clearedHdg);

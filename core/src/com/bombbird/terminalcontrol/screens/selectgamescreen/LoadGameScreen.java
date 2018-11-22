@@ -28,6 +28,7 @@ public class LoadGameScreen extends SelectGameScreen {
     public void loadScroll() {
         //TODO Load saves
 
+
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
         scrollPane.setupFadeScrollBars(1, 1.5f);
         scrollPane.setX(2880 / 2f - BUTTON_WIDTH * 0.6f);

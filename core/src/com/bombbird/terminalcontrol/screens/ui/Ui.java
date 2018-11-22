@@ -19,7 +19,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
-public class Ui implements Disposable {
+public class Ui {
     private static Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
     private static Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
     private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
@@ -28,8 +28,6 @@ public class Ui implements Disposable {
     public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
     public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
     public static SpriteDrawable lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
-
-    private GameScreen gameScreen;
 
     public LatTab latTab;
     public AltTab altTab;
@@ -58,8 +56,11 @@ public class Ui implements Disposable {
 
     private int tab;
 
-    public Ui(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
+    private RadarScreen radarScreen;
+
+    public Ui() {
+        radarScreen  = TerminalControl.radarScreen;
+
         tab = 0;
         loadNormalPane();
         loadAircraftLabel();
@@ -74,23 +75,23 @@ public class Ui implements Disposable {
         //Updates text in METAR label
         for (Label label: metarInfos) {
             //Get airport: ICAO code is first 4 letters of label's text
-            Airport airport = RadarScreen.AIRPORTS.get(label.getText().toString().substring(0, 4));
+            Airport airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
             if (airport.getWinds()[0] != 0) {
-                metarText[1] = "Winds: " + Integer.toString(airport.getWinds()[0]) + "@" + Integer.toString(airport.getWinds()[1]) + "kts";
+                metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
             } else {
-                metarText[1] = "Winds: VRB@" + Integer.toString(airport.getWinds()[1]) + "kts";
+                metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
             }
             //Gusts
             if (airport.getGusts() != -1) {
-                metarText[2] = "Gusting to: " + Integer.toString(airport.getGusts()) + "kts";
+                metarText[2] = "Gusting to: " + airport.getGusts() + "kts";
             } else {
                 metarText[2] = "Gusting to: None";
             }
             //Visbility
-            metarText[3] = "Visibility: " + Integer.toString(airport.getVisibility()) + " metres";
+            metarText[3] = "Visibility: " + airport.getVisibility() + " metres";
             //Windshear
             metarText[4] = "Windshear: " + airport.getWindshear();
             label.setText(StringUtils.join(metarText, "\n"));
@@ -112,7 +113,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(labelButton);
+        radarScreen.uiStage.addActor(labelButton);
     }
 
     private void loadNormalPane() {
@@ -130,15 +131,15 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(paneImage);
+        radarScreen.uiStage.addActor(paneImage);
 
         Label.LabelStyle labelStyle2 = new Label.LabelStyle();
         labelStyle2.font = Fonts.defaultFont30;
         labelStyle2.fontColor = Color.WHITE;
 
-        scoreLabel = new Label("Score: " + Integer.toString(RadarScreen.getScore()) + "\nHigh score: " + Integer.toString(RadarScreen.getHighScore()) , labelStyle2);
+        scoreLabel = new Label("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore() , labelStyle2);
         scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
-        RadarScreen.UI_STAGE.addActor(scoreLabel);
+        radarScreen.uiStage.addActor(scoreLabel);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
@@ -152,11 +153,11 @@ public class Ui implements Disposable {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Set game state to paused
-                gameScreen.setGameState(GameScreen.State.PAUSE);
+                radarScreen.setGameState(GameScreen.State.PAUSE);
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(pauseButton);
+        radarScreen.uiStage.addActor(pauseButton);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
@@ -164,7 +165,7 @@ public class Ui implements Disposable {
 
         int index = 0;
         metarInfos = new Array<Label>();
-        for (Airport airport: RadarScreen.AIRPORTS.values()) {
+        for (Airport airport: radarScreen.airports.values()) {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             metarText[1] = "Winds: Loading";
@@ -174,7 +175,7 @@ public class Ui implements Disposable {
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
             metarInfo.setPosition(paneImage.getWidth() / 19.2f, 2300 - index * 575);
             metarInfo.setSize(paneImage.getWidth() / 2.74f, 300);
-            RadarScreen.UI_STAGE.addActor(metarInfo);
+            radarScreen.uiStage.addActor(metarInfo);
             metarInfos.add(metarInfo);
             index++;
         }
@@ -252,7 +253,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(cfmChange);
+        radarScreen.uiStage.addActor(cfmChange);
 
         //Undo all changes button
         resetAll = new TextButton("Undo all\nchanges", textButtonStyle);
@@ -265,7 +266,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(resetAll);
+        radarScreen.uiStage.addActor(resetAll);
     }
 
     private void loadTabButtons() {
@@ -294,7 +295,7 @@ public class Ui implements Disposable {
             }
         });
         setTabColours(latButton, true);
-        RadarScreen.UI_STAGE.addActor(latButton);
+        radarScreen.uiStage.addActor(latButton);
 
         //Alt mode
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
@@ -320,7 +321,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(altButton);
+        radarScreen.uiStage.addActor(altButton);
 
         //Spd mode
         TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
@@ -346,7 +347,7 @@ public class Ui implements Disposable {
                 event.handle();
             }
         });
-        RadarScreen.UI_STAGE.addActor(spdButton);
+        radarScreen.uiStage.addActor(spdButton);
     }
 
     private void updateTabButtons() {
@@ -363,7 +364,7 @@ public class Ui implements Disposable {
             setTabColours(altButton, false);
             setTabColours(spdButton, true);
         } else {
-            Gdx.app.log("Invalid tab", "Unknown tab number " + Integer.toString(tab) + " set!");
+            Gdx.app.log("Invalid tab", "Unknown tab number " + tab + " set!");
         }
     }
 
@@ -530,15 +531,15 @@ public class Ui implements Disposable {
     }
 
     public void updateScoreLabels() {
-        scoreLabel.setText("Score: " + Integer.toString(RadarScreen.getScore()) + "\nHigh score: " + Integer.toString(RadarScreen.getHighScore()));
+        scoreLabel.setText("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore());
     }
 
     public float getPaneWidth() {
         return paneImage.getWidth();
     }
 
-    @Override
-    public void dispose() {
+    /** Disposes of static textures */
+    public static void disposeStatic() {
         hdgBoxBackground.dispose();
         lightBackground.dispose();
         lightestBackground.dispose();

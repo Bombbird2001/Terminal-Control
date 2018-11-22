@@ -2,16 +2,18 @@ package com.bombbird.terminalcontrol.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
-
-import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class RangeCircle extends Actor{
     private int range;
     private Label labelUp;
     private Label labelDown;
+
+    private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
 
     public RangeCircle(int range, int yOffset) {
         this.range = range;
@@ -19,9 +21,9 @@ public class RangeCircle extends Actor{
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont10;
         labelStyle.fontColor = Color.GRAY;
-        labelUp = new Label(Integer.toString(range) + "nm", labelStyle);
+        labelUp = new Label(range+ "nm", labelStyle);
         labelUp.setPosition(5760 / 2f + xOffset, 3240 / 2f - yOffset + 5);
-        labelDown = new Label(Integer.toString(range)+ "nm", labelStyle);
+        labelDown = new Label(range+ "nm", labelStyle);
         labelDown.setPosition(5760 / 2f + xOffset, 3140 / 2f + yOffset);
     }
 
@@ -32,7 +34,7 @@ public class RangeCircle extends Actor{
     }
 
     public void renderShape() {
-        SHAPE_RENDERER.setColor(Color.GRAY);
-        SHAPE_RENDERER.circle(2880, 1620, range / 10f * 324, 60);
+        shapeRenderer.setColor(Color.GRAY);
+        shapeRenderer.circle(2880, 1620, range / 10f * 324, 60);
     }
 }

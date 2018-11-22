@@ -1,12 +1,15 @@
 package com.bombbird.terminalcontrol.screens.selectgamescreen;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class NewGameScreen extends SelectGameScreen {
@@ -31,7 +34,7 @@ public class NewGameScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load airports
-        String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "ZSPD\nShanghai Pudong International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
+        String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
         for (final String airport: airports) {
             final TextButton airportButton = new TextButton(airport, getButtonStyle());
             airportButton.setName(airport.substring(0, 4));
@@ -42,17 +45,39 @@ public class NewGameScreen extends SelectGameScreen {
                     FileHandle handle = Gdx.files.internal("game/available.arpt");
                     String[] airports = handle.readString().split("\\r?\\n");
                     boolean found = false;
-                    int airac = -1;
+                    int airac = Integer.parseInt(airports[0]);
+                    int index = 0;
                     for (String arptData: airports) {
                         String arpt = arptData.split(":")[0];
-                        airac = Integer.parseInt(arptData.split(":")[1]);
+                        if (index > 0) airac = Integer.parseInt(arptData.split(":")[1]);
                         if (arpt.equals(name)) {
                             found = true;
                             break;
                         }
+                        index++;
                     }
+
+                    FileHandle handle1;
+                    if (Gdx.app.getType() == Application.ApplicationType.Android) {
+                        handle1 = Gdx.files.local("saves/saves.saves");
+                    } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                        handle1 = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+                    } else {
+                        handle1 = Gdx.files.local("saves/saves.saves");
+                        Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
+                    }
+                    int slot = 0;
+                    if (handle1.exists()) {
+                        Array<String> saves = new Array<String>(handle1.readString().split(","));
+                        while (saves.contains(Integer.toString(slot), false)) {
+                            slot++;
+                        }
+                    }
+
                     if (found && airac > -1) {
-                        game.setScreen(new RadarScreen(game, name, airac));
+                        RadarScreen radarScreen = new RadarScreen(game, name, airac, slot);
+                        TerminalControl.radarScreen = radarScreen;
+                        game.setScreen(radarScreen);
                     } else {
                         if (!found) {
                             Gdx.app.log("Directory not found", "Directory not found for " + name);

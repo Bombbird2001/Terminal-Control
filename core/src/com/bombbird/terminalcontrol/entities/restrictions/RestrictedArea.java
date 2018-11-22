@@ -7,19 +7,23 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
-
-import static com.bombbird.terminalcontrol.screens.GameScreen.SHAPE_RENDERER;
 
 public class RestrictedArea extends Actor {
     private Circle circle;
     private int minAlt;
     private Label label;
 
+    private RadarScreen radarScreen;
+    private ShapeRenderer shapeRenderer;
+
     public RestrictedArea(String toParse) {
         parseData(toParse);
+        radarScreen = TerminalControl.radarScreen;
+        shapeRenderer = radarScreen.shapeRenderer;
     }
 
     /** Parses input string into relevant information */
@@ -43,7 +47,7 @@ public class RestrictedArea extends Actor {
                 case 4: centreX = Float.parseFloat(s1); break;
                 case 5: centreY = Float.parseFloat(s1); break;
                 case 6: radius = Float.parseFloat(s1) * 2; break;
-                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + RadarScreen.MAIN_NAME + "/restricted.rest");
+                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/restricted.rest");
             }
             index++;
         }
@@ -60,14 +64,14 @@ public class RestrictedArea extends Actor {
 
     /** Renders the circle for restricted areas on screen */
     public void renderShape() {
-        SHAPE_RENDERER.end();
-        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Filled);
-        SHAPE_RENDERER.setColor(Color.BLACK);
-        SHAPE_RENDERER.circle(circle.x, circle.y, circle.radius);
-        SHAPE_RENDERER.end();
-        SHAPE_RENDERER.begin(ShapeRenderer.ShapeType.Line);
-        SHAPE_RENDERER.setColor(Color.GRAY);
-        SHAPE_RENDERER.circle(circle.x, circle.y, circle.radius);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.circle(circle.x, circle.y, circle.radius);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.GRAY);
+        shapeRenderer.circle(circle.x, circle.y, circle.radius);
     }
 
     /** Checks if input aircraft is in the circle */
