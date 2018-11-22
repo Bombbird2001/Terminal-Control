@@ -242,4 +242,8 @@ public class Airport {
     public void setAirborne(int airborne) {
         this.airborne = airborne;
     }
+
+    public TakeoffManager getTakeoffManager() {
+        return takeoffManager;
+    }
 }

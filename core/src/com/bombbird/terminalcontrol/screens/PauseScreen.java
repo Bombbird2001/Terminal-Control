@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.utilities.FileSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class PauseScreen {
@@ -74,10 +74,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu screen
-                for (Aircraft aircraft: RadarScreen.AIRCRAFTS.values()) {
-                    //Clears timer for all aircrafts' navState
-                    aircraft.getNavState().clearAll();
-                }
+                FileSaver.saveGame(); //Save the game first
                 dispose();
                 gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game));
             }

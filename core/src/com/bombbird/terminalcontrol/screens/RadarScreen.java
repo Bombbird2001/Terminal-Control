@@ -30,7 +30,6 @@ public class RadarScreen extends GameScreen {
     public static float MAG_HDG_DEV;
     public static int MAX_ALT;
     public static int MIN_ALT;
-    public static int TRANS_ALT;
     public static int TRANS_LVL;
     public static int SEPARATION_MINIMA;
     public static int AIRAC;
@@ -121,10 +120,9 @@ public class RadarScreen extends GameScreen {
             switch (index) {
                 case 0: MIN_ALT = Integer.parseInt(s); break;
                 case 1: MAX_ALT = Integer.parseInt(s); break;
-                case 2: SEPARATION_MINIMA = Integer.parseInt(s); break;
-                case 3: TRANS_ALT = Integer.parseInt(s); break;
-                case 4: TRANS_LVL = Integer.parseInt(s); break;
-                case 5: MAG_HDG_DEV = Float.parseFloat(s); break;
+                case 2: TRANS_LVL = Integer.parseInt(s); break;
+                case 3: SEPARATION_MINIMA = Integer.parseInt(s); break;
+                case 4: MAG_HDG_DEV = Float.parseFloat(s); break;
                 default:
                     int index1 = 0;
                     String icao = "";
@@ -345,14 +343,8 @@ public class RadarScreen extends GameScreen {
     public void setTimersPaused(boolean paused) {
         if (paused) {
             radarTimer.stop();
-            for (Aircraft aircraft: AIRCRAFTS.values()) {
-                aircraft.getNavState().getTimer().stop();
-            }
         } else {
             radarTimer.start();
-            for (Aircraft aircraft: AIRCRAFTS.values()) {
-                aircraft.getNavState().getTimer().start();
-            }
         }
     }
 

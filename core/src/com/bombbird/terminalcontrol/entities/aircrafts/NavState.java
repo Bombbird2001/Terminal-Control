@@ -18,12 +18,12 @@ public class NavState {
     private Array<String> altModes;
     private Array<String> spdModes;
 
+    private Array<Float> timeQueue;
+
     //Modes used for display
     private Queue<String> dispLatMode;
     private Queue<String> dispAltMode;
     private Queue<String> dispSpdMode;
-
-    private Timer timer;
 
     private Queue<Integer> clearedHdg;
     private Queue<Waypoint> clearedDirect;
@@ -79,7 +79,7 @@ public class NavState {
         dispSpdMode = new Queue<String>();
         dispSpdMode.addLast(spdModes.get(0));
 
-        timer = new Timer();
+        timeQueue = new Array<Float>();
 
         clearedHdg = new Queue<Integer>();
         clearedHdg.addLast(aircraft.getClearedHeading());
@@ -106,68 +106,68 @@ public class NavState {
         goAround.addLast(false);
     }
 
-    /** Schedules a new task of setting aircraft's instructions after time delay; should be called after sending lat, alt and spd */
+    /** Adds the time delay to keep track of when to send instructions */
     public void updateState() {
-        timer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                if (!goAround.get(1) && aircraft.isGoAround()) {
-                    dispLatMode.removeIndex(1);
-                    dispAltMode.removeIndex(1);
-                    dispSpdMode.removeIndex(1);
+        timeQueue.add(timeDelay);
+    }
 
-                    clearedHdg.removeIndex(1);
-                    clearedDirect.removeIndex(1);
-                    clearedAftWpt.removeIndex(1);
-                    clearedAftWptHdg.removeIndex(1);
-                    clearedHold.removeIndex(1);
-                    clearedIls.removeIndex(1);
+    /** When called updates the aircraft's intentions (i.e. after reaction time has passed) */
+    private void sendInstructions() {
+        if (!goAround.get(1) && aircraft.isGoAround()) {
+            dispLatMode.removeIndex(1);
+            dispAltMode.removeIndex(1);
+            dispSpdMode.removeIndex(1);
 
-                    clearedAlt.removeIndex(1);
-                    clearedExpedite.removeIndex(1);
+            clearedHdg.removeIndex(1);
+            clearedDirect.removeIndex(1);
+            clearedAftWpt.removeIndex(1);
+            clearedAftWptHdg.removeIndex(1);
+            clearedHold.removeIndex(1);
+            clearedIls.removeIndex(1);
 
-                    clearedSpd.removeIndex(1);
+            clearedAlt.removeIndex(1);
+            clearedExpedite.removeIndex(1);
 
-                    goAround.removeIndex(1);
-                } else {
-                    //Do not send inputs if aircraft went around during delay
-                    validateInputs();
+            clearedSpd.removeIndex(1);
 
-                    dispLatMode.removeFirst();
-                    dispAltMode.removeFirst();
-                    dispSpdMode.removeFirst();
+            goAround.removeIndex(1);
+        } else {
+            //Do not send inputs if aircraft went around during delay
+            validateInputs();
 
-                    clearedHdg.removeFirst();
-                    if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                        aircraft.setClearedHeading(clearedHdg.first());
-                    }
-                    clearedDirect.removeFirst();
-                    aircraft.setDirect(clearedDirect.first());
-                    aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
-                    clearedAftWpt.removeFirst();
-                    aircraft.setAfterWaypoint(clearedAftWpt.first());
-                    clearedAftWptHdg.removeFirst();
-                    aircraft.setAfterWptHdg(clearedAftWptHdg.first());
-                    clearedHold.removeFirst();
-                    aircraft.setHoldWpt(clearedHold.first());
-                    clearedIls.removeFirst();
-                    aircraft.setIls(clearedIls.first());
+            dispLatMode.removeFirst();
+            dispAltMode.removeFirst();
+            dispSpdMode.removeFirst();
 
-                    clearedAlt.removeFirst();
-                    aircraft.setClearedAltitude(clearedAlt.first());
-                    clearedExpedite.removeFirst();
-                    aircraft.setExpedite(clearedExpedite.first());
-
-                    clearedSpd.removeFirst();
-                    if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                        aircraft.setClearedIas(clearedSpd.first());
-                    }
-
-                    goAround.removeFirst();
-                }
-                length--;
+            clearedHdg.removeFirst();
+            if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                aircraft.setClearedHeading(clearedHdg.first());
             }
-        }, timeDelay);
+            clearedDirect.removeFirst();
+            aircraft.setDirect(clearedDirect.first());
+            aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
+            clearedAftWpt.removeFirst();
+            aircraft.setAfterWaypoint(clearedAftWpt.first());
+            clearedAftWptHdg.removeFirst();
+            aircraft.setAfterWptHdg(clearedAftWptHdg.first());
+            clearedHold.removeFirst();
+            aircraft.setHoldWpt(clearedHold.first());
+            clearedIls.removeFirst();
+            aircraft.setIls(clearedIls.first());
+
+            clearedAlt.removeFirst();
+            aircraft.setClearedAltitude(clearedAlt.first());
+            clearedExpedite.removeFirst();
+            aircraft.setExpedite(clearedExpedite.first());
+
+            clearedSpd.removeFirst();
+            if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+                aircraft.setClearedIas(clearedSpd.first());
+            }
+
+            goAround.removeFirst();
+        }
+        length--;
     }
 
     /** Called before updating aircraft mode to ensure inputs are valid in case aircraft state changes during the pilot delay*/
@@ -313,10 +313,15 @@ public class NavState {
         }
     }
 
-    /** Stops all timer tasks */
-    public void clearAll() {
-        timer.stop();
-        timer.clear();
+    /** Updates the time queue for instructions */
+    public void updateTime() {
+        for (int i = 0; i < timeQueue.size; i++) {
+            timeQueue.set(i, timeQueue.get(i) - Gdx.graphics.getDeltaTime());
+        }
+        if (timeQueue.size > 0 && timeQueue.get(0) <= 0) {
+            timeQueue.removeIndex(0);
+            sendInstructions();
+        }
     }
 
     public Array<String> getLatModes() {
@@ -379,7 +384,15 @@ public class NavState {
         return clearedHold;
     }
 
-    public Timer getTimer() {
-        return timer;
+    public Array<Float> getTimeQueue() {
+        return timeQueue;
+    }
+
+    public Queue<Boolean> getGoAround() {
+        return goAround;
+    }
+
+    public int getLength() {
+        return length;
     }
 }

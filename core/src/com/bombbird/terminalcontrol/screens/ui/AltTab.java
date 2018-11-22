@@ -64,12 +64,14 @@ public class AltTab extends Tab {
             alts.add(Integer.toString(lowestAlt));
             int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
             while (altTracker <= highestAlt) {
-                alts.add(Integer.toString(altTracker));
+                String toAdd = altTracker / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(altTracker / 100) : Integer.toString(altTracker);
+                alts.add(toAdd);
                 altTracker += 1000;
             }
         } else {
             while (lowestAlt <= highestAlt) {
-                alts.add(Integer.toString(lowestAlt));
+                String toAdd = lowestAlt / 100 >= RadarScreen.TRANS_LVL ? "FL" + Integer.toString(lowestAlt / 100) : Integer.toString(lowestAlt);
+                alts.add(toAdd);
                 lowestAlt += 1000;
             }
         }
@@ -129,6 +131,6 @@ public class AltTab extends Tab {
     @Override
     public void getChoices() {
         altMode = settingsBox.getSelected();
-        clearedAlt = Integer.parseInt(valueBox.getSelected());
+        clearedAlt = valueBox.getSelected().contains("FL") ? Integer.parseInt(valueBox.getSelected().substring(2)) * 100 : Integer.parseInt(valueBox.getSelected());
     }
 }

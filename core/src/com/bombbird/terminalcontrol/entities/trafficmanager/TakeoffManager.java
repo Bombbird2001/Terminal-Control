@@ -26,6 +26,7 @@ public class TakeoffManager {
         timers = new HashMap<String, Float>();
         for (Runway runway: airport.getRunways().values()) {
             timers.put(runway.getName(), 180f);
+            prevAircraft.put(runway.getName(), null);
         }
     }
 
@@ -123,5 +124,17 @@ public class TakeoffManager {
             Aircraft aircraft = runway.getAircraftsOnAppr().first();
             return MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 5 && !aircraft.isOnGround() && runway.getOppRwy().getAircraftsOnAppr().size == 0;
         }
+    }
+
+    public HashMap<String, String[]> getNextAircraft() {
+        return nextAircraft;
+    }
+
+    public HashMap<String, Aircraft> getPrevAircraft() {
+        return prevAircraft;
+    }
+
+    public HashMap<String, Float> getTimers() {
+        return timers;
     }
 }

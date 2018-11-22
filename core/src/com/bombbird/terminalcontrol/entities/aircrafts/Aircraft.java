@@ -67,7 +67,7 @@ public class Aircraft extends Actor {
     private NavState navState;
     private boolean goAround;
     private boolean goAroundWindow;
-    private int goAroundTime;
+    private float goAroundTime;
     private boolean conflict;
     private boolean warning;
 
@@ -333,6 +333,7 @@ public class Aircraft extends Actor {
 
     /** The main update function, called during aircraft draw */
     public double update() {
+        navState.updateTime();
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
         if (tkofLdg) {
@@ -1279,6 +1280,7 @@ public class Aircraft extends Actor {
 
     /** Appends a new image to end of queue for drawing trail dots */
     public void addTrailDot() {
+        if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
         Image image;
         if (this instanceof Arrival) {
             image = new Image(SKIN.getDrawable("DotsArrival"));
@@ -1511,5 +1513,53 @@ public class Aircraft extends Actor {
         if (goAroundWindow) {
             goAroundTime = 120;
         }
+    }
+
+    public float getGoAroundTime() {
+        return goAroundTime;
+    }
+
+    public boolean isInit() {
+        return init;
+    }
+
+    public boolean isType1leg() {
+        return type1leg;
+    }
+
+    public float[][] getHoldTargetPt() {
+        return holdTargetPt;
+    }
+
+    public boolean[] getHoldTargetPtSelected() {
+        return holdTargetPtSelected;
+    }
+
+    public Queue<Image> getTrailDots() {
+        return trailDots;
+    }
+
+    public float getPrevAlt() {
+        return prevAlt;
+    }
+
+    public double getRadarHdg() {
+        return radarHdg;
+    }
+
+    public double getRadarTrack() {
+        return radarTrack;
+    }
+
+    public float getRadarGs() {
+        return radarGs;
+    }
+
+    public float getRadarAlt() {
+        return radarAlt;
+    }
+
+    public float getRadarVs() {
+        return radarVs;
     }
 }
