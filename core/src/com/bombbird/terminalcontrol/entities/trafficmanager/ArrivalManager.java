@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -20,6 +21,14 @@ public class ArrivalManager {
             for (Star star: airport.getStars().values()) {
                 entryPoint.put(star.getWaypoint(0), null);
             }
+        }
+    }
+
+    public ArrivalManager(JSONObject save) {
+        this();
+
+        for (String waypoint: save.keySet()) {
+            entryPoint.put(TerminalControl.radarScreen.waypoints.get(waypoint), TerminalControl.radarScreen.aircrafts.get(save.getString(waypoint)));
         }
     }
 

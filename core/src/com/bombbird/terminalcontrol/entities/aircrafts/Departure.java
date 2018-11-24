@@ -6,8 +6,8 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -16,7 +16,7 @@ public class Departure extends Aircraft {
     private Sid sid;
     private int outboundHdg;
     private int contactAlt;
-    private int handOverAlt;
+    private int handoveralt;
     private boolean v2set;
     private boolean sidSet;
     private boolean contacted;
@@ -27,7 +27,7 @@ public class Departure extends Aircraft {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = radarScreen.minAlt + MathUtils.random(-800, 0);
-        handOverAlt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
+        handoveralt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
         v2set = false;
         sidSet = false;
         contacted = false;
@@ -65,7 +65,7 @@ public class Departure extends Aircraft {
         setY(getRunway().getPosition()[1]);
 
         loadLabel();
-        setNavState(new NavState(2, this));
+        setNavState(new NavState(this));
 
         setControlState(0);
         setColor(new Color(0x11ff00ff));
@@ -77,6 +77,20 @@ public class Departure extends Aircraft {
         takeOff();
 
         initRadarPos();
+    }
+
+    public Departure(JSONObject save) {
+        super(save);
+
+        sid = getAirport().getSids().get(save.getString("sid"));
+        outboundHdg = save.getInt("outboundHdg");
+        contactAlt = save.getInt("contactAlt");
+        handoveralt = save.getInt("handOverAlt");
+        v2set = save.getBoolean("v2set");
+        sidSet = save.getBoolean("sidSet");
+        contacted = save.getBoolean("contacted");
+        cruiseAlt = save.getInt("cruiseAlt");
+        higherSpdSet = save.getBoolean("higherSpdSet");
     }
 
     private void takeOff() {
@@ -102,7 +116,7 @@ public class Departure extends Aircraft {
             setClearedHeading(getRunway().getHeading());
         }
         setHeading(getClearedHeading());
-        setTkofLdg(true);
+        setTkOfLdg(true);
     }
 
     @Override
@@ -128,7 +142,7 @@ public class Departure extends Aircraft {
             updateTargetAltitude();
         }
         if (contacted && v2set && sidSet) {
-            setTkofLdg(false);
+            setTkOfLdg(false);
         }
     }
 
@@ -225,7 +239,7 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude() {
         super.updateAltitude();
-        if (getControlState() == 2 && getAltitude() >= handOverAlt) {
+        if (getControlState() == 2 && getAltitude() >= handoveralt) {
             setControlState(0);
             setClearedIas(getClimbSpd());
             super.updateSpd();
@@ -243,5 +257,33 @@ public class Departure extends Aircraft {
 
     public boolean isSidSet() {
         return sidSet;
+    }
+
+    public int getOutboundHdg() {
+        return outboundHdg;
+    }
+
+    public int getContactAlt() {
+        return contactAlt;
+    }
+
+    public int getHandoveralt() {
+        return handoveralt;
+    }
+
+    public boolean isV2set() {
+        return v2set;
+    }
+
+    public boolean isContacted() {
+        return contacted;
+    }
+
+    public int getCruiseAlt() {
+        return cruiseAlt;
+    }
+
+    public boolean isHigherSpdSet() {
+        return higherSpdSet;
     }
 }

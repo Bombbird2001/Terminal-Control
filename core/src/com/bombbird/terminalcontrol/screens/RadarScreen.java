@@ -22,7 +22,9 @@ import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
-import com.bombbird.terminalcontrol.utilities.FileSaver;
+import com.bombbird.terminalcontrol.utilities.GameLoader;
+import com.bombbird.terminalcontrol.utilities.GameSaver;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -35,7 +37,7 @@ public class RadarScreen extends GameScreen {
     public int transLvl;
     public int separationMinima;
     public int airac;
-    public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in UI
+    public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in settings
 
     //Score of current game
     private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately this number
@@ -64,8 +66,12 @@ public class RadarScreen extends GameScreen {
 
     private Aircraft selectedAircraft;
 
+    private JSONObject save;
+
     public RadarScreen(final TerminalControl game, String name, int airac, int saveID) {
+        //Creates new game
         super(game);
+        save = null;
         mainName = name;
         this.airac = airac;
         saveId = saveID;
@@ -75,6 +81,36 @@ public class RadarScreen extends GameScreen {
         highScore = 0;
         arrivals = 0;
 
+        loadStageCamTimer();
+
+        //Set timer for radar delay, trails and autosave
+        radarTime = RADAR_SWEEP_DELAY;
+        trailTime = 10f;
+        saveTime = 60f;
+    }
+
+    public RadarScreen(final TerminalControl game, JSONObject save) {
+        //Loads the game from save
+        super(game);
+        this.save = save;
+        saveId = save.getInt("saveId");
+        mainName = save.getString("MAIN_NAME");
+        airac = save.getInt("AIRAC");
+
+        planesToControl = (float) save.getDouble("planesToControl");
+        score = save.getInt("score");
+        highScore = save.getInt("highScore");
+        arrivals = save.getInt("arrivals");
+
+        loadStageCamTimer();
+
+        //Set timer for radar delay, trails and autosave
+        radarTime = (float) save.getDouble("radarTime");
+        trailTime = (float) save.getDouble("trailTime");
+        saveTime = 60f;
+    }
+
+    private void loadStageCamTimer() {
         //Set stage params
         stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
@@ -91,11 +127,6 @@ public class RadarScreen extends GameScreen {
 
         //Set timer for METAR
         timer = new Timer(true);
-
-        //Set timer for radar delay, trails and autosave
-        radarTime = RADAR_SWEEP_DELAY;
-        trailTime = 10f;
-        saveTime = 60f;
     }
 
     private void loadInputProcessors() {
@@ -212,7 +243,7 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new arrival for random airport */
     private void newArrival() {
-        if (arrivals < planesToControl) {
+        if (arrivals < planesToControl * 2 / 3) {
             String[] aircraftInfo = RandomGenerator.randomPlane();
             while (aircrafts.get(aircraftInfo[0]) != null) {
                 //Ensures there are no duplicates
@@ -285,7 +316,7 @@ public class RadarScreen extends GameScreen {
 
         saveTime -= Gdx.graphics.getDeltaTime();
         if (saveTime <= 0) {
-            FileSaver.saveGame();
+            GameSaver.saveGame();
             saveTime += 60f;
         }
     }
@@ -363,8 +394,9 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void show() {
-        //Implements show method of screen, loads UI after show is called
+        //Implements show method of screen, loads UI & save (if available) after show is called
         loadUI();
+        GameLoader.loadSaveData(save);
     }
 
     @Override

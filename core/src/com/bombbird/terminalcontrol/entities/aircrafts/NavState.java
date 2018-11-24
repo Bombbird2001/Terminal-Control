@@ -8,6 +8,8 @@ import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class NavState {
     public static float timeDelay = 2f;
@@ -43,14 +45,14 @@ public class NavState {
 
     private RadarScreen radarScreen;
 
-    public NavState(int type, Aircraft aircraft) {
+    public NavState(Aircraft aircraft) {
         radarScreen = TerminalControl.radarScreen;
 
         this.aircraft = aircraft;
         altModes = new Array<String>(5);
         spdModes = new Array<String>(3);
 
-        if (type == 1) {
+        if (aircraft instanceof Arrival) {
             //Arrival
             latModes = new Array<String>(6);
             latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Hold at", "Fly heading");
@@ -59,7 +61,7 @@ public class NavState {
             altModes.add("Descend via STAR");
 
             spdModes.add("STAR speed restrictions");
-        } else if (type == 2) {
+        } else if (aircraft instanceof Departure) {
             //Departure
             latModes = new Array<String>(4);
             latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
@@ -108,6 +110,114 @@ public class NavState {
 
         goAround = new Queue<Boolean>();
         goAround.addLast(false);
+    }
+
+    public NavState(Aircraft aircraft, JSONObject save) {
+        radarScreen = TerminalControl.radarScreen;
+        this.aircraft = aircraft;
+
+        latModes = new Array<String>();
+        altModes = new Array<String>();
+        spdModes = new Array<String>();
+
+        timeQueue = new Array<Float>();
+
+        dispLatMode = new Queue<String>();
+        dispAltMode = new Queue<String>();
+        dispSpdMode = new Queue<String>();
+
+        clearedHdg = new Queue<Integer>();
+        clearedDirect = new Queue<Waypoint>();
+        clearedAftWpt = new Queue<Waypoint>();
+        clearedAftWptHdg = new Queue<Integer>();
+        clearedHold = new Queue<Waypoint>();
+        clearedIls = new Queue<ILS>();
+
+        clearedAlt = new Queue<Integer>();
+        clearedExpedite = new Queue<Boolean>();
+
+        clearedSpd = new Queue<Integer>();
+
+        goAround = new Queue<Boolean>();
+
+        length = save.getInt("length");
+
+        {
+            JSONArray array = save.getJSONArray("latModes");
+            for (int i = 0; i < array.length(); i++) {
+                latModes.add(array.getString(i));
+            }
+        }
+
+        {
+            JSONArray array = save.getJSONArray("altModes");
+            for (int i = 0; i < array.length(); i++) {
+                altModes.add(array.getString(i));
+            }
+        }
+
+        {
+            JSONArray array = save.getJSONArray("spdModes");
+            for (int i = 0; i < array.length(); i++) {
+                spdModes.add(array.getString(i));
+            }
+        }
+
+        {
+            JSONArray array = save.getJSONArray("timeQueue");
+            for (int i = 0; i < array.length(); i++) {
+                timeQueue.add(array.getFloat(i));
+            }
+        }
+
+        addToQueueString(save.getJSONArray("dispLatMode"), dispLatMode);
+        addToQueueString(save.getJSONArray("dispAltMode"), dispAltMode);
+        addToQueueString(save.getJSONArray("dispSpdMode"), dispSpdMode);
+        addToQueueInt(save.getJSONArray("clearedHdg"), clearedHdg);
+        addToQueueWpt(save.getJSONArray("clearedDirect"), clearedDirect);
+        addToQueueWpt(save.getJSONArray("clearedAftWpt"), clearedAftWpt);
+        addToQueueInt(save.getJSONArray("clearedAftWptHdg"), clearedAftWptHdg);
+        addToQueueWpt(save.getJSONArray("clearedHold"), clearedHold);
+
+        {
+            JSONArray array = save.getJSONArray("clearedIls");
+            for (int i = 0; i < array.length(); i++) {
+                clearedIls.addLast(array.isNull(i) ? null : aircraft.getAirport().getApproaches().get(array.getString(i)));
+            }
+        }
+
+        addToQueueInt(save.getJSONArray("clearedAlt"), clearedAlt);
+        addToQueueBool(save.getJSONArray("clearedExpedite"), clearedExpedite);
+        addToQueueInt(save.getJSONArray("clearedSpd"), clearedSpd);
+        addToQueueBool(save.getJSONArray("goAround"), goAround);
+    }
+
+    /** Adds all elements in string array to string queue */
+    private void addToQueueString(JSONArray array, Queue<String> queue) {
+        for (int i = 0; i < array.length(); i++) {
+            queue.addLast(array.isNull(i) ? null : array.getString(i));
+        }
+    }
+
+    /** Adds all elements in int array to int queue */
+    private void addToQueueInt(JSONArray array, Queue<Integer> queue) {
+        for (int i = 0; i < array.length(); i++) {
+            queue.addLast(array.isNull(i) ? null : array.getInt(i));
+        }
+    }
+
+    /** Adds all elements in bool array to bool queue */
+    private void addToQueueBool(JSONArray array, Queue<Boolean> queue) {
+        for (int i = 0; i < array.length(); i++) {
+            queue.addLast(array.isNull(i) ? null : array.getBoolean(i));
+        }
+    }
+
+    /** Adds all elements in wpt array to wpt queue */
+    private void addToQueueWpt(JSONArray array, Queue<Waypoint> queue) {
+        for (int i = 0; i < array.length(); i++) {
+            queue.addLast(array.isNull(i) ? null : radarScreen.waypoints.get(array.getString(i)));
+        }
     }
 
     /** Adds the time delay to keep track of when to send instructions */

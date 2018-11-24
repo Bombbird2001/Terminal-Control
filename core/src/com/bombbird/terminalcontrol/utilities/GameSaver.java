@@ -18,7 +18,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class FileSaver {
+public class GameSaver {
     /** Saves current game state */
     public static void saveGame() {
         RadarScreen radarScreen = TerminalControl.radarScreen;
@@ -26,7 +26,7 @@ public class FileSaver {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
         jsonObject.put("airports", saveAirports());
-        jsonObject.put("SAVE_ID", radarScreen.saveId);
+        jsonObject.put("saveId", radarScreen.saveId);
         jsonObject.put("MAIN_NAME", radarScreen.mainName);
         jsonObject.put("AIRAC", radarScreen.airac);
         jsonObject.put("score", radarScreen.getScore());
@@ -36,6 +36,16 @@ public class FileSaver {
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("arrivalManager", getArrivalManager());
+
+        int aircraftsLanded = 0;
+        int aircraftsAirborne = 0;
+        for (Airport airport: radarScreen.airports.values()) {
+            aircraftsLanded += airport.getLandings();
+            aircraftsAirborne += airport.getAirborne();
+        }
+
+        jsonObject.put("landings", aircraftsLanded);
+        jsonObject.put("airborne", aircraftsAirborne);
 
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
@@ -63,19 +73,11 @@ public class FileSaver {
         for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
             JSONObject aircraftInfo = new JSONObject();
             String type;
-            if (aircraft instanceof Arrival) {
-                type = "Arrival";
-            } else if (aircraft instanceof Departure) {
-                type = "Departure";
-            } else {
-                type = "Type error";
-                Gdx.app.log("Save error", "Invalid aircraft instance type");
-            }
-            aircraftInfo.put("TYPE", type);
+
             aircraftInfo.put("airport", aircraft.getAirport().getIcao()); //Airport
             aircraftInfo.put("runway", aircraft.getRunway() == null ? JSONObject.NULL : aircraft.getRunway().getName()); //Runway
             aircraftInfo.put("onGround", aircraft.isOnGround()); //Whether it is on the ground
-            aircraftInfo.put("tkOfLdg", aircraft.isTkofLdg()); //Whether it is taking off/landing
+            aircraftInfo.put("tkOfLdg", aircraft.isTkOfLdg()); //Whether it is taking off/landing
 
             aircraftInfo.put("callsign", aircraft.getCallsign()); //Callsign
             aircraftInfo.put("icaoType", aircraft.getIcaoType()); //ICAO aircraft type
@@ -137,8 +139,8 @@ public class FileSaver {
             JSONArray trail = new JSONArray();
             for (Image image: aircraft.getTrailDots()) {
                 JSONArray point = new JSONArray();
-                point.put((double) (image.getX() + image.getWidth() / 2));
-                point.put((double) (image.getY() + image.getHeight() / 2));
+                point.put(image.getX() + image.getWidth() / 2);
+                point.put(image.getY() + image.getHeight() / 2);
                 trail.put(point);
             }
             aircraftInfo.put("trailDots", trail);
@@ -161,7 +163,7 @@ public class FileSaver {
             JSONArray deltaPosition = new JSONArray();
             deltaPosition.put((double) aircraft.getDeltaPosition().x);
             deltaPosition.put((double) aircraft.getDeltaPosition().y);
-            aircraftInfo.put("deltaPosition",deltaPosition);
+            aircraftInfo.put("deltaPosition", deltaPosition);
 
             aircraftInfo.put("clearedIas", aircraft.getClearedIas()); //Cleared speed
             aircraftInfo.put("deltaIas", (double) aircraft.getDeltaIas()); //Rate of change of speed
@@ -174,6 +176,48 @@ public class FileSaver {
             aircraftInfo.put("radarGs", (double) aircraft.getRadarGs()); //Radar ground speed
             aircraftInfo.put("radarAlt", (double) aircraft.getRadarAlt()); //Radar altitude
             aircraftInfo.put("radarVs", (double) aircraft.getRadarVs()); //Radar vertical speed
+
+            if (aircraft instanceof Arrival) {
+                type = "Arrival";
+                aircraftInfo.put("star", aircraft.getSidStar().getName());
+
+                if (((Arrival) aircraft).getNonPrecAlts() != null) {
+                    //Non prec alts for arrivals
+                    JSONArray nonPrecAlts = new JSONArray();
+                    for (int[] info : ((Arrival) aircraft).getNonPrecAlts()) {
+                        JSONArray data = new JSONArray();
+                        data.put(info[0]);
+                        data.put(info[1]);
+                        nonPrecAlts.put(data);
+                    }
+                    aircraftInfo.put("nonPrecAlts", nonPrecAlts);
+                } else {
+                    aircraftInfo.put("nonPrecAlts", JSONObject.NULL);
+                }
+
+                aircraftInfo.put("lowerSpdSet", ((Arrival) aircraft).isLowerSpdSet());
+                aircraftInfo.put("ilsSpdSet", ((Arrival) aircraft).isIlsSpdSet());
+                aircraftInfo.put("finalSpdSet", ((Arrival) aircraft).isFinalSpdSet());
+                aircraftInfo.put("willGoAround", ((Arrival) aircraft).isWillGoAround());
+                aircraftInfo.put("goAroundAlt", ((Arrival) aircraft).getGoAroundAlt());
+                aircraftInfo.put("goAroundSet", ((Arrival) aircraft).isGoAroundSet());
+
+            } else if (aircraft instanceof Departure) {
+                type = "Departure";
+                aircraftInfo.put("sid", aircraft.getSidStar().getName());
+                aircraftInfo.put("outboundHdg", ((Departure) aircraft).getOutboundHdg());
+                aircraftInfo.put("contactAlt", ((Departure) aircraft).getContactAlt());
+                aircraftInfo.put("handOverAlt", ((Departure) aircraft).getHandoveralt());
+                aircraftInfo.put("v2set", ((Departure) aircraft).isV2set());
+                aircraftInfo.put("sidSet", ((Departure) aircraft).isSidSet());
+                aircraftInfo.put("contacted", ((Departure) aircraft).isContacted());
+                aircraftInfo.put("cruiseAlt", ((Departure) aircraft).getCruiseAlt());
+                aircraftInfo.put("higherSpdSet", ((Departure) aircraft).isHigherSpdSet());
+            } else {
+                type = "Type error";
+                Gdx.app.log("Save error", "Invalid aircraft instance type");
+            }
+            aircraftInfo.put("TYPE", type);
 
             aircrafts.put(aircraftInfo);
         }
@@ -219,8 +263,7 @@ public class FileSaver {
         navState.put("dispAltMode", getStringArray(aircraft.getNavState().getDispAltMode()));
 
         //Add display spd mode queue
-
-        navState.put("dispLatMode", getStringArray(aircraft.getNavState().getDispSpdMode()));
+        navState.put("dispSpdMode", getStringArray(aircraft.getNavState().getDispSpdMode()));
 
         //Add cleared heading
         navState.put("clearedHdg", getIntArray(aircraft.getNavState().getClearedHdg()));
@@ -319,7 +362,20 @@ public class FileSaver {
             airportInfo.put("takeoffRunways", takeoffRunways);
 
             airportInfo.put("icao", airport.getIcao()); //ICAO code of airport
+            airportInfo.put("elevation", airport.getElevation()); //Elevation of airport
             airportInfo.put("takeoffManager", getTakeoffManager(airport)); //Takeoff manager
+
+            //Queue for runway landings
+            JSONObject runwayQueues = new JSONObject();
+            for (Runway runway: airport.getRunways().values()) {
+                JSONArray queue = new JSONArray();
+                for (Aircraft aircraft: runway.getAircraftsOnAppr()) {
+                    queue.put(aircraft.getCallsign());
+                }
+                runwayQueues.put(runway.getName(), queue);
+            }
+            airportInfo.put("runwayQueues", runwayQueues);
+
             airportInfo.put("landings", airport.getLandings()); //Landings
             airportInfo.put("airborne", airport.getAirborne()); //Airborne
 

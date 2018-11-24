@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.utilities;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
@@ -15,8 +16,8 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -196,5 +197,33 @@ public class FileLoader {
             missedApproaches.put(name, new MissedApproach(name, airport, toParse));
         }
         return missedApproaches;
+    }
+
+    public static JSONArray loadSaves() {
+        JSONArray saves = new JSONArray();
+
+        FileHandle handle = null;
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            //If desktop, save to external roaming appData
+            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            //If Android, check first if local storage available
+            if (Gdx.files.isLocalStorageAvailable()) {
+                handle = Gdx.files.local("saves/saves.saves");
+            } else {
+                Gdx.app.log("Storage error", "Local storage unavailable for Android!");
+            }
+        }
+
+        if (handle != null && handle.exists()) {
+            String[] saveIds = handle.readString().split(",");
+
+            for (String id: saveIds) {
+                JSONObject save = new JSONObject(handle.sibling(id + ".json").readString());
+                saves.put(save);
+            }
+        }
+
+        return saves;
     }
 }

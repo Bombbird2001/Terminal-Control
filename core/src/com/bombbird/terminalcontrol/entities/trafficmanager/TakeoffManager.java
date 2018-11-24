@@ -10,6 +10,8 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -32,6 +34,27 @@ public class TakeoffManager {
         for (Runway runway: airport.getRunways().values()) {
             timers.put(runway.getName(), 180f);
             prevAircraft.put(runway.getName(), null);
+        }
+    }
+
+    public TakeoffManager(Airport airport, JSONObject save) {
+        radarScreen = TerminalControl.radarScreen;
+
+        this.airport = airport;
+        nextAircraft = new HashMap<String, String[]>();
+        prevAircraft = new HashMap<String, Aircraft>();
+        timers = new HashMap<String, Float>();
+        for (Runway runway: airport.getRunways().values()) {
+            JSONArray info = save.getJSONObject("nextAircraft").getJSONArray(runway.getName());
+            if (info.length() == 2) {
+                nextAircraft.put(runway.getName(), new String[]{info.getString(0), info.getString(1)});
+            } else {
+                nextAircraft.put(runway.getName(), null);
+            }
+
+            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(save.getJSONObject("prevAircraft").isNull(runway.getName()) ? null : save.getJSONObject("prevAircraft").getString(runway.getName())));
+
+            timers.put(runway.getName(), save.getJSONObject("timers").getFloat(runway.getName()));
         }
     }
 

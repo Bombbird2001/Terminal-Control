@@ -12,6 +12,8 @@ import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -74,7 +76,7 @@ public class Arrival extends Aircraft {
         setY(point[1]);
 
         loadLabel();
-        setNavState(new NavState(1, this));
+        setNavState(new NavState(this));
         float initAlt = 3000 + (distToGo() - 20) / 300 * 60 * getTypDes();
         if (initAlt > 26000) {
             initAlt = 26000;
@@ -121,6 +123,31 @@ public class Arrival extends Aircraft {
         setTrack(getHeading() - radarScreen.magHdgDev + updateTargetHeading()[1]);
 
         initRadarPos();
+    }
+
+    public Arrival(JSONObject save) {
+        super(save);
+
+        star = getAirport().getStars().get(save.getString("star"));
+
+        if (save.isNull("nonPrecAlts")) {
+            //If non precision alt is null
+            nonPrecAlts = null;
+        } else {
+            JSONArray nonPrec = save.getJSONArray("nonPrecAlts");
+            nonPrecAlts = new Queue<int[]>();
+            for (int i = 0; i < nonPrec.length(); i++) {
+                JSONArray data = nonPrec.getJSONArray(i);
+                nonPrecAlts.addLast(new int[] {data.getInt(0), data.getInt(1)});
+            }
+        }
+
+        lowerSpdSet = save.getBoolean("lowerSpdSet");
+        ilsSpdSet = save.getBoolean("ilsSpdSet");
+        finalSpdSet = save.getBoolean("finalSpdSet");
+        willGoAround = save.getBoolean("willGoAround");
+        goAroundAlt = save.getInt("goAroundAlt");
+        goAroundSet = save.getBoolean("goAroundSet");
     }
 
     /** Calculates remaining distance on STAR from current aircraft position */
@@ -313,7 +340,7 @@ public class Arrival extends Aircraft {
                 //TODO Add contact tower transmission
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
-                setTkofLdg(true);
+                setTkOfLdg(true);
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
             }
@@ -510,6 +537,8 @@ public class Arrival extends Aircraft {
         getNavState().voidAllIls();
         ilsSpdSet = false;
         finalSpdSet = false;
+        willGoAround = false;
+        goAroundSet = false;
         if (isSelected() && getControlState() == 2) {
             ui.updateState();
         }
@@ -518,6 +547,38 @@ public class Arrival extends Aircraft {
     @Override
     public SidStar getSidStar() {
         return star;
+    }
+
+    public Queue<int[]> getNonPrecAlts() {
+        return nonPrecAlts;
+    }
+
+    public boolean isLowerSpdSet() {
+        return lowerSpdSet;
+    }
+
+    public boolean isIlsSpdSet() {
+        return ilsSpdSet;
+    }
+
+    public boolean isFinalSpdSet() {
+        return finalSpdSet;
+    }
+
+    public boolean isWillGoAround() {
+        return willGoAround;
+    }
+
+    public int getGoAroundAlt() {
+        return goAroundAlt;
+    }
+
+    public boolean isGoAroundSet() {
+        return goAroundSet;
+    }
+
+    public MissedApproach getMissedApproach() {
+        return missedApproach;
     }
 
     /*

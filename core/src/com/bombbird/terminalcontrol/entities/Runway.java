@@ -256,14 +256,6 @@ public class Runway extends Actor {
         this.windshear = windshear;
     }
 
-    public float getPxLength() {
-        return pxLength;
-    }
-
-    public void setPxLength(float pxLength) {
-        this.pxLength = pxLength;
-    }
-
     public ILS getIls() {
         return ils;
     }
@@ -282,5 +274,9 @@ public class Runway extends Actor {
 
     public Array<Aircraft> getAircraftsOnAppr() {
         return aircraftsOnAppr;
+    }
+
+    public void setAircraftsOnAppr(Array<Aircraft> aircraftsOnAppr) {
+        this.aircraftsOnAppr = aircraftsOnAppr;
     }
 }

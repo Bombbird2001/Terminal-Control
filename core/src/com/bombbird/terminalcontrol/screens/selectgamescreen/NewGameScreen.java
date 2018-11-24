@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class NewGameScreen extends SelectGameScreen {
@@ -46,15 +45,12 @@ public class NewGameScreen extends SelectGameScreen {
                     String[] airports = handle.readString().split("\\r?\\n");
                     boolean found = false;
                     int airac = Integer.parseInt(airports[0]);
-                    int index = 0;
                     for (String arptData: airports) {
                         String arpt = arptData.split(":")[0];
-                        if (index > 0) airac = Integer.parseInt(arptData.split(":")[1]);
                         if (arpt.equals(name)) {
                             found = true;
                             break;
                         }
-                        index++;
                     }
 
                     FileHandle handle1;
@@ -86,11 +82,10 @@ public class NewGameScreen extends SelectGameScreen {
                             Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle " + airac);
                         }
                     }
+                    event.handle();
                 }
             });
             getScrollTable().add(airportButton).width(BUTTON_WIDTH * 1.2f).height(BUTTON_HEIGHT);
-            getScrollTable().row();
-            getScrollTable().add(newFillerImage()).width(BUTTON_WIDTH * 1.2f).height(0.0125f * BUTTON_HEIGHT);
             getScrollTable().row();
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());

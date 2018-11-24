@@ -1,5 +1,8 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
@@ -8,6 +11,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -28,6 +32,7 @@ public class Airport {
     private TakeoffManager takeoffManager;
     private int landings;
     private int airborne;
+    private JSONObject save;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -37,6 +42,33 @@ public class Airport {
         takeoffRunways = new HashMap<String, Runway>();
         landings = 0;
         airborne = 0;
+        save = null;
+        setActiveRunways();
+    }
+
+    public Airport(JSONObject save) {
+        this.save = save;
+        icao = save.getString("icao");
+        elevation = save.getInt("elevation");
+        runways = FileLoader.loadRunways(icao);
+        landingRunways = new HashMap<String, Runway>();
+        takeoffRunways = new HashMap<String, Runway>();
+        landings = save.getInt("landings");
+        airborne = save.getInt("airborne");
+
+        JSONArray landing = save.getJSONArray("landingRunways");
+        for (int i = 0; i < landing.length(); i++) {
+            runways.get(landing.getString(i)).setActive(true, false);
+        }
+        JSONArray takeoff = save.getJSONArray("takeoffRunways");
+        for (int i = 0; i < takeoff.length(); i++) {
+            Runway runway = runways.get(takeoff.getString(i));
+            runway.setActive(runway.isLanding(), true);
+        }
+    }
+
+    /** Sets the initial active runways for airport */
+    private void setActiveRunways() {
         if ("RCTP".equals(icao)) {
             setActive("05L", true, false);
             setActive("05R", true, true);
@@ -61,6 +93,20 @@ public class Airport {
         }
 
         takeoffManager = new TakeoffManager(this);
+    }
+
+    public void loadOthers(JSONObject save) {
+        loadOthers();
+
+        for (Runway runway: runways.values()) {
+            Array<Aircraft> queueArray = new Array<Aircraft>();
+            JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
+            for (int i = 0; i < queue.length(); i++) {
+                queueArray.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
+            }
+        }
+
+        takeoffManager = new TakeoffManager(this, save);
     }
 
     private void setOppRwys() {

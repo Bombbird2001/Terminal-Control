@@ -29,6 +29,8 @@ import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Aircraft extends Actor {
     //Rendering parameters
@@ -58,7 +60,7 @@ public class Aircraft extends Actor {
     private Airport airport;
     private Runway runway;
     private boolean onGround;
-    private boolean tkofLdg;
+    private boolean tkOfLdg;
 
     //Aircraft characteristics
     private String callsign;
@@ -130,22 +132,8 @@ public class Aircraft extends Actor {
     private float radarVs;
 
     public Aircraft(String callsign, String icaoType, Airport airport) {
-        radarScreen = TerminalControl.radarScreen;
-        stage = radarScreen.stage;
-        shapeRenderer = radarScreen.shapeRenderer;
-        ui = radarScreen.ui;
+        loadResources();
 
-        if (!LOADED_ICONS) {
-            BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
-            BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
-            BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
-            BUTTON_STYLE_DEPT.imageDown = SKIN.getDrawable("aircraftDeparture");
-            BUTTON_STYLE_UNCTRL.imageUp = SKIN.getDrawable("aircraftNotControlled");
-            BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
-            BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
-            BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
-            LOADED_ICONS = true;
-        }
         this.callsign = callsign;
         stage.addActor(this);
         this.icaoType = icaoType;
@@ -175,7 +163,7 @@ public class Aircraft extends Actor {
         deltaPosition = new Vector2();
         clearedIas = 250;
         deltaIas = 0;
-        tkofLdg = false;
+        tkOfLdg = false;
         gsCap = false;
         locCap = false;
         climbSpd = MathUtils.random(270, 285);
@@ -187,6 +175,127 @@ public class Aircraft extends Actor {
 
         selected = false;
         dragging = false;
+    }
+
+    public Aircraft(JSONObject save) {
+        loadResources();
+
+        airport = radarScreen.airports.get(save.getString("airport"));
+        runway = save.isNull("runway") ? null : airport.getRunways().get(save.getString("runway"));
+        onGround = save.getBoolean("onGround");
+        tkOfLdg = save.getBoolean("tkOfLdg");
+
+        callsign = save.getString("callsign");
+        stage.addActor(this);
+        icaoType = save.getString("icaoType");
+        wakeCat = save.getString("wakeCat").charAt(0);
+        v2 = save.getInt("v2");
+        typClimb = save.getInt("typClimb");
+        maxClimb = save.getInt("maxClimb");
+        typDes = save.getInt("typDes");
+        maxDes = save.getInt("maxDes");
+        apchSpd = save.getInt("apchSpd");
+        controlState = save.getInt("controlState");
+        navState = new NavState(this, save.getJSONObject("navState"));
+        goAround = save.getBoolean("goAround");
+        goAroundWindow = save.getBoolean("goAroundWindow");
+        goAroundTime = (float) save.getDouble("goAroundTime");
+        conflict = save.getBoolean("conflict");
+        warning = save.getBoolean("warning");
+
+        x = (float) save.getDouble("x");
+        y = (float) save.getDouble("y");
+        heading = save.getDouble("heading");
+        targetHeading = save.getDouble("targetHeading");
+        clearedHeading = save.getInt("clearedHeading");
+        angularVelocity = save.getDouble("angularVelocity");
+        track = save.getDouble("track");
+        sidStarIndex = save.getInt("sidStarIndex");
+        direct = save.isNull("direct") ? null : radarScreen.waypoints.get(save.getString("direct"));
+        afterWaypoint = save.isNull("afterWaypoint") ? null : radarScreen.waypoints.get(save.getString("afterWaypoint"));
+        afterWptHdg = save.getInt("afterWptHdg");
+        ils = save.isNull("ils") ? null : airport.getApproaches().get(save.getString("ils"));
+        locCap = save.getBoolean("locCap");
+        holdWpt = save.isNull("holdWpt") ? null : radarScreen.waypoints.get(save.getString("holdWpt"));
+        holding = save.getBoolean("holding");
+        init = save.getBoolean("init");
+        type1leg = save.getBoolean("type1leg");
+
+        if (save.isNull("holdTargetPt")) {
+            //Null holding arrays
+            holdTargetPt = null;
+            holdTargetPtSelected = null;
+        } else {
+            //Not null
+            JSONArray the2points = save.getJSONArray("holdTargetPt");
+            holdTargetPt = new float[2][2];
+            for (int i = 0; i < the2points.length(); i++) {
+                JSONArray coordinates = the2points.getJSONArray(i);
+                holdTargetPt[i][0] = coordinates.getFloat(0);
+                holdTargetPt[i][1] = coordinates.getFloat(1);
+            }
+            JSONArray the2bools = save.getJSONArray("holdTargetPtSelected");
+            holdTargetPtSelected = new boolean[2];
+            holdTargetPtSelected[0] = the2bools.getBoolean(0);
+            holdTargetPtSelected[1] = the2bools.getBoolean(1);
+        }
+
+        trailDots = new Queue<Image>();
+        JSONArray trails = save.getJSONArray("trailDots");
+        for (int i = 0; i < trails.length(); i++) {
+            addTrailDot(trails.getJSONArray(i).getFloat(0), trails.getJSONArray(i).getFloat(1));
+        }
+
+        prevAlt = (float) save.getDouble("prevAlt");
+        altitude = (float) save.getDouble("altitude");
+        clearedAltitude = save.getInt("clearedAltitude");
+        targetAltitude = save.getInt("targetAltitude");
+        verticalSpeed = (float) save.getDouble("verticalSpeed");
+        expedite = save.getBoolean("expedite");
+        lowestAlt = save.getInt("lowestAlt");
+        highestAlt = save.getInt("highestAlt");
+        gsCap = save.getBoolean("gsCap");
+
+        ias = (float) save.getDouble("ias");
+        tas = (float) save.getDouble("tas");
+        gs = (float) save.getDouble("gs");
+
+        JSONArray delta = save.getJSONArray("deltaPosition");
+        deltaPosition = new Vector2();
+        deltaPosition.x = delta.getFloat(0);
+        deltaPosition.y = delta.getFloat(1);
+
+        clearedIas = save.getInt("clearedIas");
+        deltaIas = (float) save.getDouble("deltaIas");
+        climbSpd = save.getInt("climbSpd");
+
+        radarX = (float) save.getDouble("radarX");
+        radarY = (float) save.getDouble("radarY");
+        radarHdg = save.getDouble("radarHdg");
+        radarTrack = save.getDouble("radarTrack");
+        radarGs = (float) save.getDouble("radarGs");
+        radarAlt = (float) save.getDouble("radarAlt");
+        radarVs = (float) save.getDouble("radarVs");
+    }
+
+    /** Loads & sets aircraft resources */
+    private void loadResources() {
+        radarScreen = TerminalControl.radarScreen;
+        stage = radarScreen.stage;
+        shapeRenderer = radarScreen.shapeRenderer;
+        ui = radarScreen.ui;
+
+        if (!LOADED_ICONS) {
+            BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
+            BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
+            BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
+            BUTTON_STYLE_DEPT.imageDown = SKIN.getDrawable("aircraftDeparture");
+            BUTTON_STYLE_UNCTRL.imageUp = SKIN.getDrawable("aircraftNotControlled");
+            BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
+            BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
+            BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
+            LOADED_ICONS = true;
+        }
     }
 
     /** Sets the initial radar position for aircraft */
@@ -348,7 +457,7 @@ public class Aircraft extends Actor {
         navState.updateTime();
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
-        if (tkofLdg) {
+        if (tkOfLdg) {
             updateTkofLdg();
         }
         if (!onGround) {
@@ -408,7 +517,7 @@ public class Aircraft extends Actor {
         }
         float max = 1.5f;
         float min = -2.25f;
-        if (tkofLdg) {
+        if (tkOfLdg) {
             max = 3;
             if (gs >= 60) {
                 min = -4.5f;
@@ -1059,12 +1168,12 @@ public class Aircraft extends Actor {
         this.onGround = onGround;
     }
 
-    public boolean isTkofLdg() {
-        return tkofLdg;
+    public boolean isTkOfLdg() {
+        return tkOfLdg;
     }
 
-    public void setTkofLdg(boolean tkofLdg) {
-        this.tkofLdg = tkofLdg;
+    public void setTkOfLdg(boolean tkOfLdg) {
+        this.tkOfLdg = tkOfLdg;
     }
 
     public String getCallsign() {
@@ -1290,8 +1399,8 @@ public class Aircraft extends Actor {
         //No default implementation
     }
 
-    /** Appends a new image to end of queue for drawing trail dots */
-    public void addTrailDot() {
+    /** Appends a new image to end of queue for drawing trail dots given a set of coordinates */
+    private void addTrailDot(float x, float y) {
         if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
         Image image;
         if (this instanceof Arrival) {
@@ -1304,6 +1413,11 @@ public class Aircraft extends Actor {
         }
         image.setPosition(x - image.getWidth() / 2, y - image.getHeight() / 2);
         trailDots.addLast(image);
+    }
+
+    /** Appends a new image to end of queue for aircraft's own position */
+    public void addTrailDot() {
+        addTrailDot(x, y);
     }
 
     public float getVerticalSpeed() {
