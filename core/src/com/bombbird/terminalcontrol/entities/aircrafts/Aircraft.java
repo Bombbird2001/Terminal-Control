@@ -195,7 +195,6 @@ public class Aircraft extends Actor {
         typDes = save.getInt("typDes");
         maxDes = save.getInt("maxDes");
         apchSpd = save.getInt("apchSpd");
-        controlState = save.getInt("controlState");
         navState = new NavState(this, save.getJSONObject("navState"));
         goAround = save.getBoolean("goAround");
         goAroundWindow = save.getBoolean("goAroundWindow");
@@ -207,14 +206,20 @@ public class Aircraft extends Actor {
         y = (float) save.getDouble("y");
         heading = save.getDouble("heading");
         targetHeading = save.getDouble("targetHeading");
+        if (callsign.equals("EVA495")) {
+            System.out.println("targetHeading: " + targetHeading);
+        }
         clearedHeading = save.getInt("clearedHeading");
         angularVelocity = save.getDouble("angularVelocity");
         track = save.getDouble("track");
+        if (callsign.equals("EVA495")) {
+            System.out.println("Track: " + track);
+        }
         sidStarIndex = save.getInt("sidStarIndex");
         direct = save.isNull("direct") ? null : radarScreen.waypoints.get(save.getString("direct"));
         afterWaypoint = save.isNull("afterWaypoint") ? null : radarScreen.waypoints.get(save.getString("afterWaypoint"));
         afterWptHdg = save.getInt("afterWptHdg");
-        ils = save.isNull("ils") ? null : airport.getApproaches().get(save.getString("ils"));
+        ils = save.isNull("ils") ? null : airport.getApproaches().get(save.getString("ils").substring(3));
         locCap = save.getBoolean("locCap");
         holdWpt = save.isNull("holdWpt") ? null : radarScreen.waypoints.get(save.getString("holdWpt"));
         holding = save.getBoolean("holding");
@@ -243,7 +248,7 @@ public class Aircraft extends Actor {
         trailDots = new Queue<Image>();
         JSONArray trails = save.getJSONArray("trailDots");
         for (int i = 0; i < trails.length(); i++) {
-            addTrailDot(trails.getJSONArray(i).getFloat(0), trails.getJSONArray(i).getFloat(1));
+            addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
         }
 
         prevAlt = (float) save.getDouble("prevAlt");
@@ -262,10 +267,13 @@ public class Aircraft extends Actor {
 
         JSONArray delta = save.getJSONArray("deltaPosition");
         deltaPosition = new Vector2();
-        deltaPosition.x = delta.getFloat(0);
-        deltaPosition.y = delta.getFloat(1);
+        deltaPosition.x = (float) delta.getDouble(0);
+        deltaPosition.y = (float) delta.getDouble(1);
 
         clearedIas = save.getInt("clearedIas");
+        if (callsign.equals("EVA495")) {
+            System.out.println("Cleared IAS: " + ias);
+        }
         deltaIas = (float) save.getDouble("deltaIas");
         climbSpd = save.getInt("climbSpd");
 
@@ -1401,7 +1409,6 @@ public class Aircraft extends Actor {
 
     /** Appends a new image to end of queue for drawing trail dots given a set of coordinates */
     private void addTrailDot(float x, float y) {
-        if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
         Image image;
         if (this instanceof Arrival) {
             image = new Image(SKIN.getDrawable("DotsArrival"));
@@ -1417,6 +1424,7 @@ public class Aircraft extends Actor {
 
     /** Appends a new image to end of queue for aircraft's own position */
     public void addTrailDot() {
+        if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
         addTrailDot(x, y);
     }
 

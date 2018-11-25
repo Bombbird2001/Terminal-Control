@@ -59,9 +59,10 @@ public class LoadGameScreen extends SelectGameScreen {
                         }
                     }
 
-                    if (minAirac < jsonObject.getInt("AIRAC")) {
+                    if (minAirac <= jsonObject.getInt("AIRAC")) {
                         jsonObject.put("AIRAC", newestAirac);
                     } else {
+                        Gdx.app.log("AIRAC cycle error", "Game AIRAC " + jsonObject.getInt("AIRAC") + " not compatible with newest AIRAC " + newestAirac);
                         //TODO Alert user that game AIRAC is no longer compatible with newest version, can play with older version but may be removed in the future
                     }
 

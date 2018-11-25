@@ -202,7 +202,7 @@ public class RadarScreen extends GameScreen {
         calendar.set(Calendar.SECOND, 0);
         System.out.println(calendar.getTime().toString());
 
-        metar = new Metar(this);
+        metar = save == null ? new Metar(this) : new Metar(this, save.getJSONObject("metar"));
 
         //Update the METAR every quarter of the hour
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -212,11 +212,13 @@ public class RadarScreen extends GameScreen {
             }
         }, calendar.getTime(), 900000);
 
-        metar.updateMetar();
+        if (save == null) metar.updateMetar(); //Update the current airport METAR if not from save (airports not loaded in save at this stage)
     }
 
     /** Generates initial aircrafts (to prevent user getting overwhelmed at the start) */
     public void newAircraft() {
+        if (save != null) return;
+
         aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
         arrivals++;
 
@@ -477,5 +479,13 @@ public class RadarScreen extends GameScreen {
 
     public float getTrailTime() {
         return trailTime;
+    }
+
+    public void setArrivalManager(ArrivalManager arrivalManager) {
+        this.arrivalManager = arrivalManager;
+    }
+
+    public Metar getMetar() {
+        return metar;
     }
 }

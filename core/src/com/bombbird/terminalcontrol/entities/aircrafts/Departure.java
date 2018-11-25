@@ -91,6 +91,10 @@ public class Departure extends Aircraft {
         contacted = save.getBoolean("contacted");
         cruiseAlt = save.getInt("cruiseAlt");
         higherSpdSet = save.getBoolean("higherSpdSet");
+
+        loadLabel();
+        setColor(new Color(0x11ff00ff));
+        setControlState(save.getInt("controlState"));
     }
 
     private void takeOff() {

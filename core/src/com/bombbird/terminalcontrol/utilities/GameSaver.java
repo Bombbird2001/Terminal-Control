@@ -36,6 +36,7 @@ public class GameSaver {
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("arrivalManager", getArrivalManager());
+        jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
 
         int aircraftsLanded = 0;
         int aircraftsAirborne = 0;
@@ -54,7 +55,7 @@ public class GameSaver {
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available
             if (Gdx.files.isLocalStorageAvailable()) {
-                handle = Gdx.files.local("saves/Test.json");
+                handle = Gdx.files.local("saves/" + radarScreen.saveId + ".json");
             } else {
                 Gdx.app.log("Storage error", "Local storage unavailable for Android!");
             }
@@ -139,8 +140,8 @@ public class GameSaver {
             JSONArray trail = new JSONArray();
             for (Image image: aircraft.getTrailDots()) {
                 JSONArray point = new JSONArray();
-                point.put(image.getX() + image.getWidth() / 2);
-                point.put(image.getY() + image.getHeight() / 2);
+                point.put((double)(image.getX() + image.getWidth() / 2));
+                point.put((double)(image.getY() + image.getHeight() / 2));
                 trail.put(point);
             }
             aircraftInfo.put("trailDots", trail);
@@ -252,7 +253,7 @@ public class GameSaver {
         //Add transmit timings
         JSONArray timeQueue = new JSONArray();
         for (float time: aircraft.getNavState().getTimeQueue()) {
-            timeQueue.put(time);
+            timeQueue.put((double) time);
         }
         navState.put("timeQueue", timeQueue);
 
@@ -409,7 +410,7 @@ public class GameSaver {
         //Save timers for each runway
         JSONObject timers = new JSONObject();
         for (String rwy: airport.getTakeoffManager().getTimers().keySet()) {
-            timers.put(rwy, airport.getTakeoffManager().getTimers().get(rwy));
+            timers.put(rwy, (double) airport.getTakeoffManager().getTimers().get(rwy));
         }
         takeoffManager.put("timers", timers);
 

@@ -28,7 +28,8 @@ public class ArrivalManager {
         this();
 
         for (String waypoint: save.keySet()) {
-            entryPoint.put(TerminalControl.radarScreen.waypoints.get(waypoint), TerminalControl.radarScreen.aircrafts.get(save.getString(waypoint)));
+            Aircraft aircraft = save.isNull(waypoint) ? null : TerminalControl.radarScreen.aircrafts.get(save.getString(waypoint));
+            entryPoint.put(TerminalControl.radarScreen.waypoints.get(waypoint), aircraft);
         }
     }
 

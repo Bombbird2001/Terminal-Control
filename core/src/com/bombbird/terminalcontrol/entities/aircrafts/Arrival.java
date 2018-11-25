@@ -148,6 +148,10 @@ public class Arrival extends Aircraft {
         willGoAround = save.getBoolean("willGoAround");
         goAroundAlt = save.getInt("goAroundAlt");
         goAroundSet = save.getBoolean("goAroundSet");
+
+        loadLabel();
+        setColor(new Color(0x00b3ffff));
+        setControlState(save.getInt("controlState"));
     }
 
     /** Calculates remaining distance on STAR from current aircraft position */

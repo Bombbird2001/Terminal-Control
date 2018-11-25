@@ -32,7 +32,6 @@ public class Airport {
     private TakeoffManager takeoffManager;
     private int landings;
     private int airborne;
-    private JSONObject save;
 
     public Airport(String icao, int elevation) {
         this.icao = icao;
@@ -42,12 +41,10 @@ public class Airport {
         takeoffRunways = new HashMap<String, Runway>();
         landings = 0;
         airborne = 0;
-        save = null;
         setActiveRunways();
     }
 
     public Airport(JSONObject save) {
-        this.save = save;
         icao = save.getString("icao");
         elevation = save.getInt("elevation");
         runways = FileLoader.loadRunways(icao);
@@ -58,12 +55,15 @@ public class Airport {
 
         JSONArray landing = save.getJSONArray("landingRunways");
         for (int i = 0; i < landing.length(); i++) {
-            runways.get(landing.getString(i)).setActive(true, false);
+            Runway runway = runways.get(landing.getString(i));
+            runway.setActive(true, false);
+            landingRunways.put(runway.getName(), runway);
         }
         JSONArray takeoff = save.getJSONArray("takeoffRunways");
         for (int i = 0; i < takeoff.length(); i++) {
             Runway runway = runways.get(takeoff.getString(i));
             runway.setActive(runway.isLanding(), true);
+            takeoffRunways.put(runway.getName(), runway);
         }
     }
 
@@ -106,7 +106,7 @@ public class Airport {
             }
         }
 
-        takeoffManager = new TakeoffManager(this, save);
+        takeoffManager = new TakeoffManager(this, save.getJSONObject("takeoffManager"));
     }
 
     private void setOppRwys() {
@@ -125,7 +125,7 @@ public class Airport {
                 } else {
                     oppExtra = extra;
                 }
-                String oppRwyStr = Integer.toString(oppNumber) + oppExtra;
+                String oppRwyStr = oppNumber + oppExtra;
                 if (oppNumber < 10) {
                     oppRwyStr = "0" + oppRwyStr;
                 }
@@ -174,43 +174,35 @@ public class Airport {
         //Update active runways if METAR is updated
         int windHdg = this.metar.getInt("windDirection");
         ws = "";
-        if (this.metar.get("windshear") != JSONObject.NULL) {
+        if (!this.metar.isNull("windshear")) {
             ws = this.metar.getString("windshear");
         } else {
             ws = "None";
         }
-        if (windHdg != 0) { //Update runways if winds are not variable
-            for (Runway runway: runways.values()) {
-                int rightHeading = runway.getHeading() + 90;
-                int leftHeading = runway.getHeading() - 90;
-                if (rightHeading > 360) {
-                    rightHeading -= 360;
-                    if (windHdg >= rightHeading && windHdg < leftHeading) {
-                        setActive(runway.getName(), false, false);
-                    } else {
-                        setActive(runway.getName(), true, true);
-                    }
-                } else if (leftHeading < 0) {
-                    leftHeading += 360;
-                    if (windHdg >= rightHeading && windHdg < leftHeading) {
-                        setActive(runway.getName(), false, false);
-                    } else {
-                        setActive(runway.getName(), true, true);
-                    }
-                } else {
-                    if (windHdg >= leftHeading && windHdg < rightHeading) {
-                        setActive(runway.getName(), true, true);
-                    } else {
-                        setActive(runway.getName(), false, false);
-                    }
-                }
-                runway.setWindshear(ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
+        for (Runway runway: runways.values()) {
+            if (windHdg != 0) { //Update runways if wind not variable
+                boolean active = runwayActiveForWind(windHdg, runway);
+                setActive(runway.getName(), active, active);
             }
+            runway.setWindshear(ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
         }
     }
 
-    private JSONObject getMetar() {
-        return metar;
+    public boolean runwayActiveForWind(int windHdg, Runway runway) {
+        boolean active;
+        int rightHeading = runway.getHeading() + 90;
+        int leftHeading = runway.getHeading() - 90;
+        if (rightHeading > 360) {
+            rightHeading -= 360;
+            active = !(windHdg >= rightHeading && windHdg < leftHeading);
+        } else if (leftHeading < 0) {
+            leftHeading += 360;
+            active = !(windHdg >= rightHeading && windHdg < leftHeading);
+        } else {
+            active = (windHdg >= leftHeading && windHdg < rightHeading);
+        }
+
+        return active;
     }
 
     public HashMap<String, Star> getStars() {
@@ -230,7 +222,7 @@ public class Airport {
     }
 
     public int[] getWinds() {
-        return new int[] {getMetar().getInt("windDirection"), getMetar().getInt("windSpeed")};
+        return new int[] {metar.getInt("windDirection"), metar.getInt("windSpeed")};
     }
 
     public HashMap<String, Runway> getRunways() {

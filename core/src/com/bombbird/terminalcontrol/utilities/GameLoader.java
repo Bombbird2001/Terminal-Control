@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,8 +15,19 @@ public class GameLoader {
     public static void loadSaveData(JSONObject save) {
         if (save == null) return;
 
+        JSONArray airports = save.getJSONArray("airports");
+
+        loadAirportData(airports);
+        TerminalControl.radarScreen.getMetar().updateMetar();
         loadAircraft(save.getJSONArray("aircrafts"));
-        loadAirportData(save.getJSONArray("airports"));
+
+        for (int i = 0; i < airports.length(); i++) {
+            TerminalControl.radarScreen.airports.get(airports.getJSONObject(i).getString("icao")).getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
+        }
+
+        TerminalControl.radarScreen.setArrivalManager(new ArrivalManager(save.getJSONObject("arrivalManager")));
+
+        GameSaver.saveGame();
     }
 
     /** Loads aircraft data from save */
@@ -45,7 +57,7 @@ public class GameLoader {
         for (int i = 0; i < airports.length(); i++) {
             Airport airport = new Airport(airports.getJSONObject(i));
             TerminalControl.radarScreen.airports.put(airport.getIcao(), airport);
-            airport.loadOthers(airports.getJSONObject(i).getJSONObject("takeoffManager"));
+            airport.loadOthers(airports.getJSONObject(i));
         }
     }
 }

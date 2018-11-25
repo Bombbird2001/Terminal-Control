@@ -166,7 +166,7 @@ public class NavState {
         {
             JSONArray array = save.getJSONArray("timeQueue");
             for (int i = 0; i < array.length(); i++) {
-                timeQueue.add(array.getFloat(i));
+                timeQueue.add((float) array.getDouble(i));
             }
         }
 
@@ -182,7 +182,7 @@ public class NavState {
         {
             JSONArray array = save.getJSONArray("clearedIls");
             for (int i = 0; i < array.length(); i++) {
-                clearedIls.addLast(array.isNull(i) ? null : aircraft.getAirport().getApproaches().get(array.getString(i)));
+                clearedIls.addLast(array.isNull(i) ? null : aircraft.getAirport().getApproaches().get(array.getString(i).substring(3)));
             }
         }
 
