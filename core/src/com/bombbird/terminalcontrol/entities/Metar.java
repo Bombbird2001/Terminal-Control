@@ -20,6 +20,11 @@ public class Metar {
         this.radarScreen = radarScreen;
     }
 
+    public Metar(RadarScreen radarScreen, JSONObject save) {
+        this(radarScreen);
+        metarObject = save;
+    }
+
     public void updateMetar() {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
@@ -138,7 +143,7 @@ public class Metar {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                metarObject = generateRandomWeather();
+                metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
                 updateAirports();
                 radarScreen.ui.updateMetar();
                 radarScreen.loadingPercent = "100%";
@@ -156,7 +161,7 @@ public class Metar {
                     } else {
                         //Generate offline weather
                         response.close();
-                        metarObject = generateRandomWeather();
+                        metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
                         updateAirports();
                         radarScreen.ui.updateMetar();
                         radarScreen.loadingPercent = "100%";
@@ -191,6 +196,45 @@ public class Metar {
         }
     }
 
+    /** Create new weather based on current (i.e. small changes only) */
+    private JSONObject randomBasedOnCurrent() {
+        JSONObject airports = new JSONObject();
+        for (String airport: radarScreen.airports.keySet()) {
+            JSONObject jsonObject = new JSONObject();
+            int visibility = metarObject.getJSONObject(airport).getInt("visibility") + MathUtils.randomSign() * 1000;
+            visibility = MathUtils.clamp(visibility, 100, 10000);
+            jsonObject.put("visibility", visibility);
+
+            int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-20, 20);
+            if (windDir > 360) {
+                windDir -= 360;
+            } else if (windDir <= 0) {
+                windDir += 360;
+            }
+            jsonObject.put("windDirection", windDir);
+
+            int windSpd = metarObject.getJSONObject(airport).getInt("windSpeed") + MathUtils.random(-15, 15);
+            windSpd = MathUtils.clamp(windSpd, 1, 30);
+            jsonObject.put("windSpeed", windSpd);
+
+            String ws = randomWS(windDir, windSpd, airport);
+            jsonObject.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
+
+            int gust = -1;
+            if (windSpd >= 15 && MathUtils.random(2) == 2) {
+                //Gusts
+                gust = MathUtils.random(windSpd + 3, 40);
+            }
+            jsonObject.put("windGust", gust > -1 ? gust : JSONObject.NULL);
+
+            jsonObject.put("rain", JSONObject.NULL);
+
+            airports.put(airport, jsonObject);
+        }
+
+        return airports;
+    }
+
     private JSONObject generateRandomWeather() {
         JSONObject jsonObject = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
@@ -204,11 +248,11 @@ public class Metar {
             windDir = (MathUtils.random(35)) * 10 + 10;
             windSpd = MathUtils.random(29) + 1;
 
-            ws = randomWS(windSpd, airport);
+            ws = randomWS(windDir, windSpd, airport);
 
             if (windSpd >= 15 && MathUtils.random(2) == 2) {
                 //Gusts
-                gust = MathUtils.random(windSpd, 40);
+                gust = MathUtils.random(windSpd + 3, 40);
             }
 
             JSONObject object = new JSONObject();
@@ -218,33 +262,25 @@ public class Metar {
             object.put("windDirection", windDir);
             object.put("windSpeed", windSpd);
 
-            if (gust > -1) {
-                object.put("windGust", gust);
-            } else {
-                object.put("windGust", JSONObject.NULL);
-            }
+            object.put("windGust", gust > -1 ? gust : JSONObject.NULL);
 
-            if (ws != null && !ws.equals("")) {
-                object.put("windshear", ws);
-            } else {
-                object.put("windshear", JSONObject.NULL);
-            }
+            object.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
             jsonObject.put(airport, object);
         }
         return jsonObject;
     }
 
-    private String randomWS(int windSpd, String airport) {
-        String ws = null;
+    private String randomWS(int windHdg, int windSpd, String airport) {
+        String ws = "";
         if (windSpd >= 15 && MathUtils.random(2) == 2) {
             //Runway windshear
             StringBuilder stringBuilder = new StringBuilder();
-            for (String runway : radarScreen.airports.get(airport).getRunways().keySet()) {
+            for (Runway runway : radarScreen.airports.get(airport).getRunways().values()) {
                 //Random boolean for each runway
-                if (radarScreen.airports.get(airport).getRunways().get(runway).isActive() && MathUtils.random(1) == 1) {
+                if (radarScreen.airports.get(airport).runwayActiveForWind(windHdg, runway) && MathUtils.random(1) == 1) {
                     stringBuilder.append("R");
-                    stringBuilder.append(runway);
+                    stringBuilder.append(runway.getName());
                     stringBuilder.append(" ");
                 }
             }
@@ -255,5 +291,9 @@ public class Metar {
             }
         }
         return ws;
+    }
+
+    public JSONObject getMetarObject() {
+        return metarObject;
     }
 }
