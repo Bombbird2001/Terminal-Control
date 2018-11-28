@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener, InputProcessor {
     public Stage stage;
+    public Stage labelStage;
 
     //Init game (set in constructor)
     public final TerminalControl game;
@@ -33,9 +34,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Set input processors
     public InputMultiplexer inputMultiplexer = new InputMultiplexer();
-    public InputProcessor inputProcessor1 = this;
-    public InputProcessor inputProcessor2;
-    public InputProcessor inputProcessor3;
     public GestureDetector gd = new GestureDetector(40, 0.2f,1.1f, 0.15f, this);
 
     //Pinch zoom constants
@@ -116,6 +114,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             //Zoom in
             camera.zoom += ZOOM_CONSTANT * dt;
+            ((OrthographicCamera)(labelStage.getCamera())).zoom += ZOOM_CONSTANT * dt;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
             //Zoom out
@@ -244,6 +243,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                 //Update stage
                 stage.act(delta);
+                labelStage.act(delta);
 
                 //Render each of the range circles, obstacles using shaperenderer
                 if (!loading) {
@@ -274,6 +274,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
                 } else {
                     stage.draw();
+                    game.batch.end();
+                    game.batch.setProjectionMatrix(labelStage.getCamera().combined);
+                    game.batch.begin();
+                    labelStage.getViewport().apply();
+                    labelStage.draw();
                 }
                 game.batch.end();
 
@@ -310,6 +315,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         viewport.update(width, height, false);
         stage.getViewport().update(width, height, false);
+        labelStage.getViewport().update(width, height, false);
         float xOffset = camera.zoom * 990;
         camera.position.set(camera.viewportWidth / 2 - xOffset, camera.viewportHeight / 2, 0);
 
@@ -362,6 +368,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public void dispose() {
         stage.clear();
         stage.dispose();
+
+        labelStage.clear();
+        labelStage.dispose();
 
         uiStage.clear();
         uiStage.dispose();

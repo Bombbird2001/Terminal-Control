@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
-public class Runway extends Actor {
+public class Runway {
     //Name of runway
     private String name;
 
@@ -24,7 +24,6 @@ public class Runway extends Actor {
     private Runway oppRwy;
 
     //Set landing/takeoff status
-    private boolean active;
     private boolean landing;
     private boolean takeoff;
 
@@ -64,6 +63,7 @@ public class Runway extends Actor {
         shapeRenderer = radarScreen.shapeRenderer;
 
         parseInfo(toParse);
+
         aircraftsOnAppr = new Array<Aircraft>();
 
         //Calculate the position offsets
@@ -73,10 +73,7 @@ public class Runway extends Actor {
         float yOffsetL = pxLength * MathUtils.sinDeg(90 - getTrueHdg());
 
         //Create polygon
-        setPolygon(new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW}));
-
-        radarScreen.stage.addActor(this);
-        setVisible(false);
+        polygon = new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});
     }
 
     /** Parses the input string into relevant data for the runway */
@@ -105,26 +102,20 @@ public class Runway extends Actor {
             }
             index++;
         }
+        radarScreen.stage.addActor(label);
     }
 
     /** Sets runway status for landing, takeoffs */
     public void setActive(boolean landing, boolean takeoff) {
-        this.setLanding(landing);
-        this.setTakeoff(takeoff);
-        setActive(landing || takeoff);
-        setVisible(landing || takeoff);
-    }
-
-    /** Draws the runway label */
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        label.draw(batch, 1);
+        this.landing = landing;
+        this.takeoff = takeoff;
+        label.setVisible(landing || takeoff);
     }
 
     /** Renders the runway rectangle */
     public void renderShape() {
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.polygon(getPolygon().getVertices());
+        shapeRenderer.polygon(polygon.getVertices());
     }
 
     /** Called to remove aircraft from the array of aircrafts on approach, should be called during go arounds/cancelling approaches */
@@ -150,10 +141,6 @@ public class Runway extends Actor {
         aircraftsOnAppr.swap(thisIndex, thisIndex - 1);
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
     public boolean isLanding() {
         return landing;
     }
@@ -174,44 +161,26 @@ public class Runway extends Actor {
         return new float[] {getX(), getY()};
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
 
-    private void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public void setLanding(boolean landing) {
-        this.landing = landing;
-    }
-
-    public void setTakeoff(boolean takeoff) {
-        this.takeoff = takeoff;
-    }
-
-    @Override
     public float getX() {
         return x;
     }
 
-    @Override
     public void setX(float x) {
         this.x = x;
     }
 
-    @Override
     public float getY() {
         return y;
     }
 
-    @Override
     public void setY(float y) {
         this.y = y;
     }
@@ -230,22 +199,6 @@ public class Runway extends Actor {
 
     public void setTrueHdg(float trueHdg) {
         this.trueHdg = trueHdg;
-    }
-
-    public Label getLabel() {
-        return label;
-    }
-
-    public void setLabel(Label label) {
-        this.label = label;
-    }
-
-    public Polygon getPolygon() {
-        return polygon;
-    }
-
-    public void setPolygon(Polygon polygon) {
-        this.polygon = polygon;
     }
 
     public boolean isWindshear() {
@@ -278,5 +231,9 @@ public class Runway extends Actor {
 
     public void setAircraftsOnAppr(Array<Aircraft> aircraftsOnAppr) {
         this.aircraftsOnAppr = aircraftsOnAppr;
+    }
+
+    public Label getLabel() {
+        return label;
     }
 }

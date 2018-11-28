@@ -98,8 +98,8 @@ public class SeparationChecker extends Actor {
                         //If either plane is below 1400 feet or above 20000 feet
                         continue;
                     }
-                    if (plane1.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.isLocCap() && plane2.isLocCap()) {
-                        //If both planes are on different ILS and both have captured LOC
+                    if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
+                        //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs
                         continue;
                     }
                     if (plane1.isGoAroundWindow() || plane2.isGoAroundWindow()) {

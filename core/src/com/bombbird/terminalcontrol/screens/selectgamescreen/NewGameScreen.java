@@ -44,11 +44,12 @@ public class NewGameScreen extends SelectGameScreen {
                     FileHandle handle = Gdx.files.internal("game/available.arpt");
                     String[] airports = handle.readString().split("\\r?\\n");
                     boolean found = false;
-                    int airac = Integer.parseInt(airports[0]);
+                    int airac = -1;
                     for (String arptData: airports) {
                         String arpt = arptData.split(":")[0];
                         if (arpt.equals(name)) {
                             found = true;
+                            airac = Integer.parseInt(arptData.split(":")[1].split(",")[0].split("-")[1]);
                             break;
                         }
                     }

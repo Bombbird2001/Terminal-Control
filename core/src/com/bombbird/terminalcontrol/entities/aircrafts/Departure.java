@@ -31,7 +31,7 @@ public class Departure extends Aircraft {
         v2set = false;
         sidSet = false;
         contacted = false;
-        cruiseAlt = MathUtils.random(30, 39) * 1000;
+        cruiseAlt = MathUtils.random(30, 39) * 1000; //TODO Fix departure climb cruise alt too high
         higherSpdSet = false;
 
         //Sets requested runway for takeoff

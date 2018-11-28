@@ -54,7 +54,7 @@ public class MainMenuScreen implements Screen {
         //Set title icon
         Image image = new Image(new Texture(Gdx.files.internal("game/ui/MainMenuIcon.png")));
         image.scaleBy(0.5f);
-        image.setPosition(2880 / 2.0f - 1.5f * image.getWidth() / 2.0f, 1620 * 0.825f);
+        image.setPosition(2880 / 2.0f - 1.5f * image.getWidth() / 2.0f, 1620 * 0.775f);
         stage.addActor(image);
 
         //Set button textures
@@ -65,7 +65,7 @@ public class MainMenuScreen implements Screen {
 
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
-        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.65f);
+        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.55f);
         newGameButton.setWidth(buttonWidth);
         newGameButton.setHeight(buttonHeight);
         newGameButton.getLabel().setAlignment(Align.center);
@@ -81,7 +81,7 @@ public class MainMenuScreen implements Screen {
 
         //Set load game button params
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
-        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.5f);
+        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.4f);
         loadGameButton.setWidth(buttonWidth);
         loadGameButton.setHeight(buttonHeight);
         loadGameButton.getLabel().setAlignment(Align.center);
@@ -95,23 +95,9 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(loadGameButton);
 
-        //Set settings button params
-        TextButton settingsButton = new TextButton("Settings", buttonStyle);
-        settingsButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.35f);
-        settingsButton.setWidth(buttonWidth);
-        settingsButton.setHeight(buttonHeight);
-        settingsButton.getLabel().setAlignment(Align.center);
-        settingsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //Change settings -> Settings screen
-            }
-        });
-        stage.addActor(settingsButton);
-
         //Set quit button params
         TextButton quitButton = new TextButton("Quit", buttonStyle);
-        quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.2f);
+        quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.1f);
         quitButton.setWidth(buttonWidth);
         quitButton.setHeight(buttonHeight);
         quitButton.getLabel().setAlignment(Align.center);

@@ -40,7 +40,7 @@ public class RadarScreen extends GameScreen {
     public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in settings
 
     //Score of current game
-    private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately this number
+    private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately 2/3 this value
     private int score; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
     private int highScore; //High score of player
 
@@ -76,7 +76,7 @@ public class RadarScreen extends GameScreen {
         this.airac = airac;
         saveId = saveID;
 
-        planesToControl = 2f;
+        planesToControl = 1f;
         score = 0;
         highScore = 0;
         arrivals = 0;
@@ -125,18 +125,20 @@ public class RadarScreen extends GameScreen {
             camera.position.set(2286, 1620, 0);
         }
 
+        labelStage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
+        labelStage.getViewport().setCamera(camera);
+        labelStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+
         //Set timer for METAR
         timer = new Timer(true);
     }
 
     private void loadInputProcessors() {
         //Set input processors
-        inputProcessor2 = stage;
-        inputProcessor3 = uiStage;
-        inputMultiplexer.addProcessor(inputProcessor3);
-        inputMultiplexer.addProcessor(inputProcessor2);
+        inputMultiplexer.addProcessor(uiStage);
+        inputMultiplexer.addProcessor(labelStage);
         inputMultiplexer.addProcessor(gd);
-        inputMultiplexer.addProcessor(inputProcessor1);
+        inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -219,23 +221,27 @@ public class RadarScreen extends GameScreen {
     public void newAircraft() {
         if (save != null) return;
 
-        aircrafts.put("EVA226", new Arrival("EVA226", "B77W", airports.get("RCTP")));
-        arrivals++;
-
-        //Spawn another 2 aircrafts after 1.5 minute intervals
+        //Spawn another 3 aircrafts after 2 minute intervals
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 planesToControl += 1;
             }
-        }, 90000);
+        }, 120000);
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 planesToControl += 1;
             }
-        }, 180000);
+        }, 240000);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                planesToControl += 1;
+            }
+        }, 360000);
     }
 
     /** Creates a new departure at the given airport */

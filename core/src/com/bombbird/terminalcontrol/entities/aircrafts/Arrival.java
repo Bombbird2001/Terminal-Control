@@ -29,11 +29,6 @@ public class Arrival extends Aircraft {
     private boolean willGoAround;
     private int goAroundAlt;
     private boolean goAroundSet;
-    //private boolean transSet;
-    private MissedApproach missedApproach;
-    //private float lastDistFromRwy;
-    //private Queue<String> goAroundQueue;
-    //private int goAroundDir;
 
     public Arrival(String callsign, String icaoType, Airport arrival) {
         super(callsign, icaoType, arrival);
@@ -43,8 +38,6 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundAlt = 0;
-        //transSet = false;
-        //goAroundDir = 0;
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -58,10 +51,6 @@ public class Arrival extends Aircraft {
                     break;
                 }
             }
-        }
-
-        if (callsign.equals("EVA226")) {
-            star = starList.get("BAKER1A");
         }
 
         setDirect(star.getWaypoint(0));
@@ -91,24 +80,6 @@ public class Arrival extends Aircraft {
             setClearedAltitude((int) initAlt - (int) initAlt % 1000);
         }
         setClearedIas(getClimbSpd());
-
-        if (callsign.equals("EVA226")) {
-            getNavState().getDispAltMode().removeFirst();
-            getNavState().getDispAltMode().addFirst("Climb/descend to");
-            getNavState().getDispLatMode().removeFirst();
-            getNavState().getDispLatMode().addFirst("Fly heading");
-            getNavState().getDispSpdMode().removeFirst();
-            getNavState().getDispSpdMode().addFirst("No speed restrictions");
-            setHeading(54);
-            setClearedHeading(54);
-            setAltitude(4000);
-            setClearedAltitude(4000);
-            setClearedIas(220);
-            getNavState().getClearedSpd().removeFirst();
-            getNavState().getClearedSpd().addFirst(220);
-            setX(2394);
-            setY(1296);
-        }
 
         getNavState().getClearedSpd().removeFirst();
         getNavState().getClearedSpd().addFirst(getClearedIas());
@@ -250,7 +221,7 @@ public class Arrival extends Aircraft {
         }
         if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 5) {
             if (getClearedIas() > 160) {
-                setClearedIas(160);
+                setClearedIas(getApchSpd());
                 super.updateSpd();
             }
             finalSpdSet = true;
@@ -309,20 +280,22 @@ public class Arrival extends Aircraft {
                         nonPrecAlts.addLast(data);
                     }
                 }
-                if (nonPrecAlts != null && nonPrecAlts.size > 0) {
-                    //Set target altitude to current restricted altitude
-                    setTargetAltitude(nonPrecAlts.first()[0]);
-                    while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
-                        nonPrecAlts.removeFirst();
+                if (isLocCap()) {
+                    if (nonPrecAlts != null && nonPrecAlts.size > 0) {
+                        //Set target altitude to current restricted altitude
+                        setTargetAltitude(nonPrecAlts.first()[0]);
+                        while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
+                            nonPrecAlts.removeFirst();
+                        }
+                        super.updateAltitude();
+                    } else {
+                        //Set final descent towards runway
+                        setTargetAltitude(getIls().getRwy().getElevation());
+                        float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
+                        float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
+                        setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
+                        setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
                     }
-                    super.updateAltitude();
-                } else {
-                    //Set final descent towards runway
-                    setTargetAltitude(getIls().getRwy().getElevation());
-                    float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
-                    float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
-                    setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
-                    setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
                 }
             }
             if (isLocCap()) {
@@ -338,7 +311,7 @@ public class Arrival extends Aircraft {
                 setControlState(0);
                 setClearedIas(getApchSpd());
                 float points = 0.6f - radarScreen.getPlanesToControl() / 40;
-                points = MathUtils.clamp(points, 0.1f, 0.4f);
+                points = MathUtils.clamp(points, 0.15f, 0.5f);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 //TODO Add contact tower transmission
@@ -471,56 +444,16 @@ public class Arrival extends Aircraft {
         if (getAltitude() >= 1600 && getControlState() == 0) {
             setControlState(1);
             setGoAround(false);
-        }
-        /*
-        //Check if aircraft has passed initial climb phase
-        float dist = MathTools.distanceBetween(getX(), getY(), missedApproach.getIls().getX(), missedApproach.getIls().getY());
-        if (!transSet) {
-            if (missedApproach.getTransition().equals("ALT")) {
-                //Check if aircraft has climbed above this altitude
-                if (getAltitude() > missedApproach.getTransInfo() && dist > lastDistFromRwy) {
-                    transSet = true;
-                }
-            } else if (missedApproach.getTransition().equals("DIST")) {
-                //Check if aircraft has flew past this distance from end of runway
-                if (dist > missedApproach.getTransInfo() && dist > lastDistFromRwy) {
-                    //Make sure aircraft is flying from (not towards) the end of the runway
-                    transSet = true;
-                }
-            }
-        }
-        */
-    }
-
-
-    /*
-    /** Overrides updateGoAroundDirect method in Aircraft, called to update aircraft action after reaching the next waypoint in the waypoint queue
-    @Override
-    public void updateGoAroundDirect() {
-        if (goAroundQueue.size > 0) {
-            String[] info = goAroundQueue.first().split(" ");
-            if (info[0].equals("ANY")) {
-                goAroundDir = 0;
-            } else if (info[0].equals("LEFT")) {
-                goAroundDir = 1;
-            } else if (info[0].equals("RIGHT")) {
-                goAroundDir = 2;
-            } else {
-                Gdx.app.log("Go around direction", "Invalid go around direction " + info[0] + " specified!");
-            }
-
-        } else {
-            //Last waypoint reached, check for holding pattern TODO
+            radarScreen.setArrivals(radarScreen.getArrivals() + 1);
         }
     }
-    */
 
     /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft */
     private void initializeGoAround() {
         setGoAround(true);
         setGoAroundWindow(true);
 
-        missedApproach = getIls().getMissedApchProc();
+        MissedApproach missedApproach = getIls().getMissedApchProc();
 
         setClearedHeading(getIls().getHeading());
         getNavState().getClearedHdg().removeFirst();
@@ -535,8 +468,6 @@ public class Arrival extends Aircraft {
             getNavState().getClearedAlt().removeFirst();
             getNavState().getClearedAlt().addFirst(getClearedAltitude());
         }
-        //lastDistFromRwy = MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY());
-        //goAroundQueue = missedApproach.getProcedure();
         setIls(null);
         getNavState().voidAllIls();
         ilsSpdSet = false;
@@ -580,14 +511,4 @@ public class Arrival extends Aircraft {
     public boolean isGoAroundSet() {
         return goAroundSet;
     }
-
-    public MissedApproach getMissedApproach() {
-        return missedApproach;
-    }
-
-    /*
-    public boolean isTransSet() {
-        return transSet;
-    }
-    */
 }

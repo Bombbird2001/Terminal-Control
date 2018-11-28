@@ -53,7 +53,6 @@ public class AltTab extends Tab {
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
-            //TODO Set minimum alt for each ILS if cleared app
         } else {
             lowestAlt = 0;
             highestAlt = 10000;

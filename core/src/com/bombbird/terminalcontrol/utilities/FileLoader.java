@@ -217,7 +217,10 @@ public class FileLoader {
 
         if (handle != null && handle.exists()) {
             String[] saveIds = handle.readString().split(",");
-
+            if ("".equals(saveIds[0])) {
+                //"" returned if saves.saves is empty
+                return saves;
+            }
             for (String id: saveIds) {
                 JSONObject save = new JSONObject(handle.sibling(id + ".json").readString());
                 saves.put(save);

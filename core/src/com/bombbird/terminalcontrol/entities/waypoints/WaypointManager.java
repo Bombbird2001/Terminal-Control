@@ -32,11 +32,13 @@ public class WaypointManager {
         Aircraft aircraft = radarScreen.getSelectedAircraft();
         if (aircraft != null) {
             String latMode = aircraft.getNavState().getDispLatMode().last();
-            if (latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(latMode) || "Hold at".equals(latMode)) {
+            if (latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(latMode) || ("Hold at".equals(latMode) && !aircraft.isHolding())) {
                 //Cleared is sidstar mode
                 for (Waypoint waypoint: aircraft.getRemainingWaypoints()) {
                     waypoint.setSelected(true);
                 }
+            } else if (aircraft.isHolding()) {
+                aircraft.getHoldWpt().setSelected(true);
             }
         }
     }

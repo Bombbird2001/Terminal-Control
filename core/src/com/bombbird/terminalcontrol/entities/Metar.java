@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.entities;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.Values;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +33,7 @@ public class Metar {
     }
 
     private void sendMetar(final MediaType mediaType, final OkHttpClient client, JSONObject jo, Calendar calendar) {
-        jo.put("password", ""); //TODO: Remove before committing
+        jo.put("password", Values.SEND_METAR_PASSWORD);
         jo.put("year", calendar.get(Calendar.YEAR));
         jo.put("month", calendar.get(Calendar.MONTH) + 1);
         jo.put("day", calendar.get(Calendar.DAY_OF_MONTH));
@@ -40,13 +41,15 @@ public class Metar {
         jo.put("minute", calendar.get(Calendar.MINUTE));
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
-                .url("") //TODO: Remove before committing
+                .url(Values.SEND_METAR_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                //If requests fails due to timeout
                 e.printStackTrace();
+                receiveMetar(mediaType, client);
             }
 
             @Override
@@ -84,16 +87,15 @@ public class Metar {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                //If requests fails due to timeout
                 e.printStackTrace();
+                receiveMetar(mediaType, client);
             }
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    //If requests fails due to timeout
                     System.out.println(response.body().string());
-                    response.close();
-                    receiveMetar(mediaType, client);
                 } else {
                     String responseText = response.body().string();
                     JSONObject jo = new JSONObject(responseText);
@@ -105,16 +107,18 @@ public class Metar {
     }
 
     private void getApiKey(final MediaType mediaType, final OkHttpClient client) {
-        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"\"}"); //TODO: Remove before committing
+        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"" + Values.API_PASSWORD + "\"}");
         Request request = new Request.Builder()
-                .url("") //TODO: Remove before committing
+                .url(Values.API_URL)
                 .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                //If requests fails due to timeout
                 e.printStackTrace();
+                receiveMetar(mediaType, client);
             }
 
             @Override
@@ -132,12 +136,12 @@ public class Metar {
 
     private void getMetar(final MediaType mediaType, final OkHttpClient client) {
         JSONObject jo = new JSONObject();
-        jo.put("password", ""); //TODO: Remove before committing
+        jo.put("password", Values.GET_METAR_PASSWORD);
         JSONArray apts = new JSONArray(radarScreen.airports.keySet());
         jo.put("airports", apts);
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
-                .url("") //TODO: Remove before committing
+                .url(Values.GET_METAR_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -202,7 +206,7 @@ public class Metar {
         for (String airport: radarScreen.airports.keySet()) {
             JSONObject jsonObject = new JSONObject();
             int visibility = metarObject.getJSONObject(airport).getInt("visibility") + MathUtils.randomSign() * 1000;
-            visibility = MathUtils.clamp(visibility, 100, 10000);
+            visibility = MathUtils.clamp(visibility, 1000, 10000);
             jsonObject.put("visibility", visibility);
 
             int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-20, 20);
@@ -214,7 +218,7 @@ public class Metar {
             jsonObject.put("windDirection", windDir);
 
             int windSpd = metarObject.getJSONObject(airport).getInt("windSpeed") + MathUtils.random(-15, 15);
-            windSpd = MathUtils.clamp(windSpd, 1, 30);
+            windSpd = MathUtils.clamp(windSpd, 5, 30);
             jsonObject.put("windSpeed", windSpd);
 
             String ws = randomWS(windDir, windSpd, airport);
@@ -246,7 +250,7 @@ public class Metar {
             String ws;
             visibility = (MathUtils.random(9) + 1) * 1000;
             windDir = (MathUtils.random(35)) * 10 + 10;
-            windSpd = MathUtils.random(29) + 1;
+            windSpd = MathUtils.random(25) + 5;
 
             ws = randomWS(windDir, windSpd, airport);
 

@@ -189,7 +189,7 @@ public class LatTab extends Tab {
                 valueBox.setVisible(true);
             }
             waypoints.clear();
-            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName()), selectedAircraft.getSidStar().getWaypoints().size - 1)) {
+            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getSidStarIndex(), selectedAircraft.getSidStar().getWaypoints().size - 1)) {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
@@ -235,7 +235,7 @@ public class LatTab extends Tab {
                     ils.add(approach.getName());
                 }
             }
-            if (!ils.contains(clearedILS, false)) {
+            if (clearedILS != null && !ils.contains(clearedILS, false)) {
                 ils.clear();
                 ils.add(clearedILS);
             }

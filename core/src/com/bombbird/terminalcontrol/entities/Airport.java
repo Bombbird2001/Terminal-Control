@@ -67,10 +67,22 @@ public class Airport {
         }
     }
 
+    /** Loads the runway queue from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
+    public void updateRunwayQueue(JSONObject save) {
+        for (Runway runway: runways.values()) {
+            Array<Aircraft> aircraftsOnAppr = new Array<Aircraft>();
+            JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
+            for (int i = 0; i < queue.length(); i++) {
+                aircraftsOnAppr.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
+            }
+            runway.setAircraftsOnAppr(aircraftsOnAppr);
+        }
+    }
+
     /** Sets the initial active runways for airport */
     private void setActiveRunways() {
         if ("RCTP".equals(icao)) {
-            setActive("05L", true, false);
+            setActive("05L", true, true);
             setActive("05R", true, true);
         } else if ("RCSS".equals(icao)) {
             setActive("10", true, true);
@@ -162,7 +174,7 @@ public class Airport {
         takeoffManager.update();
 
         for (Runway runway: runways.values()) {
-            if (runway.isActive()) {
+            if (runway.isTakeoff() || runway.isLanding()) {
                 runway.renderShape();
             }
         }

@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
@@ -17,17 +18,24 @@ public class GameLoader {
 
         JSONArray airports = save.getJSONArray("airports");
 
+        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
+            for (Runway runway: airport.getRunways().values()) {
+                runway.getLabel().remove();
+            }
+        }
         loadAirportData(airports);
         TerminalControl.radarScreen.getMetar().updateMetar();
         loadAircraft(save.getJSONArray("aircrafts"));
 
         for (int i = 0; i < airports.length(); i++) {
-            TerminalControl.radarScreen.airports.get(airports.getJSONObject(i).getString("icao")).getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
+            Airport airport = TerminalControl.radarScreen.airports.get(airports.getJSONObject(i).getString("icao"));
+            airport.getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
+            airport.updateRunwayQueue(airports.getJSONObject(i));
         }
 
         TerminalControl.radarScreen.setArrivalManager(new ArrivalManager(save.getJSONObject("arrivalManager")));
 
-        GameSaver.saveGame();
+        //GameSaver.saveGame();
     }
 
     /** Loads aircraft data from save */

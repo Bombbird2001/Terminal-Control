@@ -1,6 +1,6 @@
 package com.bombbird.terminalcontrol.entities.procedures;
 
-import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 
@@ -10,14 +10,10 @@ public class MissedApproach {
     private ILS ils;
     private int climbAlt;
     private int climbSpd;
-    private String transition;
-    private float transInfo;
-    private Queue<String> procedure;
 
     public MissedApproach(String name, Airport airport, String info) {
         this.name = name;
         this.airport = airport;
-        procedure = new Queue<String>();
 
         parseInfo(info);
     }
@@ -32,13 +28,8 @@ public class MissedApproach {
             switch (index) {
                 case 0: climbAlt = Integer.parseInt(s); break;
                 case 1: climbSpd = Integer.parseInt(s); break;
-                case 2:
-                    String[] trans = s.split(" ");
-                    transition = trans[0];
-                    transInfo = Float.parseFloat(trans[1]);
-                    break;
                 default:
-                    procedure.addLast(s);
+                    Gdx.app.log("Missed approach error", "Unexpected additional parameter for " + ils.getName() + " approach!");
             }
             index++;
         }
@@ -52,23 +43,7 @@ public class MissedApproach {
         return climbSpd;
     }
 
-    public String getTransition() {
-        return transition;
-    }
-
-    public float getTransInfo() {
-        return transInfo;
-    }
-
-    public HoldProcedure getHoldProcedure() {
-        return airport.getHoldProcedures().get(name);
-    }
-
     public ILS getIls() {
         return ils;
-    }
-
-    public Queue<String> getProcedure() {
-        return procedure;
     }
 }

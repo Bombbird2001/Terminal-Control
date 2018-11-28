@@ -451,11 +451,41 @@ public class GameSaver {
             } else {
                 return; //If contains ID, no action required
             }
+            ids.removeValue("", false); //Remove a random "" that is loaded into the array
         } else {
             ids = new Array<String>();
             ids.add(Integer.toString(id));
         }
 
         handle.writeString(ids.toString(","), false);
+    }
+
+    /** Deletes a save given input game ID */
+    public static void deleteSave(int id) {
+        FileHandle handle;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            handle = Gdx.files.local("saves/saves.saves");
+        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+        } else {
+            handle = Gdx.files.local("saves/saves.saves");
+            Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
+        }
+
+        String[] saveIDs = handle.readString().split(",");
+        Array<Integer> ids = new Array<Integer>();
+        for (String stringID: saveIDs) {
+            ids.add(Integer.parseInt(stringID));
+        }
+
+        if (!ids.removeValue(id, false)) {
+            Gdx.app.log("Delete error", "Save ID " + id + " not found in saves.saves");
+        }
+        handle.writeString(ids.toString(","), false);
+
+        handle = handle.sibling(id + ".json");
+        if (!handle.delete()) {
+            Gdx.app.log("Delete error", id + ".json not found");
+        }
     }
 }
