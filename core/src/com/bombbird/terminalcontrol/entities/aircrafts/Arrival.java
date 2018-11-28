@@ -74,8 +74,8 @@ public class Arrival extends Aircraft {
         }
         setAltitude(initAlt);
         updateAltRestrictions();
-        if (initAlt > 11000) {
-            setClearedAltitude(11000);
+        if (initAlt > 15000) {
+            setClearedAltitude(15000);
         } else {
             setClearedAltitude((int) initAlt - (int) initAlt % 1000);
         }
@@ -123,6 +123,11 @@ public class Arrival extends Aircraft {
         loadLabel();
         setColor(new Color(0x00b3ffff));
         setControlState(save.getInt("controlState"));
+
+        if (!save.isNull("labelPos")) {
+            JSONArray labelPos = save.getJSONArray("labelPos");
+            getLabel().setPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+        }
     }
 
     /** Calculates remaining distance on STAR from current aircraft position */

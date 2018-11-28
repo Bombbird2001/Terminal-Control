@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class Departure extends Aircraft {
     private boolean contacted;
     private int cruiseAlt;
     private boolean higherSpdSet;
+    private boolean cruiseSpdSet;
 
     public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
@@ -33,6 +35,7 @@ public class Departure extends Aircraft {
         contacted = false;
         cruiseAlt = MathUtils.random(30, 39) * 1000; //TODO Fix departure climb cruise alt too high
         higherSpdSet = false;
+        cruiseSpdSet = false;
 
         //Sets requested runway for takeoff
         setRunway(runway);
@@ -91,10 +94,14 @@ public class Departure extends Aircraft {
         contacted = save.getBoolean("contacted");
         cruiseAlt = save.getInt("cruiseAlt");
         higherSpdSet = save.getBoolean("higherSpdSet");
+        cruiseSpdSet = save.getBoolean("cruiseSpdSet");
 
         loadLabel();
         setColor(new Color(0x11ff00ff));
         setControlState(save.getInt("controlState"));
+
+        JSONArray labelPos = save.getJSONArray("labelPos");
+        getLabel().setPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
     }
 
     private void takeOff() {
@@ -243,6 +250,10 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude() {
         super.updateAltitude();
+        if (!cruiseSpdSet && getAltitude() > 10000) {
+            setClearedIas(getClimbSpd());
+            cruiseSpdSet = true;
+        }
         if (getControlState() == 2 && getAltitude() >= handoveralt) {
             setControlState(0);
             setClearedIas(getClimbSpd());
@@ -289,5 +300,9 @@ public class Departure extends Aircraft {
 
     public boolean isHigherSpdSet() {
         return higherSpdSet;
+    }
+
+    public boolean isCruiseSpdSet() {
+        return cruiseSpdSet;
     }
 }

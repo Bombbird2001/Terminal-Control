@@ -608,7 +608,8 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f + 10;
+            float multiplier = (gs / 230) * ias > 250 ? 2f : 1f;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 10;
             if (distance <= requiredDistance) {
                 updateDirect();
             }

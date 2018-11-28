@@ -114,7 +114,7 @@ public class LoadGameScreen extends SelectGameScreen {
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
         scrollPane.setupFadeScrollBars(1, 1.5f);
-        scrollPane.setX(2880 / 2f - BUTTON_WIDTH * 0.6f);
+        scrollPane.setX(2880 / 2f - BUTTON_WIDTH * 0.8f);
         scrollPane.setY(1620 * 0.2f);
         scrollPane.setWidth(BUTTON_WIDTH * 1.6f);
         scrollPane.setHeight(1620 * 0.6f);

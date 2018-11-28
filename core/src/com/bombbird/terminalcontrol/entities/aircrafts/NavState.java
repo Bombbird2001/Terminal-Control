@@ -383,6 +383,10 @@ public class NavState {
                     latModes.add("Hold at");
                 }
             }
+            if (clearedHold.last() != null) {
+                clearedHold.removeLast();
+                clearedHold.addLast(null);
+            }
         } else if (latMode.equals("After waypoint, fly heading")) {
             clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);

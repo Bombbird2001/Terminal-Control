@@ -178,6 +178,11 @@ public class GameSaver {
             aircraftInfo.put("radarAlt", (double) aircraft.getRadarAlt()); //Radar altitude
             aircraftInfo.put("radarVs", (double) aircraft.getRadarVs()); //Radar vertical speed
 
+            JSONArray labelPos = new JSONArray(); //Aircraft label position
+            labelPos.put((double) aircraft.getLabel().getX());
+            labelPos.put((double) aircraft.getLabel().getY());
+            aircraftInfo.put("labelPos", labelPos);
+
             if (aircraft instanceof Arrival) {
                 type = "Arrival";
                 aircraftInfo.put("star", aircraft.getSidStar().getName());
@@ -214,6 +219,7 @@ public class GameSaver {
                 aircraftInfo.put("contacted", ((Departure) aircraft).isContacted());
                 aircraftInfo.put("cruiseAlt", ((Departure) aircraft).getCruiseAlt());
                 aircraftInfo.put("higherSpdSet", ((Departure) aircraft).isHigherSpdSet());
+                aircraftInfo.put("cruiseSpdSet", ((Departure) aircraft).isCruiseSpdSet());
             } else {
                 type = "Type error";
                 Gdx.app.log("Save error", "Invalid aircraft instance type");
