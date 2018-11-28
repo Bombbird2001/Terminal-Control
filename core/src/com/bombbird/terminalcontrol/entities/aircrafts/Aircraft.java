@@ -206,15 +206,9 @@ public class Aircraft extends Actor {
         y = (float) save.getDouble("y");
         heading = save.getDouble("heading");
         targetHeading = save.getDouble("targetHeading");
-        if (callsign.equals("EVA495")) {
-            System.out.println("targetHeading: " + targetHeading);
-        }
         clearedHeading = save.getInt("clearedHeading");
         angularVelocity = save.getDouble("angularVelocity");
         track = save.getDouble("track");
-        if (callsign.equals("EVA495")) {
-            System.out.println("Track: " + track);
-        }
         sidStarIndex = save.getInt("sidStarIndex");
         direct = save.isNull("direct") ? null : radarScreen.waypoints.get(save.getString("direct"));
         afterWaypoint = save.isNull("afterWaypoint") ? null : radarScreen.waypoints.get(save.getString("afterWaypoint"));
@@ -236,8 +230,8 @@ public class Aircraft extends Actor {
             holdTargetPt = new float[2][2];
             for (int i = 0; i < the2points.length(); i++) {
                 JSONArray coordinates = the2points.getJSONArray(i);
-                holdTargetPt[i][0] = coordinates.getFloat(0);
-                holdTargetPt[i][1] = coordinates.getFloat(1);
+                holdTargetPt[i][0] = (float) coordinates.getDouble(0);
+                holdTargetPt[i][1] = (float) coordinates.getDouble(1);
             }
             JSONArray the2bools = save.getJSONArray("holdTargetPtSelected");
             holdTargetPtSelected = new boolean[2];

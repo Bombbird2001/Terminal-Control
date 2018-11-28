@@ -122,7 +122,7 @@ public class GameSaver {
                 int index = 0;
                 for (float[] info: aircraft.getHoldTargetPt()) {
                     JSONArray point = new JSONArray();
-                    for (float info2: info) {
+                    for (double info2: info) {
                         point.put(info2);
                     }
                     info0.put(point);
