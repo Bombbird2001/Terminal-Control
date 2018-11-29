@@ -2,11 +2,13 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
+import com.bombbird.terminalcontrol.screens.ui.Tab;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,7 +35,7 @@ public class Departure extends Aircraft {
         v2set = false;
         sidSet = false;
         contacted = false;
-        cruiseAlt = MathUtils.random(30, 39) * 1000; //TODO Fix departure climb cruise alt too high
+        cruiseAlt = MathUtils.random(30, 39) * 1000;
         higherSpdSet = false;
         cruiseSpdSet = false;
 
@@ -141,6 +143,7 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() - getAirport().getElevation() >= contactAlt && !contacted) {
             setControlState(2);
+            radarScreen.getCommBox().initialContact(this);
             contacted = true;
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
@@ -198,6 +201,11 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
+        if (getAltitude() > handoveralt) {
+            //Aircraft has been handed over
+            setLowestAlt(cruiseAlt);
+            setHighestAlt(cruiseAlt);
+        }
         if (getNavState().getDispLatMode().first().contains("departure")) {
             //Aircraft on SID
             int highestAlt = -1;
@@ -245,23 +253,35 @@ public class Departure extends Aircraft {
             }
             higherSpdSet = true;
         }
+        if (!cruiseSpdSet && getAltitude() > 10000) {
+            if (getClearedIas() < getClimbSpd()) {
+                if (isSelected()) {
+                    Tab.notListening = true;
+                    Array<String> array = ui.spdTab.valueBox.getList().getItems();
+                    array.add(Integer.toString(getClimbSpd()));
+                    ui.spdTab.valueBox.setItems(array);
+                    ui.spdTab.valueBox.setSelected(Integer.toString(getClimbSpd()));
+                    Tab.notListening = false;
+                }
+                setClearedIas(getClimbSpd());
+                super.updateSpd();
+            }
+            cruiseSpdSet = true;
+        }
     }
 
     @Override
     public void updateAltitude() {
         super.updateAltitude();
-        if (!cruiseSpdSet && getAltitude() > 10000) {
-            setClearedIas(getClimbSpd());
-            cruiseSpdSet = true;
-        }
         if (getControlState() == 2 && getAltitude() >= handoveralt) {
             setControlState(0);
             setClearedIas(getClimbSpd());
             super.updateSpd();
-            updateAltRestrictions();
             setClearedAltitude(cruiseAlt);
+            getNavState().replaceAllClearedAlt();
             setExpedite(false);
             radarScreen.setScore(radarScreen.getScore() + 1);
+            radarScreen.getCommBox().contactFreq(this, radarScreen.centreFreq[0], radarScreen.centreFreq[1]);
         }
     }
 

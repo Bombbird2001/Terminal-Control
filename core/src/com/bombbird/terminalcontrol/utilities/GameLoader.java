@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
+import com.bombbird.terminalcontrol.screens.ui.CommBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,6 +35,9 @@ public class GameLoader {
         }
 
         TerminalControl.radarScreen.setArrivalManager(new ArrivalManager(save.getJSONObject("arrivalManager")));
+
+        TerminalControl.radarScreen.getCommBox().remove();
+        TerminalControl.radarScreen.setCommBox(new CommBox(save.getJSONArray("commBox")));
 
         //GameSaver.saveGame();
     }

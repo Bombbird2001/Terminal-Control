@@ -188,6 +188,7 @@ public class Ui {
         }
         scoreLabel.setVisible(show);
         pauseButton.setVisible(show);
+        if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
     }
 
     public void setSelectedPane(Aircraft aircraft) {
@@ -500,6 +501,7 @@ public class Ui {
         for (Label label: metarInfos) {
             label.setX(paneImage.getWidth() / 19.2f);
         }
+        radarScreen.getCommBox().updateBoxWidth(paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {

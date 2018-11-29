@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -33,9 +34,11 @@ public class GameSaver {
         jsonObject.put("highScore", radarScreen.getHighScore());
         jsonObject.put("planesToControl", (double) radarScreen.getPlanesToControl());
         jsonObject.put("arrivals", radarScreen.getArrivals());
+        jsonObject.put("spawnTimer", (double) radarScreen.getSpawnTimer());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("arrivalManager", getArrivalManager());
+        jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
 
         int aircraftsLanded = 0;
@@ -207,6 +210,7 @@ public class GameSaver {
                 aircraftInfo.put("willGoAround", ((Arrival) aircraft).isWillGoAround());
                 aircraftInfo.put("goAroundAlt", ((Arrival) aircraft).getGoAroundAlt());
                 aircraftInfo.put("goAroundSet", ((Arrival) aircraft).isGoAroundSet());
+                aircraftInfo.put("contactAlt", ((Arrival) aircraft).getContactAlt());
 
             } else if (aircraft instanceof Departure) {
                 type = "Departure";
@@ -464,6 +468,17 @@ public class GameSaver {
         }
 
         handle.writeString(ids.toString(","), false);
+    }
+
+    private static JSONArray getCommBox() {
+        JSONArray jsonArray = new JSONArray();
+        for (Label label: TerminalControl.radarScreen.getCommBox().getLabels()) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", label.getText());
+            jsonObject.put("color", label.getStyle().fontColor.toString());
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
     }
 
     /** Deletes a save given input game ID */

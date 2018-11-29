@@ -24,6 +24,7 @@ public class ILS extends Actor {
     private float gsOffset;
     private int minima;
     private int gsAlt;
+    private String[] towerFreq;
     private Runway rwy;
     private MissedApproach missedApchProc;
 
@@ -61,6 +62,7 @@ public class ILS extends Actor {
                 case 5: gsOffset = Float.parseFloat(s1); break;
                 case 6: minima = Integer.parseInt(s1); break;
                 case 7: gsAlt = Integer.parseInt(s1); break;
+                case 8: towerFreq = s1.split(">"); break;
                 default:
                     if (!(this instanceof LDA)) {
                         Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/ils" + airport.getIcao() + ".ils");
@@ -228,5 +230,9 @@ public class ILS extends Actor {
 
     public MissedApproach getMissedApchProc() {
         return missedApchProc;
+    }
+
+    public String[] getTowerFreq() {
+        return towerFreq;
     }
 }

@@ -546,15 +546,16 @@ public class Aircraft extends Actor {
         }
         float multiplier = altitude > 20000 ? 0.75f : 1;
         if (!expedite && verticalSpeed > typClimb * multiplier) {
-            verticalSpeed = typClimb;
+            verticalSpeed = typClimb * multiplier;
         } else if (!expedite && verticalSpeed < -typDes * multiplier) {
-            verticalSpeed = -typDes;
+            verticalSpeed = -typDes * multiplier;
         } else if (expedite && verticalSpeed > maxClimb * multiplier) {
-            verticalSpeed = maxClimb;
+            verticalSpeed = maxClimb * multiplier;
         } else if (expedite && verticalSpeed < -maxDes * multiplier) {
-            verticalSpeed = -maxDes;
+            verticalSpeed = -maxDes * multiplier;
         }
         altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
+
         if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
             altitude = targetAltitude;
             verticalSpeed = 0;
@@ -608,8 +609,8 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            float multiplier = (gs / 230) * ias > 250 ? 2f : 1f;
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 10;
+            float multiplier = (gs / 230) * ias > 250 ? 2f : 0.4f;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 15;
             if (distance <= requiredDistance) {
                 updateDirect();
             }

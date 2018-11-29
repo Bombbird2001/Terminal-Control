@@ -146,7 +146,7 @@ public class FileLoader {
         String[] indivApches = handle.readString().split("\\r?\\n");
         for (String s: indivApches) {
             //For each approach
-            if (s.split(",").length == 8) {
+            if (s.split(",").length == 9) {
                 ILS ils = new ILS(airport, s);
                 approaches.put(ils.getRwy().getName(), ils);
             } else {

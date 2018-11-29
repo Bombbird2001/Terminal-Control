@@ -27,9 +27,9 @@ public class LDA extends ILS {
         nonPrecAlts = new Queue<int[]>();
 
         String[] info = toParse.split(",");
-        lineUpDist = Float.parseFloat(info[8]);
+        lineUpDist = Float.parseFloat(info[9]);
 
-        for (String s3: info[9].split("-")) {
+        for (String s3: info[10].split("-")) {
             int[] altDist = new int[2];
             int index1 = 0;
             for (String s2 : s3.split(">")) {

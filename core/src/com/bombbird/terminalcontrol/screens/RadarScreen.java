@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
+import com.bombbird.terminalcontrol.screens.ui.CommBox;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
@@ -37,6 +38,7 @@ public class RadarScreen extends GameScreen {
     public int transLvl;
     public int separationMinima;
     public int airac;
+    public String[] centreFreq;
     public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in settings
 
     //Score of current game
@@ -45,6 +47,7 @@ public class RadarScreen extends GameScreen {
     private int highScore; //High score of player
 
     private int arrivals;
+    private float spawnTimer;
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
@@ -64,6 +67,9 @@ public class RadarScreen extends GameScreen {
     //Manages arrival traffic to prevent conflict prior to handover
     private ArrivalManager arrivalManager;
 
+    //Communication box to keep track of aircraft transmissions
+    private CommBox commBox;
+
     private Aircraft selectedAircraft;
 
     private JSONObject save;
@@ -80,6 +86,7 @@ public class RadarScreen extends GameScreen {
         score = 0;
         highScore = 0;
         arrivals = 0;
+        spawnTimer = 0;
 
         loadStageCamTimer();
 
@@ -101,6 +108,7 @@ public class RadarScreen extends GameScreen {
         score = save.getInt("score");
         highScore = save.getInt("highScore");
         arrivals = save.getInt("arrivals");
+        spawnTimer = (float) save.getDouble("spawnTimer");
 
         loadStageCamTimer();
 
@@ -166,6 +174,7 @@ public class RadarScreen extends GameScreen {
                 case 2: transLvl = Integer.parseInt(s); break;
                 case 3: separationMinima = Integer.parseInt(s); break;
                 case 4: magHdgDev = Float.parseFloat(s); break;
+                case 5: centreFreq = s.split(">"); break;
                 default:
                     int index1 = 0;
                     String icao = "";
@@ -251,17 +260,16 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new arrival for random airport */
     private void newArrival() {
-        if (arrivals < planesToControl * 2 / 3) {
-            String[] aircraftInfo = RandomGenerator.randomPlane();
-            while (aircrafts.get(aircraftInfo[0]) != null) {
-                //Ensures there are no duplicates
-                aircraftInfo = RandomGenerator.randomPlane();
-            }
-            Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], RandomGenerator.randomAirport());
-            arrivalManager.checkArrival(arrival);
-            aircrafts.put(aircraftInfo[0], arrival);
-            arrivals++;
+        String[] aircraftInfo = RandomGenerator.randomPlane();
+        while (aircrafts.get(aircraftInfo[0]) != null) {
+            //Ensures there are no duplicates
+            aircraftInfo = RandomGenerator.randomPlane();
         }
+        Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], RandomGenerator.randomAirport());
+        arrivalManager.checkArrival(arrival);
+        aircrafts.put(aircraftInfo[0], arrival);
+        arrivals++;
+        spawnTimer = 45f;
     }
 
     /** Loads the full UI for RadarScreen */
@@ -302,6 +310,9 @@ public class RadarScreen extends GameScreen {
         ui.setNormalPane(true);
         ui.setSelectedPane(null);
 
+        //Load communication box
+        commBox = new CommBox();
+
         //Load METARs
         loadMetar();
 
@@ -327,6 +338,12 @@ public class RadarScreen extends GameScreen {
             GameSaver.saveGame();
             saveTime += 60f;
         }
+
+        spawnTimer -= Gdx.graphics.getDeltaTime();
+        if (spawnTimer <= 0 && arrivals < planesToControl * 2 / 3) {
+            //Ensure at least 45 sec interval between each new plane
+            newArrival();
+        }
     }
 
     /** Sets the radar return of aircraft to current aircraft information */
@@ -347,9 +364,6 @@ public class RadarScreen extends GameScreen {
     public void renderShape() {
         //Update timers
         updateTimers();
-
-        //Check whether new aircrafts needs to be generated
-        newArrival();
 
         //Updates waypoints status
         waypointManager.update();
@@ -493,5 +507,17 @@ public class RadarScreen extends GameScreen {
 
     public Metar getMetar() {
         return metar;
+    }
+
+    public float getSpawnTimer() {
+        return spawnTimer;
+    }
+
+    public CommBox getCommBox() {
+        return commBox;
+    }
+
+    public void setCommBox(CommBox commBox) {
+        this.commBox = commBox;
     }
 }

@@ -114,7 +114,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             //Zoom in
             camera.zoom += ZOOM_CONSTANT * dt;
-            ((OrthographicCamera)(labelStage.getCamera())).zoom += ZOOM_CONSTANT * dt;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
             //Zoom out

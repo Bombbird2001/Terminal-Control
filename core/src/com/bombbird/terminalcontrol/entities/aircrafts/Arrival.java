@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 public class Arrival extends Aircraft {
     //Others
+    private int contactAlt;
     private Star star;
     private Queue<int[]> nonPrecAlts;
     private boolean lowerSpdSet;
@@ -38,6 +39,7 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundAlt = 0;
+        contactAlt = MathUtils.random(2000) + 22000;
 
         //Gets a STAR for active runways
         HashMap<String, Star> starList = getAirport().getStars();
@@ -79,6 +81,10 @@ public class Arrival extends Aircraft {
         } else {
             setClearedAltitude((int) initAlt - (int) initAlt % 1000);
         }
+        if (getClearedAltitude() < getAltitude() - 500) {
+            setVerticalSpeed(-getTypDes());
+        }
+
         setClearedIas(getClimbSpd());
 
         getNavState().getClearedSpd().removeFirst();
@@ -119,6 +125,7 @@ public class Arrival extends Aircraft {
         willGoAround = save.getBoolean("willGoAround");
         goAroundAlt = save.getInt("goAroundAlt");
         goAroundSet = save.getBoolean("goAroundSet");
+        contactAlt = save.getInt("contactAlt");
 
         loadLabel();
         setColor(new Color(0x00b3ffff));
@@ -319,7 +326,7 @@ public class Arrival extends Aircraft {
                 points = MathUtils.clamp(points, 0.15f, 0.5f);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
-                //TODO Add contact tower transmission
+                radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
                 setTkOfLdg(true);
@@ -337,8 +344,9 @@ public class Arrival extends Aircraft {
             goAroundSet = false;
             super.updateAltitude();
         }
-        if (getControlState() != 1 && getAltitude() <= 23000 && getAltitude() > getAirport().getElevation() + 1200) {
+        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1200) {
             setControlState(1);
+            radarScreen.getCommBox().initialContact(this);
         }
     }
 
@@ -382,33 +390,33 @@ public class Arrival extends Aircraft {
         //Gonna split the returns into different segments just to make it easier to read
         if (willGoAround && getAltitude() < goAroundAlt && (getAirport().getWindshear().contains(getIls().getRwy().getName()) || getAirport().getWindshear().equals("ALL RWY"))) {
             //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
-            System.out.println(getCallsign() + " performed a go around due to windshear!");
+            radarScreen.getCommBox().goAround(this, "windshear");
             return true;
         }
         if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 3) {
             //If distance from runway is less than 3nm
             if (!(getIls() instanceof LDA) && !isGsCap()) {
                 //If ILS GS has not been captured
-                System.out.println(getCallsign() + " performed a go around due to being too high!");
+                radarScreen.getCommBox().goAround(this, "being too high");
                 return true;
             } else if (getIas() - getApchSpd() > 10) {
                 //If airspeed is more than 10 knots higher than approach speed
-                System.out.println(getCallsign() + " performed a go around due to being too fast!");
+                radarScreen.getCommBox().goAround(this, "being too fast");
                 return true;
             } else if (MathUtils.cosDeg(getIls().getRwy().getTrueHdg() - (float) getTrack()) < MathUtils.cosDeg(10)) {
                 //If aircraft is not fully stabilised on LOC course
-                System.out.println(getCallsign() + " performed a go around due to unstable approach!");
+                radarScreen.getCommBox().goAround(this, "unstable approach");
                 return true;
             }
         }
         if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima()) * 9) {
             //If altitude below minima and visibility is less than 9 times the minima (approx)
-            System.out.println(getCallsign() + " performed a go around due to poor visibility!");
+            radarScreen.getCommBox().goAround(this, "runway not in sight");
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150 && getIls().getRwy().getAircraftsOnAppr().indexOf(this, false) > 0) {
             //If runway is not clear by the time aircraft reaches 150 feet AGL
-            System.out.println(getCallsign() + " performed a go around due to traffic on runway!");
+            radarScreen.getCommBox().goAround(this, "traffic on runway");
             return true;
         }
         return false;
@@ -515,5 +523,9 @@ public class Arrival extends Aircraft {
 
     public boolean isGoAroundSet() {
         return goAroundSet;
+    }
+
+    public int getContactAlt() {
+        return contactAlt;
     }
 }

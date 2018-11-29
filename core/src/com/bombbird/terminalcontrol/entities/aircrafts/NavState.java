@@ -349,7 +349,7 @@ public class NavState {
     }
 
     /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value, sets alt mode to climb/descend (no expedite) */
-    private void replaceAllClearedAlt() {
+    public void replaceAllClearedAlt() {
         int altSize = dispAltMode.size;
         dispAltMode.clear();
         for (int i = 0; i < altSize; i++) {
