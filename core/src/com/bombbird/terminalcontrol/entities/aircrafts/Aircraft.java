@@ -34,8 +34,8 @@ import org.json.JSONObject;
 
 public class Aircraft extends Actor {
     //Rendering parameters
-    public static TextureAtlas ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
-    public static Skin SKIN = new Skin(ICON_ATLAS);
+    public static TextureAtlas ICON_ATLAS;
+    public static Skin SKIN;
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_CTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
@@ -288,6 +288,9 @@ public class Aircraft extends Actor {
         ui = radarScreen.ui;
 
         if (!LOADED_ICONS) {
+            ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
+            SKIN = new Skin(ICON_ATLAS);
+
             BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
             BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
             BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
@@ -1678,5 +1681,9 @@ public class Aircraft extends Actor {
 
     public float getRadarVs() {
         return radarVs;
+    }
+
+    public static void setLoadedIcons(boolean loadedIcons) {
+        LOADED_ICONS = loadedIcons;
     }
 }

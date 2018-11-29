@@ -21,6 +21,7 @@ import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.screens.ui.CommBox;
+import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
@@ -416,6 +417,11 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void show() {
+        //Regenerates textures if disposed
+        Ui.generatePaneTextures();
+        Aircraft.setLoadedIcons(false);
+        Tab.setLoadedStyles(false);
+
         //Implements show method of screen, loads UI & save (if available) after show is called
         loadUI();
         GameLoader.loadSaveData(save);
@@ -431,8 +437,8 @@ public class RadarScreen extends GameScreen {
 
     /** Disposes of static final variables after user quits app */
     public static void disposeStatic() {
-        Aircraft.SKIN.dispose();
-        Aircraft.ICON_ATLAS.dispose();
+        if (Aircraft.SKIN != null) Aircraft.SKIN.dispose();
+        if (Aircraft.ICON_ATLAS != null) Aircraft.ICON_ATLAS.dispose();
     }
 
     public void setSelectedAircraft(Aircraft aircraft) {

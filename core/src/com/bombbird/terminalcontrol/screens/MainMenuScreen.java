@@ -57,6 +57,14 @@ public class MainMenuScreen implements Screen {
         image.setPosition(2880 / 2.0f - 1.5f * image.getWidth() / 2.0f, 1620 * 0.775f);
         stage.addActor(image);
 
+        //Additional lite image if version is lite
+        if ("lite".equals(Gdx.files.internal("game/type.type").readString())) {
+            Image image1 = new Image(new Texture(Gdx.files.internal("game/ui/Lite.png")));
+            image1.scaleBy(0.25f);
+            image1.setPosition(2880 / 2.0f + 2.5f * image1.getWidth(), 1620 * 0.83f);
+            stage.addActor(image1);
+        }
+
         //Set button textures
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont20;

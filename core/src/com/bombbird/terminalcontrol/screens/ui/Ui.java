@@ -20,14 +20,14 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui {
-    private static Texture hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
-    private static Texture paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
-    private static Texture lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
-    private static Texture lightestBackground = new Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"));
+    private static Texture hdgBoxBackground;
+    private static Texture paneTexture;
+    private static Texture lightBackground;
+    private static Texture lightestBackground;
     private Button paneImage;
-    public static SpriteDrawable hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
-    public static SpriteDrawable lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
-    public static SpriteDrawable lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
+    public static SpriteDrawable hdgBoxBackgroundDrawable;
+    public static SpriteDrawable lightBoxBackground;
+    public static SpriteDrawable lightestBoxBackground;
 
     public LatTab latTab;
     public AltTab altTab;
@@ -59,6 +59,10 @@ public class Ui {
     private RadarScreen radarScreen;
 
     public Ui() {
+        if (hdgBoxBackground == null) {
+            generatePaneTextures();
+        }
+
         radarScreen  = TerminalControl.radarScreen;
 
         tab = 0;
@@ -69,6 +73,17 @@ public class Ui {
         spdTab = new SpdTab(this);
         loadButtons();
         setSelectedPane(null);
+    }
+
+    public static void generatePaneTextures() {
+        hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
+        paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
+        lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
+        lightestBackground = new Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"));
+
+        hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
+        lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
+        lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
     }
 
     public void updateMetar() {
@@ -542,9 +557,15 @@ public class Ui {
 
     /** Disposes of static textures */
     public static void disposeStatic() {
+        if (hdgBoxBackground == null) return;
         hdgBoxBackground.dispose();
         lightBackground.dispose();
         lightestBackground.dispose();
         paneTexture.dispose();
+
+        hdgBoxBackground = null;
+        lightBackground = null;
+        lightestBackground = null;
+        paneTexture = null;
     }
 }

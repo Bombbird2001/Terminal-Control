@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class Tab {
@@ -48,15 +47,15 @@ public class Tab {
 
     public Queue<Object[]> infoQueue;
 
-    private static boolean loadedStyles = false;
+    private static boolean LOADED_STYLES = false;
 
     public Tab(Ui Ui) {
         ui = Ui;
         notListening = false;
         visible = false;
-        if (!loadedStyles) {
+        if (!LOADED_STYLES) {
             loadStyles();
-            loadedStyles = true;
+            LOADED_STYLES = true;
         }
         loadSelect();
         loadResetButton();
@@ -226,5 +225,9 @@ public class Tab {
 
     public SelectBox<String> getValueBox() {
         return valueBox;
+    }
+
+    public static void setLoadedStyles(boolean loadedStyles) {
+        LOADED_STYLES = loadedStyles;
     }
 }
