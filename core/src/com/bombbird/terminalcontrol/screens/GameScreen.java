@@ -87,10 +87,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private static State state = State.RUN;
 
     //Overlay screen when paused
-    private PauseScreen pauseScreen = new PauseScreen(this);
+    private PauseScreen pauseScreen;
 
     //Overlay screen for game settings
-    private SettingsScreen settingsScreen = new SettingsScreen((RadarScreen) this);
+    private SettingsScreen settingsScreen;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -101,6 +101,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loading = false;
         aircraftLoaded = false;
         loadingPercent = "0%";
+
+        pauseScreen = new PauseScreen(this);
+        settingsScreen = new SettingsScreen((RadarScreen) this);
 
         setGameState(State.RUN);
     }

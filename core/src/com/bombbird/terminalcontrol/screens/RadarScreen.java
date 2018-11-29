@@ -40,7 +40,7 @@ public class RadarScreen extends GameScreen {
     public int separationMinima;
     public int airac;
     public String[] centreFreq;
-    public int trajectoryLine = 2;
+    public int trajectoryLine = 90;
     public boolean liveWeather = true;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
