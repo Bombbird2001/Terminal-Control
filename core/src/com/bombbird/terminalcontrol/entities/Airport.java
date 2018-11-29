@@ -32,10 +32,12 @@ public class Airport {
     private TakeoffManager takeoffManager;
     private int landings;
     private int airborne;
+    private int aircraftRatio;
 
-    public Airport(String icao, int elevation) {
+    public Airport(String icao, int elevation, int aircraftRatio) {
         this.icao = icao;
         this.elevation = elevation;
+        this.aircraftRatio = aircraftRatio;
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<String, Runway>();
         takeoffRunways = new HashMap<String, Runway>();
@@ -52,6 +54,7 @@ public class Airport {
         takeoffRunways = new HashMap<String, Runway>();
         landings = save.getInt("landings");
         airborne = save.getInt("airborne");
+        aircraftRatio = save.getInt("aircraftRatio");
 
         JSONArray landing = save.getJSONArray("landingRunways");
         for (int i = 0; i < landing.length(); i++) {
@@ -295,5 +298,9 @@ public class Airport {
 
     public TakeoffManager getTakeoffManager() {
         return takeoffManager;
+    }
+
+    public int getAircraftRatio() {
+        return aircraftRatio;
     }
 }

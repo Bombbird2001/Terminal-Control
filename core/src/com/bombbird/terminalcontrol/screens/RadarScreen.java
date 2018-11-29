@@ -40,7 +40,9 @@ public class RadarScreen extends GameScreen {
     public int separationMinima;
     public int airac;
     public String[] centreFreq;
-    public static float RADAR_SWEEP_DELAY = 2f; //TODO Change radar sweep delay in settings
+    public int trajectoryLine = 2;
+    public boolean liveWeather = true;
+    public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Score of current game
     private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately 2/3 this value
@@ -92,7 +94,7 @@ public class RadarScreen extends GameScreen {
         loadStageCamTimer();
 
         //Set timer for radar delay, trails and autosave
-        radarTime = RADAR_SWEEP_DELAY;
+        radarTime = radarSweepDelay;
         trailTime = 10f;
         saveTime = 60f;
     }
@@ -117,6 +119,9 @@ public class RadarScreen extends GameScreen {
         radarTime = (float) save.getDouble("radarTime");
         trailTime = (float) save.getDouble("trailTime");
         saveTime = 60f;
+
+        trajectoryLine = save.getInt("trajectoryLine");
+        liveWeather = save.getBoolean("liveWeather");
     }
 
     private void loadStageCamTimer() {
@@ -180,15 +185,17 @@ public class RadarScreen extends GameScreen {
                     int index1 = 0;
                     String icao = "";
                     int elevation = 0;
+                    int aircraftRatio = 0;
                     for (String s1: s.split(" ")) {
                         switch (index1) {
                             case 0: icao = s1; break;
                             case 1: elevation = Integer.parseInt(s1); break;
+                            case 2: aircraftRatio = Integer.parseInt(s1); break;
                             default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
                         }
                         index1++;
                     }
-                    Airport airport = new Airport(icao, elevation);
+                    Airport airport = new Airport(icao, elevation, aircraftRatio);
                     airport.loadOthers();
                     airports.put(icao, airport);
             }
@@ -325,7 +332,7 @@ public class RadarScreen extends GameScreen {
         radarTime -= Gdx.graphics.getDeltaTime();
         if (radarTime <= 0) {
             updateRadarInfo();
-            radarTime += RADAR_SWEEP_DELAY;
+            radarTime += radarSweepDelay;
         }
 
         trailTime -= Gdx.graphics.getDeltaTime();

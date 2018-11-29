@@ -65,6 +65,14 @@ public class PauseScreen {
         settingsButton = new TextButton("Settings", textButtonStyle);
         settingsButton.setSize(1200, 300);
         settingsButton.setPosition((5760 - 1200) / 2f, 3240 - 1600);
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Change to settings state
+                gameScreen.getSettingsScreen().setOptions();
+                gameScreen.setGameState(GameScreen.State.SETTINGS);
+            }
+        });
         stage.addActor(settingsButton);
 
         quitButton = new TextButton("Quit", textButtonStyle);
@@ -81,11 +89,6 @@ public class PauseScreen {
             }
         });
         stage.addActor(quitButton);
-    }
-
-    /** Draws each element of the pauseScreen */
-    public void draw() {
-        stage.draw();
     }
 
     /** Sets whether each element is visible or not */

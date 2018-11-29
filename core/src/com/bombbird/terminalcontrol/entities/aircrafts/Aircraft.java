@@ -369,7 +369,7 @@ public class Aircraft extends Actor {
         shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
-            shapeRenderer.line(radarX, radarY, radarX + radarGs * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarGs * MathUtils.sinDeg((float)(90 - radarTrack)));
+            shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.sinDeg((float)(90 - radarTrack)));
             //shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
         }
         clickSpot.drawDebug(shapeRenderer);
@@ -612,7 +612,7 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            float multiplier = (gs / 230) * ias > 250 ? 2f : 0.4f;
+            float multiplier = (gs / 240) * ias > 250 ? 2f : 0.4f;
             double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 15;
             if (distance <= requiredDistance) {
                 updateDirect();

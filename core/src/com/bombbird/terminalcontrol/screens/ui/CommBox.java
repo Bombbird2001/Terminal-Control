@@ -61,15 +61,15 @@ public class CommBox {
     public void contactFreq(Aircraft aircraft, String callsign, String freq) {
         String wake = "";
         if (aircraft.getWakeCat() == 'H') {
-            wake = " Heavy";
+            wake = " heavy";
         } else if (aircraft.getWakeCat() == 'J') {
-            wake = " Super";
+            wake = " super";
         }
 
         Label label = new Label(aircraft.getCallsign() + wake + ", contact " + callsign + " on " + freq + ", good day.", getLabelStyle(Color.BLACK));
         updateLabelQueue(label);
 
-        Label label1 = new Label(freq + ", good day, " + aircraft.getCallsign(), getLabelStyle(aircraft.getColor()));
+        Label label1 = new Label(freq + ", good day, " + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
         updateLabelQueue(label1);
     }
 
@@ -80,6 +80,13 @@ public class CommBox {
     }
 
     public void initialContact(Aircraft aircraft) {
+        String wake = "";
+        if (aircraft.getWakeCat() == 'H') {
+            wake = " heavy";
+        } else if (aircraft.getWakeCat() == 'J') {
+            wake = " super";
+        }
+
         Label label = null;
 
         String altitude;
@@ -108,12 +115,12 @@ public class CommBox {
         }
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
-                label = new Label(aircraft.getCallsign() + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName(), getLabelStyle(aircraft.getColor()));
+                label = new Label(aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName(), getLabelStyle(aircraft.getColor()));
             } else {
-                label = new Label(aircraft.getCallsign() + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
+                label = new Label(aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
             }
         } else if (aircraft instanceof Departure) {
-            label = new Label(aircraft.getCallsign() + " with you, " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
+            label = new Label(aircraft.getCallsign() + wake + " with you, " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
         }
 
         updateLabelQueue(label);

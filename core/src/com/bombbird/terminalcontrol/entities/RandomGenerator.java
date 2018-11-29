@@ -17,13 +17,17 @@ public class RandomGenerator {
 
     /** Generates a random airport given the RadarScreen mainName variable */
     public static Airport randomAirport() {
+        int total = 0;
+        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
+
+        }
         if ("RCTP".equals(TerminalControl.radarScreen.mainName)) {
             if (MathUtils.random(9) < 9) {
                 return TerminalControl.radarScreen.airports.get("RCTP");
             }
             return TerminalControl.radarScreen.airports.get("RCSS");
         }
-        Gdx.app.log("Unknown mainName", "Unknowm mainName " + TerminalControl.radarScreen.mainName + " set!");
+        Gdx.app.log("Unknown mainName", "Unknown mainName " + TerminalControl.radarScreen.mainName + " set!");
         return TerminalControl.radarScreen.airports.get("RCTP");
     }
 }

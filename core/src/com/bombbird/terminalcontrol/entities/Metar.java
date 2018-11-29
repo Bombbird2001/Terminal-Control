@@ -29,7 +29,15 @@ public class Metar {
     public void updateMetar() {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
-        getMetar(JSON, client);
+        if (radarScreen.liveWeather) {
+            getMetar(JSON, client);
+        } else {
+            metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
+            updateAirports();
+            radarScreen.ui.updateMetar();
+            radarScreen.loadingPercent = "100%";
+            radarScreen.loading = false;
+        }
     }
 
     private void sendMetar(final MediaType mediaType, final OkHttpClient client, JSONObject jo, Calendar calendar) {

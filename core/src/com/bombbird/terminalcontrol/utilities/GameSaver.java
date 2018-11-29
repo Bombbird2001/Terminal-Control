@@ -37,6 +37,8 @@ public class GameSaver {
         jsonObject.put("spawnTimer", (double) radarScreen.getSpawnTimer());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
+        jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
+        jsonObject.put("liveWeather", radarScreen.liveWeather);
         jsonObject.put("arrivalManager", getArrivalManager());
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
@@ -374,6 +376,7 @@ public class GameSaver {
 
             airportInfo.put("icao", airport.getIcao()); //ICAO code of airport
             airportInfo.put("elevation", airport.getElevation()); //Elevation of airport
+            airportInfo.put("aircraftRatio", airport.getAircraftRatio()); //Ratio of flights to the airport
             airportInfo.put("takeoffManager", getTakeoffManager(airport)); //Takeoff manager
 
             //Queue for runway landings

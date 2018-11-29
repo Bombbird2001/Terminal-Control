@@ -74,15 +74,23 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public HashMap<String, Waypoint> waypoints;
 
+    public SettingsScreen getSettingsScreen() {
+        return settingsScreen;
+    }
+
     //Game state
     public enum State {
         PAUSE,
-        RUN
+        RUN,
+        SETTINGS
     }
     private static State state = State.RUN;
 
     //Overlay screen when paused
     private PauseScreen pauseScreen = new PauseScreen(this);
+
+    //Overlay screen for game settings
+    private SettingsScreen settingsScreen = new SettingsScreen((RadarScreen) this);
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -297,7 +305,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                 pauseScreen.getStage().act();
                 game.batch.begin();
                 pauseScreen.getStage().getViewport().apply();
-                pauseScreen.draw();
+                pauseScreen.getStage().draw();
+                game.batch.end();
+                break;
+            case SETTINGS:
+                game.batch.setProjectionMatrix(settingsScreen.getCamera().combined);
+                settingsScreen.getStage().act();
+                game.batch.begin();
+                settingsScreen.getStage().getViewport().apply();
+                settingsScreen.getStage().draw();
                 game.batch.end();
                 break;
             default: Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
@@ -325,6 +341,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         pauseScreen.getViewport().update(width, height, true);
         pauseScreen.getStage().getViewport().update(width, height, true);
         pauseScreen.getCamera().position.set(pauseScreen.getCamera().viewportWidth / 2f, pauseScreen.getCamera().viewportHeight / 2f, 0);
+
+        settingsScreen.getViewport().update(width, height, true);
+        settingsScreen.getStage().getViewport().update(width, height, true);
+        settingsScreen.getCamera().position.set(settingsScreen.getCamera().viewportWidth / 2f, settingsScreen.getCamera().viewportHeight / 2f, 0);
 
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
@@ -513,11 +533,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public void setGameState(State s) {
         GameScreen.state = s;
         pauseScreen.setVisible(s == State.PAUSE);
+        settingsScreen.setVisible(s == State.SETTINGS);
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
-
-        } else {
+        } else if (s == State.PAUSE) {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
+        } else if (s == State.SETTINGS) {
+            Gdx.input.setInputProcessor(settingsScreen.getStage());
         }
     }
 }
