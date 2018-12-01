@@ -120,7 +120,7 @@ public class CommBox {
                 label = new Label(aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
             }
         } else if (aircraft instanceof Departure) {
-            label = new Label(aircraft.getCallsign() + wake + " with you, " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
+            label = new Label(aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
         }
 
         updateLabelQueue(label);

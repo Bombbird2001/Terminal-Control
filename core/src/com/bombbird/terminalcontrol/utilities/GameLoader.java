@@ -12,6 +12,8 @@ import com.bombbird.terminalcontrol.screens.ui.CommBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class GameLoader {
     /** Loads save information from the save JSONObject */
     public static void loadSaveData(JSONObject save) {
@@ -33,6 +35,13 @@ public class GameLoader {
             airport.getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
             airport.updateRunwayQueue(airports.getJSONObject(i));
         }
+
+        JSONArray jsonArray = save.getJSONArray("allAircraft");
+        HashMap<String, Boolean> allAircrafts = new HashMap<String, Boolean>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            allAircrafts.put(jsonArray.getString(i), true);
+        }
+        TerminalControl.radarScreen.setAllAircraft(allAircrafts);
 
         TerminalControl.radarScreen.setArrivalManager(new ArrivalManager(save.getJSONObject("arrivalManager")));
 

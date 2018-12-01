@@ -3,17 +3,30 @@ package com.bombbird.terminalcontrol.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType;
 
 import java.util.HashMap;
 
 public class RandomGenerator {
+
+
     /** Generates a random plane (with callsign, aircraft type) */
-    public static String[] randomPlane() {
-        //TODO Load airline callsigns from file
-        String[] callsigns = new String[] {"EVA", "CAL", "UIA", "MDA"};
-        String[] aircrafts = AircraftType.aircraftTypes.keySet().toArray(new String[0]);
-        return new String[] {callsigns[MathUtils.random(callsigns.length - 1)] + MathUtils.random(1, 999), aircrafts[MathUtils.random(aircrafts.length - 1)]};
+    public static String[] randomPlane(Airport airport) {
+        int size = airport.getAirlines().size();
+
+        String airline;
+        int number;
+        String aircraft;
+
+        do {
+            airline = airport.getAirlines().get(MathUtils.random(size - 1));
+            number = MathUtils.random(1, 999);
+            String[] aircrafts = airport.getAircrafts().get(airline).split(">");
+            aircraft = aircrafts[MathUtils.random(aircrafts.length - 1)];
+        } while (TerminalControl.radarScreen.getAllAircraft().get(airline + number) != null);
+
+        TerminalControl.radarScreen.getAllAircraft().put(airline + number, true);
+
+        return new String[] {airline + number, aircraft};
     }
 
     /** Generates a random airport given the RadarScreen mainName variable */

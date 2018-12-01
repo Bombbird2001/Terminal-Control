@@ -229,4 +229,30 @@ public class FileLoader {
 
         return saves;
     }
+
+    public static HashMap<Integer, String> loadAirlines(String icao) {
+        HashMap<Integer, String> airlines = new HashMap<Integer, String>();
+        String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/airlines" + icao + ".airl").readString().split("\\r?\\n");
+        int counter = 0;
+        for (String indivAirline: info) {
+            String callsign = indivAirline.split(",")[0];
+            int times = Integer.parseInt(indivAirline.split(",")[1]);
+            for (int i = 0; i < times; i++) {
+                airlines.put(counter, callsign);
+                counter++;
+            }
+        }
+
+        return airlines;
+    }
+
+    public static HashMap<String, String> loadAirlineAircrafts(String icao) {
+        HashMap<String, String> aircrafts = new HashMap<String, String>();
+        String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/airlines" + icao + ".airl").readString().split("\\r?\\n");
+        for (String indivAirline: info) {
+            aircrafts.put(indivAirline.split(",")[0], indivAirline.split(",")[2]);
+        }
+
+        return aircrafts;
+    }
 }

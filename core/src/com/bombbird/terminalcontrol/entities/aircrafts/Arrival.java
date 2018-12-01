@@ -322,8 +322,8 @@ public class Arrival extends Aircraft {
                 //Contact the tower
                 setControlState(0);
                 setClearedIas(getApchSpd());
-                float points = 0.6f - radarScreen.getPlanesToControl() / 40;
-                points = MathUtils.clamp(points, 0.15f, 0.5f);
+                float points = 0.7f - radarScreen.getPlanesToControl() / 40;
+                points = MathUtils.clamp(points, 0.15f, 0.6f);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);

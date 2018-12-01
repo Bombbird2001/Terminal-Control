@@ -43,6 +43,12 @@ public class GameSaver {
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
 
+        JSONArray jsonArray = new JSONArray();
+        for (String aircraft: radarScreen.getAllAircraft().keySet()) {
+            jsonArray.put(aircraft);
+        }
+        jsonObject.put("allAircraft", jsonArray);
+
         int aircraftsLanded = 0;
         int aircraftsAirborne = 0;
         for (Airport airport: radarScreen.airports.values()) {

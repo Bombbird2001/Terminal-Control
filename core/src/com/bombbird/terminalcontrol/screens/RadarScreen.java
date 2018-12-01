@@ -61,6 +61,9 @@ public class RadarScreen extends GameScreen {
     private float trailTime;
     private float saveTime;
 
+    //Stores callsigns of all aircrafts generated and aircrafts waiting to be generated (for take offs)
+    private HashMap<String, Boolean> allAircraft;
+
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
 
@@ -238,27 +241,34 @@ public class RadarScreen extends GameScreen {
     public void newAircraft() {
         if (save != null) return;
 
-        //Spawn another 3 aircrafts after 2 minute intervals
+        //Spawn another 4 aircrafts after 2 minute intervals
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                planesToControl += 1;
+                planesToControl += 1.5;
             }
         }, 120000);
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                planesToControl += 1;
+                planesToControl += 1.5;
             }
         }, 240000);
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                planesToControl += 1;
+                planesToControl += 1.5;
             }
         }, 360000);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                planesToControl += 1.5;
+            }
+        }, 480000);
     }
 
     /** Creates a new departure at the given airport */
@@ -268,12 +278,10 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new arrival for random airport */
     private void newArrival() {
-        String[] aircraftInfo = RandomGenerator.randomPlane();
-        while (aircrafts.get(aircraftInfo[0]) != null) {
-            //Ensures there are no duplicates
-            aircraftInfo = RandomGenerator.randomPlane();
-        }
-        Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], RandomGenerator.randomAirport());
+        Airport airport = RandomGenerator.randomAirport();
+
+        String[] aircraftInfo = RandomGenerator.randomPlane(airport);
+        Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);
         arrivalManager.checkArrival(arrival);
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
@@ -300,6 +308,9 @@ public class RadarScreen extends GameScreen {
         //Load separation checker
         separationChecker = new SeparationChecker();
         stage.addActor(separationChecker);
+
+        //Load aircraft callsign hashMap
+        allAircraft = new HashMap<String, Boolean>();
 
         //Load waypoint manager
         waypointManager = new WaypointManager();
@@ -532,5 +543,13 @@ public class RadarScreen extends GameScreen {
 
     public void setCommBox(CommBox commBox) {
         this.commBox = commBox;
+    }
+
+    public HashMap<String, Boolean> getAllAircraft() {
+        return allAircraft;
+    }
+
+    public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
+        this.allAircraft = allAircraft;
     }
 }

@@ -396,7 +396,7 @@ public class Aircraft extends Actor {
                     uiDrawSidStar();
                 } else if (LatTab.latMode.equals("After waypoint, fly heading") && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode.contains("heading") && (LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode.contains("heading") && (this instanceof Departure || LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
                 } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
@@ -612,8 +612,8 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            float multiplier = (gs / 240) * ias > 250 ? 2f : 0.4f;
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 15;
+            float multiplier = (gs / 240) * ias > 250 ? 2f : 0.5f;
+            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 10;
             if (distance <= requiredDistance) {
                 updateDirect();
             }
@@ -901,6 +901,9 @@ public class Aircraft extends Actor {
                 clearedIas = spdRestr;
             }
             direct = getSidStar().getWaypoint(sidStarIndex);
+            if (direct == null) {
+                navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
+            }
         } else {
             direct = getSidStar().getWaypoint(sidStarIndex);
             if (direct == null) {
@@ -1380,6 +1383,7 @@ public class Aircraft extends Actor {
         labelButton.remove();
         clickSpot.remove();
         remove();
+        radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
     }
 

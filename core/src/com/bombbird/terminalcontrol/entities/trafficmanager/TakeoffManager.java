@@ -69,12 +69,8 @@ public class TakeoffManager {
         for (String rwy: timers.keySet()) {
             timers.put(rwy, timers.get(rwy) + Gdx.graphics.getDeltaTime());
             if (nextAircraft.get(rwy) == null) {
-                String[] aircraftInfo = RandomGenerator.randomPlane();
-                while (radarScreen.aircrafts.get(aircraftInfo[0]) != null) {
-                    //Ensure there are no duplicates
-                    aircraftInfo = RandomGenerator.randomPlane();
-                }
-                nextAircraft.put(rwy, RandomGenerator.randomPlane());
+                String[] aircraftInfo = RandomGenerator.randomPlane(airport);
+                nextAircraft.put(rwy, aircraftInfo);
             }
         }
         if (airport.getAirborne() - airport.getLandings() < 3) {
