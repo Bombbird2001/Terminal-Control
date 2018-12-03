@@ -612,8 +612,12 @@ public class Aircraft extends Actor {
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            float multiplier = (gs / 240) * ias > 250 ? 2f : 0.5f;
-            double requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * multiplier + 10;
+            double requiredDistance;
+            if (ias > 250) {
+                requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * 2f * gs / 240 + 10;
+            } else {
+                requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * 0.8f * gs / 240 + 5;
+            }
             if (distance <= requiredDistance) {
                 updateDirect();
             }
@@ -718,7 +722,7 @@ public class Aircraft extends Actor {
             targetHeading = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
         } else {
             targetHeading = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
-        } //TODO fix small deviation in track & targetHeading
+        }
 
         //Calculate required aircraft heading to account for winds
         //Using sine rule to determine angle between aircraft velocity and actual velocity
@@ -767,6 +771,7 @@ public class Aircraft extends Actor {
         y += deltaPosition.y;
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
+            navState.replaceAllHdgModes();
             if (selected) {
                 ui.updateState();
             }
@@ -847,6 +852,9 @@ public class Aircraft extends Actor {
         } else {
             //If within +-0.1 of target, set equal to target
             angularVelocity = targetAngularVelocity;
+            if (navState.getDispLatMode().first().contains("Turn")) {
+                navState.replaceAllHdgModes();
+            }
         }
 
         //Add angular velocity to heading
@@ -1463,10 +1471,6 @@ public class Aircraft extends Actor {
         return deltaPosition;
     }
 
-    public void setDeltaPosition(Vector2 deltaPosition) {
-        this.deltaPosition = deltaPosition;
-    }
-
     public int getClearedIas() {
         return clearedIas;
     }
@@ -1479,10 +1483,6 @@ public class Aircraft extends Actor {
         return deltaIas;
     }
 
-    public void setDeltaIas(float deltaIas) {
-        this.deltaIas = deltaIas;
-    }
-
     public NavState getNavState() {
         return navState;
     }
@@ -1493,10 +1493,6 @@ public class Aircraft extends Actor {
 
     public int getMaxClimb() {
         return maxClimb;
-    }
-
-    public void setMaxClimb(int maxClimb) {
-        this.maxClimb = maxClimb;
     }
 
     @Override
@@ -1547,10 +1543,6 @@ public class Aircraft extends Actor {
 
     public int getClimbSpd() {
         return climbSpd;
-    }
-
-    public void setClimbSpd(int climbSpd) {
-        this.climbSpd = climbSpd;
     }
 
     public int getMaxWptSpd(String wpt) {
@@ -1610,6 +1602,9 @@ public class Aircraft extends Actor {
     }
 
     public void setConflict(boolean conflict) {
+        if (this.conflict != conflict && conflict) {
+            radarScreen.setScore((int) Math.ceil((double) radarScreen.getScore() / 2));
+        }
         this.conflict = conflict;
     }
 

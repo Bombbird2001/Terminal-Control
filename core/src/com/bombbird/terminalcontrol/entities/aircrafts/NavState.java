@@ -348,6 +348,19 @@ public class NavState {
         }
     }
 
+    /** Replaces all turn left/right heading with fly heading, called after aircraft has finished a turn instructed in a specific direction */
+    public void replaceAllHdgModes() {
+        Queue<String> newLatMode = new Queue<String>();
+
+        int size = dispLatMode.size;
+        for (int i = 0; i < size; i++) {
+            String string = dispLatMode.removeFirst();
+            newLatMode.addLast(string.contains("Turn") ? "Fly hrading" : string);
+        }
+
+        dispLatMode = newLatMode;
+    }
+
     /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value, sets alt mode to climb/descend (no expedite) */
     public void replaceAllClearedAlt() {
         int altSize = dispAltMode.size;

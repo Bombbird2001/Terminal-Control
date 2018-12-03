@@ -172,7 +172,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(pauseButton);
+        if (!radarScreen.tutorial) radarScreen.uiStage.addActor(pauseButton);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;

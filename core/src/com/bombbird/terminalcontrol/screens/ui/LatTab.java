@@ -13,7 +13,6 @@ import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class LatTab extends Tab {
@@ -86,6 +85,12 @@ public class LatTab extends Tab {
         hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
         hdgBox.setSize(0.8f * getPaneWidth(), 270);
         hdgBox.setAlignment(Align.center);
+        hdgBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
         TerminalControl.radarScreen.uiStage.addActor(hdgBox);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
@@ -120,7 +125,7 @@ public class LatTab extends Tab {
     }
 
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
-        TextButton button = new TextButton(((value > 0) ? "+" : "") + Integer.toString(value), buttonStyle);
+        TextButton button = new TextButton(((value > 0) ? "+" : "") + value, buttonStyle);
         button.setSize((0.8f / 3f) * getPaneWidth(), 300);
         button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2000) : (3240 - 2570));
         button.addListener(new ChangeListener() {

@@ -78,7 +78,7 @@ public class SelectGameScreen implements Screen {
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Set back button params
-        TextButton backButton = new TextButton("<- Back", buttonStyle);
+        TextButton backButton = new TextButton("<= Back", buttonStyle);
         backButton.setWidth(BUTTON_WIDTH);
         backButton.setHeight(BUTTON_HEIGHT);
         backButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * 0.05f);

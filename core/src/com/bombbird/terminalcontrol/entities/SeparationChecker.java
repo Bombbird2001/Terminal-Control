@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -192,6 +193,7 @@ public class SeparationChecker extends Actor {
                 radarScreen.setScore(0);
                 radarScreen.shapeRenderer.setColor(Color.RED);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
+                radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.05f);
             } else if (aircraft.isWarning()) {
                 radarScreen.shapeRenderer.setColor(Color.YELLOW);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);

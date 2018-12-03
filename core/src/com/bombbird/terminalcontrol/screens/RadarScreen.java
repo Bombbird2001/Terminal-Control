@@ -26,6 +26,7 @@ import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
 import com.bombbird.terminalcontrol.utilities.GameSaver;
+import com.bombbird.terminalcontrol.utilities.TutorialManager;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -60,8 +61,8 @@ public class RadarScreen extends GameScreen {
     private Metar metar;
 
     //Timer for updating aircraft radar returns, trails and save every given amount of time
-    protected float radarTime;
-    protected float trailTime;
+    private float radarTime;
+    private float trailTime;
     private float saveTime;
 
     //Stores callsigns of all aircrafts generated and aircrafts waiting to be generated (for take offs)
@@ -75,6 +76,9 @@ public class RadarScreen extends GameScreen {
 
     //Manages arrival traffic to prevent conflict prior to handover
     private ArrivalManager arrivalManager;
+
+    //Tutorial manager
+    private TutorialManager tutorialManager = null;
 
     //Communication box to keep track of aircraft transmissions
     private CommBox commBox;
@@ -104,6 +108,10 @@ public class RadarScreen extends GameScreen {
         radarTime = radarSweepDelay;
         trailTime = 10f;
         saveTime = 60f;
+
+        if (tutorial) {
+            tutorialManager = new TutorialManager(this);
+        }
     }
 
     public RadarScreen(final TerminalControl game, JSONObject save) {
@@ -312,6 +320,9 @@ public class RadarScreen extends GameScreen {
         //Load communication box
         commBox = new CommBox();
 
+        //Initialise tutorial manager if is tutorial
+        if (tutorial) tutorialManager.init();
+
         //Load METARs
         loadMetar();
 
@@ -319,7 +330,7 @@ public class RadarScreen extends GameScreen {
     }
 
     /** Updates the time values for each timer & runs tasks when time is reached */
-    public void updateTimers() {
+    private void updateTimers() {
         radarTime -= Gdx.graphics.getDeltaTime();
         if (radarTime <= 0) {
             updateRadarInfo();
@@ -348,14 +359,14 @@ public class RadarScreen extends GameScreen {
     }
 
     /** Sets the radar return of aircraft to current aircraft information */
-    protected void updateRadarInfo() {
+    private void updateRadarInfo() {
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.updateRadarInfo();
         }
     }
 
     /** Adds a new trail dot value to the aircraft's trail queue */
-    protected void addTrailDot() {
+    private void addTrailDot() {
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.addTrailDot();
         }
@@ -409,6 +420,10 @@ public class RadarScreen extends GameScreen {
             for (ILS ils: airport.getApproaches().values()) {
                 ils.renderShape();
             }
+        }
+
+        if (tutorialManager != null) {
+            tutorialManager.update();
         }
 
         shapeRenderer.end();
@@ -533,5 +548,9 @@ public class RadarScreen extends GameScreen {
 
     public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
         this.allAircraft = allAircraft;
+    }
+
+    public TutorialManager getTutorialManager() {
+        return tutorialManager;
     }
 }

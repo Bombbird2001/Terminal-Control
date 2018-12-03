@@ -88,16 +88,16 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (checkLanding(runway1) && checkLanding(runway1.getOppRwy()) && distance > dist) {
-                if ("05L".equals(runway1.getName()) && checkPreceding("05L") && checkPreceding("05R") && checkPreceding("23R")) {
+                if ("05L".equals(runway1.getName()) && checkPreceding("05L") && checkPreceding("05R") && checkPreceding("23R") && checkLanding(airport.getRunways().get("23L"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("05R".equals(runway1.getName()) && checkPreceding("05L") && checkPreceding("05R") && checkPreceding("23L")) {
+                } else if ("05R".equals(runway1.getName()) && checkPreceding("05L") && checkPreceding("05R") && checkPreceding("23L") && checkLanding(airport.getRunways().get("23R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("23L".equals(runway1.getName()) && checkPreceding("23L") && checkPreceding("23R") && checkPreceding("05R")) {
+                } else if ("23L".equals(runway1.getName()) && checkPreceding("23L") && checkPreceding("23R") && checkPreceding("05R") && checkLanding(airport.getRunways().get("05L"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("23R".equals(runway1.getName()) && checkPreceding("23L") && checkPreceding("23R") && checkPreceding("05L")) {
+                } else if ("23R".equals(runway1.getName()) && checkPreceding("23L") && checkPreceding("23R") && checkPreceding("05L") && checkLanding(airport.getRunways().get("05R"))) {
                     runway = runway1;
                     dist = distance;
                 }

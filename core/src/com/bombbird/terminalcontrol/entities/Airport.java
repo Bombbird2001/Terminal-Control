@@ -181,7 +181,9 @@ public class Airport {
     }
 
     public void renderRunways() {
-        takeoffManager.update();
+        if (!TerminalControl.radarScreen.tutorial) {
+            takeoffManager.update();
+        }
 
         for (Runway runway: runways.values()) {
             if (runway.isTakeoff() || runway.isLanding()) {

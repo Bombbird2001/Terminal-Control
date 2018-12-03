@@ -55,6 +55,10 @@ public class Arrival extends Aircraft {
             }
         }
 
+        if ("EVA226".equals(callsign) && radarScreen.tutorial) {
+            star = starList.get("TNN1A");
+        }
+
         setDirect(star.getWaypoint(0));
         setHeading(star.getInboundHdg());
 
@@ -68,9 +72,9 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(this));
-        float initAlt = 3000 + (distToGo() - 20) / 300 * 60 * getTypDes();
-        if (initAlt > 26000) {
-            initAlt = 26000;
+        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
+        if (initAlt > 28000) {
+            initAlt = 28000;
         } else if (initAlt < 6000) {
             initAlt = 6000;
         }
@@ -270,7 +274,7 @@ public class Arrival extends Aircraft {
             if (!(getIls() instanceof LDA)) {
                 if (!isGsCap()) {
                     super.updateAltitude();
-                    if (getIls().isInsideILS(getX(), getY()) && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
+                    if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
                         setGsCap(true);
                         setMissedAlt(); //TODO Reproduce & fix bug where altitude is set to go around alt when GS not captured
                     }
@@ -425,6 +429,7 @@ public class Arrival extends Aircraft {
     /** Sets the cleared altitude for aircrafts on approach, updates UI altitude selections if selected */
     private void setMissedAlt() {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
+        getNavState().replaceAllClearedAlt();
         if (isSelected()) {
             ui.updateState();
         }

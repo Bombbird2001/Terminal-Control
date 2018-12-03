@@ -56,6 +56,10 @@ public class Departure extends Aircraft {
             }
         }
 
+        if ("CAL641".equals(callsign) && radarScreen.tutorial) {
+            sid = sidList.get("CHALI1C");
+        }
+
         setDirect(sid.getWaypoint(0));
 
         //Set initial IAS due to wind + 10 knots ground speed
