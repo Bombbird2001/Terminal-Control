@@ -58,6 +58,7 @@ public class CommBox {
         }
     }
 
+    /** Adds a message for the input aircraft to contact in the input frequency given the callsign of the next controller */
     public void contactFreq(Aircraft aircraft, String callsign, String freq) {
         String wake = "";
         if (aircraft.getWakeCat() == 'H') {
@@ -73,12 +74,14 @@ public class CommBox {
         updateLabelQueue(label1);
     }
 
+    /** Adds a message if the input aircraft goes around, with the reason for the go around */
     public void goAround(Aircraft aircraft, String reason) {
         Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
 
         updateLabelQueue(label);
     }
 
+    /** Adds a message for an aircraft contacting the player for the first time */
     public void initialContact(Aircraft aircraft) {
         String wake = "";
         if (aircraft.getWakeCat() == 'H') {
@@ -123,6 +126,12 @@ public class CommBox {
             label = new Label(aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
         }
 
+        updateLabelQueue(label);
+    }
+
+    /** Adds a message for the tutorial */
+    public void tutorialMsg(String msg) {
+        Label label = new Label(msg, getLabelStyle(Color.BLACK));
         updateLabelQueue(label);
     }
 

@@ -44,8 +44,11 @@ public class RadarScreen extends GameScreen {
     public boolean liveWeather = true;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
+    //Whether the game is a tutorial
+    public boolean tutorial = false;
+
     //Score of current game
-    private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately 2/3 this value
+    private float planesToControl; //To keep track of how well the user is coping; number of arrivals to control is approximately this value
     private int score; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
     private int highScore; //High score of player
 
@@ -57,8 +60,8 @@ public class RadarScreen extends GameScreen {
     private Metar metar;
 
     //Timer for updating aircraft radar returns, trails and save every given amount of time
-    private float radarTime;
-    private float trailTime;
+    protected float radarTime;
+    protected float trailTime;
     private float saveTime;
 
     //Stores callsigns of all aircrafts generated and aircrafts waiting to be generated (for take offs)
@@ -80,15 +83,16 @@ public class RadarScreen extends GameScreen {
 
     private JSONObject save;
 
-    public RadarScreen(final TerminalControl game, String name, int airac, int saveID) {
+    public RadarScreen(final TerminalControl game, String name, int airac, int saveID, boolean tutorial) {
         //Creates new game
         super(game);
         save = null;
         mainName = name;
         this.airac = airac;
         saveId = saveID;
+        this.tutorial = tutorial;
 
-        planesToControl = 1f;
+        planesToControl = 4f;
         score = 0;
         highScore = 0;
         arrivals = 0;
@@ -230,45 +234,21 @@ public class RadarScreen extends GameScreen {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                metar.updateMetar();
+                if (tutorial) {
+                    metar.updateTutorialMetar();
+                } else {
+                    metar.updateMetar();
+                }
             }
         }, calendar.getTime(), 900000);
 
-        if (save == null) metar.updateMetar(); //Update the current airport METAR if not from save (airports not loaded in save at this stage)
-    }
-
-    /** Generates initial aircrafts (to prevent user getting overwhelmed at the start) */
-    public void newAircraft() {
-        if (save != null) return;
-
-        //Spawn another 4 aircrafts after 2 minute intervals
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                planesToControl += 1.5;
+        if (save == null) {
+            if (tutorial) {
+                metar.updateTutorialMetar();
+            } else {
+                metar.updateMetar(); //Update the current airport METAR if not from save (airports not loaded in save at this stage)
             }
-        }, 120000);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                planesToControl += 1.5;
-            }
-        }, 240000);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                planesToControl += 1.5;
-            }
-        }, 360000);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                planesToControl += 1.5;
-            }
-        }, 480000);
+        }
     }
 
     /** Creates a new departure at the given airport */
@@ -285,7 +265,7 @@ public class RadarScreen extends GameScreen {
         arrivalManager.checkArrival(arrival);
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
-        spawnTimer = 45f;
+        spawnTimer = 90f;
     }
 
     /** Loads the full UI for RadarScreen */
@@ -339,7 +319,7 @@ public class RadarScreen extends GameScreen {
     }
 
     /** Updates the time values for each timer & runs tasks when time is reached */
-    private void updateTimers() {
+    public void updateTimers() {
         radarTime -= Gdx.graphics.getDeltaTime();
         if (radarTime <= 0) {
             updateRadarInfo();
@@ -352,28 +332,30 @@ public class RadarScreen extends GameScreen {
             trailTime += 10f;
         }
 
-        saveTime -= Gdx.graphics.getDeltaTime();
-        if (saveTime <= 0) {
-            GameSaver.saveGame();
-            saveTime += 60f;
-        }
+        if (!tutorial) {
+            saveTime -= Gdx.graphics.getDeltaTime();
+            if (saveTime <= 0) {
+                GameSaver.saveGame();
+                saveTime += 60f;
+            }
 
-        spawnTimer -= Gdx.graphics.getDeltaTime();
-        if (spawnTimer <= 0 && arrivals < planesToControl * 2 / 3) {
-            //Ensure at least 45 sec interval between each new plane
-            newArrival();
+            spawnTimer -= Gdx.graphics.getDeltaTime();
+            if (spawnTimer <= 0 && arrivals < planesToControl) {
+                //Ensure at least 90 sec interval between each new plane
+                newArrival();
+            }
         }
     }
 
     /** Sets the radar return of aircraft to current aircraft information */
-    private void updateRadarInfo() {
+    protected void updateRadarInfo() {
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.updateRadarInfo();
         }
     }
 
     /** Adds a new trail dot value to the aircraft's trail queue */
-    private void addTrailDot() {
+    protected void addTrailDot() {
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.addTrailDot();
         }

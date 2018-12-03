@@ -30,7 +30,7 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
         setOnGround(true);
-        contactAlt = radarScreen.minAlt + MathUtils.random(-800, 0);
+        contactAlt = radarScreen.minAlt + MathUtils.random(-800, -200);
         handoveralt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
         v2set = false;
         sidSet = false;

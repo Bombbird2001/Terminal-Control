@@ -133,7 +133,7 @@ public class TakeoffManager {
 
     private boolean checkPreceding(String runway) {
         float additionalTime = 180 - 20 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
-        additionalTime = MathUtils.clamp(additionalTime, 0, 120);
+        additionalTime = MathUtils.clamp(additionalTime, 0, 150);
         if (prevAircraft.get(runway) == null) {
             //If no aircraft has taken off before
             return true;

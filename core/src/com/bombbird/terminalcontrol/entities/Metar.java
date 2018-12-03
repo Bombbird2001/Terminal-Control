@@ -33,11 +33,32 @@ public class Metar {
             getMetar(JSON, client);
         } else {
             metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-            updateAirports();
-            radarScreen.ui.updateMetar();
-            radarScreen.loadingPercent = "100%";
-            radarScreen.loading = false;
+            updateRadarScreenState();
         }
+    }
+
+    public void updateTutorialMetar() {
+        metarObject = new JSONObject();
+
+        JSONObject rctpMetar = new JSONObject();
+        rctpMetar.put("rain", JSONObject.NULL);
+        rctpMetar.put("visibility", 9000);
+        rctpMetar.put("windSpeed", 14);
+        rctpMetar.put("windDirection", 60);
+        rctpMetar.put("windGust", JSONObject.NULL);
+        rctpMetar.put("windshear", JSONObject.NULL);
+        metarObject.put("RCTP", rctpMetar);
+
+        JSONObject rcssMetar = new JSONObject();
+        rcssMetar.put("rain", JSONObject.NULL);
+        rcssMetar.put("visibility", 10000);
+        rcssMetar.put("windSpeed", 8);
+        rcssMetar.put("windDirection", 100);
+        rcssMetar.put("windGust", JSONObject.NULL);
+        rcssMetar.put("windshear", JSONObject.NULL);
+        metarObject.put("RCSS", rcssMetar);
+
+        updateRadarScreenState();
     }
 
     private void sendMetar(final MediaType mediaType, final OkHttpClient client, JSONObject jo, Calendar calendar) {
@@ -156,10 +177,7 @@ public class Metar {
             @Override
             public void onFailure(Call call, IOException e) {
                 metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-                updateAirports();
-                radarScreen.ui.updateMetar();
-                radarScreen.loadingPercent = "100%";
-                radarScreen.loading = false;
+                updateRadarScreenState();
             }
 
             @Override
@@ -174,10 +192,7 @@ public class Metar {
                         //Generate offline weather
                         response.close();
                         metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-                        updateAirports();
-                        radarScreen.ui.updateMetar();
-                        radarScreen.loadingPercent = "100%";
-                        radarScreen.loading = false;
+                        updateRadarScreenState();
                         System.out.println(response.body().string());
                     }
                 } else {
@@ -191,10 +206,7 @@ public class Metar {
                     } else {
                         //METAR JSON text has been received
                         metarObject = new JSONObject(responseText);
-                        updateAirports();
-                        radarScreen.ui.updateMetar();
-                        radarScreen.loadingPercent = "100%";
-                        radarScreen.loading = false;
+                        updateRadarScreenState();
                     }
                     response.close();
                 }
@@ -296,13 +308,20 @@ public class Metar {
                     stringBuilder.append(" ");
                 }
             }
-            if (stringBuilder.length() > 3 && stringBuilder.length() == radarScreen.airports.get(airport).getRunways().size() * 3) {
+            if (stringBuilder.length() > 3 && stringBuilder.length() == radarScreen.airports.get(airport).getLandingRunways().size() * 3) {
                 ws = "ALL RWY";
             } else {
                 ws = stringBuilder.toString();
             }
         }
         return ws;
+    }
+
+    private void updateRadarScreenState() {
+        updateAirports();
+        radarScreen.ui.updateMetar();
+        radarScreen.loadingPercent = "100%";
+        radarScreen.loading = false;
     }
 
     public JSONObject getMetarObject() {

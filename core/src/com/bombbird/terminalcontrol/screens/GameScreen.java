@@ -27,7 +27,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Init game (set in constructor)
     public final TerminalControl game;
-    private boolean aircraftLoaded;
     public boolean loading;
     public String loadingPercent;
     private float loadedTime = 0;
@@ -99,7 +98,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         rangeCircles = new RangeCircle[3];
 
         loading = false;
-        aircraftLoaded = false;
         loadingPercent = "0%";
 
         pauseScreen = new PauseScreen(this);
@@ -229,12 +227,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
-        if (!loading && !aircraftLoaded) {
-            //Load the initial aircrafts if METAR has finished loading but aircrafts not loaded yet
-            newAircraft();
-            aircraftLoaded = true;
-        }
-
         //Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

@@ -318,12 +318,12 @@ public class Arrival extends Aircraft {
                 }
                 checkAircraftInFront();
             }
-            if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1200) {
+            if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1300) {
                 //Contact the tower
                 setControlState(0);
                 setClearedIas(getApchSpd());
-                float points = 0.7f - radarScreen.getPlanesToControl() / 40;
-                points = MathUtils.clamp(points, 0.15f, 0.6f);
+                float points = 0.6f - radarScreen.getPlanesToControl() / 40;
+                points = MathUtils.clamp(points, 0.1f, 0.5f);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
@@ -344,7 +344,7 @@ public class Arrival extends Aircraft {
             goAroundSet = false;
             super.updateAltitude();
         }
-        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1200) {
+        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300) {
             setControlState(1);
             radarScreen.getCommBox().initialContact(this);
         }

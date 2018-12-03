@@ -7,8 +7,6 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import java.util.HashMap;
 
 public class RandomGenerator {
-
-
     /** Generates a random plane (with callsign, aircraft type) */
     public static String[] randomPlane(Airport airport) {
         int size = airport.getAirlines().size();

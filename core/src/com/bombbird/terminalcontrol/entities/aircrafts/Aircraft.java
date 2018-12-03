@@ -635,6 +635,7 @@ public class Aircraft extends Actor {
         } else if (holding) {
             if (!navState.getDispLatMode().first().equals("Hold at")) {
                 holding = false;
+                return updateTargetHeading();
             }
             Star star = (Star) getSidStar(); //For convenience
             if (holdTargetPt == null) {

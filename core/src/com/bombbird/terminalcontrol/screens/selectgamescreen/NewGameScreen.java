@@ -33,14 +33,19 @@ public class NewGameScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load airports
-        String[] airports = {"RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
+        String[] airports = {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
         for (final String airport: airports) {
-            final TextButton airportButton = new TextButton(airport, getButtonStyle());
+            TextButton airportButton = new TextButton(airport, getButtonStyle());
             airportButton.setName(airport.substring(0, 4));
             airportButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     String name = actor.getName();
+                    boolean tutorial = false;
+                    if ("Tuto".equals(name)) {
+                        name = "RCTP";
+                        tutorial = true;
+                    }
                     FileHandle handle = Gdx.files.internal("game/available.arpt");
                     String[] airports = handle.readString().split("\\r?\\n");
                     boolean found = false;
@@ -72,7 +77,7 @@ public class NewGameScreen extends SelectGameScreen {
                     }
 
                     if (found && airac > -1) {
-                        RadarScreen radarScreen = new RadarScreen(game, name, airac, slot);
+                        RadarScreen radarScreen = new RadarScreen(game, name, airac, slot, tutorial);
                         TerminalControl.radarScreen = radarScreen;
                         game.setScreen(radarScreen);
                     } else {
