@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
@@ -16,7 +15,6 @@ public class HoldProcedure {
     //Constant turn diameter
     private static final float turnDiameterNm = 3f;
 
-    private String name;
     private Airport airport;
     private Array<Waypoint> waypoints;
     private Array<int[]> altRestrictions;
@@ -30,11 +28,10 @@ public class HoldProcedure {
     private RadarScreen radarScreen;
     private ShapeRenderer shapeRenderer;
 
-    public HoldProcedure(String name, Airport airport, String info) {
+    public HoldProcedure(Airport airport, String info) {
         radarScreen = TerminalControl.radarScreen;
         shapeRenderer = radarScreen.shapeRenderer;
 
-        this.name = name;
         this.airport = airport;
         waypoints = new Array<Waypoint>();
         altRestrictions = new Array<int[]>();

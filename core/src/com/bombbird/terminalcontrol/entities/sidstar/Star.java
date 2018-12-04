@@ -7,8 +7,6 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class Star extends SidStar {
@@ -22,7 +20,7 @@ public class Star extends SidStar {
     public void parseInfo(String toParse) {
         super.parseInfo(toParse);
 
-        String starInfo[] = toParse.split(",");
+        String[] starInfo = toParse.split(",");
 
         inboundHdg = new Array<Integer>();
 

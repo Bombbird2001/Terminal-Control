@@ -46,7 +46,7 @@ public class RestrictedArea extends Actor {
                 case 3: label.setY(Integer.parseInt(s1)); break;
                 case 4: centreX = Float.parseFloat(s1); break;
                 case 5: centreY = Float.parseFloat(s1); break;
-                case 6: radius = Float.parseFloat(s1) * 2; break;
+                case 6: radius = Float.parseFloat(s1); break;
                 default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/restricted.rest");
             }
             index++;

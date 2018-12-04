@@ -173,7 +173,7 @@ public class FileLoader {
                     toParse = info;
                 }
             }
-            holdProcedures.put(name, new HoldProcedure(name, airport, toParse));
+            holdProcedures.put(name, new HoldProcedure(airport, toParse));
         }
         return holdProcedures;
     }

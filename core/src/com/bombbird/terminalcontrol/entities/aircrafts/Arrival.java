@@ -73,8 +73,14 @@ public class Arrival extends Aircraft {
         loadLabel();
         setNavState(new NavState(this));
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
-        if (initAlt > 28000) {
-            initAlt = 28000;
+        int limit = 28000;
+        if (getDirect() != null) {
+            if (star.getWptMaxAlt(getDirect().getName()) > -1) {
+                limit = star.getWptMaxAlt(getDirect().getName());
+            }
+        }
+        if (initAlt > limit) {
+            initAlt = limit;
         } else if (initAlt < 6000) {
             initAlt = 6000;
         }
@@ -413,7 +419,7 @@ public class Arrival extends Aircraft {
                 return true;
             }
         }
-        if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima()) * 9) {
+        if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima() - getIls().getRwy().getElevation()) * 9) {
             //If altitude below minima and visibility is less than 9 times the minima (approx)
             radarScreen.getCommBox().goAround(this, "runway not in sight");
             return true;

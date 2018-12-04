@@ -479,6 +479,21 @@ public class LatTab extends Tab {
             ui.spdTab.settingsBox.setSelected("No speed restrictions");
             spdMode = "No speed restrictions";
         }
+
+        if (selectedAircraft instanceof Arrival && !"Hold at".equals(latMode) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
+            Array<String> waypoints = new Array<String>();
+            for (Waypoint waypoint: ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
+                if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+                    //Check if holding point is after current aircraft direct
+                    waypoints.add(waypoint.getName());
+                }
+            }
+
+            if (waypoints.size == 0) {
+                selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
+            }
+        }
+
         ui.updateElements();
         notListening = false;
     }

@@ -446,6 +446,7 @@ public class Aircraft extends Actor {
     /** Draws the cleared holding pattern when selected */
     public void drawHoldPattern() {
         shapeRenderer.setColor(Color.WHITE);
+        if (!holding) shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
         ((Star) getSidStar()).getHoldProcedure().renderShape(navState.getClearedHold().last());
     }
 
@@ -1028,8 +1029,12 @@ public class Aircraft extends Actor {
             } else {
                 labelText[5] = Integer.toString(navState.getClearedHdg().last());
             }
-        } else if (navState.getClearedHold().last() != null && navState.getClearedHold().last().equals(holdWpt)) {
-            labelText[5] = holdWpt.getName();
+        } else if ("Hold at".equals(navState.getDispLatMode().last())) {
+            if (holding || (direct != null && direct.equals(holdWpt))) {
+                labelText[5] = holdWpt.getName();
+            } else if (direct != null) {
+                labelText[5] = direct.getName();
+            }
         } else if (navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
             if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
                 labelText[5] = navState.getClearedDirect().last().getName() + navState.getClearedAftWptHdg().last();
