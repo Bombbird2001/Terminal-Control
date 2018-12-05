@@ -33,7 +33,12 @@ public class NewGameScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load airports
-        String[] airports = {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
+        String[] airports;
+        if ("full".equals(Gdx.files.internal("game/type.type").readString())) {
+            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "VHHH\nHong Kong International Airport", "RJAA\nNarita International Airport", "WMKK\nKuala Lumpur International Airport", "WIII\nSoekarno-Hatta International Airport", "VTBS\nBangkok Suvarnabhumi Airport", "VVTS\nTan Son Nhat International Airport"};
+        } else {
+            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport"};
+        }
         for (final String airport: airports) {
             TextButton airportButton = new TextButton(airport, getButtonStyle());
             airportButton.setName(airport.substring(0, 4));
@@ -83,7 +88,6 @@ public class NewGameScreen extends SelectGameScreen {
                     } else {
                         if (!found) {
                             Gdx.app.log("Directory not found", "Directory not found for " + name);
-                            //TODO Set popup to ask user to get full version
                         } else {
                             Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle " + airac);
                         }

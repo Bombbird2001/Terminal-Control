@@ -193,12 +193,11 @@ public class Metar {
                         response.close();
                         metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
                         updateRadarScreenState();
-                        System.out.println(response.body().string());
                     }
                 } else {
                     String responseText = response.body().string();
                     System.out.println(responseText);
-                    if (responseText.equals("Update")) {
+                    if ("Update".equals(responseText)) {
                         //Server requested for METAR update
                         System.out.println("Update requested");
                         radarScreen.loadingPercent = "20%";

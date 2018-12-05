@@ -228,6 +228,7 @@ public class NavState {
     /** When called updates the aircraft's intentions (i.e. after reaction time has passed) */
     private void sendInstructions() {
         if (!goAround.get(1) && aircraft.isGoAround()) {
+            //Do not send inputs if aircraft went around during delay
             dispLatMode.removeIndex(1);
             dispAltMode.removeIndex(1);
             dispSpdMode.removeIndex(1);
@@ -246,7 +247,6 @@ public class NavState {
 
             goAround.removeIndex(1);
         } else {
-            //Do not send inputs if aircraft went around during delay
             validateInputs();
 
             dispLatMode.removeFirst();
@@ -290,7 +290,7 @@ public class NavState {
         String clearedDispLatMode = dispLatMode.get(1);
         String currentDirect = clearedDirect.first() == null ? null : clearedDirect.first().getName();
         String newDirect = clearedDirect.get(1) == null ? null : clearedDirect.get(1).getName();
-        if (currentDispLatMode.contains("heading") && !currentDispLatMode.equals("After waypoint, fly heading") && (clearedDispLatMode.equals("After waypoint, fky heading") || clearedDispLatMode.equals("Hold at"))) {
+        if (currentDispLatMode.contains("heading") && !"After waypoint, fly heading".equals(currentDispLatMode) && ("After waypoint, fky heading".equals(clearedDispLatMode) || "Hold at".equals(clearedDispLatMode))) {
             //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
             dispLatMode.removeFirst();
             dispLatMode.removeFirst();
@@ -308,7 +308,7 @@ public class NavState {
             clearedDirect.removeFirst();
             clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
             clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
-        } else if (aircraft.getDirect() == null && currentDispLatMode.equals("Fly heading") && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || clearedDispLatMode.equals("After waypoint, fly heading") || clearedDispLatMode.equals("Hold at"))) {
+        } else if (aircraft.getDirect() == null && "Fly heading".equals(currentDispLatMode) && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(clearedDispLatMode) || "Hold at".equals(clearedDispLatMode))) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             dispLatMode.removeFirst();
             dispLatMode.removeFirst();
@@ -374,6 +374,16 @@ public class NavState {
         for (int i = 0; i < size; i++) {
             clearedAlt.addLast(currentAlt);
         }
+    }
+
+    /** Gets current cleared aircraft speed and sets all subsequently cleared speed to that value if larger */
+    public void replaceAllClearedSpdToLower() {
+        Queue<Integer> newQueue = new Queue<Integer>();
+        while (!clearedSpd.isEmpty()) {
+            int first = clearedSpd.removeFirst();
+            newQueue.addLast(first > aircraft.getClearedIas() ? aircraft.getClearedIas() : first);
+        }
+        clearedSpd = newQueue;
     }
 
     public void voidAllIls() {

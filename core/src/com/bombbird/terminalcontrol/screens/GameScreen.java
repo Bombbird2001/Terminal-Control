@@ -73,9 +73,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public HashMap<String, Waypoint> waypoints;
 
-    public SettingsScreen getSettingsScreen() {
-        return settingsScreen;
-    }
+    //Overlay screen when paused
+    private PauseScreen pauseScreen;
+
+    //Overlay screen for game settings
+    private SettingsScreen settingsScreen;
 
     //Game state
     public enum State {
@@ -84,12 +86,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         SETTINGS
     }
     private static State state = State.RUN;
-
-    //Overlay screen when paused
-    private PauseScreen pauseScreen;
-
-    //Overlay screen for game settings
-    private SettingsScreen settingsScreen;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -206,11 +202,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         } else if (camera.position.y > upLimit) {
             camera.position.y = upLimit;
         }
-    }
-
-    /** Creates new aircraft; overridden in radarScreen subclass */
-    public void newAircraft() {
-        //No default implementation
     }
 
     /** Implements show method of screen; overridden in radarScreen class */
@@ -536,5 +527,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         } else if (s == State.SETTINGS) {
             Gdx.input.setInputProcessor(settingsScreen.getStage());
         }
+    }
+
+    public SettingsScreen getSettingsScreen() {
+        return settingsScreen;
     }
 }

@@ -31,7 +31,7 @@ public class SpdTab extends Tab {
         int highestSpd = -1;
         if (spdMode.contains("SID") || spdMode.contains("STAR")) {
             //Set spd restrictions in box
-            if (latMode.equals("Hold at") && selectedAircraft.isHolding()) {
+            if ("Hold at".equals(latMode) && selectedAircraft.isHolding()) {
                 highestSpd = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
             } else if (clearedWpt != null) {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);

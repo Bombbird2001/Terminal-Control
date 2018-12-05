@@ -74,10 +74,8 @@ public class Arrival extends Aircraft {
         setNavState(new NavState(this));
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
         int limit = 28000;
-        if (getDirect() != null) {
-            if (star.getWptMaxAlt(getDirect().getName()) > -1) {
-                limit = star.getWptMaxAlt(getDirect().getName());
-            }
+        if (getDirect() != null && star.getWptMaxAlt(getDirect().getName()) > -1) {
+            limit = star.getWptMaxAlt(getDirect().getName());
         }
         if (initAlt > limit) {
             initAlt = limit;
@@ -93,9 +91,24 @@ public class Arrival extends Aircraft {
         }
         if (getClearedAltitude() < getAltitude() - 500) {
             setVerticalSpeed(-getTypDes());
+        } else {
+            setVerticalSpeed(-getTypDes() * (getAltitude() - getClearedAltitude()) / 500);
         }
 
         setClearedIas(getClimbSpd());
+
+        if (getDirect() != null) {
+            int spd = star.getWptMaxSpd(getDirect().getName());
+            if (spd > -1) {
+                setClearedIas(spd);
+                setIas(spd);
+            }
+        }
+
+        if (getAltitude() <= 10000 && (getClearedIas() > 250 || getIas() > 250)) {
+            setClearedIas(250);
+            setIas(250);
+        }
 
         getNavState().getClearedSpd().removeFirst();
         getNavState().getClearedSpd().addFirst(getClearedIas());
@@ -241,8 +254,8 @@ public class Arrival extends Aircraft {
             }
             ilsSpdSet = true;
         }
-        if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 5) {
-            if (getClearedIas() > 160) {
+        if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 6) {
+            if (getClearedIas() > getApchSpd()) {
                 setClearedIas(getApchSpd());
                 super.updateSpd();
             }
@@ -448,7 +461,7 @@ public class Arrival extends Aircraft {
         setVerticalSpeed(0);
         setClearedIas(0);
         if (getGs() <= 35) {
-            radarScreen.setScore(radarScreen.getScore() + 1);
+            if (!getAirport().isCongested()) radarScreen.setScore(radarScreen.getScore() + 1); //Add score only if the airport is not congested
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);

@@ -22,9 +22,11 @@ public class SeparationChecker extends Actor {
     private Array<Label> labels;
 
     private RadarScreen radarScreen;
+    private int lastNumber;
 
     public SeparationChecker() {
         radarScreen = TerminalControl.radarScreen;
+        lastNumber = 0;
 
         flightLevels = new Array<Array<Aircraft>>(true, radarScreen.maxAlt / 1000);
         labels = new Array<Label>();
@@ -62,6 +64,7 @@ public class SeparationChecker extends Actor {
         checkAircraftSep();
         checkRestrSep();
         renderShape();
+        updateIncidentNumber();
     }
 
     /** Updates the levels each aircraft belongs to */
@@ -190,7 +193,6 @@ public class SeparationChecker extends Actor {
     private void renderShape() {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isConflict()) {
-                radarScreen.setScore(0);
                 radarScreen.shapeRenderer.setColor(Color.RED);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.05f);
@@ -199,5 +201,30 @@ public class SeparationChecker extends Actor {
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
             }
         }
+    }
+
+    /** Updates the number of separation incidents going on */
+    private void updateIncidentNumber() {
+        int active = 0;
+        for (Label label: labels) {
+            if ("Taken".equals(label.getName())) {
+                active++;
+            }
+        }
+
+        if (active > lastNumber) {
+            for (int i = 0; i < active - lastNumber; i++) {
+                radarScreen.setScore(radarScreen.getScore() / 2);
+            }
+        }
+        lastNumber = active;
+    }
+
+    public int getLastNumber() {
+        return lastNumber;
+    }
+
+    public void setLastNumber(int lastNumber) {
+        this.lastNumber = lastNumber;
     }
 }

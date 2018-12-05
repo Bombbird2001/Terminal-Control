@@ -75,7 +75,7 @@ public class TutorialManager {
 
     /** Initialises the 3rd part of the tutorial */
     private void initPart3() {
-        radarScreen.getCommBox().tutorialMsg("All right, the aircraft will now descend via the STAR to the altitude. Similar to SIDs, STARs are predefined arrival routes into the airport with altitude and speed restrictions.");
+        radarScreen.getCommBox().tutorialMsg("All right, the aircraft will now descend via the STAR to the altitude. Similar to SIDs, Standard Terminal Arrival Routes (STARs) are predefined arrival routes into the airport with altitude and speed restrictions.");
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
@@ -215,7 +215,7 @@ public class TutorialManager {
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        radarScreen.getCommBox().tutorialMsg("SIDs are predefined departure routes from the airport which may have altitude and speed restrictions. The aircraft will fly according to the route as shown when you select it.");
+                        radarScreen.getCommBox().tutorialMsg("Standard Instrument Departures (SIDs) are predefined departure routes from the airport which may have altitude and speed restrictions. The aircraft will fly according to the route as shown when you select it.");
                     }
                 }, 10);
 
@@ -291,6 +291,12 @@ public class TutorialManager {
             if (prompt5 && aircraft.getControlState() == 0) {
                 prompt5 = false;
                 radarScreen.getCommBox().tutorialMsg("Alright! The aircraft has been handed off to the tower controller. For every departure that gets handed over, or for every arrival that lands, you receive 1 point to add to your score. But for every separation infringement, your score will be halved. Be careful!");
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        radarScreen.getCommBox().tutorialMsg("The airport can suffer from congestion if you let in the arrivals too quickly, causing aircrafts on the ground to be unable to take off. Hence, you will need to reduce the number of arrivals into the airport by reducing their speed or putting them in holding patterns. When an airport is congested, landing an aircraft into it will not score you any points!");
+                    }
+                }, 15);
                 prompt6 = true;
             }
         } else if (prompt6) {

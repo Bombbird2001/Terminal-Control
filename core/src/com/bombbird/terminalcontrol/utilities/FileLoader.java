@@ -27,6 +27,7 @@ public class FileLoader {
         Array<Obstacle> obsArray = new Array<Obstacle>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
+            if ("".equals(s)) break;
             //For each individual obstacle:
             Obstacle obs = new Obstacle(s);
             obsArray.add(obs);

@@ -48,6 +48,8 @@ public class GameLoader {
         TerminalControl.radarScreen.getCommBox().remove();
         TerminalControl.radarScreen.setCommBox(new CommBox(save.getJSONArray("commBox")));
 
+        TerminalControl.radarScreen.separationChecker.setLastNumber(save.getInt("lastNumber"));
+
         //GameSaver.saveGame();
     }
 

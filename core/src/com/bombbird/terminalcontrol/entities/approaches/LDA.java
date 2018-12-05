@@ -5,8 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class LDA extends ILS {
@@ -48,6 +46,7 @@ public class LDA extends ILS {
     /** Overrides method in ILS to ignore it */
     @Override
     public void calculateGsRings() {
+        //Nothing
     }
 
     /** Overrides method in ILS to draw FAF point on LOC course */

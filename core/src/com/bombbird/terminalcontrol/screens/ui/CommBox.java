@@ -135,6 +135,13 @@ public class CommBox {
         updateLabelQueue(label);
     }
 
+    /** Adds a message in red for warnings */
+    public void warningMsg(String msg) {
+        Label label = new Label(msg, getLabelStyle(Color.RED));
+        updateLabelQueue(label);
+    }
+
+    /** Adds the label to queue and removes labels if necessary, updates scrollPane to show messages */
     private void updateLabelQueue(Label label) {
         labels.addLast(label);
         label.setWidth(scrollPane.getWidth() - 20);

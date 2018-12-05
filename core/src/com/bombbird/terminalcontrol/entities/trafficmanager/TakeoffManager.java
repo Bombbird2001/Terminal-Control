@@ -78,6 +78,8 @@ public class TakeoffManager {
                 updateRCTP();
             } else if ("RCSS".equals(airport.getIcao())) {
                 updateRCSS();
+            } else if ("WSSS".equals(airport.getIcao())) {
+                updateWSSS();
             }
         }
     }
@@ -120,6 +122,36 @@ public class TakeoffManager {
             if (checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkLanding(runway1.getOppRwy()) && distance > dist) {
                 runway = runway1;
                 dist = distance;
+            }
+        }
+        if (runway != null) {
+            String callsign = nextAircraft.get(runway.getName())[0];
+            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
+            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
+            nextAircraft.put(runway.getName(), null);
+            timers.put(runway.getName(), 0f);
+        }
+    }
+
+    private void updateWSSS() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkLanding(runway1) && checkLanding(runway1.getOppRwy()) && distance > dist) {
+                if ("02L".equals(runway1.getName()) && checkPreceding("02L") && checkPreceding("02C") && checkPreceding("20R") && checkLanding(airport.getRunways().get("20C"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("02C".equals(runway1.getName()) && checkPreceding("02C") && checkPreceding("02L") && checkPreceding("20C") && checkLanding(airport.getRunways().get("20R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("20C".equals(runway1.getName()) && checkPreceding("20C") && checkPreceding("20R") && checkPreceding("02C") && checkLanding(airport.getRunways().get("02L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("20C".equals(runway1.getName()) && checkPreceding("20C") && checkPreceding("20C") && checkPreceding("20R") && checkLanding(airport.getRunways().get("02C"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
             }
         }
         if (runway != null) {

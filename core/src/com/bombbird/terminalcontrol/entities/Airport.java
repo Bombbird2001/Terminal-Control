@@ -32,6 +32,7 @@ public class Airport {
     private TakeoffManager takeoffManager;
     private int landings;
     private int airborne;
+    private boolean congested;
 
     private int aircraftRatio;
     private HashMap<Integer, String> airlines;
@@ -46,6 +47,7 @@ public class Airport {
         takeoffRunways = new HashMap<String, Runway>();
         landings = 0;
         airborne = 0;
+        congested = false;
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
         setActiveRunways();
@@ -59,6 +61,7 @@ public class Airport {
         takeoffRunways = new HashMap<String, Runway>();
         landings = save.getInt("landings");
         airborne = save.getInt("airborne");
+        congested = save.getBoolean("congestion");
         aircraftRatio = save.getInt("aircraftRatio");
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
@@ -75,6 +78,7 @@ public class Airport {
             runway.setActive(runway.isLanding(), true);
             takeoffRunways.put(runway.getName(), runway);
         }
+        setActiveRunways();
     }
 
     /** Loads the runway queue from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
@@ -94,8 +98,16 @@ public class Airport {
         if ("RCTP".equals(icao)) {
             setActive("05L", true, true);
             setActive("05R", true, true);
+            setActive("23R", false, false);
+            setActive("23L", false, false);
         } else if ("RCSS".equals(icao)) {
             setActive("10", true, true);
+            setActive("28", false, false);
+        } else if ("WSSS".equals(icao)) {
+            setActive("02L", true, true);
+            setActive("02C", true, true);
+            setActive("20R", false, false);
+            setActive("20C", false, false);
         }
     }
 
@@ -185,6 +197,13 @@ public class Airport {
             takeoffManager.update();
         }
 
+        if (landings - airborne > 10) {
+            TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
+            congested = true;
+        } else {
+            congested = false;
+        }
+
         for (Runway runway: runways.values()) {
             if (runway.isTakeoff() || runway.isLanding()) {
                 runway.renderShape();
@@ -208,7 +227,7 @@ public class Airport {
                 boolean active = runwayActiveForWind(windHdg, runway);
                 setActive(runway.getName(), active, active);
             }
-            runway.setWindshear(ws.equals("ALL RWY") || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
+            runway.setWindshear("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
         }
     }
 
@@ -319,5 +338,9 @@ public class Airport {
 
     public HashMap<String, String> getAircrafts() {
         return aircrafts;
+    }
+
+    public boolean isCongested() {
+        return congested;
     }
 }

@@ -29,6 +29,7 @@ import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -578,6 +579,13 @@ public class Aircraft extends Actor {
         prevAlt = altitude;
     }
 
+    private double findRequiredDistance(double deltaHeading) {
+        float turnRate = ias > 250 ? 1.5f : 3f;
+        double radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate);
+        double halfTheta = (180 - deltaHeading) / 2f;
+        return 32.4 * radius / Math.tan(Math.toRadians(halfTheta)) + 5;
+    }
+
     /** Called to update the heading aircraft should turn towards to follow instructed lateral mode, returns the heading it should fly as well as the resulting difference in angle of the track due to winds */
     public double[] updateTargetHeading() {
         deltaPosition.setZero();
@@ -592,6 +600,9 @@ public class Aircraft extends Actor {
         }
         int windHdg = winds[0] + 180;
         int windSpd = winds[1];
+        if (winds[0] == 0) {
+            windSpd = 0;
+        }
 
         boolean sidstar = navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading") || navState.getDispLatMode().first().equals("Hold at");
         boolean vector = !sidstar && navState.getDispLatMode().first().contains("heading");
@@ -614,10 +625,11 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            if (ias > 250) {
-                requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * 2f * gs / 240 + 10;
+            String[] flyOverPoints = {"TP050", "TP060", "TP064", "TP230", "TP240"};
+            if (ArrayUtils.contains(flyOverPoints, direct.getName())) {
+                requiredDistance = 5;
             } else {
-                requiredDistance = Math.abs(findDeltaHeading(findNextTargetHdg())) / 1.75f * 0.8f * gs / 240 + 5;
+                requiredDistance = findRequiredDistance(Math.abs(findDeltaHeading(findNextTargetHdg())));
             }
             if (distance <= requiredDistance) {
                 updateDirect();
@@ -778,6 +790,7 @@ public class Aircraft extends Actor {
             }
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
+            if (this instanceof Arrival) radarScreen.setArrivals(radarScreen.getArrivals() - 1);
             removeAircraft();
         }
     }
@@ -1387,6 +1400,7 @@ public class Aircraft extends Actor {
         }
         if (clearedIas > highestSpd) {
             clearedIas = highestSpd;
+            navState.replaceAllClearedSpdToLower();
         }
     }
 
@@ -1482,6 +1496,9 @@ public class Aircraft extends Actor {
 
     public void setClearedIas(int clearedIas) {
         this.clearedIas = clearedIas;
+        if (!"No speed restrictions".equals(navState.getDispSpdMode().last())) {
+            updateClearedSpd();
+        }
     }
 
     public float getDeltaIas() {
@@ -1607,9 +1624,6 @@ public class Aircraft extends Actor {
     }
 
     public void setConflict(boolean conflict) {
-        if (this.conflict != conflict && conflict) {
-            radarScreen.setScore((int) Math.ceil((double) radarScreen.getScore() / 2));
-        }
         this.conflict = conflict;
     }
 
