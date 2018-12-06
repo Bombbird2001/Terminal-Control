@@ -61,13 +61,7 @@ public class Metar {
         updateRadarScreenState();
     }
 
-    private void sendMetar(final MediaType mediaType, final OkHttpClient client, JSONObject jo, Calendar calendar) {
-        jo.put("password", Values.SEND_METAR_PASSWORD);
-        jo.put("year", calendar.get(Calendar.YEAR));
-        jo.put("month", calendar.get(Calendar.MONTH) + 1);
-        jo.put("day", calendar.get(Calendar.DAY_OF_MONTH));
-        jo.put("hour", calendar.get(Calendar.HOUR_OF_DAY));
-        jo.put("minute", calendar.get(Calendar.MINUTE));
+    private void sendMetar(final MediaType mediaType, final OkHttpClient client, final JSONObject jo) {
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
                 .url(Values.SEND_METAR_URL)
@@ -78,7 +72,7 @@ public class Metar {
             public void onFailure(Call call, IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
-                receiveMetar(mediaType, client);
+                sendMetar(mediaType, client, jo);
             }
 
             @Override
@@ -100,19 +94,6 @@ public class Metar {
                 .addHeader("X-API-KEY", apiKey)
                 .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
                 .build();
-        final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        int minute = calendar.get(Calendar.MINUTE);
-        if (minute >= 45) {
-            minute = 30;
-        } else if (minute >= 30) {
-            minute = 15;
-        } else if (minute >= 15) {
-            minute = 0;
-        } else {
-            minute = 45;
-            calendar.add(Calendar.HOUR_OF_DAY, -1);
-        }
-        calendar.set(Calendar.MINUTE, minute);
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -128,7 +109,7 @@ public class Metar {
                 } else {
                     String responseText = response.body().string();
                     JSONObject jo = new JSONObject(responseText);
-                    sendMetar(mediaType, client, jo, calendar);
+                    sendMetar(mediaType, client, jo);
                     radarScreen.loadingPercent = "60%";
                 }
             }
@@ -147,7 +128,7 @@ public class Metar {
             public void onFailure(Call call, IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
-                receiveMetar(mediaType, client);
+                getApiKey(mediaType, client);
             }
 
             @Override
