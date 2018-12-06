@@ -60,6 +60,7 @@ public class Metar {
     }
 
     private void sendMetar(final MediaType mediaType, final OkHttpClient client, final JSONObject jo) {
+        jo.put("password", Values.SEND_METAR_PASSWORD);
         RequestBody body = RequestBody.create(mediaType, jo.toString());
         Request request = new Request.Builder()
                 .url(Values.SEND_METAR_URL)

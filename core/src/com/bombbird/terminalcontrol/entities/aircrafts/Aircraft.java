@@ -622,11 +622,11 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            String[] flyOverPoints = {"TP050", "TP060", "TP064", "TP230", "TP240"};
-            if (ArrayUtils.contains(flyOverPoints, direct.getName())) {
+            String[] flyOverWpts = {"TP050", "TP060", "TP064", "TP230", "TP240"};
+            if (ArrayUtils.contains(flyOverWpts, direct.getName())) {
                 requiredDistance = 5;
             } else {
-                requiredDistance = findRequiredDistance(Math.abs(findDeltaHeading(findNextTargetHdg())));
+                requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));
             }
             if (distance <= requiredDistance) {
                 updateDirect();
@@ -808,11 +808,16 @@ public class Aircraft extends Actor {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
         }
-        return findDeltaHeading(targetHeading, forceDirection);
+        return findDeltaHeading(targetHeading, forceDirection, heading);
+    }
+
+    /** Finds the deltaHeading for the leg after current leg */
+    private double findSidStarDeltaHeading(double targetHeading, double prevHeading) {
+        return findDeltaHeading(targetHeading, 0, prevHeading);
     }
 
     /** Finds the deltaHeading given a forced direction */
-    private double findDeltaHeading(double targetHeading, int forceDirection) {
+    private double findDeltaHeading(double targetHeading, int forceDirection, double heading) {
         double deltaHeading = targetHeading - heading;
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
