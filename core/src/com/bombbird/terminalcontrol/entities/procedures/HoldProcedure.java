@@ -58,7 +58,7 @@ public class HoldProcedure {
                     case 1: altRest[0] = Integer.parseInt(wptInfo); break;
                     case 2: altRest[1] = Integer.parseInt(wptInfo); break;
                     case 3: maxSpd.add(Integer.parseInt(wptInfo)); break;
-                    case 4: left.add(wptInfo.equals("LEFT")); break;
+                    case 4: left.add("LEFT".equals(wptInfo)); break;
                     case 5: entryProcedure.add(Integer.parseInt(wptInfo)); break;
                     case 6: inboundHdg.add(Integer.parseInt(wptInfo)); break;
                     case 7: legDist.add(Integer.parseInt(wptInfo)); break;

@@ -97,7 +97,7 @@ public class RadarScreen extends GameScreen {
         saveId = saveID;
         this.tutorial = tutorial;
 
-        planesToControl = 4f;
+        planesToControl = 6f;
         score = 0;
         highScore = 0;
         arrivals = 0;
@@ -396,7 +396,7 @@ public class RadarScreen extends GameScreen {
 
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
-        if (mainName.equals("RCTP")) {
+        if ("RCTP".equals(mainName)) {
             shapeRenderer.line(4500, 2416, 4500, 2124);
             shapeRenderer.line(1256, 2050, 1256, 1180);
         }

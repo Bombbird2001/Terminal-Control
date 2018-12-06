@@ -266,9 +266,6 @@ public class Aircraft extends Actor {
         deltaPosition.y = (float) delta.getDouble(1);
 
         clearedIas = save.getInt("clearedIas");
-        if (callsign.equals("EVA495")) {
-            System.out.println("Cleared IAS: " + ias);
-        }
         deltaIas = (float) save.getDouble("deltaIas");
         climbSpd = save.getInt("climbSpd");
 
@@ -395,11 +392,11 @@ public class Aircraft extends Actor {
                 //System.out.println("arrival/departure: " + (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) + " hdgChanged: " + ui.latTab.isHdgChanged() + " latModeChanged: " + ui.latTab.isLatModeChanged() + " wptChanged: " + ui.latTab.isWptChanged());
                 if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
-                } else if (LatTab.latMode.equals("After waypoint, fly heading") && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if ("After waypoint, fly heading".equals(LatTab.latMode) && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode.contains("heading") && (this instanceof Departure || LatTab.clearedILS.equals("Not cleared approach") || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode.contains("heading") && (this instanceof Departure || "Not cleared approach".equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
-                } else if (LatTab.latMode.equals("Hold at") && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
+                } else if ("Hold at".equals(LatTab.latMode) && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
                 }
             }
@@ -950,13 +947,6 @@ public class Aircraft extends Actor {
         }
     }
 
-    /*
-    /** Overriden method that sets next aircraft action after reaching direct
-    public void updateGoAroundDirect() {
-        //No default implementation
-    }
-    */
-
     /** Overriden method that sets aircraft heading after the last waypoint is reached */
     public void setAfterLastWpt() {
         //No default implementation
@@ -1392,7 +1382,7 @@ public class Aircraft extends Actor {
     /** Updates the cleared IAS under certain circumstances */
     private void updateClearedSpd() {
         int highestSpd = -1;
-        if (navState.getDispLatMode().first().contains(getSidStar().getName()) && direct != null) {
+        if (!"No speed restrictions".equals(navState.getDispSpdMode().last()) && direct != null) {
             highestSpd = getSidStar().getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {
@@ -1500,9 +1490,6 @@ public class Aircraft extends Actor {
 
     public void setClearedIas(int clearedIas) {
         this.clearedIas = clearedIas;
-        if (!"No speed restrictions".equals(navState.getDispSpdMode().last())) {
-            updateClearedSpd();
-        }
     }
 
     public float getDeltaIas() {

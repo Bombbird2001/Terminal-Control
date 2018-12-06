@@ -88,7 +88,7 @@ public class LatTab extends Tab {
         hdgBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                event.handle();
             }
         });
         TerminalControl.radarScreen.uiStage.addActor(hdgBox);

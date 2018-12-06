@@ -410,10 +410,10 @@ public class NavState {
                 clearedHold.removeLast();
                 clearedHold.addLast(null);
             }
-        } else if (latMode.equals("After waypoint, fly heading")) {
+        } else if ("After waypoint, fly heading".equals(latMode)) {
             clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
-        } else if (latMode.equals("Hold at")) {
+        } else if ("Hold at".equals(latMode)) {
             clearedHold.addLast(radarScreen.waypoints.get(holdWpt));
             latModes.removeValue("After waypoint, fly heading", false);
         } else {
