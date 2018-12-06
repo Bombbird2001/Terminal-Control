@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 public class Metar {
     private JSONObject metarObject;
