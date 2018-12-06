@@ -355,7 +355,7 @@ public class NavState {
         int size = dispLatMode.size;
         for (int i = 0; i < size; i++) {
             String string = dispLatMode.removeFirst();
-            newLatMode.addLast(string.contains("Turn") ? "Fly hrading" : string);
+            newLatMode.addLast(string.contains("Turn") ? "Fly heading" : string);
         }
 
         dispLatMode = newLatMode;

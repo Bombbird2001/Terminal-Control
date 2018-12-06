@@ -380,7 +380,7 @@ public class Aircraft extends Actor {
     private void drawLatLines() {
         if (selected) {
             //Draws cleared status
-            if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().first().contains("departure") && direct != null) {
+            if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().last().contains("departure") && direct != null) {
                 drawSidStar();
             } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading") && direct != null) {
                 drawAftWpt();
@@ -855,6 +855,13 @@ public class Aircraft extends Actor {
         }
         if (Math.abs(deltaHeading) <= 10) {
             targetAngularVelocity = deltaHeading / 3;
+            if (navState.getDispLatMode().first().contains("Turn")) {
+                navState.replaceAllHdgModes();
+                if (selected && (controlState == 1 || controlState == 2)) {
+                    updateUISelections();
+                    ui.updateState();
+                }
+            }
         }
         //Update angular velocity towards target angular velocity
         if (targetAngularVelocity > angularVelocity + 0.1f) {
@@ -866,9 +873,6 @@ public class Aircraft extends Actor {
         } else {
             //If within +-0.1 of target, set equal to target
             angularVelocity = targetAngularVelocity;
-            if (navState.getDispLatMode().first().contains("Turn")) {
-                navState.replaceAllHdgModes();
-            }
         }
 
         //Add angular velocity to heading
@@ -1388,7 +1392,7 @@ public class Aircraft extends Actor {
     /** Updates the cleared IAS under certain circumstances */
     private void updateClearedSpd() {
         int highestSpd = -1;
-        if (direct != null) {
+        if (navState.getDispLatMode().first().contains(getSidStar().getName()) && direct != null) {
             highestSpd = getSidStar().getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {

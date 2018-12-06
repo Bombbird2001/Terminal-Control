@@ -122,7 +122,7 @@ public class SeparationChecker extends Actor {
                             //TODO If visibility is poor, reduced separation doesn't apply
                         }
                     }
-                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < 4.5) {
+                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < minima + 2) {
                         if (dist < minima) {
                             //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
                             //Aircrafts have infringed minima of 1000 feet and 3nm apart

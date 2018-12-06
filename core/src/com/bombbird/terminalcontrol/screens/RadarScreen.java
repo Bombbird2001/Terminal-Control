@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
@@ -483,6 +484,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setPlanesToControl(float planesToControl) {
+        planesToControl = MathUtils.clamp(planesToControl, 4f, 30f);
         this.planesToControl = planesToControl;
     }
 

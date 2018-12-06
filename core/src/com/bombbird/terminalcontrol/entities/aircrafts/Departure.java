@@ -189,7 +189,7 @@ public class Departure extends Aircraft {
     /** Overrides method in Aircraft class to set to outbound heading */
     @Override
     public void setAfterLastWpt() {
-        getNavState().getLatModes().removeValue(sid.getName() + " deaprture", false);
+        getNavState().getLatModes().removeValue(sid.getName() + " departure", false);
         setClearedHeading((int)(outboundHdg + radarScreen.magHdgDev));
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());
@@ -209,6 +209,7 @@ public class Departure extends Aircraft {
             //Aircraft has been handed over
             setLowestAlt(cruiseAlt);
             setHighestAlt(cruiseAlt);
+            return;
         }
         if (getNavState().getDispLatMode().first().contains("departure")) {
             //Aircraft on SID
@@ -277,7 +278,7 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude() {
         super.updateAltitude();
-        if (getControlState() == 2 && getAltitude() >= handoveralt) {
+        if (getControlState() == 2 && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
             setControlState(0);
             setClearedIas(getClimbSpd());
             super.updateSpd();
