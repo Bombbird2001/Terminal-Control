@@ -1400,6 +1400,7 @@ public class Aircraft extends Actor {
         if (clearedIas > highestSpd) {
             clearedIas = highestSpd;
             navState.replaceAllClearedSpdToLower();
+            if (selected && (controlState == 1 || controlState == 2)) updateUISelections();
         }
     }
 
@@ -1495,6 +1496,7 @@ public class Aircraft extends Actor {
 
     public void setClearedIas(int clearedIas) {
         this.clearedIas = clearedIas;
+        updateClearedSpd();
     }
 
     public float getDeltaIas() {
