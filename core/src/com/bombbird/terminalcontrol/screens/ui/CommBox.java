@@ -52,7 +52,14 @@ public class CommBox {
         for (int i = 0; i < save.length(); i++) {
             JSONObject info = save.getJSONObject(i);
 
-            Label label = new Label(info.getString("message"), getLabelStyle(new Color(Integer.parseInt(info.getString("color"), 16))));
+            Color color;
+            if ("ff0000ff".equals(info.getString("color"))) {
+                color = Color.RED;
+            } else {
+                color = new Color(Integer.parseInt(info.getString("color"), 16));
+            }
+
+            Label label = new Label(info.getString("message"), getLabelStyle(color));
 
             updateLabelQueue(label);
         }
