@@ -197,7 +197,7 @@ public class Airport {
             takeoffManager.update();
         }
 
-        if (landings - airborne > 10) {
+        if (!congested && landings - airborne > 10) {
             TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
             congested = true;
         } else {

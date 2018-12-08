@@ -41,6 +41,7 @@ public class FileLoader {
         Array<RestrictedArea> restArray = new Array<RestrictedArea>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
+            if ("".equals(s)) break;
             //For each individual restricted area
             RestrictedArea area = new RestrictedArea(s);
             restArray.add(area);

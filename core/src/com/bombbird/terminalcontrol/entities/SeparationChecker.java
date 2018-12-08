@@ -64,7 +64,6 @@ public class SeparationChecker extends Actor {
         checkAircraftSep();
         checkRestrSep();
         renderShape();
-        updateIncidentNumber();
     }
 
     /** Updates the levels each aircraft belongs to */
@@ -81,6 +80,7 @@ public class SeparationChecker extends Actor {
 
     /** Checks that each aircraft is separated from one another */
     private void checkAircraftSep() {
+        int active = 0;
         for (int i = 0; i < flightLevels.size; i++) {
             //Get all the possible planes to check
             Array<Aircraft> planesToCheck = new Array<Aircraft>();
@@ -130,8 +130,9 @@ public class SeparationChecker extends Actor {
                             plane2.setConflict(true);
                             radarScreen.shapeRenderer.setColor(Color.RED);
                             radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                            active++;
                         } else {
-                            //Aircrafts within 1000 feet, 4.5nm of each other
+                            //Aircrafts within 1000 feet, 5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
                             radarScreen.shapeRenderer.setColor(Color.YELLOW);
@@ -153,6 +154,10 @@ public class SeparationChecker extends Actor {
                     }
                 }
             }
+        }
+        while (active > lastNumber) {
+            radarScreen.setScore(radarScreen.getScore() / 2);
+            active--;
         }
     }
 
@@ -201,23 +206,6 @@ public class SeparationChecker extends Actor {
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
             }
         }
-    }
-
-    /** Updates the number of separation incidents going on */
-    private void updateIncidentNumber() {
-        int active = 0;
-        for (Label label: labels) {
-            if ("Taken".equals(label.getName())) {
-                active++;
-            }
-        }
-
-        if (active > lastNumber) {
-            for (int i = 0; i < active - lastNumber; i++) {
-                radarScreen.setScore(radarScreen.getScore() / 2);
-            }
-        }
-        lastNumber = active;
     }
 
     public int getLastNumber() {
