@@ -782,6 +782,7 @@ public class Aircraft extends Actor {
         if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
+            navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
             if (selected) {
                 ui.updateState();
             }
@@ -1574,10 +1575,10 @@ public class Aircraft extends Actor {
     }
 
     public void setIls(ILS ils) {
-        if (ils == null && locCap) {
-            getIls().getRwy().removeFromArray(this);
-        }
         if (this.ils != ils) {
+            if (locCap) {
+                this.ils.getRwy().removeFromArray(this);
+            }
             gsCap = false;
             locCap = false;
             resetApchSpdSet();

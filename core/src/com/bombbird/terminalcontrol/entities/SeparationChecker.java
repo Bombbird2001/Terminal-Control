@@ -155,10 +155,12 @@ public class SeparationChecker extends Actor {
                 }
             }
         }
-        while (active > lastNumber) {
+        int tmpActive = active;
+        while (tmpActive > lastNumber) {
             radarScreen.setScore(radarScreen.getScore() / 2);
-            active--;
+            tmpActive--;
         }
+        lastNumber = active;
     }
 
     /** Called to update the label with aircraft data */

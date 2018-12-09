@@ -480,7 +480,7 @@ public class LatTab extends Tab {
             spdMode = "No speed restrictions";
         }
 
-        if (selectedAircraft instanceof Arrival && !"Hold at".equals(latMode) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
+        if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().first()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             Array<String> waypoints = new Array<String>();
             for (Waypoint waypoint: ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
                 if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
