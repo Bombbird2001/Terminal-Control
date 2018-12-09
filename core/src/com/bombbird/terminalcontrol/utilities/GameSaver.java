@@ -108,6 +108,7 @@ public class GameSaver {
             aircraftInfo.put("goAroundTime", (double) aircraft.getGoAroundTime()); //Go around window timing
             aircraftInfo.put("conflict", aircraft.isConflict()); //Aircraft is in conflict
             aircraftInfo.put("warning", aircraft.isWarning()); //Aircraft is in warning state
+            aircraftInfo.put("terrainConflict", aircraft.isTerrainConflict()); //Aircraft in conflict with terrain
 
             aircraftInfo.put("x", (double) aircraft.getX()); //x coordinate
             aircraftInfo.put("y", (double) aircraft.getY()); //y coordinate

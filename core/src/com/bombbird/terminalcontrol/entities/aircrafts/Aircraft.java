@@ -206,9 +206,9 @@ public class Aircraft extends Actor {
         conflict = save.getBoolean("conflict");
         warning = save.getBoolean("warning");
         if (save.isNull("terrainConflict")) {
-            warning = false;
+            terrainConflict = false;
         } else {
-            warning = save.getBoolean("terrainConflict");
+            terrainConflict = save.getBoolean("terrainConflict");
         }
 
         x = (float) save.getDouble("x");
