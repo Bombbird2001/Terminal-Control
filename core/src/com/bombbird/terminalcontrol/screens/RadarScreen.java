@@ -551,8 +551,4 @@ public class RadarScreen extends GameScreen {
     public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
         this.allAircraft = allAircraft;
     }
-
-    public TutorialManager getTutorialManager() {
-        return tutorialManager;
-    }
 }

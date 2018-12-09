@@ -61,8 +61,14 @@ public class SeparationChecker extends Actor {
             label.setText("");
             label.setName("");
         }
-        checkAircraftSep();
-        checkRestrSep();
+        int active = checkAircraftSep();
+        active = checkRestrSep(active);
+        int tmpActive = active;
+        while (tmpActive > lastNumber) {
+            radarScreen.setScore(radarScreen.getScore() / 2);
+            tmpActive--;
+        }
+        lastNumber = active;
         renderShape();
     }
 
@@ -79,7 +85,7 @@ public class SeparationChecker extends Actor {
     }
 
     /** Checks that each aircraft is separated from one another */
-    private void checkAircraftSep() {
+    private int checkAircraftSep() {
         int active = 0;
         for (int i = 0; i < flightLevels.size; i++) {
             //Get all the possible planes to check
@@ -124,14 +130,16 @@ public class SeparationChecker extends Actor {
                     }
                     if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < minima + 2) {
                         if (dist < minima) {
-                            //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
-                            //Aircrafts have infringed minima of 1000 feet and 3nm apart
-                            plane1.setConflict(true);
-                            plane2.setConflict(true);
-                            radarScreen.shapeRenderer.setColor(Color.RED);
-                            radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
-                            active++;
-                        } else {
+                            if ((!plane1.isConflict() || !plane2.isConflict())) {
+                                //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
+                                //Aircrafts have infringed minima of 1000 feet and 3nm apart
+                                plane1.setConflict(true);
+                                plane2.setConflict(true);
+                                radarScreen.shapeRenderer.setColor(Color.RED);
+                                radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                                active++;
+                            }
+                        } else if (!plane1.isWarning() || !plane2.isWarning()) {
                             //Aircrafts within 1000 feet, 5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
@@ -155,12 +163,7 @@ public class SeparationChecker extends Actor {
                 }
             }
         }
-        int tmpActive = active;
-        while (tmpActive > lastNumber) {
-            radarScreen.setScore(radarScreen.getScore() / 2);
-            tmpActive--;
-        }
-        lastNumber = active;
+        return active;
     }
 
     /** Called to update the label with aircraft data */
@@ -175,7 +178,7 @@ public class SeparationChecker extends Actor {
     }
 
     /** Checks that each aircraft is separated from each obstacles/restricted area */
-    private void checkRestrSep() {
+    private int checkRestrSep(int active) {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
                     (aircraft instanceof Departure && aircraft.getAltitude() <= 4000 + aircraft.getAirport().getElevation()) ||
@@ -184,16 +187,19 @@ public class SeparationChecker extends Actor {
                 continue;
             }
             for (Obstacle obstacle: radarScreen.obsArray) {
-                if (aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
+                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
+                    active++;
                 }
             }
             for (RestrictedArea restrictedArea: radarScreen.restArray) {
-                if (aircraft.getAltitude() < restrictedArea.getMinAlt() - 50 && restrictedArea.isIn(aircraft)) {
+                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < restrictedArea.getMinAlt() - 50 && restrictedArea.isIn(aircraft)) {
                     aircraft.setConflict(true);
+                    active++;
                 }
             }
         }
+        return active;
     }
 
     /** Renders the separation rings if aircraft is in conflict */

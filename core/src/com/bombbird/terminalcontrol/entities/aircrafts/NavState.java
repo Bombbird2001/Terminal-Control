@@ -374,6 +374,11 @@ public class NavState {
         for (int i = 0; i < size; i++) {
             clearedAlt.addLast(currentAlt);
         }
+        int expSize = clearedExpedite.size;
+        clearedExpedite.clear();
+        for (int i = 0; i < expSize; i++) {
+            clearedExpedite.addLast(false);
+        }
     }
 
     /** Gets current cleared aircraft speed and sets all subsequently cleared speed to that value if larger */

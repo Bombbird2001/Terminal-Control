@@ -80,6 +80,7 @@ public class Aircraft extends Actor {
     private float goAroundTime;
     private boolean conflict;
     private boolean warning;
+    private boolean terrainConflict;
 
     //Aircraft position
     private float x;
@@ -172,6 +173,8 @@ public class Aircraft extends Actor {
         goAroundWindow = false;
         goAroundTime = 0;
         conflict = false;
+        warning = false;
+        terrainConflict = false;
         trailDots = new Queue<Image>();
 
         selected = false;
@@ -202,6 +205,11 @@ public class Aircraft extends Actor {
         goAroundTime = (float) save.getDouble("goAroundTime");
         conflict = save.getBoolean("conflict");
         warning = save.getBoolean("warning");
+        if (save.isNull("terrainConflict")) {
+            warning = false;
+        } else {
+            warning = save.getBoolean("terrainConflict");
+        }
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
@@ -564,6 +572,8 @@ public class Aircraft extends Actor {
             if ("Expedite climb/descent to".equals(navState.getDispAltMode().first())) {
                 navState.getDispAltMode().removeFirst();
                 navState.getDispAltMode().addFirst("Climb/descend to");
+                navState.getClearedExpedite().removeFirst();
+                navState.getClearedExpedite().addFirst(false);
                 expedite = false;
             }
         }
@@ -748,7 +758,7 @@ public class Aircraft extends Actor {
 
     public double findNextTargetHdg() {
         if ((navState.getDispLatMode().first().equals("After waypoint, fly heading") && direct.equals(afterWaypoint)) || navState.getDispLatMode().first().equals("Hold at") && direct.equals(holdWpt)) {
-            return clearedHeading;
+            return targetHeading;
         }
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
@@ -939,6 +949,7 @@ public class Aircraft extends Actor {
             if (direct == null) {
                 navState.getDispLatMode().removeFirst();
                 navState.getDispLatMode().addFirst("Fly heading");
+                navState.replaceAllClearedAlt();
                 setAfterLastWpt();
             }
         }
@@ -1703,5 +1714,13 @@ public class Aircraft extends Actor {
 
     public static void setLoadedIcons(boolean loadedIcons) {
         LOADED_ICONS = loadedIcons;
+    }
+
+    public boolean isTerrainConflict() {
+        return terrainConflict;
+    }
+
+    public void setTerrainConflict(boolean terrainConflict) {
+        this.terrainConflict = terrainConflict;
     }
 }
