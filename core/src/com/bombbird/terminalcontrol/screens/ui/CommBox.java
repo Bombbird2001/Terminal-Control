@@ -90,6 +90,7 @@ public class CommBox {
 
     /** Adds a message for an aircraft contacting the player for the first time */
     public void initialContact(Aircraft aircraft) {
+        String apchCallsign = aircraft instanceof Arrival ? TerminalControl.radarScreen.callsign : TerminalControl.radarScreen.deptCallsign;
         String wake = "";
         if (aircraft.getWakeCat() == 'H') {
             wake = " heavy";
@@ -125,12 +126,12 @@ public class CommBox {
         }
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
-                label = new Label(aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName(), getLabelStyle(aircraft.getColor()));
+                label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName(), getLabelStyle(aircraft.getColor()));
             } else {
-                label = new Label(aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
+                label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
             }
         } else if (aircraft instanceof Departure) {
-            label = new Label(aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
+            label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
         }
 
         updateLabelQueue(label);

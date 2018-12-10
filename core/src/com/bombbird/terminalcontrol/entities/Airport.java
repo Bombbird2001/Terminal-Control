@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
+import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
@@ -30,6 +31,7 @@ public class Airport {
     private int elevation;
     private String ws;
     private TakeoffManager takeoffManager;
+    private RunwayManager runwayManager;
     private int landings;
     private int airborne;
     private boolean congested;
@@ -50,7 +52,6 @@ public class Airport {
         congested = false;
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
-        setActiveRunways();
     }
 
     public Airport(JSONObject save) {
@@ -78,7 +79,6 @@ public class Airport {
             runway.setActive(runway.isLanding(), true);
             takeoffRunways.put(runway.getName(), runway);
         }
-        setActiveRunways();
     }
 
     /** Loads the runway queue from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
@@ -93,24 +93,7 @@ public class Airport {
         }
     }
 
-    /** Sets the initial active runways for airport */
-    private void setActiveRunways() {
-        if ("RCTP".equals(icao)) {
-            setActive("05L", true, true);
-            setActive("05R", true, true);
-            setActive("23R", false, false);
-            setActive("23L", false, false);
-        } else if ("RCSS".equals(icao)) {
-            setActive("10", true, true);
-            setActive("28", false, false);
-        } else if ("WSSS".equals(icao)) {
-            setActive("02L", true, true);
-            setActive("02C", true, true);
-            setActive("20R", false, false);
-            setActive("20C", false, false);
-        }
-    }
-
+    /** Loads the necessary resources that cannot be loaded in constructor */
     public void loadOthers() {
         holdProcedures = FileLoader.loadHoldInfo(this);
         missedApproaches = FileLoader.loadMissedInfo(this);
@@ -127,8 +110,10 @@ public class Airport {
         }
 
         takeoffManager = new TakeoffManager(this);
+        runwayManager = new RunwayManager(this);
     }
 
+    /** loadOthers from JSON save */
     public void loadOthers(JSONObject save) {
         loadOthers();
 
@@ -143,6 +128,7 @@ public class Airport {
         takeoffManager = new TakeoffManager(this, save.getJSONObject("takeoffManager"));
     }
 
+    /** Sets the opposite runway for each runway */
     private void setOppRwys() {
         for (Runway runway: runways.values()) {
             if (runway.getOppRwy() == null) {
@@ -169,27 +155,61 @@ public class Airport {
         }
     }
 
-    private void setActive(String rwy, boolean landing, boolean takeoff) {
+    /** Sets the runway's active state, and removes or adds it into hashMap of takeoff & landing runways */
+    public void setActive(String rwy, boolean landing, boolean takeoff) {
         //Retrieves runway from hashtable
         Runway runway = runways.get(rwy);
+        boolean ldgChange = false;
+        boolean tkofChange = false;
+        boolean ldgOff = false;
+        boolean tkofOff = false;
 
         if (!runway.isLanding() && landing) {
             //Add to landing runways if not landing before, but landing now
             landingRunways.put(rwy, runway);
+            ldgChange = true;
         } else if (runway.isLanding() && !landing) {
             //Remove if landing before, but not landing now
             landingRunways.remove(rwy);
+            ldgOff = true;
         }
         if (!runway.isTakeoff() && takeoff) {
             //Add to takeoff runways if not taking off before, but taking off now
             takeoffRunways.put(rwy, runway);
+            tkofChange = true;
         } else if (runway.isTakeoff() && !takeoff) {
             //Remove if taking off before, but not taking off now
             takeoffRunways.remove(rwy);
+            tkofOff = true;
         }
 
         //Set runway's internal active state
         runway.setActive(landing, takeoff);
+
+        //Message to inform user of runway change
+        if (ldgChange || tkofChange) {
+            String msg = "Runway " + rwy + " at " + icao + " is now active for ";
+            if (ldgChange && tkofChange) {
+                msg += "takeoffs and landings.";
+            } else if (ldgChange) {
+                msg += "landings.";
+            } else {
+                msg += "takeoffs.";
+            }
+            TerminalControl.radarScreen.getCommBox().tutorialMsg(msg);
+        }
+
+        if (ldgOff || tkofOff) {
+            String msg = "Runway " + rwy + " at " + icao + " is no longer active for ";
+            if (ldgOff && tkofOff) {
+                msg += "takeoffs and landings.";
+            } else if (ldgOff) {
+                msg += "landings.";
+            } else {
+                msg += "takeoffs.";
+            }
+            TerminalControl.radarScreen.getCommBox().tutorialMsg(msg);
+        }
     }
 
     public void renderRunways() {
@@ -197,8 +217,8 @@ public class Airport {
             takeoffManager.update();
         }
 
-        if (!congested && landings - airborne > 10) {
-            TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
+        if (landings - airborne > 10) {
+            if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
             congested = true;
         } else {
             congested = false;
@@ -222,30 +242,10 @@ public class Airport {
         } else {
             ws = "None";
         }
+        runwayManager.updateRunways(windHdg, this.metar.getInt("windSpeed"));
         for (Runway runway: runways.values()) {
-            if (windHdg != 0) { //Update runways if wind not variable
-                boolean active = runwayActiveForWind(windHdg, runway);
-                setActive(runway.getName(), active, active);
-            }
-            runway.setWindshear("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName()));
+            runway.setWindshear(runway.isLanding() && ("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName())));
         }
-    }
-
-    public boolean runwayActiveForWind(int windHdg, Runway runway) {
-        boolean active;
-        int rightHeading = runway.getHeading() + 90;
-        int leftHeading = runway.getHeading() - 90;
-        if (rightHeading > 360) {
-            rightHeading -= 360;
-            active = !(windHdg >= rightHeading && windHdg < leftHeading);
-        } else if (leftHeading < 0) {
-            leftHeading += 360;
-            active = !(windHdg >= rightHeading && windHdg < leftHeading);
-        } else {
-            active = (windHdg >= leftHeading && windHdg < rightHeading);
-        }
-
-        return active;
     }
 
     public HashMap<String, Star> getStars() {

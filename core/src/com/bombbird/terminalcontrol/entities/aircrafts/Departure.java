@@ -286,7 +286,7 @@ public class Departure extends Aircraft {
             getNavState().replaceAllClearedAlt();
             setExpedite(false);
             radarScreen.setScore(radarScreen.getScore() + 1);
-            radarScreen.getCommBox().contactFreq(this, radarScreen.centreFreq[0], radarScreen.centreFreq[1]);
+            radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
         }
     }
 

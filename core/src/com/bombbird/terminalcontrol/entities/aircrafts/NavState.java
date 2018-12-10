@@ -391,12 +391,21 @@ public class NavState {
         clearedSpd = newQueue;
     }
 
+    /** Removes all ILS clearances */
     public void voidAllIls() {
         int size = clearedIls.size;
         clearedIls.clear();
         for (int i = 0; i < size; i++) {
             clearedIls.addLast(null);
         }
+    }
+
+    /** Called after aircraft enters holding mode */
+    public void initHold() {
+        altModes.removeValue("Descend via STAR", false);
+        spdModes.removeValue("STAR speed restrictions", false);
+        replaceAllClearedAlt();
+        replaceAllClearedSpdToLower();
     }
 
     /** Adds new lateral instructions to queue */

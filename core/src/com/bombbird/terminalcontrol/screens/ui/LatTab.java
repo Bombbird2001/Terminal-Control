@@ -462,25 +462,25 @@ public class LatTab extends Tab {
 
     private void updateSidStarOptions() {
         notListening = true;
-        if (("Hold at".equals(latMode) || latMode.contains("arrival")) && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
+        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
             selectedAircraft.getNavState().getAltModes().add("Descend via STAR");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
             selectedAircraft.getNavState().getAltModes().add("Climb via SID");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && !"Hold at".equals(latMode) && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
+        } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
             ui.altTab.settingsBox.setSelected("Climb/descend to");
             altMode = "Climb/descend to";
         }
 
-        if (("Hold at".equals(latMode) || latMode.contains("arrival")) && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
+        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
             selectedAircraft.getNavState().getSpdModes().add("STAR speed restrictions");
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
             selectedAircraft.getNavState().getSpdModes().add("SID speed restrictions");
-        } else if (!latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && !"Hold at".equals(latMode) && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
+        } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
             ui.spdTab.settingsBox.setSelected("No speed restrictions");
             spdMode = "No speed restrictions";
         }
 
-        if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().first()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
+        if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             Array<String> waypoints = new Array<String>();
             for (Waypoint waypoint: ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
                 if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {

@@ -273,7 +273,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateAltRestrictions method in Aircraft, for setting aircraft altitude restrictions when descending via the STAR */
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint")) {
+        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint") && ("Hold at".equals(getNavState().getDispLatMode().first()) && !isHolding())) {
             //Aircraft on STAR
             int highestAlt = -1;
             int lowestAlt = -1;
@@ -293,7 +293,7 @@ public class Arrival extends Aircraft {
             if (!(getIls() instanceof LDA)) {
                 if (!isGsCap()) {
                     super.updateAltitude();
-                    if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50) {
+                    if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
                         setGsCap(true);
                         setMissedAlt(); //TODO Reproduce & fix bug where altitude is set to go around alt when GS not captured
                     }
@@ -430,6 +430,14 @@ public class Arrival extends Aircraft {
                 //If aircraft is not fully stabilised on LOC course
                 radarScreen.getCommBox().goAround(this, "unstable approach");
                 return true;
+            } else {
+                int windDir = getAirport().getWinds()[0];
+                int windSpd = getAirport().getWinds()[1];
+                if (windSpd * MathUtils.cosDeg(windDir - getIls().getRwy().getHeading()) < -10) {
+                    //If tailwind exceeds 10 knots
+                    radarScreen.getCommBox().goAround(this, "strong tailwind");
+                    return true;
+                }
             }
         }
         if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima() - getIls().getRwy().getElevation()) * 9) {

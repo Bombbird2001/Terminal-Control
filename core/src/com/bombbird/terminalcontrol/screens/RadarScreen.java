@@ -41,7 +41,8 @@ public class RadarScreen extends GameScreen {
     public int transLvl;
     public int separationMinima;
     public int airac;
-    public String[] centreFreq;
+    public String callsign;
+    public String deptCallsign;
     public int trajectoryLine = 90;
     public boolean liveWeather = true;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
@@ -196,7 +197,8 @@ public class RadarScreen extends GameScreen {
                 case 2: transLvl = Integer.parseInt(s); break;
                 case 3: separationMinima = Integer.parseInt(s); break;
                 case 4: magHdgDev = Float.parseFloat(s); break;
-                case 5: centreFreq = s.split(">"); break;
+                case 5: callsign = s; break;
+                case 6: deptCallsign = s; break;
                 default:
                     int index1 = 0;
                     String icao = "";

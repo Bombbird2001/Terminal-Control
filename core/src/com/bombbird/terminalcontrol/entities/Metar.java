@@ -220,7 +220,7 @@ public class Metar {
             windSpd = MathUtils.clamp(windSpd, 5, 30);
             jsonObject.put("windSpeed", windSpd);
 
-            String ws = randomWS(windDir, windSpd, airport);
+            String ws = randomWS(windSpd, airport);
             jsonObject.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
             int gust = -1;
@@ -251,7 +251,7 @@ public class Metar {
             windDir = (MathUtils.random(35)) * 10 + 10;
             windSpd = MathUtils.random(25) + 5;
 
-            ws = randomWS(windDir, windSpd, airport);
+            ws = randomWS(windSpd, airport);
 
             if (windSpd >= 15 && MathUtils.random(2) == 2) {
                 //Gusts
@@ -274,14 +274,14 @@ public class Metar {
         return jsonObject;
     }
 
-    private String randomWS(int windHdg, int windSpd, String airport) {
+    private String randomWS(int windSpd, String airport) {
         String ws = "";
         if (windSpd >= 15 && MathUtils.random(2) == 2) {
             //Runway windshear
             StringBuilder stringBuilder = new StringBuilder();
             for (Runway runway : radarScreen.airports.get(airport).getRunways().values()) {
                 //Random boolean for each runway
-                if (radarScreen.airports.get(airport).runwayActiveForWind(windHdg, runway) && MathUtils.random(1) == 1) {
+                if (MathUtils.random(2) == 2) {
                     stringBuilder.append("R");
                     stringBuilder.append(runway.getName());
                     stringBuilder.append(" ");

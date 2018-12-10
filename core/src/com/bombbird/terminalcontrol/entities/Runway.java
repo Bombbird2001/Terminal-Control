@@ -101,6 +101,7 @@ public class Runway {
             index++;
         }
         radarScreen.stage.addActor(label);
+        label.setVisible(false);
     }
 
     /** Sets runway status for landing, takeoffs */
@@ -126,7 +127,7 @@ public class Runway {
         aircraftsOnAppr.add(aircraft);
         if (aircraftsOnAppr.size > 1) {
             int thisIndex = aircraftsOnAppr.size - 1;
-            while (MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), x, y) < MathTools.distanceBetween(aircraftsOnAppr.get(thisIndex - 1).getX(), aircraftsOnAppr.get(thisIndex  - 1).getY(), x, y) && !aircraftsOnAppr.get(thisIndex - 1).isOnGround()) {
+            while (thisIndex > 0 && MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), x, y) < MathTools.distanceBetween(aircraftsOnAppr.get(thisIndex - 1).getX(), aircraftsOnAppr.get(thisIndex  - 1).getY(), x, y) && !aircraftsOnAppr.get(thisIndex - 1).isOnGround()) {
                 aircraftsOnAppr.swap(thisIndex - 1, thisIndex);
                 thisIndex -= 1;
             }

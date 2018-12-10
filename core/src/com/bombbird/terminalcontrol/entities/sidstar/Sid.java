@@ -9,6 +9,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 public class Sid extends SidStar {
     private int[] initClimb;
     private Array<Integer> outboundHdg;
+    private String[] centre;
 
     public Sid(Airport airport, String toParse) {
         super(airport, toParse);
@@ -70,6 +71,9 @@ public class Sid extends SidStar {
                         outboundHdg.add(Integer.parseInt(s2));
                     }
                     break;
+                case 5: //Centre callsign & frequency
+                    centre = s1.split(">");
+                    break;
                 default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + TerminalControl.radarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");
             }
             index++;
@@ -82,5 +86,9 @@ public class Sid extends SidStar {
 
     public int[] getInitClimb() {
         return initClimb;
+    }
+
+    public String[] getCentre() {
+        return centre;
     }
 }

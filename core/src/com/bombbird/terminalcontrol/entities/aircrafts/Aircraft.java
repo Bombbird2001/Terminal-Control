@@ -666,6 +666,7 @@ public class Aircraft extends Actor {
                 float[] point = star.getHoldProcedure().getOppPtAtWpt(holdWpt);
                 holdTargetPt = new float[][] {{holdWpt.getPosX(), holdWpt.getPosY()}, point};
                 holdTargetPtSelected = new boolean[] {false, false};
+                navState.initHold();
             }
             if (!init) {
                 //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
