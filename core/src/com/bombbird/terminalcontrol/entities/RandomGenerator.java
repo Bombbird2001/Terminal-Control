@@ -3,10 +3,13 @@ package com.bombbird.terminalcontrol.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
 
 public class RandomGenerator {
+    public static String[] excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n");
+
     /** Generates a random plane (with callsign, aircraft type) */
     public static String[] randomPlane(Airport airport) {
         int size = airport.getAirlines().size();
@@ -20,7 +23,7 @@ public class RandomGenerator {
             number = MathUtils.random(1, 999);
             String[] aircrafts = airport.getAircrafts().get(airline).split(">");
             aircraft = aircrafts[MathUtils.random(aircrafts.length - 1)];
-        } while (TerminalControl.radarScreen.getAllAircraft().get(airline + number) != null);
+        } while (ArrayUtils.contains(excluded, airline + number) || TerminalControl.radarScreen.getAllAircraft().get(airline + number) != null);
 
         TerminalControl.radarScreen.getAllAircraft().put(airline + number, true);
 

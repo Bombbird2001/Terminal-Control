@@ -302,6 +302,8 @@ public class NavState {
             clearedHdg.removeFirst();
             clearedHdg.addFirst(clearedAftWptHdg.get(1));
             clearedHdg.addFirst(initHdg);
+
+            replaceAllClearedAlt();
         } else if (currentDispLatMode.contains(aircraft.getSidStar().getName()) && aircraft.getSidStar().findWptIndex(newDirect) < aircraft.getSidStar().findWptIndex(currentDirect)) {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
@@ -317,6 +319,7 @@ public class NavState {
 
             //And set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg();
+            replaceAllClearedAlt();
         } else if (aircraft.isLocCap() && clearedHdg.get(1) != aircraft.getIls().getHeading()) {
             //Case 4: Aircraft captured LOC during delay: Replace all set headings to ILS heading
             replaceAllClearedHdg();

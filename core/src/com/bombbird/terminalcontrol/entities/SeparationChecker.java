@@ -128,6 +128,14 @@ public class SeparationChecker extends Actor {
                             //TODO If visibility is poor, reduced separation doesn't apply
                         }
                     }
+
+                    if (plane1 instanceof Departure && plane2 instanceof Departure) {
+                        if ("RJAA".equals(plane1.getAirport().getIcao()) && "RJAA".equals(plane1.getAirport().getIcao()) && !plane1.getRunway().equals(plane2.getRunway()) && plane1.getAltitude() <= 5000 && plane2.getAltitude() <= 5000) {
+                            //Simultaneous departures for Narita airport
+                            minima = 0.84f;
+                        }
+                    }
+
                     if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < minima + 2) {
                         if (dist < minima) {
                             if ((!plane1.isConflict() || !plane2.isConflict())) {

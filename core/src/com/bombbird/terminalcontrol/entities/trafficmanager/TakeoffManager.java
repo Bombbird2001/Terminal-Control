@@ -82,6 +82,8 @@ public class TakeoffManager {
                 updateWSSS();
             } else if ("RJTT".equals(airport.getIcao())) {
                 updateRJTT();
+            } else if ("RJAA".equals(airport.getIcao())) {
+                updateRJAA();
             }
         }
     }
@@ -107,13 +109,7 @@ public class TakeoffManager {
                 }
             }
         }
-        if (runway != null) {
-            String callsign = nextAircraft.get(runway.getName())[0];
-            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
-            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
-            nextAircraft.put(runway.getName(), null);
-            timers.put(runway.getName(), 0f);
-        }
+        updateRunway(runway);
     }
 
     private void updateRCSS() {
@@ -126,13 +122,7 @@ public class TakeoffManager {
                 dist = distance;
             }
         }
-        if (runway != null) {
-            String callsign = nextAircraft.get(runway.getName())[0];
-            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
-            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
-            nextAircraft.put(runway.getName(), null);
-            timers.put(runway.getName(), 0f);
-        }
+        updateRunway(runway);
     }
 
     private void updateWSSS() {
@@ -156,13 +146,7 @@ public class TakeoffManager {
                 }
             }
         }
-        if (runway != null) {
-            String callsign = nextAircraft.get(runway.getName())[0];
-            radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
-            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
-            nextAircraft.put(runway.getName(), null);
-            timers.put(runway.getName(), 0f);
-        }
+        updateRunway(runway);
     }
 
     private void updateRJTT() {
@@ -206,6 +190,35 @@ public class TakeoffManager {
                 }
             }
         }
+        updateRunway(runway);
+    }
+
+    private void updateRJAA() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
+                if ("16L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("16R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("34L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */
+    private void updateRunway(Runway runway) {
         if (runway != null) {
             String callsign = nextAircraft.get(runway.getName())[0];
             radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);

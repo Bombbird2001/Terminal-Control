@@ -632,7 +632,7 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            String[] flyOverWpts = {"TP050", "TP060", "TP064", "TP230", "TP240", "TT501"};
+            String[] flyOverWpts = {"TP050", "TP060", "TP064", "TP230", "TP240", "TT501", "ASPEN", "BEAMS", "ARIES", "BOXER", "ASTRA"};
             if (ArrayUtils.contains(flyOverWpts, direct.getName())) {
                 requiredDistance = 2;
             } else {

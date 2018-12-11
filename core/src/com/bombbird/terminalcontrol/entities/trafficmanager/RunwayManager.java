@@ -19,7 +19,9 @@ public class RunwayManager {
         } else if ("WSSS".equals(airport.getIcao())) {
             updateWSSS(windDir, windSpd);
         } else if ("RJTT".equals(airport.getIcao())) {
-            updateRJTT(windDir);
+            updateRJAA(windDir);
+        } else if ("RJAA".equals(airport.getIcao())) {
+            updateRJAA(windDir, windSpd);
         }
     }
 
@@ -113,7 +115,7 @@ public class RunwayManager {
         }
     }
 
-    private void updateRJTT(int windDir) {
+    private void updateRJAA(int windDir) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
@@ -137,6 +139,38 @@ public class RunwayManager {
                 airport.setActive("16R", false, true);
                 airport.setActive("22", true, false);
                 airport.setActive("23", true, false);
+            }
+        }
+    }
+
+    private void updateRJAA(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("34L"))) {
+                airport.setActive("34L", true, true);
+                airport.setActive("34R", true, true);
+            } else {
+                airport.setActive("16L", true, true);
+                airport.setActive("16R", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("34L") != null) {
+                //34s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34L").getHeading()) < -5) {
+                    airport.setActive("16L", true, true);
+                    airport.setActive("16R", true, true);
+                    airport.setActive("34L", false, false);
+                    airport.setActive("34R", false, false);
+                }
+            } else {
+                //16s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("16L").getHeading()) < -5) {
+                    airport.setActive("34L", true, true);
+                    airport.setActive("34R", true, true);
+                    airport.setActive("16L", false, false);
+                    airport.setActive("16R", false, false);
+                }
             }
         }
     }
