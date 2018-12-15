@@ -33,6 +33,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class Aircraft extends Actor {
     //Rendering parameters
     public static TextureAtlas ICON_ATLAS;
@@ -42,6 +44,9 @@ public class Aircraft extends Actor {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
     private static boolean LOADED_ICONS = false;
+
+    //Fly over waypoints
+    private static final HashMap<String, String[]> FLY_OVER_PTS = new HashMap<String, String[]>();
 
     public RadarScreen radarScreen;
     private Stage stage;
@@ -305,6 +310,12 @@ public class Aircraft extends Actor {
             BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
             BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
             BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
+
+            FLY_OVER_PTS.put("RCTP", new String[] {"TP050", "TP060", "TP064", "TP230", "TP240"});
+            FLY_OVER_PTS.put("RJTT", new String[] {"TT501"});
+            FLY_OVER_PTS.put("RJAA", new String[] {"ASPEN", "BEAMS", "ARIES", "BOXER", "ASTRA"});
+            FLY_OVER_PTS.put("RJBB", new String[] {"B6R10", "B6R13", "B6R14", "B4L10", "B4R20", "B6L20"});
+
             LOADED_ICONS = true;
         }
     }
@@ -632,7 +643,7 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            String[] flyOverWpts = {"TP050", "TP060", "TP064", "TP230", "TP240", "TT501", "ASPEN", "BEAMS", "ARIES", "BOXER", "ASTRA"};
+            String[] flyOverWpts = FLY_OVER_PTS.get(airport.getIcao());
             if (ArrayUtils.contains(flyOverWpts, direct.getName())) {
                 requiredDistance = 2;
             } else {
@@ -818,6 +829,10 @@ public class Aircraft extends Actor {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
             } else if (type == 2 || type == 3) {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
+            }
+        } else if (this instanceof Departure) {
+            if (getSidStar().getName().contains("NANKO1(6") && "NANKO".equals(direct.getName())) {
+                forceDirection = 1;
             }
         }
         return findDeltaHeading(targetHeading, forceDirection, heading);

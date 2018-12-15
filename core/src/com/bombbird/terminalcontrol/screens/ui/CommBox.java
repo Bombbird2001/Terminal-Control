@@ -137,8 +137,8 @@ public class CommBox {
         updateLabelQueue(label);
     }
 
-    /** Adds a message for the tutorial */
-    public void tutorialMsg(String msg) {
+    /** Adds a normal message */
+    public void normalMsg(String msg) {
         Label label = new Label(msg, getLabelStyle(Color.BLACK));
         updateLabelQueue(label);
     }

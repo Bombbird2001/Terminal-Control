@@ -196,7 +196,7 @@ public class Airport {
             } else {
                 msg += "takeoffs.";
             }
-            TerminalControl.radarScreen.getCommBox().tutorialMsg(msg);
+            TerminalControl.radarScreen.getCommBox().normalMsg(msg);
         }
 
         if (ldgOff || tkofOff) {
@@ -208,7 +208,7 @@ public class Airport {
             } else {
                 msg += "takeoffs.";
             }
-            TerminalControl.radarScreen.getCommBox().tutorialMsg(msg);
+            TerminalControl.radarScreen.getCommBox().normalMsg(msg);
         }
     }
 
@@ -217,7 +217,7 @@ public class Airport {
             takeoffManager.update();
         }
 
-        if (landings - airborne > 10) {
+        if (landings - airborne > 12) {
             if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
             congested = true;
         } else {
