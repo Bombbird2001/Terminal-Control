@@ -19,9 +19,11 @@ public class RunwayManager {
         } else if ("WSSS".equals(airport.getIcao())) {
             updateWSSS(windDir, windSpd);
         } else if ("RJTT".equals(airport.getIcao())) {
-            updateRJAA(windDir);
+            updateRJTT(windDir);
         } else if ("RJAA".equals(airport.getIcao())) {
             updateRJAA(windDir, windSpd);
+        } else if ("RJBB".equals(airport.getIcao())) {
+            updateRJBB(windDir, windSpd);
         }
     }
 
@@ -115,12 +117,12 @@ public class RunwayManager {
         }
     }
 
-    private void updateRJAA(int windDir) {
+    private void updateRJTT(int windDir) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
             airport.setActive("05", false, true);
-        } else {
+        } else if (windDir != 0) {
             if (windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) {
                 airport.setActive("34L", true, false);
                 airport.setActive("34R", true, true);
@@ -170,6 +172,38 @@ public class RunwayManager {
                     airport.setActive("34R", true, true);
                     airport.setActive("16L", false, false);
                     airport.setActive("16R", false, false);
+                }
+            }
+        }
+    }
+
+    private void updateRJBB(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("06L"))) {
+                airport.setActive("06L", true, true);
+                airport.setActive("06R", true, true);
+            } else {
+                airport.setActive("24L", true, true);
+                airport.setActive("24R", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("24L") != null) {
+                //24s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("24L").getHeading()) < -5) {
+                    airport.setActive("06L", true, true);
+                    airport.setActive("06R", true, true);
+                    airport.setActive("24L", false, false);
+                    airport.setActive("24R", false, false);
+                }
+            } else {
+                //06s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06L").getHeading()) < -5) {
+                    airport.setActive("24L", true, true);
+                    airport.setActive("24R", true, true);
+                    airport.setActive("06L", false, false);
+                    airport.setActive("06R", false, false);
                 }
             }
         }

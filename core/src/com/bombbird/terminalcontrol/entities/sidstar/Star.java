@@ -58,7 +58,7 @@ public class Star extends SidStar {
                                     altSpdRestrictions[2] = Integer.parseInt(s3);
                                     break; //3 is max speed
                                 default:
-                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + TerminalControl.radarScreen.mainName + "/star" + getAirport().getIcao() + ".star");
+                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter " + s3 + " in " + s2 + " in game/" + TerminalControl.radarScreen.mainName + "/star" + getAirport().getIcao() + ".star");
                             }
                             index1++;
                         }

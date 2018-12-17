@@ -242,10 +242,10 @@ public class LatTab extends Tab {
             }
             if (clearedILS != null && !ils.contains(clearedILS, false)) {
                 ils.clear();
+                ils.add("Not cleared approach");
                 if (selectedAircraft.getAirport().getRunways().get(clearedILS.substring(3)) != null) {
                     ils.add(clearedILS);
                 } else {
-                    ils.add("Not cleared approach");
                     clearedILS = "Not cleared approach";
                 }
             }

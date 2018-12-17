@@ -112,6 +112,8 @@ public class Departure extends Aircraft {
 
     private void takeOff() {
         //Sets aircraft to takeoff mode
+        getAirport().setAirborne(getAirport().getAirborne() + 1);
+
         outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
         super.updateSpd();
@@ -141,7 +143,6 @@ public class Departure extends Aircraft {
         //Called to check for takeoff landing status
         if (getIas() > getV2() - 10 && !v2set) {
             setOnGround(false);
-            getAirport().setAirborne(getAirport().getAirborne() + 1);
             setTargetHeading(getClearedHeading());
             v2set = true;
         }
@@ -283,6 +284,7 @@ public class Departure extends Aircraft {
             setClearedIas(getClimbSpd());
             super.updateSpd();
             setClearedAltitude(cruiseAlt);
+            getNavState().replaceAllClearedAltMode();
             getNavState().replaceAllClearedAlt();
             setExpedite(false);
             radarScreen.setScore(radarScreen.getScore() + 1);

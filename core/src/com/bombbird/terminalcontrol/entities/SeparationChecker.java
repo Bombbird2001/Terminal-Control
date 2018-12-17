@@ -216,7 +216,7 @@ public class SeparationChecker extends Actor {
             if (aircraft.isConflict()) {
                 radarScreen.shapeRenderer.setColor(Color.RED);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
-                radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.05f);
+                radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.025f);
             } else if (aircraft.isWarning()) {
                 radarScreen.shapeRenderer.setColor(Color.YELLOW);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);

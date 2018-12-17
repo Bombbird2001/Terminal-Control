@@ -303,7 +303,7 @@ public class NavState {
             clearedHdg.addFirst(clearedAftWptHdg.get(1));
             clearedHdg.addFirst(initHdg);
 
-            replaceAllClearedAlt();
+            replaceAllClearedAltMode();
         } else if (currentDispLatMode.contains(aircraft.getSidStar().getName()) && aircraft.getSidStar().findWptIndex(newDirect) < aircraft.getSidStar().findWptIndex(currentDirect)) {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
@@ -312,26 +312,23 @@ public class NavState {
             clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
         } else if (aircraft.getDirect() == null && "Fly heading".equals(currentDispLatMode) && (clearedDispLatMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(clearedDispLatMode) || "Hold at".equals(clearedDispLatMode))) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
-            dispLatMode.removeFirst();
-            dispLatMode.removeFirst();
-            dispLatMode.addFirst("Fly heading");
-            dispLatMode.addFirst("Fly heading");
-
-            //And set all the cleared heading to current aircraft cleared heading
+            //Set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg();
-            replaceAllClearedAlt();
+            replaceAllClearedAltMode();
         } else if (aircraft.isLocCap() && clearedHdg.get(1) != aircraft.getIls().getHeading()) {
             //Case 4: Aircraft captured LOC during delay: Replace all set headings to ILS heading
             replaceAllClearedHdg();
 
             if (aircraft.getIls() instanceof LDA) {
                 //Case 4b: Aircraft on LDA has captured LOC and is performing non precision approach: Replace all set altitude to missed approach altitude
+                replaceAllClearedAltMode();
                 replaceAllClearedAlt();
             }
         }
 
         if (aircraft.isGsCap() || (aircraft.getIls() instanceof LDA && aircraft.isLocCap())) {
             //Case 5: Aircraft captured GS during delay: Replace all set altitude to missed approach altitude
+            replaceAllClearedAltMode();
             replaceAllClearedAlt();
         }
     }
@@ -364,23 +361,28 @@ public class NavState {
         dispLatMode = newLatMode;
     }
 
-    /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value, sets alt mode to climb/descend (no expedite) */
-    public void replaceAllClearedAlt() {
+    /** Sets all alt mode to climb/descend (no expedite) */
+    public void replaceAllClearedAltMode() {
         int altSize = dispAltMode.size;
         dispAltMode.clear();
         for (int i = 0; i < altSize; i++) {
             dispAltMode.addLast("Climb/descend to");
         }
+
+        int expSize = clearedExpedite.size;
+        clearedExpedite.clear();
+        for (int i = 0; i < expSize; i++) {
+            clearedExpedite.addLast(false);
+        }
+    }
+
+    /** Gets the current cleared aircraft altitude and sets all subsequently cleared altitudes to that value */
+    public void replaceAllClearedAlt() {
         int currentAlt = aircraft.getClearedAltitude();
         int size = clearedAlt.size;
         clearedAlt.clear();
         for (int i = 0; i < size; i++) {
             clearedAlt.addLast(currentAlt);
-        }
-        int expSize = clearedExpedite.size;
-        clearedExpedite.clear();
-        for (int i = 0; i < expSize; i++) {
-            clearedExpedite.addLast(false);
         }
     }
 
@@ -407,7 +409,7 @@ public class NavState {
     public void initHold() {
         altModes.removeValue("Descend via STAR", false);
         spdModes.removeValue("STAR speed restrictions", false);
-        replaceAllClearedAlt();
+        replaceAllClearedAltMode();
         replaceAllClearedSpdToLower();
     }
 

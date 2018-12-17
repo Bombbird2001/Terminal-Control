@@ -28,6 +28,7 @@ public class FileLoader {
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             if ("".equals(s)) break;
+            if (s.charAt(0) == '#') continue;
             //For each individual obstacle:
             Obstacle obs = new Obstacle(s);
             obsArray.add(obs);
@@ -42,6 +43,7 @@ public class FileLoader {
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             if ("".equals(s)) break;
+            if (s.charAt(0) == '#') continue;
             //For each individual restricted area
             RestrictedArea area = new RestrictedArea(s);
             restArray.add(area);

@@ -456,6 +456,7 @@ public class Arrival extends Aircraft {
     /** Sets the cleared altitude for aircrafts on approach, updates UI altitude selections if selected */
     private void setMissedAlt() {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
+        getNavState().replaceAllClearedAltMode();
         getNavState().replaceAllClearedAlt();
         if (isSelected()) {
             ui.updateState();
