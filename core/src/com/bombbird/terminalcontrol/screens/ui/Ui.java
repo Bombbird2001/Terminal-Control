@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -48,6 +50,7 @@ public class Ui {
     private TextButton pauseButton;
 
     //Array for METAR info on default pane
+    private ScrollPane metarPane;
     private Array<Label> metarInfos;
 
     //Instructions panel info
@@ -177,7 +180,8 @@ public class Ui {
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
 
-        int index = 0;
+        Table metarTable = new Table();
+        metarTable.align(Align.left);
         metarInfos = new Array<Label>();
         for (Airport airport: radarScreen.airports.values()) {
             String[] metarText = new String[5];
@@ -185,14 +189,31 @@ public class Ui {
             metarText[1] = "Winds: Loading";
             metarText[2] = "Gusting to: Loading";
             metarText[3] = "Visibility: Loading";
-            metarText[4] = "Windshear: Loading";
+            metarText[4] = "Windshear: Loading\n";
             Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            metarInfo.setPosition(paneImage.getWidth() / 19.2f, 2300 - index * 575);
             metarInfo.setSize(paneImage.getWidth() / 2.74f, 300);
-            radarScreen.uiStage.addActor(metarInfo);
+            //radarScreen.uiStage.addActor(metarInfo);
             metarInfos.add(metarInfo);
-            index++;
+            metarTable.add(metarInfo);
+            metarTable.row();
         }
+
+        metarPane = new ScrollPane(metarTable);
+        metarPane.setupFadeScrollBars(1, 1.5f);
+        metarPane.setX(paneImage.getWidth() / 19.2f);
+        metarPane.setY(1550);
+        metarPane.setWidth(paneImage.getWidth() / 2.74f);
+        metarPane.setHeight(1200);
+
+        InputListener inputListener = null;
+        for (EventListener eventListener: metarPane.getListeners()) {
+            if (eventListener instanceof InputListener) {
+                inputListener = (InputListener) eventListener;
+            }
+        }
+        if (inputListener != null) metarPane.removeListener(inputListener);
+
+        radarScreen.uiStage.addActor(metarPane);
     }
 
     public void setNormalPane(boolean show) {
@@ -512,9 +533,8 @@ public class Ui {
         labelButton.setX(0.1f * paneImage.getWidth());
         scoreLabel.setX(paneImage.getWidth() / 19.2f);
         pauseButton.setX(0.75f * paneImage.getWidth());
-        for (Label label: metarInfos) {
-            label.setX(paneImage.getWidth() / 19.2f);
-        }
+        metarPane.setX(paneImage.getWidth() / 19.2f);
+        metarPane.setWidth(paneImage.getWidth() * 5 / 6);
         radarScreen.getCommBox().updateBoxWidth(paneImage.getWidth());
     }
 

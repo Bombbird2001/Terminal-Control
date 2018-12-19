@@ -38,13 +38,16 @@ public class RandomGenerator {
             total += airport.getAircraftRatio();
             airportRange.put(airport, new int[] {total - airport.getAircraftRatio(), total});
         }
-        int index = MathUtils.random(1, total);
-        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
-            if (index > airportRange.get(airport)[0] && index <= airportRange.get(airport)[1]) {
-                return airport;
+
+        Airport airport = null;
+        do {
+            int index = MathUtils.random(1, total);
+            for (Airport airport1 : TerminalControl.radarScreen.airports.values()) {
+                if (index > airportRange.get(airport1)[0] && index <= airportRange.get(airport1)[1]) {
+                    airport = airport1;
+                }
             }
-        }
-        Gdx.app.log("Random airport error", "Something went wrong with generating the random airport, returning main airport");
-        return TerminalControl.radarScreen.airports.get(TerminalControl.radarScreen.mainName);
+        } while (airport == null || airport.getLandingRunways().size() == 0);
+        return airport;
     }
 }

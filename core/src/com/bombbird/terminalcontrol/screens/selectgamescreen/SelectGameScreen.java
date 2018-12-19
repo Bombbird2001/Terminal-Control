@@ -167,8 +167,4 @@ public class SelectGameScreen implements Screen {
     public Table getScrollTable() {
         return scrollTable;
     }
-
-    public Image newFillerImage() {
-        return new Image(TerminalControl.skin.getDrawable("FillerImage"));
-    }
 }

@@ -206,7 +206,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getAltitude() > handoveralt) {
+        if (getAltitude() > handoveralt && getControlState() == 0) {
             //Aircraft has been handed over
             setLowestAlt(cruiseAlt);
             setHighestAlt(cruiseAlt);

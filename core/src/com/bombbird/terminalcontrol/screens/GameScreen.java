@@ -91,7 +91,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         this.game = game;
 
         //Initiate range circles
-        rangeCircles = new RangeCircle[3];
+        rangeCircles = new RangeCircle[2];
 
         loading = false;
         loadingPercent = "0%";
@@ -105,8 +105,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Load radar screen range circles */
     public void loadRange() {
         rangeCircles[0] = new RangeCircle(10, -255);
-        rangeCircles[1] = new RangeCircle(30, -900);
-        rangeCircles[2] = new RangeCircle(50, -1548);
+        rangeCircles[1] = new RangeCircle(35, -1062);
         for (RangeCircle circle: rangeCircles) {
             stage.addActor(circle);
         }

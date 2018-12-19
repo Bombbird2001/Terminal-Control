@@ -24,6 +24,10 @@ public class RunwayManager {
             updateRJAA(windDir, windSpd);
         } else if ("RJBB".equals(airport.getIcao())) {
             updateRJBB(windDir, windSpd);
+        } else if ("RJOO".equals(airport.getIcao())) {
+            updateRJOO(windDir, windSpd);
+        } else if ("RJBE".equals(airport.getIcao())) {
+            updateRJBE(windDir, windSpd);
         }
     }
 
@@ -206,6 +210,22 @@ public class RunwayManager {
                     airport.setActive("06R", false, false);
                 }
             }
+        }
+    }
+
+    private void updateRJOO(int windDir, int windSpd) {
+        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
+            airport.setActive("32L", false, false);
+        } else {
+            airport.setActive("32L", true, true);
+        }
+    }
+
+    private void updateRJBE(int windDir, int windSpd) {
+        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
+            airport.setActive("09", false, false);
+        } else {
+            airport.setActive("09", true, true);
         }
     }
 

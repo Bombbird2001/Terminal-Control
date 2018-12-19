@@ -86,6 +86,10 @@ public class TakeoffManager {
                 updateRJAA();
             } else if ("RJBB".equals(airport.getIcao())) {
                 updateRJBB();
+            } else if ("RJOO".equals(airport.getIcao())) {
+                updateRJOO();
+            } else if ("RJBE".equals(airport.getIcao())) {
+                updateRJBE();
             }
         }
     }
@@ -183,10 +187,10 @@ public class TakeoffManager {
                         runway = runway1;
                         dist = distance;
                     }
-                } else if ("16L".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkOppLanding(airport.getRunways().get("16R"))) {
+                } else if ("16L".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("16R")) {
                     runway = runway1;
                     dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L"))) {
+                } else if ("16R".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("16L")) {
                     runway = runway1;
                     dist = distance;
                 }
@@ -241,6 +245,20 @@ public class TakeoffManager {
             }
         }
         updateRunway(runway);
+    }
+
+    private void updateRJOO() {
+        Runway runway = airport.getRunways().get("32L");
+        if (runway.isTakeoff() && checkPreceding("32L") && checkLanding(runway)) {
+            updateRunway(runway);
+        }
+    }
+
+    private void updateRJBE() {
+        Runway runway = airport.getRunways().get("09");
+        if (runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
+            updateRunway(runway);
+        }
     }
 
     /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */

@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.screens.selectgamescreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -101,8 +102,13 @@ public class LoadGameScreen extends SelectGameScreen {
                         deleteButton.setName("" + 1);
                     } else {
                         GameSaver.deleteSave(jsonObject.getInt("saveId"));
+                        Cell cell = getScrollTable().getCell(deleteButton);
+                        Cell cell1 = getScrollTable().getCell(saveButton);
                         getScrollTable().removeActor(deleteButton);
                         getScrollTable().removeActor(saveButton);
+                        getScrollTable().getCells().removeValue(cell, true);
+                        getScrollTable().getCells().removeValue(cell1, true);
+                        getScrollTable().invalidate();
                     }
                     if (!getScrollTable().hasChildren()) {
                         label.setVisible(true);

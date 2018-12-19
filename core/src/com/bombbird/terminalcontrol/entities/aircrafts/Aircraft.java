@@ -774,7 +774,7 @@ public class Aircraft extends Actor {
         }
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
-            return -1;
+            return targetHeading;
         } else {
             float deltaX = nextWpt.getPosX() - getDirect().getPosX();
             float deltaY = nextWpt.getPosY() - getDirect().getPosY();
@@ -831,7 +831,21 @@ public class Aircraft extends Actor {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
         } else if (this instanceof Departure) {
-            if (getSidStar().getName().contains("NANKO1(6") && "NANKO".equals(direct.getName())) {
+            //Force directions for certain departure procedures
+            if (getSidStar().getName().contains("NANKO1(6") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 300) {
+                //RJBB NANKO1(6L) and NANKO1(6R) departures
+                forceDirection = 1;
+            } else if (getSidStar().getName().contains("KANSAI1") && getSidStar().getName().contains("24") && direct != null && "KNE".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJBB KANSAI1(24L) and KANSAI1(24R) departures
+                forceDirection = 2;
+            } else if ("ASUKA4".equals(getSidStar().getName()) && direct != null && "ASUKA".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO ASUKA4 departure
+                forceDirection = 1;
+            } else if ("OTSU5".equals(getSidStar().getName()) && direct != null && "D101P".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO OTSU5 departure
+                forceDirection = 1;
+            } else if ("MINAC3".equals(getSidStar().getName()) && direct != null && "ITE16".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO MINAC3 departure
                 forceDirection = 1;
             }
         }
@@ -1398,12 +1412,15 @@ public class Aircraft extends Actor {
         } else {
             //Restrictions
             if (clearedAltitude > highestAlt) {
+                if (this instanceof Arrival) {
+                    clearedAltitude = highestAlt;
+                    navState.replaceAllClearedAlt();
+                }
                 targetAltitude = highestAlt;
             } else if (clearedAltitude < lowestAlt) {
                 if (this instanceof Departure) {
                     clearedAltitude = lowestAlt;
-                    navState.getClearedAlt().removeFirst();
-                    navState.getClearedAlt().addFirst(clearedAltitude);
+                    navState.replaceAllClearedAlt();
                 }
                 targetAltitude = lowestAlt;
             } else {
