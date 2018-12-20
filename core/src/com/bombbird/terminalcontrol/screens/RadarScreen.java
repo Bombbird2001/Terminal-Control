@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -390,12 +391,28 @@ public class RadarScreen extends GameScreen {
         separationChecker.update();
 
         //Draw obstacles
+        Array<Obstacle> saveForLast = new Array<Obstacle>();
         for (Obstacle obstacle: obsArray) {
+            if (obstacle.isConflict()) {
+                saveForLast.add(obstacle);
+            } else {
+                obstacle.renderShape();
+            }
+        }
+        for (Obstacle obstacle: saveForLast) {
             obstacle.renderShape();
         }
 
         //Draw restricted areas
+        Array<RestrictedArea> saveForLast1 = new Array<RestrictedArea>();
         for (RestrictedArea restrictedArea: restArray) {
+            if (restrictedArea.isConflict()) {
+                saveForLast1.add(restrictedArea);
+            } else {
+                restrictedArea.renderShape();
+            }
+        }
+        for (RestrictedArea restrictedArea: saveForLast1) {
             restrictedArea.renderShape();
         }
 

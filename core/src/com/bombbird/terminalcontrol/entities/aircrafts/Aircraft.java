@@ -387,7 +387,6 @@ public class Aircraft extends Actor {
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.sinDeg((float)(90 - radarTrack)));
-            //shapeRenderer.line(x, y, x + gs * MathUtils.cosDeg((float)(90 - track)), y + gs * MathUtils.sinDeg((float)(90 - track)));
         }
         clickSpot.drawDebug(shapeRenderer);
     }

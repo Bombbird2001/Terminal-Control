@@ -16,6 +16,7 @@ public class RestrictedArea extends Actor {
     private Circle circle;
     private int minAlt;
     private Label label;
+    private boolean conflict;
 
     private RadarScreen radarScreen;
     private ShapeRenderer shapeRenderer;
@@ -59,6 +60,11 @@ public class RestrictedArea extends Actor {
     /** Draws the area label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (conflict) {
+            label.getStyle().fontColor = Color.RED;
+        } else {
+            label.getStyle().fontColor = Color.GRAY;
+        }
         label.draw(batch, 1);
     }
 
@@ -70,7 +76,11 @@ public class RestrictedArea extends Actor {
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.GRAY);
+        if (conflict) {
+            shapeRenderer.setColor(Color.RED);
+        } else {
+            shapeRenderer.setColor(Color.GRAY);
+        }
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
     }
 
@@ -81,5 +91,13 @@ public class RestrictedArea extends Actor {
 
     public int getMinAlt() {
         return minAlt;
+    }
+
+    public boolean isConflict() {
+        return conflict;
+    }
+
+    public void setConflict(boolean conflict) {
+        this.conflict = conflict;
     }
 }

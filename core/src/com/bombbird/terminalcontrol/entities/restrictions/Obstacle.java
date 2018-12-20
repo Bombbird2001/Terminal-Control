@@ -15,6 +15,7 @@ public class Obstacle extends Actor {
     private Polygon polygon;
     private int minAlt;
     private Label label;
+    private boolean conflict;
 
     public Obstacle(String toParse) {
         parseInfo(toParse);
@@ -50,12 +51,21 @@ public class Obstacle extends Actor {
     /** Draws the obstacle label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (conflict) {
+            label.getStyle().fontColor = Color.RED;
+        } else {
+            label.getStyle().fontColor = Color.GRAY;
+        }
         label.draw(batch, 1);
     }
 
     /** Renders the polygon of obstacle to screen */
     public void renderShape() {
-        TerminalControl.radarScreen.shapeRenderer.setColor(Color.GRAY);
+        if (conflict) {
+            TerminalControl.radarScreen.shapeRenderer.setColor(Color.RED);
+        } else {
+            TerminalControl.radarScreen.shapeRenderer.setColor(Color.GRAY);
+        }
         TerminalControl.radarScreen.shapeRenderer.polygon(polygon.getVertices());
     }
 
@@ -66,5 +76,13 @@ public class Obstacle extends Actor {
 
     public int getMinAlt() {
         return minAlt;
+    }
+
+    public boolean isConflict() {
+        return conflict;
+    }
+
+    public void setConflict(boolean conflict) {
+        this.conflict = conflict;
     }
 }

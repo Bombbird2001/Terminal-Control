@@ -34,7 +34,7 @@ public class RangeCircle extends Actor{
     }
 
     public void renderShape() {
-        shapeRenderer.setColor(Color.GRAY);
+        shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.circle(2880, 1620, range / 10f * 324, 60);
     }
 }

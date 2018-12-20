@@ -20,7 +20,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.0.1813.4'
+    version = '1.0.1813.5'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.9'

@@ -61,6 +61,12 @@ public class SeparationChecker extends Actor {
             label.setText("");
             label.setName("");
         }
+        for (Obstacle obstacle: radarScreen.obsArray) {
+            obstacle.setConflict(false);
+        }
+        for (RestrictedArea restrictedArea: radarScreen.restArray) {
+            restrictedArea.setConflict(false);
+        }
         int active = checkAircraftSep();
         active = checkRestrSep(active);
         int tmpActive = active;
@@ -197,12 +203,14 @@ public class SeparationChecker extends Actor {
             for (Obstacle obstacle: radarScreen.obsArray) {
                 if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
+                    obstacle.setConflict(true);
                     active++;
                 }
             }
             for (RestrictedArea restrictedArea: radarScreen.restArray) {
                 if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < restrictedArea.getMinAlt() - 50 && restrictedArea.isIn(aircraft)) {
                     aircraft.setConflict(true);
+                    restrictedArea.setConflict(true);
                     active++;
                 }
             }
