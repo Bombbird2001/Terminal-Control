@@ -8,6 +8,8 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
+import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
+import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
@@ -81,6 +83,16 @@ public class Arrival extends Aircraft {
             initAlt = limit;
         } else if (initAlt < 6000) {
             initAlt = 6000;
+        }
+        for (Obstacle obstacle: radarScreen.obsArray) {
+            if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
+                initAlt = obstacle.getMinAlt();
+            }
+        }
+        for (RestrictedArea restrictedArea: radarScreen.restArray) {
+            if (restrictedArea.isIn(this) && initAlt < restrictedArea.getMinAlt()) {
+                initAlt = restrictedArea.getMinAlt();
+            }
         }
         setAltitude(initAlt);
         updateAltRestrictions();

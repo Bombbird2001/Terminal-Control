@@ -85,7 +85,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         RUN,
         SETTINGS
     }
-    private static State state = State.RUN;
+    public static State state = State.RUN;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -138,10 +138,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             //Move up
             camera.translate(0, SCROLL_CONSTANT / camera.zoom * dt, 0);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
-            //On android, change to pause screen if not paused, un-pause if paused
-            setGameState(state == State.PAUSE ? State.RUN : State.PAUSE);
         }
 
         if (zooming) {
@@ -211,7 +207,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     /** Renders shapes for aircraft trajectory line, obstacle and restricted areas; overridden in radarScreen class */
     public void renderShape() {
-        //No default implementation
+        for (RangeCircle rangeCircle : rangeCircles) {
+            rangeCircle.renderShape();
+        }
     }
 
     /** Main rendering method for rendering to spriteBatch */
@@ -242,9 +240,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     stage.getViewport().apply();
                     //Render shapes only if METAR has finished loading
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-                    for (RangeCircle rangeCircle : rangeCircles) {
-                        rangeCircle.renderShape();
-                    }
                     renderShape();
                     shapeRenderer.end();
                 }

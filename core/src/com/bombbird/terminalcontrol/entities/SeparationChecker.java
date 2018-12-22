@@ -75,7 +75,6 @@ public class SeparationChecker extends Actor {
             tmpActive--;
         }
         lastNumber = active;
-        renderShape();
     }
 
     /** Updates the levels each aircraft belongs to */
@@ -219,7 +218,7 @@ public class SeparationChecker extends Actor {
     }
 
     /** Renders the separation rings if aircraft is in conflict */
-    private void renderShape() {
+    public void renderShape() {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isConflict()) {
                 radarScreen.shapeRenderer.setColor(Color.RED);

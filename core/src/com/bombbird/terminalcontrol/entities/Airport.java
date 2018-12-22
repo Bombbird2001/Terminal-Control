@@ -225,9 +225,7 @@ public class Airport {
         }
 
         for (Runway runway: runways.values()) {
-            if (runway.isTakeoff() || runway.isLanding()) {
-                runway.renderShape();
-            }
+            runway.renderShape();
         }
     }
 
@@ -235,7 +233,7 @@ public class Airport {
         this.metar = metar.getJSONObject(getIcao());
         System.out.println("METAR of " + getIcao() + ": " + this.metar.toString());
         //Update active runways if METAR is updated
-        int windHdg = this.metar.getInt("windDirection");
+        int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");
         ws = "";
         if (!this.metar.isNull("windshear")) {
             ws = this.metar.getString("windshear");

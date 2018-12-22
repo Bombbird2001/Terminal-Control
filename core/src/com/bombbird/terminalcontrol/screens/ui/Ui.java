@@ -99,7 +99,11 @@ public class Ui {
             if (airport.getWinds()[0] != 0) {
                 metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
             } else {
-                metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
+                if (airport.getWinds()[1] != 0) {
+                    metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
+                } else {
+                    metarText[1] = "Winds: Calm";
+                }
             }
             //Gusts
             if (airport.getGusts() != -1) {

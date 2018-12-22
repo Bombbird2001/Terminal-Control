@@ -113,7 +113,11 @@ public class Runway {
 
     /** Renders the runway rectangle */
     public void renderShape() {
-        shapeRenderer.setColor(Color.WHITE);
+        if (landing || takeoff) {
+            shapeRenderer.setColor(Color.WHITE);
+        } else if (!oppRwy.takeoff && !oppRwy.landing) {
+            shapeRenderer.setColor(Color.DARK_GRAY);
+        }
         shapeRenderer.polygon(polygon.getVertices());
     }
 

@@ -180,6 +180,7 @@ public class CommBox {
     public void updateBoxWidth(float paneWidth) {
         scrollPane.setX(0.1f * paneWidth);
         scrollPane.setWidth(0.8f * paneWidth);
+        header.setX(0.3f * TerminalControl.radarScreen.ui.getPaneWidth());
     }
 
     public void setVisible(boolean show) {

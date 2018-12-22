@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -416,6 +417,8 @@ public class RadarScreen extends GameScreen {
             restrictedArea.renderShape();
         }
 
+        super.renderShape();
+
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
         if ("RCTP".equals(mainName)) {
@@ -445,12 +448,23 @@ public class RadarScreen extends GameScreen {
             }
         }
 
+        separationChecker.renderShape();
+
         if (tutorialManager != null) {
             tutorialManager.update();
         }
 
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    }
+
+    @Override
+    public void render(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial) {
+            //On android, change to pause screen if not paused, un-pause if paused
+            setGameState(GameScreen.state == State.PAUSE ? State.RUN : State.PAUSE);
+        }
+        super.render(delta);
     }
 
     @Override

@@ -63,7 +63,15 @@ public class GameSaver {
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             //If desktop, save to external roaming appData
-            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
+            String type = Gdx.files.internal("game/type.type").readString();
+            if ("lite".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
+            } else if ("full".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/saves/" + radarScreen.saveId + ".json");
+            } else {
+                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
+            }
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available
             if (Gdx.files.isLocalStorageAvailable()) {

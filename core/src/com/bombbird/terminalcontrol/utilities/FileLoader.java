@@ -209,7 +209,15 @@ public class FileLoader {
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             //If desktop, save to external roaming appData
-            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+            String type = Gdx.files.internal("game/type.type").readString();
+            if ("lite".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+            } else if ("full".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/saves/saves.saves");
+            } else {
+                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+            }
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available
             if (Gdx.files.isLocalStorageAvailable()) {
