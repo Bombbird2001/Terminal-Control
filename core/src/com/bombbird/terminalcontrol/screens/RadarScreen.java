@@ -466,6 +466,15 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        //Updates position of tutorial box if tutorial
+        if (tutorial) {
+            tutorialManager.getScrollPane().setX((float) TerminalControl.WIDTH / TerminalControl.HEIGHT * 3240 - 1750);
+        }
+    }
+
+    @Override
     public void dispose() {
         //Implements dispose method of screen, disposes resources after they're no longer needed
         super.dispose();

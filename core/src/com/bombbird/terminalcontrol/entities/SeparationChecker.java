@@ -110,7 +110,7 @@ public class SeparationChecker extends Actor {
                     Aircraft plane2 = planesToCheck.get(k);
 
                     //Split up exception cases to make it easier to read
-                    if (plane1.getAltitude() < 1400 || plane2.getAltitude() < 1400 || plane1.getAltitude() > 20000 || plane2.getAltitude() > 20000) {
+                    if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
                         //If either plane is below 1400 feet or above 20000 feet
                         continue;
                     }
@@ -195,7 +195,7 @@ public class SeparationChecker extends Actor {
     private int checkRestrSep(int active) {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
-                    (aircraft instanceof Departure && aircraft.getAltitude() <= 4000 + aircraft.getAirport().getElevation()) ||
+                    (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
                     aircraft.isGoAroundWindow()) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is a departure that is below 4000ft AGL
                 continue;

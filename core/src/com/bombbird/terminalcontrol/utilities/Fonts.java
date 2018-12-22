@@ -41,15 +41,17 @@ public class Fonts {
     }
 
     public static void dispose() {
-        if (!TerminalControl.ishtml) {
+        if (!TerminalControl.ishtml && defaultFont != null) {
             defaultFont.dispose();
         }
-        defaultFont6.dispose();
-        defaultFont8.dispose();
-        defaultFont10.dispose();
-        defaultFont12.dispose();
-        defaultFont20.dispose();
-        defaultFont30.dispose();
+        if (defaultFont6 != null) {
+            defaultFont6.dispose();
+            defaultFont8.dispose();
+            defaultFont10.dispose();
+            defaultFont12.dispose();
+            defaultFont20.dispose();
+            defaultFont30.dispose();
+        }
 
         defaultFont = null;
         defaultFont6 = null;

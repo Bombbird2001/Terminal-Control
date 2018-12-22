@@ -46,7 +46,7 @@ public class TutorialManager {
         scrollTable = new Table();
         scrollPane = new ScrollPane(scrollTable);
 
-        scrollPane.setX(4600);
+        scrollPane.setX((float) TerminalControl.WIDTH / TerminalControl.HEIGHT * 3240 - 1750);
         scrollPane.setY(3240 * 0.6f);
         scrollPane.setSize(1600, 3240 * 0.35f);
         scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
@@ -417,5 +417,9 @@ public class TutorialManager {
                 }
             }, 10);
         }
+    }
+
+    public ScrollPane getScrollPane() {
+        return scrollPane;
     }
 }

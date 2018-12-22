@@ -37,6 +37,8 @@ public class TerminalControl extends Game {
         skin = new Skin();
         skin.addRegions(TerminalControl.buttonAtlas);
 
+        Gdx.input.setCatchBackKey(true);
+
         this.setScreen(new MainMenuScreen(this));
     }
 
