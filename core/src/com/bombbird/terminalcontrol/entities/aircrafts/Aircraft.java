@@ -19,6 +19,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.procedures.FlyOverPts;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
@@ -33,8 +34,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class Aircraft extends Actor {
     //Rendering parameters
     public static TextureAtlas ICON_ATLAS;
@@ -44,9 +43,6 @@ public class Aircraft extends Actor {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
     private static boolean LOADED_ICONS = false;
-
-    //Fly over waypoints
-    private static final HashMap<String, String[]> FLY_OVER_PTS = new HashMap<String, String[]>();
 
     public RadarScreen radarScreen;
     private Stage stage;
@@ -310,11 +306,6 @@ public class Aircraft extends Actor {
             BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
             BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
             BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
-
-            FLY_OVER_PTS.put("RCTP", new String[] {"TP050", "TP060", "TP064", "TP230", "TP240"});
-            FLY_OVER_PTS.put("RJTT", new String[] {"TT501"});
-            FLY_OVER_PTS.put("RJAA", new String[] {"ASPEN", "BEAMS", "ARIES", "BOXER", "ASTRA"});
-            FLY_OVER_PTS.put("RJBB", new String[] {"B6R10", "B6R13", "B6R14", "B4L10", "B4R20", "B6L20"});
 
             LOADED_ICONS = true;
         }
@@ -642,7 +633,7 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            String[] flyOverWpts = FLY_OVER_PTS.get(airport.getIcao());
+            String[] flyOverWpts = FlyOverPts.FLY_OVER_PTS.get(airport.getIcao());
             if (ArrayUtils.contains(flyOverWpts, direct.getName())) {
                 requiredDistance = 2;
             } else {
@@ -657,10 +648,9 @@ public class Aircraft extends Actor {
                 runway = getIls().getRwy();
                 navState.getLatModes().removeValue(getSidStar() + " arrival", false);
             }
-            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY())) <= ((LDA) getIls()).getLineUpDist()) {
-                float deltaX = 100 * MathUtils.cosDeg(90 - runway.getTrueHdg());
-                float deltaY = 100 * MathUtils.sinDeg(90 - runway.getTrueHdg());
-                targetHeading = calculatePointTargetHdg(deltaX, deltaY, windHdg, windSpd);
+            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) + 10) <= ((LDA) getIls()).getLineUpDist()) {
+                ils = ((LDA) getIls()).getImaginaryIls();
+                return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
                 Vector2 position = this.getIls().getPointAhead(this);
@@ -846,6 +836,9 @@ public class Aircraft extends Actor {
             } else if ("MINAC3".equals(getSidStar().getName()) && direct != null && "ITE16".equals(direct.getName()) && heading > 180 && heading <= 360) {
                 //RJOO MINAC3 departure
                 forceDirection = 1;
+            } else if (("NLG2D".equals(getSidStar().getName()) || "SHL2D".equals(getSidStar().getName()) || "MIPAG2D".equals(getSidStar().getName())) && direct != null && "MCU".equals(direct.getName()) && heading > 90 && heading <= 360) {
+                //VMMC NLG2D, SHL2D and MIPAG2D departures
+                forceDirection = 2;
             }
         }
         return findDeltaHeading(targetHeading, forceDirection, heading);

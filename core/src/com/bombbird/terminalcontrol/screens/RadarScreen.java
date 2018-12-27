@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.FlyOverPts;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -297,6 +298,9 @@ public class RadarScreen extends GameScreen {
 
         //Load waypoints
         waypoints = FileLoader.loadWaypoints();
+
+        //Load fly over waypoints
+        FlyOverPts.loadPoints();
 
         //Load airports
         loadAirports();

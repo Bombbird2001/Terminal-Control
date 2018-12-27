@@ -90,6 +90,8 @@ public class TakeoffManager {
                 updateRJOO();
             } else if ("RJBE".equals(airport.getIcao())) {
                 updateRJBE();
+            } else if ("VHHH".equals(airport.getIcao())) {
+                updateVHHH();
             }
         }
     }
@@ -259,6 +261,30 @@ public class TakeoffManager {
         if (runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
             updateRunway(runway);
         }
+    }
+
+    private void updateVHHH() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
+                if ("07L".equals(runway1.getName()) && checkPreceding("07R") && checkOppLanding(airport.getRunways().get("07R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("07R".equals(runway1.getName()) && checkPreceding("07L") && checkOppLanding(airport.getRunways().get("07L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("25L".equals(runway1.getName()) && checkPreceding("25R") && checkOppLanding(airport.getRunways().get("25R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("25R".equals(runway1.getName()) && checkPreceding("25L") && checkOppLanding(airport.getRunways().get("25L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
     }
 
     /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */

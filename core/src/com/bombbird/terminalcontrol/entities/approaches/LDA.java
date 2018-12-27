@@ -11,31 +11,45 @@ public class LDA extends ILS {
     private Queue<int[]> nonPrecAlts;
     private Vector2 gsRing;
     private float lineUpDist;
+    private boolean npa;
+    private ILS imaginaryIls;
 
     public LDA(Airport airport, String toParse) {
         super(airport, toParse);
-        calculateFAFRing();
+        if (npa) calculateFAFRing();
+        loadImaginaryIls();
     }
 
-    /** Overrides method in ILS to also load the non precision approach altitudes */
+    /** Overrides method in ILS to also load the non precision approach altitudes if applicable */
     @Override
     public void parseInfo(String toParse) {
         super.parseInfo(toParse);
 
-        nonPrecAlts = new Queue<int[]>();
-
         String[] info = toParse.split(",");
         lineUpDist = Float.parseFloat(info[9]);
 
-        for (String s3: info[10].split("-")) {
-            int[] altDist = new int[2];
-            int index1 = 0;
-            for (String s2 : s3.split(">")) {
-                altDist[index1] = Integer.parseInt(s2);
-                index1++;
+        npa = false;
+
+        if (info.length >= 11) {
+            npa = true;
+            nonPrecAlts = new Queue<int[]>();
+
+            for (String s3 : info[10].split("-")) {
+                int[] altDist = new int[2];
+                int index1 = 0;
+                for (String s2 : s3.split(">")) {
+                    altDist[index1] = Integer.parseInt(s2);
+                    index1++;
+                }
+                nonPrecAlts.addLast(altDist);
             }
-            nonPrecAlts.addLast(altDist);
         }
+    }
+
+    /** Loads the imaginary ILS from runway center line */
+    private void loadImaginaryIls() {
+        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getOppRwy().getX() + "," + getRwy().getOppRwy().getY() + ",-" + MathTools.pixelToNm(getRwy().getPxLength()) + ",0,4000,->-";
+        imaginaryIls = new ILS(getAirport(), text);
     }
 
     /** Calculates position of FAF on LOC course */
@@ -43,16 +57,18 @@ public class LDA extends ILS {
         gsRing = new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev), getY() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev));
     }
 
-    /** Overrides method in ILS to ignore it */
+    /** Overrides method in ILS to ignore it if NPA */
     @Override
     public void calculateGsRings() {
-        //Nothing
+        if (!npa) {
+            super.calculateGsRings();
+        }
     }
 
     /** Overrides method in ILS to draw FAF point on LOC course */
     @Override
     public void drawGsCircles() {
-        TerminalControl.radarScreen.shapeRenderer.circle(gsRing.x, gsRing.y, 8);
+        if (npa) TerminalControl.radarScreen.shapeRenderer.circle(gsRing.x, gsRing.y, 8);
     }
 
 
@@ -62,5 +78,13 @@ public class LDA extends ILS {
 
     public float getLineUpDist() {
         return lineUpDist;
+    }
+
+    public boolean isNpa() {
+        return npa;
+    }
+
+    public ILS getImaginaryIls() {
+        return imaginaryIls;
     }
 }

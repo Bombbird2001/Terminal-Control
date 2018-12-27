@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
@@ -71,7 +72,7 @@ public class SeparationChecker extends Actor {
         active = checkRestrSep(active);
         int tmpActive = active;
         while (tmpActive > lastNumber) {
-            radarScreen.setScore(radarScreen.getScore() / 2);
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() / 2f));
             tmpActive--;
         }
         lastNumber = active;

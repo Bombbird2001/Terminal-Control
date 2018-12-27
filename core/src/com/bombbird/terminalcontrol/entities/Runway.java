@@ -239,4 +239,8 @@ public class Runway {
     public Label getLabel() {
         return label;
     }
+
+    public float getPxLength() {
+        return pxLength;
+    }
 }

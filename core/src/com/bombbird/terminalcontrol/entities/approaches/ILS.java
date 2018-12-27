@@ -235,4 +235,8 @@ public class ILS extends Actor {
     public String[] getTowerFreq() {
         return towerFreq;
     }
+
+    public Airport getAirport() {
+        return airport;
+    }
 }

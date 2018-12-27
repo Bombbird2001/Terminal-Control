@@ -28,6 +28,8 @@ public class RunwayManager {
             updateRJOO(windDir, windSpd);
         } else if ("RJBE".equals(airport.getIcao())) {
             updateRJBE(windDir, windSpd);
+        } else if ("VHHH".equals(airport.getIcao())) {
+            updateVHHH(windDir, windSpd);
         }
     }
 
@@ -226,6 +228,38 @@ public class RunwayManager {
             airport.setActive("09", false, false);
         } else {
             airport.setActive("09", true, true);
+        }
+    }
+
+    private void updateVHHH(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("07L"))) {
+                airport.setActive("07L", true, true);
+                airport.setActive("07R", true, true);
+            } else {
+                airport.setActive("25L", true, true);
+                airport.setActive("25R", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("07L") != null) {
+                //05s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("07L").getHeading()) < -5) {
+                    airport.setActive("25L", true, true);
+                    airport.setActive("25R", true, true);
+                    airport.setActive("07L", false, false);
+                    airport.setActive("07R", false, false);
+                }
+            } else {
+                //23s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25L").getHeading()) < -5) {
+                    airport.setActive("07L", true, true);
+                    airport.setActive("07R", true, true);
+                    airport.setActive("25L", false, false);
+                    airport.setActive("25R", false, false);
+                }
+            }
         }
     }
 

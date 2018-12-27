@@ -63,15 +63,7 @@ public class GameSaver {
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             //If desktop, save to external roaming appData
-            String type = Gdx.files.internal("game/type.type").readString();
-            if ("lite".equals(type)) {
-                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
-            } else if ("full".equals(type)) {
-                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/saves/" + radarScreen.saveId + ".json");
-            } else {
-                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
-                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/" + radarScreen.saveId + ".json");
-            }
+            handle = Gdx.files.external(FileLoader.mainDir + "/saves/" + radarScreen.saveId + ".json");
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available
             if (Gdx.files.isLocalStorageAvailable()) {
@@ -464,7 +456,7 @@ public class GameSaver {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             handle = Gdx.files.local("saves/saves.saves");
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+            handle = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves");
         } else {
             handle = Gdx.files.local("saves/saves.saves");
             Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
@@ -507,7 +499,7 @@ public class GameSaver {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             handle = Gdx.files.local("saves/saves.saves");
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+            handle = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves");
         } else {
             handle = Gdx.files.local("saves/saves.saves");
             Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");

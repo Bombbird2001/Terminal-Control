@@ -48,6 +48,7 @@ public class HoldProcedure {
 
     /** Parses input string into the relevant information for the holding procedure */
     private void parseInfo(String info) {
+        if ("".equals(info)) return;
         for (String indivWpt: info.split(",")) {
             //For each individual holding waypoint specified
             int index = 0;

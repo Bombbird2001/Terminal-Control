@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class FileLoader {
+    public static final String mainDir = "full".equals(Gdx.files.internal("game/type.type").readString()) ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
+
     public static Array<Obstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
         Array<Obstacle> obsArray = new Array<Obstacle>();
@@ -150,12 +152,14 @@ public class FileLoader {
         String[] indivApches = handle.readString().split("\\r?\\n");
         for (String s: indivApches) {
             //For each approach
-            if (s.split(",").length == 9) {
+            if (s.contains("ILS")) {
                 ILS ils = new ILS(airport, s);
                 approaches.put(ils.getRwy().getName(), ils);
-            } else {
+            } else if (s.contains("LDA")) {
                 LDA lda = new LDA(airport, s);
                 approaches.put(lda.getRwy().getName(), lda);
+            } else {
+                Gdx.app.log("ILS error", "Invalid approach type specified for " + s);
             }
         }
         return approaches;
