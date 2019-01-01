@@ -285,7 +285,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateAltRestrictions method in Aircraft, for setting aircraft altitude restrictions when descending via the STAR */
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint") && ("Hold at".equals(getNavState().getDispLatMode().first()) && !isHolding())) {
+        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint") || ("Hold at".equals(getNavState().getDispLatMode().first()) && !isHolding())) {
             //Aircraft on STAR
             int highestAlt = -1;
             int lowestAlt = -1;

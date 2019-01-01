@@ -92,10 +92,13 @@ public class TakeoffManager {
                 updateRJBE();
             } else if ("VHHH".equals(airport.getIcao())) {
                 updateVHHH();
+            } else if ("VMMC".equals(airport.getIcao())) {
+                updateVMMC();
             }
         }
     }
 
+    /** Checks takeoff status for Taiwan Taoyuan */
     private void updateRCTP() {
         Runway runway = null;
         float dist = -1;
@@ -120,6 +123,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Taipei Songshan */
     private void updateRCSS() {
         Runway runway = null;
         float dist = -1;
@@ -133,6 +137,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Singapore Changi */
     private void updateWSSS() {
         Runway runway = null;
         float dist = -1;
@@ -157,6 +162,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Tokyo Haneda */
     private void updateRJTT() {
         Runway runway = null;
         float dist = -1;
@@ -201,6 +207,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Tokyo Narita */
     private void updateRJAA() {
         Runway runway = null;
         float dist = -1;
@@ -225,6 +232,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Osaka Kansai */
     private void updateRJBB() {
         Runway runway = null;
         float dist = -1;
@@ -249,6 +257,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
+    /** Checks takeoff status for Osaka Itami */
     private void updateRJOO() {
         Runway runway = airport.getRunways().get("32L");
         if (runway.isTakeoff() && checkPreceding("32L") && checkLanding(runway)) {
@@ -256,6 +265,7 @@ public class TakeoffManager {
         }
     }
 
+    /** Checks takeoff status for Kobe */
     private void updateRJBE() {
         Runway runway = airport.getRunways().get("09");
         if (runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
@@ -263,6 +273,7 @@ public class TakeoffManager {
         }
     }
 
+    /** Checks takeoff status for Hong Kong */
     private void updateVHHH() {
         Runway runway = null;
         float dist = -1;
@@ -282,6 +293,20 @@ public class TakeoffManager {
                     runway = runway1;
                     dist = distance;
                 }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Macau */
+    private void updateVMMC() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+                runway = runway1;
+                dist = distance;
             }
         }
         updateRunway(runway);

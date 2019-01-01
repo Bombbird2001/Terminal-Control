@@ -72,7 +72,7 @@ public class SeparationChecker extends Actor {
         active = checkRestrSep(active);
         int tmpActive = active;
         while (tmpActive > lastNumber) {
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() / 2f));
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
             tmpActive--;
         }
         lastNumber = active;

@@ -134,7 +134,7 @@ public class Departure extends Aircraft {
         } else {
             setClearedHeading(getRunway().getHeading());
         }
-        setHeading(getClearedHeading());
+        setHeading(getRunway().getHeading());
         setTkOfLdg(true);
     }
 

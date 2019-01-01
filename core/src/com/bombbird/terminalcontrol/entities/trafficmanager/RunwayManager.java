@@ -30,9 +30,12 @@ public class RunwayManager {
             updateRJBE(windDir, windSpd);
         } else if ("VHHH".equals(airport.getIcao())) {
             updateVHHH(windDir, windSpd);
+        } else if ("VMMC".equals(airport.getIcao())) {
+            updateVMMC(windDir, windSpd);
         }
     }
 
+    /** Updates runway status for Taiwan Taoyuan */
     private void updateRCTP(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -65,6 +68,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Taipei Songshan */
     private void updateRCSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -91,6 +95,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Singapore Changi */
     private void updateWSSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -123,6 +128,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Tokyo Haneda */
     private void updateRJTT(int windDir) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
@@ -151,6 +157,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Tokyo Narita */
     private void updateRJAA(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -183,6 +190,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Osaka Kansai */
     private void updateRJBB(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -215,6 +223,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Osaka Itami */
     private void updateRJOO(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
             airport.setActive("32L", false, false);
@@ -223,6 +232,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Kobe */
     private void updateRJBE(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
             airport.setActive("09", false, false);
@@ -231,6 +241,7 @@ public class RunwayManager {
         }
     }
 
+    /** Updates runway status for Hong Kong*/
     private void updateVHHH(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
@@ -258,6 +269,33 @@ public class RunwayManager {
                     airport.setActive("07R", true, true);
                     airport.setActive("25L", false, false);
                     airport.setActive("25R", false, false);
+                }
+            }
+        }
+    }
+
+    /** Updates runway status for Macau */
+    private void updateVMMC(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("16"))) {
+                airport.setActive("16", true, true);
+            } else {
+                airport.setActive("34", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("16") != null) {
+                //10 is active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("16").getHeading()) < -5) {
+                    airport.setActive("34", true, true);
+                    airport.setActive("16", false, false);
+                }
+            } else {
+                //28 is active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34").getHeading()) < -5) {
+                    airport.setActive("16", true, true);
+                    airport.setActive("34", false, false);
                 }
             }
         }

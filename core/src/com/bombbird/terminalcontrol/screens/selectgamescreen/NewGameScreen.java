@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.FileLoader;
 
 public class NewGameScreen extends SelectGameScreen {
     public NewGameScreen(final TerminalControl game) {
@@ -68,7 +69,7 @@ public class NewGameScreen extends SelectGameScreen {
                     if (Gdx.app.getType() == Application.ApplicationType.Android) {
                         handle1 = Gdx.files.local("saves/saves.saves");
                     } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-                        handle1 = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
+                        handle1 = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves");
                     } else {
                         handle1 = Gdx.files.local("saves/saves.saves");
                         Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");

@@ -12,7 +12,7 @@ public class FlyOverPts {
         FLY_OVER_PTS.put("RJTT", new String[] {"TT501"});
         FLY_OVER_PTS.put("RJAA", new String[] {"ASPEN", "BEAMS", "ARIES", "BOXER", "ASTRA"});
         FLY_OVER_PTS.put("RJBB", new String[] {"B6R10", "B6R13", "B6R14", "B4L10", "B4R20", "B6L20"});
-        FLY_OVER_PTS.put("VHHH", new String[] {"PORPA", "ROVER", "PRAWN"});
+        FLY_OVER_PTS.put("VHHH", new String[] {"07LDER", "25RDER", "PORPA", "ROVER", "PRAWN"});
         FLY_OVER_PTS.put("VMMC", new String[] {"MC501"});
     }
 }
