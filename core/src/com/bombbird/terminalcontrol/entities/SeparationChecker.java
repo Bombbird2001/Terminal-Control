@@ -24,10 +24,12 @@ public class SeparationChecker extends Actor {
 
     private RadarScreen radarScreen;
     private int lastNumber;
+    private float time;
 
     public SeparationChecker() {
         radarScreen = TerminalControl.radarScreen;
         lastNumber = 0;
+        time = 2;
 
         flightLevels = new Array<Array<Aircraft>>(true, radarScreen.maxAlt / 1000);
         labels = new Array<Label>();
@@ -75,7 +77,12 @@ public class SeparationChecker extends Actor {
             radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
             tmpActive--;
         }
+        if (time <= 0) {
+            radarScreen.setScore(radarScreen.getScore() - active);
+            time += 2;
+        }
         lastNumber = active;
+        time -= Gdx.graphics.getDeltaTime();
     }
 
     /** Updates the levels each aircraft belongs to */
@@ -238,5 +245,13 @@ public class SeparationChecker extends Actor {
 
     public void setLastNumber(int lastNumber) {
         this.lastNumber = lastNumber;
+    }
+
+    public float getTime() {
+        return time;
+    }
+
+    public void setTime(float time) {
+        this.time = time;
     }
 }

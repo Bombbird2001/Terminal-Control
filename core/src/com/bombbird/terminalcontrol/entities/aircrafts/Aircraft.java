@@ -799,7 +799,10 @@ public class Aircraft extends Actor {
             }
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
-            if (this instanceof Arrival) radarScreen.setArrivals(radarScreen.getArrivals() - 1);
+            if (this instanceof Arrival) {
+                radarScreen.setArrivals(radarScreen.getArrivals() - 1);
+                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+            }
             removeAircraft();
         }
     }

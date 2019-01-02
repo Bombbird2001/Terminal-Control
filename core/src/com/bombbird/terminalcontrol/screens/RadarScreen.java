@@ -542,6 +542,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setScore(int score) {
+        if (score < 0) score = 0;
         this.score = score;
         if (score > highScore) {
             highScore = score;
