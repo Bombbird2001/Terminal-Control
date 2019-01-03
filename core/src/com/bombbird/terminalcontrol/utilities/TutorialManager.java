@@ -90,14 +90,14 @@ public class TutorialManager {
             public void run() {
                 Airport airport = radarScreen.airports.get("RCTP");
                 radarScreen.newDeparture("CAL641", "A359", airport, airport.getRunways().get("05L"));
-                tutorialMsg("Firstly, we have Taoyuan International Airport (RCTP), Taiwan's main international airport, which handled almost 45 million passengers in 2017. It has 2 runways: 05L-23R and 05R-23L.");
+                tutorialMsg("Firstly, we have Taoyuan International Airport (RCTP), Taiwan's main international airport. It has 2 runways: 05L-23R and 05R-23L.");
             }
         }, 10);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Next, we have Taipei Songshan Airport (RCSS), located in the heart of downtown Taipei. It handled more than 6 million passengers in 2017. It has 1 runway, 10-28.");
+                tutorialMsg("Next, we have Taipei Songshan Airport (RCSS), located in downtown Taipei. It has 1 runway, 10-28.");
             }
         }, 20);
 

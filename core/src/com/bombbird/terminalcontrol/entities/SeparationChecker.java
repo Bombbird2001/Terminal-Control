@@ -29,7 +29,7 @@ public class SeparationChecker extends Actor {
     public SeparationChecker() {
         radarScreen = TerminalControl.radarScreen;
         lastNumber = 0;
-        time = 2;
+        time = 3;
 
         flightLevels = new Array<Array<Aircraft>>(true, radarScreen.maxAlt / 1000);
         labels = new Array<Label>();
@@ -79,7 +79,7 @@ public class SeparationChecker extends Actor {
         }
         if (time <= 0) {
             radarScreen.setScore(radarScreen.getScore() - active);
-            time += 2;
+            time += 3;
         }
         lastNumber = active;
         time -= Gdx.graphics.getDeltaTime();

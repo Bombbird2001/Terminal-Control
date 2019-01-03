@@ -49,7 +49,7 @@ public class GameLoader {
         TerminalControl.radarScreen.setCommBox(new CommBox(save.getJSONArray("commBox")));
 
         TerminalControl.radarScreen.separationChecker.setLastNumber(save.getInt("lastNumber"));
-        TerminalControl.radarScreen.separationChecker.setTime(save.isNull("sepTime") ? 2 : (float) save.getDouble("time"));
+        TerminalControl.radarScreen.separationChecker.setTime(save.isNull("sepTime") ? 3 : (float) save.getDouble("sepTime"));
 
         //GameSaver.saveGame();
     }
