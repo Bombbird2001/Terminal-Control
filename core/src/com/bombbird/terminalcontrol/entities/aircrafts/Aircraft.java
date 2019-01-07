@@ -555,7 +555,7 @@ public class Aircraft extends Actor {
         } else if (targetVertSpd < verticalSpeed - 100) {
             verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
         }
-        float multiplier = altitude > 20000 ? 0.75f : 1;
+        float multiplier = altitude > 20000 ? 0.7f : 0.9f;
         if (!expedite && verticalSpeed > typClimb * multiplier) {
             verticalSpeed = typClimb * multiplier;
         } else if (!expedite && verticalSpeed < -typDes * multiplier) {
@@ -962,7 +962,7 @@ public class Aircraft extends Actor {
         } else if (direct.equals(holdWpt) && navState.getDispLatMode().first().equals("Hold at")) {
             holding = true;
             int spdRestr = ((Star) getSidStar()).getHoldProcedure().getMaxSpdAtWpt(holdWpt);
-            if (clearedIas > spdRestr) {
+            if (spdRestr > -1 && clearedIas > spdRestr) {
                 clearedIas = spdRestr;
             }
             direct = getSidStar().getWaypoint(sidStarIndex);
