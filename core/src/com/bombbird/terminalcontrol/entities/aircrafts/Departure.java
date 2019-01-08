@@ -287,7 +287,7 @@ public class Departure extends Aircraft {
             getNavState().replaceAllClearedAltMode();
             getNavState().replaceAllClearedAlt();
             setExpedite(false);
-            radarScreen.setScore(radarScreen.getScore() + 1);
+            if (getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1);
             radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
         }
     }

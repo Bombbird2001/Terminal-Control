@@ -74,7 +74,7 @@ public class SeparationChecker extends Actor {
         active = checkRestrSep(active);
         int tmpActive = active;
         while (tmpActive > lastNumber) {
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
             tmpActive--;
         }
         if (time <= 0) {
@@ -143,7 +143,7 @@ public class SeparationChecker extends Actor {
                     }
 
                     if (plane1 instanceof Departure && plane2 instanceof Departure) {
-                        if ("RJAA".equals(plane1.getAirport().getIcao()) && "RJAA".equals(plane1.getAirport().getIcao()) && !plane1.getRunway().equals(plane2.getRunway()) && plane1.getAltitude() <= 5000 && plane2.getAltitude() <= 5000) {
+                        if ("RJAA".equals(plane1.getAirport().getIcao()) && "RJAA".equals(plane1.getAirport().getIcao()) && !plane1.getRunway().equals(plane2.getRunway()) && plane1.getAltitude() <= 7100 && plane2.getAltitude() <= 7100) {
                             //Simultaneous departures for Narita airport
                             minima = 0.84f;
                         }

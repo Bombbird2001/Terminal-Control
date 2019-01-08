@@ -166,6 +166,7 @@ public class GameSaver {
             aircraftInfo.put("targetAltitude", aircraft.getTargetAltitude()); //Target altitude
             aircraftInfo.put("verticalSpeed", (double) aircraft.getVerticalSpeed()); //Vertical speed
             aircraftInfo.put("expedite", aircraft.isExpedite()); //Expedite
+            aircraftInfo.put("expediteTime", (double) aircraft.getExpediteTime()); //Expedite time
             aircraftInfo.put("lowestAlt", aircraft.getLowestAlt()); //Lowest altitude
             aircraftInfo.put("highestAlt", aircraft.getHighestAlt()); //Highest altitude
             aircraftInfo.put("gsCap", aircraft.isGsCap()); //Glide slope captured

@@ -112,6 +112,7 @@ public class Aircraft extends Actor {
     private int targetAltitude;
     private float verticalSpeed;
     private boolean expedite;
+    private float expediteTime;
     private int lowestAlt;
     private int highestAlt;
     private boolean gsCap;
@@ -261,6 +262,11 @@ public class Aircraft extends Actor {
         targetAltitude = save.getInt("targetAltitude");
         verticalSpeed = (float) save.getDouble("verticalSpeed");
         expedite = save.getBoolean("expedite");
+        if (save.isNull("expediteTime")) {
+            expediteTime = 0;
+        } else {
+            expediteTime = (float) save.getDouble("expediteTime");
+        }
         lowestAlt = save.getInt("lowestAlt");
         highestAlt = save.getInt("highestAlt");
         gsCap = save.getBoolean("gsCap");
@@ -536,6 +542,14 @@ public class Aircraft extends Actor {
             } else {
                 min = -1.5f;
             }
+        } else if (expedite) {
+            if (verticalSpeed < 0) {
+                min = -0.25f;
+                max = 2.25f;
+            } else if (verticalSpeed > 0) {
+                max = 0.3f;
+                min = -3;
+            }
         }
         if (deltaIas > max) {
             deltaIas = max;
@@ -565,6 +579,7 @@ public class Aircraft extends Actor {
         } else if (expedite && verticalSpeed < -maxDes * multiplier) {
             verticalSpeed = -maxDes * multiplier;
         }
+        expediteTime += expedite ? Gdx.graphics.getDeltaTime() : 0;
         altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
 
         if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
@@ -801,7 +816,7 @@ public class Aircraft extends Actor {
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
-                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
             }
             removeAircraft();
         }
@@ -1750,5 +1765,13 @@ public class Aircraft extends Actor {
 
     public void setTerrainConflict(boolean terrainConflict) {
         this.terrainConflict = terrainConflict;
+    }
+
+    public float getExpediteTime() {
+        return expediteTime;
+    }
+
+    public void setExpediteTime(float expediteTime) {
+        this.expediteTime = expediteTime;
     }
 }

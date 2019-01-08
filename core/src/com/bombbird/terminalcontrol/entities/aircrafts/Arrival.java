@@ -482,7 +482,7 @@ public class Arrival extends Aircraft {
         setVerticalSpeed(0);
         setClearedIas(0);
         if (getGs() <= 35) {
-            if (!getAirport().isCongested()) radarScreen.setScore(radarScreen.getScore() + 1); //Add score only if the airport is not congested
+            if (!getAirport().isCongested() && getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1); //Add score only if the airport is not congested
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);
