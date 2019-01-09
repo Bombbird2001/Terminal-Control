@@ -533,8 +533,8 @@ public class Aircraft extends Actor {
         } else {
             deltaIas = targetdeltaIas;
         }
-        float max = 1.5f;
-        float min = -2.25f;
+        float max;
+        float min;
         if (tkOfLdg) {
             max = 3;
             if (gs >= 60) {
@@ -542,18 +542,13 @@ public class Aircraft extends Actor {
             } else {
                 min = -1.5f;
             }
-        } else if (expedite) {
-            if (verticalSpeed < 0) {
-                min = -0.25f;
-                max = 2.25f;
-            } else if (verticalSpeed > 0) {
-                max = 0.3f;
-                min = -3;
-            }
+        } else {
+            max = 1.25f * (1 - verticalSpeed / maxClimb);
+            min = -2 * (1 + verticalSpeed / maxDes);
         }
         if (deltaIas > max) {
             deltaIas = max;
-        } else if (deltaIas< min) {
+        } else if (deltaIas < min) {
             deltaIas = min;
         }
         ias = ias + deltaIas * Gdx.graphics.getDeltaTime();
@@ -1022,7 +1017,7 @@ public class Aircraft extends Actor {
             navState.getLatModes().removeValue(getSidStar().getName() + " departure", false);
         } else {
             navState.getLatModes().removeValue("After waypoint, fly heading", false);
-            navState.getLatModes().removeValue("Hold at", false);
+            if (!"Hold at".equals(getNavState().getDispLatMode().last())) navState.getLatModes().removeValue("Hold at", false);
         }
         if (selected && (controlState == 1 || controlState == 2)) {
             ui.updateState();
@@ -1632,6 +1627,7 @@ public class Aircraft extends Actor {
         if (this.ils != ils) {
             if (locCap) {
                 this.ils.getRwy().removeFromArray(this);
+                ui.updateState();
             }
             gsCap = false;
             locCap = false;

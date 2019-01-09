@@ -235,9 +235,6 @@ public class Arrival extends Aircraft {
     /** Overrides method in Aircraft class to set to current heading*/
     @Override
     public void setAfterLastWpt() {
-        getNavState().getLatModes().removeValue(star.getName() + " arrival", false);
-        getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
-        getNavState().getLatModes().removeValue("Hold at", false);
         setClearedHeading((int) getHeading());
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());

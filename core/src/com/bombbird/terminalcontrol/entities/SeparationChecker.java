@@ -79,7 +79,7 @@ public class SeparationChecker extends Actor {
         }
         if (time <= 0) {
             radarScreen.setScore(radarScreen.getScore() - active);
-            time += 3;
+            time += 5;
         }
         lastNumber = active;
         time -= Gdx.graphics.getDeltaTime();

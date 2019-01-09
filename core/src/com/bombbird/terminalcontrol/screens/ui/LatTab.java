@@ -183,7 +183,7 @@ public class LatTab extends Tab {
         if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getSidStar().getWaypoints().size) {
             selectedAircraft.getNavState().getLatModes().removeValue(selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " arrival" : " departure"), false);
             selectedAircraft.getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
-            selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
+            if (!"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last())) selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
         }
         settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
         settingsBox.setSelected(latMode);
@@ -481,15 +481,16 @@ public class LatTab extends Tab {
         }
 
         if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
-            Array<String> waypoints = new Array<String>();
+            boolean found = false;
             for (Waypoint waypoint: ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
                 if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                     //Check if holding point is after current aircraft direct
-                    waypoints.add(waypoint.getName());
+                    found = true;
+                    break;
                 }
             }
 
-            if (waypoints.size == 0) {
+            if (!found) {
                 selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
             }
         }

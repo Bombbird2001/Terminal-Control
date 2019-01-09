@@ -396,7 +396,7 @@ public class TutorialManager {
 
             if (prompt5 && aircraft.getControlState() == 0) {
                 prompt5 = false;
-                tutorialMsg("Alright! The aircraft has been handed off to the tower controller. For every departure that gets handed over, or for every arrival that lands, you receive 1 point to add to your score. But for every separation infringement, you will lose 5% of your points, and 1 point for every 3 seconds the incident continues. Be careful!");
+                tutorialMsg("Alright! The aircraft has been handed off to the tower controller. For every departure that gets handed over, or for every arrival that lands, you receive 1 point to add to your score. But for every separation infringement, you will lose 5% of your points, and 1 point for every 5 seconds the incident continues. Be careful!");
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
