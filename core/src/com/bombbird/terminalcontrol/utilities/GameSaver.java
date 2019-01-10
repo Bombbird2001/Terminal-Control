@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
@@ -75,7 +76,7 @@ public class GameSaver {
         }
 
         if (handle != null) {
-            handle.writeString(jsonObject.toString(), false);
+            handle.writeString(Base64Coder.encodeString(jsonObject.toString()), false);
         }
 
         saveID(radarScreen.saveId);

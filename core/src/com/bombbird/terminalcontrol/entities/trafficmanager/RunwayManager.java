@@ -19,7 +19,7 @@ public class RunwayManager {
         } else if ("WSSS".equals(airport.getIcao())) {
             updateWSSS(windDir, windSpd);
         } else if ("RJTT".equals(airport.getIcao())) {
-            updateRJTT(windDir);
+            updateRJTT(windDir, windSpd);
         } else if ("RJAA".equals(airport.getIcao())) {
             updateRJAA(windDir, windSpd);
         } else if ("RJBB".equals(airport.getIcao())) {
@@ -129,12 +129,12 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Tokyo Haneda */
-    private void updateRJTT(int windDir) {
+    private void updateRJTT(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
             airport.setActive("05", false, true);
-        } else if (windDir != 0) {
+        } else if (windDir != 0 && windSpd >= 7) {
             if (windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) {
                 airport.setActive("34L", true, false);
                 airport.setActive("34R", true, true);

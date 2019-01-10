@@ -255,7 +255,7 @@ public class LatTab extends Tab {
         }
 
         //Show heading box if heading mode, otherwise hide it
-        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null));
+        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null || "Not cleared approach".equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())));
         if (latMode.equals("After waypoint, fly heading")) {
             hdgBox.setText(Integer.toString(afterWptHdg));
         } else if (latMode.contains("heading")) {

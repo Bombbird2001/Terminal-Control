@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
@@ -238,7 +239,9 @@ public class FileLoader {
                 return saves;
             }
             for (String id: saveIds) {
-                JSONObject save = new JSONObject(handle.sibling(id + ".json").readString());
+                String saveString = handle.sibling(id + ".json").readString();
+                if (saveString.charAt(0) != '{') saveString = Base64Coder.decodeString(saveString);
+                JSONObject save = new JSONObject(saveString);
                 saves.put(save);
             }
         }
