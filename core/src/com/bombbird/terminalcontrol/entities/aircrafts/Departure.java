@@ -257,7 +257,8 @@ public class Departure extends Aircraft {
                 setClearedIas(250);
                 super.updateSpd();
             }
-            higherSpdSet = true;
+            int waypointSpd = getDirect() == null ? -1 : getSidStar().getWptMaxSpd(getDirect().getName());
+            higherSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= 250 || waypointSpd == -1;
         }
         if (!cruiseSpdSet && getAltitude() > 10000) {
             if (getClearedIas() < getClimbSpd()) {
@@ -272,7 +273,8 @@ public class Departure extends Aircraft {
                 setClearedIas(getClimbSpd());
                 super.updateSpd();
             }
-            cruiseSpdSet = true;
+            int waypointSpd = getDirect() == null ? -1 : getSidStar().getWptMaxSpd(getDirect().getName());
+            cruiseSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= getClimbSpd() || waypointSpd == -1;
         }
     }
 
