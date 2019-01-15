@@ -263,7 +263,7 @@ public class Airport {
     }
 
     public int[] getWinds() {
-        return new int[] {metar.getInt("windDirection"), metar.getInt("windSpeed")};
+        return metar.isNull("windDirection") ? new int[] {0, 0} : new int[] {metar.getInt("windDirection"), metar.getInt("windSpeed")};
     }
 
     public HashMap<String, Runway> getRunways() {

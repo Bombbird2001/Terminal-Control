@@ -396,7 +396,7 @@ public class Aircraft extends Actor {
                 drawSidStar();
             } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading") && direct != null) {
                 drawAftWpt();
-            } else if (navState.getDispLatMode().last().contains("heading") && !locCap) {
+            } else if (navState.getDispLatMode().last().contains("heading") && (!locCap || navState.getClearedIls().last() == null)) {
                 drawHdgLine();
             } else if (navState.getDispLatMode().last().equals("Hold at")) {
                 drawHoldPattern();
@@ -1627,11 +1627,15 @@ public class Aircraft extends Actor {
         if (this.ils != ils) {
             if (locCap) {
                 this.ils.getRwy().removeFromArray(this);
-                ui.updateState();
+                if (selected && (controlState == 1 || controlState == 2)) ui.updateState();
             }
             gsCap = false;
             locCap = false;
             resetApchSpdSet();
+            if (clearedIas < 160) {
+                clearedIas = 160;
+                navState.replaceAllClearedSpdToHigher();
+            }
         }
         this.ils = ils;
     }

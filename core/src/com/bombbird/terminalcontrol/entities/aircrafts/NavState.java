@@ -396,6 +396,16 @@ public class NavState {
         clearedSpd = newQueue;
     }
 
+    /** Gets current cleared aircraft speed and sets all subsequently cleared speed to that value if smaller */
+    public void replaceAllClearedSpdToHigher() {
+        Queue<Integer> newQueue = new Queue<Integer>();
+        while (!clearedSpd.isEmpty()) {
+            int first = clearedSpd.removeFirst();
+            newQueue.addLast(first < aircraft.getClearedIas() ? aircraft.getClearedIas() : first);
+        }
+        clearedSpd = newQueue;
+    }
+
     /** Removes all ILS clearances */
     public void voidAllIls() {
         int size = clearedIls.size;
