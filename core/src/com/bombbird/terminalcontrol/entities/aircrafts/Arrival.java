@@ -454,10 +454,19 @@ public class Arrival extends Aircraft {
             radarScreen.getCommBox().goAround(this, "runway not in sight");
             return true;
         }
-        if (getAltitude() < getIls().getRwy().getElevation() + 150 && getIls().getRwy().getAircraftsOnAppr().indexOf(this, false) > 0) {
-            //If runway is not clear by the time aircraft reaches 150 feet AGL
-            radarScreen.getCommBox().goAround(this, "traffic on runway");
-            return true;
+        if (getAltitude() < getIls().getRwy().getElevation() + 150) {
+            if (getIls().getRwy().getAircraftsOnAppr().indexOf(this, false) > 0) {
+                //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
+                radarScreen.getCommBox().goAround(this, "traffic on runway");
+                return true;
+            } else {
+                //If departure has not cleared runway
+                Aircraft dep = getAirport().getTakeoffManager().getPrevAircraft().get(getIls().getRwy().getName());
+                if (dep != null && dep.getAltitude() - getIls().getRwy().getElevation() < 10) {
+                    radarScreen.getCommBox().goAround(this, "traffic on runway");
+                    return true;
+                }
+            }
         }
         return false;
     }

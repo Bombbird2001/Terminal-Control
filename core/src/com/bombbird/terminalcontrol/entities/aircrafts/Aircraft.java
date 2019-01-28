@@ -472,7 +472,7 @@ public class Aircraft extends Actor {
 
     /** The main update function, called during aircraft draw */
     public double update() {
-        navState.updateTime();
+        if (navState!= null) navState.updateTime();
         tas = MathTools.iasToTas(ias, altitude);
         updateIas();
         if (tkOfLdg) {

@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Values;
@@ -98,7 +99,9 @@ public class Metar {
             public void onFailure(Call call, IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
-                receiveMetar(mediaType, client);
+                Gdx.app.log("API metar error", "CheckWX API may not be working, using random weather!");
+                metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
+                updateRadarScreenState();
             }
 
             @Override

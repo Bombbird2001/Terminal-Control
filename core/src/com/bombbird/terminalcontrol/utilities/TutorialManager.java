@@ -348,7 +348,7 @@ public class TutorialManager {
                 initPart3();
             }
 
-            if (prompt1 && aircraft.getDirect().equals(radarScreen.waypoints.get("JAMMY"))) {
+            if (prompt1 && aircraft.getDirect() != null && aircraft.getDirect().equals(radarScreen.waypoints.get("JAMMY"))) {
                 prompt1 = false;
                 tutorialMsg("Excellent, the aircraft will now fly directly to waypoint JAMMY.");
                 initPart4();
