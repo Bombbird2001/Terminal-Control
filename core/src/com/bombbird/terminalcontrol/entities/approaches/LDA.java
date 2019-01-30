@@ -48,7 +48,7 @@ public class LDA extends ILS {
 
     /** Loads the imaginary ILS from runway center line */
     private void loadImaginaryIls() {
-        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getX() + "," + getRwy().getY() + ",-" + MathTools.pixelToNm(getRwy().getPxLength()) + ",0,4000,->-";
+        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getX() + "," + getRwy().getY() + ",0,0,4000,->-";
         imaginaryIls = new ILS(getAirport(), text);
     }
 

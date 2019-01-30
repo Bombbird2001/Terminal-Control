@@ -404,7 +404,6 @@ public class Aircraft extends Actor {
 
             //Draws selected status (from UI)
             if (controlState == 1 || controlState == 2) {
-                //System.out.println("arrival/departure: " + (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) + " hdgChanged: " + ui.latTab.isHdgChanged() + " latModeChanged: " + ui.latTab.isLatModeChanged() + " wptChanged: " + ui.latTab.isWptChanged());
                 if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
                 } else if ("After waypoint, fly heading".equals(LatTab.latMode) && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
@@ -658,8 +657,9 @@ public class Aircraft extends Actor {
                 runway = getIls().getRwy();
                 navState.getLatModes().removeValue(getSidStar() + " arrival", false);
             }
-            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) + 10) <= ((LDA) getIls()).getLineUpDist()) {
+            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) + 20) <= ((LDA) getIls()).getLineUpDist()) {
                 ils = ((LDA) getIls()).getImaginaryIls();
+                gsCap = true;
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
@@ -791,11 +791,6 @@ public class Aircraft extends Actor {
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds = track - heading
         track = heading - radarScreen.magHdgDev + angleDiff;
-        if (!onGround && getIls() != null && getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, getIls().getRwy().getX(), getIls().getRwy().getY())) <= ((LDA) getIls()).getLineUpDist()) {
-            //Set track && heading to runway
-            track = getIls().getRwy().getTrueHdg();
-            heading = track + angleDiff;
-        }
         deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;

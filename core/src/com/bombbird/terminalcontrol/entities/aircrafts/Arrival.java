@@ -427,7 +427,7 @@ public class Arrival extends Aircraft {
         }
         if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 3) {
             //If distance from runway is less than 3nm
-            if (!(getIls() instanceof LDA) && !isGsCap()) {
+            if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && !isGsCap()) {
                 //If ILS GS has not been captured
                 radarScreen.getCommBox().goAround(this, "being too high");
                 return true;
@@ -435,7 +435,7 @@ public class Arrival extends Aircraft {
                 //If airspeed is more than 10 knots higher than approach speed
                 radarScreen.getCommBox().goAround(this, "being too fast");
                 return true;
-            } else if (MathUtils.cosDeg(getIls().getRwy().getTrueHdg() - (float) getTrack()) < MathUtils.cosDeg(10)) {
+            } else if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && MathUtils.cosDeg(getIls().getRwy().getTrueHdg() - (float) getTrack()) < MathUtils.cosDeg(10)) {
                 //If aircraft is not fully stabilised on LOC course
                 radarScreen.getCommBox().goAround(this, "unstable approach");
                 return true;
