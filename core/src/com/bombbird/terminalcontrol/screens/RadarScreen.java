@@ -464,7 +464,7 @@ public class RadarScreen extends GameScreen {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
             //On android, change to pause screen if not paused, un-pause if paused
             setGameState(GameScreen.state == State.PAUSE ? State.RUN : State.PAUSE);
         }
