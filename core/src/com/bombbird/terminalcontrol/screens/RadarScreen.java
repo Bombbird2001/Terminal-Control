@@ -398,7 +398,7 @@ public class RadarScreen extends GameScreen {
         //Draw obstacles
         Array<Obstacle> saveForLast = new Array<Obstacle>();
         for (Obstacle obstacle: obsArray) {
-            if (obstacle.isConflict()) {
+            if (obstacle.isConflict() || obstacle.getLabel().getText().toString().charAt(0) == '#') {
                 saveForLast.add(obstacle);
             } else {
                 obstacle.renderShape();

@@ -51,7 +51,7 @@ public class Obstacle extends Actor {
     /** Draws the obstacle label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (conflict) {
+        if (conflict || label.getText().toString().charAt(0) == '#') {
             label.getStyle().fontColor = Color.RED;
         } else {
             label.getStyle().fontColor = Color.GRAY;
@@ -61,7 +61,7 @@ public class Obstacle extends Actor {
 
     /** Renders the polygon of obstacle to screen */
     public void renderShape() {
-        if (conflict) {
+        if (conflict || label.getText().toString().charAt(0) == '#') {
             TerminalControl.radarScreen.shapeRenderer.setColor(Color.RED);
         } else {
             TerminalControl.radarScreen.shapeRenderer.setColor(Color.GRAY);
@@ -84,5 +84,9 @@ public class Obstacle extends Actor {
 
     public void setConflict(boolean conflict) {
         this.conflict = conflict;
+    }
+
+    public Label getLabel() {
+        return label;
     }
 }

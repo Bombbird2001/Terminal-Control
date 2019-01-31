@@ -12,6 +12,7 @@ import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 import org.json.JSONArray;
@@ -74,15 +75,27 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(this));
-        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
-        int limit = 28000;
-        if (getDirect() != null && star.getWptMaxAlt(getDirect().getName()) > -1) {
-            limit = star.getWptMaxAlt(getDirect().getName());
+        Waypoint maxAltWpt = null;
+        Waypoint minAltWpt = null;
+        for (Waypoint waypoint: getSidStar().getWaypoints()) {
+            if (maxAltWpt == null && star.getWptMaxAlt(waypoint.getName()) > -1) {
+                maxAltWpt = waypoint;
+            }
+            if (minAltWpt == null && star.getWptMinAlt(waypoint.getName()) > -1) {
+                minAltWpt = waypoint;
+            }
         }
-        if (initAlt > limit) {
-            initAlt = limit;
+        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
+        if (maxAltWpt != null) {
+            float maxAlt = star.getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
+            if (maxAlt < initAlt) initAlt = maxAlt;
+        }
+        if (initAlt > 28000) {
+            initAlt = 28000;
         } else if (initAlt < 6000) {
             initAlt = 6000;
+        } else if (minAltWpt != null && initAlt < star.getWptMinAlt(minAltWpt.getName())) {
+            initAlt = star.getWptMinAlt(minAltWpt.getName());
         }
         for (Obstacle obstacle: radarScreen.obsArray) {
             if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
@@ -176,6 +189,19 @@ public class Arrival extends Aircraft {
     private float distToGo() {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
         dist += ((Star) getSidStar()).distBetRemainPts(getSidStarIndex());
+        return dist;
+    }
+
+    /** Calculates remaining distance on STAR from current start aircraft position to a certain point on it */
+    private float distFromStartToPoint(Waypoint waypoint) {
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
+        int nextIndex = 1;
+        if (getSidStar().getWaypoints().size > 1 && !getSidStar().getWaypoint(0).equals(waypoint)) {
+            while (!getSidStar().getWaypoint(nextIndex).equals(waypoint)) {
+                dist += ((Star) getSidStar()).distBetween(nextIndex - 1, nextIndex);
+                nextIndex += 1;
+            }
+        }
         return dist;
     }
 

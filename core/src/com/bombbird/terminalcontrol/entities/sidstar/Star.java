@@ -81,7 +81,7 @@ public class Star extends SidStar {
         return dist;
     }
 
-    private float distBetween(int pt1, int pt2) {
+    public float distBetween(int pt1, int pt2) {
         Waypoint waypoint1 = getWaypoint(pt1);
         Waypoint waypoint2 = getWaypoint(pt2);
         return MathTools.pixelToNm(MathTools.distanceBetween(waypoint1.getPosX(), waypoint1.getPosY(), waypoint2.getPosX(), waypoint2.getPosY()));
