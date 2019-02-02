@@ -657,7 +657,7 @@ public class Aircraft extends Actor {
                 runway = getIls().getRwy();
                 navState.getLatModes().removeValue(getSidStar() + " arrival", false);
             }
-            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) + 20) <= ((LDA) getIls()).getLineUpDist()) {
+            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) getIls()).getLineUpDist()) {
                 ils = ((LDA) getIls()).getImaginaryIls();
                 gsCap = true;
                 return updateTargetHeading();
@@ -807,6 +807,7 @@ public class Aircraft extends Actor {
             if (this instanceof Arrival) {
                 radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
+                radarScreen.getCommBox().warningMsg(callsign + " has left the airspace!");
             }
             removeAircraft();
         }
