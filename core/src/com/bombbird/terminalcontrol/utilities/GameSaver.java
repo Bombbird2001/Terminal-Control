@@ -206,10 +206,10 @@ public class GameSaver {
                 if (((Arrival) aircraft).getNonPrecAlts() != null) {
                     //Non prec alts for arrivals
                     JSONArray nonPrecAlts = new JSONArray();
-                    for (int[] info : ((Arrival) aircraft).getNonPrecAlts()) {
+                    for (float[] info : ((Arrival) aircraft).getNonPrecAlts()) {
                         JSONArray data = new JSONArray();
-                        data.put(info[0]);
-                        data.put(info[1]);
+                        data.put((double) info[0]);
+                        data.put((double) info[1]);
                         nonPrecAlts.put(data);
                     }
                     aircraftInfo.put("nonPrecAlts", nonPrecAlts);

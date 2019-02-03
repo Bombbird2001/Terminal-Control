@@ -24,7 +24,7 @@ public class Arrival extends Aircraft {
     //Others
     private int contactAlt;
     private Star star;
-    private Queue<int[]> nonPrecAlts;
+    private Queue<float[]> nonPrecAlts;
     private boolean lowerSpdSet;
     private boolean ilsSpdSet;
     private boolean finalSpdSet;
@@ -160,10 +160,10 @@ public class Arrival extends Aircraft {
             nonPrecAlts = null;
         } else {
             JSONArray nonPrec = save.getJSONArray("nonPrecAlts");
-            nonPrecAlts = new Queue<int[]>();
+            nonPrecAlts = new Queue<float[]>();
             for (int i = 0; i < nonPrec.length(); i++) {
                 JSONArray data = nonPrec.getJSONArray(i);
-                nonPrecAlts.addLast(new int[] {data.getInt(0), data.getInt(1)});
+                nonPrecAlts.addLast(new float[] {(float) data.getDouble(0), (float) data.getDouble(1)});
             }
         }
 
@@ -344,16 +344,16 @@ public class Arrival extends Aircraft {
                     setMissedAlt();
                 }
                 if (nonPrecAlts == null) {
-                    nonPrecAlts = new Queue<int[]>();
-                    Queue<int[]> copy = ((LDA) getIls()).getNonPrecAlts();
-                    for (int[] data: copy) {
+                    nonPrecAlts = new Queue<float[]>();
+                    Queue<float[]> copy = ((LDA) getIls()).getNonPrecAlts();
+                    for (float[] data: copy) {
                         nonPrecAlts.addLast(data);
                     }
                 }
                 if (isLocCap()) {
                     if (nonPrecAlts != null && nonPrecAlts.size > 0) {
                         //Set target altitude to current restricted altitude
-                        setTargetAltitude(nonPrecAlts.first()[0]);
+                        setTargetAltitude((int) nonPrecAlts.first()[0]);
                         while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
                             nonPrecAlts.removeFirst();
                         }
@@ -574,7 +574,7 @@ public class Arrival extends Aircraft {
         return star;
     }
 
-    public Queue<int[]> getNonPrecAlts() {
+    public Queue<float[]> getNonPrecAlts() {
         return nonPrecAlts;
     }
 

@@ -8,7 +8,7 @@ import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class LDA extends ILS {
-    private Queue<int[]> nonPrecAlts;
+    private Queue<float[]> nonPrecAlts;
     private Vector2 gsRing;
     private float lineUpDist;
     private boolean npa;
@@ -32,13 +32,13 @@ public class LDA extends ILS {
 
         if (info.length >= 11) {
             npa = true;
-            nonPrecAlts = new Queue<int[]>();
+            nonPrecAlts = new Queue<float[]>();
 
             for (String s3 : info[10].split("-")) {
-                int[] altDist = new int[2];
+                float[] altDist = new float[2];
                 int index1 = 0;
                 for (String s2 : s3.split(">")) {
-                    altDist[index1] = Integer.parseInt(s2);
+                    altDist[index1] = Float.parseFloat(s2);
                     index1++;
                 }
                 nonPrecAlts.addLast(altDist);
@@ -72,7 +72,7 @@ public class LDA extends ILS {
     }
 
 
-    public Queue<int[]> getNonPrecAlts() {
+    public Queue<float[]> getNonPrecAlts() {
         return nonPrecAlts;
     }
 
