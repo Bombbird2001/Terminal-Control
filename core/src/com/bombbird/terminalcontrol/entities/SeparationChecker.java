@@ -207,8 +207,13 @@ public class SeparationChecker extends Actor {
             if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
                     (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
                     aircraft.isGoAroundWindow()) {
-                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is a departure that is below 4000ft AGL
+                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground
                 continue;
+            }
+            if (aircraft instanceof Departure) {
+                //Suppress terrain warnings if aircraft is departure below certain altitudes depending in airport
+                if ("RCSS".equals(aircraft.getAirport().getIcao()) && aircraft.getAltitude() <= 5050) continue;
+                if (aircraft.getAltitude() <= 4050) continue;
             }
             for (Obstacle obstacle: radarScreen.obsArray) {
                 if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {

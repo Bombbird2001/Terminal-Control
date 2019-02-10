@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
@@ -616,6 +617,12 @@ public class Arrival extends Aircraft {
         if (isSelected() && getControlState() == 2) {
             ui.updateState();
         }
+    }
+
+    @Override
+    public void setIls(ILS ils) {
+        if (this.getIls() != ils) goAroundSet = false;
+        super.setIls(ils);
     }
 
     @Override
