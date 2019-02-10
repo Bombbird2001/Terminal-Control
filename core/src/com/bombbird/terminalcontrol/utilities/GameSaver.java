@@ -224,7 +224,10 @@ public class GameSaver {
                 aircraftInfo.put("goAroundAlt", ((Arrival) aircraft).getGoAroundAlt());
                 aircraftInfo.put("goAroundSet", ((Arrival) aircraft).isGoAroundSet());
                 aircraftInfo.put("contactAlt", ((Arrival) aircraft).getContactAlt());
-
+                aircraftInfo.put("fuel", (double) ((Arrival) aircraft).getFuel());
+                aircraftInfo.put("requestPriority", ((Arrival) aircraft).isRequestPriority());
+                aircraftInfo.put("declareEmergency", ((Arrival) aircraft).isDeclareEmergency());
+                aircraftInfo.put("divert", ((Arrival) aircraft).isDivert());
             } else if (aircraft instanceof Departure) {
                 type = "Departure";
                 aircraftInfo.put("sid", aircraft.getSidStar().getName());

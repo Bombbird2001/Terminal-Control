@@ -134,7 +134,7 @@ public class RunwayManager {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
             airport.setActive("05", false, true);
-        } else if (windDir != 0 && windSpd >= 7) {
+        } else if (windDir != 0 && windSpd >= 7 || airport.getLandingRunways().size() == 0) {
             if (windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) {
                 airport.setActive("34L", true, false);
                 airport.setActive("34R", true, true);

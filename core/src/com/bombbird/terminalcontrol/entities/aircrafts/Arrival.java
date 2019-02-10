@@ -29,6 +29,12 @@ public class Arrival extends Aircraft {
     private boolean ilsSpdSet;
     private boolean finalSpdSet;
 
+    //For fuel
+    private float fuel;
+    private boolean requestPriority = false;
+    private boolean declareEmergency = false;
+    private boolean divert = false;
+
     //For go around
     private boolean willGoAround;
     private int goAroundAlt;
@@ -85,6 +91,9 @@ public class Arrival extends Aircraft {
                 minAltWpt = waypoint;
             }
         }
+
+        fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + MathUtils.random(-600, 600);
+
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
         if (maxAltWpt != null) {
             float maxAlt = star.getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
@@ -174,6 +183,11 @@ public class Arrival extends Aircraft {
         goAroundAlt = save.getInt("goAroundAlt");
         goAroundSet = save.getBoolean("goAroundSet");
         contactAlt = save.getInt("contactAlt");
+
+        fuel = save.isNull("fuel") ? 75 * 60 : (float) save.getDouble("fuel");
+        requestPriority = !save.isNull("requestPriority") && save.getBoolean("requestPriority");
+        declareEmergency = !save.isNull("declareEmergency") && save.getBoolean("declareEmergency");
+        divert = !save.isNull("divert") && save.getBoolean("divert");
 
         loadLabel();
         setColor(new Color(0x00b3ffff));
@@ -318,6 +332,41 @@ public class Arrival extends Aircraft {
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
             setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
+        }
+    }
+
+    /** Overrides update method in Aircraft to include updating fuel time */
+    @Override
+    public double update() {
+        double info = super.update();
+
+        if (!isOnGround()) {
+            updateFuel();
+        }
+
+        return info;
+    }
+
+    /** Updates the fuel time for arrival */
+    private void updateFuel() {
+        fuel -= Gdx.graphics.getDeltaTime();
+
+        if (fuel < 2700 && !requestPriority) {
+            //Low fuel, request priority
+            radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
+            requestPriority = true;
+        }
+
+        if (fuel < 2100 && !declareEmergency) {
+            //Minimum fuel, declare emergency
+            radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " requests immediate landing within 10 minutes or will divert.");
+            declareEmergency = true;
+        }
+
+        if (fuel < 1500 && !divert) {
+            //Diverting to alternate
+            radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
+            divert = true;
         }
     }
 
@@ -604,5 +653,21 @@ public class Arrival extends Aircraft {
 
     public int getContactAlt() {
         return contactAlt;
+    }
+
+    public float getFuel() {
+        return fuel;
+    }
+
+    public boolean isRequestPriority() {
+        return requestPriority;
+    }
+
+    public boolean isDeclareEmergency() {
+        return declareEmergency;
+    }
+
+    public boolean isDivert() {
+        return divert;
     }
 }

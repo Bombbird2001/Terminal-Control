@@ -460,7 +460,7 @@ public class Ui {
         } else if (tab == 2) {
             spdTab.resetTab();
         } else {
-            Gdx.app.log("Invalid tab", "Unknown tab number " + Integer.toString(tab) + " specified!");
+            Gdx.app.log("Invalid tab", "Unknown tab number " + tab + " specified!");
         }
     }
 

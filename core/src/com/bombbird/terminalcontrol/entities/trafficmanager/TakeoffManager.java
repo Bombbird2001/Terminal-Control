@@ -195,10 +195,10 @@ public class TakeoffManager {
                         runway = runway1;
                         dist = distance;
                     }
-                } else if ("16L".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("16R")) {
+                } else if ("16L".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkOppLanding(airport.getRunways().get("16R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("16L")) {
+                } else if ("16R".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L"))) {
                     runway = runway1;
                     dist = distance;
                 }

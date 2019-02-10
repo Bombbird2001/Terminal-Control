@@ -29,7 +29,7 @@ public class Metar {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
         if (radarScreen.liveWeather) {
-            getMetar(JSON, client);
+            getMetar(JSON, client, true);
         } else {
             metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
             updateRadarScreenState();
@@ -81,16 +81,16 @@ public class Metar {
                     throw new IOException(response.toString());
                 } else {
                     System.out.println(response.body().string());
-                    getMetar(mediaType, client);
+                    getMetar(mediaType, client, true);
                     radarScreen.loadingPercent = "80%";
                 }
             }
         });
     }
 
-    private void receiveMetar(final MediaType mediaType, final OkHttpClient client) {
+    private void receiveMetar(final MediaType mediaType, final OkHttpClient client, final boolean retry) {
         String str = radarScreen.airports.keySet().toString();
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .addHeader("X-API-KEY", apiKey)
                 .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
                 .build();
@@ -99,7 +99,15 @@ public class Metar {
             public void onFailure(Call call, IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
-                Gdx.app.log("API metar error", "CheckWX API may not be working, using random weather!");
+                Gdx.app.log("API metar error", "CheckWX API may not be working!");
+
+                //If retrying
+                if (retry) {
+                    Gdx.app.log("receiveMetar", "Retrying getting weather from API");
+                    receiveMetar(mediaType, client, false);
+                    return;
+                }
+
                 metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
                 updateRadarScreenState();
             }
@@ -139,14 +147,14 @@ public class Metar {
                     throw new IOException(response.toString());
                 } else {
                     apiKey = response.body().string();
-                    receiveMetar(mediaType, client);
+                    receiveMetar(mediaType, client, true);
                     radarScreen.loadingPercent = "40%";
                 }
             }
         });
     }
 
-    private void getMetar(final MediaType mediaType, final OkHttpClient client) {
+    private void getMetar(final MediaType mediaType, final OkHttpClient client, final boolean retry) {
         JSONObject jo = new JSONObject();
         jo.put("password", Values.GET_METAR_PASSWORD);
         JSONArray apts = new JSONArray(radarScreen.airports.keySet());
@@ -166,10 +174,10 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    if (response.code() == 503) {
+                    if (response.code() == 503 && retry) {
                         System.out.println("503 received: trying again");
                         radarScreen.loadingPercent = "10%";
-                        getMetar(mediaType, client);
+                        getMetar(mediaType, client, false);
                         response.close();
                     } else {
                         //Generate offline weather
