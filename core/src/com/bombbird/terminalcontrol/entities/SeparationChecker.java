@@ -146,7 +146,7 @@ public class SeparationChecker extends Actor {
                         if ("RJAA".equals(plane1.getAirport().getIcao()) && "RJAA".equals(plane1.getAirport().getIcao()) && !plane1.getRunway().equals(plane2.getRunway()) && plane1.getAltitude() <= 7100 && plane2.getAltitude() <= 7100) {
                             //Simultaneous departures for Narita airport
                             minima = 0.84f;
-                        } else if ("RJTT".equals(plane1.getAirport().getIcao()) && "RJTT".equals(plane2.getAirport().getIcao()) && (("16L".equals(plane1.getRunway().getName()) && "16R".equals(plane2.getRunway().getName())) || ("16R".equals(plane1.getRunway().getName()) && "16L".equals(plane2.getRunway().getName())))) {
+                        } else if ("RJTT".equals(plane1.getAirport().getIcao()) && "RJTT".equals(plane2.getAirport().getIcao()) && (("16L".equals(plane1.getRunway().getName()) && "16R".equals(plane2.getRunway().getName())) || ("16R".equals(plane1.getRunway().getName()) && "16L".equals(plane2.getRunway().getName()))) && plane1.getAltitude() <= 7100 && plane2.getAltitude() <= 7100) {
                             //Simultaneous departures for Haneda airport rwys 16L & 16R
                             minima = 0.75f;
                         }
