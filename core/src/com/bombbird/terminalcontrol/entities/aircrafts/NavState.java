@@ -254,34 +254,43 @@ public class NavState {
             dispSpdMode.removeFirst();
 
             clearedHdg.removeFirst();
-            if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                aircraft.setClearedHeading(clearedHdg.first());
-            }
             clearedDirect.removeFirst();
-            aircraft.setDirect(clearedDirect.first());
-            aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
             clearedAftWpt.removeFirst();
-            aircraft.setAfterWaypoint(clearedAftWpt.first());
             clearedAftWptHdg.removeFirst();
-            aircraft.setAfterWptHdg(clearedAftWptHdg.first());
             clearedHold.removeFirst();
-            aircraft.setHoldWpt(clearedHold.first());
             clearedIls.removeFirst();
-            aircraft.setIls(clearedIls.first());
 
             clearedAlt.removeFirst();
-            aircraft.setClearedAltitude(clearedAlt.first());
             clearedExpedite.removeFirst();
-            aircraft.setExpedite(clearedExpedite.first());
 
             clearedSpd.removeFirst();
-            if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
-                aircraft.setClearedIas(clearedSpd.first());
-            }
 
             goAround.removeFirst();
+
+            updateAircraftInfo();
         }
         length--;
+    }
+
+    /** Sets the direct aircraft navigation states */
+    public void updateAircraftInfo() {
+        if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+            aircraft.setClearedHeading(clearedHdg.first());
+        }
+
+        aircraft.setDirect(clearedDirect.first());
+        aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
+        aircraft.setAfterWaypoint(clearedAftWpt.first());
+        aircraft.setAfterWptHdg(clearedAftWptHdg.first());
+        aircraft.setHoldWpt(clearedHold.first());
+        aircraft.setIls(clearedIls.first());
+        aircraft.setClearedAltitude(clearedAlt.first());
+        aircraft.setExpedite(clearedExpedite.first());
+
+        if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
+            aircraft.setClearedIas(clearedSpd.first());
+        }
+
     }
 
     /** Called before updating aircraft mode to ensure inputs are valid in case aircraft state changes during the pilot delay*/
@@ -564,5 +573,9 @@ public class NavState {
 
     public int getLength() {
         return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 }

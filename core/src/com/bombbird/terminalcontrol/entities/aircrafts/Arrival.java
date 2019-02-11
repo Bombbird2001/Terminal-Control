@@ -362,12 +362,45 @@ public class Arrival extends Aircraft {
             //Minimum fuel, declare emergency
             radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " requests immediate landing within 10 minutes or will divert.");
             declareEmergency = true;
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
         }
 
-        if (fuel < 1500 && !divert) {
+        if (fuel < 1500 && !divert && !isLocCap()) {
             //Diverting to alternate
             radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
+
+            getNavState().getDispLatMode().clear();
+            getNavState().getDispLatMode().addFirst("Fly heading");
+            getNavState().getDispAltMode().clear();
+            getNavState().getDispAltMode().addFirst("Climb/descend to");
+            getNavState().getDispSpdMode().clear();
+            getNavState().getDispSpdMode().addFirst("No speed restrictions");
+
+            getNavState().getClearedHdg().clear();
+            getNavState().getClearedHdg().addFirst(radarScreen.divertHdg);
+            getNavState().getClearedDirect().clear();
+            getNavState().getClearedDirect().addFirst(null);
+            getNavState().getClearedAftWpt().clear();
+            getNavState().getClearedAftWpt().addFirst(null);
+            getNavState().getClearedAftWptHdg().clear();
+            getNavState().getClearedAftWptHdg().addFirst(radarScreen.divertHdg);
+            getNavState().getClearedHold().clear();
+            getNavState().getClearedHold().addFirst(null);
+            getNavState().getClearedIls().clear();
+            getNavState().getClearedIls().addFirst(null);
+            getNavState().getClearedAlt().clear();
+            getNavState().getClearedAlt().addFirst(10000);
+            getNavState().getClearedExpedite().clear();
+            getNavState().getClearedExpedite().addFirst(false);
+            getNavState().getClearedSpd().clear();
+            getNavState().getClearedSpd().addFirst(250);
+            getNavState().setLength(1);
+            getNavState().updateAircraftInfo();
+
+            setControlState(0);
+
             divert = true;
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
         }
     }
 
@@ -452,7 +485,7 @@ public class Arrival extends Aircraft {
             goAroundSet = false;
             super.updateAltitude();
         }
-        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300) {
+        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
             setControlState(1);
             radarScreen.getCommBox().initialContact(this);
         }

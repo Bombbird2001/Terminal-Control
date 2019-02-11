@@ -1106,7 +1106,7 @@ public class Aircraft extends Actor {
         }
         String exped = navState.getClearedExpedite().last() ? " =>> " : " => ";
         String updatedText;
-        if (getControlState() == 1 || getControlState() == 2) {
+        if (controlState == 1 || controlState == 2) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];

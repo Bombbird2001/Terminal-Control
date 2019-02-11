@@ -43,6 +43,7 @@ public class RadarScreen extends GameScreen {
     public int minAlt;
     public int transLvl;
     public int separationMinima;
+    public int divertHdg;
     public int airac;
     public String callsign;
     public String deptCallsign;
@@ -200,8 +201,9 @@ public class RadarScreen extends GameScreen {
                 case 2: transLvl = Integer.parseInt(s); break;
                 case 3: separationMinima = Integer.parseInt(s); break;
                 case 4: magHdgDev = Float.parseFloat(s); break;
-                case 5: callsign = s; break;
-                case 6: deptCallsign = s; break;
+                case 5: divertHdg = Integer.parseInt(s); break;
+                case 6: callsign = s; break;
+                case 7: deptCallsign = s; break;
                 default:
                     int index1 = 0;
                     String icao = "";
