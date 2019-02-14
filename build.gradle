@@ -108,13 +108,12 @@ project(":html") {
 project(":core") {
     apply plugin: "java"
 
-
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile 'com.squareup.okhttp3:okhttp:3.7.0'
         compile 'org.json:json:20180813'
-        compile 'org.apache.commons:commons-lang3:3.8'
+        compile 'org.apache.commons:commons-lang3:3.8.1'
     }
 }
 

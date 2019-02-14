@@ -170,7 +170,7 @@ public class Aircraft extends Actor {
         tkOfLdg = false;
         gsCap = false;
         locCap = false;
-        climbSpd = MathUtils.random(270, 285);
+        climbSpd = MathUtils.random(270, 280);
         goAround = false;
         goAroundWindow = false;
         goAroundTime = 0;

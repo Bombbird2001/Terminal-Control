@@ -115,8 +115,15 @@ public class SelectGameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(delta);
         game.batch.begin();
-        stage.draw();
-        game.batch.end();
+        try {
+            stage.draw();
+            game.batch.end();
+        } catch (IndexOutOfBoundsException e) {
+            Gdx.app.log("SelectGameScreen", "stage.draw() render error");
+            e.printStackTrace();
+            game.batch.end();
+            render(delta);
+        }
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
