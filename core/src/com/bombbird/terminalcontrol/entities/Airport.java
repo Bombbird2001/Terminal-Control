@@ -105,6 +105,8 @@ public class Airport {
         stars = FileLoader.loadStars(this);
         sids = FileLoader.loadSids(this);
 
+        //if (icao.equals("VMMC")) TerminalControl.tts.test(stars, sids);
+
         for (MissedApproach missedApproach: missedApproaches.values()) {
             missedApproach.loadIls();
         }

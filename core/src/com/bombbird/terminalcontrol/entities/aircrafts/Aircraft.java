@@ -30,6 +30,7 @@ import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.Values;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,6 +44,9 @@ public class Aircraft extends Actor {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
     private static boolean LOADED_ICONS = false;
+
+    //Android text-to-speech
+    private String voice;
 
     public RadarScreen radarScreen;
     private Stage stage;
@@ -181,6 +185,8 @@ public class Aircraft extends Actor {
 
         selected = false;
         dragging = false;
+
+        voice = Values.VOICES[MathUtils.random(0, Values.VOICES.length)];
     }
 
     public Aircraft(JSONObject save) {
@@ -291,6 +297,8 @@ public class Aircraft extends Actor {
         radarGs = (float) save.getDouble("radarGs");
         radarAlt = (float) save.getDouble("radarAlt");
         radarVs = (float) save.getDouble("radarVs");
+
+        voice = save.isNull("voice") ? Values.VOICES[MathUtils.random(0, Values.VOICES.length - 1)] : save.getString("voice");
     }
 
     /** Loads & sets aircraft resources */
@@ -1769,5 +1777,9 @@ public class Aircraft extends Actor {
 
     public void setExpediteTime(float expediteTime) {
         this.expediteTime = expediteTime;
+    }
+
+    public String getVoice() {
+        return voice;
     }
 }

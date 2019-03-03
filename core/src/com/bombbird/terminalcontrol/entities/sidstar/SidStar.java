@@ -16,6 +16,8 @@ public class SidStar {
 
     private RadarScreen radarScreen;
 
+    private String pronounciation;
+
     public SidStar(Airport airport, String toParse) {
         radarScreen = TerminalControl.radarScreen;
 
@@ -114,5 +116,13 @@ public class SidStar {
 
     public Airport getAirport() {
         return airport;
+    }
+
+    public String getPronounciation() {
+        return pronounciation;
+    }
+
+    public void setPronounciation(String pronounciation) {
+        this.pronounciation = pronounciation;
     }
 }

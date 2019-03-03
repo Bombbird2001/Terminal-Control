@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 
@@ -26,6 +27,13 @@ public class TerminalControl extends Game {
 
     //The one and only spritebatch
     public SpriteBatch batch;
+
+    //Text-to-speech (for Android only)
+    public static TextToSpeech tts;
+
+    public TerminalControl(TextToSpeech tts) {
+        TerminalControl.tts = tts;
+    }
 
     @Override
     public void create () {

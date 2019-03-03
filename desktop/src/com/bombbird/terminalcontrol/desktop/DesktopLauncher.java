@@ -12,6 +12,6 @@ public class DesktopLauncher {
 		config.setWindowIcon("game/Icon48.png", "game/Icon32.png", "game/Icon16.png");
 		config.setWindowedMode(1440, 810);
 		TerminalControl.ishtml = false;
-		new Lwjgl3Application(new TerminalControl(), config);
+		new Lwjgl3Application(new TerminalControl(new TextToSpeechManager()), config);
 	}
 }

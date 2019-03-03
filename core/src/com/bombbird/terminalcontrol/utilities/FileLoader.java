@@ -274,4 +274,13 @@ public class FileLoader {
 
         return aircrafts;
     }
+
+    public static HashMap<String, String> loadIcaoCallsigns() {
+        HashMap<String, String> callsigns = new HashMap<String, String>();
+        String[] info = Gdx.files.internal("game/aircrafts/callsigns.call").readString().split("\\r?\\n");
+        for (String indivAirline: info) {
+            callsigns.put(indivAirline.split(",")[0], indivAirline.split(",")[1]);
+        }
+        return callsigns;
+    }
 }

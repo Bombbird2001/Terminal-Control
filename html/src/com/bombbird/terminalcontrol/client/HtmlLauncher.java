@@ -47,6 +47,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new TerminalControl();
+                return new TerminalControl(new TextToSpeechManager());
         }
 }

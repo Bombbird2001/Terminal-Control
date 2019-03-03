@@ -194,6 +194,8 @@ public class GameSaver {
             aircraftInfo.put("radarAlt", (double) aircraft.getRadarAlt()); //Radar altitude
             aircraftInfo.put("radarVs", (double) aircraft.getRadarVs()); //Radar vertical speed
 
+            aircraftInfo.put("voice", aircraft.getVoice()); //Text to speech voice
+
             JSONArray labelPos = new JSONArray(); //Aircraft label position
             labelPos.put((double) aircraft.getLabel().getX());
             labelPos.put((double) aircraft.getLabel().getY());

@@ -28,18 +28,19 @@ public class Sid extends SidStar {
         for (String s1: sidInfo) {
             switch (index) {
                 case 0: setName(s1); break; //First part is the name of the SID
-                case 1: //Add SID runways
+                case 1: setPronounciation(s1); break; //How name is pronounced by TTS
+                case 2: //Add SID runways
                     for (String s2: s1.split(">")) {
                         getRunways().add(s2);
                     }
                     break;
-                case 2: //Second part is the initial climb of the SID
+                case 3: //Second part is the initial climb of the SID
                     String[] info = s1.split(" ");
                     for (int i = 0; i < 3; i++) {
                         initClimb[i] = Integer.parseInt(info[i]);
                     }
                     break;
-                case 3: //Add waypoints to SID
+                case 4: //Add waypoints to SID
                     for (String s2: s1.split(">")) {
                         //For each waypoint on the STAR
                         int index1 = 0;
@@ -66,12 +67,12 @@ public class Sid extends SidStar {
                         getRestrictions().add(altSpdRestrictions);
                     }
                     break;
-                case 4: //Outbound heading after last waypoint
+                case 5: //Outbound heading after last waypoint
                     for (String s2: s1.split(">")) {
                         outboundHdg.add(Integer.parseInt(s2));
                     }
                     break;
-                case 5: //Centre callsign & frequency
+                case 6: //Centre callsign & frequency
                     centre = s1.split(">");
                     break;
                 default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + TerminalControl.radarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");

@@ -79,6 +79,7 @@ public class CommBox {
 
         Label label1 = new Label(freq + ", good day, " + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
         updateLabelQueue(label1);
+        TerminalControl.tts.contactOther(aircraft.getVoice(), freq, aircraft.getCallsign().substring(0, 3), aircraft.getCallsign().substring(3), wake);
     }
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
@@ -98,7 +99,7 @@ public class CommBox {
             wake = " super";
         }
 
-        Label label = null;
+        Label label;
 
         String altitude;
         if (aircraft.getAltitude() >= TerminalControl.radarScreen.transLvl * 100) {
@@ -124,17 +125,28 @@ public class CommBox {
                 action = "at " + clearedAltitude;
             }
         }
+
+        String text = "";
+        String icao = aircraft.getCallsign().substring(0, 3);
+        String flightNo = aircraft.getCallsign().substring(3);
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
-                label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName(), getLabelStyle(aircraft.getColor()));
+                text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName();
+                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronounciation(), aircraft.getDirect().getName());
             } else {
-                label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading(), getLabelStyle(aircraft.getColor()));
+                text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
+                TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
             }
         } else if (aircraft instanceof Departure) {
-            label = new Label(apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure", getLabelStyle(aircraft.getColor()));
+            text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure";
+            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), action, aircraft.getSidStar().getPronounciation());
         }
 
+        label = new Label(text, getLabelStyle(aircraft.getColor()));
+
         updateLabelQueue(label);
+
+
     }
 
     /** Adds a normal message */

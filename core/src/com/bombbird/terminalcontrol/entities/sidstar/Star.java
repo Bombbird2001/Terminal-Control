@@ -28,17 +28,18 @@ public class Star extends SidStar {
         for (String s1: starInfo) {
             switch (index) {
                 case 0: setName(s1); break; //First part is the name of the STAR
-                case 1: //Add STAR runways
+                case 1: setPronounciation(s1); break; //How name is pronounced by TTS
+                case 2: //Add STAR runways
                     for (String s2: s1.split(">")) {
                         getRunways().add(s2);
                     }
                     break;
-                case 2: //Second part is the inbound track(s) of the STAR
+                case 3: //Second part is the inbound track(s) of the STAR
                     for (String s2: s1.split(">")) {
                         inboundHdg.add(Integer.parseInt(s2));
                     }
                     break;
-                case 3: //Add waypoints to STAR
+                case 4: //Add waypoints to STAR
                     for (String s2: s1.split(">")) {
                         //For each waypoint on the STAR
                         int index1 = 0;
