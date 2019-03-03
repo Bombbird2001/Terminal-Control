@@ -30,7 +30,6 @@ import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
-import com.bombbird.terminalcontrol.utilities.Values;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,6 +46,13 @@ public class Aircraft extends Actor {
 
     //Android text-to-speech
     private String voice;
+    private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
+            "en-us-x-sfg#female_1-local", "en-gb-x-rjs-local", "en-gb-x-rjs#female_3-local", "en-gb-x-gbd-local",
+            "en-gb-x-fis#male_2-local", "en-us-x-sfg#female_2-local", "en-gb-x-rjs#female_1-local",
+            "en-gb-x-fis#male_3-local", "en-gb-x-fis-local", "en-gb-x-gbb-local", "en-gb-x-fis#female_2-local",
+            "en-us-x-sfg#male_2-local", "en-gb-x-rjs#female_2-local", "en-gb-x-fis#male_1-local", "en-us-x-sfg#female_3-local",
+            "en-gb-x-fis#female_3-local"
+    };
 
     public RadarScreen radarScreen;
     private Stage stage;
@@ -186,7 +192,7 @@ public class Aircraft extends Actor {
         selected = false;
         dragging = false;
 
-        voice = Values.VOICES[MathUtils.random(0, Values.VOICES.length)];
+        voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
 
     public Aircraft(JSONObject save) {
@@ -298,7 +304,7 @@ public class Aircraft extends Actor {
         radarAlt = (float) save.getDouble("radarAlt");
         radarVs = (float) save.getDouble("radarVs");
 
-        voice = save.isNull("voice") ? Values.VOICES[MathUtils.random(0, Values.VOICES.length - 1)] : save.getString("voice");
+        voice = save.isNull("voice") ? VOICES[MathUtils.random(0, VOICES.length - 1)] : save.getString("voice");
     }
 
     /** Loads & sets aircraft resources */

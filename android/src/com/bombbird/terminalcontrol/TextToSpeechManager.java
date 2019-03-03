@@ -17,9 +17,11 @@ import java.util.Locale;
 
 public class TextToSpeechManager extends AndroidApplication implements TextToSpeech.OnInitListener, com.bombbird.terminalcontrol.sounds.TextToSpeech {
     private TextToSpeech tts = null;
-    public final int ACT_CHECK_TTS_DATA = 1000;
+    public static final int ACT_CHECK_TTS_DATA = 1000;
+    public static final int ACT_INSTALL_TTS_DATA = 1001;
     private static HashMap<String, String> callsigns;
 
+    /** Performs relevant actions after receiving status for TTS data check  */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACT_CHECK_TTS_DATA) {
@@ -30,11 +32,16 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
                 //Data is missing, so we start the TTS installation process
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
+                startActivityForResult(installIntent, ACT_INSTALL_TTS_DATA);
             }
+        } else if (requestCode == ACT_INSTALL_TTS_DATA) {
+            Intent ttsIntent = new Intent();
+            ttsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+            startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA);
         }
     }
 
+    /** Sets initial properties after initialisation of TTS is complete */
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             if (tts != null) {
@@ -53,6 +60,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         }
     }
 
+    /** Stops, destroys TTS instance */
     protected void onDestroy() {
         if (tts != null) {
             tts.stop();
@@ -61,6 +69,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         super.onDestroy();
     }
 
+    /** Converts any FLXXX in text to flight level X X X */
     private String convertToFlightLevel(String action) {
         String[] actionList = action.split(" ");
         for (int i = 0; i < actionList.length; i++) {
@@ -73,6 +82,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         return StringUtils.join(actionList, " ");
     }
 
+    /** Converts any number into text due to special pronunciation requirements for 0, 9 and . */
     private String convertNoToText(String altitude) {
         String[] list = altitude.split("");
         for (int i = 0; i < list.length; i++) {
@@ -83,6 +93,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         return StringUtils.join(list, " ");
     }
 
+    /** Says the text depending on API level */
     private void sayText(String text, String voice) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             tts.setVoice(new Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null));
@@ -92,46 +103,52 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         }
     }
 
+    /** Speaks the initial contact for arrivals */
     @Override
     public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
-        icao = callsigns.get(icao);
-        flightNo = convertNoToText(flightNo);
-        action = convertToFlightLevel(action);
-        String text = apchCallsign + ", " + icao + " " + flightNo + " " + wake + " with you, " + action + " on the " + star + " arrival, inbound " + direct;
+        String callsign = callsigns.get(icao);
+        String newFlightNo = convertNoToText(flightNo);
+        String newAction = convertToFlightLevel(action);
+        String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + direct;
         Gdx.app.log("TTS initArr", text);
         sayText(text, voice);
     }
 
+    /** Speaks the contact from arrivals after going around */
     @Override
     public void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading) {
-        icao = callsigns.get(icao);
-        action = convertToFlightLevel(action);
-        flightNo = convertNoToText(flightNo);
-        heading = StringUtils.join(heading.split(""), " ");
-        String text = apchCallsign + ", " + icao + flightNo + " " + wake + " with you, " + action + ", heading " + heading;
+        String callsign = callsigns.get(icao);
+        String newAction = convertToFlightLevel(action);
+        String newFlightNo = convertNoToText(flightNo);
+        String newHeading = StringUtils.join(heading.split(""), " ");
+        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
         Gdx.app.log("TTS goAround", text);
         sayText(text, voice);
     }
 
+    /** Speaks the initial contact for departures */
     @Override
     public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String action, String sid) {
-        icao = callsigns.get(icao);
+        String callsign = callsigns.get(icao);
         action = convertToFlightLevel(action);
         flightNo = convertNoToText(flightNo);
-        String text = apchCallsign + ", " + icao + flightNo + " " + wake + " with you, outbound " + airport + ", " + action + ", " + sid + " departure";
+        String text = apchCallsign + ", " + callsign + flightNo + " " + wake + " with you, outbound " + airport + ", " + action + ", " + sid + " departure";
         Gdx.app.log("TTS initDep", text);
         sayText(text, voice);
     }
 
+    /** Speaks handover of aircraft to other frequencies */
     @Override
     public void contactOther(String voice, String frequency, String icao, String flightNo, String wake) {
-        frequency = convertNoToText(frequency);
-        icao = callsigns.get(icao);
+        String newFreq = convertNoToText(frequency);
+        String callsign = callsigns.get(icao);
         flightNo = convertNoToText(flightNo);
-        String text = frequency + ", good day, " + icao + flightNo + " " + wake;
+        String text = newFreq + ", good day, " + callsign + flightNo + " " + wake;
+        Gdx.app.log("TTS contactOther", text);
         sayText(text, voice);
     }
 
+    /** Test function */
     @Override
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
         for (Star star: stars.values()) {
