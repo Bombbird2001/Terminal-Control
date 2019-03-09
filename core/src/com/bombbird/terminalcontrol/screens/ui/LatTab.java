@@ -482,8 +482,9 @@ public class LatTab extends Tab {
 
         if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             boolean found = false;
-            for (Waypoint waypoint: ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
-                if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+            Array<Waypoint> waypoints = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints();
+            for (int i = 0; i < waypoints.size; i++) {
+                if (selectedAircraft.getSidStar().findWptIndex(waypoints.get(i).getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                     //Check if holding point is after current aircraft direct
                     found = true;
                     break;

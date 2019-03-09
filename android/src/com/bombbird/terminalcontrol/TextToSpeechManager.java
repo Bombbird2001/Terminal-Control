@@ -109,7 +109,8 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         String callsign = callsigns.get(icao);
         String newFlightNo = convertNoToText(flightNo);
         String newAction = convertToFlightLevel(action);
-        String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + direct;
+        String newDirect = direct.toLowerCase();
+        String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + newDirect;
         Gdx.app.log("TTS initArr", text);
         sayText(text, voice);
     }
