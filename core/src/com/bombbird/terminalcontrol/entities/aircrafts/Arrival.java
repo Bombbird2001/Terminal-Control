@@ -449,6 +449,8 @@ public class Arrival extends Aircraft {
                         setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
                         setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
                     }
+                } else {
+                    super.updateAltitude();
                 }
             }
             if (isLocCap()) {
