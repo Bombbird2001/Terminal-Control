@@ -66,12 +66,14 @@ public class AltTab extends Tab {
             while (altTracker <= highestAlt) {
                 String toAdd = altTracker / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + altTracker / 100 : Integer.toString(altTracker);
                 alts.add(toAdd);
+                if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && altTracker == 3000) alts.add("3500");
                 altTracker += 1000;
             }
         } else {
             while (lowestAlt <= highestAlt) {
                 String toAdd = lowestAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + lowestAlt / 100 : Integer.toString(lowestAlt);
                 alts.add(toAdd);
+                if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && lowestAlt == 3000) alts.add("3500");
                 lowestAlt += 1000;
             }
         }

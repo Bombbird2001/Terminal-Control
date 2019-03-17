@@ -844,7 +844,7 @@ public class Aircraft extends Actor {
             }
         } else if (this instanceof Departure) {
             //Force directions for certain departure procedures
-            if (getSidStar().getName().contains("NANKO1(6") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 300) {
+            if (getSidStar().getName().contains("NANKO1(6") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 320) {
                 //RJBB NANKO1(6L) and NANKO1(6R) departures
                 forceDirection = 1;
             } else if (getSidStar().getName().contains("KANSAI1") && getSidStar().getName().contains("24") && direct != null && "KNE".equals(direct.getName()) && heading > 180 && heading <= 360) {
