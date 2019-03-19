@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
+import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.HashMap;
@@ -56,6 +57,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Create texture stuff
     public final ShapeRenderer shapeRenderer = new ShapeRenderer();
+
+    //Sounds
+    public SoundManager soundManager = new SoundManager();
 
     //Create range circles
     private RangeCircle[] rangeCircles;
@@ -355,12 +359,14 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     @Override
     public void pause() {
         setGameState(State.PAUSE);
+        soundManager.pause();
     }
 
     /** Implements resume method of screen */
     @Override
     public void resume() {
         setGameState(State.RUN);
+        soundManager.resume();
     }
 
     /** Implements hide method of screen */
@@ -386,6 +392,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         aircrafts.clear();
         airports.clear();
         waypoints.clear();
+
+        soundManager.dispose();
     }
 
     /** Implements touchdown method of gestureListener */
@@ -523,10 +531,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         settingsScreen.setVisible(s == State.SETTINGS);
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
+            soundManager.resume();
         } else if (s == State.PAUSE) {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
+            soundManager.pause();
         } else if (s == State.SETTINGS) {
             Gdx.input.setInputProcessor(settingsScreen.getStage());
+            soundManager.pause();
         }
     }
 

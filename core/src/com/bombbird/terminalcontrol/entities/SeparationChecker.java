@@ -83,6 +83,12 @@ public class SeparationChecker extends Actor {
         }
         lastNumber = active;
         time -= Gdx.graphics.getDeltaTime();
+
+        if (lastNumber > 0) {
+            radarScreen.soundManager.playConflict();
+        } else {
+            radarScreen.soundManager.stopConflict();
+        }
     }
 
     /** Updates the levels each aircraft belongs to */
