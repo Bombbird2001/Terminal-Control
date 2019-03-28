@@ -356,6 +356,7 @@ public class Arrival extends Aircraft {
             //Low fuel, request priority
             radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
             requestPriority = true;
+            TerminalControl.tts.lowFuel(getVoice(), 0, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
         }
 
         if (fuel < 2100 && !declareEmergency) {
@@ -363,6 +364,7 @@ public class Arrival extends Aircraft {
             radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " requests immediate landing within 10 minutes or will divert.");
             declareEmergency = true;
             radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+            TerminalControl.tts.lowFuel(getVoice(), 1, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
         }
 
         if (fuel < 1500 && !divert && !isLocCap()) {
@@ -401,6 +403,7 @@ public class Arrival extends Aircraft {
 
             divert = true;
             radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+            TerminalControl.tts.lowFuel(getVoice(), 2, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
         }
     }
 

@@ -94,7 +94,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     }
 
     /** Says the text depending on API level */
-    private void sayText(String text, String voice) {
+    public void sayText(String text, String voice) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             tts.setVoice(new Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null));
             tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
@@ -106,6 +106,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     /** Speaks the initial contact for arrivals */
     @Override
     public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
         String newFlightNo = convertNoToText(flightNo);
         String newAction = convertToFlightLevel(action);
@@ -118,6 +119,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     /** Speaks the contact from arrivals after going around */
     @Override
     public void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
         String newAction = convertToFlightLevel(action);
         String newFlightNo = convertNoToText(flightNo);
@@ -130,6 +132,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     /** Speaks the initial contact for departures */
     @Override
     public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String action, String sid) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
         action = convertToFlightLevel(action);
         flightNo = convertNoToText(flightNo);
@@ -141,6 +144,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     /** Speaks handover of aircraft to other frequencies */
     @Override
     public void contactOther(String voice, String frequency, String icao, String flightNo, String wake) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         String newFreq = convertNoToText(frequency);
         String callsign = callsigns.get(icao);
         flightNo = convertNoToText(flightNo);
@@ -149,9 +153,34 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         sayText(text, voice);
     }
 
+    /** Speaks aircraft's low fuel call */
+    @Override
+    public void lowFuel(String voice, int status, String icao, String flightNo, char wakeCat) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String callsign = callsigns.get(icao);
+        flightNo = convertNoToText(flightNo);
+        String wake = "";
+        if (wakeCat == 'H') {
+            wake = " heavy";
+        } else if (wakeCat == 'J') {
+            wake = " super";
+        }
+        String text = "";
+        if (status == 0) {
+            text = "Pan-pan, pan-pan, pan-pan, " + callsign + flightNo + " " + wake + " is low on fuel and requests priority landing.";
+        } else if (status == 1) {
+            text = "Mayday, mayday, mayday, " + callsign + flightNo + " " + wake + " requests immediate landing within 10 minutes or will divert.";
+        } else if (status == 2) {
+            text = callsign + flightNo + " " + wake + ", we are diverting to the alternate airport.";
+        }
+        Gdx.app.log("TTS Low fuel", text);
+        sayText(text, voice);
+    }
+
     /** Test function */
     @Override
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         for (Star star: stars.values()) {
             //System.out.println(star.getPronounciation());
             //tts.speak(star.getPronounciation(), TextToSpeech.QUEUE_ADD, null, null);

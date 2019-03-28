@@ -86,8 +86,6 @@ public class SeparationChecker extends Actor {
 
         if (lastNumber > 0) {
             radarScreen.soundManager.playConflict();
-        } else {
-            radarScreen.soundManager.stopConflict();
         }
     }
 

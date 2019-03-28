@@ -199,6 +199,7 @@ public class Airport {
                 msg += "takeoffs.";
             }
             TerminalControl.radarScreen.getCommBox().normalMsg(msg);
+            TerminalControl.radarScreen.soundManager.playRunwayChange();
         }
 
         if (ldgOff || tkofOff) {
@@ -211,6 +212,7 @@ public class Airport {
                 msg += "takeoffs.";
             }
             TerminalControl.radarScreen.getCommBox().normalMsg(msg);
+            TerminalControl.radarScreen.soundManager.playRunwayChange();
         }
     }
 

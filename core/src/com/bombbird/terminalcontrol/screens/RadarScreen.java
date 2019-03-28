@@ -49,6 +49,7 @@ public class RadarScreen extends GameScreen {
     public String deptCallsign;
     public int trajectoryLine = 90;
     public boolean liveWeather = true;
+    public int soundSel = 2;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Whether the game is a tutorial
@@ -143,6 +144,7 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = save.getInt("trajectoryLine");
         liveWeather = save.getBoolean("liveWeather");
+        soundSel = save.isNull("sounds") ? 2 : save.getInt("sounds");
     }
 
     private void loadStageCamTimer() {

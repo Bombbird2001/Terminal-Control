@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.screens;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,6 +26,7 @@ public class SettingsScreen {
     private SelectBox.SelectBoxStyle selectBoxStyle;
     private SelectBox<String> trajectoryLine;
     private SelectBox<String> weather;
+    private SelectBox<String> sound;
 
     private TextButton confirmButton;
     private TextButton cancelButton;
@@ -33,6 +36,9 @@ public class SettingsScreen {
 
     private Label weatherLabel;
     private boolean weatherSel;
+
+    private Label soundLabel;
+    private int soundSel;
 
     public SettingsScreen(final RadarScreen radarScreen) {
         this.radarScreen = radarScreen;
@@ -92,7 +98,7 @@ public class SettingsScreen {
             }
         });
         trajectoryLine.setSize(1200, 300);
-        trajectoryLine.setPosition(5760 / 2f - 400, 3240 * 0.7f);
+        trajectoryLine.setPosition(5760 / 2f - 400, 3240 * 0.8f);
         trajectoryLine.setAlignment(Align.center);
         trajectoryLine.getList().setAlignment(Align.center);
         stage.addActor(trajectoryLine);
@@ -108,10 +114,36 @@ public class SettingsScreen {
             }
         });
         weather.setSize(1200, 300);
-        weather.setPosition(5760 / 2f - 400, 3240 * 0.5f);
+        weather.setPosition(5760 / 2f - 400, 3240 * 0.6f);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
         stage.addActor(weather);
+
+        sound = new SelectBox<String>(selectBoxStyle);
+        Array<String> options2 = new Array<String>(2);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            options2.add("Text-to-speech + sound effects", "Sound effects only", "Off");
+        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            options2.add("Sound effects", "Off");
+        }
+        sound.setItems(options2);
+        sound.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Text-to-speech + sound effects".equals(sound.getSelected())) {
+                    soundSel = 2;
+                } else if ("Sound effects".equals(sound.getSelected()) || "Sound effects only".equals(sound.getSelected())) {
+                    soundSel = 1;
+                } else if ("Off".equals(sound.getSelected())) {
+                    soundSel = 0;
+                }
+            }
+        });
+        sound.setSize(1200, 300);
+        sound.setPosition(5760 / 2f - 400, 3240 * 0.4f);
+        sound.setAlignment(Align.center);
+        sound.getList().setAlignment(Align.center);
+        stage.addActor(sound);
     }
 
     /** Loads buttons */
@@ -158,12 +190,17 @@ public class SettingsScreen {
         weatherLabel = new Label("Weather: ", labelStyle);
         weatherLabel.setPosition(weather.getX() - 100 - weatherLabel.getWidth(), weather.getY() + weather.getHeight() / 2 - weatherLabel.getHeight() / 2);
         stage.addActor(weatherLabel);
+
+        soundLabel = new Label("Sounds: ", labelStyle);
+        soundLabel.setPosition(sound.getX() - 100 - soundLabel.getWidth(), sound.getY() + sound.getHeight() / 2 - soundLabel.getHeight() / 2);
+        stage.addActor(soundLabel);
     }
 
     /** Confirms and applies the changes set */
     private void sendChanges() {
         radarScreen.trajectoryLine = trajectorySel;
         radarScreen.liveWeather = weatherSel;
+        radarScreen.soundSel = soundSel;
     }
 
     /** Sets visibility of elements */
@@ -172,13 +209,21 @@ public class SettingsScreen {
         trajectoryLabel.setVisible(show);
         weather.setVisible(show);
         weatherLabel.setVisible(show);
+        sound.setVisible(show);
+        soundLabel.setVisible(show);
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
     }
 
     public void setOptions() {
+        trajectorySel = radarScreen.trajectoryLine;
         trajectoryLine.setSelected(radarScreen.trajectoryLine + " sec");
-        weather.setSelected(radarScreen.liveWeather ? "Live weather" : "Random weather");
+        weatherSel = radarScreen.liveWeather;
+        weather.setSelectedIndex(weatherSel ? 0 : 1);
+        soundSel = radarScreen.soundSel;
+        int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
+        if (soundIndex < 0) soundIndex = 0;
+        sound.setSelectedIndex(soundIndex);
     }
 
     public Stage getStage() {

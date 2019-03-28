@@ -40,6 +40,7 @@ public class GameSaver {
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
+        jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("arrivalManager", getArrivalManager());
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());

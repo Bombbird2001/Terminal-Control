@@ -8,6 +8,11 @@ import java.util.HashMap;
 
 public class TextToSpeechManager implements TextToSpeech {
     @Override
+    public void lowFuel(String voice, int status, String icao, String flightNo, char wake) {
+
+    }
+
+    @Override
     public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
         //No default implementation
     }

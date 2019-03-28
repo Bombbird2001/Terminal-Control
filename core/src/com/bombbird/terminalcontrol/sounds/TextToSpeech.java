@@ -14,5 +14,7 @@ public interface TextToSpeech {
 
     void contactOther(String voice, String frequency, String icao, String flightNo, String wake);
 
+    void lowFuel(String voice, int status, String icao, String flightNo, char wake);
+
     void test(HashMap<String, Star> stars, HashMap<String, Sid> sids);
 }

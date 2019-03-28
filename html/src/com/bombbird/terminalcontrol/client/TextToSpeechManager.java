@@ -28,6 +28,11 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
+    public void lowFuel(String voice, int status, String icao, String flightNo, char wake) {
+
+    }
+
+    @Override
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
         //No default implementation
     }
