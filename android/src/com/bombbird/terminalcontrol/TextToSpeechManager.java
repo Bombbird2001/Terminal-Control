@@ -135,8 +135,8 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
         action = convertToFlightLevel(action);
-        flightNo = convertNoToText(flightNo);
-        String text = apchCallsign + ", " + callsign + flightNo + " " + wake + " with you, outbound " + airport + ", " + action + ", " + sid + " departure";
+        String newFlightNo = convertNoToText(flightNo);
+        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, outbound " + airport + ", " + action + ", " + sid + " departure";
         Gdx.app.log("TTS initDep", text);
         sayText(text, voice);
     }
@@ -147,8 +147,8 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String newFreq = convertNoToText(frequency);
         String callsign = callsigns.get(icao);
-        flightNo = convertNoToText(flightNo);
-        String text = newFreq + ", good day, " + callsign + flightNo + " " + wake;
+        String newFlightNo = convertNoToText(flightNo);
+        String text = newFreq + ", good day, " + callsign + newFlightNo + " " + wake;
         Gdx.app.log("TTS contactOther", text);
         sayText(text, voice);
     }
@@ -158,7 +158,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     public void lowFuel(String voice, int status, String icao, String flightNo, char wakeCat) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
-        flightNo = convertNoToText(flightNo);
+        String newFlightNo = convertNoToText(flightNo);
         String wake = "";
         if (wakeCat == 'H') {
             wake = " heavy";
@@ -167,11 +167,11 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         }
         String text = "";
         if (status == 0) {
-            text = "Pan-pan, pan-pan, pan-pan, " + callsign + flightNo + " " + wake + " is low on fuel and requests priority landing.";
+            text = "Pan-pan, pan-pan, pan-pan, " + callsign + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
         } else if (status == 1) {
-            text = "Mayday, mayday, mayday, " + callsign + flightNo + " " + wake + " requests immediate landing within 10 minutes or will divert.";
+            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " requests immediate landing within 10 minutes or will divert.";
         } else if (status == 2) {
-            text = callsign + flightNo + " " + wake + ", we are diverting to the alternate airport.";
+            text = callsign + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
         }
         Gdx.app.log("TTS Low fuel", text);
         sayText(text, voice);

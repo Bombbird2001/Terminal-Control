@@ -29,7 +29,7 @@ public class TextToSpeechManager implements TextToSpeech {
 
     @Override
     public void lowFuel(String voice, int status, String icao, String flightNo, char wake) {
-
+        //No default implementation
     }
 
     @Override
