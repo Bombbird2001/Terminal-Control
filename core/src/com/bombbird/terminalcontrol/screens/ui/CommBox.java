@@ -132,14 +132,14 @@ public class CommBox {
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName();
-                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronounciation(), aircraft.getDirect().getName());
+                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronounciation().toLowerCase(), aircraft.getDirect().getName());
             } else {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
                 TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
             }
         } else if (aircraft instanceof Departure) {
             text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure";
-            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), action, aircraft.getSidStar().getPronounciation());
+            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), action, aircraft.getSidStar().getPronounciation().toLowerCase());
         }
 
         label = new Label(text, getLabelStyle(aircraft.getColor()));
