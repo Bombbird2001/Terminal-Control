@@ -122,7 +122,7 @@ public class SettingsScreen {
         sound = new SelectBox<String>(selectBoxStyle);
         Array<String> options2 = new Array<String>(2);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            options2.add("Text-to-speech + sound effects", "Sound effects only", "Off");
+            options2.add("Pilot voices + sound effects", "Sound effects only", "Off");
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             options2.add("Sound effects", "Off");
         }
@@ -130,7 +130,7 @@ public class SettingsScreen {
         sound.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if ("Text-to-speech + sound effects".equals(sound.getSelected())) {
+                if ("Pilot voices + sound effects".equals(sound.getSelected())) {
                     soundSel = 2;
                 } else if ("Sound effects".equals(sound.getSelected()) || "Sound effects only".equals(sound.getSelected())) {
                     soundSel = 1;

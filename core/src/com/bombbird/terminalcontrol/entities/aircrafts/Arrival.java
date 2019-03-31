@@ -93,7 +93,7 @@ public class Arrival extends Aircraft {
             }
         }
 
-        fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + MathUtils.random(-600, 600);
+        fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + 900 + MathUtils.random(-600, 600);
 
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
         if (maxAltWpt != null) {
