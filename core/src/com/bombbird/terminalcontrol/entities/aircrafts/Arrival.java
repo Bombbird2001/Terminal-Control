@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
@@ -409,11 +410,11 @@ public class Arrival extends Aircraft {
 
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach */
     @Override
-    public void updateAltitude() {
+    public void updateAltitude(boolean holdAlt) {
         if (getIls() != null) {
             if (!(getIls() instanceof LDA) || !((LDA) getIls()).isNpa()) {
                 if (!isGsCap()) {
-                    super.updateAltitude();
+                    super.updateAltitude(getIls().getName().contains("IMG"));
                     if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
                         setGsCap(true);
                         setMissedAlt(); //TODO Reproduce & fix bug where altitude is set to go around alt when GS not captured
@@ -443,17 +444,19 @@ public class Arrival extends Aircraft {
                         while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
                             nonPrecAlts.removeFirst();
                         }
-                        super.updateAltitude();
+                        super.updateAltitude(false);
                     } else {
                         //Set final descent towards runway
                         setTargetAltitude(getIls().getRwy().getElevation());
-                        float remainingAlt = getAltitude() - getIls().getRwy().getElevation();
-                        float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY()));
+                        float lineUpDist = ((LDA) getIls()).getLineUpDist();
+                        float actlTargetAlt = ((LDA) getIls()).getImaginaryIls().getGSAltAtDist(lineUpDist);
+                        float remainingAlt = getAltitude() - actlTargetAlt + 100;
+                        Vector2 actlTargetPos = ((LDA) getIls()).getImaginaryIls().getPointAtDist(lineUpDist);
+                        float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), actlTargetPos.x, actlTargetPos.y));
                         setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
-                        setAltitude(getAltitude() + getVerticalSpeed() / 60 * Gdx.graphics.getDeltaTime());
                     }
                 } else {
-                    super.updateAltitude();
+                    super.updateAltitude(false);
                 }
             }
             if (isLocCap()) {
@@ -488,7 +491,7 @@ public class Arrival extends Aircraft {
                 nonPrecAlts = null;
             }
             goAroundSet = false;
-            super.updateAltitude();
+            super.updateAltitude(false);
         }
         if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
             setControlState(1);

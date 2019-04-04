@@ -279,8 +279,8 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    public void updateAltitude() {
-        super.updateAltitude();
+    public void updateAltitude(boolean holdAlt) {
+        super.updateAltitude(false);
         if (getControlState() == 2 && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
             setControlState(0);
             setClearedIas(getClimbSpd());

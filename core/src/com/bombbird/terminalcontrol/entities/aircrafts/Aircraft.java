@@ -496,7 +496,7 @@ public class Aircraft extends Actor {
             targetHeading = info[0];
             updateHeading(targetHeading);
             updatePosition(info[1]);
-            updateAltitude();
+            updateAltitude(false);
             updateSpd();
             if (goAround) {
                 updateGoAround();
@@ -570,8 +570,9 @@ public class Aircraft extends Actor {
         }
     }
 
-    public void updateAltitude() {
-        float targetVertSpd = (targetAltitude - altitude) / 0.1f;
+    public void updateAltitude(boolean holdAlt) {
+        float targetVertSpd = 0;
+        if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f;
         if (targetVertSpd > verticalSpeed + 100) {
             verticalSpeed = verticalSpeed + 500 * Gdx.graphics.getDeltaTime();
         } else if (targetVertSpd < verticalSpeed - 100) {
@@ -673,7 +674,7 @@ public class Aircraft extends Actor {
             }
             if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) getIls()).getLineUpDist()) {
                 ils = ((LDA) getIls()).getImaginaryIls();
-                gsCap = true;
+                gsCap = false;
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane

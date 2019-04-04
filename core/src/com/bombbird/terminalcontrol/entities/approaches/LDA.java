@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.utilities.MathTools;
+import org.apache.commons.lang3.StringUtils;
 
 public class LDA extends ILS {
     private Queue<float[]> nonPrecAlts;
@@ -48,7 +49,7 @@ public class LDA extends ILS {
 
     /** Loads the imaginary ILS from runway center line */
     private void loadImaginaryIls() {
-        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getX() + "," + getRwy().getY() + ",0,0,4000,->-";
+        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getX() + "," + getRwy().getY() + ",0,0,4000," + StringUtils.join(getTowerFreq(), ">");
         imaginaryIls = new ILS(getAirport(), text);
     }
 

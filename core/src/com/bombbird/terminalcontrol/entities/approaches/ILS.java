@@ -75,7 +75,7 @@ public class ILS extends Actor {
     /** Calculates positions of the GS rings; overriden for LDAs */
     public void calculateGsRings() {
         for (int i = 2; i <= gsAlt / 1000; i++) {
-            gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev)));
+            if (i * 1000 > airport.getElevation() + 1000) gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev)));
         }
     }
 
@@ -164,12 +164,12 @@ public class ILS extends Actor {
     }
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
-    private Vector2 getPointAtDist(float dist) {
+    public Vector2 getPointAtDist(float dist) {
         return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev));
     }
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin */
-    private float getGSAltAtDist(float dist) {
+    public float getGSAltAtDist(float dist) {
         return MathTools.nmToFeet(dist + gsOffset) * (float) Math.tan(Math.toRadians(3)) + rwy.getElevation();
     }
 
