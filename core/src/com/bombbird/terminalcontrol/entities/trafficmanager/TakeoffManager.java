@@ -195,10 +195,10 @@ public class TakeoffManager {
                         runway = runway1;
                         dist = distance;
                     }
-                } else if ("16L".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkOppLanding(airport.getRunways().get("16R"))) {
+                } else if ("16L".equals(runway1.getName()) && checkLandingRJTT23() && checkOppLanding(airport.getRunways().get("16R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkLanding(airport.getRunways().get("23")) && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L"))) {
+                } else if ("16R".equals(runway1.getName()) && checkLandingRJTT23() && checkLanding(airport.getRunways().get("22")) && checkOppLanding(airport.getRunways().get("16L"))) {
                     runway = runway1;
                     dist = distance;
                 }
@@ -353,6 +353,31 @@ public class TakeoffManager {
         } else {
             Aircraft aircraft = runway.getAircraftsOnAppr().first();
             return MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 5 && !aircraft.isOnGround() && runway.getOppRwy().getAircraftsOnAppr().size == 0;
+        }
+    }
+
+    /** Checks specific case for RJTT's runway 23, same as above function but will also return true if aircraft has landed */
+    private boolean checkLandingRJTT23() {
+        if (!"RJTT".equals(airport.getIcao())) return false;
+        Runway runway = airport.getRunways().get("23");
+        if (runway.getAircraftsOnAppr().size == 0) {
+            //No aircraft on approach
+            return true;
+        } else {
+            Aircraft aircraft = runway.getAircraftsOnAppr().first();
+            Aircraft aircraft1 = null;
+            if (runway.getAircraftsOnAppr().size > 1) aircraft1 = runway.getAircraftsOnAppr().get(1);
+            if (runway.getOppRwy().getAircraftsOnAppr().size == 0) {
+                //No planes landing opposite
+                if (MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 4 && !aircraft.isOnGround()) {
+                    //If latest aircraft is more than 4 miles away and not landed yet
+                    return true;
+                } else {
+                    //If first aircraft has touched down, 2nd aircraft is non-existent OR is more than 4 miles away
+                    return aircraft.isOnGround() && (aircraft1 == null || !aircraft1.isOnGround() && MathTools.pixelToNm(MathTools.distanceBetween(aircraft1.getX(), aircraft1.getY(), runway.getX(), runway.getY())) >= 4);
+                }
+            }
+            return false;
         }
     }
 
