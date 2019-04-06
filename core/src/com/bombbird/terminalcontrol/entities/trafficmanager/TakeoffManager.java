@@ -369,12 +369,12 @@ public class TakeoffManager {
             if (runway.getAircraftsOnAppr().size > 1) aircraft1 = runway.getAircraftsOnAppr().get(1);
             if (runway.getOppRwy().getAircraftsOnAppr().size == 0) {
                 //No planes landing opposite
-                if (MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 4 && !aircraft.isOnGround()) {
-                    //If latest aircraft is more than 4 miles away and not landed yet
+                if (MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 5 && !aircraft.isOnGround()) {
+                    //If latest aircraft is more than 5 miles away and not landed yet
                     return true;
                 } else {
-                    //If first aircraft has touched down, 2nd aircraft is non-existent OR is more than 4 miles away
-                    return aircraft.isOnGround() && (aircraft1 == null || !aircraft1.isOnGround() && MathTools.pixelToNm(MathTools.distanceBetween(aircraft1.getX(), aircraft1.getY(), runway.getX(), runway.getY())) >= 4);
+                    //If first aircraft has touched down, 2nd aircraft is non-existent OR is more than 5 miles away
+                    return aircraft.isOnGround() && (aircraft1 == null || !aircraft1.isOnGround() && MathTools.pixelToNm(MathTools.distanceBetween(aircraft1.getX(), aircraft1.getY(), runway.getX(), runway.getY())) >= 5);
                 }
             }
             return false;

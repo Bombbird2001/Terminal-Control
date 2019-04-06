@@ -461,6 +461,7 @@ public class LatTab extends Tab {
     }
 
     private void updateSidStarOptions() {
+        if (selectedAircraft == null) return;
         notListening = true;
         if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
             selectedAircraft.getNavState().getAltModes().add("Descend via STAR");

@@ -208,10 +208,10 @@ public class SeparationChecker extends Actor {
     /** Checks that each aircraft is separated from each obstacles/restricted area */
     private int checkRestrSep(int active) {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
+            if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) || (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
                     (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
                     aircraft.isGoAroundWindow()) {
-                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground
+                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet)
                 continue;
             }
             if (aircraft instanceof Departure) {

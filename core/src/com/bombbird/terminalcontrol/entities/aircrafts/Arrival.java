@@ -454,6 +454,7 @@ public class Arrival extends Aircraft {
                         Vector2 actlTargetPos = ((LDA) getIls()).getImaginaryIls().getPointAtDist(lineUpDist);
                         float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), actlTargetPos.x, actlTargetPos.y));
                         setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
+                        super.updateAltitude(remainingAlt < 0);
                     }
                 } else {
                     super.updateAltitude(false);

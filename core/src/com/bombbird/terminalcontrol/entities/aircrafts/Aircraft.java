@@ -788,7 +788,8 @@ public class Aircraft extends Actor {
         }
         Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
-            return targetHeading;
+            if (this instanceof Departure) return ((Departure) this).getOutboundHdg();
+            return targetAltitude;
         } else {
             float deltaX = nextWpt.getPosX() - getDirect().getPosX();
             float deltaY = nextWpt.getPosY() - getDirect().getPosY();
