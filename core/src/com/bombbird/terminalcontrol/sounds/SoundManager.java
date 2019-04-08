@@ -8,15 +8,18 @@ import com.bombbird.terminalcontrol.TerminalControl;
 public class SoundManager {
     private Sound conflict;
     private Sound runwayChange;
+    private Sound initialContact;
 
     private boolean conflictPlaying;
     private boolean runwayChangePlaying;
+    private boolean initialContactPlaying;
 
     private Timer timer;
 
     public SoundManager() {
         conflict = Gdx.audio.newSound(Gdx.files.internal("game/audio/conflict.wav"));
         runwayChange = Gdx.audio.newSound(Gdx.files.internal("game/audio/rwy_change.wav"));
+        initialContact = Gdx.audio.newSound(Gdx.files.internal("game/audio/initial_contact.wav"));
         timer = new Timer();
     }
 
@@ -48,10 +51,26 @@ public class SoundManager {
         }
     }
 
+    /** Plays initial contact sound effect if not playing */
+    public void playInitialContact() {
+        //Play only if not playing AND sound selected is sound effects only
+        if (!initialContactPlaying && TerminalControl.radarScreen.soundSel == 1) {
+            initialContact.play(0.8f);
+            initialContactPlaying = true;
+            timer.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    initialContactPlaying = false;
+                }
+            }, 0.23f);
+        }
+    }
+
     /** Pauses playing all sounds */
     public void pause() {
         conflict.pause();
         runwayChange.pause();
+        initialContact.pause();
         timer.stop();
     }
 
@@ -59,6 +78,7 @@ public class SoundManager {
     public void resume() {
         conflict.resume();
         runwayChange.resume();
+        initialContact.resume();
         timer.start();
     }
 
@@ -68,5 +88,7 @@ public class SoundManager {
         conflict.dispose();
         runwayChange.stop();
         runwayChange.dispose();
+        initialContact.stop();
+        initialContact.dispose();
     }
 }

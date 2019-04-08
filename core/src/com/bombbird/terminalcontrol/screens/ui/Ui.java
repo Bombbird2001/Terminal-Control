@@ -21,12 +21,14 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui {
+    private static Texture transBackground;
     private static Texture hdgBoxBackground;
     private static Texture paneTexture;
     private static Texture lightBackground;
     private static Texture lightestBackground;
     private Button paneImage;
     public static SpriteDrawable hdgBoxBackgroundDrawable;
+    public static SpriteDrawable transBackgroundDrawable;
     public static SpriteDrawable lightBoxBackground;
     public static SpriteDrawable lightestBoxBackground;
 
@@ -79,11 +81,13 @@ public class Ui {
 
     public static void generatePaneTextures() {
         hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
+        transBackground = new Texture(Gdx.files.internal("game/ui/TransBackground.png"));
         paneTexture = new Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"));
         lightBackground = new Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"));
         lightestBackground = new Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"));
 
         hdgBoxBackgroundDrawable = new SpriteDrawable(new Sprite(hdgBoxBackground));
+        transBackgroundDrawable = new SpriteDrawable(new Sprite(transBackground));
         lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
         lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
     }

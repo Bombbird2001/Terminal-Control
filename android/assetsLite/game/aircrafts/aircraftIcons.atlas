@@ -1,61 +1,82 @@
 aircraftIcons.png
-size: 234, 95
+size: 131, 115
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 aircraftControlled
   rotate: false
-  xy: 0, 0
+  xy: 51, 0
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 aircraftDeparture
   rotate: false
-  xy: 20, 0
+  xy: 91, 0
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 aircraftEnroute
   rotate: false
-  xy: 40, 0
+  xy: 71, 0
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 aircraftNotControlled
   rotate: false
-  xy: 60, 0
+  xy: 111, 0
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 DotsArrival
   rotate: false
-  xy: 80, 0
+  xy: 16, 0
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 DotsDeparture
   rotate: false
-  xy: 88, 0
+  xy: 0, 0
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 DotsEnroute
   rotate: false
-  xy: 96, 0
+  xy: 8, 0
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 labelBackgroundSmall
   rotate: false
-  xy: 104, 0
+  xy: 0, 20
   size: 130, 95
   orig: 130, 95
+  offset: 0, 0
+  index: -1
+labelBorderBlue
+  rotate: false
+  xy: 33, 0
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+labelBorderGreen
+  rotate: false
+  xy: 24, 0
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+labelBorderRed
+  rotate: false
+  xy: 42, 0
+  size: 9, 9
+  orig: 9, 9
   offset: 0, 0
   index: -1

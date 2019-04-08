@@ -146,7 +146,7 @@ public class CommBox {
 
         updateLabelQueue(label);
 
-
+        TerminalControl.radarScreen.soundManager.playInitialContact();
     }
 
     /** Adds a normal message */

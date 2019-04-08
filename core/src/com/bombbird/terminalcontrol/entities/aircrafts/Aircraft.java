@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -42,6 +44,9 @@ public class Aircraft extends Actor {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
+    private static NinePatch LABEL_PATCH_GREEN;
+    private static NinePatch LABEL_PATCH_BLUE;
+    private static NinePatch LABEL_PATCH_RED;
     private static boolean LOADED_ICONS = false;
 
     //Android text-to-speech
@@ -59,6 +64,7 @@ public class Aircraft extends Actor {
     public ShapeRenderer shapeRenderer;
     public Ui ui;
 
+    //TODO To be refactored
     private Label label;
     private String[] labelText;
     private boolean selected;
@@ -66,6 +72,7 @@ public class Aircraft extends Actor {
     private Button labelButton;
     private Button clickSpot;
     private boolean dragging;
+    //
     private Color color;
 
     //Aircraft information
@@ -327,6 +334,10 @@ public class Aircraft extends Actor {
             BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
             BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
 
+            LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
+            LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
+            LABEL_PATCH_RED= new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
+
             LOADED_ICONS = true;
         }
     }
@@ -360,7 +371,15 @@ public class Aircraft extends Actor {
         labelButton = new Button(SKIN.getDrawable("labelBackgroundSmall"), SKIN.getDrawable("labelBackgroundSmall"));
         labelButton.setSize(label.getWidth() + 10, label.getHeight());
 
-        clickSpot = new Button(new Button.ButtonStyle());
+
+        NinePatchDrawable ninePatchDrawable;
+        if (this instanceof Arrival) {
+            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
+        } else {
+            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
+        }
+        Button.ButtonStyle clickSpotStyle = new Button.ButtonStyle(ninePatchDrawable, ninePatchDrawable, ninePatchDrawable);
+        clickSpot = new Button(clickSpotStyle);
         clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
         clickSpot.setName(callsign);
         clickSpot.addListener(new DragListener() {
@@ -381,7 +400,6 @@ public class Aircraft extends Actor {
                 }
             }
         });
-        clickSpot.setDebug(true);
 
         Stage labelStage = TerminalControl.radarScreen.labelStage;
         labelStage.addActor(labelButton);
@@ -399,7 +417,6 @@ public class Aircraft extends Actor {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.sinDeg((float)(90 - radarTrack)));
         }
-        clickSpot.drawDebug(shapeRenderer);
     }
 
     /** Draws the lines displaying the lateral status of aircraft */

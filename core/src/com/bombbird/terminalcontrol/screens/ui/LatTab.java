@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.screens.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -17,6 +18,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class LatTab extends Tab {
     private Label hdgBox;
+    private Button hdgBoxClick;
     private TextButton hdg100add;
     private TextButton hdg100minus;
     private TextButton hdg10add;
@@ -85,13 +87,22 @@ public class LatTab extends Tab {
         hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
         hdgBox.setSize(0.8f * getPaneWidth(), 270);
         hdgBox.setAlignment(Align.center);
-        hdgBox.addListener(new ChangeListener() {
+        TerminalControl.radarScreen.uiStage.addActor(hdgBox);
+
+        //Button for click spot below heading label, fixes annoying "click-through" bug
+        Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
+        buttonStyle.up = Ui.transBackgroundDrawable;
+        buttonStyle.down = Ui.transBackgroundDrawable;
+        hdgBoxClick = new Button(buttonStyle);
+        hdgBoxClick.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
+        hdgBoxClick.setSize(0.8f * getPaneWidth(), 270);
+        hdgBoxClick.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 event.handle();
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(hdgBox);
+        TerminalControl.radarScreen.uiStage.addActor(hdgBoxClick);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.WHITE;
@@ -357,6 +368,8 @@ public class LatTab extends Tab {
         float leftMargin = 0.1f * paneWidth;
         hdgBox.setSize(paneSize, 270);
         hdgBox.setX(leftMargin);
+        hdgBoxClick.setSize(paneSize, 270);
+        hdgBoxClick.setX(leftMargin);
         ilsBox.setSize(paneSize, boxHeight);
         ilsBox.setX(leftMargin);
         hdg100add.setSize(paneSize / 3, 300);
@@ -379,6 +392,7 @@ public class LatTab extends Tab {
     public void setVisibility(boolean show) {
         super.setVisibility(show);
         hdgBox.setVisible(show);
+        hdgBoxClick.setVisible(show);
         hdg100add.setVisible(show);
         hdg100minus.setVisible(show);
         hdg10add.setVisible(show);
@@ -452,6 +466,7 @@ public class LatTab extends Tab {
 
     private void showHdgBoxes(boolean show) {
         hdgBox.setVisible(show);
+        hdgBoxClick.setVisible(show);
         hdg100add.setVisible(show);
         hdg100minus.setVisible(show);
         hdg10add.setVisible(show);
