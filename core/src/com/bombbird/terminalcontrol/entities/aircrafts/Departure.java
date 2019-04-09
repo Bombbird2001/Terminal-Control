@@ -106,8 +106,15 @@ public class Departure extends Aircraft {
         setColor(new Color(0x11ff00ff));
         setControlState(save.getInt("controlState"));
 
-        JSONArray labelPos = save.getJSONArray("labelPos");
-        getLabel().setPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+        JSONArray trails = save.getJSONArray("trailDots");
+        for (int i = 0; i < trails.length(); i++) {
+            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
+        }
+
+        if (!save.isNull("labelPos")) {
+            JSONArray labelPos = save.getJSONArray("labelPos");
+            getDataTag().setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+        }
     }
 
     private void takeOff() {
@@ -178,13 +185,6 @@ public class Departure extends Aircraft {
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
         sid.joinLines(sid.findWptIndex(LatTab.clearedWpt), sid.getWaypoints().size, -1);
-    }
-
-    /** Overrides method in Aircraft class to update label + update SID name */
-    @Override
-    public void updateLabel() {
-        getLabelText()[8] = sid.getName();
-        super.updateLabel();
     }
 
     /** Overrides method in Aircraft class to set to outbound heading */

@@ -154,7 +154,7 @@ public class GameSaver {
 
             //Trail dots
             JSONArray trail = new JSONArray();
-            for (Image image: aircraft.getTrailDots()) {
+            for (Image image: aircraft.getDataTag().getTrailDots()) {
                 JSONArray point = new JSONArray();
                 point.put((double)(image.getX() + image.getWidth() / 2));
                 point.put((double)(image.getY() + image.getHeight() / 2));
@@ -198,8 +198,8 @@ public class GameSaver {
             aircraftInfo.put("voice", aircraft.getVoice()); //Text to speech voice
 
             JSONArray labelPos = new JSONArray(); //Aircraft label position
-            labelPos.put((double) aircraft.getLabel().getX());
-            labelPos.put((double) aircraft.getLabel().getY());
+            labelPos.put((double) aircraft.getDataTag().getLabelPosition()[0]);
+            labelPos.put((double) aircraft.getDataTag().getLabelPosition()[1]);
             aircraftInfo.put("labelPos", labelPos);
 
             if (aircraft instanceof Arrival) {

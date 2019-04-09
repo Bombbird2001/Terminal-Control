@@ -3,20 +3,12 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
@@ -27,28 +19,16 @@ import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.ui.DataTag;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
-import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Aircraft extends Actor {
-    //Rendering parameters
-    public static TextureAtlas ICON_ATLAS;
-    public static Skin SKIN;
-    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_CTRL = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
-    private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
-    private static NinePatch LABEL_PATCH_GREEN;
-    private static NinePatch LABEL_PATCH_BLUE;
-    private static NinePatch LABEL_PATCH_RED;
-    private static boolean LOADED_ICONS = false;
-
     //Android text-to-speech
     private String voice;
     private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
@@ -64,16 +44,10 @@ public class Aircraft extends Actor {
     public ShapeRenderer shapeRenderer;
     public Ui ui;
 
-    //TODO To be refactored
-    private Label label;
-    private String[] labelText;
-    private boolean selected;
-    private ImageButton icon;
-    private Button labelButton;
-    private Button clickSpot;
-    private boolean dragging;
-    //
+    private DataTag dataTag;
     private Color color;
+
+    private boolean selected;
 
     //Aircraft information
     private Airport airport;
@@ -120,7 +94,6 @@ public class Aircraft extends Actor {
     private boolean type1leg;
     private float[][] holdTargetPt;
     private boolean[] holdTargetPtSelected;
-    private Queue<Image> trailDots;
 
     //Altitude
     private float prevAlt;
@@ -194,10 +167,6 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
-        trailDots = new Queue<Image>();
-
-        selected = false;
-        dragging = false;
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
@@ -269,12 +238,6 @@ public class Aircraft extends Actor {
             holdTargetPtSelected[1] = the2bools.getBoolean(1);
         }
 
-        trailDots = new Queue<Image>();
-        JSONArray trails = save.getJSONArray("trailDots");
-        for (int i = 0; i < trails.length(); i++) {
-            addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
-        }
-
         prevAlt = (float) save.getDouble("prevAlt");
         altitude = (float) save.getDouble("altitude");
         clearedAltitude = save.getInt("clearedAltitude");
@@ -320,26 +283,6 @@ public class Aircraft extends Actor {
         stage = radarScreen.stage;
         shapeRenderer = radarScreen.shapeRenderer;
         ui = radarScreen.ui;
-
-        if (!LOADED_ICONS) {
-            ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
-            SKIN = new Skin(ICON_ATLAS);
-
-            BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled");
-            BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled");
-            BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture");
-            BUTTON_STYLE_DEPT.imageDown = SKIN.getDrawable("aircraftDeparture");
-            BUTTON_STYLE_UNCTRL.imageUp = SKIN.getDrawable("aircraftNotControlled");
-            BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled");
-            BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
-            BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
-
-            LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
-            LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
-            LABEL_PATCH_RED= new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
-
-            LOADED_ICONS = true;
-        }
     }
 
     /** Sets the initial radar position for aircraft */
@@ -355,64 +298,15 @@ public class Aircraft extends Actor {
 
     /** Loads the aircraft data labels */
     public void loadLabel() {
-        icon = new ImageButton(BUTTON_STYLE_UNCTRL);
-        icon.setSize(20, 20);
-        icon.getImageCell().size(20, 20);
-        stage.addActor(icon);
-
-        labelText = new String[11];
-        labelText[9] = airport.getIcao();
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont6;
-        labelStyle.fontColor = Color.WHITE;
-        label = new Label("Loading...", labelStyle);
-        label.setPosition(x - label.getWidth() / 2, y + 25);
-
-        labelButton = new Button(SKIN.getDrawable("labelBackgroundSmall"), SKIN.getDrawable("labelBackgroundSmall"));
-        labelButton.setSize(label.getWidth() + 10, label.getHeight());
-
-
-        NinePatchDrawable ninePatchDrawable;
-        if (this instanceof Arrival) {
-            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
-        } else {
-            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
-        }
-        Button.ButtonStyle clickSpotStyle = new Button.ButtonStyle(ninePatchDrawable, ninePatchDrawable, ninePatchDrawable);
-        clickSpot = new Button(clickSpotStyle);
-        clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
-        clickSpot.setName(callsign);
-        clickSpot.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                label.moveBy(x - labelButton.getWidth() / 2, y - labelButton.getHeight() / 2);
-                dragging = true;
-                event.handle();
-            }
-        });
-        clickSpot.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!dragging) {
-                    radarScreen.setSelectedAircraft(radarScreen.aircrafts.get(actor.getName()));
-                } else {
-                    dragging = false;
-                }
-            }
-        });
-
-        Stage labelStage = TerminalControl.radarScreen.labelStage;
-        labelStage.addActor(labelButton);
-        labelStage.addActor(label);
-        labelStage.addActor(clickSpot);
+        dataTag = new DataTag(this);
     }
 
     /** Renders shapes using shapeRenderer; all rendering should be called here */
     public void renderShape() {
         drawLatLines();
-        moderateLabel();
+        dataTag.moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, radarX, radarY);
+        dataTag.renderShape();
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.sinDeg((float)(90 - radarTrack)));
@@ -964,19 +858,10 @@ public class Aircraft extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         update();
-        updateLabel();
-        icon.setPosition(radarX - 10, radarY - 10);
-        icon.setColor(Color.BLACK); //Icon doesn't draw without this for some reason
-        icon.draw(batch, 1);
+        dataTag.updateLabel();
+        dataTag.updateIcon(batch);
 
-        int index = 0;
-        int size = trailDots.size;
-        for (Image trail: trailDots) {
-            if (selected || (size - index <= 5 && (controlState == 1 || controlState == 2))) {
-                trail.draw(batch, parentAlpha);
-            }
-            index++;
-        }
+        dataTag.drawTrailDots(batch, parentAlpha);
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
@@ -1056,17 +941,7 @@ public class Aircraft extends Actor {
     /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected */
     public void setControlState(int controlState) {
         this.controlState = controlState;
-        if (controlState == -1) { //En route aircraft - gray
-            icon.setStyle(BUTTON_STYLE_ENROUTE);
-        } else if (controlState == 0) { //Uncontrolled aircraft - yellow
-            icon.setStyle(BUTTON_STYLE_UNCTRL);
-        } else if (controlState == 1) { //Controlled arrival - blue
-            icon.setStyle(BUTTON_STYLE_CTRL);
-        } else if (controlState == 2) { //Controlled departure - green
-            icon.setStyle(BUTTON_STYLE_DEPT);
-        } else {
-            Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
-        }
+        dataTag.updateIconColor(controlState);
         if (selected) {
             if (controlState == -1 || controlState == 0) {
                 ui.setNormalPane(true);
@@ -1076,80 +951,6 @@ public class Aircraft extends Actor {
                 ui.setSelectedPane(this);
             }
         }
-    }
-
-    /** Updates the position of the label to prevent it from going out of bounds */
-    private void moderateLabel() {
-        if (label.getX() < 936) {
-            label.setX(936);
-        } else if (label.getX() + label.getWidth() > 4824) {
-            label.setX(4824 - label.getWidth());
-        }
-        if (label.getY() < 0) {
-            label.setY(0);
-        } else if (label.getY() + label.getHeight() > 3240) {
-            label.setY(3240 - label.getHeight());
-        }
-    }
-
-    /** Updates the label on the radar given aircraft's radar data and other data */
-    public void updateLabel() {
-        String vertSpd;
-        if (radarVs < -150) {
-            vertSpd = " DOWN ";
-        } else if (radarVs > 150) {
-            vertSpd = " UP ";
-        } else {
-            vertSpd = " = ";
-        }
-        labelText[0] = callsign;
-        labelText[1] = icaoType + "/" + wakeCat;
-        labelText[2] = Integer.toString(MathUtils.round(radarAlt / 100));
-        labelText[3] = gsCap ? "GS" : Integer.toString(targetAltitude / 100);
-        labelText[10] = Integer.toString(navState.getClearedAlt().last() / 100);
-        if ((MathUtils.round((float) radarHdg) == 0)) {
-            radarHdg += 360;
-        }
-        labelText[4] = Integer.toString(MathUtils.round((float) radarHdg));
-        if (navState.getDispLatMode().first().contains("heading") && !navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
-            if (locCap) {
-                labelText[5] = "LOC";
-            } else {
-                labelText[5] = Integer.toString(navState.getClearedHdg().last());
-            }
-        } else if ("Hold at".equals(navState.getDispLatMode().last())) {
-            if (holding || (direct != null && direct.equals(holdWpt))) {
-                labelText[5] = holdWpt.getName();
-            } else if (direct != null) {
-                labelText[5] = direct.getName();
-            }
-        } else if (navState.getDispLatMode().last().contains(getSidStar().getName()) || navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
-            if (navState.getClearedDirect().last().equals(navState.getClearedAftWpt().last()) && navState.getDispLatMode().last().equals("After waypoint, fly heading")) {
-                labelText[5] = navState.getClearedDirect().last().getName() + navState.getClearedAftWptHdg().last();
-            } else {
-                labelText[5] = navState.getClearedDirect().last().getName();
-            }
-        }
-        labelText[6] = Integer.toString((int) radarGs);
-        labelText[7] = Integer.toString(navState.getClearedSpd().last());
-        if (navState.getClearedIls().last() != null) {
-            labelText[8] = navState.getClearedIls().last().getName();
-        } else {
-            labelText[8] = getSidStar().getName();
-        }
-        String exped = navState.getClearedExpedite().last() ? " =>> " : " => ";
-        String updatedText;
-        if (controlState == 1 || controlState == 2) {
-            updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
-        } else {
-            updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
-        }
-        label.setText(updatedText);
-        label.pack();
-        labelButton.setSize(label.getWidth() + 10, label.getHeight());
-        labelButton.setPosition(label.getX() - 5, label.getY());
-        clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
-        clickSpot.setPosition(labelButton.getX(), labelButton.getY());
     }
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
@@ -1169,7 +970,7 @@ public class Aircraft extends Actor {
 
     /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep */
     public void updateRadarInfo() {
-        label.moveBy(x - radarX, y - radarY);
+        dataTag.moveLabel(x - radarX, y - radarY);
         radarX = x;
         radarY = y;
         radarHdg = heading;
@@ -1215,32 +1016,8 @@ public class Aircraft extends Actor {
         this.selected = selected;
     }
 
-    public Label getLabel() {
-        return label;
-    }
-
-    public void setLabel(Label label) {
-        this.label = label;
-    }
-
-    public String[] getLabelText() {
-        return labelText;
-    }
-
-    public void setLabelText(String[] labelText) {
-        this.labelText = labelText;
-    }
-
     public boolean isSelected() {
         return selected;
-    }
-
-    public ImageButton getIcon() {
-        return icon;
-    }
-
-    public void setIcon(ImageButton icon) {
-        this.icon = icon;
     }
 
     public Airport getAirport() {
@@ -1485,10 +1262,7 @@ public class Aircraft extends Actor {
 
     /** Removes the aircraft completely from game, including its labels, other elements */
     public void removeAircraft() {
-        label.remove();
-        icon.remove();
-        labelButton.remove();
-        clickSpot.remove();
+        dataTag.removeLabel();
         remove();
         radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
@@ -1504,25 +1278,10 @@ public class Aircraft extends Actor {
         //No default implementation
     }
 
-    /** Appends a new image to end of queue for drawing trail dots given a set of coordinates */
-    private void addTrailDot(float x, float y) {
-        Image image;
-        if (this instanceof Arrival) {
-            image = new Image(SKIN.getDrawable("DotsArrival"));
-        } else if (this instanceof Departure) {
-            image = new Image(SKIN.getDrawable("DotsDeparture"));
-        } else {
-            image = new Image();
-            Gdx.app.log("Trail dot error", "Aircraft not instance of arrival or departure, trail image not found!");
-        }
-        image.setPosition(x - image.getWidth() / 2, y - image.getHeight() / 2);
-        trailDots.addLast(image);
-    }
-
     /** Appends a new image to end of queue for aircraft's own position */
     public void addTrailDot() {
         if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
-        addTrailDot(x, y);
+        dataTag.addTrailDot(x, y);
     }
 
     public float getVerticalSpeed() {
@@ -1756,10 +1515,6 @@ public class Aircraft extends Actor {
         return holdTargetPtSelected;
     }
 
-    public Queue<Image> getTrailDots() {
-        return trailDots;
-    }
-
     public float getPrevAlt() {
         return prevAlt;
     }
@@ -1784,10 +1539,6 @@ public class Aircraft extends Actor {
         return radarVs;
     }
 
-    public static void setLoadedIcons(boolean loadedIcons) {
-        LOADED_ICONS = loadedIcons;
-    }
-
     public boolean isTerrainConflict() {
         return terrainConflict;
     }
@@ -1806,5 +1557,13 @@ public class Aircraft extends Actor {
 
     public String getVoice() {
         return voice;
+    }
+
+    public void setRadarHdg(double radarHdg) {
+        this.radarHdg = radarHdg;
+    }
+
+    public DataTag getDataTag() {
+        return dataTag;
     }
 }

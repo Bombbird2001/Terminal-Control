@@ -195,9 +195,14 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
         setControlState(save.getInt("controlState"));
 
+        JSONArray trails = save.getJSONArray("trailDots");
+        for (int i = 0; i < trails.length(); i++) {
+            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
+        }
+
         if (!save.isNull("labelPos")) {
             JSONArray labelPos = save.getJSONArray("labelPos");
-            getLabel().setPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+            getDataTag().setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
         }
     }
 
@@ -265,13 +270,6 @@ public class Arrival extends Aircraft {
         super.uiDrawHoldPattern();
         radarScreen.shapeRenderer.setColor(Color.YELLOW);
         star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1);
-    }
-
-    /** Overrides method in Aircraft class to update label + update STAR name */
-    @Override
-    public void updateLabel() {
-        getLabelText()[8] = star.getName();
-        super.updateLabel();
     }
 
     /** Overrides method in Aircraft class to set to current heading*/
@@ -417,7 +415,7 @@ public class Arrival extends Aircraft {
                     super.updateAltitude(getIls().getName().contains("IMG"));
                     if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
                         setGsCap(true);
-                        setMissedAlt(); //TODO Reproduce & fix bug where altitude is set to go around alt when GS not captured
+                        setMissedAlt();
                     }
                 } else {
                     setVerticalSpeed(-MathTools.nmToFeet((float) Math.tan(Math.toRadians(3)) * 140f / 60f));
