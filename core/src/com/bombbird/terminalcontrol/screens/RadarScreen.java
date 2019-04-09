@@ -502,6 +502,7 @@ public class RadarScreen extends GameScreen {
         super.dispose();
 
         timer.cancel();
+        TerminalControl.tts.cancel();
     }
 
     /** Disposes of static final variables after user quits app */

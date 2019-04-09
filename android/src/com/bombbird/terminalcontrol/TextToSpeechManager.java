@@ -177,6 +177,11 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         sayText(text, voice);
     }
 
+    /** Stops all current and subsequent speeches */
+    public void cancel() {
+        tts.stop();
+    }
+
     /** Test function */
     @Override
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {

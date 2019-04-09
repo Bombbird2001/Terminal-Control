@@ -36,7 +36,7 @@ public class ArrivalManager {
     public void checkArrival(Arrival arrival) {
         Waypoint entryPt = arrival.getSidStar().getWaypoint(0);
         Aircraft prevAcft = entryPoint.get(entryPt);
-        if (prevAcft != null && arrival.getAltitude() - prevAcft.getAltitude() < 2500 && MathTools.pixelToNm(MathTools.distanceBetween(arrival.getX(), arrival.getY(), prevAcft.getX(), prevAcft.getY())) < 3) {
+        if (prevAcft != null && arrival.getAltitude() - prevAcft.getAltitude() < 2500 && MathTools.pixelToNm(MathTools.distanceBetween(arrival.getX(), arrival.getY(), prevAcft.getX(), prevAcft.getY())) < 6) {
             if (arrival.getTypDes() - prevAcft.getTypDes() > 300) {
                 arrival.setAltitude(prevAcft.getAltitude() + 3500);
             } else {
@@ -46,7 +46,7 @@ public class ArrivalManager {
             arrival.getNavState().getClearedSpd().removeFirst();
             arrival.getNavState().getClearedSpd().addFirst(arrival.getClearedIas());
 
-            arrival.setClearedAltitude(prevAcft.getClearedAltitude() + 1000);
+            if (arrival.getClearedAltitude() < prevAcft.getClearedAltitude() + 1000) arrival.setClearedAltitude(prevAcft.getClearedAltitude() + 1000);
             arrival.getNavState().getClearedAlt().removeFirst();
             arrival.getNavState().getClearedAlt().addFirst(arrival.getClearedAltitude());
         }

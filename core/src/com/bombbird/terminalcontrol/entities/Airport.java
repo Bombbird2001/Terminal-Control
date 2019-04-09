@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -229,6 +230,7 @@ public class Airport {
         }
 
         for (Runway runway: runways.values()) {
+            runway.setLabelColor(congested ? Color.ORANGE : Color.WHITE);
             runway.renderShape();
         }
     }

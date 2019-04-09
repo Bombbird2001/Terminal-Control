@@ -144,6 +144,11 @@ public class Runway {
         aircraftsOnAppr.swap(thisIndex, thisIndex - 1);
     }
 
+    /** Changes the color of the runway label */
+    public void setLabelColor(Color color) {
+        label.getStyle().fontColor = color;
+    }
+
     public boolean isLanding() {
         return landing;
     }

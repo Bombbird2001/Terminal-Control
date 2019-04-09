@@ -16,5 +16,7 @@ public interface TextToSpeech {
 
     void lowFuel(String voice, int status, String icao, String flightNo, char wake);
 
+    void cancel();
+
     void test(HashMap<String, Star> stars, HashMap<String, Sid> sids);
 }

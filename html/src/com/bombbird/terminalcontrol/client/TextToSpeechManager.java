@@ -33,6 +33,11 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
+    public void cancel() {
+        //No default implementation
+    }
+
+    @Override
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
         //No default implementation
     }

@@ -10,9 +10,10 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
-import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 
 public class ILS extends Actor {
@@ -81,8 +82,12 @@ public class ILS extends Actor {
 
     /** Draws ILS line using shapeRenderer */
     public void renderShape() {
-        if (rwy.isLanding()) {
+        boolean landing = rwy.isLanding();
+        Aircraft aircraft = radarScreen.getSelectedAircraft();
+        boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == 1 && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == 0 && this.equals(aircraft.getIls())));
+        if (landing || selectedIls) {
             radarScreen.shapeRenderer.setColor(Color.CYAN);
+            if (selectedIls) radarScreen.shapeRenderer.setColor(Color.YELLOW);
             radarScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev));
             drawGsCircles();
         }

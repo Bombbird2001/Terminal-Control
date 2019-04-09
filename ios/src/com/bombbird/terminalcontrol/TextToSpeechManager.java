@@ -13,6 +13,11 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
+    public void cancel() {
+        //No default implementation
+    }
+
+    @Override
     public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
         //No default implementation
     }
