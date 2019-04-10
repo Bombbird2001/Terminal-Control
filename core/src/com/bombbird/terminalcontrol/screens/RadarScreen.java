@@ -231,7 +231,7 @@ public class RadarScreen extends GameScreen {
                         }
                         index1++;
                     }
-                    Airport airport = new com.bombbird.terminalcontrol.entities.airports.Airport(icao, elevation, aircraftRatio);
+                    Airport airport = new Airport(icao, elevation, aircraftRatio);
                     airport.loadOthers();
                     airports.put(icao, airport);
             }
@@ -618,5 +618,9 @@ public class RadarScreen extends GameScreen {
 
     public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
         this.allAircraft = allAircraft;
+    }
+
+    public Timer getTimer() {
+        return timer;
     }
 }

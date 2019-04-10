@@ -90,6 +90,10 @@ public class GameSaver {
             JSONObject aircraftInfo = new JSONObject();
             String type;
 
+            aircraftInfo.put("actionRequired", aircraft.isActionRequired()); //Whether aircraft label is flashing
+            aircraftInfo.put("dataTagMin", aircraft.getDataTag().isMinimized()); //Whether aircraft label is minimized
+            aircraftInfo.put("emergency", aircraft.isEmergency()); //Whether aircraft is having a 7700
+
             aircraftInfo.put("airport", aircraft.getAirport().getIcao()); //Airport
             aircraftInfo.put("runway", aircraft.getRunway() == null ? JSONObject.NULL : aircraft.getRunway().getName()); //Runway
             aircraftInfo.put("onGround", aircraft.isOnGround()); //Whether it is on the ground

@@ -453,6 +453,8 @@ public class Ui {
             selectedAircraft.getNavState().updateState();
 
             resetAll();
+
+            selectedAircraft.setActionRequired(false);
         }
     }
 

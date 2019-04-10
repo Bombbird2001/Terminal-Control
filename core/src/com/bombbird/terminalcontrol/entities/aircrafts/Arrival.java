@@ -195,15 +195,7 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
         setControlState(save.getInt("controlState"));
 
-        JSONArray trails = save.getJSONArray("trailDots");
-        for (int i = 0; i < trails.length(); i++) {
-            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
-        }
-
-        if (!save.isNull("labelPos")) {
-            JSONArray labelPos = save.getJSONArray("labelPos");
-            getDataTag().setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
-        }
+        loadOtherLabelInfo(save);
     }
 
     /** Calculates remaining distance on STAR from current aircraft position */
@@ -356,6 +348,9 @@ public class Arrival extends Aircraft {
             radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
             requestPriority = true;
             TerminalControl.tts.lowFuel(getVoice(), 0, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+
+            setActionRequired(true);
+            getDataTag().flashIcon();
         }
 
         if (fuel < 2100 && !declareEmergency) {
@@ -364,6 +359,9 @@ public class Arrival extends Aircraft {
             declareEmergency = true;
             radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
             TerminalControl.tts.lowFuel(getVoice(), 1, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+
+            if (!isEmergency()) setEmergency(true);
+            getDataTag().setEmergency();
         }
 
         if (fuel < 1500 && !divert && !isLocCap()) {
@@ -453,8 +451,6 @@ public class Arrival extends Aircraft {
                         Vector2 actlTargetPos = ((LDA) getIls()).getImaginaryIls().getPointAtDist(lineUpDist);
                         float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), actlTargetPos.x, actlTargetPos.y));
                         setVerticalSpeed(-remainingAlt / (distFromRwy / getGs() * 60));
-                        System.out.println(getCallsign() + " target alt: " + actlTargetAlt);
-                        System.out.println(getCallsign() + " target VS: " + getVerticalSpeed());
                         super.updateAltitude(remainingAlt < 0, true);
                     }
                 } else {
@@ -502,6 +498,8 @@ public class Arrival extends Aircraft {
         if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
             setControlState(1);
             radarScreen.getCommBox().initialContact(this);
+            setActionRequired(true);
+            getDataTag().flashIcon();
         }
     }
 

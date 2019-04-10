@@ -48,6 +48,8 @@ public class Aircraft extends Actor {
     private Color color;
 
     private boolean selected;
+    private boolean actionRequired;
+    private boolean emergency;
 
     //Aircraft information
     private Airport airport;
@@ -299,6 +301,27 @@ public class Aircraft extends Actor {
     /** Loads the aircraft data labels */
     public void loadLabel() {
         dataTag = new DataTag(this);
+    }
+
+    /** Loads other aircraft data label info */
+    public void loadOtherLabelInfo(JSONObject save) {
+        JSONArray trails = save.getJSONArray("trailDots");
+        for (int i = 0; i < trails.length(); i++) {
+            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
+        }
+
+        if (!save.isNull("labelPos")) {
+            JSONArray labelPos = save.getJSONArray("labelPos");
+            dataTag.setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+        }
+
+        dataTag.setMinimized(!save.isNull("dataTagMin") && save.getBoolean("dataTagMin"));
+
+        emergency = !save.isNull("emergency") && save.getBoolean("emergency");
+        if (emergency) dataTag.setEmergency();
+
+        actionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired");
+        if (actionRequired) dataTag.flashIcon();
     }
 
     /** Renders shapes using shapeRenderer; all rendering should be called here */
@@ -942,7 +965,8 @@ public class Aircraft extends Actor {
     /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected */
     public void setControlState(int controlState) {
         this.controlState = controlState;
-        dataTag.updateIconColor(controlState);
+        dataTag.updateIconColors(controlState);
+        actionRequired = actionRequired && (controlState == 1 || controlState == 2);
         if (selected) {
             if (controlState == -1 || controlState == 0) {
                 ui.setNormalPane(true);
@@ -1566,5 +1590,21 @@ public class Aircraft extends Actor {
 
     public DataTag getDataTag() {
         return dataTag;
+    }
+
+    public boolean isActionRequired() {
+        return actionRequired;
+    }
+
+    public void setActionRequired(boolean actionRequired) {
+        this.actionRequired = actionRequired;
+    }
+
+    public boolean isEmergency() {
+        return emergency;
+    }
+
+    public void setEmergency(boolean emergency) {
+        this.emergency = emergency;
     }
 }

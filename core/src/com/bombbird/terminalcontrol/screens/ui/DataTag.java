@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -31,6 +32,7 @@ public class DataTag {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
     private static NinePatch LABEL_PATCH_GREEN;
     private static NinePatch LABEL_PATCH_BLUE;
+    private static NinePatch LABEL_PATCH_ORANGE;
     private static NinePatch LABEL_PATCH_RED;
     private static boolean LOADED_ICONS = false;
 
@@ -43,11 +45,16 @@ public class DataTag {
     private Button clickSpot;
     private boolean dragging;
 
+    private int tapCount;
+    private boolean minimized;
+
     private Queue<Image> trailDots;
 
     private RadarScreen radarScreen;
 
-    public DataTag(Aircraft aircraft) {
+    public static final Timer timer = new Timer();
+
+    public DataTag(final Aircraft aircraft) {
         loadResources();
 
         this.aircraft = aircraft;
@@ -97,6 +104,18 @@ public class DataTag {
             public void changed(ChangeEvent event, Actor actor) {
                 if (!dragging) {
                     TerminalControl.radarScreen.setSelectedAircraft(TerminalControl.radarScreen.aircrafts.get(actor.getName()));
+                    tapCount++;
+                    if (tapCount >= 2) {
+                        if (aircraft.getControlState() == 1 || aircraft.getControlState() == 2) minimized = !minimized;
+                        tapCount = 0;
+                        timer.clear();
+                    }
+                    timer.scheduleTask(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            tapCount = 0;
+                        }
+                    }, 0.2f);
                 } else {
                     dragging = false;
                 }
@@ -130,6 +149,7 @@ public class DataTag {
 
             LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
             LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
+            LABEL_PATCH_ORANGE = new NinePatch(SKIN.getRegion("labelBorderOrange"), 3, 3, 3, 3);
             LABEL_PATCH_RED= new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
 
             LOADED_ICONS = true;
@@ -149,7 +169,7 @@ public class DataTag {
     }
 
     /** Updates the icon colour depending on aircraft control state */
-    public void updateIconColor(int controlState) {
+    public void updateIconColors(int controlState) {
         if (controlState == -1) { //En route aircraft - gray
             icon.setStyle(BUTTON_STYLE_ENROUTE);
         } else if (controlState == 0) { //Uncontrolled aircraft - yellow
@@ -161,6 +181,43 @@ public class DataTag {
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
         }
+    }
+
+    /** Called to start flashing an aircraft's label borders during initial contact */
+    public void flashIcon() {
+        if (aircraft.isActionRequired() && !aircraft.isEmergency()) {
+            NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_ORANGE);
+            clickSpot.getStyle().up = ninePatchDrawable;
+            clickSpot.getStyle().down = ninePatchDrawable;
+            clickSpot.getStyle().checked = ninePatchDrawable;
+            timer.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
+                    if (aircraft instanceof Arrival) {
+                        ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
+                    }
+                    clickSpot.getStyle().up = ninePatchDrawable;
+                    clickSpot.getStyle().down = ninePatchDrawable;
+                    clickSpot.getStyle().checked = ninePatchDrawable;
+                }
+            }, 1);
+
+            timer.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    flashIcon();
+                }
+            }, 2);
+        }
+    }
+
+    /** Called to change aircraft label to red for emergencies */
+    public void setEmergency() {
+        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_RED);
+        clickSpot.getStyle().up = ninePatchDrawable;
+        clickSpot.getStyle().down = ninePatchDrawable;
+        clickSpot.getStyle().checked = ninePatchDrawable;
     }
 
     /** Draws the trail dots for aircraft */
@@ -251,7 +308,7 @@ public class DataTag {
         }
         String exped = aircraft.getNavState().getClearedExpedite().last() ? " =>> " : " => ";
         String updatedText;
-        if (aircraft.getControlState() == 1 || aircraft.getControlState() == 2) {
+        if (!minimized && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
@@ -288,5 +345,13 @@ public class DataTag {
 
     public Queue<Image> getTrailDots() {
         return trailDots;
+    }
+
+    public boolean isMinimized() {
+        return minimized;
+    }
+
+    public void setMinimized(boolean minimized) {
+        this.minimized = minimized;
     }
 }

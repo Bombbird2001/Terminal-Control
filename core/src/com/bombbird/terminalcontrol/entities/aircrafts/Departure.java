@@ -106,15 +106,7 @@ public class Departure extends Aircraft {
         setColor(new Color(0x11ff00ff));
         setControlState(save.getInt("controlState"));
 
-        JSONArray trails = save.getJSONArray("trailDots");
-        for (int i = 0; i < trails.length(); i++) {
-            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
-        }
-
-        if (!save.isNull("labelPos")) {
-            JSONArray labelPos = save.getJSONArray("labelPos");
-            getDataTag().setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
-        }
+        loadOtherLabelInfo(save);
     }
 
     private void takeOff() {
@@ -156,6 +148,8 @@ public class Departure extends Aircraft {
         if (getAltitude() - getAirport().getElevation() >= contactAlt && !contacted) {
             setControlState(2);
             radarScreen.getCommBox().initialContact(this);
+            setActionRequired(true);
+            getDataTag().flashIcon();
             contacted = true;
         }
         if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {

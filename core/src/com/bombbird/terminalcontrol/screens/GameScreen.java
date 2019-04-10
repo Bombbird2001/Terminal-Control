@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.screens.ui.DataTag;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -532,12 +533,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
             soundManager.resume();
+            DataTag.timer.start();
         } else if (s == State.PAUSE) {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
             soundManager.pause();
+            DataTag.timer.stop();
         } else if (s == State.SETTINGS) {
             Gdx.input.setInputProcessor(settingsScreen.getStage());
             soundManager.pause();
+            DataTag.timer.stop();
         }
     }
 
