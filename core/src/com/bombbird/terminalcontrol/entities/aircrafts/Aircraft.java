@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.procedures.FlyOverPts;
@@ -407,7 +407,7 @@ public class Aircraft extends Actor {
             targetHeading = info[0];
             updateHeading(targetHeading);
             updatePosition(info[1]);
-            updateAltitude(false);
+            updateAltitude(false, false);
             updateSpd();
             if (goAround) {
                 updateGoAround();
@@ -481,9 +481,10 @@ public class Aircraft extends Actor {
         }
     }
 
-    public void updateAltitude(boolean holdAlt) {
+    public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         float targetVertSpd = 0;
         if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f;
+        if (fixedVs) targetVertSpd = verticalSpeed;
         if (targetVertSpd > verticalSpeed + 100) {
             verticalSpeed = verticalSpeed + 500 * Gdx.graphics.getDeltaTime();
         } else if (targetVertSpd < verticalSpeed - 100) {

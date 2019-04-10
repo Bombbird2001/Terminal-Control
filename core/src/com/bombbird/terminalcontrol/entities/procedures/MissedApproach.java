@@ -1,7 +1,7 @@
 package com.bombbird.terminalcontrol.entities.procedures;
 
 import com.badlogic.gdx.Gdx;
-import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 
 public class MissedApproach {

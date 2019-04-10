@@ -10,7 +10,7 @@ public interface TextToSpeech {
 
     void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading);
 
-    void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String action, String sid);
+    void initDepContact(String voice, String apchCallsign, String icao, String outbound, String flightNo, String wake, String airport, String action, String sid);
 
     void contactOther(String voice, String frequency, String icao, String flightNo, String wake);
 

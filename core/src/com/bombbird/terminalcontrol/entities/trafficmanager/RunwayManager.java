@@ -1,7 +1,7 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 
 public class RunwayManager {

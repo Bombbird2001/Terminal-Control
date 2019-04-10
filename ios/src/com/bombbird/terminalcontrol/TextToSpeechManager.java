@@ -28,7 +28,7 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
-    public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String action, String sid) {
+    public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String outbound, String action, String sid) {
         //No default implementation
     }
 

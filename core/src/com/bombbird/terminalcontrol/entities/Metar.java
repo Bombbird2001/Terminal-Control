@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Values;
 import okhttp3.*;

@@ -11,6 +11,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -138,8 +139,10 @@ public class CommBox {
                 TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
             }
         } else if (aircraft instanceof Departure) {
-            text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, outbound " + aircraft.getAirport().getIcao() + ", " + action + ", " + aircraft.getSidStar().getName() + " departure";
-            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), action, aircraft.getSidStar().getPronounciation().toLowerCase());
+            String outboundText = "";
+            if (!"-".equals(AirportName.getAirportName(aircraft.getAirport().getIcao()))) outboundText = "outbound " + AirportName.getAirportName(aircraft.getAirport().getIcao()) + ", ";
+            text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + ", " + aircraft.getSidStar().getName() + " departure";
+            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronounciation().toLowerCase());
         }
 
         label = new Label(text, getLabelStyle(aircraft.getColor()));

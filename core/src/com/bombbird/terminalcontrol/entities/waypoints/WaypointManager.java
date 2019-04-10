@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.waypoints;
 
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -34,8 +35,9 @@ public class WaypointManager {
             String latMode = aircraft.getNavState().getDispLatMode().last();
             if (latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(latMode) || ("Hold at".equals(latMode) && !aircraft.isHolding())) {
                 //Cleared is sidstar mode
-                for (Waypoint waypoint: aircraft.getRemainingWaypoints()) {
-                    waypoint.setSelected(true);
+                Array<Waypoint> remaining = aircraft.getRemainingWaypoints();
+                for (int i = 0; i < remaining.size; i++) {
+                    remaining.get(i).setSelected(true);
                 }
             } else if (aircraft.isHolding()) {
                 aircraft.getHoldWpt().setSelected(true);

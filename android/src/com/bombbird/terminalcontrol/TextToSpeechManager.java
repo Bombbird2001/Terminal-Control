@@ -131,12 +131,12 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks the initial contact for departures */
     @Override
-    public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String action, String sid) {
+    public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String outbound,  String action, String sid) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = callsigns.get(icao);
         action = convertToFlightLevel(action);
         String newFlightNo = convertNoToText(flightNo);
-        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, outbound " + airport + ", " + action + ", " + sid + " departure";
+        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + ", " + sid + " departure";
         Gdx.app.log("TTS initDep", text);
         sayText(text, voice);
     }

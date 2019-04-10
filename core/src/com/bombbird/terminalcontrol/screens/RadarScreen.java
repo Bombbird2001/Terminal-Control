@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.*;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
+import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.procedures.FlyOverPts;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
@@ -31,6 +33,7 @@ import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
 import com.bombbird.terminalcontrol.utilities.GameSaver;
+import com.bombbird.terminalcontrol.utilities.RandomGenerator;
 import com.bombbird.terminalcontrol.utilities.TutorialManager;
 import org.json.JSONObject;
 
@@ -50,7 +53,7 @@ public class RadarScreen extends GameScreen {
     public String deptCallsign;
     public int trajectoryLine = 90;
     public boolean liveWeather = true;
-    public int soundSel = 2;
+    public int soundSel;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Whether the game is a tutorial
@@ -116,6 +119,12 @@ public class RadarScreen extends GameScreen {
         radarTime = radarSweepDelay;
         trailTime = 10f;
         saveTime = 60f;
+
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            soundSel = 1;
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            soundSel = 2;
+        }
 
         if (tutorial) {
             tutorialManager = new TutorialManager(this);
@@ -217,11 +226,12 @@ public class RadarScreen extends GameScreen {
                             case 0: icao = s1; break;
                             case 1: elevation = Integer.parseInt(s1); break;
                             case 2: aircraftRatio = Integer.parseInt(s1); break;
+                            case 3: AirportName.airportNames.put(icao, s1); break;
                             default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
                         }
                         index1++;
                     }
-                    Airport airport = new Airport(icao, elevation, aircraftRatio);
+                    Airport airport = new com.bombbird.terminalcontrol.entities.airports.Airport(icao, elevation, aircraftRatio);
                     airport.loadOthers();
                     airports.put(icao, airport);
             }
@@ -278,6 +288,8 @@ public class RadarScreen extends GameScreen {
     /** Creates a new arrival for random airport */
     private void newArrival() {
         Airport airport = RandomGenerator.randomAirport();
+        if (airport.getIcao().equals("VHHH")) airport = airports.get("VMMC");
+        if (airport.getIcao().equals("RCTP")) airport = airports.get("RCSS");
 
         String[] aircraftInfo = RandomGenerator.randomPlane(airport);
         Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);

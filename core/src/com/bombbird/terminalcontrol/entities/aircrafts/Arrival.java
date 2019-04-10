@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
@@ -408,11 +408,11 @@ public class Arrival extends Aircraft {
 
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach */
     @Override
-    public void updateAltitude(boolean holdAlt) {
+    public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         if (getIls() != null) {
             if (!(getIls() instanceof LDA) || !((LDA) getIls()).isNpa()) {
                 if (!isGsCap()) {
-                    super.updateAltitude(getIls().getName().contains("IMG"));
+                    super.updateAltitude(getAltitude() < getIls().getGSAlt(this) && getIls().getName().contains("IMG"), false);
                     if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
                         setGsCap(true);
                         setMissedAlt();
@@ -442,20 +442,23 @@ public class Arrival extends Aircraft {
                         while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
                             nonPrecAlts.removeFirst();
                         }
-                        super.updateAltitude(false);
+                        super.updateAltitude(false, false);
                     } else {
                         //Set final descent towards runway
                         setTargetAltitude(getIls().getRwy().getElevation());
                         float lineUpDist = ((LDA) getIls()).getLineUpDist();
                         float actlTargetAlt = ((LDA) getIls()).getImaginaryIls().getGSAltAtDist(lineUpDist);
-                        float remainingAlt = getAltitude() - actlTargetAlt + 100;
+                        actlTargetAlt = actlTargetAlt < getRunway().getElevation() + 300 ? getRunway().getElevation() + 300 : actlTargetAlt;
+                        float remainingAlt = getAltitude() - actlTargetAlt + 200;
                         Vector2 actlTargetPos = ((LDA) getIls()).getImaginaryIls().getPointAtDist(lineUpDist);
                         float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), actlTargetPos.x, actlTargetPos.y));
-                        setVerticalSpeed(-remainingAlt / distFromRwy * getGs() / 60);
-                        super.updateAltitude(remainingAlt < 0);
+                        setVerticalSpeed(-remainingAlt / (distFromRwy / getGs() * 60));
+                        System.out.println(getCallsign() + " target alt: " + actlTargetAlt);
+                        System.out.println(getCallsign() + " target VS: " + getVerticalSpeed());
+                        super.updateAltitude(remainingAlt < 0, true);
                     }
                 } else {
-                    super.updateAltitude(false);
+                    super.updateAltitude(false, false);
                 }
             }
             if (isLocCap()) {
@@ -494,7 +497,7 @@ public class Arrival extends Aircraft {
                 nonPrecAlts = null;
             }
             goAroundSet = false;
-            super.updateAltitude(false);
+            super.updateAltitude(holdAlt, fixedVs);
         }
         if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
             setControlState(1);
@@ -596,7 +599,7 @@ public class Arrival extends Aircraft {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
         getNavState().replaceAllClearedAltMode();
         getNavState().replaceAllClearedAlt();
-        if (isSelected()) {
+        if (isSelected() && getControlState() == 1) {
             ui.updateState();
         }
     }

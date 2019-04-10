@@ -1,8 +1,9 @@
-package com.bombbird.terminalcontrol.entities;
+package com.bombbird.terminalcontrol.utilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;

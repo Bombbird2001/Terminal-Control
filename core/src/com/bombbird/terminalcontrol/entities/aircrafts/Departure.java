@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.entities.Airport;
+import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
@@ -279,8 +279,8 @@ public class Departure extends Aircraft {
     }
 
     @Override
-    public void updateAltitude(boolean holdAlt) {
-        super.updateAltitude(false);
+    public void updateAltitude(boolean holdAlt, boolean fixedVs) {
+        super.updateAltitude(holdAlt, fixedVs);
         if (getControlState() == 2 && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
             setControlState(0);
             setClearedIas(getClimbSpd());
