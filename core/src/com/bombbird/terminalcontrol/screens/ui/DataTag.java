@@ -52,7 +52,8 @@ public class DataTag {
 
     private RadarScreen radarScreen;
 
-    public static final Timer timer = new Timer();
+    private static final Timer tapTimer = new Timer();
+    private static final Timer flashTimer = new Timer();
 
     public DataTag(final Aircraft aircraft) {
         loadResources();
@@ -108,9 +109,9 @@ public class DataTag {
                     if (tapCount >= 2) {
                         if (aircraft.getControlState() == 1 || aircraft.getControlState() == 2) minimized = !minimized;
                         tapCount = 0;
-                        timer.clear();
+                        tapTimer.clear();
                     }
-                    timer.scheduleTask(new Timer.Task() {
+                    tapTimer.scheduleTask(new Timer.Task() {
                         @Override
                         public void run() {
                             tapCount = 0;
@@ -190,7 +191,7 @@ public class DataTag {
             clickSpot.getStyle().up = ninePatchDrawable;
             clickSpot.getStyle().down = ninePatchDrawable;
             clickSpot.getStyle().checked = ninePatchDrawable;
-            timer.scheduleTask(new Timer.Task() {
+            flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
                     NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
@@ -203,7 +204,7 @@ public class DataTag {
                 }
             }, 1);
 
-            timer.scheduleTask(new Timer.Task() {
+            flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
                     flashIcon();
@@ -353,5 +354,17 @@ public class DataTag {
 
     public void setMinimized(boolean minimized) {
         this.minimized = minimized;
+    }
+
+    /** Pauses all timers */
+    public static void pauseTimers() {
+        tapTimer.stop();
+        flashTimer.stop();
+    }
+
+    /** Resumes all timers */
+    public static void startTimers() {
+        tapTimer.start();
+        flashTimer.start();
     }
 }

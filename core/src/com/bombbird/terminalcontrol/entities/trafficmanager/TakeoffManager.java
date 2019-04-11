@@ -73,7 +73,7 @@ public class TakeoffManager {
                 nextAircraft.put(rwy, aircraftInfo);
             }
         }
-        if (airport.getAirborne() - airport.getLandings() < 3) {
+        if (airport.getAirborne() - airport.getLandings() < 5) {
             if ("RCTP".equals(airport.getIcao())) {
                 updateRCTP();
             } else if ("RCSS".equals(airport.getIcao())) {
@@ -312,7 +312,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
-    /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */
+    /** Checks whether airport has available runways for takeoff, updates hashMap and tapTimer if available */
     private void updateRunway(Runway runway) {
         if (runway != null) {
             String callsign = nextAircraft.get(runway.getName())[0];

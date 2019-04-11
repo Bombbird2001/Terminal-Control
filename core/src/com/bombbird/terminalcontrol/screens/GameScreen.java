@@ -533,15 +533,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
             soundManager.resume();
-            DataTag.timer.start();
+            DataTag.startTimers();
         } else if (s == State.PAUSE) {
             Gdx.input.setInputProcessor(pauseScreen.getStage());
             soundManager.pause();
-            DataTag.timer.stop();
+            DataTag.pauseTimers();
         } else if (s == State.SETTINGS) {
             Gdx.input.setInputProcessor(settingsScreen.getStage());
             soundManager.pause();
-            DataTag.timer.stop();
+            DataTag.pauseTimers();
         }
     }
 

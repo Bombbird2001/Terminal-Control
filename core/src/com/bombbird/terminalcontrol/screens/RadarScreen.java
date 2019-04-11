@@ -115,7 +115,7 @@ public class RadarScreen extends GameScreen {
 
         loadStageCamTimer();
 
-        //Set timer for radar delay, trails and autosave
+        //Set tapTimer for radar delay, trails and autosave
         radarTime = radarSweepDelay;
         trailTime = 10f;
         saveTime = 60f;
@@ -147,7 +147,7 @@ public class RadarScreen extends GameScreen {
 
         loadStageCamTimer();
 
-        //Set timer for radar delay, trails and autosave
+        //Set tapTimer for radar delay, trails and autosave
         radarTime = (float) save.getDouble("radarTime");
         trailTime = (float) save.getDouble("trailTime");
         saveTime = 60f;
@@ -176,7 +176,7 @@ public class RadarScreen extends GameScreen {
         labelStage.getViewport().setCamera(camera);
         labelStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
 
-        //Set timer for METAR
+        //Set tapTimer for METAR
         timer = new Timer(true);
     }
 
@@ -288,9 +288,6 @@ public class RadarScreen extends GameScreen {
     /** Creates a new arrival for random airport */
     private void newArrival() {
         Airport airport = RandomGenerator.randomAirport();
-        if (airport.getIcao().equals("VHHH")) airport = airports.get("VMMC");
-        if (airport.getIcao().equals("RCTP")) airport = airports.get("RCSS");
-
         String[] aircraftInfo = RandomGenerator.randomPlane(airport);
         Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);
         arrivalManager.checkArrival(arrival);
@@ -358,7 +355,7 @@ public class RadarScreen extends GameScreen {
         loadInputProcessors();
     }
 
-    /** Updates the time values for each timer & runs tasks when time is reached */
+    /** Updates the time values for each tapTimer & runs tasks when time is reached */
     private void updateTimers() {
         radarTime -= Gdx.graphics.getDeltaTime();
         if (radarTime <= 0) {
