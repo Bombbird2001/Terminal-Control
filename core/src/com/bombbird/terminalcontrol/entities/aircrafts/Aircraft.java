@@ -806,6 +806,7 @@ public class Aircraft extends Actor {
 
     /** Finds the deltaHeading for the leg after current leg */
     private double findSidStarDeltaHeading(double targetHeading, double prevHeading) {
+        if (targetHeading == -1) return 0; //Return 0 if last waypoint is outside radar, no early turn required
         return findDeltaHeading(targetHeading, 0, prevHeading);
     }
 
