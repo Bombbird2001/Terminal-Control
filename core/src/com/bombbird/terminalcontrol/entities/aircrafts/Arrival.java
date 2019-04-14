@@ -343,7 +343,7 @@ public class Arrival extends Aircraft {
     private void updateFuel() {
         fuel -= Gdx.graphics.getDeltaTime();
 
-        if (fuel < 2700 && !requestPriority) {
+        if (fuel < 2700 && !requestPriority && getControlState() == 1) {
             //Low fuel, request priority
             radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
             requestPriority = true;
@@ -353,7 +353,7 @@ public class Arrival extends Aircraft {
             getDataTag().flashIcon();
         }
 
-        if (fuel < 2100 && !declareEmergency) {
+        if (fuel < 2100 && !declareEmergency && getControlState() == 1) {
             //Minimum fuel, declare emergency
             radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " requests immediate landing within 10 minutes or will divert.");
             declareEmergency = true;
@@ -364,7 +364,7 @@ public class Arrival extends Aircraft {
             getDataTag().setEmergency();
         }
 
-        if (fuel < 1500 && !divert && !isLocCap()) {
+        if (fuel < 1500 && !divert && !isLocCap() && getControlState() == 1) {
             //Diverting to alternate
             radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
 
@@ -465,19 +465,8 @@ public class Arrival extends Aircraft {
                 }
                 checkAircraftInFront();
             }
-            if (getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1300) {
-                //Contact the tower
-                setControlState(0);
-                setClearedIas(getApchSpd());
-                float points = 0.7f - radarScreen.getPlanesToControl() / 40;
-                points = MathUtils.clamp(points, 0.15f, 0.6f);
-                if (!getAirport().isCongested()) {
-                    radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
-                } else {
-                    radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - 0.4f);
-                }
-                radarScreen.setArrivals(radarScreen.getArrivals() - 1);
-                radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
+            if (getIls() != null && getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1300) {
+                contactOther();
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
                 setTkOfLdg(true);
@@ -501,6 +490,23 @@ public class Arrival extends Aircraft {
             setActionRequired(true);
             getDataTag().flashIcon();
         }
+    }
+
+    /** Checks when aircraft should contact tower */
+    @Override
+    public void contactOther() {
+        //Contact the tower
+        setControlState(0);
+        setClearedIas(getApchSpd());
+        float points = 0.7f - radarScreen.getPlanesToControl() / 40;
+        points = MathUtils.clamp(points, 0.15f, 0.6f);
+        if (!getAirport().isCongested()) {
+            radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
+        } else {
+            radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - 0.4f);
+        }
+        radarScreen.setArrivals(radarScreen.getArrivals() - 1);
+        radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
     }
 
     /** Called to check the distance behind the aircraft ahead of current aircraft, calls swap in runway array if it somehow overtakes it */

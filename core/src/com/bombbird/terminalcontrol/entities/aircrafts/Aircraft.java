@@ -546,6 +546,11 @@ public class Aircraft extends Actor {
         prevAlt = altitude;
     }
 
+    /** Gets aircraft to contact other frequencies, overriden in Arrival, Departure */
+    public void contactOther() {
+        //No default implementation
+    }
+
     private double findRequiredDistance(double deltaHeading) {
         float turnRate = ias > 250 ? 1.5f : 3f;
         double radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate);
@@ -756,9 +761,11 @@ public class Aircraft extends Actor {
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
-                radarScreen.setArrivals(radarScreen.getArrivals() - 1);
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
                 radarScreen.getCommBox().warningMsg(callsign + " has left the airspace!");
+            } else if (this instanceof Departure && navState.getDispLatMode().last().contains("departure") && navState.getClearedAlt().last() == radarScreen.maxAlt) {
+                //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
+                contactOther();
             }
             removeAircraft();
         }
@@ -1288,6 +1295,7 @@ public class Aircraft extends Actor {
 
     /** Removes the aircraft completely from game, including its labels, other elements */
     public void removeAircraft() {
+        if (this instanceof Arrival) radarScreen.setArrivals(radarScreen.getArrivals() - 1);
         dataTag.removeLabel();
         remove();
         radarScreen.getAllAircraft().remove(callsign);

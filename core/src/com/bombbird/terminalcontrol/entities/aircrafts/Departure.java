@@ -9,7 +9,6 @@ import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.screens.ui.Tab;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -276,16 +275,21 @@ public class Departure extends Aircraft {
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         super.updateAltitude(holdAlt, fixedVs);
         if (getControlState() == 2 && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
-            setControlState(0);
-            setClearedIas(getClimbSpd());
-            super.updateSpd();
-            setClearedAltitude(cruiseAlt);
-            getNavState().replaceAllClearedAltMode();
-            getNavState().replaceAllClearedAlt();
-            setExpedite(false);
-            if (getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1);
-            radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
+            contactOther();
         }
+    }
+
+    @Override
+    public void contactOther() {
+        setControlState(0);
+        setClearedIas(getClimbSpd());
+        super.updateSpd();
+        setClearedAltitude(cruiseAlt);
+        getNavState().replaceAllClearedAltMode();
+        getNavState().replaceAllClearedAlt();
+        setExpedite(false);
+        if (getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1);
+        radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
     }
 
     @Override
