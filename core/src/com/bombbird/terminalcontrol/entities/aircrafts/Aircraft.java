@@ -597,8 +597,7 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            String[] flyOverWpts = FlyOverPts.FLY_OVER_PTS.get(airport.getIcao());
-            if (ArrayUtils.contains(flyOverWpts, direct.getName())) {
+            if (direct.isFlyOver()) {
                 requiredDistance = 2;
             } else {
                 requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));

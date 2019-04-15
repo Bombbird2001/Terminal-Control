@@ -36,7 +36,7 @@ public class NewGameScreen extends SelectGameScreen {
         //Load airports
         String[] airports;
         if ("full".equals(Gdx.files.internal("game/type.type").readString())) {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "RJTT\nTokyo Haneda Airport", "VHHH\nHong Kong International Airport", "RJBB\nOsaka Kansai International Airport", "VTBS\nBangkok Suvarnabhumi Airport"};
+            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "RJTT\nTokyo Haneda Airport", "VHHH\nHong Kong International Airport", "RJBB\nOsaka Kansai International Airport", "VTBS\nBangkok Don Mueang International Airport"};
         } else {
             airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport"};
         }

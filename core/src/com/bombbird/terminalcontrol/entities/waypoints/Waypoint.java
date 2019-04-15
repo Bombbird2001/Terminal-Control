@@ -14,6 +14,7 @@ public class Waypoint extends Actor {
     private int posY;
     private Label label;
     private boolean selected;
+    private boolean flyOver;
 
     private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
 
@@ -22,6 +23,7 @@ public class Waypoint extends Actor {
         this.posX = posX;
         this.posY = posY;
         selected = false;
+        flyOver = false;
 
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -85,5 +87,13 @@ public class Waypoint extends Actor {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isFlyOver() {
+        return flyOver;
+    }
+
+    public void setFlyOver(boolean flyOver) {
+        this.flyOver = flyOver;
     }
 }
