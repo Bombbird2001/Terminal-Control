@@ -312,7 +312,7 @@ public class TakeoffManager {
         updateRunway(runway);
     }
 
-    /** Checks whether airport has available runways for takeoff, updates hashMap and tapTimer if available */
+    /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */
     private void updateRunway(Runway runway) {
         if (runway != null) {
             String callsign = nextAircraft.get(runway.getName())[0];

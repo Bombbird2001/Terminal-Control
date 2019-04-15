@@ -4,7 +4,7 @@
 \
 A realistic approach TRACON simulation game made with [LibGDX](https://libgdx.badlogicgames.com/).
 
-## V1.0 is released
+## V1.1 is released
 
 ### Downloads
 
