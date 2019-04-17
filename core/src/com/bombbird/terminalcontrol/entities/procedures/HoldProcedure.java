@@ -22,7 +22,7 @@ public class HoldProcedure {
     private Array<Boolean> left; //If false then direction is right
     private Array<Integer> entryProcedure;
     private Array<Integer> inboundHdg;
-    private Array<Integer> legDist;
+    private Array<Float> legDist;
     private Array<float[]> oppPoint;
 
     private RadarScreen radarScreen;
@@ -39,7 +39,7 @@ public class HoldProcedure {
         left = new Array<Boolean>();
         entryProcedure = new Array<Integer>();
         inboundHdg = new Array<Integer>();
-        legDist = new Array<Integer>();
+        legDist = new Array<Float>();
 
         parseInfo(info);
 
@@ -62,7 +62,7 @@ public class HoldProcedure {
                     case 4: left.add("LEFT".equals(wptInfo)); break;
                     case 5: entryProcedure.add(Integer.parseInt(wptInfo)); break;
                     case 6: inboundHdg.add(Integer.parseInt(wptInfo)); break;
-                    case 7: legDist.add(Integer.parseInt(wptInfo)); break;
+                    case 7: legDist.add(Float.parseFloat(wptInfo)); break;
                     default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/hold" + airport.getIcao() + ".hold");
                 }
                 index++;
@@ -137,7 +137,7 @@ public class HoldProcedure {
         return inboundHdg.get(waypoints.indexOf(waypoint, false));
     }
 
-    public int getLegDistAtWpt(Waypoint waypoint) {
+    public float getLegDistAtWpt(Waypoint waypoint) {
         return legDist.get(waypoints.indexOf(waypoint, false));
     }
 

@@ -785,7 +785,7 @@ public class Aircraft extends Actor {
             } else if (type == 2 || type == 3) {
                 forceDirection = star.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
-        } else if (this instanceof Departure) {
+        } else if (this instanceof Departure && navState.getDispLatMode().first().contains("departure")) {
             //Force directions for certain departure procedures
             if (getSidStar().getName().contains("NANKO1(6") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 320) {
                 //RJBB NANKO1(6L) and NANKO1(6R) departures
@@ -802,7 +802,7 @@ public class Aircraft extends Actor {
             } else if ("MINAC3".equals(getSidStar().getName()) && direct != null && "ITE16".equals(direct.getName()) && heading > 180 && heading <= 360) {
                 //RJOO MINAC3 departure
                 forceDirection = 1;
-            } else if (("NLG2D".equals(getSidStar().getName()) || "SHL2D".equals(getSidStar().getName()) || "MIPAG2D".equals(getSidStar().getName())) && direct != null && "MCU".equals(direct.getName()) && heading > 90 && heading <= 360) {
+            } else if ((getSidStar().getName().contains("NLG2D") || "SHL2D".equals(getSidStar().getName()) || "MIPAG2D".equals(getSidStar().getName())) && direct != null && "MCU".equals(direct.getName()) && heading > 90 && heading <= 360) {
                 //VMMC NLG2D, SHL2D and MIPAG2D departures
                 forceDirection = 2;
             }
