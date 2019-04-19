@@ -15,6 +15,7 @@ public class FlyOverPts {
         flyOverWpts.put("VHHH", new String[] {"07LDER", "25RDER", "PORPA", "ROVER", "PRAWN", "MC501"});
         flyOverWpts.put("VTBD", new String[] {"RIVER", "LOUIS", "ROVEN", "VARIS", "EXSON"});
 
+        if (!flyOverWpts.containsKey(TerminalControl.radarScreen.mainName)) return;
         for (String s: flyOverWpts.get(TerminalControl.radarScreen.mainName)) {
             TerminalControl.radarScreen.waypoints.get(s).setFlyOver(true);
         }
