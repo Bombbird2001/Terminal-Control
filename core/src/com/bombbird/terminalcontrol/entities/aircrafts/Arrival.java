@@ -498,8 +498,8 @@ public class Arrival extends Aircraft {
         //Contact the tower
         setControlState(0);
         setClearedIas(getApchSpd());
-        float points = 0.7f - radarScreen.getPlanesToControl() / 40;
-        points = MathUtils.clamp(points, 0.15f, 0.6f);
+        float points = 0.7f - radarScreen.getPlanesToControl() / 30;
+        points = MathUtils.clamp(points, 0.2f, 0.6f);
         if (!getAirport().isCongested()) {
             radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() + points);
         } else {

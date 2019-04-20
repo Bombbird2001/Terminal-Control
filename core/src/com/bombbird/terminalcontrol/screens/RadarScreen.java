@@ -294,9 +294,9 @@ public class RadarScreen extends GameScreen {
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
 
-        //Min 30sec for diff of >=20 planes && max 120sec for diff of <=5 planes
+        //Min 60sec for diff of >=20 planes && max 120sec for diff of <=5 planes
         spawnTimer = 150f - 6 * (planesToControl - arrivals);
-        spawnTimer = MathUtils.clamp(spawnTimer, 30, 120);
+        spawnTimer = MathUtils.clamp(spawnTimer, 60, 120);
     }
 
     /** Loads the full UI for RadarScreen */
