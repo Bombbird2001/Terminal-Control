@@ -60,7 +60,7 @@ public class RestrictedArea extends Actor {
     /** Draws the area label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (conflict) {
+        if (conflict || label.getText().toString().charAt(0) == '#') {
             label.getStyle().fontColor = Color.RED;
         } else {
             label.getStyle().fontColor = Color.GRAY;

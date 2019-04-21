@@ -94,6 +94,10 @@ public class TakeoffManager {
                 updateVHHH();
             } else if ("VMMC".equals(airport.getIcao())) {
                 updateVMMC();
+            } else if ("VTBD".equals(airport.getIcao())) {
+                updateVTBD();
+            } else if ("VTBS".equals(airport.getIcao())) {
+                updateVTBS();
             }
         }
     }
@@ -307,6 +311,50 @@ public class TakeoffManager {
             if (checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
                 runway = runway1;
                 dist = distance;
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Bangkok Don Mueang */
+    private void updateVTBD() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
+                if ("03R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("03L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("21L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("21R"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Bangkok Suvarnabhumi */
+    private void updateVTBS() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
+                if ("01L".equals(runway1.getName()) && checkPreceding("01R") && checkOppLanding(airport.getRunways().get("01R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("01R".equals(runway1.getName()) && checkPreceding("01L") && checkOppLanding(airport.getRunways().get("01L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("19L".equals(runway1.getName()) && checkPreceding("19R") && checkOppLanding(airport.getRunways().get("19R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("19R".equals(runway1.getName()) && checkPreceding("19L") && checkOppLanding(airport.getRunways().get("19L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
             }
         }
         updateRunway(runway);

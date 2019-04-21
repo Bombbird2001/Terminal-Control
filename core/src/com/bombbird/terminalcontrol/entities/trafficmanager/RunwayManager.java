@@ -32,6 +32,10 @@ public class RunwayManager {
             updateVHHH(windDir, windSpd);
         } else if ("VMMC".equals(airport.getIcao())) {
             updateVMMC(windDir, windSpd);
+        } else if ("VTBD".equals(airport.getIcao())) {
+            updateVTBD(windDir, windSpd);
+        } else if ("VTBS".equals(airport.getIcao())) {
+            updateVTBS(windDir, windSpd);
         }
     }
 
@@ -296,6 +300,72 @@ public class RunwayManager {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34").getHeading()) < -5) {
                     airport.setActive("16", true, true);
                     airport.setActive("34", false, false);
+                }
+            }
+        }
+    }
+
+    /** Updates runway status for Bangkok Don Mueang */
+    private void updateVTBD(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("03L"))) {
+                airport.setActive("03L", true, false);
+                airport.setActive("03R", false, true);
+            } else {
+                airport.setActive("21L", false, true);
+                airport.setActive("21R", true, false);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("03L") != null) {
+                //03s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("03L").getHeading()) < -5) {
+                    airport.setActive("21L", false, true);
+                    airport.setActive("21R", true, false);
+                    airport.setActive("03L", false, false);
+                    airport.setActive("03R", false, false);
+                }
+            } else {
+                //21s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("21L").getHeading()) < -5) {
+                    airport.setActive("03L", true, false);
+                    airport.setActive("03R", false, true);
+                    airport.setActive("21L", false, false);
+                    airport.setActive("21R", false, false);
+                }
+            }
+        }
+    }
+
+    /** Updates runway status for Bangkok Suvarnabhumi */
+    private void updateVTBS(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("01L"))) {
+                airport.setActive("01L", true, true);
+                airport.setActive("01R", true, true);
+            } else {
+                airport.setActive("19L", true, true);
+                airport.setActive("19R", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("01L") != null) {
+                //01s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("01L").getHeading()) < -5) {
+                    airport.setActive("19L", true, true);
+                    airport.setActive("19R", true, true);
+                    airport.setActive("01L", false, false);
+                    airport.setActive("01R", false, false);
+                }
+            } else {
+                //19s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("19L").getHeading()) < -5) {
+                    airport.setActive("01L", true, true);
+                    airport.setActive("01R", true, true);
+                    airport.setActive("19L", false, false);
+                    airport.setActive("19R", false, false);
                 }
             }
         }
