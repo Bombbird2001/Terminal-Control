@@ -25,7 +25,7 @@ task debug(dependsOn: classes, type: JavaExec) {
 
 task distLite(type: Jar) {
     project.ext.assetsDir = new File("../android/assetsLite")
-    from files(sourceSets.main.output.classesDir)
+    from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
     from files(project.assetsDir);
@@ -39,7 +39,7 @@ distLite.dependsOn classes
 
 task distFull(type: Jar) {
     project.ext.assetsDir = new File("../android/assetsFull")
-    from files(sourceSets.main.output.classesDir)
+    from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
     from files(project.assetsDir);

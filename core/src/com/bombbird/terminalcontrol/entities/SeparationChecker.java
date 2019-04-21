@@ -239,14 +239,15 @@ public class SeparationChecker extends Actor {
 
     /** Renders the separation rings if aircraft is in conflict */
     public void renderShape() {
+        int radius = (int)(MathTools.nmToPixel(radarScreen.separationMinima) / 2);
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isConflict()) {
                 radarScreen.shapeRenderer.setColor(Color.RED);
-                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
+                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), radius);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.025f);
             } else if (aircraft.isWarning()) {
                 radarScreen.shapeRenderer.setColor(Color.YELLOW);
-                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 49);
+                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), radius);
             }
         }
     }
