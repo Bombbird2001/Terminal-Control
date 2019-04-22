@@ -49,7 +49,7 @@ public class SidStar {
     }
 
     private void drawOutbound(float previousX, float previousY, int outbound) {
-        if (outbound != -1) {
+        if (outbound != -1 && previousX <= 4500 && previousX >= 1260 && previousY <= 3240 && previousY >= 0) {
             float outboundTrack = outbound - radarScreen.magHdgDev;
             float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
             radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1]);
