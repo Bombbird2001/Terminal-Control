@@ -120,7 +120,15 @@ public class Ui {
             metarText[3] = "Visibility: " + airport.getVisibility() + " metres";
             //Windshear
             metarText[4] = "Windshear: " + airport.getWindshear();
-            label.setText(StringUtils.join(metarText, "\n"));
+            boolean success = false;
+            while (!success) {
+                try {
+                    label.setText(StringUtils.join(metarText, "\n"));
+                    success = true;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

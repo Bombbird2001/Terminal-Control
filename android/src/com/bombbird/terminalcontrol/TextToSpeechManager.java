@@ -95,6 +95,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Says the text depending on API level */
     public void sayText(String text, String voice) {
+        if (tts == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             tts.setVoice(new Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null));
             tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
