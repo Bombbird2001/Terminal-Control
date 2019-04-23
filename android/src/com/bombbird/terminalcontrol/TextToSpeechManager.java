@@ -9,7 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.utilities.FileLoader;
+import com.bombbird.terminalcontrol.sounds.Pronunciation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -19,7 +19,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     private TextToSpeech tts = null;
     public static final int ACT_CHECK_TTS_DATA = 1000;
     public static final int ACT_INSTALL_TTS_DATA = 1001;
-    private static HashMap<String, String> callsigns;
 
     /** Performs relevant actions after receiving status for TTS data check  */
     @Override
@@ -51,7 +50,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
                 } else {
                     Gdx.app.log("Text to Speech", "TTS initialized successfully");
                     tts.setSpeechRate(1.7f);
-                    callsigns = FileLoader.loadIcaoCallsigns();
                 }
             }
         } else {
@@ -69,32 +67,8 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         super.onDestroy();
     }
 
-    /** Converts any FLXXX in text to flight level X X X */
-    private String convertToFlightLevel(String action) {
-        String[] actionList = action.split(" ");
-        for (int i = 0; i < actionList.length; i++) {
-            if (actionList[i].contains("FL")) {
-                String altitude = convertNoToText(actionList[i].substring(2));
-                String phrase = "flight level" + altitude;
-                actionList[i] = phrase;
-            }
-        }
-        return StringUtils.join(actionList, " ");
-    }
-
-    /** Converts any number into text due to special pronunciation requirements for 0, 9 and . */
-    private String convertNoToText(String altitude) {
-        String[] list = altitude.split("");
-        for (int i = 0; i < list.length; i++) {
-            if (list[i].equals("0")) list[i] = "zero";
-            if (list[i].equals("9")) list[i] = "niner";
-            if (list[i].equals(".")) list[i] = "decimal";
-        }
-        return StringUtils.join(list, " ");
-    }
-
     /** Says the text depending on API level */
-    public void sayText(String text, String voice) {
+    private void sayText(String text, String voice) {
         if (tts == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             tts.setVoice(new Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null));
@@ -108,10 +82,15 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     @Override
     public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = callsigns.get(icao);
-        String newFlightNo = convertNoToText(flightNo);
-        String newAction = convertToFlightLevel(action);
-        String newDirect = direct.toLowerCase();
+        String callsign = Pronunciation.callsigns.get(icao);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
+        String newAction = Pronunciation.convertToFlightLevel(action);
+        String newDirect;
+        if (Pronunciation.waypointPronunciations.containsKey(direct)) {
+            newDirect = Pronunciation.waypointPronunciations.get(direct);
+        } else {
+            newDirect = Pronunciation.checkNumber(direct).toLowerCase();
+        }
         String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + newDirect;
         Gdx.app.log("TTS initArr", text);
         sayText(text, voice);
@@ -121,9 +100,9 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     @Override
     public void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = callsigns.get(icao);
-        String newAction = convertToFlightLevel(action);
-        String newFlightNo = convertNoToText(flightNo);
+        String callsign = Pronunciation.callsigns.get(icao);
+        String newAction = Pronunciation.convertToFlightLevel(action);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String newHeading = StringUtils.join(heading.split(""), " ");
         String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
         Gdx.app.log("TTS goAround", text);
@@ -134,9 +113,9 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     @Override
     public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String outbound,  String action, String sid) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = callsigns.get(icao);
-        action = convertToFlightLevel(action);
-        String newFlightNo = convertNoToText(flightNo);
+        String callsign = Pronunciation.callsigns.get(icao);
+        action = Pronunciation.convertToFlightLevel(action);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + ", " + sid + " departure";
         Gdx.app.log("TTS initDep", text);
         sayText(text, voice);
@@ -146,9 +125,9 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     @Override
     public void contactOther(String voice, String frequency, String icao, String flightNo, String wake) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String newFreq = convertNoToText(frequency);
-        String callsign = callsigns.get(icao);
-        String newFlightNo = convertNoToText(flightNo);
+        String newFreq = Pronunciation.convertNoToText(frequency);
+        String callsign = Pronunciation.callsigns.get(icao);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String text = newFreq + ", good day, " + callsign + newFlightNo + " " + wake;
         Gdx.app.log("TTS contactOther", text);
         sayText(text, voice);
@@ -158,8 +137,8 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     @Override
     public void lowFuel(String voice, int status, String icao, String flightNo, char wakeCat) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = callsigns.get(icao);
-        String newFlightNo = convertNoToText(flightNo);
+        String callsign = Pronunciation.callsigns.get(icao);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String wake = "";
         if (wakeCat == 'H') {
             wake = " heavy";

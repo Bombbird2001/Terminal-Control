@@ -106,7 +106,11 @@ public class NavState {
         clearedExpedite.addLast(aircraft.isExpedite());
 
         clearedSpd = new Queue<Integer>();
-        clearedSpd.addLast(aircraft.getClimbSpd());
+        if (aircraft instanceof Departure) {
+            clearedSpd.addLast(aircraft.getV2());
+        } else {
+            clearedSpd.addLast(aircraft.getClimbSpd());
+        }
 
         goAround = new Queue<Boolean>();
         goAround.addLast(false);
@@ -481,7 +485,11 @@ public class NavState {
 
     /** Adds new speed instructions to queue, called after sendAlt */
     public void sendSpd(String spdMode, int clearedSpd) {
-        this.clearedSpd.addLast(clearedSpd);
+        if (aircraft instanceof Departure && !((Departure) aircraft).isSidSet() && clearedSpd == aircraft.getV2()) {
+            this.clearedSpd.addLast(220);
+        } else {
+            this.clearedSpd.addLast(clearedSpd);
+        }
         dispSpdMode.addLast(spdMode);
     }
 

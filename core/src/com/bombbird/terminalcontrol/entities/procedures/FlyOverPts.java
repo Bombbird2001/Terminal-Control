@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import java.util.HashMap;
 
 public class FlyOverPts {
-    //Loads the fly over points
+    /** Loads the fly over points */
     public static void loadPoints() {
         HashMap<String, String[]> flyOverWpts = new HashMap<String, String[]>();
 

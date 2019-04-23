@@ -30,6 +30,7 @@ import com.bombbird.terminalcontrol.screens.ui.CommBox;
 import com.bombbird.terminalcontrol.screens.ui.DataTag;
 import com.bombbird.terminalcontrol.screens.ui.Tab;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
+import com.bombbird.terminalcontrol.sounds.Pronunciation;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
 import com.bombbird.terminalcontrol.utilities.GameSaver;
@@ -315,6 +316,9 @@ public class RadarScreen extends GameScreen {
 
         //Load fly over waypoints
         FlyOverPts.loadPoints();
+
+        //Load specific waypoint pronunciation
+        Pronunciation.loadPronunciation();
 
         //Load airports
         loadAirports();
