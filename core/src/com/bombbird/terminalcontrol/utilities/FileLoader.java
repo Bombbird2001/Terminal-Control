@@ -283,4 +283,26 @@ public class FileLoader {
         }
         return callsigns;
     }
+
+    public static HashMap<String, int[][]> loadSidNoise(String icao, boolean sid) {
+        HashMap<String, int[][]> noise = new HashMap<String, int[][]>();
+        String fileName = sid ? "/noiseSid" : "/noiseStar";
+        String read = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + fileName + icao + ".noi").readString();
+        if ("".equals(read)) return noise;
+        String[] info = read.split("\\r?\\n");
+        for (String s: info) {
+            String[] data = s.split(":");
+            String[] times = data[1].split(">");
+            int[][] timeInfo = new int[times.length][2];
+            for (int i = 0; i < times.length; i++) {
+                String[] minMaxTime = times[i].split("-");
+                int[] time = new int[2];
+                time[0] = Integer.parseInt(minMaxTime[0]);
+                time[1] = Integer.parseInt(minMaxTime[1]);
+                timeInfo[i] = time;
+            }
+            noise.put(data[0], timeInfo);
+        }
+        return noise;
+    }
 }

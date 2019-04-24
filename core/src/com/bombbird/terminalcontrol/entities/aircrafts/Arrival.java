@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
@@ -19,8 +20,6 @@ import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.utilities.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class Arrival extends Aircraft {
     //Others
@@ -53,21 +52,10 @@ public class Arrival extends Aircraft {
         contactAlt = MathUtils.random(2000) + 22000;
 
         //Gets a STAR for active runways
-        HashMap<String, Star> starList = getAirport().getStars();
-        boolean starSet = false;
-        while (!starSet) {
-            String starStr = (String) starList.keySet().toArray()[MathUtils.random(starList.size() - 1)];
-            star = starList.get(starStr);
-            for (String runway: star.getRunways()) {
-                if (arrival.getLandingRunways().containsKey(runway)) {
-                    starSet = true;
-                    break;
-                }
-            }
-        }
+        star = RandomSTAR.randomSTAR(getAirport(), (String) arrival.getLandingRunways().keySet().toArray()[0]);
 
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
-            star = starList.get("TNN1A");
+            star = arrival.getStars().get("TNN1A");
         }
 
         setDirect(star.getWaypoint(0));

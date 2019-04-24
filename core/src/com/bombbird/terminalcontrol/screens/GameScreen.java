@@ -281,14 +281,17 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     uiStage.act();
                     game.batch.begin();
                     uiStage.getViewport().apply();
-                    try {
-                        uiStage.draw();
-                        game.batch.end();
-                    } catch (IllegalArgumentException e) {
-                        Gdx.app.log("GameScreen", "uiStage.draw() render error");
-                        e.printStackTrace();
-                        game.batch.end();
-                        render(delta);
+                    boolean success = false;
+                    while (!success) {
+                        try {
+                            uiStage.draw();
+                            game.batch.end();
+                            success = true;
+                        } catch (IllegalArgumentException e) {
+                            Gdx.app.log("GameScreen", "uiStage.draw() render error");
+                            uiStage.getBatch().end();
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;

@@ -8,6 +8,8 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
@@ -106,6 +108,8 @@ public class Airport {
         setOppRwys();
         stars = FileLoader.loadStars(this);
         sids = FileLoader.loadSids(this);
+        RandomSID.loadSidNoise(icao);
+        RandomSTAR.loadStarNoise(icao);
 
         //TerminalControl.tts.test(stars, sids);
 

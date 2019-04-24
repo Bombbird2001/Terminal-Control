@@ -115,14 +115,17 @@ public class SelectGameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(delta);
         game.batch.begin();
-        try {
-            stage.draw();
-            game.batch.end();
-        } catch (IndexOutOfBoundsException e) {
-            Gdx.app.log("SelectGameScreen", "stage.draw() render error");
-            e.printStackTrace();
-            game.batch.end();
-            render(delta);
+        boolean success = false;
+        while (!success) {
+            try {
+                stage.draw();
+                game.batch.end();
+                success = true;
+            } catch (IndexOutOfBoundsException e) {
+                Gdx.app.log("SelectGameScreen", "stage.draw() render error");
+                stage.getBatch().end();
+                e.printStackTrace();
+            }
         }
     }
 

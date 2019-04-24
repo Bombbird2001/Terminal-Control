@@ -5,13 +5,12 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.ui.LatTab;
 import com.bombbird.terminalcontrol.screens.ui.Tab;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class Departure extends Aircraft {
     //Others
@@ -42,21 +41,10 @@ public class Departure extends Aircraft {
         setRunway(runway);
 
         //Gets a random SID
-        HashMap<String, Sid> sidList = getAirport().getSids();
-        boolean sidSet = false;
-        while (!sidSet) {
-            String sidStr = (String) sidList.keySet().toArray()[MathUtils.random(sidList.size() - 1)];
-            sid = sidList.get(sidStr);
-            for (String runwayStr: sid.getRunways()) {
-                if (runwayStr.equals(getRunway().getName())) {
-                    sidSet = true;
-                    break;
-                }
-            }
-        }
+        sid = RandomSID.randomSID(departure, runway.getName());
 
         if ("CAL641".equals(callsign) && radarScreen.tutorial) {
-            sid = sidList.get("CHALI1C");
+            sid = getAirport().getSids().get("CHALI1C");
         }
 
         setDirect(sid.getWaypoint(0));
