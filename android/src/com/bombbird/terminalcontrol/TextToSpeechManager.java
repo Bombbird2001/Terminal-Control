@@ -92,7 +92,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
             newDirect = Pronunciation.checkNumber(direct).toLowerCase();
         }
         String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + newDirect;
-        Gdx.app.log("TTS initArr", text);
         sayText(text, voice);
     }
 
@@ -105,7 +104,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String newHeading = StringUtils.join(heading.split(""), " ");
         String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
-        Gdx.app.log("TTS goAround", text);
         sayText(text, voice);
     }
 
@@ -117,7 +115,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         action = Pronunciation.convertToFlightLevel(action);
         String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + ", " + sid + " departure";
-        Gdx.app.log("TTS initDep", text);
         sayText(text, voice);
     }
 
@@ -129,7 +126,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         String callsign = Pronunciation.callsigns.get(icao);
         String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String text = newFreq + ", good day, " + callsign + newFlightNo + " " + wake;
-        Gdx.app.log("TTS contactOther", text);
         sayText(text, voice);
     }
 
@@ -153,7 +149,6 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         } else if (status == 2) {
             text = callsign + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
         }
-        Gdx.app.log("TTS Low fuel", text);
         sayText(text, voice);
     }
 

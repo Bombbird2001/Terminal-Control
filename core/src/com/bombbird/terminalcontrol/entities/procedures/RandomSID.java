@@ -37,7 +37,8 @@ public class RandomSID {
     /** Check whether a SID is allowed to be used for the airport at the current time */
     private static boolean checkNoise(Airport airport, String sid) {
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-        int time = calendar.get(Calendar.HOUR) * 100 + calendar.get(Calendar.MINUTE);
+        int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
+        int time = (calendar.get(Calendar.HOUR) + additional) * 100 + calendar.get(Calendar.MINUTE);
         if (!noise.containsKey(airport.getIcao()) || !noise.get(airport.getIcao()).containsKey(sid)) return true;
         for (int[] timeSlot: noise.get(airport.getIcao()).get(sid)) {
             if (time >= timeSlot[0] && time < timeSlot[1]) return true;
