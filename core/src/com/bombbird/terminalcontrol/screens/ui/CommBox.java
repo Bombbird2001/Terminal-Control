@@ -175,8 +175,8 @@ public class CommBox {
         }
 
         scrollTable.clearChildren();
-        for (Label label1: labels) {
-            scrollTable.add(label1).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0);
+        for (int i = 0; i < labels.size; i++) {
+            scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0);
             scrollTable.row();
         }
 
