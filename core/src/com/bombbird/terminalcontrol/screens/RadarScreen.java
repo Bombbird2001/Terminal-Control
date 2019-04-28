@@ -257,7 +257,6 @@ public class RadarScreen extends GameScreen {
         }
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
-        System.out.println(calendar.getTime().toString());
 
         metar = save == null ? new Metar(this) : new Metar(this, save.getJSONObject("metar"));
 
@@ -310,8 +309,7 @@ public class RadarScreen extends GameScreen {
         loading = true;
 
         //Load shoreline image file
-        Image image = FileLoader.loadShoreline(mainName);
-        System.out.println(image.getWidth());
+        Image image = FileLoader.loadShoreline();
         image.setScale(3240 / image.getWidth());
         image.setX(1260);
         stage.addActor(image);

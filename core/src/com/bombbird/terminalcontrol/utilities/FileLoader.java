@@ -308,7 +308,7 @@ public class FileLoader {
         return noise;
     }
 
-    public static Image loadShoreline(String icao) {
+    public static Image loadShoreline() {
         return new Image(new Texture(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/shorelineDone.png")));
     }
 }
