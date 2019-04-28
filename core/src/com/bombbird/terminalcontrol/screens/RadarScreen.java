@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
@@ -307,6 +308,13 @@ public class RadarScreen extends GameScreen {
 
         //Show loading screen
         loading = true;
+
+        //Load shoreline image file
+        Image image = FileLoader.loadShoreline(mainName);
+        System.out.println(image.getWidth());
+        image.setScale(3240 / image.getWidth());
+        image.setX(1260);
+        stage.addActor(image);
 
         //Load range circles
         loadRange();

@@ -176,7 +176,7 @@ public class TakeoffManager {
                 if ("34R".equals(runway1.getName()) && checkPreceding("05") && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("05".equals(runway1.getName()) && checkPreceding("34R") && checkOppLanding(airport.getRunways().get("04"))) {
+                } else if ("05".equals(runway1.getName()) && checkPreceding("34R") && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
                     //Additional check if aircraft landing on 34R is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");

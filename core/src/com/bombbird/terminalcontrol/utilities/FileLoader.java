@@ -3,6 +3,8 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -304,5 +306,9 @@ public class FileLoader {
             noise.put(data[0], timeInfo);
         }
         return noise;
+    }
+
+    public static Image loadShoreline(String icao) {
+        return new Image(new Texture(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/shorelineDone.png")));
     }
 }
