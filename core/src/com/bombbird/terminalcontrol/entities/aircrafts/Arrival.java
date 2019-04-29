@@ -718,4 +718,8 @@ public class Arrival extends Aircraft {
     public boolean isDivert() {
         return divert;
     }
+
+    public void setNonPrecAlts(Queue<float[]> nonPrecAlts) {
+        this.nonPrecAlts = nonPrecAlts;
+    }
 }

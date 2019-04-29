@@ -1446,6 +1446,7 @@ public class Aircraft extends Actor {
 
     public void setIls(ILS ils) {
         if (this.ils != ils) {
+            if (this instanceof Arrival) ((Arrival) this).setNonPrecAlts(null);
             if (locCap) {
                 this.ils.getRwy().removeFromArray(this);
                 if (selected && (controlState == 1 || controlState == 2)) ui.updateState();
