@@ -15,6 +15,7 @@ public class Pronunciation {
         waypointPronunciations.put("APU", "aun poo");
         waypointPronunciations.put("YILAN", "yee lan");
         waypointPronunciations.put("HLG", "ho long");
+        waypointPronunciations.put("ZUH", "Lian Sheng Way");
         callsigns = FileLoader.loadIcaoCallsigns();
     }
 
