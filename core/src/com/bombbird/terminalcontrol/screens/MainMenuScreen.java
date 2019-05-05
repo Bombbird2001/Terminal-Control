@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -103,7 +104,8 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(loadGameButton);
 
-        //Set quit button params
+        //Set quit button params if desktop
+        if (Gdx.app.getType() == Application.ApplicationType.Android) return;
         TextButton quitButton = new TextButton("Quit", buttonStyle);
         quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.1f);
         quitButton.setWidth(buttonWidth);

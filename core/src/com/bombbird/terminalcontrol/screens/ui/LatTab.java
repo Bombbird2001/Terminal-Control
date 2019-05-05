@@ -444,6 +444,13 @@ public class LatTab extends Tab {
         notListening = true;
         latMode = settingsBox.getSelected();
 
+        if (valueBox.getItems().size == 0) {
+            updateSidStarOptions();
+            updateElements();
+            settingsBox.setSelectedIndex(0);
+            getChoices();
+        }
+
         if (latMode.contains("waypoint")) {
             valueBox.setItems(waypoints);
             afterWpt = valueBox.getSelected();

@@ -81,7 +81,7 @@ public class Metar {
                 if (!response.isSuccessful()) {
                     throw new IOException(response.toString());
                 } else {
-                    System.out.println(response.body().string());
+                    if (response.body() != null) System.out.println(response.body().string());
                     getMetar(mediaType, client, true);
                     radarScreen.loadingPercent = "80%";
                 }
@@ -116,9 +116,10 @@ public class Metar {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    System.out.println(response.body().string());
+                    if (response.body() != null) System.out.println(response.body().string());
                 } else {
-                    String responseText = response.body().string();
+                    String responseText = "";
+                    if (response.body() != null) responseText = response.body().string();
                     JSONObject jo = new JSONObject(responseText);
                     sendMetar(mediaType, client, jo);
                     radarScreen.loadingPercent = "60%";
@@ -147,7 +148,7 @@ public class Metar {
                 if (!response.isSuccessful()) {
                     throw new IOException(response.toString());
                 } else {
-                    apiKey = response.body().string();
+                    if (response.body() != null) apiKey = response.body().string();
                     receiveMetar(mediaType, client, true);
                     radarScreen.loadingPercent = "40%";
                 }
@@ -187,7 +188,8 @@ public class Metar {
                         updateRadarScreenState();
                     }
                 } else {
-                    String responseText = response.body().string();
+                    String responseText = "";
+                    if (response.body() != null) responseText = response.body().string();
                     System.out.println(responseText);
                     if ("Update".equals(responseText)) {
                         //Server requested for METAR update

@@ -97,7 +97,14 @@ public class Ui {
         for (int i = 0; i < metarInfos.size; i++) {
             Label label = metarInfos.get(i);
             //Get airport: ICAO code is first 4 letters of label's text
-            Airport airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
+            Airport airport;
+            try {
+                airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
+            } catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
+                System.out.println(label.getText().toString());
+                continue;
+            }
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
