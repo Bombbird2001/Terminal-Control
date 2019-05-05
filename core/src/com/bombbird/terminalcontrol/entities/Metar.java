@@ -1,23 +1,17 @@
 package com.bombbird.terminalcontrol.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.Values;
-import okhttp3.*;
-import org.json.JSONArray;
+import com.bombbird.terminalcontrol.utilities.HttpRequests;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class Metar {
     private JSONObject metarObject;
-    private String apiKey;
     private RadarScreen radarScreen;
+    private boolean quit;
 
     public Metar(RadarScreen radarScreen) {
-        apiKey = "";
         this.radarScreen = radarScreen;
     }
 
@@ -27,13 +21,10 @@ public class Metar {
     }
 
     public void updateMetar() {
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        OkHttpClient client = new OkHttpClient();
         if (radarScreen.liveWeather) {
-            getMetar(JSON, client, true);
+            HttpRequests.getMetar(this, true);
         } else {
-            metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-            updateRadarScreenState();
+            randomWeather();
         }
     }
 
@@ -61,152 +52,6 @@ public class Metar {
         updateRadarScreenState();
     }
 
-    private void sendMetar(final MediaType mediaType, final OkHttpClient client, final JSONObject jo) {
-        jo.put("password", Values.SEND_METAR_PASSWORD);
-        RequestBody body = RequestBody.create(mediaType, jo.toString());
-        Request request = new Request.Builder()
-                .url(Values.SEND_METAR_URL)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                //If requests fails due to timeout
-                e.printStackTrace();
-                sendMetar(mediaType, client, jo);
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
-                } else {
-                    if (response.body() != null) System.out.println(response.body().string());
-                    getMetar(mediaType, client, true);
-                    radarScreen.loadingPercent = "80%";
-                }
-            }
-        });
-    }
-
-    private void receiveMetar(final MediaType mediaType, final OkHttpClient client, final boolean retry) {
-        String str = radarScreen.airports.keySet().toString();
-        final Request request = new Request.Builder()
-                .addHeader("X-API-KEY", apiKey)
-                .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                //If requests fails due to timeout
-                e.printStackTrace();
-                Gdx.app.log("API metar error", "CheckWX API may not be working!");
-
-                //If retrying
-                if (retry) {
-                    Gdx.app.log("receiveMetar", "Retrying getting weather from API");
-                    receiveMetar(mediaType, client, false);
-                    return;
-                }
-
-                metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-                updateRadarScreenState();
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    if (response.body() != null) System.out.println(response.body().string());
-                } else {
-                    String responseText = "";
-                    if (response.body() != null) responseText = response.body().string();
-                    JSONObject jo = new JSONObject(responseText);
-                    sendMetar(mediaType, client, jo);
-                    radarScreen.loadingPercent = "60%";
-                }
-            }
-        });
-    }
-
-    private void getApiKey(final MediaType mediaType, final OkHttpClient client) {
-        RequestBody body = RequestBody.create(mediaType, "{\"password\":\"" + Values.API_PASSWORD + "\"}");
-        Request request = new Request.Builder()
-                .url(Values.API_URL)
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                //If requests fails due to timeout
-                e.printStackTrace();
-                getApiKey(mediaType, client);
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
-                } else {
-                    if (response.body() != null) apiKey = response.body().string();
-                    receiveMetar(mediaType, client, true);
-                    radarScreen.loadingPercent = "40%";
-                }
-            }
-        });
-    }
-
-    private void getMetar(final MediaType mediaType, final OkHttpClient client, final boolean retry) {
-        JSONObject jo = new JSONObject();
-        jo.put("password", Values.GET_METAR_PASSWORD);
-        JSONArray apts = new JSONArray(radarScreen.airports.keySet());
-        jo.put("airports", apts);
-        RequestBody body = RequestBody.create(mediaType, jo.toString());
-        Request request = new Request.Builder()
-                .url(Values.GET_METAR_URL)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-                updateRadarScreenState();
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    if (response.code() == 503 && retry) {
-                        System.out.println("503 received: trying again");
-                        radarScreen.loadingPercent = "10%";
-                        getMetar(mediaType, client, false);
-                        response.close();
-                    } else {
-                        //Generate offline weather
-                        response.close();
-                        metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
-                        updateRadarScreenState();
-                    }
-                } else {
-                    String responseText = "";
-                    if (response.body() != null) responseText = response.body().string();
-                    System.out.println(responseText);
-                    if ("Update".equals(responseText)) {
-                        //Server requested for METAR update
-                        System.out.println("Update requested");
-                        radarScreen.loadingPercent = "20%";
-                        getApiKey(mediaType, client);
-                    } else {
-                        //METAR JSON text has been received
-                        metarObject = new JSONObject(responseText);
-                        updateRadarScreenState();
-                    }
-                    response.close();
-                }
-            }
-        });
-    }
-
     private void updateAirports() {
         for (Airport airport: radarScreen.airports.values()) {
             airport.setMetar(metarObject);
@@ -214,7 +59,7 @@ public class Metar {
     }
 
     /** Create new weather based on current (i.e. small changes only) */
-    private JSONObject randomBasedOnCurrent() {
+    public JSONObject randomBasedOnCurrent() {
         JSONObject airports = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
             JSONObject jsonObject = new JSONObject();
@@ -252,7 +97,7 @@ public class Metar {
         return airports;
     }
 
-    private JSONObject generateRandomWeather() {
+    public JSONObject generateRandomWeather() {
         JSONObject jsonObject = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
             //For each airport, create random weather and parse to JSON object
@@ -310,7 +155,13 @@ public class Metar {
         return ws;
     }
 
-    private void updateRadarScreenState() {
+    public void randomWeather() {
+        metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
+        updateRadarScreenState();
+    }
+
+    public void updateRadarScreenState() {
+        if (quit) return;
         updateAirports();
         radarScreen.ui.updateMetar();
         radarScreen.loadingPercent = "100%";
@@ -319,5 +170,13 @@ public class Metar {
 
     public JSONObject getMetarObject() {
         return metarObject;
+    }
+
+    public void setQuit(boolean quit) {
+        this.quit = quit;
+    }
+
+    public void setMetarObject(JSONObject metarObject) {
+        this.metarObject = metarObject;
     }
 }

@@ -20,6 +20,8 @@ import com.bombbird.terminalcontrol.screens.ui.DataTag;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.HttpRequests;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.HashMap;
 
@@ -220,98 +222,111 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
-        //Clear screen
-        Gdx.gl.glClearColor(0, 0, 0, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        try {
+            //Clear screen
+            Gdx.gl.glClearColor(0, 0, 0, 0);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        switch (state) {
-            case RUN:
-                //Test for input, update camera
-                if (!loading) {
-                    handleInput(delta);
-                }
-                camera.update();
-
-                //Set rendering for stage camera
-                game.batch.setProjectionMatrix(camera.combined);
-                shapeRenderer.setProjectionMatrix(camera.combined);
-
-                //Update stage
-                stage.act(delta);
-                labelStage.act(delta);
-
-                //Render each of the range circles, obstacles using shaperenderer
-                if (!loading) {
-                    stage.getViewport().apply();
-                    //Render shapes only if METAR has finished loading
-                    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-                    renderShape();
-                    shapeRenderer.end();
-                }
-
-                //Draw to the spritebatch
-                game.batch.begin();
-                String loadingText = "Loading.   ";
-                if (loading) {
-                    //Write loading text if loading
-                    loadedTime += Gdx.graphics.getDeltaTime();
-                    if (loadedTime > 1.5) {
-                        loadedTime = 0;
-                        loadingText = "Loading.   ";
-                    } else if (loadedTime > 1) {
-                        loadingText = "Loading... ";
-                    } else if (loadedTime > 0.5) {
-                        loadingText = "Loading..  ";
+            switch (state) {
+                case RUN:
+                    //Test for input, update camera
+                    if (!loading) {
+                        handleInput(delta);
                     }
-                    Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
-                } else {
-                    stage.draw();
-                    game.batch.end();
-                    game.batch.setProjectionMatrix(labelStage.getCamera().combined);
-                    game.batch.begin();
-                    labelStage.getViewport().apply();
-                    labelStage.draw();
-                }
-                game.batch.end();
+                    camera.update();
 
-                //Draw the UI overlay
-                uiCam.update();
-                if (!loading) {
-                    game.batch.setProjectionMatrix(uiCam.combined);
-                    uiStage.act();
+                    //Set rendering for stage camera
+                    game.batch.setProjectionMatrix(camera.combined);
+                    shapeRenderer.setProjectionMatrix(camera.combined);
+
+                    //Update stage
+                    stage.act(delta);
+                    labelStage.act(delta);
+
+                    //Render each of the range circles, obstacles using shaperenderer
+                    if (!loading) {
+                        stage.getViewport().apply();
+                        //Render shapes only if METAR has finished loading
+                        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                        renderShape();
+                        shapeRenderer.end();
+                    }
+
+                    //Draw to the spritebatch
                     game.batch.begin();
-                    uiStage.getViewport().apply();
-                    boolean success = false;
-                    while (!success) {
-                        try {
-                            uiStage.draw();
-                            game.batch.end();
-                            success = true;
-                        } catch (IllegalArgumentException e) {
-                            Gdx.app.log("GameScreen", "uiStage.draw() render error");
-                            uiStage.getBatch().end();
-                            e.printStackTrace();
+                    String loadingText = "Loading.   ";
+                    if (loading) {
+                        //Write loading text if loading
+                        loadedTime += Gdx.graphics.getDeltaTime();
+                        if (loadedTime > 1.5) {
+                            loadedTime = 0;
+                            loadingText = "Loading.   ";
+                        } else if (loadedTime > 1) {
+                            loadingText = "Loading... ";
+                        } else if (loadedTime > 0.5) {
+                            loadingText = "Loading..  ";
+                        }
+                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
+                    } else {
+                        stage.draw();
+                        game.batch.end();
+                        game.batch.setProjectionMatrix(labelStage.getCamera().combined);
+                        game.batch.begin();
+                        labelStage.getViewport().apply();
+                        labelStage.draw();
+                    }
+                    game.batch.end();
+
+                    //Draw the UI overlay
+                    uiCam.update();
+                    if (!loading) {
+                        game.batch.setProjectionMatrix(uiCam.combined);
+                        uiStage.act();
+                        game.batch.begin();
+                        uiStage.getViewport().apply();
+                        boolean success = false;
+                        while (!success) {
+                            try {
+                                uiStage.draw();
+                                game.batch.end();
+                                success = true;
+                            } catch (IllegalArgumentException e) {
+                                Gdx.app.log("GameScreen", "uiStage.draw() render error");
+                                uiStage.getBatch().end();
+                                e.printStackTrace();
+                            }
                         }
                     }
-                }
-                break;
-            case PAUSE:
-                game.batch.setProjectionMatrix(pauseScreen.getCamera().combined);
-                pauseScreen.getStage().act();
-                game.batch.begin();
-                pauseScreen.getStage().getViewport().apply();
-                pauseScreen.getStage().draw();
-                game.batch.end();
-                break;
-            case SETTINGS:
-                game.batch.setProjectionMatrix(settingsScreen.getCamera().combined);
-                settingsScreen.getStage().act();
-                game.batch.begin();
-                settingsScreen.getStage().getViewport().apply();
-                settingsScreen.getStage().draw();
-                game.batch.end();
-                break;
-            default: Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
+                    break;
+                case PAUSE:
+                    game.batch.setProjectionMatrix(pauseScreen.getCamera().combined);
+                    pauseScreen.getStage().act();
+                    game.batch.begin();
+                    pauseScreen.getStage().getViewport().apply();
+                    pauseScreen.getStage().draw();
+                    game.batch.end();
+                    break;
+                case SETTINGS:
+                    game.batch.setProjectionMatrix(settingsScreen.getCamera().combined);
+                    settingsScreen.getStage().act();
+                    game.batch.begin();
+                    settingsScreen.getStage().getViewport().apply();
+                    settingsScreen.getStage().draw();
+                    game.batch.end();
+                    break;
+                default:
+                    Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            String error = ExceptionUtils.getStackTrace(e);
+            HttpRequests.sendError(error, 0);
+            //Quit game
+            ((RadarScreen) this).getMetar().setQuit(true);
+            RadarScreen.disposeStatic();
+            Ui.disposeStatic();
+            dispose();
+            Gdx.app.exit();
         }
     }
 
