@@ -318,7 +318,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             String error = ExceptionUtils.getStackTrace(e);
             HttpRequests.sendError(error, 0);
             //Quit game
@@ -327,6 +327,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             Ui.disposeStatic();
             dispose();
             Gdx.app.exit();
+            if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
         }
     }
 
