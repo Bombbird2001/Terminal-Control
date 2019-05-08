@@ -18,7 +18,9 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.HttpRequests;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class Ui {
     private static Texture transBackground;
@@ -101,6 +103,8 @@ public class Ui {
             try {
                 airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
             } catch (StringIndexOutOfBoundsException e) {
+                String error = label.getText().toString() + "\n" + ExceptionUtils.getStackTrace(e);
+                HttpRequests.sendError(error, 0);
                 e.printStackTrace();
                 System.out.println(label.getText().toString());
                 continue;
