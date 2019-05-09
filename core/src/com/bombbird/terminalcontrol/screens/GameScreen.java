@@ -19,9 +19,8 @@ import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.ui.DataTag;
 import com.bombbird.terminalcontrol.screens.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
+import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
-import com.bombbird.terminalcontrol.utilities.HttpRequests;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.HashMap;
 
@@ -318,15 +317,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
             }
         } catch (Exception e) {
-            String error = ExceptionUtils.getStackTrace(e);
-            HttpRequests.sendError(error, 0);
-            //Quit game
-            ((RadarScreen) this).getMetar().setQuit(true);
-            RadarScreen.disposeStatic();
-            Ui.disposeStatic();
-            dispose();
-            Gdx.app.exit();
-            if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
+            ErrorHandler.sendGenericError(e);
         }
     }
 

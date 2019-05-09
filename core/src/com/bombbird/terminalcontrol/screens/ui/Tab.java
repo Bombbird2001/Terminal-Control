@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class Tab {
@@ -94,10 +95,14 @@ public class Tab {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!notListening) {
-                    getChoices();
-                    updateElements();
-                    compareWithAC();
-                    updateElementColours();
+                    try {
+                        getChoices();
+                        updateElements();
+                        compareWithAC();
+                        updateElementColours();
+                    } catch (Exception e) {
+                        ErrorHandler.sendGenericError(e);
+                    }
                 }
                 event.handle();
             }
@@ -121,10 +126,14 @@ public class Tab {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!notListening) {
-                    getChoices();
-                    updateElements();
-                    compareWithAC();
-                    updateElementColours();
+                    try {
+                        getChoices();
+                        updateElements();
+                        compareWithAC();
+                        updateElementColours();
+                    } catch (Exception e) {
+                        ErrorHandler.sendGenericError(e);
+                    }
                 }
                 event.handle();
             }
@@ -147,7 +156,11 @@ public class Tab {
         resetTab.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                resetTab();
+                try {
+                    resetTab();
+                } catch (Exception e) {
+                    ErrorHandler.sendGenericError(e);
+                }
                 event.handle();
             }
         });
