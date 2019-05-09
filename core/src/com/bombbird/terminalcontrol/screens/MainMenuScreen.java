@@ -74,7 +74,8 @@ public class MainMenuScreen implements Screen {
 
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
-        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.55f);
+        float yPos = Gdx.app.getType() == Application.ApplicationType.Android ? 0.45f : 0.55f;
+        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos);
         newGameButton.setWidth(buttonWidth);
         newGameButton.setHeight(buttonHeight);
         newGameButton.getLabel().setAlignment(Align.center);
@@ -90,7 +91,8 @@ public class MainMenuScreen implements Screen {
 
         //Set load game button params
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
-        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.4f);
+        float yPos1 = Gdx.app.getType() == Application.ApplicationType.Android ? 0.3f : 0.4f;
+        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos1);
         loadGameButton.setWidth(buttonWidth);
         loadGameButton.setHeight(buttonHeight);
         loadGameButton.getLabel().setAlignment(Align.center);

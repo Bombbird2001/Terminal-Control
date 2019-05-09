@@ -174,7 +174,7 @@ public class Departure extends Aircraft {
     @Override
     public void setAfterLastWpt() {
         getNavState().getLatModes().removeValue(sid.getName() + " departure", false);
-        setClearedHeading((int)(outboundHdg + radarScreen.magHdgDev));
+        setClearedHeading(outboundHdg);
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());
         updateVectorMode();
