@@ -57,8 +57,14 @@ public class Departure extends Aircraft {
         setAltitude(getRunway().getElevation());
 
         //Set initial position on runway
-        setX(getRunway().getPosition()[0]);
-        setY(getRunway().getPosition()[1]);
+        if ("RJTT".equals(getAirport().getIcao()) && "16R".equals(runway.getName())) {
+            //Special case for RJTT runway 16R intersection takeoff
+            setX(2864.2f);
+            setY(1627.0f);
+        } else {
+            setX(getRunway().getPosition()[0]);
+            setY(getRunway().getPosition()[1]);
+        }
 
         loadLabel();
         setNavState(new NavState(this));
