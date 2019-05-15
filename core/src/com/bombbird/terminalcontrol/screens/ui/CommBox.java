@@ -180,7 +180,12 @@ public class CommBox {
             scrollTable.row();
         }
 
-        scrollPane.layout();
+        try {
+            scrollPane.layout();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            scrollPane.layout();
+        }
         scrollPane.scrollTo(0, 0, 0, 0);
     }
 

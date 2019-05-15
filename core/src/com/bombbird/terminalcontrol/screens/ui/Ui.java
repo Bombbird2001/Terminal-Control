@@ -98,13 +98,18 @@ public class Ui {
         for (int i = 0; i < metarInfos.size; i++) {
             Label label = metarInfos.get(i);
             //Get airport: ICAO code is first 4 letters of label's text
-            Airport airport;
-            try {
-                airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
-            } catch (StringIndexOutOfBoundsException e) {
-                ErrorHandler.sendMetarError(label, e);
-                continue;
+            String text = "";
+            for (int j = 0; j < 3; j++) {
+                String original = label.getText().toString();
+                try {
+                    text = label.getText().toString().substring(0, 4);
+                    break;
+                } catch (StringIndexOutOfBoundsException e) {
+                    ErrorHandler.sendMetarError(original, e, j + 1);
+                }
             }
+            if (text.length() == 0) continue;
+            Airport airport = radarScreen.airports.get(text);
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
