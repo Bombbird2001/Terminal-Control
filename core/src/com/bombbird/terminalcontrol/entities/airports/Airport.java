@@ -352,4 +352,8 @@ public class Airport {
     public boolean isCongested() {
         return congested;
     }
+
+    public JSONObject getMetar() {
+        return metar;
+    }
 }

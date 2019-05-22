@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -212,7 +214,7 @@ public class Ui {
         Table metarTable = new Table();
         metarTable.align(Align.left);
         metarInfos = new Array<Label>();
-        for (Airport airport: radarScreen.airports.values()) {
+        for (final Airport airport: radarScreen.airports.values()) {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             metarText[1] = "Winds: Loading";
@@ -223,6 +225,14 @@ public class Ui {
             metarInfo.setSize(paneImage.getWidth() / 2.74f, 300);
             //radarScreen.uiStage.addActor(metarInfo);
             metarInfos.add(metarInfo);
+            metarInfo.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    event.handle();
+                    TerminalControl.radarScreen.getRunwayChanger().setAirport(airport.getIcao());
+                }
+            });
             metarTable.add(metarInfo);
             metarTable.row();
         }

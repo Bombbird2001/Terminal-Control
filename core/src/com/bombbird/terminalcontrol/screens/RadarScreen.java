@@ -27,10 +27,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
-import com.bombbird.terminalcontrol.screens.ui.CommBox;
-import com.bombbird.terminalcontrol.screens.ui.DataTag;
-import com.bombbird.terminalcontrol.screens.ui.Tab;
-import com.bombbird.terminalcontrol.screens.ui.Ui;
+import com.bombbird.terminalcontrol.screens.ui.*;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
 import com.bombbird.terminalcontrol.utilities.FileLoader;
 import com.bombbird.terminalcontrol.utilities.GameLoader;
@@ -95,6 +92,9 @@ public class RadarScreen extends GameScreen {
 
     //Communication box to keep track of aircraft transmissions
     private CommBox commBox;
+
+    //Runway change box for changing runway configuration
+    private RunwayChanger runwayChanger;
 
     private Aircraft selectedAircraft;
 
@@ -355,6 +355,9 @@ public class RadarScreen extends GameScreen {
 
         //Load communication box
         commBox = new CommBox();
+
+        //Load runway change box
+        runwayChanger = new RunwayChanger();
 
         //Initialise tutorial manager if is tutorial
         if (tutorial) tutorialManager.init();
@@ -629,5 +632,9 @@ public class RadarScreen extends GameScreen {
 
     public Timer getTimer() {
         return timer;
+    }
+
+    public RunwayChanger getRunwayChanger() {
+        return runwayChanger;
     }
 }

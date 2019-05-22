@@ -38,8 +38,8 @@ public class PauseScreen {
 
         loadButtons();
 
-        System.out.println("Local: " + Gdx.files.getLocalStoragePath());
-        System.out.println("External: " + Gdx.files.getExternalStoragePath());
+        //System.out.println("Local: " + Gdx.files.getLocalStoragePath());
+        //System.out.println("External: " + Gdx.files.getExternalStoragePath());
     }
 
     /** Loads the buttons for screen */

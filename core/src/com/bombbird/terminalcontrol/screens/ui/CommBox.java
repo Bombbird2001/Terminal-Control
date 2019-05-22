@@ -213,6 +213,11 @@ public class CommBox {
         header.remove();
     }
 
+    public void setVisibility(boolean visible) {
+        header.setVisible(visible);
+        //Not necessary for box since runway change box will cover it anyway
+    }
+
     public Queue<Label> getLabels() {
         return labels;
     }
