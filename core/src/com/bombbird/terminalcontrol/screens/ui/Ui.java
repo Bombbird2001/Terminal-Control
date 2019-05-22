@@ -231,6 +231,8 @@ public class Ui {
                     super.clicked(event, x, y);
                     event.handle();
                     TerminalControl.radarScreen.getRunwayChanger().setAirport(airport.getIcao());
+                    TerminalControl.radarScreen.getRunwayChanger().setMainVisible(true);
+                    TerminalControl.radarScreen.getCommBox().setVisible(false);
                 }
             });
             metarTable.add(metarInfo);
@@ -577,6 +579,7 @@ public class Ui {
         metarPane.setX(paneImage.getWidth() / 19.2f);
         metarPane.setWidth(paneImage.getWidth() * 5 / 6);
         radarScreen.getCommBox().updateBoxWidth(paneImage.getWidth());
+        radarScreen.getRunwayChanger().updateBoxWidth(paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {

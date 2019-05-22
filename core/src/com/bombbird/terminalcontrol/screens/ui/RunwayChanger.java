@@ -1,17 +1,21 @@
 package com.bombbird.terminalcontrol.screens.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class RunwayChanger {
-    private ImageButton background;
+    private Image background;
     private Label airportLabel;
     private TextButton changeButton;
     private Label newRunwaysLabel;
@@ -26,7 +30,7 @@ public class RunwayChanger {
     private static final boolean[] LDG_ONLY = {true, false, true};
 
     public RunwayChanger() {
-        background = new ImageButton(TerminalControl.skin.getDrawable("ListBackground"));
+        background = new Image(TerminalControl.skin.getDrawable("ListBackground"));
         background.setX(0.1f * TerminalControl.radarScreen.ui.getPaneWidth());
         background.setY(3240 * 0.05f);
         background.setSize(0.8f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.35f);
@@ -37,42 +41,89 @@ public class RunwayChanger {
         labelStyle.font = Fonts.defaultFont20;
 
         airportLabel = new Label("", labelStyle);
-        airportLabel.setPosition(0.45f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.4f);
+        airportLabel.setPosition(0.45f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.35f);
         TerminalControl.radarScreen.uiStage.addActor(airportLabel);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont30;
+        textButtonStyle.font = Fonts.defaultFont20;
+        textButtonStyle.fontColor = Color.WHITE;
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
         changeButton = new TextButton("Change runway configuration", textButtonStyle);
-        changeButton.setSize(0.6f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.05f);
-        changeButton.setX(0.2f * TerminalControl.radarScreen.ui.getPaneWidth());
-        changeButton.setY(3240 * 0.20f);
+        changeButton.align(Align.center);
+        changeButton.setSize(0.7f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.08f);
+        changeButton.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
+        changeButton.setY(3240 * 0.22f);
         doubleCfm = false;
+        changeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                event.handle();
+                if (!doubleCfm) {
+                    newRunwaysLabel.setVisible(true);
+                    if (runways.size > 0) {
+                        doubleCfm = true;
+                        changeButton.setText("Confirm runway change");
+                    }
+                } else if (runways.size > 0) {
+                    updateRunways();
+                    doubleCfm = false;
+                    hideAll();
+                    TerminalControl.radarScreen.getCommBox().setVisible(true);
+                }
+            }
+        });
         TerminalControl.radarScreen.uiStage.addActor(changeButton);
 
         Label.LabelStyle labelStyle1 = new Label.LabelStyle();
         labelStyle1.fontColor = Color.BLACK;
         labelStyle1.font = Fonts.defaultFont20;
         newRunwaysLabel = new Label("Loading...", labelStyle1);
+        newRunwaysLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
+        newRunwaysLabel.setY(3240 * 0.1f);
+        newRunwaysLabel.setWrap(true);
+        newRunwaysLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
         TerminalControl.radarScreen.uiStage.addActor(newRunwaysLabel);
-
-        setVisible(false);
 
         runways = new Array<String>();
         tkofLdg = new Array<boolean[]>();
+
+        hideAll();
     }
 
-    public void setVisible(boolean visible) {
+    public void setMainVisible(boolean visible) {
         background.setVisible(visible);
         airportLabel.setVisible(visible);
         changeButton.setVisible(visible);
-        newRunwaysLabel.setVisible(visible);
+    }
+
+    public void hideAll() {
+        background.setVisible(false);
+        airportLabel.setVisible(false);
+        changeButton.setVisible(false);
+        newRunwaysLabel.setVisible(false);
+        runways.clear();
+        tkofLdg.clear();
+        doubleCfm = false;
+    }
+
+    public void updateBoxWidth(float paneWidth) {
+        background.setX(0.1f * paneWidth);
+        background.setWidth(0.8f * paneWidth);
+
+        airportLabel.setX(0.45f * paneWidth);
+
+        changeButton.setX(0.15f * paneWidth);
+        changeButton.setWidth(0.7f * paneWidth);
     }
 
     public void setAirport(String icao) {
         runways.clear();
         tkofLdg.clear();
+        doubleCfm = false;
+        newRunwaysLabel.setVisible(false);
+        changeButton.setText("Change runway configuration");
+        airportLabel.setText(icao);
         airport = TerminalControl.radarScreen.airports.get(icao);
         int windDir = airport.getMetar().isNull("windDirection") ? 0 : airport.getMetar().getInt("windDirection");
         int windSpd = airport.getMetar().getInt("windSpeed");
@@ -101,6 +152,46 @@ public class RunwayChanger {
         } else if ("VTBS".equals(icao)) {
             updateVTBS(windDir, windSpd);
         }
+
+        if (runways.size != tkofLdg.size) Gdx.app.log("Runway changer", "Runway array length not equal to tkofldg array length for " + icao);
+        updateRunwayLabel();
+    }
+
+    private void updateRunwayLabel() {
+        if (runways.size == 0) {
+            newRunwaysLabel.setText("Runway change not permitted due to winds");
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < runways.size; i++) {
+                if (tkofLdg.get(i)[0]) {
+                    String tmp;
+                    if (tkofLdg.get(i)[1] && tkofLdg.get(i)[2]) {
+                        tmp = "takeoffs and landings.";
+                    } else if (tkofLdg.get(i)[1]) {
+                        tmp = "takeoffs.";
+                    } else {
+                        tmp = "landings.";
+                    }
+                    stringBuilder.append("Runway ");
+                    stringBuilder.append(runways.get(i));
+                    stringBuilder.append(" will be active for ");
+                    stringBuilder.append(tmp);
+                    stringBuilder.append("\n");
+                }
+            }
+            newRunwaysLabel.setText(stringBuilder.toString());
+        }
+    }
+
+    private void updateRunways() {
+        for (int i = 0; i < runways.size; i++) {
+            airport.setActive(runways.get(i), tkofLdg.get(i)[2], tkofLdg.get(i)[1]);
+        }
+    }
+
+    public boolean containsLandingRunway(String rwy) {
+        int index = runways.indexOf(rwy, false);
+        return index > -1 && tkofLdg.get(index)[0] && doubleCfm;
     }
 
     private void updateRCTP(int windDir, int windSpd) {

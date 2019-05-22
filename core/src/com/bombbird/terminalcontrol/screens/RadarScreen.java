@@ -548,6 +548,8 @@ public class RadarScreen extends GameScreen {
         } else {
             ui.setNormalPane(true);
             ui.setSelectedPane(null);
+            runwayChanger.hideAll();
+            commBox.setVisible(true);
         }
         selectedAircraft = aircraft;
     }
