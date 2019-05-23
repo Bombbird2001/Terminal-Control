@@ -295,9 +295,9 @@ public class RadarScreen extends GameScreen {
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
 
-        //Min 60sec for diff of >=20 planes && max 120sec for diff of <=5 planes
-        spawnTimer = 150f - 6 * (planesToControl - arrivals);
-        spawnTimer = MathUtils.clamp(spawnTimer, 60, 120);
+        //Min 70sec for diff of >=20 planes && max 150sec for diff of <=5 planes
+        spawnTimer = 160f - 6 * (planesToControl - arrivals);
+        spawnTimer = MathUtils.clamp(spawnTimer, 70, 150);
     }
 
     /** Loads the full UI for RadarScreen */
@@ -535,6 +535,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setSelectedAircraft(Aircraft aircraft) {
+        runwayChanger.hideAll();
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
         }
@@ -548,7 +549,6 @@ public class RadarScreen extends GameScreen {
         } else {
             ui.setNormalPane(true);
             ui.setSelectedPane(null);
-            runwayChanger.hideAll();
             commBox.setVisible(true);
         }
         selectedAircraft = aircraft;
