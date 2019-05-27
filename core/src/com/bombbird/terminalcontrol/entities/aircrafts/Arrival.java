@@ -658,6 +658,7 @@ public class Arrival extends Aircraft {
         if (isSelected() && getControlState() == 2) {
             ui.updateState();
         }
+        getDataTag().setMinimized(false);
     }
 
     @Override

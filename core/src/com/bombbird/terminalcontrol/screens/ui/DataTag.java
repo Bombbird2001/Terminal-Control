@@ -134,7 +134,7 @@ public class DataTag {
     }
 
     /** Loads label, icon resources */
-    public void loadResources() {
+    private void loadResources() {
         if (!LOADED_ICONS) {
             ICON_ATLAS = new TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"));
             SKIN = new Skin(ICON_ATLAS);

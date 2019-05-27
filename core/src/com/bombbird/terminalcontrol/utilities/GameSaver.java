@@ -242,6 +242,7 @@ public class GameSaver {
                 aircraftInfo.put("contactAlt", ((Departure) aircraft).getContactAlt());
                 aircraftInfo.put("handOverAlt", ((Departure) aircraft).getHandoveralt());
                 aircraftInfo.put("v2set", ((Departure) aircraft).isV2set());
+                aircraftInfo.put("accel", ((Departure) aircraft).isAccel());
                 aircraftInfo.put("sidSet", ((Departure) aircraft).isSidSet());
                 aircraftInfo.put("contacted", ((Departure) aircraft).isContacted());
                 aircraftInfo.put("cruiseAlt", ((Departure) aircraft).getCruiseAlt());

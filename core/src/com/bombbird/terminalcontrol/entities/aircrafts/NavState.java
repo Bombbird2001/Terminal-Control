@@ -485,7 +485,7 @@ public class NavState {
 
     /** Adds new speed instructions to queue, called after sendAlt */
     public void sendSpd(String spdMode, int clearedSpd) {
-        if (aircraft instanceof Departure && !((Departure) aircraft).isSidSet() && clearedSpd == aircraft.getV2()) {
+        if (aircraft instanceof Departure && !((Departure) aircraft).isAccel() && clearedSpd == aircraft.getV2()) {
             this.clearedSpd.addLast(220);
         } else {
             this.clearedSpd.addLast(clearedSpd);

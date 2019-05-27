@@ -19,6 +19,7 @@ public class Departure extends Aircraft {
     private int contactAlt;
     private int handoveralt;
     private boolean v2set;
+    private boolean accel;
     private boolean sidSet;
     private boolean contacted;
     private int cruiseAlt;
@@ -31,6 +32,7 @@ public class Departure extends Aircraft {
         contactAlt = radarScreen.minAlt + MathUtils.random(-800, -200);
         handoveralt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
         v2set = false;
+        accel = false;
         sidSet = false;
         contacted = false;
         cruiseAlt = MathUtils.random(30, 39) * 1000;
@@ -89,6 +91,7 @@ public class Departure extends Aircraft {
         contactAlt = save.getInt("contactAlt");
         handoveralt = save.getInt("handOverAlt");
         v2set = save.getBoolean("v2set");
+        accel = !save.isNull("accel") && save.getBoolean("accel");
         sidSet = save.getBoolean("sidSet");
         contacted = save.getBoolean("contacted");
         cruiseAlt = save.getInt("cruiseAlt");
@@ -147,16 +150,19 @@ public class Departure extends Aircraft {
             getDataTag().flashIcon();
             contacted = true;
         }
-        if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
+        if (getAltitude() - getAirport().getElevation() > 1500 && !accel) {
             if (getClearedIas() == getV2()) {
                 setClearedIas(220);
                 super.updateSpd();
             }
+            accel = true;
+        }
+        if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
             sidSet = true;
             updateAltRestrictions();
             updateTargetAltitude();
         }
-        if (contacted && v2set && sidSet) {
+        if (contacted && v2set && sidSet && accel) {
             setTkOfLdg(false);
         }
     }
@@ -327,5 +333,9 @@ public class Departure extends Aircraft {
 
     public boolean isCruiseSpdSet() {
         return cruiseSpdSet;
+    }
+
+    public boolean isAccel() {
+        return accel;
     }
 }
