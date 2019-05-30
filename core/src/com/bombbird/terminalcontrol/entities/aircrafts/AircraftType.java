@@ -1,7 +1,7 @@
 package com.bombbird.terminalcontrol.entities.aircrafts;
 
 import com.badlogic.gdx.Gdx;
-import com.bombbird.terminalcontrol.utilities.FileLoader;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 import java.util.HashMap;
 

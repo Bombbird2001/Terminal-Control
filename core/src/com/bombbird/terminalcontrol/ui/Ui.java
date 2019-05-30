@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -19,6 +19,9 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.ui.tabs.AltTab;
+import com.bombbird.terminalcontrol.ui.tabs.LatTab;
+import com.bombbird.terminalcontrol.ui.tabs.SpdTab;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +110,7 @@ public class Ui {
                     text = label.getText().toString().substring(0, 4);
                     break;
                 } catch (StringIndexOutOfBoundsException e) {
-                    ErrorHandler.sendMetarError(original, e, j + 1);
+                    ErrorHandler.sendRepeatableError(original, e, j + 1);
                 }
             }
             if (text.length() == 0) continue;

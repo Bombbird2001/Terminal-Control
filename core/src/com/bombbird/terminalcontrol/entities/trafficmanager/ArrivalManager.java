@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONObject;
 
 import java.util.HashMap;

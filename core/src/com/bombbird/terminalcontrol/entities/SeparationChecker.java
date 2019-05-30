@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class SeparationChecker extends Actor {
     private Array<Array<Aircraft>> flightLevels;

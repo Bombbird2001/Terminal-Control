@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -199,9 +199,9 @@ public class RunwayChanger {
         }
     }
 
-    public boolean containsLandingRunway(String rwy) {
+    public boolean containsLandingRunway(String icao, String rwy) {
         int index = runways.indexOf(rwy, false);
-        return index > -1 && tkofLdg.get(index)[0] && doubleCfm;
+        return airport != null && icao.equals(airport.getIcao()) && index > -1 && tkofLdg.get(index)[0] && doubleCfm;
     }
 
     private void updateRCTP(int windDir, int windSpd) {

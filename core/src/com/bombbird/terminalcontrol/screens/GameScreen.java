@@ -16,8 +16,8 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
-import com.bombbird.terminalcontrol.screens.ui.DataTag;
-import com.bombbird.terminalcontrol.screens.ui.Ui;
+import com.bombbird.terminalcontrol.ui.DataTag;
+import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -203,6 +203,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         } else if (camera.position.y > upLimit) {
             camera.position.y = upLimit;
         }
+
+        //System.out.println(camera.zoom);
+        //System.out.println(camera.position.x);
+        //System.out.println(camera.position.y);
     }
 
     /** Implements show method of screen; overridden in radarScreen class */

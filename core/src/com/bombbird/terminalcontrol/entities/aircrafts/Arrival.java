@@ -16,8 +16,8 @@ import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.screens.ui.LatTab;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.ui.tabs.LatTab;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

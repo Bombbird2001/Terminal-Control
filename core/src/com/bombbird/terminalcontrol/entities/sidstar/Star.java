@@ -7,7 +7,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class Star extends SidStar {
     private Array<Integer> inboundHdg;

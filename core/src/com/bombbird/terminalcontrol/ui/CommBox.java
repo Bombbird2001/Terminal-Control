@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -12,6 +12,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
+import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -154,8 +155,15 @@ public class CommBox {
 
     /** Adds a normal message */
     public void normalMsg(String msg) {
-        Label label = new Label(msg, getLabelStyle(Color.BLACK));
-        updateLabelQueue(label);
+        for (int i = 0; i < 3; i++) {
+            try {
+                Label label = new Label(msg, getLabelStyle(Color.BLACK));
+                updateLabelQueue(label);
+                break;
+            } catch (NullPointerException e) {
+                ErrorHandler.sendRepeatableError("Normal message error", e, i + 1);
+            }
+        }
     }
 
     /** Adds a message in red for warnings */

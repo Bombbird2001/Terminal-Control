@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities.saving;
 
 import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -8,7 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
-import com.bombbird.terminalcontrol.screens.ui.CommBox;
+import com.bombbird.terminalcontrol.ui.CommBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

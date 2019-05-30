@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.FileLoader;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 public class NewGameScreen extends SelectGameScreen {
     public NewGameScreen(final TerminalControl game) {

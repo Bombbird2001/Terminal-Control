@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.FileLoader;
-import com.bombbird.terminalcontrol.utilities.GameSaver;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

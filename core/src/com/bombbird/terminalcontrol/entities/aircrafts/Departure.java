@@ -8,8 +8,8 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.screens.ui.LatTab;
-import com.bombbird.terminalcontrol.screens.ui.Tab;
+import com.bombbird.terminalcontrol.ui.tabs.LatTab;
+import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import org.json.JSONObject;
 
 public class Departure extends Aircraft {

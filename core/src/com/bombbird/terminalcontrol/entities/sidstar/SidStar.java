@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class SidStar {
     private Airport airport;

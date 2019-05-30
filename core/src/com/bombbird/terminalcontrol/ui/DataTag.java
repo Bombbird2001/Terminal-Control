@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

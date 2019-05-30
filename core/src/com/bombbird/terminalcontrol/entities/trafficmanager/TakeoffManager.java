@@ -4,12 +4,12 @@ package com.bombbird.terminalcontrol.entities.trafficmanager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.utilities.RandomGenerator;
+import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

@@ -27,12 +27,13 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
-import com.bombbird.terminalcontrol.screens.ui.*;
+import com.bombbird.terminalcontrol.ui.*;
+import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
-import com.bombbird.terminalcontrol.utilities.FileLoader;
-import com.bombbird.terminalcontrol.utilities.GameLoader;
-import com.bombbird.terminalcontrol.utilities.GameSaver;
-import com.bombbird.terminalcontrol.utilities.RandomGenerator;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
+import com.bombbird.terminalcontrol.utilities.saving.GameLoader;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
+import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.utilities.TutorialManager;
 import org.json.JSONObject;
 

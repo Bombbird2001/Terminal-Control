@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui.tabs;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 

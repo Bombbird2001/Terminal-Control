@@ -13,8 +13,8 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.screens.ui.LatTab;
-import com.bombbird.terminalcontrol.utilities.MathTools;
+import com.bombbird.terminalcontrol.ui.tabs.LatTab;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class ILS extends Actor {
     private Airport airport;
@@ -85,7 +85,7 @@ public class ILS extends Actor {
         boolean landing = rwy.isLanding();
         Aircraft aircraft = radarScreen.getSelectedAircraft();
         boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == 1 && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == 0 && this.equals(aircraft.getIls())));
-        boolean rwyChange = radarScreen.getRunwayChanger().containsLandingRunway(rwy.getName());
+        boolean rwyChange = radarScreen.getRunwayChanger().containsLandingRunway(airport.getIcao(), rwy.getName());
         if (landing || selectedIls || rwyChange) {
             radarScreen.shapeRenderer.setColor(Color.CYAN);
             if (selectedIls || rwyChange) radarScreen.shapeRenderer.setColor(Color.YELLOW);

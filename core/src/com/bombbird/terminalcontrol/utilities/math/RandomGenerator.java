@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities.math;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;

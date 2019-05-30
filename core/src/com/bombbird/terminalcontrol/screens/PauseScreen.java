@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.utilities.GameSaver;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class PauseScreen {

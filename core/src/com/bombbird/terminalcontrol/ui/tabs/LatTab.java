@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.ui;
+package com.bombbird.terminalcontrol.ui.tabs;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,6 +14,7 @@ import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
+import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class LatTab extends Tab {
@@ -430,12 +431,10 @@ public class LatTab extends Tab {
         }
         holdWptChanged = false;
         ilsChanged = false;
-        if (selectedAircraft instanceof Arrival) {
-            if (selectedAircraft.getNavState().getClearedIls().last() != null) {
+        if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getClearedIls().last() != null) {
                 clearedILS = selectedAircraft.getNavState().getClearedIls().last().getName();
-            } else {
-                clearedILS = "Not cleared approach";
-            }
+        } else {
+            clearedILS = "Not cleared approach";
         }
     }
 
