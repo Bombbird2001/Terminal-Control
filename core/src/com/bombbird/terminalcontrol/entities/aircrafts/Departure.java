@@ -30,7 +30,7 @@ public class Departure extends Aircraft {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = radarScreen.minAlt + MathUtils.random(-800, -200);
-        handoveralt = radarScreen.maxAlt - 1500 + MathUtils.random(-500, 500);
+        handoveralt = radarScreen.maxAlt + MathUtils.random(-800, -200);
         v2set = false;
         accel = false;
         sidSet = false;

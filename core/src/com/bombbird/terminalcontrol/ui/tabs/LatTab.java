@@ -200,6 +200,26 @@ public class LatTab extends Tab {
         settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
         settingsBox.setSelected(latMode);
 
+        ils.clear();
+        ils.add("Not cleared approach");
+        for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
+            if (selectedAircraft.getAirport().getLandingRunways().keySet().contains(approach.getName().substring(3))) {
+                ils.add(approach.getName());
+            }
+        }
+        if (clearedILS == null) clearedILS = "Not cleared approach";
+        if (!ils.contains(clearedILS, false)) {
+            ils.clear();
+            ils.add("Not cleared approach");
+            if (selectedAircraft.getAirport().getRunways().get(clearedILS.substring(3)) != null) {
+                ils.add(clearedILS);
+            } else {
+                clearedILS = "Not cleared approach";
+            }
+        }
+        ilsBox.setItems(ils);
+        ilsBox.setSelected(clearedILS);
+
         if (latMode.contains("waypoint") || latMode.contains("arrival") || latMode.contains("departure")) {
             //Make waypoint box visible
             if (visible) {
@@ -245,24 +265,6 @@ public class LatTab extends Tab {
             valueBox.setVisible(false);
 
             //And set ILS box visible
-            ils.clear();
-            ils.add("Not cleared approach");
-            for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
-                if (selectedAircraft.getAirport().getLandingRunways().keySet().contains(approach.getName().substring(3))) {
-                    ils.add(approach.getName());
-                }
-            }
-            if (clearedILS != null && !ils.contains(clearedILS, false)) {
-                ils.clear();
-                ils.add("Not cleared approach");
-                if (selectedAircraft.getAirport().getRunways().get(clearedILS.substring(3)) != null) {
-                    ils.add(clearedILS);
-                } else {
-                    clearedILS = "Not cleared approach";
-                }
-            }
-            ilsBox.setItems(ils);
-            ilsBox.setSelected(clearedILS);
             ilsBox.setVisible(selectedAircraft instanceof Arrival);
         }
 
