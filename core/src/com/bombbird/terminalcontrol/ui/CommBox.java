@@ -134,7 +134,7 @@ public class CommBox {
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName();
-                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronounciation().toLowerCase(), aircraft.getDirect().getName());
+                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronunciation().toLowerCase(), aircraft.getDirect().getName());
             } else {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
                 TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
@@ -143,7 +143,7 @@ public class CommBox {
             String outboundText = "";
             if (!"-".equals(AirportName.getAirportName(aircraft.getAirport().getIcao()))) outboundText = "outbound " + AirportName.getAirportName(aircraft.getAirport().getIcao()) + ", ";
             text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + ", " + aircraft.getSidStar().getName() + " departure";
-            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronounciation().toLowerCase());
+            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase());
         }
 
         label = new Label(text, getLabelStyle(aircraft.getColor()));

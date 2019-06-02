@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
@@ -82,6 +83,7 @@ public class Aircraft extends Actor {
     private int clearedHeading;
     private double angularVelocity;
     private double track;
+    private Route route;
     private int sidStarIndex;
     private Waypoint direct;
     private Waypoint afterWaypoint;
@@ -144,6 +146,7 @@ public class Aircraft extends Actor {
         targetHeading = 0;
         clearedHeading = (int)(heading);
         track = 0;
+        route = new Route();
         sidStarIndex = 0;
         afterWptHdg = 360;
         altitude = 10000;

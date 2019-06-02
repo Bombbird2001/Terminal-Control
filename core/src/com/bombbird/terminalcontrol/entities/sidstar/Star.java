@@ -28,7 +28,7 @@ public class Star extends SidStar {
         for (String s1: starInfo) {
             switch (index) {
                 case 0: setName(s1); break; //First part is the name of the STAR
-                case 1: setPronounciation(s1); break; //How name is pronounced by TTS
+                case 1: setPronunciation(s1); break; //How name is pronounced by TTS
                 case 2: //Add STAR runways
                     for (String s2: s1.split(">")) {
                         getRunways().add(s2);

@@ -162,13 +162,13 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         for (Star star: stars.values()) {
-            //System.out.println(star.getPronounciation());
-            //tts.speak(star.getPronounciation(), TextToSpeech.QUEUE_ADD, null, null);
+            //System.out.println(star.getPronunciation());
+            //tts.speak(star.getPronunciation(), TextToSpeech.QUEUE_ADD, null, null);
         }
 
         for (Sid sid: sids.values()) {
-            //System.out.println(sid.getPronounciation());
-            //tts.speak(sid.getPronounciation(), TextToSpeech.QUEUE_ADD, null, null);
+            //System.out.println(sid.getPronunciation());
+            //tts.speak(sid.getPronunciation(), TextToSpeech.QUEUE_ADD, null, null);
         }
     }
 }
