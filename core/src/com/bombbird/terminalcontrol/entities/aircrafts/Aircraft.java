@@ -146,7 +146,6 @@ public class Aircraft extends Actor {
         targetHeading = 0;
         clearedHeading = (int)(heading);
         track = 0;
-        route = new Route();
         sidStarIndex = 0;
         afterWptHdg = 360;
         altitude = 10000;
@@ -726,7 +725,7 @@ public class Aircraft extends Actor {
         if ((navState.getDispLatMode().first().equals("After waypoint, fly heading") && direct.equals(afterWaypoint)) || navState.getDispLatMode().first().equals("Hold at") && direct.equals(holdWpt)) {
             return targetHeading;
         }
-        Waypoint nextWpt = getSidStar().getWaypoint(getSidStarIndex() + 1);
+        Waypoint nextWpt = route.getWaypoint(getSidStarIndex() + 1);
         if (nextWpt == null) {
             if (this instanceof Departure) return ((Departure) this).getOutboundHdg();
             return targetHeading;
@@ -921,12 +920,12 @@ public class Aircraft extends Actor {
             if (spdRestr > -1 && clearedIas > spdRestr) {
                 clearedIas = spdRestr;
             }
-            direct = getSidStar().getWaypoint(sidStarIndex);
+            direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {
                 navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
             }
         } else {
-            direct = getSidStar().getWaypoint(sidStarIndex);
+            direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {
                 navState.getDispLatMode().removeFirst();
                 navState.getDispLatMode().addFirst("Fly heading");
@@ -1015,11 +1014,11 @@ public class Aircraft extends Actor {
 
     public Array<Waypoint> getRemainingWaypoints() {
         if (navState.getDispLatMode().last().contains(getSidStar().getName())) {
-            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().getWaypoints().size - 1);
+            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.getWaypoints().size - 1);
         } else if ("After waypoint, fly heading".equals(navState.getDispLatMode().last())) {
-            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().findWptIndex(navState.getClearedAftWpt().last().getName()));
+            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedAftWpt().last().getName()));
         } else if ("Hold at".equals(navState.getDispLatMode().last())) {
-            return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(navState.getClearedDirect().last().getName()), getSidStar().findWptIndex(navState.getClearedHold().last().getName()));
+            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedHold().last().getName()));
         }
         return null;
     }
@@ -1027,11 +1026,11 @@ public class Aircraft extends Actor {
     public Array<Waypoint> getUiRemainingWaypoints() {
         if (selected) {
             if (Tab.latMode.contains(getSidStar().getName())) {
-                return getSidStar().getRemainingWaypoints(getSidStar().findWptIndex(Tab.clearedWpt), getSidStar().getWaypoints().size - 1);
+                return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.getWaypoints().size - 1);
             } else if ("After waypoint, fly heading".equals(Tab.latMode)) {
-                return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(Tab.afterWpt));
+                return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt));
             } else if ("Hold at".equals(Tab.latMode)) {
-                return getSidStar().getRemainingWaypoints(sidStarIndex, getSidStar().findWptIndex(Tab.holdWpt));
+                return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt));
             }
         }
         return null;
@@ -1277,7 +1276,7 @@ public class Aircraft extends Actor {
     private void updateClearedSpd() {
         int highestSpd = -1;
         if (!"No speed restrictions".equals(navState.getDispSpdMode().last()) && direct != null) {
-            highestSpd = getSidStar().getWptMaxSpd(direct.getName());
+            highestSpd = route.getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {
             if (altitude > 10000) {
@@ -1438,7 +1437,7 @@ public class Aircraft extends Actor {
     }
 
     public int getMaxWptSpd(String wpt) {
-        return getSidStar().getWptMaxSpd(wpt);
+        return route.getWptMaxSpd(wpt);
     }
 
     public ILS getIls() {
@@ -1616,5 +1615,13 @@ public class Aircraft extends Actor {
 
     public void setEmergency(boolean emergency) {
         this.emergency = emergency;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 }

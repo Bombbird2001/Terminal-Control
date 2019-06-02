@@ -192,7 +192,7 @@ public class LatTab extends Tab {
     @Override
     public void updateElements() {
         notListening = true;
-        if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getSidStar().getWaypoints().size) {
+        if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getRoute().getWaypoints().size) {
             selectedAircraft.getNavState().getLatModes().removeValue(selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " arrival" : " departure"), false);
             selectedAircraft.getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
             if (!"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last())) selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
@@ -226,7 +226,7 @@ public class LatTab extends Tab {
                 valueBox.setVisible(true);
             }
             waypoints.clear();
-            for (Waypoint waypoint: selectedAircraft.getSidStar().getRemainingWaypoints(selectedAircraft.getSidStarIndex(), selectedAircraft.getSidStar().getWaypoints().size - 1)) {
+            for (Waypoint waypoint: selectedAircraft.getRoute().getRemainingWaypoints(selectedAircraft.getSidStarIndex(), selectedAircraft.getRoute().getWaypoints().size - 1)) {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
@@ -248,7 +248,7 @@ public class LatTab extends Tab {
                 waypoints.add(selectedAircraft.getHoldWpt().getName());
             } else {
                 for (Waypoint waypoint : ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
-                    if (selectedAircraft.getSidStar().findWptIndex(waypoint.getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+                    if (selectedAircraft.getRoute().findWptIndex(waypoint.getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                         //Check if holding point is after current aircraft direct
                         waypoints.add(waypoint.getName());
                     }
@@ -501,7 +501,7 @@ public class LatTab extends Tab {
             boolean found = false;
             Array<Waypoint> waypoints = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints();
             for (int i = 0; i < waypoints.size; i++) {
-                if (selectedAircraft.getSidStar().findWptIndex(waypoints.get(i).getName()) >= selectedAircraft.getSidStar().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+                if (selectedAircraft.getRoute().findWptIndex(waypoints.get(i).getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                     //Check if holding point is after current aircraft direct
                     found = true;
                     break;

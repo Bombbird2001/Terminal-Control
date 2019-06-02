@@ -100,11 +100,11 @@ public class FileLoader {
         //Load STARs
         HashMap<String, Star> stars = new HashMap<String, Star>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/star" + airport.getIcao() + ".star");
-        String[] indivStars = handle.readString().split("\\r?\\n");
-        for (String s: indivStars) {
+        JSONObject jo = new JSONObject(handle.readString());
+        for (String name: jo.keySet()) {
             //For each individual STAR
-            Star star = new Star(airport, s);
-            stars.put(star.getName(), star);
+            Star star = new Star(airport, jo.getJSONObject(name));
+            stars.put(name, star);
         }
         return stars;
     }
@@ -113,11 +113,11 @@ public class FileLoader {
         //Load SIDs
         HashMap<String, Sid> sids = new HashMap<String, Sid>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/sid" + airport.getIcao() + ".sid");
-        String[] indivStars = handle.readString().split("\\r?\\n");
-        for (String s: indivStars) {
+        JSONObject jo = new JSONObject(handle.readString());
+        for (String name: jo.keySet()) {
             //For each individual SID
-            Sid sid = new Sid(airport, s);
-            sids.put(sid.getName(), sid);
+            Sid sid = new Sid(airport, jo.getJSONObject(name));
+            sids.put(name, sid);
         }
         return sids;
     }
@@ -169,6 +169,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, HoldProcedure> loadHoldInfo(Airport airport) {
+        //TODO Replace with json
         HashMap<String, HoldProcedure> holdProcedures = new HashMap<String, HoldProcedure>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/hold" + airport.getIcao() + ".hold");
         String[] indivHold = handle.readString().split("\\r?\\n");
@@ -190,6 +191,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, MissedApproach> loadMissedInfo(Airport airport) {
+        //TODO Replace with json
         HashMap<String, MissedApproach> missedApproaches = new HashMap<String, MissedApproach>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/missedApch" + airport.getIcao() + ".miss");
         String[] indivMissed = handle.readString().split("\\r?\\n");

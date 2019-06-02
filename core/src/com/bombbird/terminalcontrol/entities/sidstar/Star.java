@@ -1,98 +1,82 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class Star extends SidStar {
-    private Array<Integer> inboundHdg;
+    private Array<Array<String>> inbound;
+    private HashMap<String, Array<Waypoint>> rwyWpts;
+    private HashMap<String, Array<int[]>> rwyRestrictions;
+    private HashMap<String, Array<Boolean>> rwyFlyOver;
 
-    public Star(Airport airport, String toParse) {
-        super(airport, toParse);
+    public Star(Airport airport, JSONObject jo) {
+        super(airport, jo);
     }
 
     @Override
-    public void parseInfo(String toParse) {
-        super.parseInfo(toParse);
+    public void parseInfo(JSONObject jo) {
+        super.parseInfo(jo);
 
-        String[] starInfo = toParse.split(",");
+        inbound = new Array<Array<String>>();
+        rwyWpts = new HashMap<String, Array<Waypoint>>();
+        rwyRestrictions = new HashMap<String, Array<int[]>>();
+        rwyFlyOver = new HashMap<String, Array<Boolean>>();
 
-        inboundHdg = new Array<Integer>();
+        JSONObject rwys = jo.getJSONObject("rwys");
+        for (String rwy: rwys.keySet()) {
+            getRunways().add(rwy);
+            Array<Waypoint> wpts = new Array<Waypoint>();
+            Array<int[]> restrictions = new Array<int[]>();
+            Array<Boolean> flyOver = new Array<Boolean>();
 
-        int index = 0;
-        for (String s1: starInfo) {
-            switch (index) {
-                case 0: setName(s1); break; //First part is the name of the STAR
-                case 1: setPronunciation(s1); break; //How name is pronounced by TTS
-                case 2: //Add STAR runways
-                    for (String s2: s1.split(">")) {
-                        getRunways().add(s2);
-                    }
-                    break;
-                case 3: //Second part is the inbound track(s) of the STAR
-                    for (String s2: s1.split(">")) {
-                        inboundHdg.add(Integer.parseInt(s2));
-                    }
-                    break;
-                case 4: //Add waypoints to STAR
-                    for (String s2: s1.split(">")) {
-                        //For each waypoint on the STAR
-                        int index1 = 0;
-                        int[] altSpdRestrictions = new int[3];
-                        for (String s3: s2.split(" ")) {
-                            switch (index1) {
-                                case 0:
-                                    getWaypoints().add(TerminalControl.radarScreen.waypoints.get(s3));
-                                    break; //First part is the name of the waypoint
-                                case 1:
-                                    altSpdRestrictions[0] = Integer.parseInt(s3);
-                                    break; //1 is min alt
-                                case 2:
-                                    altSpdRestrictions[1] = Integer.parseInt(s3);
-                                    break; //2 is max alt
-                                case 3:
-                                    altSpdRestrictions[2] = Integer.parseInt(s3);
-                                    break; //3 is max speed
-                                default:
-                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter " + s3 + " in " + s2 + " in game/" + TerminalControl.radarScreen.mainName + "/star" + getAirport().getIcao() + ".star");
-                            }
-                            index1++;
-                        }
-                        getRestrictions().add(altSpdRestrictions);
-                    }
-                    break;
-                default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + TerminalControl.radarScreen.mainName + "/star" + getAirport().getIcao() + ".star");
+            JSONArray rwyObject = rwys.getJSONArray(rwy);
+            for (int i = 0; i < rwyObject.length(); i++) {
+                String[] data = rwyObject.getString(i).split(" ");
+                wpts.add(TerminalControl.radarScreen.waypoints.get(data[0]));
+                restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
+                flyOver.add(data.length > 4 && data[4].equals("FO"));
             }
-            index++;
+            rwyWpts.put(rwy, wpts);
+            rwyRestrictions.put(rwy, restrictions);
+            rwyFlyOver.put(rwy, flyOver);
+        }
+
+        JSONArray inbounds = jo.getJSONArray("inbound");
+        for (int i = 0; i < inbounds.length(); i++) {
+            JSONArray trans = inbounds.getJSONArray(i);
+            Array<String> transData = new Array<String>();
+            for (int j = 0; j < trans.length(); j++) {
+                transData.add(trans.getString(j));
+            }
+            inbound.add(transData);
         }
     }
 
-    public float distBetRemainPts(int nextWptIndex) {
-        int currentIndex = nextWptIndex;
-        float dist = 0;
-        while (currentIndex < getWaypoints().size - 1) {
-            dist += distBetween(currentIndex, currentIndex + 1);
-            currentIndex++;
-        }
-        return dist;
-    }
-
-    public float distBetween(int pt1, int pt2) {
-        Waypoint waypoint1 = getWaypoint(pt1);
-        Waypoint waypoint2 = getWaypoint(pt2);
-        return MathTools.pixelToNm(MathTools.distanceBetween(waypoint1.getPosX(), waypoint1.getPosY(), waypoint2.getPosX(), waypoint2.getPosY()));
-    }
-
-    public int getInboundHdg() {
-        return inboundHdg.get(MathUtils.random(inboundHdg.size - 1));
+    public Array<String> getRandomInbound() {
+        return inbound.get(MathUtils.random(inbound.size - 1));
     }
 
     public HoldProcedure getHoldProcedure() {
         return getAirport().getHoldProcedures().get(getName());
+    }
+
+    public Array<Waypoint> getRwyWpts(String runway) {
+        return rwyWpts.get(runway);
+    }
+
+    public Array<int[]> getRwyRestrictions(String runway) {
+        return rwyRestrictions.get(runway);
+    }
+
+    public Array<Boolean> getRwyFlyOver(String runway) {
+        return rwyFlyOver.get(runway);
     }
 }

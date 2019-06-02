@@ -5,7 +5,8 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SidStar {
     private Airport airport;
@@ -13,58 +14,39 @@ public class SidStar {
     private Array<String> runways;
     private Array<Waypoint> waypoints;
     private Array<int[]> restrictions;
+    private Array<Boolean> flyOver;
 
     private RadarScreen radarScreen;
 
     private String pronunciation;
 
-    public SidStar(Airport airport, String toParse) {
+    public SidStar(Airport airport, JSONObject jo) {
         radarScreen = TerminalControl.radarScreen;
 
         this.airport = airport;
-        parseInfo(toParse);
+        parseInfo(jo);
     }
 
     /** Overriden method in SID, STAR to parse relevant information */
-    public void parseInfo(String toParse) {
+    public void parseInfo(JSONObject jo) {
         runways = new Array<String>();
         waypoints = new Array<Waypoint>();
         restrictions = new Array<int[]>();
-    }
+        flyOver = new Array<Boolean>();
 
-    public void joinLines(int start, int end, int outbound) {
-        Waypoint prevPt = null;
-        int index = start;
-        while (index < end) {
-            Waypoint waypoint = getWaypoint(index);
-            if (prevPt != null) {
-                radarScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
-            }
-            prevPt = waypoint;
-            index++;
-        }
-        if (prevPt != null) {
-            drawOutbound(prevPt.getPosX(), prevPt.getPosY(), outbound);
-        }
-    }
+        setPronunciation(jo.getString("pronunciation"));
 
-    private void drawOutbound(float previousX, float previousY, int outbound) {
-        if (outbound != -1 && previousX <= 4500 && previousX >= 1260 && previousY <= 3240 && previousY >= 0) {
-            float outboundTrack = outbound - radarScreen.magHdgDev;
-            float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
-            radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1]);
+        JSONArray joWpts = jo.getJSONArray("route");
+        for (int i = 0; i < joWpts.length(); i++) {
+            String[] data = joWpts.getString(i).split(" ");
+            waypoints.add(radarScreen.waypoints.get(data[0]));
+            restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
+            flyOver.add(data.length > 4 && data[4].equals("FO"));
         }
     }
 
     public Array<String> getRunways() {
         return runways;
-    }
-
-    public Waypoint getWaypoint(int index) {
-        if (index >= waypoints.size) {
-            return null;
-        }
-        return waypoints.get(index);
     }
 
     public String getName() {
@@ -77,37 +59,6 @@ public class SidStar {
 
     public Array<Waypoint> getWaypoints() {
         return waypoints;
-    }
-
-    public Array<Waypoint> getRemainingWaypoints(int start, int end) {
-        //Returns array of waypoints starting from index
-        Array<Waypoint> newRange = new Array<Waypoint>(waypoints);
-        if (end >= start) {
-            if (start > 0) {
-                newRange.removeRange(0, start - 1);
-            }
-            int newEnd = end - start;
-            if (newEnd < newRange.size - 1) {
-                newRange.removeRange(newEnd + 1, newRange.size - 1);
-            }
-        }
-        return newRange;
-    }
-
-    public int findWptIndex(String wptName) {
-        return waypoints.indexOf(radarScreen.waypoints.get(wptName), false);
-    }
-
-    public int getWptMinAlt(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[0];
-    }
-
-    public int getWptMaxAlt(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[1];
-    }
-
-    public int getWptMaxSpd(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[2];
     }
 
     public Array<int[]> getRestrictions() {
@@ -124,5 +75,9 @@ public class SidStar {
 
     public void setPronunciation(String pronunciation) {
         this.pronunciation = pronunciation;
+    }
+
+    public Array<Boolean> getFlyOver() {
+        return flyOver;
     }
 }

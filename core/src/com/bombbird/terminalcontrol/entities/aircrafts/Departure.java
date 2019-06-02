@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
+import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
@@ -49,7 +50,9 @@ public class Departure extends Aircraft {
             sid = getAirport().getSids().get("CHALI1C");
         }
 
-        setDirect(sid.getWaypoint(0));
+        setRoute(new Route(this, sid, runway.getName()));
+
+        setDirect(getRoute().getWaypoint(0));
 
         //Set initial IAS due to wind + 10 knots ground speed
         setGs(5);
@@ -109,11 +112,10 @@ public class Departure extends Aircraft {
         //Sets aircraft to takeoff mode
         getAirport().setAirborne(getAirport().getAirborne() + 1);
 
-        outboundHdg = sid.getOutboundHdg();
         setClearedIas(getV2());
         super.updateSpd();
-        setClearedAltitude(sid.getInitClimb()[1]);
-        int clearedAltitude = sid.getInitClimb()[1];
+        setClearedAltitude(sid.getInitClimb(getRunway().getName())[1]);
+        int clearedAltitude = sid.getInitClimb(getRunway().getName())[1];
         if (clearedAltitude < 3000) {
             clearedAltitude = 3000;
         }
@@ -124,8 +126,8 @@ public class Departure extends Aircraft {
         setClearedAltitude(clearedAltitude);
         getNavState().getClearedAlt().removeFirst();
         getNavState().getClearedAlt().addFirst(clearedAltitude);
-        if (sid.getInitClimb()[0] != -1) {
-            setClearedHeading(sid.getInitClimb()[0]);
+        if (sid.getInitClimb(getRunway().getName())[0] != -1) {
+            setClearedHeading(sid.getInitClimb(getRunway().getName())[0]);
         } else {
             setClearedHeading(getRunway().getHeading());
         }
@@ -157,7 +159,7 @@ public class Departure extends Aircraft {
             }
             accel = true;
         }
-        if (getAltitude() >= sid.getInitClimb()[1] && !sidSet) {
+        if (getAltitude() >= sid.getInitClimb(getRunway().getName())[1] && !sidSet) {
             sidSet = true;
             updateAltRestrictions();
             updateTargetAltitude();
@@ -172,14 +174,14 @@ public class Departure extends Aircraft {
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
-        sid.joinLines(sid.findWptIndex(getNavState().getClearedDirect().last().getName()), sid.getWaypoints().size, outboundHdg);
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, outboundHdg);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        sid.joinLines(sid.findWptIndex(LatTab.clearedWpt), sid.getWaypoints().size, -1);
+        getRoute().joinLines(getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to set to outbound heading */
@@ -212,8 +214,8 @@ public class Departure extends Aircraft {
             int highestAlt = -1;
             int lowestAlt = -1;
             if (getDirect() != null) {
-                highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
-                lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
+                highestAlt = getRoute().getWptMaxAlt(getDirect().getName());
+                lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
             }
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
@@ -236,7 +238,7 @@ public class Departure extends Aircraft {
                     //If lowest alt value is less than the next flight level after current altitude that divisible by 10 (e.g. if at 5500 ft, next is 6000ft)
                     if (!sidSet) {
                         //If still climbing on init climb
-                        setLowestAlt(sid.getInitClimb()[1]);
+                        setLowestAlt(sid.getInitClimb(getRunway().getName())[1]);
                     } else {
                         setLowestAlt(nextFL);
                     }
@@ -252,7 +254,7 @@ public class Departure extends Aircraft {
                 setClearedIas(250);
                 super.updateSpd();
             }
-            int waypointSpd = getDirect() == null ? -1 : getSidStar().getWptMaxSpd(getDirect().getName());
+            int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
             higherSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= 250 || waypointSpd == -1;
         }
         if (!cruiseSpdSet && getAltitude() > 10000) {
@@ -268,7 +270,7 @@ public class Departure extends Aircraft {
                 setClearedIas(getClimbSpd());
                 super.updateSpd();
             }
-            int waypointSpd = getDirect() == null ? -1 : getSidStar().getWptMaxSpd(getDirect().getName());
+            int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
             cruiseSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= getClimbSpd() || waypointSpd == -1;
         }
     }
@@ -337,5 +339,9 @@ public class Departure extends Aircraft {
 
     public boolean isAccel() {
         return accel;
+    }
+
+    public void setOutboundHdg(int outboundHdg) {
+        this.outboundHdg = outboundHdg;
     }
 }

@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -58,8 +59,9 @@ public class Arrival extends Aircraft {
             star = arrival.getStars().get("TNN1A");
         }
 
-        setDirect(star.getWaypoint(0));
-        setHeading(star.getInboundHdg());
+        setRoute(new Route(this, star));
+
+        setDirect(getRoute().getWaypoint(0));
 
         setClearedHeading((int)getHeading());
         setTrack(getHeading() - TerminalControl.radarScreen.magHdgDev);
@@ -73,11 +75,11 @@ public class Arrival extends Aircraft {
         setNavState(new NavState(this));
         Waypoint maxAltWpt = null;
         Waypoint minAltWpt = null;
-        for (Waypoint waypoint: getSidStar().getWaypoints()) {
-            if (maxAltWpt == null && star.getWptMaxAlt(waypoint.getName()) > -1) {
+        for (Waypoint waypoint: getRoute().getWaypoints()) {
+            if (maxAltWpt == null && getRoute().getWptMaxAlt(waypoint.getName()) > -1) {
                 maxAltWpt = waypoint;
             }
-            if (minAltWpt == null && star.getWptMinAlt(waypoint.getName()) > -1) {
+            if (minAltWpt == null && getRoute().getWptMinAlt(waypoint.getName()) > -1) {
                 minAltWpt = waypoint;
             }
         }
@@ -86,15 +88,15 @@ public class Arrival extends Aircraft {
 
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
         if (maxAltWpt != null) {
-            float maxAlt = star.getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
+            float maxAlt = getRoute().getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
             if (maxAlt < initAlt) initAlt = maxAlt;
         }
         if (initAlt > 28000) {
             initAlt = 28000;
         } else if (initAlt < 6000) {
             initAlt = 6000;
-        } else if (minAltWpt != null && initAlt < star.getWptMinAlt(minAltWpt.getName())) {
-            initAlt = star.getWptMinAlt(minAltWpt.getName());
+        } else if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
+            initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
         }
         for (Obstacle obstacle: radarScreen.obsArray) {
             if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
@@ -122,7 +124,7 @@ public class Arrival extends Aircraft {
         setClearedIas(getClimbSpd());
 
         if (getDirect() != null) {
-            int spd = star.getWptMaxSpd(getDirect().getName());
+            int spd = getRoute().getWptMaxSpd(getDirect().getName());
             if (spd > -1) {
                 setClearedIas(spd);
                 setIas(spd);
@@ -189,7 +191,7 @@ public class Arrival extends Aircraft {
     /** Calculates remaining distance on STAR from current aircraft position */
     private float distToGo() {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
-        dist += ((Star) getSidStar()).distBetRemainPts(getSidStarIndex());
+        dist += getRoute().distBetRemainPts(getSidStarIndex());
         return dist;
     }
 
@@ -197,9 +199,9 @@ public class Arrival extends Aircraft {
     private float distFromStartToPoint(Waypoint waypoint) {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
         int nextIndex = 1;
-        if (getSidStar().getWaypoints().size > 1 && !getSidStar().getWaypoint(0).equals(waypoint)) {
-            while (!getSidStar().getWaypoint(nextIndex).equals(waypoint)) {
-                dist += ((Star) getSidStar()).distBetween(nextIndex - 1, nextIndex);
+        if (getRoute().getWaypoints().size > 1 && !getRoute().getWaypoint(0).equals(waypoint)) {
+            while (!getRoute().getWaypoint(nextIndex).equals(waypoint)) {
+                dist += getRoute().distBetween(nextIndex - 1, nextIndex);
                 nextIndex += 1;
             }
         }
@@ -210,28 +212,28 @@ public class Arrival extends Aircraft {
     @Override
     public void drawSidStar() {
         super.drawSidStar();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.getWaypoints().size, -1);
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        star.joinLines(star.findWptIndex(LatTab.clearedWpt), star.getWaypoints().size, -1);
+        getRoute().joinLines(getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size, -1);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there */
     @Override
     public void drawAftWpt() {
         super.drawAftWpt();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last());
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last());
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there */
     @Override
     public void uiDrawAftWpt() {
         super.uiDrawAftWpt();
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg);
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till holdWpt */
@@ -240,7 +242,7 @@ public class Arrival extends Aircraft {
         super.drawHoldPattern();
         radarScreen.shapeRenderer.setColor(Color.WHITE);
         if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
-            star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1);
+            getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1);
         }
     }
 
@@ -249,7 +251,7 @@ public class Arrival extends Aircraft {
     public void uiDrawHoldPattern() {
         super.uiDrawHoldPattern();
         radarScreen.shapeRenderer.setColor(Color.YELLOW);
-        star.joinLines(star.findWptIndex(getNavState().getClearedDirect().last().getName()), star.findWptIndex(LatTab.holdWpt) + 1, -1);
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.holdWpt) + 1, -1);
     }
 
     /** Overrides method in Aircraft class to set to current heading*/
@@ -307,8 +309,8 @@ public class Arrival extends Aircraft {
             int highestAlt = -1;
             int lowestAlt = -1;
             if (getDirect() != null) {
-                highestAlt = getSidStar().getWptMaxAlt(getDirect().getName());
-                lowestAlt = getSidStar().getWptMinAlt(getDirect().getName());
+                highestAlt = getRoute().getWptMaxAlt(getDirect().getName());
+                lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
             setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);

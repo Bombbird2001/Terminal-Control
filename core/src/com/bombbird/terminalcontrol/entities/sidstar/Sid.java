@@ -1,95 +1,100 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class Sid extends SidStar {
-    private int[] initClimb;
-    private Array<Integer> outboundHdg;
+    private HashMap<String, int[]> initClimb;
+    private HashMap<String, Array<Waypoint>> initWpts;
+    private HashMap<String, Array<int[]>> initRestrictions;
+    private HashMap<String, Array<Boolean>> initFlyOver;
+    private Array<Array<String>> transition;
     private String[] centre;
 
-    public Sid(Airport airport, String toParse) {
-        super(airport, toParse);
+    public Sid(Airport airport, JSONObject jo) {
+        super(airport, jo);
     }
 
     @Override
-    public void parseInfo(String toParse) {
-        super.parseInfo(toParse);
+    public void parseInfo(JSONObject jo) {
+        super.parseInfo(jo);
 
-        String[] sidInfo = toParse.split(",");
+        initClimb = new HashMap<String, int[]>();
+        initWpts = new HashMap<String, Array<Waypoint>>();
+        initRestrictions = new HashMap<String, Array<int[]>>();
+        initFlyOver = new HashMap<String, Array<Boolean>>();
+        transition = new Array<Array<String>>();
 
-        outboundHdg = new Array<Integer>();
-        initClimb = new int[3];
+        JSONObject rwys = jo.getJSONObject("rwys");
+        for (String rwy: rwys.keySet()) {
+            getRunways().add(rwy);
+            Array<Waypoint> wpts = new Array<Waypoint>();
+            Array<int[]> restrictions = new Array<int[]>();
+            Array<Boolean> flyOver = new Array<Boolean>();
 
-        int index = 0;
-        for (String s1: sidInfo) {
-            switch (index) {
-                case 0: setName(s1); break; //First part is the name of the SID
-                case 1: setPronunciation(s1); break; //How name is pronounced by TTS
-                case 2: //Add SID runways
-                    for (String s2: s1.split(">")) {
-                        getRunways().add(s2);
-                    }
-                    break;
-                case 3: //Second part is the initial climb of the SID
-                    String[] info = s1.split(" ");
-                    for (int i = 0; i < 3; i++) {
-                        initClimb[i] = Integer.parseInt(info[i]);
-                    }
-                    break;
-                case 4: //Add waypoints to SID
-                    for (String s2: s1.split(">")) {
-                        //For each waypoint on the STAR
-                        int index1 = 0;
-                        int[] altSpdRestrictions = new int[3];
-                        for (String s3: s2.split(" ")) {
-                            switch (index1) {
-                                case 0:
-                                    getWaypoints().add(TerminalControl.radarScreen.waypoints.get(s3));
-                                    break; //First part is the name of the waypoint
-                                case 1:
-                                    altSpdRestrictions[0] = Integer.parseInt(s3);
-                                    break; //1 is min alt
-                                case 2:
-                                    altSpdRestrictions[1] = Integer.parseInt(s3);
-                                    break; //2 is max alt
-                                case 3:
-                                    altSpdRestrictions[2] = Integer.parseInt(s3);
-                                    break; //3 is max speed
-                                default:
-                                    Gdx.app.log("Load error", "Unexpected additional waypoint parameter " + s3 + " in " + s2 + " in game/" + TerminalControl.radarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");
-                            }
-                            index1++;
-                        }
-                        getRestrictions().add(altSpdRestrictions);
-                    }
-                    break;
-                case 5: //Outbound heading after last waypoint
-                    for (String s2: s1.split(">")) {
-                        outboundHdg.add(Integer.parseInt(s2));
-                    }
-                    break;
-                case 6: //Centre callsign & frequency
-                    centre = s1.split(">");
-                    break;
-                default: Gdx.app.log("Load error", "Unexpected additional waypoint parameter in game/" + TerminalControl.radarScreen.mainName + "/sid" + getAirport().getIcao() + ".sid");
+            JSONObject rwyObject = rwys.getJSONObject(rwy);
+            String[] initClimbData = rwyObject.getString("climb").split(" ");
+            JSONArray initWptData = rwyObject.getJSONArray("wpts");
+            for (int i = 0; i < initWptData.length(); i++) {
+                String[] data = initWptData.getString(i).split(" ");
+                wpts.add(TerminalControl.radarScreen.waypoints.get(data[0]));
+                restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
+                flyOver.add(data.length > 4 && data[4].equals("FO"));
             }
-            index++;
+            initClimb.put(rwy, new int[] {Integer.parseInt(initClimbData[1]), Integer.parseInt(initClimbData[2]), Integer.parseInt(initClimbData[3])});
+            initWpts.put(rwy, wpts);
+            initRestrictions.put(rwy, restrictions);
+            initFlyOver.put(rwy, flyOver);
         }
+
+        JSONArray transitions = jo.getJSONArray("transition");
+        for (int i = 0; i < transitions.length(); i++) {
+            JSONArray trans = transitions.getJSONArray(i);
+            Array<String> transData = new Array<String>();
+            for (int j = 0; j < trans.length(); j++) {
+                transData.add(trans.getString(j));
+            }
+            transition.add(transData);
+        }
+
+        JSONArray control = jo.getJSONArray("control");
+        centre = new String[2];
+        centre[0] = control.getString(0);
+        centre[1] = control.getString(1);
     }
 
-    public int getOutboundHdg() {
-        return outboundHdg.get(MathUtils.random(outboundHdg.size - 1));
+    public Array<String> getRandomTransition() {
+        return transition.get(MathUtils.random(0, transition.size - 1));
     }
 
-    public int[] getInitClimb() {
-        return initClimb;
+    public int[] getInitClimb(String rwy) {
+        return initClimb.get(rwy);
     }
 
     public String[] getCentre() {
         return centre;
+    }
+
+    public Array<Waypoint> getInitWpts(String runway) {
+        return initWpts.get(runway);
+    }
+
+    public Array<int[]> getInitRestrictions(String runway) {
+        return initRestrictions.get(runway);
+    }
+
+    public Array<Array<String>> getTransition() {
+        return transition;
+    }
+
+    public Array<Boolean> getInitFlyOver(String runway) {
+        return initFlyOver.get(runway);
     }
 }
