@@ -18,7 +18,6 @@ import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.procedures.FlyOverPts;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -208,37 +207,22 @@ public class RadarScreen extends GameScreen {
     private void loadAirports() {
         //Load airport information form file, add to hashmap
         FileHandle handle = Gdx.files.internal("game/" + mainName +"/" + airac + "/airport.arpt");
-        int index = 0;
-        for (String s: handle.readString().split("\\r?\\n")) {
-            switch (index) {
-                case 0: minAlt = Integer.parseInt(s); break;
-                case 1: maxAlt = Integer.parseInt(s); break;
-                case 2: transLvl = Integer.parseInt(s); break;
-                case 3: separationMinima = Integer.parseInt(s); break;
-                case 4: magHdgDev = Float.parseFloat(s); break;
-                case 5: divertHdg = Integer.parseInt(s); break;
-                case 6: callsign = s; break;
-                case 7: deptCallsign = s; break;
-                default:
-                    int index1 = 0;
-                    String icao = "";
-                    int elevation = 0;
-                    int aircraftRatio = 0;
-                    for (String s1: s.split(" ")) {
-                        switch (index1) {
-                            case 0: icao = s1; break;
-                            case 1: elevation = Integer.parseInt(s1); break;
-                            case 2: aircraftRatio = Integer.parseInt(s1); break;
-                            case 3: AirportName.airportNames.put(icao, s1); break;
-                            default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + mainName + "/airport.arpt");
-                        }
-                        index1++;
-                    }
-                    Airport airport = new Airport(icao, elevation, aircraftRatio);
-                    airport.loadOthers();
-                    airports.put(icao, airport);
-            }
-            index++;
+        JSONObject jo = new JSONObject(handle.readString());
+        minAlt = jo.getInt("minAlt");
+        maxAlt = jo.getInt("maxAlt");
+        transLvl = jo.getInt("transLvl");
+        separationMinima = jo.getInt("minSep");
+        magHdgDev = (float) jo.getDouble("magHdgDev");
+        callsign = jo.getString("apchCallsign");
+        deptCallsign = jo.getString("depCallsign");
+
+        JSONObject airports1 = jo.getJSONObject("airports");
+        for (String icao: airports1.keySet()) {
+            JSONObject airport1 = airports1.getJSONObject(icao);
+            Airport airport = new Airport(icao, airport1.getInt("elevation"), airport1.getInt("ratio"));
+            airport.loadOthers();
+            airports.put(icao, airport);
+            AirportName.airportNames.put(icao, airport1.getString("name"));
         }
     }
 
@@ -320,9 +304,6 @@ public class RadarScreen extends GameScreen {
 
         //Load waypoints
         waypoints = FileLoader.loadWaypoints();
-
-        //Load fly over waypoints
-        FlyOverPts.loadPoints();
 
         //Load specific waypoint pronunciation
         Pronunciation.loadPronunciation();

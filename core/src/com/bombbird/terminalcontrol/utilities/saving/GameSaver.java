@@ -254,6 +254,23 @@ public class GameSaver {
             }
             aircraftInfo.put("TYPE", type);
 
+            //Save aircraft route
+            JSONObject route = new JSONObject();
+            JSONArray wpts = new JSONArray();
+            JSONArray restrictions = new JSONArray();
+            JSONArray flyOver = new JSONArray();
+            for (int i = 0; i < aircraft.getRoute().getWaypoints().size; i++) {
+                wpts.put(aircraft.getRoute().getWaypoints().get(i).getName());
+                int[] data = aircraft.getRoute().getRestrictions().get(i);
+                String stuff = data[0] + " " + data[1] + " " + data[2];
+                restrictions.put(stuff);
+                flyOver.put(aircraft.getRoute().getFlyOver().get(i));
+            }
+            route.put("waypoints", wpts);
+            route.put("restrictions", restrictions);
+            route.put("flyOver", flyOver);
+            aircraftInfo.put("route", route);
+
             aircrafts.put(aircraftInfo);
         }
         return aircrafts;
@@ -458,8 +475,8 @@ public class GameSaver {
     private static JSONObject getArrivalManager() {
         JSONObject arrivalManager = new JSONObject();
 
-        for (Waypoint waypoint: TerminalControl.radarScreen.getArrivalManager().getEntryPoint().keySet()) {
-            arrivalManager.put(waypoint.getName(), TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
+        for (String waypoint: TerminalControl.radarScreen.getArrivalManager().getEntryPoint().keySet()) {
+            arrivalManager.put(waypoint, TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
         }
 
         return arrivalManager;

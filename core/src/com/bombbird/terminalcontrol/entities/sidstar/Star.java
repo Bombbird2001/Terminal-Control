@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -60,12 +59,21 @@ public class Star extends SidStar {
         }
     }
 
-    public Array<String> getRandomInbound() {
-        return inbound.get(MathUtils.random(inbound.size - 1));
+    public Array<String> getAllInboundWpt() {
+        Array<String> wpts = new Array<String>();
+        for (int i = 0; i < inbound.size; i++) {
+            Array<String> inboundPts = inbound.get(i);
+            if (inboundPts.size > 1) {
+                wpts.add(inboundPts.get(1).split(" ")[1]);
+            }
+        }
+        wpts.add(getWaypoints().get(0).getName());
+
+        return wpts;
     }
 
-    public HoldProcedure getHoldProcedure() {
-        return getAirport().getHoldProcedures().get(getName());
+    public Array<String> getRandomInbound() {
+        return inbound.get(MathUtils.random(inbound.size - 1));
     }
 
     public Array<Waypoint> getRwyWpts(String runway) {

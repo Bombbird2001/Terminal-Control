@@ -1,12 +1,15 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Route {
@@ -15,6 +18,7 @@ public class Route {
     private Array<Waypoint> wpts;
     private Array<int[]> restrictions;
     private Array<Boolean> flyOver;
+    private HoldProcedure holdProcedure;
 
     private Route() {
         radarScreen = TerminalControl.radarScreen;
@@ -56,6 +60,8 @@ public class Route {
         wpts.addAll(star.getRwyWpts(runway));
         restrictions.addAll(star.getRwyRestrictions(runway));
         flyOver.addAll(star.getRwyFlyOver(runway));
+
+        holdProcedure = new HoldProcedure(star);
     }
 
     public Route(Aircraft aircraft, Sid sid, String runway) {
@@ -76,14 +82,32 @@ public class Route {
                 flyOver.add(data.length > 5 && data[5].equals("FO"));
             } else {
                 //Outbound heading
-                ((Departure) aircraft).setOutboundHdg(Integer.parseInt(data[1]));
+                ((Departure) aircraft).setOutboundHdg(Integer.parseInt(data[MathUtils.random(1, data.length - 1)]));
             }
         }
+
+        holdProcedure = new HoldProcedure();
     }
 
-    public Route(Aircraft aircraft, JSONObject jo) {
-        //TODO Load route
+    public Route(JSONObject jo) {
         this();
+
+        JSONArray waypoints = jo.getJSONArray("waypoints");
+        JSONArray restr = jo.getJSONArray("restrictions");
+        JSONArray fo = jo.getJSONArray("flyOver");
+        for (int i = 0; i < waypoints.length(); i++) {
+            wpts.add(radarScreen.waypoints.get(waypoints.getString(i)));
+            String[] data = restr.getString(i).split(" ");
+            restrictions.add(new int[] {Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2])});
+            flyOver.add(fo.getBoolean(i));
+        }
+
+        holdProcedure = new HoldProcedure();
+    }
+
+    public Route(JSONObject jo, Star star) {
+        this(jo);
+        holdProcedure = new HoldProcedure(star);
     }
 
     public void joinLines(int start, int end, int outbound) {
@@ -166,5 +190,21 @@ public class Route {
 
     public int getWptMaxSpd(String wptName) {
         return restrictions.get(findWptIndex(wptName))[2];
+    }
+
+    public boolean getWptFlyOver(String wptName) {
+        return flyOver.get(findWptIndex(wptName));
+    }
+
+    public HoldProcedure getHoldProcedure() {
+        return holdProcedure;
+    }
+
+    public Array<int[]> getRestrictions() {
+        return restrictions;
+    }
+
+    public Array<Boolean> getFlyOver() {
+        return flyOver;
     }
 }

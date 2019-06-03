@@ -30,7 +30,7 @@ public class Departure extends Aircraft {
     public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
         setOnGround(true);
-        contactAlt = radarScreen.minAlt + MathUtils.random(-800, -200);
+        contactAlt = getAirport().getElevation() + 2000 + MathUtils.random(-500, 200);
         handoveralt = radarScreen.maxAlt + MathUtils.random(-800, -200);
         v2set = false;
         accel = false;
@@ -90,6 +90,7 @@ public class Departure extends Aircraft {
         super(save);
 
         sid = getAirport().getSids().get(save.getString("sid"));
+        setRoute(new Route(save.getJSONObject("route")));
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");
         handoveralt = save.getInt("handOverAlt");
@@ -154,7 +155,13 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() - getAirport().getElevation() > 1500 && !accel) {
             if (getClearedIas() == getV2()) {
-                setClearedIas(220);
+                int speed = 220;
+                if (!sidSet && getRoute().getWptMaxSpd(getRoute().getWaypoint(0).getName()) < 220) {
+                    speed = getRoute().getWptMaxSpd(getRoute().getWaypoint(0).getName());
+                } else if (sidSet && getRoute().getWptMaxSpd(getDirect().getName()) < 220) {
+                    speed = getRoute().getWptMaxSpd(getDirect().getName());
+                }
+                setClearedIas(speed);
                 super.updateSpd();
             }
             accel = true;
@@ -249,7 +256,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateSpd() {
-        if (!higherSpdSet && getAltitude() >= 7000) {
+        if (!higherSpdSet && getAltitude() >= 5000 && getAltitude() > getAirport().getElevation() + 4000) {
             if (getClearedIas() < 250) {
                 setClearedIas(250);
                 super.updateSpd();

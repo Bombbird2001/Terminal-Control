@@ -6,10 +6,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
-import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
+import com.bombbird.terminalcontrol.entities.procedures.*;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
@@ -25,7 +22,7 @@ public class Airport {
     private HashMap<String, Runway> runways;
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
-    private HashMap<String, HoldProcedure> holdProcedures;
+    private HashMap<String, HoldingPoints> holdingPoints;
     private HashMap<String, MissedApproach> missedApproaches;
     private HashMap<String, ILS> approaches;
     private String icao;
@@ -99,7 +96,7 @@ public class Airport {
 
     /** Loads the necessary resources that cannot be loaded in constructor */
     public void loadOthers() {
-        holdProcedures = FileLoader.loadHoldInfo(this);
+        holdingPoints = FileLoader.loadHoldingPoints(this);
         missedApproaches = FileLoader.loadMissedInfo(this);
         approaches = FileLoader.loadILS(this);
         for (Runway runway: runways.values()) {
@@ -309,8 +306,8 @@ public class Airport {
         return approaches;
     }
 
-    public HashMap<String, HoldProcedure> getHoldProcedures() {
-        return holdProcedures;
+    public HashMap<String, HoldingPoints> getHoldingPoints() {
+        return holdingPoints;
     }
 
     public HashMap<String, MissedApproach> getMissedApproaches() {

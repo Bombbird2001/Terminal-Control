@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.procedures;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
@@ -16,19 +17,30 @@ public class RandomSTAR {
 
     /** Loads STAR noise info for the airport */
     public static void loadStarNoise(String icao) {
-        noise.put(icao, FileLoader.loadSidNoise(icao, false));
+        noise.put(icao, FileLoader.loadNoise(icao, false));
     }
 
     /** Gets a random STAR for the airport and runway */
-    public static Star randomSTAR(Airport airport, String rwy) {
+    public static Star randomSTAR(Airport airport, HashMap<String, Runway> rwys) {
         Array<Star> possibleStars = new Array<Star>();
         for (Star star: airport.getStars().values()) {
-            if (star.getRunways().contains(rwy, false) && checkNoise(airport, star.getName())) possibleStars.add(star);
+            boolean found = false;
+            for (int i = 0; i < star.getRunways().size; i++) {
+                if (rwys.containsKey(star.getRunways().get(i))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found && checkNoise(airport, star.getName())) possibleStars.add(star);
         }
 
         if (possibleStars.size == 0) {
-            Gdx.app.log("Random STAR", "No STARs found to match criteria for " + airport.getIcao() + " " + rwy);
-            throw new IllegalArgumentException("No STARs found to match criteria for " + airport.getIcao() + " " + rwy);
+            Array<String> runways = new Array<String>();
+            for (String rwy: rwys.keySet()) {
+                runways.add(rwy);
+            }
+            Gdx.app.log("Random STAR", "No STARs found to match criteria for " + airport.getIcao() + " " + runways.toString());
+            throw new IllegalArgumentException("No STARs found to match criteria for " + airport.getIcao() + " " + runways.toString());
         } else {
             return possibleStars.get(MathUtils.random(0, possibleStars.size - 1));
         }

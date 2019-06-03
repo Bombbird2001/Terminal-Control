@@ -48,13 +48,13 @@ public class Sid extends SidStar {
                 restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
                 flyOver.add(data.length > 4 && data[4].equals("FO"));
             }
-            initClimb.put(rwy, new int[] {Integer.parseInt(initClimbData[1]), Integer.parseInt(initClimbData[2]), Integer.parseInt(initClimbData[3])});
+            initClimb.put(rwy, new int[] {Integer.parseInt(initClimbData[0]), Integer.parseInt(initClimbData[1]), Integer.parseInt(initClimbData[2])});
             initWpts.put(rwy, wpts);
             initRestrictions.put(rwy, restrictions);
             initFlyOver.put(rwy, flyOver);
         }
 
-        JSONArray transitions = jo.getJSONArray("transition");
+        JSONArray transitions = jo.getJSONArray("transitions");
         for (int i = 0; i < transitions.length(); i++) {
             JSONArray trans = transitions.getJSONArray(i);
             Array<String> transData = new Array<String>();

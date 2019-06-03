@@ -16,7 +16,7 @@ public class RandomSID {
 
     /** Loads SID noise info for the airport */
     public static void loadSidNoise(String icao) {
-        noise.put(icao, FileLoader.loadSidNoise(icao, true));
+        noise.put(icao, FileLoader.loadNoise(icao, true));
     }
 
     /** Gets a random SID for the airport and runway */

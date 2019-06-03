@@ -11,11 +11,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
-import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+
+import java.util.HashMap;
 
 public class LatTab extends Tab {
     private Label hdgBox;
@@ -247,10 +249,11 @@ public class LatTab extends Tab {
             if (selectedAircraft.isHolding()) {
                 waypoints.add(selectedAircraft.getHoldWpt().getName());
             } else {
-                for (Waypoint waypoint : ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints()) {
-                    if (selectedAircraft.getRoute().findWptIndex(waypoint.getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+                Array<Waypoint> waypoints1 = selectedAircraft.getRoute().getWaypoints();
+                for (int i = 0; i < waypoints1.size; i++) {
+                    if (selectedAircraft.getRoute().getHoldProcedure().getHoldingPoints().containsKey(waypoints1.get(i).getName()) && selectedAircraft.getRoute().findWptIndex(waypoints1.get(i).getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                         //Check if holding point is after current aircraft direct
-                        waypoints.add(waypoint.getName());
+                        waypoints.add(waypoints.get(i));
                     }
                 }
             }
@@ -499,9 +502,9 @@ public class LatTab extends Tab {
 
         if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             boolean found = false;
-            Array<Waypoint> waypoints = ((Star) selectedAircraft.getSidStar()).getHoldProcedure().getWaypoints();
-            for (int i = 0; i < waypoints.size; i++) {
-                if (selectedAircraft.getRoute().findWptIndex(waypoints.get(i).getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
+            HashMap<String, HoldingPoints> waypoints = selectedAircraft.getRoute().getHoldProcedure().getHoldingPoints();
+            for (String holdingPoint: waypoints.keySet()) {
+                if (selectedAircraft.getRoute().findWptIndex(holdingPoint) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                     //Check if holding point is after current aircraft direct
                     found = true;
                     break;

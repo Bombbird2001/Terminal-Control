@@ -9,10 +9,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.procedures.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
@@ -104,6 +104,7 @@ public class FileLoader {
         for (String name: jo.keySet()) {
             //For each individual STAR
             Star star = new Star(airport, jo.getJSONObject(name));
+            star.setName(name);
             stars.put(name, star);
         }
         return stars;
@@ -117,6 +118,7 @@ public class FileLoader {
         for (String name: jo.keySet()) {
             //For each individual SID
             Sid sid = new Sid(airport, jo.getJSONObject(name));
+            sid.setName(name);
             sids.put(name, sid);
         }
         return sids;
@@ -168,46 +170,23 @@ public class FileLoader {
         return approaches;
     }
 
-    public static HashMap<String, HoldProcedure> loadHoldInfo(Airport airport) {
-        //TODO Replace with json
-        HashMap<String, HoldProcedure> holdProcedures = new HashMap<String, HoldProcedure>();
+    public static HashMap<String, HoldingPoints> loadHoldingPoints(Airport airport) {
+        HashMap<String, HoldingPoints> holdingPoints = new HashMap<String, HoldingPoints>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/hold" + airport.getIcao() + ".hold");
-        String[] indivHold = handle.readString().split("\\r?\\n");
-        for (String hold: indivHold) {
-            boolean nameSet = false;
-            String name = "";
-            String toParse = "";
-            for (String info: hold.split(":")) {
-                if (!nameSet) {
-                    name = info;
-                    nameSet = true;
-                } else {
-                    toParse = info;
-                }
-            }
-            holdProcedures.put(name, new HoldProcedure(airport, toParse));
+        JSONObject jo = new JSONObject(handle.readString());
+        for (String point: jo.keySet()) {
+            holdingPoints.put(point, new HoldingPoints(point, jo.getJSONObject(point)));
         }
-        return holdProcedures;
+
+        return holdingPoints;
     }
 
     public static HashMap<String, MissedApproach> loadMissedInfo(Airport airport) {
-        //TODO Replace with json
         HashMap<String, MissedApproach> missedApproaches = new HashMap<String, MissedApproach>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/missedApch" + airport.getIcao() + ".miss");
-        String[] indivMissed = handle.readString().split("\\r?\\n");
-        for (String missed: indivMissed) {
-            boolean nameSet = false;
-            String name = "";
-            String toParse = "";
-            for (String info: missed.split(":")) {
-                if (!nameSet) {
-                    name = info;
-                    nameSet = true;
-                } else {
-                    toParse = info;
-                }
-            }
-            missedApproaches.put(name, new MissedApproach(name, airport, toParse));
+        JSONObject jo = new JSONObject(handle.readString());
+        for (String missed: jo.keySet()) {
+            missedApproaches.put(missed, new MissedApproach(missed, airport, jo.getJSONObject(missed)));
         }
         return missedApproaches;
     }
@@ -288,25 +267,23 @@ public class FileLoader {
         return callsigns;
     }
 
-    public static HashMap<String, int[][]> loadSidNoise(String icao, boolean sid) {
+    public static HashMap<String, int[][]> loadNoise(String icao, boolean sid) {
         HashMap<String, int[][]> noise = new HashMap<String, int[][]>();
         String fileName = sid ? "/noiseSid" : "/noiseStar";
-        String read = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + fileName + icao + ".noi").readString();
-        if ("".equals(read)) return noise;
-        String[] info = read.split("\\r?\\n");
-        for (String s: info) {
-            String[] data = s.split(":");
-            String[] times = data[1].split(">");
-            int[][] timeInfo = new int[times.length][2];
-            for (int i = 0; i < times.length; i++) {
-                String[] minMaxTime = times[i].split("-");
+        JSONObject jo = new JSONObject(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + fileName + icao + ".noi").readString());
+        for (String name: jo.keySet()) {
+            JSONArray times = jo.getJSONArray(name);
+            int[][] timeInfo = new int[times.length()][2];
+            for (int i = 0; i < times.length(); i++) {
+                String[] minMaxTime = times.getString(i).split("-");
                 int[] time = new int[2];
                 time[0] = Integer.parseInt(minMaxTime[0]);
                 time[1] = Integer.parseInt(minMaxTime[1]);
                 timeInfo[i] = time;
             }
-            noise.put(data[0], timeInfo);
+            noise.put(name, timeInfo);
         }
+
         return noise;
     }
 

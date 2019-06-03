@@ -7,7 +7,6 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
-import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.ui.Ui;
 
 public class AltTab extends Tab {
@@ -38,15 +37,14 @@ public class AltTab extends Tab {
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
             if (latMode.equals("Hold at")) {
-                Star star = (Star) selectedAircraft.getSidStar();
-                int[] restr = star.getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
+                int[] restr = selectedAircraft.getRoute().getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
             } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
-                int starHighestAlt = selectedAircraft.getSidStar().getWptMaxAlt(selectedAircraft.getDirect().getName());
+                int starHighestAlt = selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
             }
             if (highestAlt == -1) {

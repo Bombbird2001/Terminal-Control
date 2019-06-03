@@ -1,25 +1,28 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 public class ArrivalManager {
-    private HashMap<Waypoint, Aircraft> entryPoint;
+    private HashMap<String, Aircraft> entryPoint;
 
     public ArrivalManager() {
-        entryPoint = new HashMap<Waypoint, Aircraft>();
+        entryPoint = new HashMap<String, Aircraft>();
 
         for (Airport airport: TerminalControl.radarScreen.airports.values()) {
             for (Star star: airport.getStars().values()) {
-                entryPoint.put(star.getWaypoint(0), null);
+                Array<String> inboundWpts = star.getAllInboundWpt();
+                for (int i = 0; i < inboundWpts.size; i++) {
+                    entryPoint.put(inboundWpts.get(0), null);
+                }
             }
         }
     }
@@ -29,12 +32,12 @@ public class ArrivalManager {
 
         for (String waypoint: save.keySet()) {
             Aircraft aircraft = save.isNull(waypoint) ? null : TerminalControl.radarScreen.aircrafts.get(save.getString(waypoint));
-            entryPoint.put(TerminalControl.radarScreen.waypoints.get(waypoint), aircraft);
+            entryPoint.put(waypoint, aircraft);
         }
     }
 
     public void checkArrival(Arrival arrival) {
-        Waypoint entryPt = arrival.getSidStar().getWaypoint(0);
+        String entryPt = arrival.getRoute().getWaypoint(0).getName();
         Aircraft prevAcft = entryPoint.get(entryPt);
         if (prevAcft != null) {
             if (TerminalControl.radarScreen.aircrafts.get(prevAcft.getCallsign()) == null) {
@@ -58,7 +61,7 @@ public class ArrivalManager {
         entryPoint.put(entryPt, arrival);
     }
 
-    public HashMap<Waypoint, Aircraft> getEntryPoint() {
+    public HashMap<String, Aircraft> getEntryPoint() {
         return entryPoint;
     }
 }

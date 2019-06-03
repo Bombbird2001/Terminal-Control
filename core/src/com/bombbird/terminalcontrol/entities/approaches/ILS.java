@@ -45,7 +45,9 @@ public class ILS extends Actor {
         this.airport = airport;
         parseInfo(toParse);
 
-        missedApchProc = airport.getMissedApproaches().get(name);
+        String missed = name;
+        if ("IMG".equals(name.substring(0, 3))) missed = "LDA" + name.substring(3);
+        missedApchProc = airport.getMissedApproaches().get(missed);
 
         calculateGsRings();
     }

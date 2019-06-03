@@ -283,7 +283,7 @@ public class NavState {
         }
 
         aircraft.setDirect(clearedDirect.first());
-        aircraft.setSidStarIndex(aircraft.getSidStar().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
+        aircraft.setSidStarIndex(aircraft.getRoute().findWptIndex(aircraft.getDirect() == null ? null : aircraft.getDirect().getName()));
         aircraft.setAfterWaypoint(clearedAftWpt.first());
         aircraft.setAfterWptHdg(clearedAftWptHdg.first());
         aircraft.setHoldWpt(clearedHold.first());
@@ -317,7 +317,7 @@ public class NavState {
             clearedHdg.addFirst(initHdg);
 
             replaceAllClearedAltMode();
-        } else if (currentDispLatMode.contains(aircraft.getSidStar().getName()) && aircraft.getSidStar().findWptIndex(newDirect) < aircraft.getSidStar().findWptIndex(currentDirect)) {
+        } else if (currentDispLatMode.contains(aircraft.getSidStar().getName()) && aircraft.getRoute().findWptIndex(newDirect) < aircraft.getRoute().findWptIndex(currentDirect)) {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
             clearedDirect.removeFirst();

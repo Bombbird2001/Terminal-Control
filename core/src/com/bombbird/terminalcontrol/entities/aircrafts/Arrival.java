@@ -53,7 +53,7 @@ public class Arrival extends Aircraft {
         contactAlt = MathUtils.random(2000) + 22000;
 
         //Gets a STAR for active runways
-        star = RandomSTAR.randomSTAR(getAirport(), (String) arrival.getLandingRunways().keySet().toArray()[0]);
+        star = RandomSTAR.randomSTAR(getAirport(), arrival.getLandingRunways());
 
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
             star = arrival.getStars().get("TNN1A");
@@ -155,6 +155,8 @@ public class Arrival extends Aircraft {
         super(save);
 
         star = getAirport().getStars().get(save.getString("star"));
+
+        setRoute(new Route(save.getJSONObject("route"), star));
 
         if (save.isNull("nonPrecAlts")) {
             //If non precision alt is null
