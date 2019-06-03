@@ -754,6 +754,8 @@ public class Aircraft extends Actor {
             locCap = true;
             navState.replaceAllHdgModes();
             navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
+            navState.getLatModes().removeValue("After waypoint, fly heading", false);
+            navState.getLatModes().removeValue("Hold at", false);
             if (selected) {
                 ui.updateState();
             }
