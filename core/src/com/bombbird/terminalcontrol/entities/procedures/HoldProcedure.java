@@ -19,9 +19,9 @@ public class HoldProcedure {
         Array<Waypoint> waypoints = star.getWaypoints();
         for (int i = 0; i < waypoints.size; i++) {
             String wptName = waypoints.get(i).getName();
-            HashMap<String, HoldingPoints> holdingPoints = star.getAirport().getHoldingPoints();
-            if (holdingPoints.containsKey(wptName)) {
-                holdingPoints.put(wptName, holdingPoints.get(wptName));
+            HashMap<String, HoldingPoints> holdingPoint = star.getAirport().getHoldingPoints();
+            if (holdingPoint.containsKey(wptName)) {
+                holdingPoints.put(wptName, holdingPoint.get(wptName));
             }
         }
     }

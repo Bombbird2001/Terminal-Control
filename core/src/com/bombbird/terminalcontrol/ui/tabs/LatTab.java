@@ -253,7 +253,7 @@ public class LatTab extends Tab {
                 for (int i = 0; i < waypoints1.size; i++) {
                     if (selectedAircraft.getRoute().getHoldProcedure().getHoldingPoints().containsKey(waypoints1.get(i).getName()) && selectedAircraft.getRoute().findWptIndex(waypoints1.get(i).getName()) >= selectedAircraft.getRoute().findWptIndex(selectedAircraft.getNavState().getClearedDirect().last().getName())) {
                         //Check if holding point is after current aircraft direct
-                        waypoints.add(waypoints.get(i));
+                        waypoints.add(waypoints1.get(i).getName());
                     }
                 }
             }
