@@ -1,7 +1,9 @@
 package com.bombbird.terminalcontrol.entities.approaches;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -10,14 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LDA extends ILS {
     private Queue<float[]> nonPrecAlts;
-    private Vector2 gsRing;
     private float lineUpDist;
     private boolean npa;
     private ILS imaginaryIls;
 
     public LDA(Airport airport, String toParse) {
         super(airport, toParse);
-        if (npa) calculateFAFRing();
         loadImaginaryIls();
     }
 
@@ -53,25 +53,19 @@ public class LDA extends ILS {
         imaginaryIls = new ILS(getAirport(), text);
     }
 
-    /** Calculates position of FAF on LOC course */
-    private void calculateFAFRing() {
-        gsRing = new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev), getY() + MathTools.nmToPixel(nonPrecAlts.last()[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev));
-    }
-
     /** Overrides method in ILS to ignore it if NPA */
     @Override
     public void calculateGsRings() {
         if (!npa) {
             super.calculateGsRings();
+        } else {
+            Array<Vector2> gsRings = new Array<Vector2>();
+            for (int i = 0; i < nonPrecAlts.size; i++) {
+                gsRings.add(new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev), getY() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev)));
+            }
+            setGsRings(gsRings);
         }
     }
-
-    /** Overrides method in ILS to draw FAF point on LOC course */
-    @Override
-    public void drawGsCircles() {
-        if (npa) TerminalControl.radarScreen.shapeRenderer.circle(gsRing.x, gsRing.y, 8);
-    }
-
 
     public Queue<float[]> getNonPrecAlts() {
         return nonPrecAlts;

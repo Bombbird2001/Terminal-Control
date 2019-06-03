@@ -161,6 +161,7 @@ public class Departure extends Aircraft {
                 } else if (sidSet && getRoute().getWptMaxSpd(getDirect().getName()) < 220) {
                     speed = getRoute().getWptMaxSpd(getDirect().getName());
                 }
+                if (speed == -1) speed = 220;
                 setClearedIas(speed);
                 super.updateSpd();
             }

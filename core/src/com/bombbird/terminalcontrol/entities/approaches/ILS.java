@@ -247,4 +247,8 @@ public class ILS extends Actor {
     public Airport getAirport() {
         return airport;
     }
+
+    public void setGsRings(Array<Vector2> gsRings) {
+        this.gsRings = gsRings;
+    }
 }
