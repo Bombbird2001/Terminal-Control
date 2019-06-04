@@ -152,7 +152,14 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() - getAirport().getElevation() > 1500 && !accel) {
             if (getClearedIas() == getV2()) {
-                setClearedIas(220);
+                int speed = 220;
+                if (!sidSet && getSidStar().getWptMaxSpd(getSidStar().getWaypoint(0).getName()) < 220) {
+                    speed = getSidStar().getWptMaxSpd(getSidStar().getWaypoint(0).getName());
+                } else if (sidSet && getSidStar().getWptMaxSpd(getDirect().getName()) < 220) {
+                    speed = getSidStar().getWptMaxSpd(getDirect().getName());
+                }
+                if (speed == -1) speed = 220;
+                setClearedIas(speed);
                 super.updateSpd();
             }
             accel = true;
@@ -247,7 +254,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateSpd() {
-        if (!higherSpdSet && getAltitude() >= 7000) {
+        if (!higherSpdSet && getAltitude() >= 5000 && getAltitude() > getAirport().getElevation() + 4000) {
             if (getClearedIas() < 250) {
                 setClearedIas(250);
                 super.updateSpd();
