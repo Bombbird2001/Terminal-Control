@@ -66,7 +66,7 @@ public class LatTab extends Tab {
         ilsBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening) {
+                if (!notListening && selectedAircraft != null) {
                     getChoices();
                     updateElements();
                     compareWithAC();
