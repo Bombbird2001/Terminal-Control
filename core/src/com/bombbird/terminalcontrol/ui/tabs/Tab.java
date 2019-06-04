@@ -95,7 +95,7 @@ public class Tab {
         settingsBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening) {
+                if (!notListening && selectedAircraft != null) {
                     try {
                         getChoices();
                         updateElements();
@@ -126,7 +126,7 @@ public class Tab {
         valueBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening) {
+                if (!notListening && selectedAircraft != null) {
                     try {
                         getChoices();
                         updateElements();
