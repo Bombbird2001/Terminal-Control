@@ -1293,7 +1293,6 @@ public class Aircraft extends Actor {
 
     /** Removes the aircraft completely from game, including its labels, other elements */
     public void removeAircraft() {
-        if (this instanceof Arrival) radarScreen.setArrivals(radarScreen.getArrivals() - 1);
         dataTag.removeLabel();
         remove();
         radarScreen.getAllAircraft().remove(callsign);

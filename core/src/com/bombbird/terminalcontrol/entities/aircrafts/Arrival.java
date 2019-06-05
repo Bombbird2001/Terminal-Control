@@ -493,7 +493,6 @@ public class Arrival extends Aircraft {
         } else {
             radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - 0.4f);
         }
-        radarScreen.setArrivals(radarScreen.getArrivals() - 1);
         radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
     }
 
@@ -625,7 +624,6 @@ public class Arrival extends Aircraft {
         if (getAltitude() >= 1600 && getControlState() == 0) {
             setControlState(1);
             setGoAround(false);
-            radarScreen.setArrivals(radarScreen.getArrivals() + 1);
         }
     }
 

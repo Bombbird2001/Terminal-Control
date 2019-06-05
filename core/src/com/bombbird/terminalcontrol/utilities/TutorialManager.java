@@ -117,7 +117,6 @@ public class TutorialManager {
             @Override
             public void run() {
                 radarScreen.aircrafts.put("EVA226", new Arrival("EVA226", "B77W", radarScreen.airports.get("RCTP")));
-                radarScreen.setArrivals(radarScreen.getArrivals() + 1);
                 tutorialMsg("Seems like we have a new arrival inbound. Let's wait for it to contact us.");
             }
         }, 5);
