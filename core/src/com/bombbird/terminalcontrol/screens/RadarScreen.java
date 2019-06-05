@@ -280,9 +280,9 @@ public class RadarScreen extends GameScreen {
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
 
-        //Min 70sec for diff of >=20 planes && max 150sec for diff of <=5 planes
-        spawnTimer = 160f - 6 * (planesToControl - arrivals);
-        spawnTimer = MathUtils.clamp(spawnTimer, 70, 150);
+        //Min 50sec for >=4 planes diff, max 80sec for <=1 plane diff
+        spawnTimer = 90f - 10 * (planesToControl - arrivals);
+        spawnTimer = MathUtils.clamp(spawnTimer, 50, 80);
     }
 
     /** Loads the full UI for RadarScreen */
@@ -371,9 +371,14 @@ public class RadarScreen extends GameScreen {
                 saveTime += 60f;
             }
 
+            arrivals = 0;
+            for (Aircraft aircraft: aircrafts.values()) {
+                if (aircraft instanceof Arrival && aircraft.getControlState() == 1) arrivals++;
+            }
+
             spawnTimer -= Gdx.graphics.getDeltaTime();
             if (spawnTimer <= 0 && arrivals < planesToControl) {
-                //Ensure at least 90 sec interval between each new plane
+                //Minimum 50 sec interval between each new plane
                 newArrival();
             }
         }
@@ -568,10 +573,6 @@ public class RadarScreen extends GameScreen {
 
     public int getArrivals() {
         return arrivals;
-    }
-
-    public void setArrivals(int arrivals) {
-        this.arrivals = arrivals;
     }
 
     public ArrivalManager getArrivalManager() {
