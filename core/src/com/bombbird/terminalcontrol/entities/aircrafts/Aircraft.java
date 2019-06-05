@@ -606,7 +606,7 @@ public class Aircraft extends Actor {
         } else if (locCap) {
             clearedHeading = ils.getHeading();
             if (!ils.getRwy().equals(runway)) {
-                runway = getIls().getRwy();
+                runway = ils.getRwy();
             }
             if (ils instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) ils).getLineUpDist()) {
                 ils = ((LDA) ils).getImaginaryIls();
@@ -747,7 +747,7 @@ public class Aircraft extends Actor {
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
         x += deltaPosition.x;
         y += deltaPosition.y;
-        if (!locCap && getIls() != null && getIls().isInsideILS(x, y)) {
+        if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
             navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
