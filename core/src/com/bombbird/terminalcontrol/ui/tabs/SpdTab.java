@@ -57,6 +57,7 @@ public class SpdTab extends Tab {
             lowestSpd = 0;
             Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
         }
+        clearedSpd = MathUtils.clamp(clearedSpd, lowestSpd, highestSpd);
         if (lowestSpd % 10 != 0) {
             spds.add(Integer.toString(lowestSpd));
             int spdTracker = lowestSpd + (10 - lowestSpd % 10);
@@ -74,7 +75,6 @@ public class SpdTab extends Tab {
             spds.add(Integer.toString(highestSpd));
         }
         valueBox.setItems(spds);
-        clearedSpd = MathUtils.clamp(clearedSpd, lowestSpd, highestSpd);
         valueBox.setSelected(Integer.toString(clearedSpd));
         notListening = false;
     }
