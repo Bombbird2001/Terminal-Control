@@ -605,17 +605,16 @@ public class Aircraft extends Actor {
             }
         } else if (locCap) {
             clearedHeading = ils.getHeading();
-            if (!getIls().getRwy().equals(runway)) {
+            if (!ils.getRwy().equals(runway)) {
                 runway = getIls().getRwy();
-                navState.getLatModes().removeValue(getSidStar() + " arrival", false);
             }
-            if (getIls() instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) getIls()).getLineUpDist()) {
-                ils = ((LDA) getIls()).getImaginaryIls();
+            if (ils instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) ils).getLineUpDist()) {
+                ils = ((LDA) ils).getImaginaryIls();
                 gsCap = false;
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
-                Vector2 position = this.getIls().getPointAhead(this);
+                Vector2 position = ils.getPointAhead(this);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {
