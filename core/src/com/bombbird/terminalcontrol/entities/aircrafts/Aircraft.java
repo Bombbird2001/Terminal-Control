@@ -17,7 +17,6 @@ import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
@@ -624,7 +623,6 @@ public class Aircraft extends Actor {
                 holding = false;
                 return updateTargetHeading();
             }
-            Star star = (Star) getSidStar(); //For convenience
             if (holdTargetPt == null) {
                 float[] point = route.getHoldProcedure().getOppPtAtWpt(holdWpt);
                 holdTargetPt = new float[][] {{holdWpt.getPosX(), holdWpt.getPosY()}, point};
