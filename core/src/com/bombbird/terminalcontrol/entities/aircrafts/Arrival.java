@@ -574,7 +574,7 @@ public class Arrival extends Aircraft {
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
-            if (getIls().getRwy().getAircraftsOnAppr().indexOf(this, false) > 0) {
+            if (!getIls().getRwy().getAircraftsOnAppr().get(0).getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
                 radarScreen.getCommBox().goAround(this, "traffic on runway");
                 return true;
