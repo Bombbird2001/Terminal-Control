@@ -35,6 +35,9 @@ public class AltTab extends Tab {
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
             highestAlt = TerminalControl.radarScreen.maxAlt;
+            if (altMode.contains("SID") && selectedAircraft.getSidStar().getWptMinAlt(LatTab.clearedWpt) > highestAlt) {
+                highestAlt = selectedAircraft.getSidStar().getWptMinAlt(LatTab.clearedWpt);
+            }
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
             if (latMode.equals("Hold at")) {

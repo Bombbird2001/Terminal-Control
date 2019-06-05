@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.ui.tabs;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
@@ -73,6 +74,7 @@ public class SpdTab extends Tab {
             spds.add(Integer.toString(highestSpd));
         }
         valueBox.setItems(spds);
+        clearedSpd = MathUtils.clamp(clearedSpd, lowestSpd, highestSpd);
         valueBox.setSelected(Integer.toString(clearedSpd));
         notListening = false;
     }
