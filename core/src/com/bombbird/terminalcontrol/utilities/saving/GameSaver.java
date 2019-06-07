@@ -131,6 +131,7 @@ public class GameSaver {
             aircraftInfo.put("ils", aircraft.getIls() == null ? JSONObject.NULL : aircraft.getIls().getName()); //ILS
             aircraftInfo.put("locCap", aircraft.isLocCap()); //Localizer captured
             aircraftInfo.put("holdWpt", aircraft.getHoldWpt() == null ? JSONObject.NULL : aircraft.getHoldWpt().getName()); //Holding point
+            aircraftInfo.put("holdingType", aircraft.getHoldingType()); //Entry pattern
             aircraftInfo.put("holding", aircraft.isHolding()); //Aircraft holding
             aircraftInfo.put("init", aircraft.isInit()); //Additional holding info
             aircraftInfo.put("type1leg", aircraft.isType1leg()); //Additional holding info

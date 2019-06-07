@@ -81,7 +81,8 @@ public class HoldingPoints {
     }
 
     public int getEntryProc(double heading) {
-        double offset = heading - inboundHdg;
+        //Offset is relative to opposite of inbound heading
+        double offset = heading - inboundHdg + 180;
         if (offset < -180) {
             offset += 360;
         } else if (offset > 180) {

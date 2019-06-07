@@ -91,6 +91,7 @@ public class Aircraft extends Actor {
     private boolean locCap;
     private Waypoint holdWpt;
     private boolean holding;
+    private int holdingType;
     private boolean init;
     private boolean type1leg;
     private float[][] holdTargetPt;
@@ -161,6 +162,7 @@ public class Aircraft extends Actor {
         tkOfLdg = false;
         gsCap = false;
         locCap = false;
+        holdingType = 0;
         climbSpd = MathUtils.random(270, 280);
         goAround = false;
         goAroundWindow = false;
@@ -217,6 +219,7 @@ public class Aircraft extends Actor {
         locCap = save.getBoolean("locCap");
         holdWpt = save.isNull("holdWpt") ? null : radarScreen.waypoints.get(save.getString("holdWpt"));
         holding = save.getBoolean("holding");
+        holdingType = save.isNull("holdingType") ? 0 : save.getInt("holdingType");
         init = save.getBoolean("init");
         type1leg = save.getBoolean("type1leg");
 
@@ -630,9 +633,9 @@ public class Aircraft extends Actor {
                 navState.initHold();
             }
             if (!init) {
+                if (holdingType == 0) holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
                 //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
-                int type = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
-                if (type == 1) {
+                if (holdingType == 1) {
                     //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
                     targetHeading = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
                     if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
@@ -777,10 +780,9 @@ public class Aircraft extends Actor {
         } else if (navState.getDispLatMode().first().equals("Turn right heading")) {
             forceDirection = 2;
         } else if (navState.getDispLatMode().first().equals("Hold at") && holding && !init) {
-            int type = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
-            if (type == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
+            if (holdingType == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
                 forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
-            } else if (type == 2 || type == 3) {
+            } else if (holdingType == 2 || holdingType == 3) {
                 forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
         } else if (this instanceof Departure && navState.getDispLatMode().first().contains("departure")) {
@@ -817,6 +819,8 @@ public class Aircraft extends Actor {
     /** Finds the deltaHeading given a forced direction */
     private double findDeltaHeading(double targetHeading, int forceDirection, double heading) {
         double deltaHeading = targetHeading - heading;
+        while (deltaHeading > 360) deltaHeading -= 360;
+        while (deltaHeading < -360) deltaHeading += 360;
         switch (forceDirection) {
             case 0: //Not specified: pick quickest direction
                 if (deltaHeading > 180) {
@@ -1620,5 +1624,13 @@ public class Aircraft extends Actor {
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    public int getHoldingType() {
+        return holdingType;
+    }
+
+    public void setHoldingType(int holdingType) {
+        this.holdingType = holdingType;
     }
 }
