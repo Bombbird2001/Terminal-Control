@@ -61,7 +61,7 @@ public class WaypointManager {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isHolding()) {
                 aircraft.getHoldWpt().setSelected(true);
-            } else if (aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName()) && aircraft.getNavState().getClearedDirect().last() != null) {
+            } else if (("Hold at".equals(aircraft.getNavState().getDispLatMode().last()) || aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName())) && aircraft.getNavState().getClearedDirect().last() != null) {
                 aircraft.getNavState().getClearedDirect().last().setSelected(true);
             } else if ("After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && aircraft.getDirect() != null) {
                 aircraft.getDirect().setSelected(true);
