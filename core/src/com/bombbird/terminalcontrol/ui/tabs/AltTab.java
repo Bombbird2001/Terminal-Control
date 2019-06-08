@@ -54,6 +54,7 @@ public class AltTab extends Tab {
             if (highestAlt == -1) {
                 highestAlt = TerminalControl.radarScreen.maxAlt;
             }
+            if (highestAlt < lowestAlt) highestAlt = lowestAlt;
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
