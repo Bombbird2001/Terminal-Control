@@ -177,10 +177,10 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
-                if ("34R".equals(runway1.getName()) && checkPreceding("05") && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
+                if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("05".equals(runway1.getName()) && checkPreceding("34R") && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
+                } else if ("05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
                     //Additional check if aircraft landing on 34R is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");
