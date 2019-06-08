@@ -32,13 +32,13 @@ public class Route {
         this();
         Array<String> inbound = star.getRandomInbound();
         for (int i = 0; i < inbound.size; i++) {
-            if (inbound.get(0).split(" ")[0].equals("HDG")) {
+            if ("HDG".equals(inbound.get(0).split(" ")[0])) {
                 aircraft.setHeading(Integer.parseInt(inbound.get(0).split(" ")[1]));
             } else {
                 String[] data = inbound.get(i).split(" ");
-                wpts.add(radarScreen.waypoints.get(data[0]));
-                restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
-                flyOver.add(data.length > 4 && data[4].equals("FO"));
+                wpts.add(radarScreen.waypoints.get(data[1]));
+                restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
+                flyOver.add(data.length > 5 && data[5].equals("FO"));
             }
         }
 
