@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.ui.tabs;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -63,7 +64,7 @@ public class AltTab extends Tab {
             highestAlt = 10000;
             Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
         }
-
+        clearedAlt = MathUtils.clamp(clearedAlt, lowestAlt, highestAlt);
         //Adds the possible altitudes between range to array
         if (lowestAlt % 1000 != 0) {
             alts.add(Integer.toString(lowestAlt));
