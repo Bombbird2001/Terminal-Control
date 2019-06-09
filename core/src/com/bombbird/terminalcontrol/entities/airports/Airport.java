@@ -255,9 +255,12 @@ public class Airport {
         }
     }
 
-    public void renderApchZones() {
+    public void renderZones() {
         for (int i = 0; i < approachZones.size; i++) {
             approachZones.get(i).renderShape();
+        }
+        for (int i = 0; i < departureZones.size; i++) {
+            departureZones.get(i).renderShape();
         }
     }
 
