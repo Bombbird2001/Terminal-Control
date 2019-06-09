@@ -12,6 +12,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.procedures.ApproachZone;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -124,6 +125,18 @@ public class SeparationChecker extends Actor {
                     if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
                         //If either plane is below 1400 feet or above 20000 feet
                         continue;
+                    }
+                    if (plane1 instanceof Arrival && plane2 instanceof Arrival && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao())) {
+                        //If both planes are arrivals into same airport, check whether they are in different NOZ
+                        Array<ApproachZone> approachZones = plane1.getAirport().getApproachZones();
+                        boolean found = false;
+                        for (int l = 0; l < approachZones.size; l++) {
+                            if (approachZones.get(l).isActive() && approachZones.get(l).checkSeparation(plane1, plane2)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) continue;
                     }
                     if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
                         //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs
