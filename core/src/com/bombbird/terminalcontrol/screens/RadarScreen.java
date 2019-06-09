@@ -451,7 +451,7 @@ public class RadarScreen extends GameScreen {
 
         //Draw approach zone(s) for each airport
         for (Airport airport: airports.values()) {
-            airport.renderApchZones();
+            airport.renderZones();
         }
 
         //Draw waypoints
