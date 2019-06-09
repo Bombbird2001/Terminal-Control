@@ -65,10 +65,10 @@ public class Runway {
         aircraftsOnAppr = new Array<Aircraft>();
 
         //Calculate the position offsets
-        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - getTrueHdg());
-        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - getTrueHdg());
-        float xOffsetL = pxLength * MathUtils.cosDeg(90 - getTrueHdg());
-        float yOffsetL = pxLength * MathUtils.sinDeg(90 - getTrueHdg());
+        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - trueHdg);
+        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - trueHdg);
+        float xOffsetL = pxLength * MathUtils.cosDeg(90 - trueHdg);
+        float yOffsetL = pxLength * MathUtils.sinDeg(90 - trueHdg);
 
         //Create polygon
         polygon = new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});

@@ -468,6 +468,11 @@ public class RadarScreen extends GameScreen {
             airport.renderRunways();
         }
 
+        //Draw approach zone(s) for each airport
+        for (Airport airport: airports.values()) {
+            airport.renderApchZones();
+        }
+
         //Draw waypoints
         for (Waypoint waypoint: waypoints.values()) {
             waypoint.renderShape();

@@ -5,11 +5,8 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.procedures.*;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.procedures.HoldProcedure;
-import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
@@ -43,6 +40,8 @@ public class Airport {
     private int aircraftRatio;
     private HashMap<Integer, String> airlines;
     private HashMap<String, String> aircrafts;
+
+    private Array<ApproachZone> approachZones;
 
     public Airport(String icao, int elevation, int aircraftRatio) {
         this.icao = icao;
@@ -119,6 +118,11 @@ public class Airport {
 
         takeoffManager = new TakeoffManager(this);
         runwayManager = new RunwayManager(this);
+
+        approachZones = ZoneLoader.loadZones(icao);
+        for (int i = 0; i < approachZones.size; i++) {
+            approachZones.get(i).updateStatus(landingRunways);
+        }
     }
 
     /** loadOthers from JSON save */
@@ -220,6 +224,11 @@ public class Airport {
             TerminalControl.radarScreen.getCommBox().normalMsg(msg);
             TerminalControl.radarScreen.soundManager.playRunwayChange();
         }
+
+        //Updates approach zone status
+        for (int i = 0; i < approachZones.size; i++) {
+            approachZones.get(i).updateStatus(landingRunways);
+        }
     }
 
     public void renderRunways() {
@@ -237,6 +246,12 @@ public class Airport {
         for (Runway runway: runways.values()) {
             runway.setLabelColor(congested ? Color.ORANGE : Color.WHITE);
             runway.renderShape();
+        }
+    }
+
+    public void renderApchZones() {
+        for (int i = 0; i < approachZones.size; i++) {
+            approachZones.get(i).renderShape();
         }
     }
 
@@ -355,5 +370,9 @@ public class Airport {
 
     public JSONObject getMetar() {
         return metar;
+    }
+
+    public Array<ApproachZone> getApproachZones() {
+        return approachZones;
     }
 }

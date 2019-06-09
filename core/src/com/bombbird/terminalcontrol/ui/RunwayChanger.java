@@ -137,6 +137,7 @@ public class RunwayChanger {
         airport = TerminalControl.radarScreen.airports.get(icao);
         int windDir = airport.getMetar().isNull("windDirection") ? 0 : airport.getMetar().getInt("windDirection");
         int windSpd = airport.getMetar().getInt("windSpeed");
+        if (windDir == 0) windSpd = 0;
         if ("RCTP".equals(icao)) {
             updateRCTP(windDir, windSpd);
         } else if ("RCSS".equals(icao)) {
