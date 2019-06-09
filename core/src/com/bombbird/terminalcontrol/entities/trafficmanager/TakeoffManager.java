@@ -178,9 +178,17 @@ public class TakeoffManager {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
-                    runway = runway1;
-                    dist = distance;
+                    //Additional check for runway 05 departure - 40 seconds apart
+                    if (timers.get("05") >= 40) {
+                        runway = runway1;
+                        dist = distance;
+                    }
                 } else if ("05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
+                    //Additional check for runway 34R departure - 40 seconds apart
+                    if (timers.get("34R") >= 40) {
+                        runway = runway1;
+                        dist = distance;
+                    }
                     //Additional check if aircraft landing on 34R is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");
@@ -387,7 +395,7 @@ public class TakeoffManager {
 
     /** Check the previous departure aircraft */
     private boolean checkPreceding(String runway) {
-        float additionalTime = 100 - 20 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
+        float additionalTime = 100 - 15 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
         additionalTime = MathUtils.clamp(additionalTime, 0, 150);
         if (prevAircraft.get(runway) == null) {
             //If no aircraft has taken off before
