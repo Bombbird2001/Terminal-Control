@@ -235,6 +235,11 @@ public class Airport {
         for (int i = 0; i < approachZones.size; i++) {
             approachZones.get(i).updateStatus(landingRunways);
         }
+
+        //Updates departure zone status
+        for (int i = 0; i < departureZones.size; i++) {
+            departureZones.get(i).updateStatus(takeoffRunways);
+        }
     }
 
     public void renderRunways() {
