@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.procedures.ApproachZone;
+import com.bombbird.terminalcontrol.entities.procedures.DepartureZone;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -127,11 +128,23 @@ public class SeparationChecker extends Actor {
                         continue;
                     }
                     if (plane1 instanceof Arrival && plane2 instanceof Arrival && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao())) {
-                        //If both planes are arrivals into same airport, check whether they are in different NOZ
+                        //If both planes are arrivals into same airport, check whether they are in different NOZ for simultaneous approach
                         Array<ApproachZone> approachZones = plane1.getAirport().getApproachZones();
                         boolean found = false;
                         for (int l = 0; l < approachZones.size; l++) {
                             if (approachZones.get(l).isActive() && approachZones.get(l).checkSeparation(plane1, plane2)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) continue;
+                    }
+                    if (plane1 instanceof Departure && plane2 instanceof Departure && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao())) {
+                        //If both planes are departures from same airport, check whether they are in different NOZ for simultaneous departure
+                        Array<DepartureZone> departureZones = plane1.getAirport().getDepartureZones();
+                        boolean found = false;
+                        for (int l = 0; l < departureZones.size; l++) {
+                            if (departureZones.get(l).checkSeparation(plane1, plane2)) {
                                 found = true;
                                 break;
                             }
@@ -156,16 +169,6 @@ public class SeparationChecker extends Actor {
                             //If both planes on the same LOC but are both less than 10nm from runway threshold, separation minima is reduced to 2.5nm
                             minima = 2.5f;
                             //TODO If visibility is poor, reduced separation doesn't apply
-                        }
-                    }
-
-                    if (plane1 instanceof Departure && plane2 instanceof Departure) {
-                        if ("RJAA".equals(plane1.getAirport().getIcao()) && "RJAA".equals(plane1.getAirport().getIcao()) && !plane1.getRunway().equals(plane2.getRunway()) && plane1.getAltitude() <= 7100 && plane2.getAltitude() <= 7100) {
-                            //Simultaneous departures for Narita airport
-                            minima = 0.84f;
-                        } else if ("RJTT".equals(plane1.getAirport().getIcao()) && "RJTT".equals(plane2.getAirport().getIcao()) && (("16L".equals(plane1.getRunway().getName()) && "16R".equals(plane2.getRunway().getName())) || ("16R".equals(plane1.getRunway().getName()) && "16L".equals(plane2.getRunway().getName()))) && plane1.getAltitude() <= 7100 && plane2.getAltitude() <= 7100) {
-                            //Simultaneous departures for Haneda airport rwys 16L & 16R
-                            minima = 0.75f;
                         }
                     }
 

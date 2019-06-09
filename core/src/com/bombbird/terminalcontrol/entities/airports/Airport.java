@@ -42,6 +42,7 @@ public class Airport {
     private HashMap<String, String> aircrafts;
 
     private Array<ApproachZone> approachZones;
+    private Array<DepartureZone> departureZones;
 
     public Airport(String icao, int elevation, int aircraftRatio) {
         this.icao = icao;
@@ -119,9 +120,14 @@ public class Airport {
         takeoffManager = new TakeoffManager(this);
         runwayManager = new RunwayManager(this);
 
-        approachZones = ZoneLoader.loadZones(icao);
+        approachZones = ZoneLoader.loadApchZones(icao);
         for (int i = 0; i < approachZones.size; i++) {
             approachZones.get(i).updateStatus(landingRunways);
+        }
+
+        departureZones = ZoneLoader.loadDepZones(icao);
+        for (int i = 0; i < departureZones.size; i++) {
+            departureZones.get(i).updateStatus(takeoffRunways);
         }
     }
 
@@ -374,5 +380,9 @@ public class Airport {
 
     public Array<ApproachZone> getApproachZones() {
         return approachZones;
+    }
+
+    public Array<DepartureZone> getDepartureZones() {
+        return departureZones;
     }
 }
