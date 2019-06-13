@@ -100,8 +100,4 @@ public class ApproachZone {
     public boolean checkSeparation(Aircraft plane1, Aircraft plane2) {
         return (noz1.contains(plane1.getX(), plane1.getY()) && noz2.contains(plane2.getX(), plane2.getY())) || (noz1.contains(plane2.getX(), plane2.getY()) && noz2.contains(plane1.getX(), plane1.getY()));
     }
-
-    public boolean isActive() {
-        return active;
-    }
 }

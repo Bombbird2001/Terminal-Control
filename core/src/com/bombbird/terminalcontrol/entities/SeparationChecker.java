@@ -124,15 +124,15 @@ public class SeparationChecker extends Actor {
 
                     //Split up exception cases to make it easier to read
                     if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
-                        //If either plane is below 1400 feet or above 20000 feet
+                        //If either plane is below 1400 feet or above max alt
                         continue;
                     }
-                    if (plane1 instanceof Arrival && plane2 instanceof Arrival && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao())) {
+                    if (plane1 instanceof Arrival && plane2 instanceof Arrival && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao()) && plane1.getAltitude() < plane1.getAirport().getElevation() + 6000 && plane2.getAltitude() < plane2.getAirport().getElevation() + 6000) {
                         //If both planes are arrivals into same airport, check whether they are in different NOZ for simultaneous approach
                         Array<ApproachZone> approachZones = plane1.getAirport().getApproachZones();
                         boolean found = false;
                         for (int l = 0; l < approachZones.size; l++) {
-                            if (approachZones.get(l).isActive() && approachZones.get(l).checkSeparation(plane1, plane2)) {
+                            if (approachZones.get(l).checkSeparation(plane1, plane2)) {
                                 found = true;
                                 break;
                             }
