@@ -67,7 +67,7 @@ public class ZoneLoader {
 
     private static Array<AltitudeExclusionZone> loadExclRJAA() {
         Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
-        zones.add(new AltitudeExclusionZone(new String[] {"16L", "16R"}, 3828.3f, 2060.9f, 157, 14, 3));
+        zones.add(new AltitudeExclusionZone(new String[] {"16L", "16R"}, 3828.3f, 2060.9f, 157, 14, 5));
 
         return zones;
     }
