@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.procedures;
+package com.bombbird.terminalcontrol.entities.zones;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;

@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.procedures;
+package com.bombbird.terminalcontrol.entities.zones;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -54,5 +54,21 @@ public class ZoneLoader {
         departureZones.add(new DepartureZone("34L", "34R", 3828.3f, 2060.9f, 337, 3.1f, 16, 0.329f));
 
         return departureZones;
+    }
+
+    public static Array<AltitudeExclusionZone> loadAltExclZones(String icao) {
+        Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
+        if ("RJAA".equals(icao)) {
+            zones = loadExclRJAA();
+        }
+
+        return zones;
+    }
+
+    private static Array<AltitudeExclusionZone> loadExclRJAA() {
+        Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
+        zones.add(new AltitudeExclusionZone(new String[] {"16L", "16R"}, 3828.3f, 2060.9f, 157, 12, 3));
+
+        return zones;
     }
 }
