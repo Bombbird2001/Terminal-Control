@@ -12,8 +12,9 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
-import com.bombbird.terminalcontrol.entities.procedures.ApproachZone;
-import com.bombbird.terminalcontrol.entities.procedures.DepartureZone;
+import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
+import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
+import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -127,6 +128,7 @@ public class SeparationChecker extends Actor {
                         //If either plane is below 1400 feet or above max alt
                         continue;
                     }
+
                     if (plane1 instanceof Arrival && plane2 instanceof Arrival && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao()) && plane1.getAltitude() < plane1.getAirport().getElevation() + 6000 && plane2.getAltitude() < plane2.getAirport().getElevation() + 6000) {
                         //If both planes are arrivals into same airport, check whether they are in different NOZ for simultaneous approach
                         Array<ApproachZone> approachZones = plane1.getAirport().getApproachZones();
@@ -139,6 +141,7 @@ public class SeparationChecker extends Actor {
                         }
                         if (found) continue;
                     }
+
                     if (plane1 instanceof Departure && plane2 instanceof Departure && plane1.getAirport().getIcao().equals(plane2.getAirport().getIcao())) {
                         //If both planes are departures from same airport, check whether they are in different NOZ for simultaneous departure
                         Array<DepartureZone> departureZones = plane1.getAirport().getDepartureZones();
@@ -151,10 +154,12 @@ public class SeparationChecker extends Actor {
                         }
                         if (found) continue;
                     }
+
                     if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
                         //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs
                         continue;
                     }
+
                     if (plane1.isGoAroundWindow() || plane2.isGoAroundWindow()) {
                         //If either plane went around less than 2 minutes ago
                         continue;
@@ -229,6 +234,17 @@ public class SeparationChecker extends Actor {
                     aircraft.isGoAroundWindow()) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                 continue;
+            }
+            if (aircraft instanceof Arrival) {
+                Array<AltitudeExclusionZone> zones = aircraft.getAirport().getAltitudeExclusionZones();
+                boolean found = false;
+                for (int i = 0; i < zones.size; i++) {
+                    if (zones.get(i).isInside(aircraft)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) continue;
             }
             if (aircraft instanceof Departure) {
                 //Suppress terrain warnings if aircraft is departure below certain altitudes depending in airport

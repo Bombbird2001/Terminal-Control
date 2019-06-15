@@ -11,6 +11,10 @@ import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
+import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
+import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
+import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
+import com.bombbird.terminalcontrol.entities.zones.ZoneLoader;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -43,6 +47,7 @@ public class Airport {
 
     private Array<ApproachZone> approachZones;
     private Array<DepartureZone> departureZones;
+    private Array<AltitudeExclusionZone> altitudeExclusionZones;
 
     public Airport(String icao, int elevation, int aircraftRatio) {
         this.icao = icao;
@@ -128,6 +133,11 @@ public class Airport {
         departureZones = ZoneLoader.loadDepZones(icao);
         for (int i = 0; i < departureZones.size; i++) {
             departureZones.get(i).updateStatus(takeoffRunways);
+        }
+
+        altitudeExclusionZones = ZoneLoader.loadAltExclZones(icao);
+        for (int i = 0; i < altitudeExclusionZones.size; i++) {
+            altitudeExclusionZones.get(i).updateStatus(landingRunways);
         }
     }
 
@@ -267,6 +277,9 @@ public class Airport {
         for (int i = 0; i < departureZones.size; i++) {
             departureZones.get(i).renderShape();
         }
+        for (int i = 0; i < altitudeExclusionZones.size; i++) {
+            altitudeExclusionZones.get(i).renderShape();
+        }
     }
 
     public void setMetar(JSONObject metar) {
@@ -392,5 +405,9 @@ public class Airport {
 
     public Array<DepartureZone> getDepartureZones() {
         return departureZones;
+    }
+
+    public Array<AltitudeExclusionZone> getAltitudeExclusionZones() {
+        return altitudeExclusionZones;
     }
 }
