@@ -28,6 +28,47 @@ public class Route {
         flyOver = new Array<Boolean>();
     }
 
+    //Merge previous save format to new route format
+    public Route(Star star) {
+        this();
+        Array<String> inbound = star.getRandomInbound();
+        if (!"HDG".equals(inbound.get(0).split(" ")[0])) {
+            String[] data = inbound.get(0).split(" ");
+            wpts.add(radarScreen.waypoints.get(data[1]));
+            restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
+            flyOver.add(data.length > 5 && data[5].equals("FO"));
+        }
+
+        wpts.addAll(star.getWaypoints());
+        restrictions.addAll(star.getRestrictions());
+        flyOver.addAll(star.getFlyOver());
+
+        holdProcedure = new HoldProcedure(star);
+    }
+
+    //Merge previous save format to new route format
+    public Route(Sid sid, String runway) {
+        this();
+        wpts.addAll(sid.getInitWpts(runway));
+        restrictions.addAll(sid.getInitRestrictions(runway));
+        flyOver.addAll(sid.getInitFlyOver(runway));
+        wpts.addAll(sid.getWaypoints());
+        restrictions.addAll(sid.getRestrictions());
+        flyOver.addAll(sid.getFlyOver());
+        Array<String> transition = sid.getRandomTransition();
+        for (int i = 0; i < transition.size; i++) {
+            String[] data = transition.get(i).split(" ");
+            if (data[0].equals("WPT")) {
+                //Waypoint
+                wpts.add(TerminalControl.radarScreen.waypoints.get(data[1]));
+                restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
+                flyOver.add(data.length > 5 && data[5].equals("FO"));
+            }
+        }
+
+        holdProcedure = new HoldProcedure();
+    }
+
     public Route(Aircraft aircraft, Star star) {
         this();
         Array<String> inbound = star.getRandomInbound();

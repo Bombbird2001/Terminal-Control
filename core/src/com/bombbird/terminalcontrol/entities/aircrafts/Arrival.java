@@ -156,7 +156,11 @@ public class Arrival extends Aircraft {
 
         star = getAirport().getStars().get(save.getString("star"));
 
-        setRoute(new Route(save.getJSONObject("route"), star));
+        if (save.isNull("route")) {
+            setRoute(new Route(star));
+        } else {
+            setRoute(new Route(save.getJSONObject("route"), star));
+        }
 
         if (save.isNull("nonPrecAlts")) {
             //If non precision alt is null

@@ -90,7 +90,11 @@ public class Departure extends Aircraft {
         super(save);
 
         sid = getAirport().getSids().get(save.getString("sid"));
-        setRoute(new Route(save.getJSONObject("route")));
+        if (save.isNull("route")) {
+            setRoute(new Route(sid, getRunway().getName()));
+        } else {
+            setRoute(new Route(save.getJSONObject("route")));
+        }
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");
         handoveralt = save.getInt("handOverAlt");
