@@ -1,0 +1,380 @@
+{
+  "BITAN1M": {
+    "pronunciation": "BITAN 1 MIKE",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "WUGOO 3000 -1 -1",
+          "BITAN 6000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 6000 -1 -1",
+      "ROBIN 6000 -1 -1",
+      "PABSO 6000 -1 -1",
+      "KIKIT 6000 -1 -1",
+      "MOLKA 6000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 55"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "BITAN1K": {
+    "pronunciation": "BITAN 1 KILO",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "WUGOO 3000 -1 -1",
+          "BITAN 6000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 6000 -1 -1",
+      "KUDOS 6000 -1 -1",
+      "LOTTO 6000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 99"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "KE1M": {
+    "pronunciation": "KEELUNG 1 MIKE",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SITZE 4000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 4000 -1 -1",
+      "ROBIN 4000 -1 -1",
+      "PABSO 4000 -1 -1",
+      "KIKIT 4000 -1 -1",
+      "MOLKA 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 55"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "KE1K": {
+    "pronunciation": "KEELUNG 1 KILO",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SITZE 4000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "KUDOS 4000 -1 -1",
+      "LOTTO 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 99"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "MUKKA2H": {
+    "pronunciation": "MOO KA 2 HOTEL",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "MUKKA 2500 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "D242T 4000 -1 -1",
+      "HLG 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 203 230"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "MUKKA2M": {
+    "pronunciation": "MOO KA 2 MIKE",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "MUKKA 2500 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "APU30 10000 -1 -1",
+      "XEBEC 16000 -1 -1",
+      "MKG 16000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 242 309"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "MUKKA2Q": {
+    "pronunciation": "MOO KA 2 QUEBEC",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "MUKKA 2500 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "D242T 4000 -1 -1",
+      "RONEO 10000 -1 -1",
+      "APU76 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 238"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "MUKKA2R": {
+    "pronunciation": "MOO KA 2 ROMEO",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "MUKKA 2500 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "D242T 4000 -1 -1",
+      "RONEO 10000 -1 -1",
+      "APU76 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 202"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "MUKKA2T": {
+    "pronunciation": "MOO KA 2 TANGO",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "MUKKA 2500 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "APU30 10000 -1 -1",
+      "XEBEC 16000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 244"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "SULIN2H": {
+    "pronunciation": "SULIN 2 HOTEL",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SULIN -1 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "HLG -1 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 203 230"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "SULIN2M": {
+    "pronunciation": "SULIN 2 MIKE",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SULIN -1 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "RONEO 10000 -1 -1",
+      "APU76 10000 -1 -1",
+      "MKG 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 242 309"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "VIVID1A": {
+    "pronunciation": "VIVID 1 ALPHA",
+    "rwys": {
+      "10": {
+        "climb": "96 4500 -1",
+        "wpts": []
+      }
+    },
+    "route": [
+      "VIVID 5000 -1 -1",
+      "PIANO 5000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 40"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "VIVID1B": {
+    "pronunciation": "VIVID 1 BRAVO",
+    "rwys": {
+      "28": {
+        "climb": "276 600 210",
+        "wpts": [
+          "DICTA 3000 -1 210 ",
+          "LOBAR 5000 -1 -1",
+          "SENNA 5000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "VIVID 5000 -1 -1",
+      "PIANO 5000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 40"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "YILAN1A": {
+    "pronunciation": "YILAN 1 ALPHA",
+    "rwys": {
+      "10": {
+        "climb": "96 600 -1",
+        "wpts": [
+          "GLEAM -1 -1 -1",
+          "TRINO -1 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "YILAN -1 -1 -1"
+    ],
+    "transitions": [
+      [
+        "WPT WADER -1 -1 -1",
+        "WPT LARGO -1 -1 -1",
+        "WPT TINHO -1 -1 -1",
+        "HDG 200"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "YILAN1B": {
+    "pronunciation": "YILAN 1 BRAVO",
+    "rwys": {
+      "28": {
+        "climb": "276 500 -1",
+        "wpts": [
+          "KUMAR -1 -1 -1",
+          "SASHA -1 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "YILAN -1 -1 -1"
+    ],
+    "transitions": [
+      [
+        "WPT WADER -1 -1 -1",
+        "WPT LARGO -1 -1 -1",
+        "WPT TINHO -1 -1 -1",
+        "HDG 200"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  }
+}

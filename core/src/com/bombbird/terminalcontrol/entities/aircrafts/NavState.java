@@ -462,6 +462,7 @@ public class NavState {
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {
                 clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
+                latModes.removeValue("Hold at", false);
             }
         }
         dispLatMode.addLast(latMode);

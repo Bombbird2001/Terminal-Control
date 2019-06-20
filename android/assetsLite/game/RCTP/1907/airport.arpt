@@ -1,0 +1,22 @@
+{
+  "minAlt": 2000,
+  "maxAlt": 20000,
+  "transLvl": 130,
+  "minSep": 3,
+  "magHdgDev": 4.5,
+  "divertHdg": 240,
+  "apchCallsign": "Taipei Approach",
+  "depCallsign": "Taipei Approach",
+  "airports": {
+    "RCTP": {
+      "elevation": 108,
+      "ratio": 4,
+      "name": "-"
+    },
+    "RCSS": {
+      "elevation": 18,
+      "ratio": 1,
+      "name": "Songshan"
+    }
+  }
+}

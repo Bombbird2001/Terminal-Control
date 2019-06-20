@@ -18,7 +18,9 @@ import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
+import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -83,9 +85,6 @@ public class RadarScreen extends GameScreen {
 
     //Separation checker for checking separation between aircrafts & terrain
     public SeparationChecker separationChecker;
-
-    //Manages arrival traffic to prevent conflict prior to handover
-    private ArrivalManager arrivalManager;
 
     //Tutorial manager
     private TutorialManager tutorialManager = null;
@@ -274,9 +273,13 @@ public class RadarScreen extends GameScreen {
     /** Creates a new arrival for random airport */
     private void newArrival() {
         Airport airport = RandomGenerator.randomAirport();
+        if (!RandomSTAR.starAvailable(airport.getIcao())) {
+            spawnTimer = 10f; //Wait for another 10 seconds if no spawn points available
+            return;
+        }
         String[] aircraftInfo = RandomGenerator.randomPlane(airport);
         Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);
-        arrivalManager.checkArrival(arrival);
+        ArrivalManager.checkArrival(arrival);
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
 
@@ -308,6 +311,9 @@ public class RadarScreen extends GameScreen {
         //Load specific waypoint pronunciation
         Pronunciation.loadPronunciation();
 
+        //Load maximum traffic limits for different airports
+        MaxTraffic.loadMaxTraffic();
+
         //Load airports
         loadAirports();
 
@@ -320,9 +326,6 @@ public class RadarScreen extends GameScreen {
 
         //Load waypoint manager
         waypointManager = new WaypointManager();
-
-        //Load arrival manager
-        arrivalManager = new ArrivalManager();
 
         //Load obstacles
         obsArray = FileLoader.loadObstacles();
@@ -352,20 +355,22 @@ public class RadarScreen extends GameScreen {
 
     /** Updates the time values for each timer & runs tasks when time is reached */
     private void updateTimers() {
-        radarTime -= Gdx.graphics.getDeltaTime();
+        float deltaTime = Gdx.graphics.getDeltaTime();
+
+        radarTime -= deltaTime;
         if (radarTime <= 0) {
             updateRadarInfo();
             radarTime += radarSweepDelay;
         }
 
-        trailTime -= Gdx.graphics.getDeltaTime();
+        trailTime -= deltaTime;
         if (trailTime <= 0) {
             addTrailDot();
             trailTime += 10f;
         }
 
         if (!tutorial) {
-            saveTime -= Gdx.graphics.getDeltaTime();
+            saveTime -= deltaTime;
             if (saveTime <= 0) {
                 GameSaver.saveGame();
                 saveTime += 60f;
@@ -376,7 +381,7 @@ public class RadarScreen extends GameScreen {
                 if (aircraft instanceof Arrival && aircraft.getControlState() == 1) arrivals++;
             }
 
-            spawnTimer -= Gdx.graphics.getDeltaTime();
+            spawnTimer -= deltaTime;
             if (spawnTimer <= 0 && arrivals < planesToControl) {
                 //Minimum 50 sec interval between each new plane
                 newArrival();
@@ -408,6 +413,9 @@ public class RadarScreen extends GameScreen {
 
         //Updates aircraft separation status
         separationChecker.update();
+
+        //Updates STAR timers
+        RandomSTAR.update();
 
         //Draw obstacles
         Array<Obstacle> saveForLast = new Array<Obstacle>();
@@ -555,7 +563,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setPlanesToControl(float planesToControl) {
-        planesToControl = MathUtils.clamp(planesToControl, 4f, 30f);
+        planesToControl = MathUtils.clamp(planesToControl, 4f, MaxTraffic.maxTraffic.get(mainName));
         this.planesToControl = planesToControl;
     }
 
@@ -580,20 +588,12 @@ public class RadarScreen extends GameScreen {
         return arrivals;
     }
 
-    public ArrivalManager getArrivalManager() {
-        return arrivalManager;
-    }
-
     public float getRadarTime() {
         return radarTime;
     }
 
     public float getTrailTime() {
         return trailTime;
-    }
-
-    public void setArrivalManager(ArrivalManager arrivalManager) {
-        this.arrivalManager = arrivalManager;
     }
 
     public Metar getMetar() {

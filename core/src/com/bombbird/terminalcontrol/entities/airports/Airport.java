@@ -139,6 +139,8 @@ public class Airport {
         for (int i = 0; i < altitudeExclusionZones.size; i++) {
             altitudeExclusionZones.get(i).updateStatus(landingRunways);
         }
+
+        RandomSTAR.loadEntryTiming(this);
     }
 
     /** loadOthers from JSON save */
@@ -154,6 +156,12 @@ public class Airport {
         }
 
         takeoffManager = new TakeoffManager(this, save.getJSONObject("takeoffManager"));
+
+        if (save.isNull("starTimers")) {
+            RandomSTAR.loadEntryTiming(this);
+        } else {
+            RandomSTAR.loadEntryTiming(this, save.getJSONObject("starTimers"));
+        }
     }
 
     /** Sets the opposite runway for each runway */

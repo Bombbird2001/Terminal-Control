@@ -1,0 +1,1011 @@
+{
+  "ANITO6E": {
+    "pronunciation": "ANITO 6 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "ANITO 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 145"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "ANITO6A": {
+    "pronunciation": "ANITO 6 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "ANITO 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 145"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "ANITO7F": {
+    "pronunciation": "ANITO 7 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "ANITO 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 145"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "ANITO7B": {
+    "pronunciation": "ANITO 7 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "DONDI 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "ANITO 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 145"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "ADMIM1E": {
+    "pronunciation": "ADMIM 1 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 6000 -1",
+          "DOKTA 4000 6000 -1",
+          "DOGRA 4000 6000 -1",
+          "AGROT 4000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "ABVIP 4000 -1 -1",
+      "ADMIM 10000 -1 -1",
+      "ASUNA 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 252 291"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "ADMIM1A": {
+    "pronunciation": "ADMIM 1 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 6000 -1",
+          "DOKTA 4000 6000 -1",
+          "DOGRA 4000 6000 -1",
+          "AGROT 4000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "ABVIP 4000 -1 -1",
+      "ADMIM 10000 -1 -1",
+      "ASUNA 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 252 291"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "ADMIM3F": {
+    "pronunciation": "ADMIM 3 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "SAMKO 2500 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "ABVIP 2500 -1 -1",
+      "ADMIM 10000 -1 -1",
+      "ASUNA 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 252 291"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "ADMIM3B": {
+    "pronunciation": "ADMIM 3 FOXTROT",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "SAMKO 2500 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "ABVIP 2500 -1 -1",
+      "ADMIM 10000 -1 -1",
+      "ASUNA 10000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 252 291"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "TOMAN2E": {
+    "pronunciation": "TOMAN 2 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 -1 -1",
+          "DOKTA 4000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "HOSBA 7000 -1 -1",
+      "TOMAN 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 27 52 69 88"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.2"
+    ]
+  },
+  "TOMAN2A": {
+    "pronunciation": "TOMAN 2 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 -1 -1",
+          "DOKTA 4000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "HOSBA 7000 -1 -1",
+      "TOMAN 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 27 52 69 88"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.2"
+    ]
+  },
+  "TOMAN4F": {
+    "pronunciation": "TOMAN 4 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1",
+          "DOGRA 4000 6000 -1",
+          "RUVIK 4000 7000 -1"
+        ]
+      }
+    },
+    "route": [
+      "HOSBA 7000 -1 -1",
+      "TOMAN 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 27 52 69 88"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.2"
+    ]
+  },
+  "TOMAN4B": {
+    "pronunciation": "TOMAN 4 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "DONDI 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1",
+          "DOGRA 4000 6000 -1",
+          "RUVIK 4000 7000 -1"
+        ]
+      }
+    },
+    "route": [
+      "HOSBA 7000 -1 -1",
+      "TOMAN 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 27 52 69 88"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.2"
+    ]
+  },
+  "BAVUS1E": {
+    "pronunciation": "BAVUS 1 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "BAVUS 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 101"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "BAVUS1A": {
+    "pronunciation": "BAVUS 1 ALPHA",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "BAVUS 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 101"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "BAVUS3F": {
+    "pronunciation": "BAVUS 3 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "BAVUS 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 101"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "BAVUS3B": {
+    "pronunciation": "BAVUS 3 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "DONDI 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "BAVUS 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 101"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "AROSO2E": {
+    "pronunciation": "AROSO 2 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 -1 -1",
+          "ATRUM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AKMET 11000 -1 -1",
+      "AROSO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 294"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "AROSO2A": {
+    "pronunciation": "AROSO 2 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AKMET 11000 -1 -1",
+      "AROSO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 294"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "AROSO4F": {
+    "pronunciation": "AROSO 4 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 -1 -1",
+          "LETGO 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AKMET 11000 -1 -1",
+      "AROSO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 294"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "AROSO4B": {
+    "pronunciation": "AROSO 4 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 -1 -1",
+          "IBIVA 2500 -1 -1",
+          "DONDI 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AKMET 11000 -1 -1",
+      "AROSO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 294"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "MASBO2E": {
+    "pronunciation": "MASBO 2 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 -1 -1",
+          "ATRUM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AGVAR 11000 -1 -1",
+      "SABKA 11000 -1 -1",
+      "MASBO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 296"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "MASBO2A": {
+    "pronunciation": "MASBO 2 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AGVAR 11000 -1 -1",
+      "SABKA 11000 -1 -1",
+      "MASBO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 296"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "MASBO4F": {
+    "pronunciation": "MASBO 4 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 -1 -1",
+          "LETGO 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AGVAR 11000 -1 -1",
+      "SABKA 11000 -1 -1",
+      "MASBO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 296"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "MASBO4B": {
+    "pronunciation": "MASBO 4 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 -1 -1",
+          "IBIVA 2500 -1 -1",
+          "DONDI 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "AGVAR 11000 -1 -1",
+      "SABKA 11000 -1 -1",
+      "MASBO 11000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 296"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.25"
+    ]
+  },
+  "VMR5E": {
+    "pronunciation": "MERSING 5 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 -1 -1",
+          "ATRUM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "VMR 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 8 32 335"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.8"
+    ]
+  },
+  "VMR5A": {
+    "pronunciation": "MERSING 5 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "VMR 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 8 32 335"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.8"
+    ]
+  },
+  "VMR8F": {
+    "pronunciation": "MERSING 8 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 -1 -1",
+          "LETGO 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "VMR 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 8 32 335"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.8"
+    ]
+  },
+  "VMR8B": {
+    "pronunciation": "MERSING 8 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 -1 -1",
+          "IBIVA 2500 -1 -1",
+          "DONDI 2500 -1 -1",
+          "DIVSA 4000 -1 -1",
+          "DOSPA 4000 -1 -1",
+          "VTK 7000 -1 -1"
+        ]
+      }
+    },
+    "route": [
+      "AKOMA 7000 -1 -1",
+      "VMR 7000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 8 32 335"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "133.8"
+    ]
+  },
+  "VENIX1E": {
+    "pronunciation": "VENIX 1 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "VENIX 4000 -1 -1",
+      "SURGA 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 131"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "VENIX1A": {
+    "pronunciation": "VENIX 1 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "VENIX 4000 -1 -1",
+      "SURGA 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 131"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "VENIX3F": {
+    "pronunciation": "VENIX 3 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "VENIX 4000 -1 -1",
+      "SURGA 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 131"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "VENIX3B": {
+    "pronunciation": "VENIX 3 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "DONDI 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "VENIX 4000 -1 -1",
+      "SURGA 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 131"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "KADAR1E": {
+    "pronunciation": "KADAR 1 ECHO",
+    "rwys": {
+      "02L": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOPOM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "KADAR 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 123"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "KADAR1A": {
+    "pronunciation": "KADAR 1 ALPHA",
+    "rwys": {
+      "02C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "TOKIM 2000 6000 -1",
+          "DOKTA 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "KADAR 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 123"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "KADAR3F": {
+    "pronunciation": "KADAR 3 FOXTROT",
+    "rwys": {
+      "20R": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "LEDOX 1500 6000 -1",
+          "LETGO 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "KADAR 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 123"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  },
+  "KADAR3B": {
+    "pronunciation": "KADAR 3 BRAVO",
+    "rwys": {
+      "20C": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "IBIXU 1500 6000 -1",
+          "IBIVA 2500 6000 -1",
+          "DONDI 2500 6000 -1",
+          "DIVSA 4000 6000 -1",
+          "BTM 4000 6000 -1"
+        ]
+      }
+    },
+    "route": [
+      "DOGRA 4000 6000 -1",
+      "DOSNO 4000 -1 -1",
+      "VENPA 4000 -1 -1",
+      "ATKAX 4000 -1 -1",
+      "KADAR 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 123"
+      ]
+    ],
+    "control": [
+      "Singapore Radar",
+      "134.4"
+    ]
+  }
+}

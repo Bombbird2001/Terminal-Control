@@ -1,0 +1,17 @@
+{
+    "minAlt": 2000,
+    "maxAlt": 22000,
+    "transLvl": 130,
+    "minSep": 3,
+    "magHdgDev": -0.4,
+    "divertHdg": 300,
+    "apchCallsign": "Singapore Approach",
+    "depCallsign": "Singapore Approach",
+    "airports": {
+        "WSSS": {
+            "elevation": 22,
+            "ratio": 1,
+            "name": "-"
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+  "BRAVO": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": true,
+    "inboundHdg": 46,
+    "legDist": 5
+  },
+  "JAMMY": {
+    "minAlt": 4000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": true,
+    "inboundHdg": 68,
+    "legDist": 5
+  },
+  "JUNTA": {
+    "minAlt": 4000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": true,
+    "inboundHdg": 54,
+    "legDist": 5
+  },
+  "AUGUR": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 218,
+    "legDist": 5
+  },
+  "SEPIA": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 234,
+    "legDist": 5
+  },
+  "MARCH": {
+    "minAlt": 4000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 234,
+    "legDist": 5
+  }
+}

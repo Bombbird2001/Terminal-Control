@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import org.json.JSONArray;
@@ -41,7 +42,6 @@ public class GameSaver {
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
         jsonObject.put("sounds", radarScreen.soundSel);
-        jsonObject.put("arrivalManager", getArrivalManager());
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
@@ -434,6 +434,10 @@ public class GameSaver {
             airportInfo.put("airborne", airport.getAirborne()); //Airborne
             airportInfo.put("congestion", airport.isCongested()); //Congestion
 
+            //STAR timers
+            JSONObject starTimers = new JSONObject(RandomSTAR.getTime().get(airport.getIcao()));
+            airportInfo.put("starTimers", starTimers);
+
             airports.put(airportInfo);
         }
         return airports;
@@ -470,17 +474,6 @@ public class GameSaver {
         takeoffManager.put("timers", timers);
 
         return takeoffManager;
-    }
-
-    /** Returns the arrival manager as JSONObject */
-    private static JSONObject getArrivalManager() {
-        JSONObject arrivalManager = new JSONObject();
-
-        for (String waypoint: TerminalControl.radarScreen.getArrivalManager().getEntryPoint().keySet()) {
-            arrivalManager.put(waypoint, TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint) == null ? JSONObject.NULL : TerminalControl.radarScreen.getArrivalManager().getEntryPoint().get(waypoint).getCallsign());
-        }
-
-        return arrivalManager;
     }
 
     /** Saves the input ID into saves.saves file */

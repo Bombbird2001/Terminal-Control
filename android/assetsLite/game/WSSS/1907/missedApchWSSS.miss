@@ -1,0 +1,18 @@
+{
+    "ILS02L": {
+        "altitude": "4000",
+        "speed": "200"
+    },
+    "ILS02C": {
+        "altitude": "3000",
+        "speed": "200"
+    },
+    "ILS20R": {
+        "altitude": "5000",
+        "speed": "200"
+    },
+    "ILS20C": {
+        "altitude": "4000",
+        "speed": "200"
+    }
+}

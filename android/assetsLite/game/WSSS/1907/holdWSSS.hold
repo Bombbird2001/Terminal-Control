@@ -1,0 +1,42 @@
+{
+  "BOBAG": {
+    "minAlt": 6000,
+    "maxAlt": 18000,
+    "maxSpd": 220,
+    "left": false,
+    "inboundHdg": 82,
+    "legDist": 5
+  },
+  "SAMKO": {
+    "minAlt": 4000,
+    "maxAlt": 14000,
+    "maxSpd": 220,
+    "left": true,
+    "inboundHdg": 348,
+    "legDist": 5
+  },
+  "NYLON": {
+    "minAlt": 3000,
+    "maxAlt": 14000,
+    "maxSpd": 220,
+    "left": true,
+    "inboundHdg": 203,
+    "legDist": 5
+  },
+  "LAVAX": {
+    "minAlt": 7000,
+    "maxAlt": 14000,
+    "maxSpd": 220,
+    "left": true,
+    "inboundHdg": 269,
+    "legDist": 5
+  },
+  "REMES": {
+    "minAlt": 6000,
+    "maxAlt": 14000,
+    "maxSpd": 220,
+    "left": false,
+    "inboundHdg": 348,
+    "legDist": 5
+  }
+}

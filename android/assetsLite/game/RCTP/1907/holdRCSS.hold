@@ -1,0 +1,74 @@
+{
+  "DUPAR": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": true,
+    "inboundHdg": 85,
+    "legDist": 5
+  },
+  "BESOM": {
+    "minAlt": 4500,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 289,
+    "legDist": 5
+  },
+  "SASHA": {
+    "minAlt": 6000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 228,
+    "legDist": 5
+  },
+  "ZONLI": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 51,
+    "legDist": 5
+  },
+  "YILAN": {
+    "minAlt": 6000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 335,
+    "legDist": 5
+  },
+  "PINSI": {
+    "minAlt": 5000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": true,
+    "inboundHdg": 299,
+    "legDist": 5
+  },
+  "KUDOS": {
+    "minAlt": 6000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 280,
+    "legDist": 5
+  },
+  "FUSIN": {
+    "minAlt": 9000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 70,
+    "legDist": 5
+  },
+  "JONHO": {
+    "minAlt": 7000,
+    "maxAlt": -1,
+    "maxSpd": 230,
+    "left": false,
+    "inboundHdg": 60,
+    "legDist": 5
+  }
+}
