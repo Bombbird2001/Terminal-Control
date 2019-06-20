@@ -805,6 +805,9 @@ public class Aircraft extends Actor {
             } else if ((getSidStar().getName().contains("NLG2D") || "SHL2D".equals(getSidStar().getName()) || "MIPAG2D".equals(getSidStar().getName())) && direct != null && "MCU".equals(direct.getName()) && heading > 90 && heading <= 360) {
                 //VMMC NLG2D, SHL2D and MIPAG2D departures
                 forceDirection = 2;
+            } else if ("OPPAR3".equals(getSidStar().getName()) && runway.getName().contains("16") && direct != null && "OPPAR".equals(direct.getName()) && heading < 165) {
+                //RJTT OPPAR3 departure
+                forceDirection = 1;
             }
         }
         return findDeltaHeading(targetHeading, forceDirection, heading);

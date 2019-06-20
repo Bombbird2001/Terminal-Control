@@ -47,7 +47,7 @@ public class TerminalControl extends Game {
 
         Gdx.input.setCatchBackKey(true);
 
-        this.setScreen(new MainMenuScreen(this));
+        this.setScreen(new MainMenuScreen(this, null));
     }
 
     @Override

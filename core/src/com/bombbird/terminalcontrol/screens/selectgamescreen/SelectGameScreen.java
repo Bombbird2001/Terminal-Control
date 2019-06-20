@@ -29,11 +29,14 @@ public class SelectGameScreen implements Screen {
     private Label.LabelStyle labelStyle;
     private TextButton.TextButtonStyle buttonStyle;
 
+    //Background image (from MainMenuScreen)
+    private Image background;
+
     //Constant values
     public static final int BUTTON_WIDTH = 1000;
     public static final int BUTTON_HEIGHT = 200;
 
-    public SelectGameScreen(final TerminalControl game) {
+    public SelectGameScreen(final TerminalControl game, Image background) {
         this.game = game;
 
         //Set camera params
@@ -49,12 +52,17 @@ public class SelectGameScreen implements Screen {
 
         //Set table params (for scrollpane)
         scrollTable = new Table();
+
+        //Set background image to that shown on main menu screen
+        this.background = background;
     }
 
     /** Loads the full UI of this screen */
     private void loadUI() {
         //Reset stage
         stage.clear();
+
+        stage.addActor(background);
 
         loadLabel();
         loadButtons();
@@ -86,7 +94,7 @@ public class SelectGameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
-                game.setScreen(new MainMenuScreen(game));
+                game.setScreen(new MainMenuScreen(game, background));
             }
         });
 
@@ -107,7 +115,7 @@ public class SelectGameScreen implements Screen {
     /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0.3f, 0, 0);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();

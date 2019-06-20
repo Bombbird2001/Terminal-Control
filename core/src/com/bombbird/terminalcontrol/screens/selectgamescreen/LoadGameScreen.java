@@ -3,10 +3,7 @@ package com.bombbird.terminalcontrol.screens.selectgamescreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -18,8 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class LoadGameScreen extends SelectGameScreen {
-    public LoadGameScreen(final TerminalControl game) {
-        super(game);
+    public LoadGameScreen(final TerminalControl game, Image background) {
+        super(game, background);
     }
 
     /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label */

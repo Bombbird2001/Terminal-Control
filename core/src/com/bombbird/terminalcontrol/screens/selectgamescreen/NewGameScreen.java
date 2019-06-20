@@ -13,8 +13,8 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 public class NewGameScreen extends SelectGameScreen {
-    public NewGameScreen(final TerminalControl game) {
-        super(game);
+    public NewGameScreen(final TerminalControl game, Image background) {
+        super(game, background);
     }
 
     /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label */

@@ -84,7 +84,7 @@ public class PauseScreen {
                 if (!((RadarScreen) gameScreen).tutorial) GameSaver.saveGame(); //Save the game first
                 dispose();
                 TerminalControl.radarScreen = null;
-                gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game));
+                gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game, null));
             }
         });
         stage.addActor(quitButton);

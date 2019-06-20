@@ -72,6 +72,8 @@ public class Arrival extends Aircraft {
         setX(point[0]);
         setY(point[1]);
 
+        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) setDirect(getRoute().getWaypoint(1));
+
         loadLabel();
         setNavState(new NavState(this));
         Waypoint maxAltWpt = null;

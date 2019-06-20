@@ -3,9 +3,11 @@ package com.bombbird.terminalcontrol.screens;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -29,8 +31,12 @@ public class MainMenuScreen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    public MainMenuScreen(final TerminalControl game) {
+    //Background image
+    private Image background;
+
+    public MainMenuScreen(final TerminalControl game, Image background) {
         this.game = game;
+        this.background = background;
 
         //Set camera params
         camera = new OrthographicCamera();
@@ -51,6 +57,14 @@ public class MainMenuScreen implements Screen {
 
         //Reset stage
         stage.clear();
+
+        //Background image
+        if (background == null) {
+            FileHandle fileHandle = Gdx.files.internal("game/ui/mainMenuImages/" + MathUtils.random(1, 2) + ".png");
+            background = new Image(new Texture(fileHandle));
+            background.scaleBy(6.8f);
+        }
+        stage.addActor(background);
 
         //Set title icon
         Image image = new Image(new Texture(Gdx.files.internal("game/ui/MainMenuIcon.png")));
@@ -83,7 +97,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Start new game -> Choose airport screen
-                game.setScreen(new NewGameScreen(game));
+                game.setScreen(new NewGameScreen(game, background));
                 dispose();
             }
         });
@@ -100,7 +114,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Load game -> Saved games screen
-                game.setScreen(new LoadGameScreen(game));
+                game.setScreen(new LoadGameScreen(game, background));
                 dispose();
             }
         });
@@ -139,7 +153,7 @@ public class MainMenuScreen implements Screen {
     /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0.3f, 0, 0);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();

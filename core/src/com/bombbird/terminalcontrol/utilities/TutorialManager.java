@@ -412,7 +412,7 @@ public class TutorialManager {
                 @Override
                 public void run() {
                     TerminalControl.radarScreen = null;
-                    radarScreen.game.setScreen(new MainMenuScreen(radarScreen.game));
+                    radarScreen.game.setScreen(new MainMenuScreen(radarScreen.game, null));
                 }
             }, 10);
         }
