@@ -184,8 +184,8 @@ public class TakeoffManager {
                         dist = distance;
                     }
                 } else if ("05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
-                    //Additional check for runway 34R departure - 50 seconds apart
-                    if (timers.get("34R") >= 50) {
+                    //Additional check for runway 34R departure - 60 seconds apart
+                    if (timers.get("34R") >= 60) {
                         runway = runway1;
                         dist = distance;
                     }

@@ -21,6 +21,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void updateElements() {
+        if (selectedAircraft == null) return;
         notListening = true;
         settingsBox.setItems(selectedAircraft.getNavState().getSpdModes());
         settingsBox.setSelected(spdMode);

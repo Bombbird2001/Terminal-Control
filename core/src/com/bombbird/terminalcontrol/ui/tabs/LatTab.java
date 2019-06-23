@@ -457,9 +457,6 @@ public class LatTab extends Tab {
         } else if ("Hold at".equals(latMode)) {
             valueBox.setItems(waypoints);
             holdWpt = valueBox.getSelected();
-            if (holdWpt == null) {
-                holdWpt = valueBox.getItems().first();
-            }
         } else if (latMode.contains("heading")) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();

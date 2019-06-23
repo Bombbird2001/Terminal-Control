@@ -1,6 +1,6 @@
 {
   "BITAN1M": {
-    "pronunciation": "BITAN 1 MIKE",
+    "pronunciation": "BEE TON 1 MIKE",
     "rwys": {
       "28": {
         "climb": "-1 -1 -1",
@@ -27,8 +27,33 @@
       "125.5"
     ]
   },
+  "BITAN1R": {
+    "pronunciation": "BEE TON 1 ROMEO",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "WUGOO 3000 -1 -1",
+          "BITAN 6000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 6000 -1 -1",
+      "ROBIN 6000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 74"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
   "BITAN1K": {
-    "pronunciation": "BITAN 1 KILO",
+    "pronunciation": "BEE TON 1 KILO",
     "rwys": {
       "28": {
         "climb": "-1 -1 -1",
@@ -46,6 +71,31 @@
     "transitions": [
       [
         "HDG 99"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "BITAN1P": {
+    "pronunciation": "BEE TON 1 PAPA",
+    "rwys": {
+      "28": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "WUGOO 3000 -1 -1",
+          "BITAN 6000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 6000 -1 -1",
+      "PIANO 6000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 40"
       ]
     ],
     "control": [
@@ -73,6 +123,30 @@
     "transitions": [
       [
         "HDG 55"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
+  "KE1R": {
+    "pronunciation": "KEELUNG 1 ROMEO",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SITZE 4000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "LU 4000 -1 -1",
+      "ROBIN 4000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "HDG 74"
       ]
     ],
     "control": [
