@@ -90,30 +90,36 @@ public class Arrival extends Aircraft {
         fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + 900 + MathUtils.random(-600, 600);
 
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
-        if (maxAltWpt != null) {
-            float maxAlt = getRoute().getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
-            if (maxAlt < initAlt) initAlt = maxAlt;
-        }
-        if (initAlt > 28000) {
-            initAlt = 28000;
-        } else if (initAlt < 6000) {
-            initAlt = 6000;
-        } else if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
-            initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
-        }
-        for (Obstacle obstacle: radarScreen.obsArray) {
-            if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
-                initAlt = obstacle.getMinAlt();
+        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) {
+            initAlt = 9000;
+        } else {
+            if (maxAltWpt != null) {
+                float maxAlt = getRoute().getWptMaxAlt(maxAltWpt.getName()) + (distFromStartToPoint(maxAltWpt) - 5) / 300 * 60 * getTypDes();
+                if (maxAlt < initAlt) initAlt = maxAlt;
             }
-        }
-        for (RestrictedArea restrictedArea: radarScreen.restArray) {
-            if (restrictedArea.isIn(this) && initAlt < restrictedArea.getMinAlt()) {
-                initAlt = restrictedArea.getMinAlt();
+            if (initAlt > 28000) {
+                initAlt = 28000;
+            } else if (initAlt < 6000) {
+                initAlt = 6000;
+            } else if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
+                initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
+            }
+            for (Obstacle obstacle : radarScreen.obsArray) {
+                if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
+                    initAlt = obstacle.getMinAlt();
+                }
+            }
+            for (RestrictedArea restrictedArea : radarScreen.restArray) {
+                if (restrictedArea.isIn(this) && initAlt < restrictedArea.getMinAlt()) {
+                    initAlt = restrictedArea.getMinAlt();
+                }
             }
         }
         setAltitude(initAlt);
         updateAltRestrictions();
-        if (initAlt > 15000) {
+        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) {
+            setClearedAltitude(6000);
+        } else if (initAlt > 15000) {
             setClearedAltitude(15000);
         } else {
             setClearedAltitude((int) initAlt - (int) initAlt % 1000);
@@ -444,9 +450,11 @@ public class Arrival extends Aircraft {
                         //Set final descent towards runway
                         setTargetAltitude(getIls().getRwy().getElevation());
                         float lineUpDist = ((LDA) getIls()).getLineUpDist();
-                        float actlTargetAlt = ((LDA) getIls()).getImaginaryIls().getGSAltAtDist(lineUpDist);
-                        actlTargetAlt = actlTargetAlt < getRunway().getElevation() + 300 ? getRunway().getElevation() + 300 : actlTargetAlt;
-                        float remainingAlt = getAltitude() - actlTargetAlt + 200;
+                        float tmpAlt, actlTargetAlt;
+                        tmpAlt = actlTargetAlt = ((LDA) getIls()).getImaginaryIls().getGSAltAtDist(lineUpDist);
+                        actlTargetAlt -= 200;
+                        actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + getRunway().getElevation()) / 2, tmpAlt);
+                        float remainingAlt = getAltitude() - actlTargetAlt;
                         Vector2 actlTargetPos = ((LDA) getIls()).getImaginaryIls().getPointAtDist(lineUpDist);
                         float distFromRwy = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), actlTargetPos.x, actlTargetPos.y));
                         setVerticalSpeed(-remainingAlt / (distFromRwy / getGs() * 60));
