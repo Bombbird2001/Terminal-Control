@@ -176,6 +176,13 @@ public class TutorialManager {
                 tutorialMsg("Finally, the 4th line. The 1st number is the aircraft's ground speed, the 2nd is its cleared airspeed, and the 3rd text is its departure or arrival airport.");
             }
         }, 90);
+
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                tutorialMsg("You can double tap the label of a controlled aircraft to change between the full and simplified labels.");
+            }
+        }, 100);
     }
 
     /** Initialises the 3rd part of the tutorial */
