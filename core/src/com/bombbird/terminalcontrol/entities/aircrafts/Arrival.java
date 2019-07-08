@@ -450,7 +450,8 @@ public class Arrival extends Aircraft {
                         //Set final descent towards runway
                         setTargetAltitude(getIls().getRwy().getElevation());
                         float lineUpDist = ((LDA) getIls()).getLineUpDist();
-                        float tmpAlt, actlTargetAlt;
+                        float tmpAlt;
+                        float actlTargetAlt;
                         tmpAlt = actlTargetAlt = ((LDA) getIls()).getImaginaryIls().getGSAltAtDist(lineUpDist);
                         actlTargetAlt -= 200;
                         actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + getRunway().getElevation()) / 2, tmpAlt);
