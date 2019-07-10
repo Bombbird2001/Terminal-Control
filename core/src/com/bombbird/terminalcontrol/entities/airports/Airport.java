@@ -291,8 +291,8 @@ public class Airport {
     }
 
     public void setMetar(JSONObject metar) {
-        this.metar = metar.getJSONObject(getIcao());
-        System.out.println("METAR of " + getIcao() + ": " + this.metar.toString());
+        this.metar = metar.getJSONObject(icao);
+        System.out.println("METAR of " + icao + ": " + this.metar.toString());
         //Update active runways if METAR is updated
         int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");
         ws = "";
