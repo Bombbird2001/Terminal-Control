@@ -21,10 +21,32 @@ public class SidStar {
     private String pronunciation;
 
     public SidStar(Airport airport, JSONObject jo) {
-        radarScreen = TerminalControl.radarScreen;
-
-        this.airport = airport;
+        this(airport);
         parseInfo(jo);
+    }
+
+    public SidStar(Airport airport) {
+        radarScreen = TerminalControl.radarScreen;
+        this.airport = airport;
+    }
+
+    public SidStar(Airport airport, JSONArray wpts, JSONArray restriction, JSONArray fo) {
+        this(airport);
+
+        runways = new Array<String>();
+        waypoints = new Array<Waypoint>();
+        restrictions = new Array<int[]>();
+        flyOver = new Array<Boolean>();
+
+        pronunciation = "null";
+        name = "null";
+
+        for (int i = 0; i < wpts.length(); i++) {
+            waypoints.add(radarScreen.waypoints.get(wpts.getString(i)));
+            String[] data = restriction.getString(i).split(" ");
+            restrictions.add(new int[] {Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2])});
+            flyOver.add(fo.getBoolean(i));
+        }
     }
 
     /** Overriden method in SID, STAR to parse relevant information */
@@ -34,7 +56,7 @@ public class SidStar {
         restrictions = new Array<int[]>();
         flyOver = new Array<Boolean>();
 
-        setPronunciation(jo.getString("pronunciation"));
+        pronunciation = jo.getString("pronunciation");
 
         JSONArray joWpts = jo.getJSONArray("route");
         for (int i = 0; i < joWpts.length(); i++) {

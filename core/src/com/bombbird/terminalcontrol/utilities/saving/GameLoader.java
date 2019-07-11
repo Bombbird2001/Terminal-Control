@@ -62,8 +62,6 @@ public class GameLoader {
                 //Load arrival
                 Arrival arrival = new Arrival(aircrafts.getJSONObject(i));
                 TerminalControl.radarScreen.aircrafts.put(arrival.getCallsign(), arrival);
-                //Oops fixed a dumb mistake with RCSS ANNNA1B STAR
-                if ("RCSS".equals(arrival.getAirport().getIcao()) && "ANNAA1B".equals(arrival.getSidStar().getName())) arrival.removeAircraft();
             } else if ("Departure".equals(aircrafts.getJSONObject(i).getString("TYPE"))) {
                 //Load departure
                 Departure departure = new Departure(aircrafts.getJSONObject(i));

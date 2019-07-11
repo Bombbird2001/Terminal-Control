@@ -20,6 +20,19 @@ public class Star extends SidStar {
         super(airport, jo);
     }
 
+    public Star(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo) {
+        super(airport, wpts, restrictions, fo);
+
+        inbound = new Array<Array<String>>();
+        rwyWpts = new HashMap<String, Array<Waypoint>>();
+        rwyRestrictions = new HashMap<String, Array<int[]>>();
+        rwyFlyOver = new HashMap<String, Array<Boolean>>();
+
+        Array<String> inbound1 = new Array<String>();
+        inbound1.add("HDG 360");
+        inbound.add(inbound1);
+    }
+
     @Override
     public void parseInfo(JSONObject jo) {
         super.parseInfo(jo);

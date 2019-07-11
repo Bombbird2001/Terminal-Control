@@ -168,7 +168,11 @@ public class Arrival extends Aircraft {
         if (save.isNull("route")) {
             setRoute(new Route(star));
         } else {
-            setRoute(new Route(save.getJSONObject("route"), star));
+            JSONObject route = save.getJSONObject("route");
+            if (star == null) {
+                star = new Star(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"));
+            }
+            setRoute(new Route(route, star));
         }
 
         if (save.isNull("nonPrecAlts")) {
