@@ -787,10 +787,10 @@ public class Aircraft extends Actor {
             }
         } else if (this instanceof Departure && navState.getDispLatMode().first().contains("departure")) {
             //Force directions for certain departure procedures
-            if (getSidStar().getName().contains("NANKO1(6") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 320) {
+            if (getSidStar().getName().contains("NANKO1") && runway.getName().contains("06") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 320) {
                 //RJBB NANKO1(6L) and NANKO1(6R) departures
                 forceDirection = 1;
-            } else if (getSidStar().getName().contains("KANSAI1") && getSidStar().getName().contains("24") && direct != null && "KNE".equals(direct.getName()) && heading > 180 && heading <= 360) {
+            } else if (getSidStar().getName().contains("KANSAI1") && runway.getName().contains("24") && direct != null && "KNE".equals(direct.getName()) && heading > 180 && heading <= 360) {
                 //RJBB KANSAI1(24L) and KANSAI1(24R) departures
                 forceDirection = 2;
             } else if ("ASUKA4".equals(getSidStar().getName()) && direct != null && "ASUKA".equals(direct.getName()) && heading > 180 && heading <= 360) {
