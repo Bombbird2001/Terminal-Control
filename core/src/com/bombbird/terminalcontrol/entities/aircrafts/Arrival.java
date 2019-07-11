@@ -170,7 +170,7 @@ public class Arrival extends Aircraft {
         } else {
             JSONObject route = save.getJSONObject("route");
             if (star == null) {
-                star = new Star(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"));
+                star = new Star(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.isNull("name") ? "null" : route.getString("name"));
             }
             setRoute(new Route(route, star));
         }

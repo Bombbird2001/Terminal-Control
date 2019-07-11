@@ -20,6 +20,8 @@ public class Route {
     private Array<Boolean> flyOver;
     private HoldProcedure holdProcedure;
 
+    private String name;
+
     private Route() {
         radarScreen = TerminalControl.radarScreen;
 
@@ -44,6 +46,8 @@ public class Route {
         flyOver.addAll(star.getFlyOver());
 
         holdProcedure = new HoldProcedure(star);
+
+        name = star.getName();
     }
 
     //Merge previous save format to new route format
@@ -67,6 +71,8 @@ public class Route {
         }
 
         holdProcedure = new HoldProcedure();
+
+        name = sid.getName();
     }
 
     public Route(Aircraft aircraft, Star star) {
@@ -103,6 +109,8 @@ public class Route {
         flyOver.addAll(star.getRwyFlyOver(runway));
 
         holdProcedure = new HoldProcedure(star);
+
+        name = star.getName();
     }
 
     public Route(Aircraft aircraft, Sid sid, String runway) {
@@ -128,6 +136,8 @@ public class Route {
         }
 
         holdProcedure = new HoldProcedure();
+
+        name = sid.getName();
     }
 
     public Route(JSONObject jo) {
@@ -144,11 +154,15 @@ public class Route {
         }
 
         holdProcedure = new HoldProcedure();
+
+        name = jo.isNull("name") ? "null" : jo.getString("name");
     }
 
     public Route(JSONObject jo, Star star) {
         this(jo);
         holdProcedure = new HoldProcedure(star);
+
+        name = star.getName();
     }
 
     public void joinLines(int start, int end, int outbound) {
@@ -247,5 +261,9 @@ public class Route {
 
     public Array<Boolean> getFlyOver() {
         return flyOver;
+    }
+
+    public String getName() {
+        return name;
     }
 }

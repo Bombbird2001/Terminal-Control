@@ -30,7 +30,7 @@ public class SidStar {
         this.airport = airport;
     }
 
-    public SidStar(Airport airport, JSONArray wpts, JSONArray restriction, JSONArray fo) {
+    public SidStar(Airport airport, JSONArray wpts, JSONArray restriction, JSONArray fo, String name) {
         this(airport);
 
         runways = new Array<String>();
@@ -39,7 +39,7 @@ public class SidStar {
         flyOver = new Array<Boolean>();
 
         pronunciation = "null";
-        name = "null";
+        this.name = name;
 
         for (int i = 0; i < wpts.length(); i++) {
             waypoints.add(radarScreen.waypoints.get(wpts.getString(i)));

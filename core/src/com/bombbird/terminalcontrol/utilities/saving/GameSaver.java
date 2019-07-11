@@ -270,6 +270,7 @@ public class GameSaver {
             route.put("waypoints", wpts);
             route.put("restrictions", restrictions);
             route.put("flyOver", flyOver);
+            route.put("name", aircraft.getRoute().getName());
             aircraftInfo.put("route", route);
 
             aircrafts.put(aircraftInfo);

@@ -20,8 +20,8 @@ public class Star extends SidStar {
         super(airport, jo);
     }
 
-    public Star(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo) {
-        super(airport, wpts, restrictions, fo);
+    public Star(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo, String name) {
+        super(airport, wpts, restrictions, fo, name);
 
         inbound = new Array<Array<String>>();
         rwyWpts = new HashMap<String, Array<Waypoint>>();
