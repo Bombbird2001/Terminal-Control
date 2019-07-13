@@ -89,7 +89,7 @@ public class Arrival extends Aircraft {
 
         fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + 900 + MathUtils.random(-600, 600);
 
-        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes();
+        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes() * 0.8f;
         if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) {
             initAlt = 9000;
         } else {

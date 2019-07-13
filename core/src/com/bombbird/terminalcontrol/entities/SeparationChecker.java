@@ -177,8 +177,8 @@ public class SeparationChecker extends Actor {
                         }
                     }
 
-                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 950 && dist < minima + 2) {
-                        if (dist < minima) {
+                    if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 975 && dist < minima + 2) {
+                        if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 900 && dist < minima) {
                             if ((!plane1.isConflict() || !plane2.isConflict())) {
                                 //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
                                 //Aircrafts have infringed minima of 1000 feet and 3nm apart

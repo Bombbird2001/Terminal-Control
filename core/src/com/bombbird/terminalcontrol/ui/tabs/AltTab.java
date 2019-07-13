@@ -48,6 +48,9 @@ public class AltTab extends Tab {
                 //Set alt restrictions in box
                 highestAlt = (int)selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
+                if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
+                    highestAlt = 3500;
+                }
                 int starHighestAlt = selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
             }
