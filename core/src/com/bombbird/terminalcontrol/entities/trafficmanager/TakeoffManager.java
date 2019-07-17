@@ -177,18 +177,12 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
-                if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
+                if (timers.get("05") >= 50 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
                     //Additional check for runway 05 departure - 50 seconds apart
-                    if (timers.get("05") >= 50) {
-                        runway = runway1;
-                        dist = distance;
-                    }
-                } else if ("05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
-                    //Additional check for runway 34R departure - 60 seconds apart
-                    if (timers.get("34R") >= 60) {
-                        runway = runway1;
-                        dist = distance;
-                    }
+                    runway = runway1;
+                    dist = distance;
+                } else if (timers.get("34R") >= 50 && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
+                    //Additional check for runway 34R departure - 50 seconds apart
                     //Additional check if aircraft landing on 34R is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");

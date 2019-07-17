@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.5'
     }
 }
@@ -19,7 +19,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.2.1907.2'
+    version = '1.2.1908.1'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.9'
