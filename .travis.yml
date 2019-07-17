@@ -1,8 +1,11 @@
 language: android
+dist: xenial
 jdk:
   - openjdk8
-  - oraclejdk8
 android:
+  components:
+    - android-28
+    - build-tools-28.0.3
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
