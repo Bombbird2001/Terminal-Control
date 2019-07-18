@@ -23,7 +23,7 @@ android {
     }
     defaultConfig {
         applicationId "com.bombbird.terminalcontrol"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 18
         versionName "1.2.1908.1"
