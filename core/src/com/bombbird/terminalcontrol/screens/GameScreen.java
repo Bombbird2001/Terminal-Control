@@ -14,8 +14,8 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.RangeCircle;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
@@ -67,8 +67,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    public Array<Obstacle> obsArray;
-    public Array<RestrictedArea> restArray;
+    public Array<PolygonObstacle> obsArray;
+    public Array<CircleObstacle> restArray;
 
     //Create airports
     public final HashMap<String, Airport> airports = new HashMap<String, Airport>();

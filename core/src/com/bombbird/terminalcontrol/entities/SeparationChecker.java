@@ -15,8 +15,8 @@ import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
-import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
@@ -67,11 +67,11 @@ public class SeparationChecker extends Actor {
             label.setText("");
             label.setName("");
         }
-        for (Obstacle obstacle: radarScreen.obsArray) {
-            obstacle.setConflict(false);
+        for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
+            polygonObstacle.setConflict(false);
         }
-        for (RestrictedArea restrictedArea: radarScreen.restArray) {
-            restrictedArea.setConflict(false);
+        for (CircleObstacle circleObstacle : radarScreen.restArray) {
+            circleObstacle.setConflict(false);
         }
         int active = checkAircraftSep();
         active = checkRestrSep(active);
@@ -251,17 +251,17 @@ public class SeparationChecker extends Actor {
                 if ("RCSS".equals(aircraft.getAirport().getIcao()) && aircraft.getAltitude() <= 5050) continue;
                 if (aircraft.getAltitude() <= 4050) continue;
             }
-            for (Obstacle obstacle: radarScreen.obsArray) {
-                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < obstacle.getMinAlt() - 50 && obstacle.isIn(aircraft)) {
+            for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
+                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < polygonObstacle.getMinAlt() - 50 && polygonObstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
-                    obstacle.setConflict(true);
+                    polygonObstacle.setConflict(true);
                     active++;
                 }
             }
-            for (RestrictedArea restrictedArea: radarScreen.restArray) {
-                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < restrictedArea.getMinAlt() - 50 && restrictedArea.isIn(aircraft)) {
+            for (CircleObstacle circleObstacle : radarScreen.restArray) {
+                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < circleObstacle.getMinAlt() - 50 && circleObstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
-                    restrictedArea.setConflict(true);
+                    circleObstacle.setConflict(true);
                     active++;
                 }
             }

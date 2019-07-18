@@ -17,8 +17,8 @@ import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,30 +27,30 @@ import java.util.HashMap;
 public class FileLoader {
     public static final String mainDir = "full".equals(Gdx.files.internal("game/type.type").readString()) ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
 
-    public static Array<Obstacle> loadObstacles() {
+    public static Array<PolygonObstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
-        Array<Obstacle> obsArray = new Array<Obstacle>();
+        Array<PolygonObstacle> obsArray = new Array<PolygonObstacle>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             if ("".equals(s)) break;
             if (s.charAt(0) == '#') continue;
             //For each individual obstacle:
-            Obstacle obs = new Obstacle(s);
+            PolygonObstacle obs = new PolygonObstacle(s);
             obsArray.add(obs);
             TerminalControl.radarScreen.stage.addActor(obs);
         }
         return obsArray;
     }
 
-    public static Array<RestrictedArea> loadRestricted() {
+    public static Array<CircleObstacle> loadRestricted() {
         FileHandle restrictions = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/restricted.restr");
-        Array<RestrictedArea> restArray = new Array<RestrictedArea>();
+        Array<CircleObstacle> restArray = new Array<CircleObstacle>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             if ("".equals(s)) break;
             if (s.charAt(0) == '#') continue;
             //For each individual restricted area
-            RestrictedArea area = new RestrictedArea(s);
+            CircleObstacle area = new CircleObstacle(s);
             restArray.add(area);
             TerminalControl.radarScreen.stage.addActor(area);
         }

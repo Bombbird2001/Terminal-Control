@@ -11,13 +11,14 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.ArrayList;
 
-public class Obstacle extends Actor {
+public class PolygonObstacle extends Actor {
     private Polygon polygon;
     private int minAlt;
     private Label label;
     private boolean conflict;
+    private boolean enforced;
 
-    public Obstacle(String toParse) {
+    public PolygonObstacle(String toParse) {
         parseInfo(toParse);
     }
 
@@ -33,7 +34,14 @@ public class Obstacle extends Actor {
         for (String s1: obsInfo) {
             switch (index) {
                 case 0: minAlt = Integer.parseInt(s1); break;
-                case 1: label = new Label(s1, labelStyle); break;
+                case 1:
+                    if (s1.length() > 0 && s1.charAt(s1.length() - 1) == 'C') {
+                    enforced = true;
+                    label = new Label(s1.substring(0, s1.length() - 1), labelStyle);
+                } else {
+                    label = new Label(s1, labelStyle);
+                }
+                break;
                 case 2: label.setX(Integer.parseInt(s1)); break;
                 case 3: label.setY(Integer.parseInt(s1)); break;
                 default: vertices.add(Float.parseFloat(s1));
@@ -53,8 +61,10 @@ public class Obstacle extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         if (conflict || label.getText().toString().charAt(0) == '#') {
             label.getStyle().fontColor = Color.RED;
-        } else {
+        } else if (!enforced) {
             label.getStyle().fontColor = Color.GRAY;
+        } else {
+            label.getStyle().fontColor = Color.ORANGE;
         }
         label.draw(batch, 1);
     }
@@ -63,15 +73,17 @@ public class Obstacle extends Actor {
     public void renderShape() {
         if (conflict || label.getText().toString().charAt(0) == '#') {
             TerminalControl.radarScreen.shapeRenderer.setColor(Color.RED);
-        } else {
+        } else if (!enforced) {
             TerminalControl.radarScreen.shapeRenderer.setColor(Color.GRAY);
+        } else {
+            TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
         }
         TerminalControl.radarScreen.shapeRenderer.polygon(polygon.getVertices());
     }
 
     /** Checks whether the input aircraft is inside the polygon area */
     public boolean isIn(Aircraft aircraft) {
-        return polygon.contains(aircraft.getX(), aircraft.getY());
+        return (enforced || (aircraft.getNavState().getDispLatMode().last().contains("Turn") || aircraft.getNavState().getDispLatMode().last().equals("Fly heading"))) && polygon.contains(aircraft.getX(), aircraft.getY());
     }
 
     public int getMinAlt() {
@@ -88,5 +100,9 @@ public class Obstacle extends Actor {
 
     public Label getLabel() {
         return label;
+    }
+
+    public boolean isEnforced() {
+        return enforced;
     }
 }

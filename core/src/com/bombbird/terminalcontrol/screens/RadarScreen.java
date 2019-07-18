@@ -25,8 +25,8 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.entities.restrictions.Obstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.RestrictedArea;
+import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
@@ -418,29 +418,29 @@ public class RadarScreen extends GameScreen {
         RandomSTAR.update();
 
         //Draw obstacles
-        Array<Obstacle> saveForLast = new Array<Obstacle>();
-        for (Obstacle obstacle: obsArray) {
-            if (obstacle.isConflict() || obstacle.getLabel().getText().toString().charAt(0) == '#') {
-                saveForLast.add(obstacle);
+        Array<PolygonObstacle> saveForLast = new Array<PolygonObstacle>();
+        for (PolygonObstacle polygonObstacle : obsArray) {
+            if (polygonObstacle.isEnforced() || polygonObstacle.isConflict() || polygonObstacle.getLabel().getText().toString().charAt(0) == '#') {
+                saveForLast.add(polygonObstacle);
             } else {
-                obstacle.renderShape();
+                polygonObstacle.renderShape();
             }
         }
-        for (Obstacle obstacle: saveForLast) {
-            obstacle.renderShape();
+        for (PolygonObstacle polygonObstacle : saveForLast) {
+            polygonObstacle.renderShape();
         }
 
         //Draw restricted areas
-        Array<RestrictedArea> saveForLast1 = new Array<RestrictedArea>();
-        for (RestrictedArea restrictedArea: restArray) {
-            if (restrictedArea.isConflict()) {
-                saveForLast1.add(restrictedArea);
+        Array<CircleObstacle> saveForLast1 = new Array<CircleObstacle>();
+        for (CircleObstacle circleObstacle : restArray) {
+            if (circleObstacle.isConflict()) {
+                saveForLast1.add(circleObstacle);
             } else {
-                restrictedArea.renderShape();
+                circleObstacle.renderShape();
             }
         }
-        for (RestrictedArea restrictedArea: saveForLast1) {
-            restrictedArea.renderShape();
+        for (CircleObstacle circleObstacle : saveForLast1) {
+            circleObstacle.renderShape();
         }
 
         super.renderShape();
