@@ -46,7 +46,7 @@ public class RandomGenerator {
         do {
             int index = MathUtils.random(1, total);
             for (Airport airport1 : TerminalControl.radarScreen.airports.values()) {
-                if (index > airportRange.get(airport1)[0] && index <= airportRange.get(airport1)[1]) {
+                if (airportRange.containsKey(airport1) && index > airportRange.get(airport1)[0] && index <= airportRange.get(airport1)[1]) {
                     airport = airport1;
                 }
             }
