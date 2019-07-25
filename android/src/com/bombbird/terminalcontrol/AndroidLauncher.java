@@ -14,7 +14,8 @@ public class AndroidLauncher extends TextToSpeechManager {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         TerminalControl.ishtml = false;
-        initialize(new TerminalControl(this), config);
+        ToastManager toastManager = new ToastManager(this);
+        initialize(new TerminalControl(this, toastManager), config);
 
         Intent ttsIntent = new Intent();
         ttsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -22,8 +23,7 @@ public class AndroidLauncher extends TextToSpeechManager {
             startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA);
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
-            Toast toast = Toast.makeText(getApplicationContext(), "Text-to-speech initialisation failed: Your device may not be compatible", Toast.LENGTH_LONG);
-            toast.show();
+            toastManager.initTTSFail();
         }
     }
 }

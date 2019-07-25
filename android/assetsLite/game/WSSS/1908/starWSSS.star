@@ -149,44 +149,6 @@
       ]
     ]
   },
-  "LELIB3B": {
-    "pronunciation": "LAY LIB 3 BRAVO",
-    "rwys": {
-      "20R": [],
-      "20C": []
-    },
-    "route": [
-      "LELIB 10000 -1 250",
-      "JB 7000 -1 250",
-      "ALFA 6000 -1 220",
-      "BIDUS 3000 -1 220",
-      "NYLON 3000 -1 190"
-    ],
-    "inbound": [
-      [
-        "HDG 147"
-      ]
-    ]
-  },
-  "MABAL2A": {
-    "pronunciation": "MABAL 2 ALPHA",
-    "rwys": {
-      "02L": [],
-      "02C": []
-    },
-    "route": [
-      "PASPU 6000 21000 250",
-      "NYLON 6000 21000 220",
-      "POSUB 6000 21000 220",
-      "SANAT 4000 21000 220",
-      "SAMKO 4000 21000 190"
-    ],
-    "inbound": [
-      [
-        "HDG 180"
-      ]
-    ]
-  },
   "MABAL2B": {
     "pronunciation": "MABAL 2 BRAVO",
     "rwys": {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.utilities.ToastManager;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -47,6 +48,16 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new TerminalControl(new TextToSpeechManager());
+                return new TerminalControl(new TextToSpeechManager(), new ToastManager() {
+                        @Override
+                        public void saveFail() {
+                                //No default implementation
+                        }
+
+                        @Override
+                        public void readStorageFail() {
+                                //No default implementation
+                        }
+                });
         }
 }

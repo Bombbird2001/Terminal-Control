@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -73,11 +74,16 @@ public class GameSaver {
                 handle = Gdx.files.local("saves/" + radarScreen.saveId + ".json");
             } else {
                 Gdx.app.log("Storage error", "Local storage unavailable for Android!");
+                TerminalControl.toastManager.saveFail();
             }
         }
 
         if (handle != null) {
-            handle.writeString(Base64Coder.encodeString(jsonObject.toString()), false);
+            try {
+                handle.writeString(Base64Coder.encodeString(jsonObject.toString()), false);
+            } catch (GdxRuntimeException e) {
+                TerminalControl.toastManager.saveFail();
+            }
         }
 
         saveID(radarScreen.saveId);

@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol;
 
+import com.bombbird.terminalcontrol.utilities.ToastManager;
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 
@@ -10,7 +11,17 @@ public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new TerminalControl(new TextToSpeechManager()), config);
+        return new IOSApplication(new TerminalControl(new TextToSpeechManager(), new ToastManager() {
+            @Override
+            public void saveFail() {
+                //No default implementation
+            }
+
+            @Override
+            public void readStorageFail() {
+                //No default implementation
+            }
+        }), config);
     }
 
     public static void main(String[] argv) {

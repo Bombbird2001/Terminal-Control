@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.desktop;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.utilities.ToastManager;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -12,6 +13,16 @@ public class DesktopLauncher {
 		config.setWindowIcon("game/Icon48.png", "game/Icon32.png", "game/Icon16.png");
 		config.setWindowedMode(1440, 810);
 		TerminalControl.ishtml = false;
-		new Lwjgl3Application(new TerminalControl(new TextToSpeechManager()), config);
+		new Lwjgl3Application(new TerminalControl(new TextToSpeechManager(), new ToastManager() {
+			@Override
+			public void saveFail() {
+				//No default implementation
+			}
+
+			@Override
+			public void readStorageFail() {
+				//No default implementation
+			}
+		}), config);
 	}
 }

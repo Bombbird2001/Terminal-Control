@@ -212,6 +212,7 @@ public class FileLoader {
                 handle = Gdx.files.local("saves/saves.saves");
             } else {
                 Gdx.app.log("Storage error", "Local storage unavailable for Android!");
+                TerminalControl.toastManager.readStorageFail();
             }
         }
 

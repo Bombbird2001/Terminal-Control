@@ -9,6 +9,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
+import com.bombbird.terminalcontrol.utilities.ToastManager;
 
 public class TerminalControl extends Game {
     //Get screen size
@@ -31,8 +32,12 @@ public class TerminalControl extends Game {
     //Text-to-speech (for Android only)
     public static TextToSpeech tts;
 
-    public TerminalControl(TextToSpeech tts) {
+    //Toast (for Android only)
+    public static ToastManager toastManager;
+
+    public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
         TerminalControl.tts = tts;
+        TerminalControl.toastManager = toastManager;
     }
 
     @Override
