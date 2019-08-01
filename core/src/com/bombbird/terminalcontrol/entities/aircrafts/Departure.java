@@ -93,7 +93,11 @@ public class Departure extends Aircraft {
         if (save.isNull("route")) {
             setRoute(new Route(sid, getRunway().getName()));
         } else {
-            setRoute(new Route(save.getJSONObject("route")));
+            JSONObject route = save.getJSONObject("route");
+            if (sid == null) {
+                sid = new Sid(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.isNull("name") ? "null" : route.getString("name"));
+            }
+            setRoute(new Route(route, sid));
         }
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");
@@ -171,7 +175,7 @@ public class Departure extends Aircraft {
             }
             accel = true;
         }
-        if (getAltitude() >= sid.getInitClimb(getRunway().getName())[1] && !sidSet) {
+        if ((sid.getInitClimb(getRunway().getName()) == null || getAltitude() >= sid.getInitClimb(getRunway().getName())[1]) && !sidSet) {
             sidSet = true;
             updateAltRestrictions();
             updateTargetAltitude();

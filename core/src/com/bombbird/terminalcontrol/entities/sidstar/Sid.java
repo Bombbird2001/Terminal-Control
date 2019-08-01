@@ -22,6 +22,15 @@ public class Sid extends SidStar {
         super(airport, jo);
     }
 
+    public Sid(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo, String name) {
+        super(airport, wpts, restrictions, fo, name);
+
+        initClimb = new HashMap<String, int[]>();
+        initWpts = new HashMap<String, Array<Waypoint>>();
+        initRestrictions = new HashMap<String, Array<int[]>>();
+        initFlyOver = new HashMap<String, Array<Boolean>>();
+    }
+
     @Override
     public void parseInfo(JSONObject jo) {
         super.parseInfo(jo);

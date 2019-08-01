@@ -158,6 +158,12 @@ public class Route {
         name = jo.isNull("name") ? "null" : jo.getString("name");
     }
 
+    public Route(JSONObject jo, Sid sid) {
+        this(jo);
+
+        if ("null".equals(name) && sid != null) name = sid.getName();
+    }
+
     public Route(JSONObject jo, Star star) {
         this(jo);
         holdProcedure = new HoldProcedure(star);

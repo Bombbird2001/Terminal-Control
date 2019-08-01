@@ -223,7 +223,10 @@ public class FileLoader {
                 return saves;
             }
             for (String id: saveIds) {
-                String saveString = handle.sibling(id + ".json").readString();
+                FileHandle handle1 = handle.sibling(id + ".json");
+                if (!handle1.exists()) continue;
+                String saveString = handle1.readString();
+                if (saveString.length() == 0) continue;
                 if (saveString.charAt(0) != '{') saveString = Base64Coder.decodeString(saveString);
                 JSONObject save = new JSONObject(saveString);
                 saves.put(save);
