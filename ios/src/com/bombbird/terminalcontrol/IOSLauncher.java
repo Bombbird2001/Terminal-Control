@@ -21,6 +21,11 @@ public class IOSLauncher extends IOSApplication.Delegate {
             public void readStorageFail() {
                 //No default implementation
             }
+
+            @Override
+            public void jsonParseFail() {
+                //No default implementation
+            }
         }), config);
     }
 
