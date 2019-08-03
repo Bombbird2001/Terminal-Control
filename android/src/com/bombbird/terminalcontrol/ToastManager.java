@@ -31,6 +31,17 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
         });
     }
 
+    @Override
+    public void jsonParseFail() {
+        androidLauncher.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "Failed to load saves: 1 or more saves may be corrupted.", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
+    }
+
     public void initTTSFail() {
         androidLauncher.runOnUiThread(new Runnable() {
             @Override

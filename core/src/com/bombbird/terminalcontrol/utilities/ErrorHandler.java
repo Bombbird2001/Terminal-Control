@@ -21,6 +21,20 @@ public class ErrorHandler {
         if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
     }
 
+    public static void sendStringError(Exception e, String str) {
+        String error = ExceptionUtils.getStackTrace(e);
+        error = str + "\n" + error;
+        HttpRequests.sendError(error, 0);
+        e.printStackTrace();
+        //Quit game
+        TerminalControl.radarScreen.getMetar().setQuit(true);
+        RadarScreen.disposeStatic();
+        Ui.disposeStatic();
+        TerminalControl.radarScreen.dispose();
+        Gdx.app.exit();
+        if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
+    }
+
     public static void sendRepeatableError(String original, Exception e, int attempt) {
         String error = "Try " + attempt + ":\n" + original + "\n" + ExceptionUtils.getStackTrace(e);
         HttpRequests.sendError(error, 0);

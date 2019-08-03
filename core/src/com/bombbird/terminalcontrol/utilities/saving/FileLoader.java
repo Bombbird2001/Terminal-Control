@@ -19,7 +19,10 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
+import com.bombbird.terminalcontrol.utilities.ErrorHandler;
+import com.bombbird.terminalcontrol.utilities.ToastManager;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -227,9 +230,15 @@ public class FileLoader {
                 if (!handle1.exists()) continue;
                 String saveString = handle1.readString();
                 if (saveString.length() == 0) continue;
-                if (saveString.charAt(0) != '{') saveString = Base64Coder.decodeString(saveString);
-                JSONObject save = new JSONObject(saveString);
-                saves.put(save);
+                saveString = Base64Coder.decodeString(saveString);
+                try {
+                    JSONObject save = new JSONObject(saveString);
+                    saves.put(save);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ErrorHandler.sendStringError(e, saveString);
+                    TerminalControl.toastManager.jsonParseFail();
+                }
             }
         }
 

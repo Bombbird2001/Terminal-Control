@@ -4,4 +4,6 @@ public interface ToastManager {
     void saveFail();
 
     void readStorageFail();
+
+    void jsonParseFail();
 }

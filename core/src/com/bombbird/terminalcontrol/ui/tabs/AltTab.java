@@ -51,7 +51,7 @@ public class AltTab extends Tab {
                 if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
                     highestAlt = 3500;
                 }
-                int starHighestAlt = selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
+                int starHighestAlt = selectedAircraft.getDirect() == null ? TerminalControl.radarScreen.maxAlt : selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
             }
             if (highestAlt == -1) {
