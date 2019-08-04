@@ -73,7 +73,7 @@ public class LoadGameScreen extends SelectGameScreen {
             }
             jsonObject.put("AIRAC", airac);
             if (airac < newestAirac) {
-                saveButton.setText(toDisplay + "\nGame AIRAC not compatible with newest\nAIRAC " + newestAirac + ", older AIRAC " + airac + " will be used!");
+                saveButton.setText(toDisplay + "\nNote: New game AIRAC " + newestAirac + " has changed\nsignificantly from older AIRAC " + airac);
                 multiplier = 1.75f;
             }
 

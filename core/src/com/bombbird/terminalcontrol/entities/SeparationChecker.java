@@ -246,11 +246,6 @@ public class SeparationChecker extends Actor {
                 }
                 if (found) continue;
             }
-            if (aircraft instanceof Departure) {
-                //Suppress terrain warnings if aircraft is departure below certain altitudes depending in airport
-                if ("RCSS".equals(aircraft.getAirport().getIcao()) && aircraft.getAltitude() <= 5050) continue;
-                if (aircraft.getAltitude() <= 4050) continue;
-            }
             for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
                 if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < polygonObstacle.getMinAlt() - 50 && polygonObstacle.isIn(aircraft)) {
                     aircraft.setConflict(true);
