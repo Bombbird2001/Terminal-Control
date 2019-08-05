@@ -269,7 +269,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         } else if (loadedTime > 0.5) {
                             loadingText = "Loading live weather..  ";
                         }
-                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
+                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1450, 1550);
                     } else {
                         stage.draw();
                         game.batch.end();
