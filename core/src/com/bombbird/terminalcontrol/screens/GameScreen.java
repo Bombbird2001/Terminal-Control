@@ -257,17 +257,17 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                     //Draw to the spritebatch
                     game.batch.begin();
-                    String loadingText = "Loading.   ";
+                    String loadingText = "Loading live weather.   ";
                     if (loading) {
                         //Write loading text if loading
                         loadedTime += Gdx.graphics.getDeltaTime();
                         if (loadedTime > 1.5) {
                             loadedTime = 0;
-                            loadingText = "Loading.   ";
+                            loadingText = "Loading live weather.   ";
                         } else if (loadedTime > 1) {
-                            loadingText = "Loading... ";
+                            loadingText = "Loading live weather... ";
                         } else if (loadedTime > 0.5) {
-                            loadingText = "Loading..  ";
+                            loadingText = "Loading live weather..  ";
                         }
                         Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1560, 1550);
                     } else {

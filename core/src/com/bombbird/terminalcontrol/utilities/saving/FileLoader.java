@@ -20,7 +20,6 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
-import com.bombbird.terminalcontrol.utilities.ToastManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

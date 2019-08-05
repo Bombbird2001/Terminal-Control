@@ -17,6 +17,7 @@ public class Pronunciation {
         waypointPronunciations.put("HLG", "ho long");
         waypointPronunciations.put("ZUH", "Lian Sheng Way");
         waypointPronunciations.put("DANDE", "done day");
+        waypointPronunciations.put("NLG", "Nun Lung");
         callsigns = FileLoader.loadIcaoCallsigns();
     }
 
