@@ -50,6 +50,8 @@ public class AltTab extends Tab {
                 highestAlt -= highestAlt % 1000;
                 if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
                     highestAlt = 3500;
+                } else if ("VHHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
+                    highestAlt = 4500;
                 }
                 int starHighestAlt = selectedAircraft.getDirect() == null ? TerminalControl.radarScreen.maxAlt : selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
@@ -75,6 +77,7 @@ public class AltTab extends Tab {
                 String toAdd = altTracker / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + altTracker / 100 : Integer.toString(altTracker);
                 alts.add(toAdd);
                 if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && altTracker == 3000) alts.add("3500");
+                if ("VHHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && altTracker == 4000) alts.add("4500");
                 altTracker += 1000;
             }
         } else {
@@ -82,6 +85,7 @@ public class AltTab extends Tab {
                 String toAdd = lowestAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + lowestAlt / 100 : Integer.toString(lowestAlt);
                 alts.add(toAdd);
                 if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && lowestAlt == 3000) alts.add("3500");
+                if ("VHHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && lowestAlt == 4000) alts.add("4500");
                 lowestAlt += 1000;
             }
         }
