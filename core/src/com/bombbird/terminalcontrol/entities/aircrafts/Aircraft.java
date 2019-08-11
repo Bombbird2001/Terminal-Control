@@ -703,10 +703,11 @@ public class Aircraft extends Actor {
         double angleDiff;
 
         //Find target track angle
+        double principleAngle = Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees;
         if (deltaX >= 0) {
-            targetHeading = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            targetHeading = 90 - principleAngle;
         } else {
-            targetHeading = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+            targetHeading = 270 - principleAngle;
         }
 
         //Calculate required aircraft heading to account for winds
@@ -733,10 +734,11 @@ public class Aircraft extends Actor {
             float deltaX = nextWpt.getPosX() - getDirect().getPosX();
             float deltaY = nextWpt.getPosY() - getDirect().getPosY();
             double nextTarget;
+            double principleAngle = Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees;
             if (deltaX >= 0) {
-                nextTarget = 90 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+                nextTarget = 90 - principleAngle;
             } else {
-                nextTarget = 270 - (Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees);
+                nextTarget = 270 - principleAngle;
             }
             return nextTarget;
         }
@@ -1479,6 +1481,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
+        if (holdWpt == null && "Hold at".equals(LatTab.latMode)) holdWpt = radarScreen.waypoints.get(navState.getClearedHold());
         return holdWpt;
     }
 

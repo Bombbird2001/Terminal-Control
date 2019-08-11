@@ -14,7 +14,6 @@ public class AndroidLauncher extends TextToSpeechManager {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         TerminalControl.ishtml = false;
-        ToastManager toastManager = new ToastManager(this);
         initialize(new TerminalControl(this, toastManager), config);
 
         Intent ttsIntent = new Intent();

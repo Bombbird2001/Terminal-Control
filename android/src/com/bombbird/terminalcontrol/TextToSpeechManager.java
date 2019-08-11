@@ -1,10 +1,10 @@
 package com.bombbird.terminalcontrol;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.os.Build;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
-import android.widget.Toast;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
@@ -20,23 +20,35 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     public static final int ACT_CHECK_TTS_DATA = 1000;
     public static final int ACT_INSTALL_TTS_DATA = 1001;
 
+    public ToastManager toastManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        toastManager = new ToastManager((AndroidLauncher) this);
+    }
+
     /** Performs relevant actions after receiving status for TTS data check  */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACT_CHECK_TTS_DATA) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                //Data exists, so we instantiate the TTS engine
-                tts = new TextToSpeech(this, this);
-            } else {
-                //Data is missing, so we start the TTS installation process
-                Intent installIntent = new Intent();
-                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivityForResult(installIntent, ACT_INSTALL_TTS_DATA);
+        try {
+            if (requestCode == ACT_CHECK_TTS_DATA) {
+                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                    //Data exists, so we instantiate the TTS engine
+                    tts = new TextToSpeech(this, this);
+                } else {
+                    //Data is missing, so we start the TTS installation process
+                    Intent installIntent = new Intent();
+                    installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                    startActivityForResult(installIntent, ACT_INSTALL_TTS_DATA);
+                }
+            } else if (requestCode == ACT_INSTALL_TTS_DATA) {
+                Intent ttsIntent = new Intent();
+                ttsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+                startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA);
             }
-        } else if (requestCode == ACT_INSTALL_TTS_DATA) {
-            Intent ttsIntent = new Intent();
-            ttsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-            startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA);
+        } catch (ActivityNotFoundException e) {
+            toastManager.initTTSFail();
         }
     }
 
@@ -46,14 +58,14 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
             if (tts != null) {
                 int result = tts.setLanguage(Locale.ENGLISH);
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Toast.makeText(this, "TTS language is not supported", Toast.LENGTH_LONG).show();
+                    toastManager.ttsLangNotSupported();
                 } else {
                     Gdx.app.log("Text to Speech", "TTS initialized successfully");
                     tts.setSpeechRate(1.7f);
                 }
             }
         } else {
-            Toast.makeText(this, "TTS initialization failed", Toast.LENGTH_LONG).show();
+            toastManager.initTTSFail();
             Gdx.app.log("Text to Speech", "TTS initialization failed");
         }
     }

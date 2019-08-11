@@ -51,4 +51,14 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
             }
         });
     }
+
+    public void ttsLangNotSupported() {
+        androidLauncher.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "TTS language is not supported", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
+    }
 }

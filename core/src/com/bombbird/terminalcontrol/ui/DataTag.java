@@ -288,7 +288,7 @@ public class DataTag {
                 labelText[5] = Integer.toString(aircraft.getNavState().getClearedHdg().last());
             }
         } else if ("Hold at".equals(aircraft.getNavState().getDispLatMode().last())) {
-            if (aircraft.isHolding() || (aircraft.getDirect() != null && aircraft.getDirect().equals(aircraft.getHoldWpt()))) {
+            if (aircraft.isHolding() || (aircraft.getDirect() != null && aircraft.getHoldWpt() != null && aircraft.getDirect().equals(aircraft.getHoldWpt()))) {
                 labelText[5] = aircraft.getHoldWpt().getName();
             } else if (aircraft.getDirect() != null) {
                 labelText[5] = aircraft.getDirect().getName();

@@ -39,7 +39,7 @@ public class WaypointManager {
                 for (int i = 0; i < remaining.size; i++) {
                     remaining.get(i).setSelected(true);
                 }
-            } else if (aircraft.isHolding()) {
+            } else if (aircraft.isHolding() && aircraft.getHoldWpt() != null) {
                 aircraft.getHoldWpt().setSelected(true);
             }
         }
@@ -59,7 +59,7 @@ public class WaypointManager {
     /** Updates the waypoints selected based on whether the aircrafts' next direct is it */
     private void updateAircraftDirects() {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isHolding()) {
+            if (aircraft.isHolding() && aircraft.getHoldWpt() != null) {
                 aircraft.getHoldWpt().setSelected(true);
             } else if (("Hold at".equals(aircraft.getNavState().getDispLatMode().last()) || aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName())) && aircraft.getNavState().getClearedDirect().last() != null) {
                 aircraft.getNavState().getClearedDirect().last().setSelected(true);
