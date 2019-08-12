@@ -295,6 +295,7 @@ public class RadarScreen extends GameScreen {
 
         //Show loading screen
         loading = true;
+        loadingTime = 0;
 
         //Load shoreline image file
         Image image = FileLoader.loadShoreline();

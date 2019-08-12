@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.ui.DataTag;
+import com.bombbird.terminalcontrol.ui.RandomTip;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
@@ -31,8 +32,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Init game (set in constructor)
     public final TerminalControl game;
     public boolean loading;
+    public float loadingTime = 0;
     public String loadingPercent;
     private float loadedTime = 0;
+    private String tip = "";
 
     //Set input processors
     public InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -260,7 +263,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     String loadingText = "Loading live weather.   ";
                     if (loading) {
                         //Write loading text if loading
-                        loadedTime += Gdx.graphics.getDeltaTime();
+                        loadingTime += delta;
+                        loadedTime += delta;
                         if (loadedTime > 1.5) {
                             loadedTime = 0;
                             loadingText = "Loading live weather.   ";
@@ -269,7 +273,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         } else if (loadedTime > 0.5) {
                             loadingText = "Loading live weather..  ";
                         }
-                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1450, 1550);
+                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1420, 1550);
+                        if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
+                        if ("".equals(tip)) tip = RandomTip.randomTip();
+                        Fonts.defaultFont16.draw(game.batch, "Tip: " + tip, 1850 - (tip.length() + 5) / 2 * 28, 960);
                     } else {
                         stage.draw();
                         game.batch.end();
@@ -447,7 +454,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
         float screenHeightRatio = 3240f / Gdx.graphics.getHeight();
         float screenWidthRatio = 5760f / Gdx.graphics.getWidth();
-        float screenRatio = (screenHeightRatio > screenWidthRatio) ? screenHeightRatio : screenWidthRatio;
+        float screenRatio = Math.max(screenHeightRatio, screenWidthRatio);
         camera.translate(-deltaX * camera.zoom * screenRatio, deltaY * camera.zoom * screenRatio);
         return false;
     }

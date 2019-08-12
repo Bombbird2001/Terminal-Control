@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import java.util.HashMap;
 
 public class AircraftType {
-    public static final HashMap<String, int[]> aircraftTypes = FileLoader.loadAircraftData();
+    private static final HashMap<String, int[]> aircraftTypes = FileLoader.loadAircraftData();
 
     public static char getWakeCat(String type) {
         int code = aircraftTypes.get(type)[0];

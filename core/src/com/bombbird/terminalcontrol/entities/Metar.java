@@ -11,6 +11,9 @@ public class Metar {
     private RadarScreen radarScreen;
     private boolean quit;
 
+    //Thread lock
+    private final Object lock = new Object();
+
     public Metar(RadarScreen radarScreen) {
         this.radarScreen = radarScreen;
     }
@@ -165,6 +168,16 @@ public class Metar {
         updateAirports();
         radarScreen.ui.updateMetar();
         radarScreen.loadingPercent = "100%";
+        if (radarScreen.loadingTime < 4.5) {
+            long deltaTime = (long)((4.5 - radarScreen.loadingTime) * 1000);
+            try {
+                synchronized (lock) {
+                    lock.wait(deltaTime);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         radarScreen.loading = false;
     }
 
