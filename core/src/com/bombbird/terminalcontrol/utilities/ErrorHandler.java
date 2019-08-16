@@ -27,12 +27,22 @@ public class ErrorHandler {
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
         //Quit game
-        TerminalControl.radarScreen.getMetar().setQuit(true);
-        RadarScreen.disposeStatic();
+        if (TerminalControl.radarScreen != null) {
+            TerminalControl.radarScreen.getMetar().setQuit(true);
+            RadarScreen.disposeStatic();
+        }
         Ui.disposeStatic();
         TerminalControl.radarScreen.dispose();
         Gdx.app.exit();
         if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
+    }
+
+    public static void sendJSONErrorNoThrow(Exception e, String str) {
+        String error = ExceptionUtils.getStackTrace(e);
+        error = str + "\n" + error;
+        HttpRequests.sendError(error, 0);
+        e.printStackTrace();
+        //Don't throw runtime exception
     }
 
     public static void sendRepeatableError(String original, Exception e, int attempt) {

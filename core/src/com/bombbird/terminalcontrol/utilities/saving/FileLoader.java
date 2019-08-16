@@ -229,14 +229,20 @@ public class FileLoader {
                 if (!handle1.exists()) continue;
                 String saveString = handle1.readString();
                 if (saveString.length() == 0) continue;
-                saveString = Base64Coder.decodeString(saveString);
                 try {
+                    saveString = Base64Coder.decodeString(saveString);
                     JSONObject save = new JSONObject(saveString);
                     saves.put(save);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ErrorHandler.sendStringError(e, saveString);
+                    ErrorHandler.sendJSONErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail();
+                    Gdx.app.log("Corrupted save", "JSON parse failure");
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                    ErrorHandler.sendJSONErrorNoThrow(e, saveString);
+                    TerminalControl.toastManager.jsonParseFail();
+                    Gdx.app.log("Corrupted save", "Base64 decode failure");
                 }
             }
         }

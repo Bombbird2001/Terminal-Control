@@ -25,8 +25,8 @@ android {
         applicationId "com.bombbird.terminalcontrol"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 21
-        versionName "1.2.1909.1"
+        versionCode 22
+        versionName "1.2.1909.2"
     }
     buildTypes {
         debug {
