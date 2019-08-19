@@ -131,6 +131,7 @@ public class Arrival extends Aircraft {
         }
 
         setClearedIas(getClimbSpd());
+        setIas(getClimbSpd());
 
         if (getDirect() != null) {
             int spd = getRoute().getWptMaxSpd(getDirect().getName());
