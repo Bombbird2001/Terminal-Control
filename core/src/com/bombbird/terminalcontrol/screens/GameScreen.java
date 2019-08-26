@@ -276,7 +276,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1420, 1550);
                         if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
                         if ("".equals(tip)) tip = RandomTip.randomTip();
-                        Fonts.defaultFont16.draw(game.batch, "Tip: " + tip, 1850 - (tip.length() + 5) / 2 * 28, 960);
+                        Fonts.defaultFont16.draw(game.batch, "Tip: " + tip, 1870 - (tip.length() + 5) / 2 * 29, 960);
                     } else {
                         stage.draw();
                         game.batch.end();

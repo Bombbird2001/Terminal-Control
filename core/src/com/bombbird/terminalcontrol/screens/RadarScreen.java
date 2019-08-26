@@ -313,7 +313,7 @@ public class RadarScreen extends GameScreen {
         Pronunciation.loadPronunciation();
 
         //Load maximum traffic limits for different airports
-        MaxTraffic.loadMaxTraffic();
+        MaxTraffic.loadHashmaps();
 
         //Load airports
         loadAirports();
@@ -564,7 +564,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setPlanesToControl(float planesToControl) {
-        planesToControl = MathUtils.clamp(planesToControl, 4f, MaxTraffic.maxTraffic.get(mainName));
+        planesToControl = MathUtils.clamp(planesToControl, 4f, MaxTraffic.getMaxTraffic(mainName));
         this.planesToControl = planesToControl;
     }
 
