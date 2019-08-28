@@ -20,9 +20,10 @@ public class RandomTip {
         tips.add("Some aircraft descend/climb slower than others");
         tips.add("An aircraft will go around if it is too high or too fast");
         tips.add("An aircraft will go around if there is another aircraft on the runway");
-        tips.add("A minimum separation of 3nm or 1000feet must be kept between all aircraft (except in some cases)");
+        tips.add("A minimum separation of 3nm or 1000 feet must be kept between all aircraft (except in some cases)");
         tips.add("An aircraft will divert if it is low on fuel");
         tips.add("Refer to the AIP of the relevant aviation authorities to learn more about an airport's SID/STARs!");
+        tips.add("Fly-over waypoints are indicated by a filled circle");
     }
 
     /** Checks if the tips array has been loaded */

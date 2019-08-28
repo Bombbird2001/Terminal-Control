@@ -52,9 +52,12 @@ public class Star extends SidStar {
             JSONArray rwyObject = rwys.getJSONArray(rwy);
             for (int i = 0; i < rwyObject.length(); i++) {
                 String[] data = rwyObject.getString(i).split(" ");
-                wpts.add(TerminalControl.radarScreen.waypoints.get(data[0]));
+                String wptName = data[0];
+                wpts.add(TerminalControl.radarScreen.waypoints.get(wptName));
                 restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
-                flyOver.add(data.length > 4 && data[4].equals("FO"));
+                boolean fo = data.length > 4 && data[4].equals("FO");
+                flyOver.add(fo);
+                if (fo) Waypoint.flyOverPts.put(wptName, true);
             }
             rwyWpts.put(rwy, wpts);
             rwyRestrictions.put(rwy, restrictions);

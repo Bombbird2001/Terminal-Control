@@ -61,9 +61,12 @@ public class SidStar {
         JSONArray joWpts = jo.getJSONArray("route");
         for (int i = 0; i < joWpts.length(); i++) {
             String[] data = joWpts.getString(i).split(" ");
-            waypoints.add(radarScreen.waypoints.get(data[0]));
+            String wptName = data[0];
+            waypoints.add(radarScreen.waypoints.get(wptName));
             restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
-            flyOver.add(data.length > 4 && data[4].equals("FO"));
+            boolean fo = data.length > 4 && data[4].equals("FO");
+            flyOver.add(fo);
+            if (fo) Waypoint.flyOverPts.put(wptName, true);
         }
     }
 

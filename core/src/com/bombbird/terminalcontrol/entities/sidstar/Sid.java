@@ -53,9 +53,12 @@ public class Sid extends SidStar {
             JSONArray initWptData = rwyObject.getJSONArray("wpts");
             for (int i = 0; i < initWptData.length(); i++) {
                 String[] data = initWptData.getString(i).split(" ");
-                wpts.add(TerminalControl.radarScreen.waypoints.get(data[0]));
+                String wptName = data[0];
+                wpts.add(TerminalControl.radarScreen.waypoints.get(wptName));
                 restrictions.add(new int[] {Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[3])});
-                flyOver.add(data.length > 4 && data[4].equals("FO"));
+                boolean fo = data.length > 4 && data[4].equals("FO");
+                flyOver.add(fo);
+                if (fo) Waypoint.flyOverPts.put(wptName, true);
             }
             initClimb.put(rwy, new int[] {Integer.parseInt(initClimbData[0]), Integer.parseInt(initClimbData[1]), Integer.parseInt(initClimbData[2])});
             initWpts.put(rwy, wpts);

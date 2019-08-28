@@ -464,8 +464,14 @@ public class RadarScreen extends GameScreen {
         }
 
         //Draw waypoints
+        Array<Waypoint> flyOver = new Array<Waypoint>();
         for (Waypoint waypoint: waypoints.values()) {
-            waypoint.renderShape();
+            if (waypoint.isFlyOver()) {
+                //Save flyovers for later
+                flyOver.add(waypoint);
+            } else {
+                waypoint.renderShape();
+            }
         }
 
         //Draw aircrafts
@@ -488,6 +494,10 @@ public class RadarScreen extends GameScreen {
 
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        for (Waypoint waypoint: flyOver) {
+            waypoint.renderShape();
+        }
     }
 
     @Override

@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
+import java.util.HashMap;
+
 public class Waypoint extends Actor {
     private String name;
     private int posX;
@@ -16,6 +18,8 @@ public class Waypoint extends Actor {
     private boolean selected;
 
     private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
+
+    public static final HashMap<String, Boolean> flyOverPts = new HashMap<String, Boolean>();
 
     public Waypoint(String name, int posX, int posY) {
         this.name = name;
@@ -43,6 +47,10 @@ public class Waypoint extends Actor {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
         }
+    }
+
+    public boolean isFlyOver() {
+        return flyOverPts.containsKey(name);
     }
 
     @Override
