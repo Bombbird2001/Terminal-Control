@@ -313,7 +313,26 @@ public class FileLoader {
         return noise;
     }
 
-    public static Image loadShoreline() {
-        return new Image(new Texture(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/shorelineDone.png")));
+    public static Array<Array<Integer>> loadShoreline() {
+        Array<Array<Integer>> shoreline = new Array<Array<Integer>>();
+        String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/shoreline.shore").readString().split("\\r?\\n");
+
+        Array<Integer> landmass = new Array<Integer>();
+        for (String line: info) {
+            if (line.charAt(0) == '\"') {
+                if (landmass.size > 0) {
+                    shoreline.add(landmass);
+                    landmass = new Array<Integer>();
+                }
+            } else {
+                String[] data = line.split(" ");
+                landmass.add(Integer.parseInt(data[0])); //x coordinate
+                landmass.add(Integer.parseInt(data[1])); //y coordinate
+            }
+        }
+
+        if (landmass.size > 0) shoreline.add(landmass); //Add the last landmass
+
+        return shoreline;
     }
 }

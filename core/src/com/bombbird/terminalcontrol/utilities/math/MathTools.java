@@ -52,12 +52,22 @@ public class MathTools {
         float yDistDown = (yBorder[0] - y) / MathUtils.sinDeg(90 - track);
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
-        return xDist > yDist ? yDist : xDist;
+        return Math.min(xDist, yDist);
     }
 
     /** Calculates the point where the line from a point at a specified track meets the radar screen's border */
     public static float[] pointsAtBorder(float[] xBorder, float[] yBorder, float x, float y, float track) {
         float dist = distanceFromBorder(xBorder, yBorder, x, y, track);
         return new float[] {x + dist * MathUtils.cosDeg(90 - track), y + dist * MathUtils.sinDeg(90 - track)};
+    }
+
+    /** Checks whether integer is within range of 2 integers */
+    public static boolean withinRange(int no, int min, int max) {
+        return no >= min && no <= max;
+    }
+
+    /** Checks whether float is within range of 2 floats */
+    public static boolean withinRange(float no, float min, float max) {
+        return no > min && no < max;
     }
 }

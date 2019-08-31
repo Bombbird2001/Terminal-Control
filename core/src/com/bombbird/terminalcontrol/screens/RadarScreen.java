@@ -297,14 +297,11 @@ public class RadarScreen extends GameScreen {
         loading = true;
         loadingTime = 0;
 
-        //Load shoreline image file
-        Image image = FileLoader.loadShoreline();
-        image.setScale(3240 / image.getWidth());
-        image.setX(1260);
-        stage.addActor(image);
-
         //Load range circles
         loadRange();
+
+        //Load shoreline data
+        Shoreline.loadShoreline();
 
         //Load waypoints
         waypoints = FileLoader.loadWaypoints();
@@ -417,6 +414,9 @@ public class RadarScreen extends GameScreen {
 
         //Updates STAR timers
         RandomSTAR.update();
+
+        //Draw shoreline
+        Shoreline.renderShape();
 
         //Draw obstacles
         Array<PolygonObstacle> saveForLast = new Array<PolygonObstacle>();
