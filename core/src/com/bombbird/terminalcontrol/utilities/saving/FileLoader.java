@@ -219,16 +219,22 @@ public class FileLoader {
         }
 
         if (handle != null && handle.exists()) {
-            String[] saveIds = handle.readString().split(",");
-            if ("".equals(saveIds[0])) {
+            Array<String> saveIds = new Array<String>(handle.readString().split(","));
+            if ("".equals(saveIds.get(0))) {
                 //"" returned if saves.saves is empty
                 return saves;
             }
             for (String id: saveIds) {
                 FileHandle handle1 = handle.sibling(id + ".json");
-                if (!handle1.exists()) continue;
+                if (!handle1.exists()) {
+                    GameSaver.deleteSave(Integer.parseInt(id));
+                    continue;
+                }
                 String saveString = handle1.readString();
-                if (saveString.length() == 0) continue;
+                if (saveString.length() == 0) {
+                    GameSaver.deleteSave(Integer.parseInt(id));
+                    continue;
+                }
                 try {
                     saveString = Base64Coder.decodeString(saveString);
                     JSONObject save = new JSONObject(saveString);
@@ -238,11 +244,13 @@ public class FileLoader {
                     ErrorHandler.sendJSONErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail();
                     Gdx.app.log("Corrupted save", "JSON parse failure");
+                    if (GameSaver.deleteSave(Integer.parseInt(id))) Gdx.app.log("Save deleted", "Corrupted save deleted");
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                     ErrorHandler.sendJSONErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail();
                     Gdx.app.log("Corrupted save", "Base64 decode failure");
+                    if (GameSaver.deleteSave(Integer.parseInt(id))) Gdx.app.log("Save deleted", "Corrupted save deleted");
                 }
             }
         }

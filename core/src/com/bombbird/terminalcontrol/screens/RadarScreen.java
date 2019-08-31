@@ -495,6 +495,7 @@ public class RadarScreen extends GameScreen {
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        //Draw filled flyover waypoints
         for (Waypoint waypoint: flyOver) {
             waypoint.renderShape();
         }

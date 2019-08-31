@@ -526,8 +526,8 @@ public class GameSaver {
         return jsonArray;
     }
 
-    /** Deletes a save given input game ID */
-    public static void deleteSave(int id) {
+    /** Deletes a save given input game ID, returns true if success, false if fail */
+    public static boolean deleteSave(int id) {
         FileHandle handle;
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             handle = Gdx.files.local("saves/saves.saves");
@@ -552,6 +552,8 @@ public class GameSaver {
         handle = handle.sibling(id + ".json");
         if (!handle.delete()) {
             Gdx.app.log("Delete error", id + ".json not found");
+            return false;
         }
+        return true;
     }
 }
