@@ -931,6 +931,7 @@ public class Aircraft extends Actor {
             if (direct == null) {
                 navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
             }
+            radarScreen.getCommBox().holdEstablishMsg(this, holdWpt.getName());
         } else {
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {

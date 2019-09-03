@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
@@ -67,6 +66,8 @@ public class RadarScreen extends GameScreen {
 
     private int arrivals;
     private float spawnTimer;
+
+    private char information = 'A';
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
@@ -145,6 +146,7 @@ public class RadarScreen extends GameScreen {
         highScore = save.getInt("highScore");
         arrivals = save.getInt("arrivals");
         spawnTimer = (float) save.getDouble("spawnTimer");
+        information = (char) save.getInt("information");
 
         loadStageCamTimer();
 
@@ -638,5 +640,14 @@ public class RadarScreen extends GameScreen {
 
     public RunwayChanger getRunwayChanger() {
         return runwayChanger;
+    }
+
+    public char getInformation() {
+        return information;
+    }
+
+    public void updateInformation() {
+        information++;
+        if (information > 90) information -= 26;
     }
 }

@@ -11,7 +11,7 @@ public class MaxTraffic {
 
     public static void loadHashmaps() {
         maxTraffic.put("RCTP", 20f);
-        maxTraffic.put("WSSS", 20f);
+        maxTraffic.put("WSSS", 18f);
         maxTraffic.put("RJTT", 26f);
         maxTraffic.put("RJBB", 18f);
         maxTraffic.put("VHHH", 24f);
@@ -32,7 +32,7 @@ public class MaxTraffic {
 
         nightMaxTraffic.put("RJTT", 6f);
         nightMaxTraffic.put("RJBB", 4f);
-        nightMaxTraffic.put("VHHH", 20f);
+        nightMaxTraffic.put("VHHH", 18f);
     }
 
     public static float getMaxTraffic(String icao) {

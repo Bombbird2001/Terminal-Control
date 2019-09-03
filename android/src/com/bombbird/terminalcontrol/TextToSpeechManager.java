@@ -88,18 +88,30 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks the initial contact for arrivals */
     @Override
-    public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
+    public void initArrContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = Pronunciation.callsigns.get(icao);
         String newFlightNo = Pronunciation.convertNoToText(flightNo);
         String newAction = Pronunciation.convertToFlightLevel(action);
-        String newDirect;
-        if (Pronunciation.waypointPronunciations.containsKey(direct)) {
-            newDirect = Pronunciation.waypointPronunciations.get(direct);
-        } else {
-            newDirect = Pronunciation.checkNumber(direct).toLowerCase();
+        String starString = "";
+        if (starSaid) {
+            starString = " on the " + star + " arrival";
         }
-        String text = apchCallsign + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + " on the " + star + " arrival, inbound " + newDirect;
+        String directString = "";
+        if (inboundSaid) {
+            String newDirect;
+            if (Pronunciation.waypointPronunciations.containsKey(direct)) {
+                newDirect = Pronunciation.waypointPronunciations.get(direct);
+            } else {
+                newDirect = Pronunciation.checkNumber(direct).toLowerCase();
+            }
+            directString = ", inbound " + newDirect;
+        }
+        String newInfo = "";
+        if (info.length() >= 2) {
+            newInfo = ", information " + Pronunciation.alphabetPronunciations.get(info.charAt(info.length() - 1));
+        }
+        String text = apchCallsign + greeting + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + starString + directString + newInfo;
         sayText(text, voice);
     }
 
@@ -117,12 +129,39 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks the initial contact for departures */
     @Override
-    public void initDepContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String airport, String outbound,  String action, String sid) {
+    public void initDepContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String airport, String outbound,  String action, String sid, boolean sidSaid) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String callsign = Pronunciation.callsigns.get(icao);
         action = Pronunciation.convertToFlightLevel(action);
         String newFlightNo = Pronunciation.convertNoToText(flightNo);
-        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + ", " + sid + " departure";
+        String sidString = "";
+        if (sidSaid) {
+            sidString = ", " + sid + " departure";
+        }
+        String text = apchCallsign + greeting + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + sidString;
+        sayText(text, voice);
+    }
+
+    @Override
+    public void holdEstablishMsg(String voice, String icao, String flightNo, String wake, String wpt, int type) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String callsign = Pronunciation.callsigns.get(icao);
+        String newFlightNo = Pronunciation.convertNoToText(flightNo);
+        String text = callsign + newFlightNo + " " + wake;
+        String newWpt;
+        if (Pronunciation.waypointPronunciations.containsKey(wpt)) {
+            newWpt = Pronunciation.waypointPronunciations.get(wpt);
+        } else {
+            newWpt = Pronunciation.checkNumber(wpt).toLowerCase();
+        }
+        if (type == 0) {
+            text += " is established in the hold over " + newWpt;
+        } else if (type == 1) {
+            text += ", holding over " + newWpt;
+        } else if (type == 2) {
+            text += ", we're holding at " + newWpt;
+        }
+
         sayText(text, voice);
     }
 

@@ -38,6 +38,7 @@ public class GameSaver {
         jsonObject.put("planesToControl", (double) radarScreen.getPlanesToControl());
         jsonObject.put("arrivals", radarScreen.getArrivals());
         jsonObject.put("spawnTimer", (double) radarScreen.getSpawnTimer());
+        jsonObject.put("information", radarScreen.getInformation());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);

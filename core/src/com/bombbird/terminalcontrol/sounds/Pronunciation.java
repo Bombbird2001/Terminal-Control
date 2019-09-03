@@ -9,6 +9,7 @@ import java.util.HashMap;
 public class Pronunciation {
     public static final HashMap<String, String> waypointPronunciations = new HashMap<String, String>();
     public static HashMap<String, String> callsigns;
+    public static final HashMap<Character, String> alphabetPronunciations = new HashMap<Character, String>();
 
     /** Loads the pronunciations */
     public static void loadPronunciation() {
@@ -19,7 +20,35 @@ public class Pronunciation {
         waypointPronunciations.put("DANDE", "done day");
         waypointPronunciations.put("NLG", "Nun Lung");
         waypointPronunciations.put("SMT", "Siu Mo Tow");
+
         callsigns = FileLoader.loadIcaoCallsigns();
+
+        alphabetPronunciations.put('A', "alpha");
+        alphabetPronunciations.put('B', "bravo");
+        alphabetPronunciations.put('C', "charlie");
+        alphabetPronunciations.put('D', "delta");
+        alphabetPronunciations.put('E', "echo");
+        alphabetPronunciations.put('F', "foxtrot");
+        alphabetPronunciations.put('G', "golf");
+        alphabetPronunciations.put('H', "hotel");
+        alphabetPronunciations.put('I', "india");
+        alphabetPronunciations.put('J', "juliett");
+        alphabetPronunciations.put('K', "kilo");
+        alphabetPronunciations.put('L', "lima");
+        alphabetPronunciations.put('M', "mike");
+        alphabetPronunciations.put('N', "november");
+        alphabetPronunciations.put('O', "oscar");
+        alphabetPronunciations.put('P', "papa");
+        alphabetPronunciations.put('Q', "quebec");
+        alphabetPronunciations.put('R', "romeo");
+        alphabetPronunciations.put('S', "sierra");
+        alphabetPronunciations.put('T', "tango");
+        alphabetPronunciations.put('U', "uniform");
+        alphabetPronunciations.put('V', "victor");
+        alphabetPronunciations.put('W', "whiskey");
+        alphabetPronunciations.put('X', "x-ray");
+        alphabetPronunciations.put('Y', "yankee");
+        alphabetPronunciations.put('Z', "zulu");
     }
 
     /** Checks whether direct contains a number */

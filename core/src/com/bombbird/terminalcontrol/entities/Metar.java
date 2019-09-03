@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.utilities.HttpRequests;
 import org.json.JSONObject;
 
 public class Metar {
+    private JSONObject prevMetar;
     private JSONObject metarObject;
     private RadarScreen radarScreen;
     private boolean quit;
@@ -20,6 +21,7 @@ public class Metar {
 
     public Metar(RadarScreen radarScreen, JSONObject save) {
         this(radarScreen);
+        prevMetar = save;
         metarObject = save;
     }
 
@@ -56,6 +58,7 @@ public class Metar {
     }
 
     private void updateAirports() {
+        if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) radarScreen.updateInformation();
         for (Airport airport: radarScreen.airports.values()) {
             airport.setMetar(metarObject);
         }

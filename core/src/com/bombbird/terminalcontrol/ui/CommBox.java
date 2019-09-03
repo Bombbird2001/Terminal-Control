@@ -1,11 +1,13 @@
 package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -17,13 +19,24 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 public class CommBox {
     private Queue<Label> labels;
     private Label header;
     private Table scrollTable;
     private ScrollPane scrollPane;
 
+    private static final Array<String> atcByeCtr = new Array<String>();
+    private static final Array<String> atcByeTwr = new Array<String>();
+    private static final Array<String> pilotBye = new Array<String>();
+
     public CommBox() {
+        atcByeCtr.add("good day", "see you", "have a good flight", "have a safe flight");
+        atcByeTwr.add("good day", "see you", "have a safe landing");
+        pilotBye.add("good day", "see you", "have a nice day", "bye bye");
+
         labels = new Queue<Label>();
 
         header = new Label("Communication box", getLabelStyle(Color.WHITE));
@@ -76,12 +89,17 @@ public class CommBox {
             wake = " super";
         }
 
-        Label label = new Label(aircraft.getCallsign() + wake + ", contact " + callsign + " on " + freq + ", good day.", getLabelStyle(Color.BLACK));
+        String bai = ", ";
+        bai += callsign.contains("Tower") ? atcByeTwr.random() : atcByeCtr.random();
+        Label label = new Label(aircraft.getCallsign() + wake + ", contact " + callsign + " on " + freq + bai + ".", getLabelStyle(Color.BLACK));
         updateLabelQueue(label);
 
-        Label label1 = new Label(freq + ", good day, " + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
+        String bye = ", ";
+        bye += pilotBye.random() + ", ";
+        Label label1 = new Label(freq + bye + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
         updateLabelQueue(label1);
-        TerminalControl.tts.contactOther(aircraft.getVoice(), freq, aircraft.getCallsign().substring(0, 3), aircraft.getCallsign().substring(3), wake);
+        //Remove lowkey annoying message from TTS
+        //TerminalControl.tts.contactOther(aircraft.getVoice(), freq, aircraft.getCallsign().substring(0, 3), aircraft.getCallsign().substring(3), wake);
     }
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
@@ -101,13 +119,11 @@ public class CommBox {
             wake = " super";
         }
 
-        Label label;
-
         String altitude;
         if (aircraft.getAltitude() >= TerminalControl.radarScreen.transLvl * 100) {
             altitude = "FL" + (int)(aircraft.getAltitude() / 100);
         } else {
-            altitude = (int)(aircraft.getAltitude() / 100) * 100 + " feet";
+            altitude = Integer.toString((int)(aircraft.getAltitude() / 100) * 100);
         }
         String clearedAltitude;
         if (aircraft.getClearedAltitude() >= TerminalControl.radarScreen.transLvl * 100) {
@@ -131,10 +147,31 @@ public class CommBox {
         String text = "";
         String icao = aircraft.getCallsign().substring(0, 3);
         String flightNo = aircraft.getCallsign().substring(3);
+        String greeting = "";
+        int random = MathUtils.random(2);
+        if (random == 1) {
+            greeting = getGreetingByTime();
+        } else if (random == 2) {
+            greeting = " hello";
+        }
+        String starString = "";
+        boolean starSaid = MathUtils.randomBoolean();
+        if (starSaid) {
+            starString = " on the " + aircraft.getSidStar().getName() + " arrival";
+        }
+        String inboundString = "";
+        boolean inboundSaid = MathUtils.randomBoolean();
+        if (inboundSaid) {
+            inboundString = ", inbound " + aircraft.getDirect().getName();
+        }
+        String infoString = "";
+        if (MathUtils.randomBoolean()) {
+            infoString = ", information " + TerminalControl.radarScreen.getInformation();
+        }
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
-                text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + " on the " + aircraft.getSidStar().getName() + " arrival, inbound " + aircraft.getDirect().getName();
-                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, aircraft.getSidStar().getPronunciation().toLowerCase(), aircraft.getDirect().getName());
+                text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString;
+                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, greeting, icao, flightNo, wake, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
             } else {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
                 TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
@@ -142,11 +179,46 @@ public class CommBox {
         } else if (aircraft instanceof Departure) {
             String outboundText = "";
             if (!"-".equals(AirportName.getAirportName(aircraft.getAirport().getIcao()))) outboundText = "outbound " + AirportName.getAirportName(aircraft.getAirport().getIcao()) + ", ";
-            text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + ", " + aircraft.getSidStar().getName() + " departure";
-            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase());
+            String sidString = "";
+            boolean sidSaid = MathUtils.randomBoolean();
+            if (sidSaid) {
+                sidString = ", " + aircraft.getSidStar().getName() + " departure";
+            }
+            text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + sidString;
+            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, greeting, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
         }
 
-        label = new Label(text, getLabelStyle(aircraft.getColor()));
+        Label label = new Label(text, getLabelStyle(aircraft.getColor()));
+
+        updateLabelQueue(label);
+
+        TerminalControl.radarScreen.soundManager.playInitialContact();
+    }
+
+    /** Adds a message for an aircraft established in hold over a waypoint */
+    public void holdEstablishMsg(Aircraft aircraft, String wpt) {
+        String icao = aircraft.getCallsign().substring(0, 3);
+        String flightNo = aircraft.getCallsign().substring(3);
+        String wake = "";
+        if (aircraft.getWakeCat() == 'H') {
+            wake = " heavy";
+        } else if (aircraft.getWakeCat() == 'J') {
+            wake = " super";
+        }
+
+        String text = aircraft.getCallsign() + wake;
+        int random = MathUtils.random(2);
+        if (random == 0) {
+            text += " is established in the hold over " + wpt;
+        } else if (random == 1) {
+            text += ", holding over " + wpt;
+        } else if (random == 2) {
+            text += ", we're holding at " + wpt;
+        }
+
+        TerminalControl.tts.holdEstablishMsg(aircraft.getVoice(), icao, flightNo, wake, wpt, random);
+
+        Label label = new Label(text, getLabelStyle(aircraft.getColor()));
 
         updateLabelQueue(label);
 
@@ -170,6 +242,25 @@ public class CommBox {
     public void warningMsg(String msg) {
         Label label = new Label(msg, getLabelStyle(Color.RED));
         updateLabelQueue(label);
+
+        TerminalControl.radarScreen.soundManager.playConflict();
+    }
+
+    private String getGreetingByTime() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
+        int time = (calendar.get(Calendar.HOUR) + additional) * 100 + calendar.get(Calendar.MINUTE);
+
+        String greeting = " good ";
+        if (time <= 1200) {
+            greeting += "morning";
+        } else if (time <= 1700) {
+            greeting += "afternoon";
+        } else {
+            greeting += "evening";
+        }
+
+        return greeting;
     }
 
     /** Adds the label to queue and removes labels if necessary, updates scrollPane to show messages */

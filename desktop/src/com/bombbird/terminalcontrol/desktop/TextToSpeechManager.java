@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class TextToSpeechManager implements TextToSpeech {
     @Override
-    public void initArrContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String star, String direct) {
+    public void initArrContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
         //No default implementation
     }
 
@@ -18,7 +18,12 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
-    public void initDepContact(String voice, String apchCallsign, String icao, String outbound, String flightNo, String wake, String airport, String action, String sid) {
+    public void initDepContact(String voice, String apchCallsign, String greeting, String icao, String outbound, String flightNo, String wake, String airport, String action, String sid, boolean sidSaid) {
+        //No default implementation
+    }
+
+    @Override
+    public void holdEstablishMsg(String voice, String icao, String flightNo, String wake, String wpt, int type) {
         //No default implementation
     }
 
