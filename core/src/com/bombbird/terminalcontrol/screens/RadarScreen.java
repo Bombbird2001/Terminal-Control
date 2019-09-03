@@ -146,7 +146,7 @@ public class RadarScreen extends GameScreen {
         highScore = save.getInt("highScore");
         arrivals = save.getInt("arrivals");
         spawnTimer = (float) save.getDouble("spawnTimer");
-        information = (char) save.getInt("information");
+        information = save.isNull("information") ? 'A' : (char) save.getInt("information");
 
         loadStageCamTimer();
 
