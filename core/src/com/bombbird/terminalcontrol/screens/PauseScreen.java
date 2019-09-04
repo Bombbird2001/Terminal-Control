@@ -68,7 +68,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
-                gameScreen.getSettingsScreen().setOptions();
+                gameScreen.getGameSettingsScreen().setOptions();
                 gameScreen.setGameState(GameScreen.State.SETTINGS);
             }
         });

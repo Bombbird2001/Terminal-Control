@@ -166,7 +166,11 @@ public class CommBox {
         }
         String infoString = "";
         if (MathUtils.randomBoolean()) {
-            infoString = ", information " + TerminalControl.radarScreen.getInformation();
+            if (MathUtils.randomBoolean()) {
+                infoString = ", information " + TerminalControl.radarScreen.getInformation();
+            } else {
+                infoString = ", we have information " + TerminalControl.radarScreen.getInformation();
+            }
         }
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {

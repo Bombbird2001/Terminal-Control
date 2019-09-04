@@ -1,8 +1,10 @@
-package com.bombbird.terminalcontrol.screens;
+package com.bombbird.terminalcontrol.screens.settingsscreen;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,47 +18,49 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class SettingsScreen {
-    private RadarScreen radarScreen;
+public class SettingsScreen implements Screen {
+    public final TerminalControl game;
 
-    private Stage stage;
-    private OrthographicCamera camera;
-    private Viewport viewport;
+    public Stage stage;
+    public OrthographicCamera camera;
+    public Viewport viewport;
 
-    private SelectBox.SelectBoxStyle selectBoxStyle;
-    private SelectBox<String> trajectoryLine;
-    private SelectBox<String> weather;
-    private SelectBox<String> sound;
+    public SelectBox.SelectBoxStyle selectBoxStyle;
+    public SelectBox<String> trajectoryLine;
+    public SelectBox<String> weather;
+    public SelectBox<String> sound;
 
-    private TextButton confirmButton;
-    private TextButton cancelButton;
+    public TextButton confirmButton;
+    public TextButton cancelButton;
 
-    private Label trajectoryLabel;
-    private int trajectorySel;
+    public Label trajectoryLabel;
+    public int trajectorySel;
 
-    private Label weatherLabel;
-    private boolean weatherSel;
+    public Label weatherLabel;
+    public boolean weatherSel;
 
-    private Label soundLabel;
-    private int soundSel;
+    public Label soundLabel;
+    public int soundSel;
 
-    public SettingsScreen(final RadarScreen radarScreen) {
-        this.radarScreen = radarScreen;
-        stage = new Stage(new FitViewport(5760, 3240));
-        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+    public SettingsScreen(final TerminalControl game) {
+        this.game = game;
 
-        camera = (OrthographicCamera) stage.getViewport().getCamera();
-        camera.setToOrtho(false, 5760, 3240);
+        //Set camera params
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false,5760, 3240);
         viewport = new FitViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
         viewport.apply();
-        camera.position.set(2880, 1620, 0);
 
-        trajectorySel = radarScreen.trajectoryLine;
-        weatherSel = radarScreen.liveWeather;
+        //Set stage params
+        stage = new Stage(new FitViewport(5760, 3240));
+        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
+        Gdx.input.setInputProcessor(stage);
+    }
 
+    public void loadUI(int offset) {
         loadStyles();
 
-        loadSelectBox();
+        loadSelectBox(offset);
 
         loadButton();
 
@@ -64,7 +68,7 @@ public class SettingsScreen {
     }
 
     /** Loads the styles for the selectBox */
-    private void loadStyles() {
+    public void loadStyles() {
         ScrollPane.ScrollPaneStyle paneStyle = new ScrollPane.ScrollPaneStyle();
         paneStyle.background = TerminalControl.skin.getDrawable("ListBackground");
 
@@ -86,7 +90,7 @@ public class SettingsScreen {
     }
 
     /** Loads selectBox for settings */
-    private void loadSelectBox() {
+    public void loadSelectBox(int offset) {
         trajectoryLine = new SelectBox<String>(selectBoxStyle);
         Array<String> options = new Array<String>(3);
         options.add("60 sec", "90 sec", "120 sec", "150 sec");
@@ -98,7 +102,7 @@ public class SettingsScreen {
             }
         });
         trajectoryLine.setSize(1200, 300);
-        trajectoryLine.setPosition(5760 / 2f - 400, 3240 * 0.8f);
+        trajectoryLine.setPosition(5760 / 2f - 400, 3240 * 0.8f + offset);
         trajectoryLine.setAlignment(Align.center);
         trajectoryLine.getList().setAlignment(Align.center);
         stage.addActor(trajectoryLine);
@@ -114,7 +118,7 @@ public class SettingsScreen {
             }
         });
         weather.setSize(1200, 300);
-        weather.setPosition(5760 / 2f - 400, 3240 * 0.6f);
+        weather.setPosition(5760 / 2f - 400, 3240 * 0.6f + offset);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
         stage.addActor(weather);
@@ -140,45 +144,19 @@ public class SettingsScreen {
             }
         });
         sound.setSize(1200, 300);
-        sound.setPosition(5760 / 2f - 400, 3240 * 0.4f);
+        sound.setPosition(5760 / 2f - 400, 3240 * 0.4f + offset);
         sound.setAlignment(Align.center);
         sound.getList().setAlignment(Align.center);
         stage.addActor(sound);
     }
 
     /** Loads buttons */
-    private void loadButton() {
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont30;
-        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
-
-        cancelButton = new TextButton("Cancel", textButtonStyle);
-        cancelButton.setSize(1200, 300);
-        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800);
-        cancelButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                radarScreen.setGameState(GameScreen.State.PAUSE);
-            }
-        });
-        stage.addActor(cancelButton);
-
-        confirmButton = new TextButton("Confirm", textButtonStyle);
-        confirmButton.setSize(1200, 300);
-        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800);
-        confirmButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                sendChanges();
-                radarScreen.setGameState(GameScreen.State.PAUSE);
-            }
-        });
-        stage.addActor(confirmButton);
+    public void loadButton() {
+        //No default, depends on type of settings screen
     }
 
     /** Loads labels */
-    private void loadLabel() {
+    public void loadLabel() {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
@@ -196,45 +174,66 @@ public class SettingsScreen {
         stage.addActor(soundLabel);
     }
 
-    /** Confirms and applies the changes set */
-    private void sendChanges() {
-        radarScreen.trajectoryLine = trajectorySel;
-        radarScreen.liveWeather = weatherSel;
-        radarScreen.soundSel = soundSel;
-    }
-
-    /** Sets visibility of elements */
-    public void setVisible(boolean show) {
-        trajectoryLine.setVisible(show);
-        trajectoryLabel.setVisible(show);
-        weather.setVisible(show);
-        weatherLabel.setVisible(show);
-        sound.setVisible(show);
-        soundLabel.setVisible(show);
-        confirmButton.setVisible(show);
-        cancelButton.setVisible(show);
-    }
-
+    /** Sets relevant options into select boxes */
     public void setOptions() {
-        trajectorySel = radarScreen.trajectoryLine;
-        trajectoryLine.setSelected(radarScreen.trajectoryLine + " sec");
-        weatherSel = radarScreen.liveWeather;
+        trajectoryLine.setSelected(trajectorySel + " sec");
         weather.setSelectedIndex(weatherSel ? 0 : 1);
-        soundSel = radarScreen.soundSel;
         int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
         if (soundIndex < 0) soundIndex = 0;
         sound.setSelectedIndex(soundIndex);
     }
 
-    public Stage getStage() {
-        return stage;
+    /** Confirms and applies the changes set */
+    public void sendChanges() {
+        //No default implementation
     }
 
-    public OrthographicCamera getCamera() {
-        return camera;
+    @Override
+    public void show() {
+        if (Fonts.defaultFont6 == null) {
+            //Regenerate fonts that were disposed
+            Fonts.generateAllFonts();
+        }
     }
 
-    public Viewport getViewport() {
-        return viewport;
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        camera.update();
+
+        game.batch.setProjectionMatrix(camera.combined);
+        stage.act(delta);
+        game.batch.begin();
+        stage.draw();
+        game.batch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+        stage.getViewport().update(width, height, true);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+    }
+
+    @Override
+    public void pause() {
+        //No default implementation
+    }
+
+    @Override
+    public void resume() {
+        //No default implementation
+    }
+
+    @Override
+    public void hide() {
+        //No default implementation
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }

@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
+import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
 import com.bombbird.terminalcontrol.ui.Ui;
@@ -86,7 +87,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private PauseScreen pauseScreen;
 
     //Overlay screen for game settings
-    private SettingsScreen settingsScreen;
+    private GameSettingsScreen gameSettingsScreen;
 
     //Game state
     public enum State {
@@ -106,7 +107,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loadingPercent = "0%";
 
         pauseScreen = new PauseScreen(this);
-        settingsScreen = new SettingsScreen((RadarScreen) this);
+        gameSettingsScreen = new GameSettingsScreen(game, (RadarScreen) this);
 
         setGameState(State.RUN);
     }
@@ -276,7 +277,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1420, 1550);
                         if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
                         if ("".equals(tip)) tip = RandomTip.randomTip();
-                        Fonts.defaultFont16.draw(game.batch, "Tip: " + tip, 1870 - (tip.length() + 5) / 2 * 29, 960);
+                        Fonts.defaultFont16.draw(game.batch, tip, 1870 - tip.length() / 2 * 29, 960);
                     } else {
                         stage.draw();
                         game.batch.end();
@@ -317,11 +318,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     game.batch.end();
                     break;
                 case SETTINGS:
-                    game.batch.setProjectionMatrix(settingsScreen.getCamera().combined);
-                    settingsScreen.getStage().act();
+                    game.batch.setProjectionMatrix(gameSettingsScreen.getCamera().combined);
+                    gameSettingsScreen.getStage().act();
                     game.batch.begin();
-                    settingsScreen.getStage().getViewport().apply();
-                    settingsScreen.getStage().draw();
+                    gameSettingsScreen.getStage().getViewport().apply();
+                    gameSettingsScreen.getStage().draw();
                     game.batch.end();
                     break;
                 default:
@@ -354,9 +355,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         pauseScreen.getStage().getViewport().update(width, height, true);
         pauseScreen.getCamera().position.set(pauseScreen.getCamera().viewportWidth / 2f, pauseScreen.getCamera().viewportHeight / 2f, 0);
 
-        settingsScreen.getViewport().update(width, height, true);
-        settingsScreen.getStage().getViewport().update(width, height, true);
-        settingsScreen.getCamera().position.set(settingsScreen.getCamera().viewportWidth / 2f, settingsScreen.getCamera().viewportHeight / 2f, 0);
+        gameSettingsScreen.getViewport().update(width, height, true);
+        gameSettingsScreen.getStage().getViewport().update(width, height, true);
+        gameSettingsScreen.getCamera().position.set(gameSettingsScreen.getCamera().viewportWidth / 2f, gameSettingsScreen.getCamera().viewportHeight / 2f, 0);
 
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
@@ -549,7 +550,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public void setGameState(State s) {
         GameScreen.state = s;
         pauseScreen.setVisible(s == State.PAUSE);
-        settingsScreen.setVisible(s == State.SETTINGS);
+        gameSettingsScreen.setVisible(s == State.SETTINGS);
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
             soundManager.resume();
@@ -559,13 +560,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             soundManager.pause();
             DataTag.pauseTimers();
         } else if (s == State.SETTINGS) {
-            Gdx.input.setInputProcessor(settingsScreen.getStage());
+            Gdx.input.setInputProcessor(gameSettingsScreen.getStage());
             soundManager.pause();
             DataTag.pauseTimers();
         }
     }
 
-    public SettingsScreen getSettingsScreen() {
-        return settingsScreen;
+    public GameSettingsScreen getGameSettingsScreen() {
+        return gameSettingsScreen;
     }
 }

@@ -3,8 +3,6 @@ package com.bombbird.terminalcontrol.utilities.saving;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -196,27 +194,7 @@ public class FileLoader {
     public static JSONArray loadSaves() {
         JSONArray saves = new JSONArray();
 
-        FileHandle handle = null;
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            //If desktop, save to external roaming appData
-            String type = Gdx.files.internal("game/type.type").readString();
-            if ("lite".equals(type)) {
-                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
-            } else if ("full".equals(type)) {
-                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/saves/saves.saves");
-            } else {
-                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
-                handle = Gdx.files.external("AppData/Roaming/TerminalControl/saves/saves.saves");
-            }
-        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            //If Android, check first if local storage available
-            if (Gdx.files.isLocalStorageAvailable()) {
-                handle = Gdx.files.local("saves/saves.saves");
-            } else {
-                Gdx.app.log("Storage error", "Local storage unavailable for Android!");
-                TerminalControl.toastManager.readStorageFail();
-            }
-        }
+        FileHandle handle = getExtDir("saves/saves.saves");
 
         if (handle != null && handle.exists()) {
             Array<String> saveIds = new Array<String>(handle.readString().split(","));
@@ -334,5 +312,46 @@ public class FileLoader {
         if (landmass.size > 0) shoreline.add(landmass); //Add the last landmass
 
         return shoreline;
+    }
+
+    public static JSONObject loadSettings() {
+        JSONObject settings = null;
+        try {
+            FileHandle handle = getExtDir("settings.json");
+            if (handle != null && handle.exists()) {
+                settings = new JSONObject(handle.readString());
+            }
+        } catch (JSONException e) {
+            Gdx.app.log("Corrupted settings", "JSON parse failure");
+        }
+
+        return settings;
+    }
+
+    public static FileHandle getExtDir(String path) {
+        FileHandle handle = null;
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            //If desktop, save to external roaming appData
+            String type = Gdx.files.internal("game/type.type").readString();
+            if ("lite".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/" + path);
+            } else if ("full".equals(type)) {
+                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/" + path);
+            } else {
+                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
+                handle = Gdx.files.external("AppData/Roaming/TerminalControl/");
+            }
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            //If Android, check first if local storage available
+            if (Gdx.files.isLocalStorageAvailable()) {
+                handle = Gdx.files.local(path);
+            } else {
+                Gdx.app.log("Storage error", "Local storage unavailable for Android!");
+                TerminalControl.toastManager.readStorageFail();
+            }
+        } else {
+            Gdx.app.log("Storage error", "Unknown platform!");
+        }
+        return handle;
     }
 }

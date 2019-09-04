@@ -51,8 +51,8 @@ public class RadarScreen extends GameScreen {
     public int airac;
     public String callsign;
     public String deptCallsign;
-    public int trajectoryLine = 90;
-    public boolean liveWeather = true;
+    public int trajectoryLine;
+    public boolean liveWeather;
     public int soundSel;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
@@ -67,7 +67,7 @@ public class RadarScreen extends GameScreen {
     private int arrivals;
     private float spawnTimer;
 
-    private char information = 'A';
+    private char information;
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
@@ -114,6 +114,7 @@ public class RadarScreen extends GameScreen {
         highScore = 0;
         arrivals = 0;
         spawnTimer = 0;
+        information = 'A';
 
         loadStageCamTimer();
 
@@ -122,11 +123,9 @@ public class RadarScreen extends GameScreen {
         trailTime = 10f;
         saveTime = 60f;
 
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            soundSel = 1;
-        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            soundSel = 2;
-        }
+        trajectoryLine = TerminalControl.trajectorySel;
+        liveWeather = TerminalControl.weatherSel;
+        soundSel = TerminalControl.soundSel;
 
         if (tutorial) {
             tutorialManager = new TutorialManager(this);
@@ -649,5 +648,6 @@ public class RadarScreen extends GameScreen {
     public void updateInformation() {
         information++;
         if (information > 90) information -= 26;
+        if (commBox != null) commBox.normalMsg("Information " + information + " is now current");
     }
 }

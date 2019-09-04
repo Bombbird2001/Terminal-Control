@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.DefaultSettingsScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -48,12 +50,16 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new FitViewport(2880, 1620));
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
+
+        TerminalControl.loadSettings();
     }
 
     /** Loads the UI elements to be rendered on screen */
     private void loadUI() {
         int buttonWidth = 1000;
         int buttonHeight = 200;
+        int smallButtonWidth = 200;
+        int smallButtonHeight = 200;
 
         //Reset stage
         stage.clear();
@@ -90,8 +96,7 @@ public class MainMenuScreen implements Screen {
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
         float yPos = Gdx.app.getType() == Application.ApplicationType.Android ? 0.45f : 0.55f;
         newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos);
-        newGameButton.setWidth(buttonWidth);
-        newGameButton.setHeight(buttonHeight);
+        newGameButton.setSize(buttonWidth, buttonHeight);
         newGameButton.getLabel().setAlignment(Align.center);
         newGameButton.addListener(new ChangeListener() {
             @Override
@@ -107,8 +112,7 @@ public class MainMenuScreen implements Screen {
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
         float yPos1 = Gdx.app.getType() == Application.ApplicationType.Android ? 0.3f : 0.4f;
         loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos1);
-        loadGameButton.setWidth(buttonWidth);
-        loadGameButton.setHeight(buttonHeight);
+        loadGameButton.setSize(buttonWidth, buttonHeight);
         loadGameButton.getLabel().setAlignment(Align.center);
         loadGameButton.addListener(new ChangeListener() {
             @Override
@@ -120,12 +124,28 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(loadGameButton);
 
+        //Set settings button
+        ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
+        imageButtonStyle.imageUp = TerminalControl.skin.getDrawable("Settings_up");
+        imageButtonStyle.imageDown = TerminalControl.skin.getDrawable("Settings_down");
+        ImageButton settingsButton = new ImageButton(imageButtonStyle);
+        settingsButton.setPosition(1440 - 1200 - smallButtonWidth / 2.0f, 1620 - smallButtonHeight);
+        settingsButton.setSize(smallButtonWidth, smallButtonHeight);
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go to settings screen
+                game.setScreen(new DefaultSettingsScreen(game, background));
+                dispose();
+            }
+        });
+        stage.addActor(settingsButton);
+
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;
         TextButton quitButton = new TextButton("Quit", buttonStyle);
         quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.1f);
-        quitButton.setWidth(buttonWidth);
-        quitButton.setHeight(buttonHeight);
+        quitButton.setSize(buttonWidth, buttonHeight);
         quitButton.getLabel().setAlignment(Align.center);
         quitButton.addListener(new ChangeListener() {
             @Override

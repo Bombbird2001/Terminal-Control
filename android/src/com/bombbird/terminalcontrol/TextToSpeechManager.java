@@ -109,7 +109,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         }
         String newInfo = "";
         if (info.length() >= 2) {
-            newInfo = ", information " + Pronunciation.alphabetPronunciations.get(info.charAt(info.length() - 1));
+            newInfo = info.split("information ")[0] + "information " + Pronunciation.alphabetPronunciations.get(info.charAt(info.length() - 1));
         }
         String text = apchCallsign + greeting + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + starString + directString + newInfo;
         sayText(text, voice);

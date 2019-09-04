@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +11,8 @@ import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
+import org.json.JSONObject;
 
 public class TerminalControl extends Game {
     //Get screen size
@@ -35,9 +38,32 @@ public class TerminalControl extends Game {
     //Toast (for Android only)
     public static ToastManager toastManager;
 
+    //Default settings
+    public static int trajectorySel;
+    public static boolean weatherSel;
+    public static int soundSel;
+
     public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
         TerminalControl.tts = tts;
         TerminalControl.toastManager = toastManager;
+    }
+
+    public static void loadSettings() {
+        JSONObject settings = FileLoader.loadSettings();
+        if (settings == null) {
+            //Default settings if save unavailable
+            trajectorySel = 90;
+            weatherSel = true;
+            if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                soundSel = 1;
+            } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
+                soundSel = 2;
+            }
+        } else {
+            trajectorySel = settings.getInt("trajectory");
+            weatherSel = settings.getBoolean("weather");
+            soundSel = settings.getInt("sound");
+        }
     }
 
     @Override

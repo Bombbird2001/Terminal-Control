@@ -65,20 +65,7 @@ public class GameSaver {
         jsonObject.put("landings", aircraftsLanded);
         jsonObject.put("airborne", aircraftsAirborne);
 
-        FileHandle handle = null;
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            //If desktop, save to external roaming appData
-            handle = Gdx.files.external(FileLoader.mainDir + "/saves/" + radarScreen.saveId + ".json");
-        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            //If Android, check first if local storage available
-            if (Gdx.files.isLocalStorageAvailable()) {
-                handle = Gdx.files.local("saves/" + radarScreen.saveId + ".json");
-            } else {
-                Gdx.app.log("Storage error", "Local storage unavailable for Android!");
-                TerminalControl.toastManager.saveFail();
-            }
-        }
-
+        FileHandle handle = FileLoader.getExtDir("saves/" + radarScreen.saveId + ".json");
         if (handle != null) {
             try {
                 handle.writeString(Base64Coder.encodeString(jsonObject.toString()), false);
@@ -529,32 +516,41 @@ public class GameSaver {
 
     /** Deletes a save given input game ID, returns true if success, false if fail */
     public static boolean deleteSave(int id) {
-        FileHandle handle;
-        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            handle = Gdx.files.local("saves/saves.saves");
-        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            handle = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves");
-        } else {
-            handle = Gdx.files.local("saves/saves.saves");
-            Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
-        }
+        FileHandle handle = FileLoader.getExtDir("saves/saves.saves");
 
-        String[] saveIDs = handle.readString().split(",");
-        Array<Integer> ids = new Array<Integer>();
-        for (String stringID: saveIDs) {
-            ids.add(Integer.parseInt(stringID));
-        }
+        if (handle != null && handle.exists()) {
+            String[] saveIDs = handle.readString().split(",");
+            Array<Integer> ids = new Array<Integer>();
+            for (String stringID : saveIDs) {
+                ids.add(Integer.parseInt(stringID));
+            }
 
-        if (!ids.removeValue(id, false)) {
-            Gdx.app.log("Delete error", "Save ID " + id + " not found in saves.saves");
-        }
-        handle.writeString(ids.toString(","), false);
+            if (!ids.removeValue(id, false)) {
+                Gdx.app.log("Delete error", "Save ID " + id + " not found in saves.saves");
+            }
+            handle.writeString(ids.toString(","), false);
 
-        handle = handle.sibling(id + ".json");
-        if (!handle.delete()) {
-            Gdx.app.log("Delete error", id + ".json not found");
-            return false;
+            handle = handle.sibling(id + ".json");
+            if (!handle.delete()) {
+                Gdx.app.log("Delete error", id + ".json not found");
+                return false;
+            }
+            return true;
         }
-        return true;
+        return false;
+    }
+
+    /** Saves the default settings */
+    public static void saveSettings(int trajectorySel, boolean weatherSel, int soundSel) {
+        FileHandle handle = FileLoader.getExtDir("settings.json");
+
+        if (handle != null) {
+            JSONObject settings = new JSONObject();
+            settings.put("trajectory", trajectorySel);
+            settings.put("weather", weatherSel);
+            settings.put("sound", soundSel);
+
+            handle.writeString(settings.toString(4), false);
+        }
     }
 }
