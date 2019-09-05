@@ -12,6 +12,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import org.json.JSONObject;
 
 public class TerminalControl extends Game {
@@ -42,6 +43,7 @@ public class TerminalControl extends Game {
     public static int trajectorySel;
     public static boolean weatherSel;
     public static int soundSel;
+    public static boolean sendAnonCrash;
 
     public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
         TerminalControl.tts = tts;
@@ -59,10 +61,13 @@ public class TerminalControl extends Game {
             } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
                 soundSel = 2;
             }
+            sendAnonCrash = true;
+            GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash);
         } else {
             trajectorySel = settings.getInt("trajectory");
             weatherSel = settings.getBoolean("weather");
             soundSel = settings.getInt("sound");
+            sendAnonCrash = settings.isNull("sendCrash") || settings.getBoolean("sendCrash");
         }
     }
 

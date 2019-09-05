@@ -21,7 +21,7 @@ public class GameSettingsScreen extends SettingsScreen {
 
         this.radarScreen = radarScreen;
 
-        loadUI(0);
+        loadUI(0, 0);
     }
 
     @Override

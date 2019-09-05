@@ -57,10 +57,10 @@ public class SettingsScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    public void loadUI(int offset) {
+    public void loadUI(int xOffset, int yOffset) {
         loadStyles();
 
-        loadSelectBox(offset);
+        loadBoxes(xOffset, yOffset);
 
         loadButton();
 
@@ -90,7 +90,7 @@ public class SettingsScreen implements Screen {
     }
 
     /** Loads selectBox for settings */
-    public void loadSelectBox(int offset) {
+    public void loadBoxes(int xOffset, int yOffset) {
         trajectoryLine = new SelectBox<String>(selectBoxStyle);
         Array<String> options = new Array<String>(3);
         options.add("60 sec", "90 sec", "120 sec", "150 sec");
@@ -102,7 +102,7 @@ public class SettingsScreen implements Screen {
             }
         });
         trajectoryLine.setSize(1200, 300);
-        trajectoryLine.setPosition(5760 / 2f - 400, 3240 * 0.8f + offset);
+        trajectoryLine.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.8f + yOffset);
         trajectoryLine.setAlignment(Align.center);
         trajectoryLine.getList().setAlignment(Align.center);
         stage.addActor(trajectoryLine);
@@ -118,7 +118,7 @@ public class SettingsScreen implements Screen {
             }
         });
         weather.setSize(1200, 300);
-        weather.setPosition(5760 / 2f - 400, 3240 * 0.6f + offset);
+        weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.6f + yOffset);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
         stage.addActor(weather);
@@ -144,7 +144,7 @@ public class SettingsScreen implements Screen {
             }
         });
         sound.setSize(1200, 300);
-        sound.setPosition(5760 / 2f - 400, 3240 * 0.4f + offset);
+        sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.4f + yOffset);
         sound.setAlignment(Align.center);
         sound.getList().setAlignment(Align.center);
         stage.addActor(sound);

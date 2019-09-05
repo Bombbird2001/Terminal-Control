@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.screens.settingsscreen;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -15,6 +16,9 @@ public class DefaultSettingsScreen extends SettingsScreen {
     private Image background;
     private static float specialScale = 7.8f;
 
+    private boolean sendCrash;
+    private CheckBox sendCrashBox;
+
     public DefaultSettingsScreen(final TerminalControl game, Image background) {
         super(game);
 
@@ -24,16 +28,17 @@ public class DefaultSettingsScreen extends SettingsScreen {
         trajectorySel = TerminalControl.trajectorySel;
         weatherSel = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
+        sendCrash = TerminalControl.sendAnonCrash;
 
-        loadUI(-200);
+        loadUI(-600, -200);
 
         setOptions();
     }
 
     @Override
-    public void loadUI(int offset) {
+    public void loadUI(int xOffset, int yOffset) {
         stage.addActor(background);
-        super.loadUI(offset);
+        super.loadUI(xOffset, yOffset);
     }
 
     @Override
@@ -73,6 +78,26 @@ public class DefaultSettingsScreen extends SettingsScreen {
     }
 
     @Override
+    public void loadBoxes(int xOffset, int yOffset) {
+        super.loadBoxes(xOffset, yOffset);
+        CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
+        checkBoxStyle.checkboxOn = TerminalControl.skin.getDrawable("Checked");
+        checkBoxStyle.checkboxOff = TerminalControl.skin.getDrawable("Unchecked");
+        checkBoxStyle.font = Fonts.defaultFont20;
+        checkBoxStyle.fontColor = Color.WHITE;
+
+        sendCrashBox = new CheckBox(" Send anonymous crash reports", checkBoxStyle);
+        sendCrashBox.setPosition(5760 / 2f + 1600 + xOffset, 3240 * 0.7f + yOffset);
+        sendCrashBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                sendCrash = sendCrashBox.isChecked();
+            }
+        });
+        stage.addActor(sendCrashBox);
+    }
+
+    @Override
     public void loadLabel() {
         super.loadLabel();
 
@@ -83,6 +108,16 @@ public class DefaultSettingsScreen extends SettingsScreen {
         Label infoLabel = new Label("Set the default game settings below. You can still change these settings for individual games.", labelStyle);
         infoLabel.setPosition(5760 / 2f - infoLabel.getWidth() / 2f, 3240 - 300);
         stage.addActor(infoLabel);
+
+        Label sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle);
+        sendLabel.setPosition(sendCrashBox.getX(), sendCrashBox.getY() - 475);
+        stage.addActor(sendLabel);
+    }
+
+    @Override
+    public void setOptions() {
+        super.setOptions();
+        sendCrashBox.setChecked(TerminalControl.sendAnonCrash);
     }
 
     @Override
@@ -90,7 +125,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.trajectorySel = trajectorySel;
         TerminalControl.weatherSel = weatherSel;
         TerminalControl.soundSel = soundSel;
+        TerminalControl.sendAnonCrash = sendCrash;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash);
     }
 }

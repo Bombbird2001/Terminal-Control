@@ -14,6 +14,7 @@ public class HttpRequests {
     private static final OkHttpClient client = new OkHttpClient();
 
     public static void sendError(final String error, final int count) {
+        if (!TerminalControl.sendAnonCrash) return;
         JSONObject jo = new JSONObject();
         jo.put("password", Values.SEND_ERROR_PASSWORD);
         jo.put("error", error);
