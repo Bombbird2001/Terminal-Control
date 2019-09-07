@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.5'
     }
 }
@@ -22,7 +22,7 @@ allprojects {
     version = '1.2.1910.1'
     ext {
         appName = "Terminal Control"
-        gdxVersion = '1.9.9'
+        gdxVersion = '1.9.10'
         roboVMVersion = '2.3.5'
     }
 

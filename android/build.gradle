@@ -18,6 +18,10 @@ android {
             res.srcDirs = ['resFull']
         }
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     packagingOptions {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
