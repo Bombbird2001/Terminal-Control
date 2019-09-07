@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
@@ -23,9 +24,9 @@ public class NewGameScreen extends SelectGameScreen {
         //Set label params
         super.loadLabel();
         Label headerLabel = new Label("Choose airport:", getLabelStyle());
-        headerLabel.setWidth(BUTTON_WIDTH);
-        headerLabel.setHeight(BUTTON_HEIGHT);
-        headerLabel.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
+        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
         headerLabel.setAlignment(Align.center);
         getStage().addActor(headerLabel);
     }
@@ -96,14 +97,14 @@ public class NewGameScreen extends SelectGameScreen {
                     event.handle();
                 }
             });
-            getScrollTable().add(airportButton).width(BUTTON_WIDTH * 1.2f).height(BUTTON_HEIGHT);
+            getScrollTable().add(airportButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT);
             getScrollTable().row();
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
         scrollPane.setupFadeScrollBars(1, 1.5f);
-        scrollPane.setX(2880 / 2f - BUTTON_WIDTH * 0.6f);
+        scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.6f);
         scrollPane.setY(1620 * 0.2f);
-        scrollPane.setWidth(BUTTON_WIDTH * 1.2f);
+        scrollPane.setWidth(MainMenuScreen.BUTTON_WIDTH * 1.2f);
         scrollPane.setHeight(1620 * 0.6f);
 
         getStage().addActor(scrollPane);

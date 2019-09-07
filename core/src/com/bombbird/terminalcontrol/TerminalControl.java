@@ -23,6 +23,9 @@ public class TerminalControl extends Game {
     //Is html? (freetype not supported in html)
     public static boolean ishtml;
 
+    //Is full version?
+    public static boolean full;
+
     //Active gameScreen instance
     public static RadarScreen radarScreen = null;
 

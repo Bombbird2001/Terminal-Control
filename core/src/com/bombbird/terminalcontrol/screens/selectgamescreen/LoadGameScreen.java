@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
@@ -25,9 +26,9 @@ public class LoadGameScreen extends SelectGameScreen {
         //Set label params
         super.loadLabel();
         Label headerLabel = new Label("Choose save to load:", getLabelStyle());
-        headerLabel.setWidth(BUTTON_WIDTH);
-        headerLabel.setHeight(BUTTON_HEIGHT);
-        headerLabel.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
+        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
         headerLabel.setAlignment(Align.center);
         getStage().addActor(headerLabel);
     }
@@ -87,7 +88,7 @@ public class LoadGameScreen extends SelectGameScreen {
                     event.handle();
                 }
             });
-            getScrollTable().add(saveButton).width(BUTTON_WIDTH * 1.2f).height(BUTTON_HEIGHT * multiplier);
+            getScrollTable().add(saveButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier);
 
             final TextButton deleteButton = new TextButton("Delete", getButtonStyle());
             deleteButton.setName("" + 0);
@@ -112,14 +113,14 @@ public class LoadGameScreen extends SelectGameScreen {
                     }
                 }
             });
-            getScrollTable().add(deleteButton).width(BUTTON_WIDTH * 0.4f).height(BUTTON_HEIGHT * multiplier);
+            getScrollTable().add(deleteButton).width(MainMenuScreen.BUTTON_WIDTH * 0.4f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier);
             getScrollTable().row();
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
         scrollPane.setupFadeScrollBars(1, 1.5f);
-        scrollPane.setX(2880 / 2f - BUTTON_WIDTH * 0.8f);
+        scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.8f);
         scrollPane.setY(1620 * 0.2f);
-        scrollPane.setWidth(BUTTON_WIDTH * 1.6f);
+        scrollPane.setWidth(MainMenuScreen.BUTTON_WIDTH * 1.6f);
         scrollPane.setHeight(1620 * 0.6f);
 
         getStage().addActor(scrollPane);

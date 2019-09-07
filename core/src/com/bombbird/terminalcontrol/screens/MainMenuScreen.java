@@ -36,6 +36,12 @@ public class MainMenuScreen implements Screen {
     //Background image
     private Image background;
 
+    //Button constants
+    public static final int BUTTON_WIDTH = 1000;
+    public static final int BUTTON_HEIGHT = 200;
+    public static final int BUTTON_WIDTH_SMALL = 200;
+    public static final int BUTTON_HEIGHT_SMALL = 200;
+
     public MainMenuScreen(final TerminalControl game, Image background) {
         this.game = game;
         this.background = background;
@@ -52,15 +58,12 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         TerminalControl.loadSettings();
+
+        TerminalControl.full = !"lite".equals(Gdx.files.internal("game/type.type").readString());
     }
 
     /** Loads the UI elements to be rendered on screen */
     private void loadUI() {
-        int buttonWidth = 1000;
-        int buttonHeight = 200;
-        int smallButtonWidth = 200;
-        int smallButtonHeight = 200;
-
         //Reset stage
         stage.clear();
 
@@ -79,7 +82,7 @@ public class MainMenuScreen implements Screen {
         stage.addActor(image);
 
         //Additional lite image if version is lite
-        if ("lite".equals(Gdx.files.internal("game/type.type").readString())) {
+        if (!TerminalControl.full) {
             Image image1 = new Image(new Texture(Gdx.files.internal("game/ui/Lite.png")));
             image1.scaleBy(0.25f);
             image1.setPosition(2880 / 2.0f + 2.5f * image1.getWidth(), 1620 * 0.83f);
@@ -95,8 +98,8 @@ public class MainMenuScreen implements Screen {
         //Set new game button params
         TextButton newGameButton = new TextButton("New Game", buttonStyle);
         float yPos = Gdx.app.getType() == Application.ApplicationType.Android ? 0.45f : 0.55f;
-        newGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos);
-        newGameButton.setSize(buttonWidth, buttonHeight);
+        newGameButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * yPos);
+        newGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         newGameButton.getLabel().setAlignment(Align.center);
         newGameButton.addListener(new ChangeListener() {
             @Override
@@ -111,8 +114,8 @@ public class MainMenuScreen implements Screen {
         //Set load game button params
         TextButton loadGameButton = new TextButton("Load Game", buttonStyle);
         float yPos1 = Gdx.app.getType() == Application.ApplicationType.Android ? 0.3f : 0.4f;
-        loadGameButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * yPos1);
-        loadGameButton.setSize(buttonWidth, buttonHeight);
+        loadGameButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * yPos1);
+        loadGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         loadGameButton.getLabel().setAlignment(Align.center);
         loadGameButton.addListener(new ChangeListener() {
             @Override
@@ -129,8 +132,8 @@ public class MainMenuScreen implements Screen {
         imageButtonStyle.imageUp = TerminalControl.skin.getDrawable("Settings_up");
         imageButtonStyle.imageDown = TerminalControl.skin.getDrawable("Settings_down");
         ImageButton settingsButton = new ImageButton(imageButtonStyle);
-        settingsButton.setPosition(1440 - 1200 - smallButtonWidth / 2.0f, 1620 - smallButtonHeight);
-        settingsButton.setSize(smallButtonWidth, smallButtonHeight);
+        settingsButton.setPosition(1440 - 1200 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
+        settingsButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -141,11 +144,28 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(settingsButton);
 
+        //Set info button
+        ImageButton.ImageButtonStyle imageButtonStyle1 = new ImageButton.ImageButtonStyle();
+        imageButtonStyle1.imageUp = TerminalControl.skin.getDrawable("Information_up");
+        imageButtonStyle1.imageDown = TerminalControl.skin.getDrawable("Information_down");
+        ImageButton infoButton = new ImageButton(imageButtonStyle1);
+        infoButton.setPosition(1440 - 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
+        infoButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
+        infoButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go to settings screen
+                game.setScreen(new InfoScreen(game, background));
+                dispose();
+            }
+        });
+        stage.addActor(infoButton);
+
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;
         TextButton quitButton = new TextButton("Quit", buttonStyle);
-        quitButton.setPosition(2880 / 2.0f - buttonWidth / 2.0f, 1620 * 0.1f);
-        quitButton.setSize(buttonWidth, buttonHeight);
+        quitButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * 0.1f);
+        quitButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         quitButton.getLabel().setAlignment(Align.center);
         quitButton.addListener(new ChangeListener() {
             @Override

@@ -206,8 +206,18 @@ public class SettingsScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(delta);
         game.batch.begin();
-        stage.draw();
-        game.batch.end();
+        boolean success = false;
+        while (!success) {
+            try {
+                stage.draw();
+                game.batch.end();
+                success = true;
+            } catch (IndexOutOfBoundsException e) {
+                Gdx.app.log("SettingsScreen", "stage.draw() render error");
+                stage.getBatch().end();
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

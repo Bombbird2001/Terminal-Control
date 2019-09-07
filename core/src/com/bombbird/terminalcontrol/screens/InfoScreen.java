@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.selectgamescreen;
+package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -12,27 +12,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class SelectGameScreen implements Screen {
-    //Init game (set in constructor)
+public class InfoScreen implements Screen {
     public final TerminalControl game;
     private Stage stage;
-    private Table scrollTable;
 
-    //Create new camera
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    //Styles
-    private Label.LabelStyle labelStyle;
-    private TextButton.TextButtonStyle buttonStyle;
-
-    //Background image (from MainMenuScreen)
     private Image background;
 
-    public SelectGameScreen(final TerminalControl game, Image background) {
+    public InfoScreen(final TerminalControl game, Image background) {
         this.game = game;
 
         //Set camera params
@@ -45,9 +36,6 @@ public class SelectGameScreen implements Screen {
         stage = new Stage(new FitViewport(2880, 1620));
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
-
-        //Set table params (for scrollpane)
-        scrollTable = new Table();
 
         //Set background image to that shown on main menu screen
         this.background = background;
@@ -62,21 +50,40 @@ public class SelectGameScreen implements Screen {
 
         loadLabel();
         loadButtons();
-        loadScroll();
     }
 
-    /** Loads the appropriate labelStyle, and is overridden to load a label with the appropriate text */
+    /** Loads labels for credits, disclaimers, etc */
     public void loadLabel() {
-        //Set label style
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont20;
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.WHITE;
+
+        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2019, Bombbird", labelStyle);
+        copyright.setPosition(918, 1425);
+        stage.addActor(copyright);
+
+        Label licenses = new Label("Open source software/libraries used:\n\n" +
+                "libGDX - Apache License 2.0\n" +
+                "JSON In Java - JSON License\n" +
+                "OkHttp3 - Apache License 2.0\n" +
+                "Apache Commons Lang - Apache License 2.0\n" +
+                "Open Sans font - Apache License 2.0", labelStyle);
+        licenses.setPosition(1435 - licenses.getWidth() / 2f, 825);
+        stage.addActor(licenses);
+
+        Label disclaimer = new Label("While we make effort to ensure that this game is as realistic as possible, " +
+                "please note that this game is not a completely accurate representation of real life air traffic control " +
+                "and should not be used for purposes such as real life training.", labelStyle);
+        disclaimer.setWrap(true);
+        disclaimer.setWidth(1600);
+        disclaimer.setPosition(1465 - disclaimer.getWidth() / 2f, 500);
+        stage.addActor(disclaimer);
     }
 
     /** Loads the default button styles and back button */
     private void loadButtons() {
         //Set button textures
-        buttonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont12;
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
@@ -95,11 +102,6 @@ public class SelectGameScreen implements Screen {
         });
 
         stage.addActor(backButton);
-    }
-
-    /** Loads the contents of the scrollPane */
-    public void loadScroll() {
-        //No default implementation
     }
 
     /** Implements show method of screen */
@@ -126,7 +128,7 @@ public class SelectGameScreen implements Screen {
                 game.batch.end();
                 success = true;
             } catch (IndexOutOfBoundsException e) {
-                Gdx.app.log("SelectGameScreen", "stage.draw() render error");
+                Gdx.app.log("InfoScreen", "stage.draw() render error");
                 stage.getBatch().end();
                 e.printStackTrace();
             }
@@ -156,29 +158,13 @@ public class SelectGameScreen implements Screen {
     /** Implements hide method of screen */
     @Override
     public void hide() {
-        dispose();
+        //No default implementation
     }
 
-    /** Implements dispose method of screen, called to dispose assets once unneeded */
+    /** Implements dispose method of screen */
     @Override
     public void dispose() {
         stage.clear();
         stage.dispose();
-    }
-
-    public Label.LabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    public TextButton.TextButtonStyle getButtonStyle() {
-        return buttonStyle;
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Table getScrollTable() {
-        return scrollTable;
     }
 }
