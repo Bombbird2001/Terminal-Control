@@ -16,13 +16,12 @@ buildscript {
 }
 
 allprojects {
-    apply plugin: "eclipse"
     apply plugin: "idea"
 
     version = '1.2.1910.1'
     ext {
         appName = "Terminal Control"
-        gdxVersion = '1.9.10'
+        gdxVersion = '1.9.9' //Don't use 1.9.10 due to maximised bug
         roboVMVersion = '2.3.5'
     }
 
@@ -111,8 +110,4 @@ project(":core") {
         compile 'org.json:json:20190722'
         compile 'org.apache.commons:commons-lang3:3.9'
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }
