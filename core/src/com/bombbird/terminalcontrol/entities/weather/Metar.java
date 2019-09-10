@@ -25,17 +25,21 @@ public class Metar {
         metarObject = save;
     }
 
-    public void updateMetar() {
+    public void updateMetar(final boolean tutorial) {
         if (radarScreen.liveWeather) {
             HttpRequests.getMetar(this, true);
         } else {
-            Runnable randomWeather = new Runnable() {
+            Runnable threadRunner = new Runnable() {
                 @Override
                 public void run() {
-                    randomWeather();
+                    if (tutorial) {
+                        updateTutorialMetar();
+                    } else {
+                        randomWeather();
+                    }
                 }
             };
-            new Thread(randomWeather).start();
+            new Thread(threadRunner).start();
         }
     }
 

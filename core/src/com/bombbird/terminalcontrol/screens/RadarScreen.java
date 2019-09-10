@@ -251,20 +251,12 @@ public class RadarScreen extends GameScreen {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (tutorial) {
-                    metar.updateTutorialMetar();
-                } else {
-                    metar.updateMetar();
-                }
+                metar.updateMetar(tutorial);
             }
         }, calendar.getTime(), 900000);
 
         if (save == null) {
-            if (tutorial) {
-                metar.updateTutorialMetar();
-            } else {
-                metar.updateMetar(); //Update the current airport METAR if not from save (airports not loaded in save at this stage)
-            }
+            metar.updateMetar(tutorial); //Update the current airport METAR if not from save (airports not loaded in save at this stage)
         }
     }
 

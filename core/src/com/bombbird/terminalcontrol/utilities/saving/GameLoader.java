@@ -26,7 +26,7 @@ public class GameLoader {
             }
         }
         loadAirportData(airports);
-        TerminalControl.radarScreen.getMetar().updateMetar();
+        TerminalControl.radarScreen.getMetar().updateMetar(false);
         loadAircraft(save.getJSONArray("aircrafts"));
 
         for (int i = 0; i < airports.length(); i++) {

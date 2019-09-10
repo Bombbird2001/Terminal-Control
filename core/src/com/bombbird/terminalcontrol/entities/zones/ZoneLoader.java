@@ -43,15 +43,15 @@ public class ZoneLoader {
 
     private static Array<DepartureZone> loadDepRJTT() {
         Array<DepartureZone> departureZones = new Array<DepartureZone>();
-        departureZones.add(new DepartureZone("16L", "16R", 2895.4f, 1602.7f, 157, 3.1f, 10, 0.329f));
+        departureZones.add(new DepartureZone("16L", "16R", 2875.6f, 1636.8f, 157, 3.1f, 10, 0.329f));
 
         return departureZones;
     }
 
     private static Array<DepartureZone> loadDepRJAA() {
         Array<DepartureZone> departureZones = new Array<DepartureZone>();
-        departureZones.add(new DepartureZone("16L", "16R", 3828.3f, 2060.9f, 157, 3.1f, 19, 0.329f));
-        departureZones.add(new DepartureZone("34L", "34R", 3828.3f, 2060.9f, 337, 3.1f, 16, 0.329f));
+        departureZones.add(new DepartureZone("16L", "16R", 3805.9f, 2098.3f, 157, 3.1f, 19, 0.329f));
+        departureZones.add(new DepartureZone("34L", "34R", 3863.9f, 2000.4f, 337, 3.1f, 16, 0.329f));
 
         return departureZones;
     }
