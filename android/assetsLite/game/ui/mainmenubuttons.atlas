@@ -1,74 +1,75 @@
+
 mainmenubuttons.png
-size: 500, 1000
+size: 1024,512
 format: RGBA8888
-filter: Linear,Linear
+filter: Nearest,Nearest
 repeat: none
 Button_down
   rotate: false
-  xy: 0, 700
+  xy: 2, 204
   size: 500, 100
   orig: 500, 100
   offset: 0, 0
   index: -1
 Button_up
   rotate: false
-  xy: 0, 600
+  xy: 2, 306
   size: 500, 100
   orig: 500, 100
   offset: 0, 0
   index: -1
 Checked
   rotate: false
-  xy: 236, 400
+  xy: 504, 206
   size: 236, 200
   orig: 236, 200
   offset: 0, 0
   index: -1
 FillerImage
   rotate: false
-  xy: 0, 900
+  xy: 504, 408
   size: 500, 100
   orig: 500, 100
   offset: 0, 0
   index: -1
 Information_down
   rotate: false
-  xy: 0, 0
+  xy: 644, 4
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Information_up
   rotate: false
-  xy: 0, 200
+  xy: 442, 2
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 ListBackground
   rotate: false
-  xy: 0, 800
+  xy: 2, 408
   size: 500, 100
   orig: 500, 100
   offset: 0, 0
   index: -1
 Settings_down
   rotate: false
-  xy: 200, 0
+  xy: 240, 2
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Settings_up
   rotate: false
-  xy: 200, 200
+  xy: 742, 206
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Unchecked
   rotate: false
-  xy: 0, 400
+  xy: 2, 2
   size: 236, 200
   orig: 236, 200
   offset: 0, 0
