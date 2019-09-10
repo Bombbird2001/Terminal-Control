@@ -17,7 +17,7 @@ import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSTAR;
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -27,6 +27,8 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
 import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
+import com.bombbird.terminalcontrol.entities.weather.Metar;
+import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
 import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
@@ -71,7 +73,7 @@ public class RadarScreen extends GameScreen {
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
-    private Metar metar;
+    private com.bombbird.terminalcontrol.entities.weather.Metar metar;
 
     //Timer for updating aircraft radar returns, trails and save every given amount of time
     private float radarTime;
@@ -348,6 +350,9 @@ public class RadarScreen extends GameScreen {
 
         //Load METARs
         loadMetar();
+
+        //Load windshear chance
+        WindshearChance.loadWsChance();
 
         loadInputProcessors();
     }

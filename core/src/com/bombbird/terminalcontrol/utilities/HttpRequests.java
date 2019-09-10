@@ -2,8 +2,9 @@ package com.bombbird.terminalcontrol.utilities;
 
 import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Metar;
+import com.bombbird.terminalcontrol.entities.weather.Metar;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,21 +19,21 @@ public class HttpRequests {
         JSONObject jo = new JSONObject();
         jo.put("password", Values.SEND_ERROR_PASSWORD);
         jo.put("error", error);
-        RequestBody body = RequestBody.create(json, jo.toString());
+        RequestBody body = RequestBody.create(jo.toString(), json);
         Request request = new Request.Builder()
                 .url(Values.SEND_ERROR_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
                 if (count <= 2) sendError(error, count + 1);
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException(response.toString());
                 } else {
@@ -48,20 +49,20 @@ public class HttpRequests {
         jo.put("password", Values.GET_METAR_PASSWORD);
         JSONArray apts = new JSONArray(TerminalControl.radarScreen.airports.keySet());
         jo.put("airports", apts);
-        RequestBody body = RequestBody.create(json, jo.toString());
+        RequestBody body = RequestBody.create(jo.toString(), json);
         Request request = new Request.Builder()
                 .url(Values.GET_METAR_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 metar.setMetarObject(metar.getMetarObject() == null ? metar.generateRandomWeather() : metar.randomBasedOnCurrent());
                 metar.updateRadarScreenState();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     if (response.code() == 503 && retry) {
                         System.out.println("503 received: trying again");
@@ -95,7 +96,7 @@ public class HttpRequests {
     }
 
     private static void getApiKey(final Metar metar) {
-        RequestBody body = RequestBody.create(json, "{\"password\":\"" + Values.API_PASSWORD + "\"}");
+        RequestBody body = RequestBody.create("{\"password\":\"" + Values.API_PASSWORD + "\"}", json);
         Request request = new Request.Builder()
                 .url(Values.API_URL)
                 .post(body)
@@ -103,14 +104,14 @@ public class HttpRequests {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
                 getApiKey(metar);
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException(response.toString());
                 } else {
@@ -137,7 +138,7 @@ public class HttpRequests {
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
                 Gdx.app.log("API metar error", "CheckWX API may not be working!");
@@ -153,7 +154,7 @@ public class HttpRequests {
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     if (response.body() != null) System.out.println(response.body().string());
                 } else {
@@ -170,21 +171,21 @@ public class HttpRequests {
 
     private static void sendMetar(final Metar metar, final JSONObject jo) {
         jo.put("password", Values.SEND_METAR_PASSWORD);
-        RequestBody body = RequestBody.create(json, jo.toString());
+        RequestBody body = RequestBody.create(jo.toString(), json);
         Request request = new Request.Builder()
                 .url(Values.SEND_METAR_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
                 sendMetar(metar, jo);
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException(response.toString());
                 } else {

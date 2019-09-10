@@ -1,12 +1,14 @@
 package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -37,6 +39,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public String loadingPercent;
     private float loadedTime = 0;
     private String tip = "";
+    private Label loadingLabel;
+    private Label tipLabel;
 
     //Set input processors
     public InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -109,6 +113,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         pauseScreen = new PauseScreen(this);
         gameSettingsScreen = new GameSettingsScreen(game, (RadarScreen) this);
 
+        loadLabels();
+
         setGameState(State.RUN);
     }
 
@@ -119,6 +125,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         for (RangeCircle circle: rangeCircles) {
             stage.addActor(circle);
         }
+    }
+
+    /** Load loading, tips labels */
+    private void loadLabels() {
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont20;
+        labelStyle.fontColor = Color.WHITE;
+        loadingLabel = new Label("", labelStyle);
+
+        Label.LabelStyle labelStyle1 = new Label.LabelStyle();
+        labelStyle1.font = Fonts.defaultFont16;
+        labelStyle1.fontColor = Color.WHITE;
+        tipLabel = new Label("", labelStyle1);
     }
 
     /** Handles input from keyboard, mouse, moderates them */
@@ -261,23 +280,28 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                     //Draw to the spritebatch
                     game.batch.begin();
-                    String loadingText = "Loading live weather.   ";
+                    boolean liveWeather = ((RadarScreen) this).liveWeather;
+                    String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                     if (loading) {
                         //Write loading text if loading
                         loadingTime += delta;
                         loadedTime += delta;
                         if (loadedTime > 1.5) {
                             loadedTime = 0;
-                            loadingText = "Loading live weather.   ";
+                            loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                         } else if (loadedTime > 1) {
-                            loadingText = "Loading live weather... ";
+                            loadingText = liveWeather ? "Loading live weather... " : "Loading... ";
                         } else if (loadedTime > 0.5) {
-                            loadingText = "Loading live weather..  ";
+                            loadingText = liveWeather ? "Loading live weather..  " : "Loading..  ";
                         }
-                        Fonts.defaultFont20.draw(game.batch, loadingText + loadingPercent, 1420, 1550);
+                        loadingText += loadingPercent;
+                        loadingLabel.setText(loadingText);
+                        loadingLabel.setPosition(1920 - loadingLabel.getPrefWidth() / 2, 1550);
+                        loadingLabel.draw(game.batch, 1);
                         if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
-                        if ("".equals(tip)) tip = RandomTip.randomTip();
-                        Fonts.defaultFont16.draw(game.batch, tip, 1870 - tip.length() / 2 * 29, 960);
+                        if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
+                        tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
+                        tipLabel.draw(game.batch, 1);
                     } else {
                         stage.draw();
                         game.batch.end();

@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.procedures;
+package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;

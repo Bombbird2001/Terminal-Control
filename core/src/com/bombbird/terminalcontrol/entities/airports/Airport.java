@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.procedures.*;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
@@ -113,8 +114,8 @@ public class Airport {
         setOppRwys();
         stars = FileLoader.loadStars(this);
         sids = FileLoader.loadSids(this);
-        RandomSID.loadSidNoise(icao);
-        RandomSTAR.loadStarNoise(icao);
+        com.bombbird.terminalcontrol.entities.sidstar.RandomSID.loadSidNoise(icao);
+        com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR.loadStarNoise(icao);
 
         //TerminalControl.tts.test(stars, sids);
 
@@ -140,7 +141,7 @@ public class Airport {
             altitudeExclusionZones.get(i).updateStatus(landingRunways);
         }
 
-        RandomSTAR.loadEntryTiming(this);
+        com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR.loadEntryTiming(this);
     }
 
     /** loadOthers from JSON save */
@@ -158,7 +159,7 @@ public class Airport {
         takeoffManager = new TakeoffManager(this, save.getJSONObject("takeoffManager"));
 
         if (save.isNull("starTimers")) {
-            RandomSTAR.loadEntryTiming(this);
+            com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR.loadEntryTiming(this);
         } else {
             RandomSTAR.loadEntryTiming(this, save.getJSONObject("starTimers"));
         }

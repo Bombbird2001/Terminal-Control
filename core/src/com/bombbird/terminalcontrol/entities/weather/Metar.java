@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities;
+package com.bombbird.terminalcontrol.entities.weather;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -29,7 +29,13 @@ public class Metar {
         if (radarScreen.liveWeather) {
             HttpRequests.getMetar(this, true);
         } else {
-            randomWeather();
+            Runnable randomWeather = new Runnable() {
+                @Override
+                public void run() {
+                    randomWeather();
+                }
+            };
+            new Thread(randomWeather).start();
         }
     }
 
@@ -73,7 +79,7 @@ public class Metar {
             visibility = MathUtils.clamp(visibility, 1000, 10000);
             jsonObject.put("visibility", visibility);
 
-            int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-20, 20);
+            int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-2, 2) * 10;
             if (windDir > 360) {
                 windDir -= 360;
             } else if (windDir <= 0) {
@@ -85,7 +91,7 @@ public class Metar {
             windSpd = MathUtils.clamp(windSpd, 5, 30);
             jsonObject.put("windSpeed", windSpd);
 
-            String ws = randomWS(windSpd, airport);
+            String ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
             jsonObject.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
             int gust = -1;
@@ -116,7 +122,7 @@ public class Metar {
             windDir = (MathUtils.random(35)) * 10 + 10;
             windSpd = MathUtils.random(25) + 5;
 
-            ws = randomWS(windSpd, airport);
+            ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
 
             if (windSpd >= 15 && MathUtils.random(2) == 2) {
                 //Gusts
@@ -137,28 +143,6 @@ public class Metar {
             jsonObject.put(airport, object);
         }
         return jsonObject;
-    }
-
-    private String randomWS(int windSpd, String airport) {
-        String ws = "";
-        if (windSpd >= 15 && MathUtils.random(2) == 2) {
-            //Runway windshear
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Runway runway : radarScreen.airports.get(airport).getRunways().values()) {
-                //Random boolean for each runway
-                if (MathUtils.random(2) == 2) {
-                    stringBuilder.append("R");
-                    stringBuilder.append(runway.getName());
-                    stringBuilder.append(" ");
-                }
-            }
-            if (stringBuilder.length() > 3 && stringBuilder.length() == radarScreen.airports.get(airport).getLandingRunways().size() * 3) {
-                ws = "ALL RWY";
-            } else {
-                ws = stringBuilder.toString();
-            }
-        }
-        return ws;
     }
 
     public void randomWeather() {

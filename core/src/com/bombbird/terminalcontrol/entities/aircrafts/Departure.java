@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
-import com.bombbird.terminalcontrol.entities.procedures.RandomSID;
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSID;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
