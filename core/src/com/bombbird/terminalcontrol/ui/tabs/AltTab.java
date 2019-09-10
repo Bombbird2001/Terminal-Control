@@ -40,7 +40,7 @@ public class AltTab extends Tab {
             }
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
-            if (latMode.equals("Hold at")) {
+            if ("Hold at".equals(latMode)) {
                 int[] restr = selectedAircraft.getRoute().getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];

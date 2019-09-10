@@ -73,7 +73,7 @@ public class RadarScreen extends GameScreen {
 
     //Timer for getting METAR every quarter of hour
     private Timer timer;
-    private com.bombbird.terminalcontrol.entities.weather.Metar metar;
+    private Metar metar;
 
     //Timer for updating aircraft radar returns, trails and save every given amount of time
     private float radarTime;

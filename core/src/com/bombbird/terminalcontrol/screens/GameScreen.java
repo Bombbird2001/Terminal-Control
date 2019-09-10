@@ -38,7 +38,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public float loadingTime = 0;
     public String loadingPercent;
     private float loadedTime = 0;
-    private String tip = "";
     private Label loadingLabel;
     private Label tipLabel;
 
