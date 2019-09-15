@@ -17,8 +17,6 @@ import com.bombbird.terminalcontrol.entities.RangeCircle;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.obstacles.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.obstacles.CircleObstacle;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
