@@ -17,7 +17,7 @@ public class RandomTip {
         tips.add("Windshear can cause aircrafts to go around");
         tips.add("Circles on the LDA indicate the step-down points for a non-precision approach");
         tips.add("Some waypoints are fly-over points; aircrafts will fly directly over it before turning");
-        tips.add("Some aircraft descend/climb slower than others");
+        tips.add("Some aircraft climb/descend slower than others");
         tips.add("An aircraft will go around if it is too high or too fast");
         tips.add("An aircraft will go around if there is another aircraft on the runway");
         tips.add("A minimum separation of 3nm or 1000 feet must be kept between all aircraft (except in some cases)");

@@ -9,10 +9,9 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
-import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
@@ -104,14 +103,9 @@ public class Arrival extends Aircraft {
             } else if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
                 initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
             }
-            for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
-                if (polygonObstacle.isIn(this) && initAlt < polygonObstacle.getMinAlt()) {
-                    initAlt = polygonObstacle.getMinAlt();
-                }
-            }
-            for (CircleObstacle circleObstacle : radarScreen.restArray) {
-                if (circleObstacle.isIn(this) && initAlt < circleObstacle.getMinAlt()) {
-                    initAlt = circleObstacle.getMinAlt();
+            for (Obstacle obstacle : radarScreen.obsArray) {
+                if (obstacle.isIn(this) && initAlt < obstacle.getMinAlt()) {
+                    initAlt = obstacle.getMinAlt();
                 }
             }
         }

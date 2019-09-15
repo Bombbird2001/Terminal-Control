@@ -60,6 +60,8 @@ public class ZoneLoader {
         Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
         if ("RJAA".equals(icao)) {
             zones = loadExclRJAA();
+        } else if ("VTBD".equals(icao)) {
+            zones = loadExclVTBD();
         }
 
         return zones;
@@ -68,6 +70,13 @@ public class ZoneLoader {
     private static Array<AltitudeExclusionZone> loadExclRJAA() {
         Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
         zones.add(new AltitudeExclusionZone(new String[] {"16L", "16R"}, 3828.3f, 2060.9f, 157, 14, 5));
+
+        return zones;
+    }
+
+    private static Array<AltitudeExclusionZone> loadExclVTBD() {
+        Array<AltitudeExclusionZone> zones = new Array<AltitudeExclusionZone>();
+        zones.add(new AltitudeExclusionZone(new String[] {"03L"}, 2952.6f, 1595.8f, 30, 12, 7));
 
         return zones;
     }

@@ -1,31 +1,20 @@
-package com.bombbird.terminalcontrol.entities.restrictions;
+package com.bombbird.terminalcontrol.entities.obstacles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class CircleObstacle extends Actor {
+public class CircleObstacle extends Obstacle {
     private Circle circle;
-    private int minAlt;
-    private Label label;
-    private boolean conflict;
-    private boolean enforced;
-
-    private RadarScreen radarScreen;
-    private ShapeRenderer shapeRenderer;
 
     public CircleObstacle(String toParse) {
+        super();
         parseData(toParse);
-        radarScreen = TerminalControl.radarScreen;
-        shapeRenderer = radarScreen.shapeRenderer;
     }
 
     /** Parses input string into relevant information */
@@ -42,17 +31,17 @@ public class CircleObstacle extends Actor {
         float radius = 0;
         for (String s1: restInfo) {
             switch (index) {
-                case 0: minAlt = Integer.parseInt(s1); break;
+                case 0: setMinAlt(Integer.parseInt(s1)); break;
                 case 1:
                     if (s1.length() > 0 && s1.charAt(s1.length() - 1) == 'C') {
-                        enforced = true;
-                        label = new Label(s1.substring(0, s1.length() - 1), labelStyle);
+                        setEnforced(true);
+                        setLabel(new Label(s1.substring(0, s1.length() - 1), labelStyle));
                     } else {
-                        label = new Label(s1, labelStyle);
+                        setLabel(new Label(s1, labelStyle));
                     }
                     break;
-                case 2: label.setX(Integer.parseInt(s1)); break;
-                case 3: label.setY(Integer.parseInt(s1)); break;
+                case 2: getLabel().setX(Integer.parseInt(s1)); break;
+                case 3: getLabel().setY(Integer.parseInt(s1)); break;
                 case 4: centreX = Float.parseFloat(s1); break;
                 case 5: centreY = Float.parseFloat(s1); break;
                 case 6: radius = Float.parseFloat(s1); break;
@@ -65,20 +54,8 @@ public class CircleObstacle extends Actor {
         circle = new Circle(centreX, centreY, radius);
     }
 
-    /** Draws the area label to screen */
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        if (conflict || label.getText().toString().charAt(0) == '#') {
-            label.getStyle().fontColor = Color.RED;
-        } else if (!enforced) {
-            label.getStyle().fontColor = Color.GRAY;
-        } else {
-            label.getStyle().fontColor = Color.ORANGE;
-        }
-        label.draw(batch, 1);
-    }
-
     /** Renders the circle for restricted areas on screen */
+    @Override
     public void renderShape() {
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -86,9 +63,9 @@ public class CircleObstacle extends Actor {
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        if (conflict) {
+        if (isConflict()) {
             shapeRenderer.setColor(Color.RED);
-        } else if (!enforced) {
+        } else if (!isEnforced()) {
             shapeRenderer.setColor(Color.GRAY);
         } else {
             shapeRenderer.setColor(Color.ORANGE);
@@ -97,19 +74,8 @@ public class CircleObstacle extends Actor {
     }
 
     /** Checks if input aircraft is in the circle */
+    @Override
     public boolean isIn(Aircraft aircraft) {
-        return (enforced || (aircraft.getNavState().getDispLatMode().last().contains("Turn") || aircraft.getNavState().getDispLatMode().last().equals("Fly heading"))) && circle.contains(aircraft.getX(), aircraft.getY());
-    }
-
-    public int getMinAlt() {
-        return minAlt;
-    }
-
-    public boolean isConflict() {
-        return conflict;
-    }
-
-    public void setConflict(boolean conflict) {
-        this.conflict = conflict;
+        return circle.contains(aircraft.getX(), aircraft.getY());
     }
 }

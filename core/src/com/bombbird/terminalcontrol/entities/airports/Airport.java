@@ -142,7 +142,7 @@ public class Airport {
             altitudeExclusionZones.get(i).updateStatus(landingRunways);
         }
 
-        com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR.loadEntryTiming(this);
+        RandomSTAR.loadEntryTiming(this);
     }
 
     /** loadOthers from JSON save */
@@ -250,16 +250,6 @@ public class Airport {
             TerminalControl.radarScreen.getCommBox().normalMsg(msg);
             TerminalControl.radarScreen.soundManager.playRunwayChange();
         }
-
-        //Updates approach zone status
-        for (int i = 0; i < approachZones.size; i++) {
-            approachZones.get(i).updateStatus(landingRunways);
-        }
-
-        //Updates departure zone status
-        for (int i = 0; i < departureZones.size; i++) {
-            departureZones.get(i).updateStatus(takeoffRunways);
-        }
     }
 
     public void renderRunways() {
@@ -306,6 +296,16 @@ public class Airport {
         runwayManager.updateRunways(windHdg, this.metar.getInt("windSpeed"));
         for (Runway runway: runways.values()) {
             runway.setWindshear(runway.isLanding() && ("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName())));
+        }
+
+        //Updates approach zone status
+        for (int i = 0; i < approachZones.size; i++) {
+            approachZones.get(i).updateStatus(landingRunways);
+        }
+
+        //Updates departure zone status
+        for (int i = 0; i < departureZones.size; i++) {
+            departureZones.get(i).updateStatus(takeoffRunways);
         }
     }
 

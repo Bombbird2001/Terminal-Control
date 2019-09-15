@@ -10,13 +10,14 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.procedures.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
+import com.bombbird.terminalcontrol.entities.obstacles.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.obstacles.CircleObstacle;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,9 +28,9 @@ import java.util.HashMap;
 public class FileLoader {
     public static final String mainDir = "full".equals(Gdx.files.internal("game/type.type").readString()) ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
 
-    public static Array<PolygonObstacle> loadObstacles() {
+    public static Array<Obstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
-        Array<PolygonObstacle> obsArray = new Array<PolygonObstacle>();
+        Array<Obstacle> obsArray = new Array<Obstacle>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             if ("".equals(s)) break;
@@ -39,22 +40,18 @@ public class FileLoader {
             obsArray.add(obs);
             TerminalControl.radarScreen.stage.addActor(obs);
         }
-        return obsArray;
-    }
 
-    public static Array<CircleObstacle> loadRestricted() {
         FileHandle restrictions = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/restricted.restr");
-        Array<CircleObstacle> restArray = new Array<CircleObstacle>();
         String[] indivRests = restrictions.readString().split("\\r?\\n");
         for (String s: indivRests) {
             if ("".equals(s)) break;
             if (s.charAt(0) == '#') continue;
             //For each individual restricted area
             CircleObstacle area = new CircleObstacle(s);
-            restArray.add(area);
+            obsArray.add(area);
             TerminalControl.radarScreen.stage.addActor(area);
         }
-        return restArray;
+        return obsArray;
     }
 
     public static HashMap<String, Waypoint> loadWaypoints() {

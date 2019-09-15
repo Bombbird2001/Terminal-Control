@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
@@ -24,8 +25,6 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.entities.weather.Metar;
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
@@ -323,9 +322,6 @@ public class RadarScreen extends GameScreen {
         //Load obstacles
         obsArray = FileLoader.loadObstacles();
 
-        //Load altitude restrictions
-        restArray = FileLoader.loadRestricted();
-
         //Load panels
         loadPanel();
         ui.setNormalPane(true);
@@ -417,29 +413,16 @@ public class RadarScreen extends GameScreen {
         Shoreline.renderShape();
 
         //Draw obstacles
-        Array<PolygonObstacle> saveForLast = new Array<PolygonObstacle>();
-        for (PolygonObstacle polygonObstacle : obsArray) {
-            if (polygonObstacle.isEnforced() || polygonObstacle.isConflict() || polygonObstacle.getLabel().getText().toString().charAt(0) == '#') {
-                saveForLast.add(polygonObstacle);
+        Array<Obstacle> saveForLast = new Array<Obstacle>();
+        for (Obstacle obstacle : obsArray) {
+            if (obstacle.isEnforced() || obstacle.isConflict() || obstacle.getLabel().getText().toString().charAt(0) == '#') {
+                saveForLast.add(obstacle);
             } else {
-                polygonObstacle.renderShape();
+                obstacle.renderShape();
             }
         }
-        for (PolygonObstacle polygonObstacle : saveForLast) {
-            polygonObstacle.renderShape();
-        }
-
-        //Draw restricted areas
-        Array<CircleObstacle> saveForLast1 = new Array<CircleObstacle>();
-        for (CircleObstacle circleObstacle : restArray) {
-            if (circleObstacle.isConflict()) {
-                saveForLast1.add(circleObstacle);
-            } else {
-                circleObstacle.renderShape();
-            }
-        }
-        for (CircleObstacle circleObstacle : saveForLast1) {
-            circleObstacle.renderShape();
+        for (Obstacle obstacle : saveForLast) {
+            obstacle.renderShape();
         }
 
         super.renderShape();

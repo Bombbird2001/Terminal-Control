@@ -12,11 +12,10 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
+import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
-import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
@@ -67,11 +66,8 @@ public class SeparationChecker extends Actor {
             label.setText("");
             label.setName("");
         }
-        for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
-            polygonObstacle.setConflict(false);
-        }
-        for (CircleObstacle circleObstacle : radarScreen.restArray) {
-            circleObstacle.setConflict(false);
+        for (Obstacle obstacle : radarScreen.obsArray) {
+            obstacle.setConflict(false);
         }
         int active = checkAircraftSep();
         active = checkRestrSep(active);
@@ -173,14 +169,14 @@ public class SeparationChecker extends Actor {
                                 MathTools.pixelToNm(MathTools.distanceBetween(plane2.getX(), plane2.getY(), runway.getX(), runway.getY())) < 10) {
                             //If both planes on the same LOC but are both less than 10nm from runway threshold, separation minima is reduced to 2.5nm
                             minima = 2.5f;
-                            //TODO If visibility is poor, reduced separation doesn't apply
+                            //TODO If visibility is poor, reduced separation doesn't apply?
                         }
                     }
 
                     if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 975 && dist < minima + 2) {
                         if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 900 && dist < minima) {
                             if ((!plane1.isConflict() || !plane2.isConflict())) {
-                                //TODO Change separation minima depending on visibility, and in future reduced separation for emergencies
+                                //TODO Change separation minima depending on visibility(?), and reduced separation for emergencies
                                 //Aircrafts have infringed minima of 1000 feet and 3nm apart
                                 plane1.setConflict(true);
                                 plane2.setConflict(true);
@@ -235,30 +231,38 @@ public class SeparationChecker extends Actor {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                 continue;
             }
+
+            boolean conflict = false;
+            boolean excl = false;
+
             if (aircraft instanceof Arrival) {
+                //Check if aircraft is in altitude exclusion zone
                 Array<AltitudeExclusionZone> zones = aircraft.getAirport().getAltitudeExclusionZones();
-                boolean found = false;
                 for (int i = 0; i < zones.size; i++) {
                     if (zones.get(i).isInside(aircraft)) {
-                        found = true;
+                        excl = true;
                         break;
                     }
                 }
-                if (found) continue;
             }
-            for (PolygonObstacle polygonObstacle : radarScreen.obsArray) {
-                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < polygonObstacle.getMinAlt() - 50 && polygonObstacle.isIn(aircraft)) {
-                    aircraft.setConflict(true);
-                    polygonObstacle.setConflict(true);
-                    active++;
+
+            for (Obstacle obstacle : radarScreen.obsArray) {
+                //If aircraft is infringing obstacle
+                if (obstacle.isIn(aircraft) && aircraft.getAltitude() < obstacle.getMinAlt() - 100) {
+                    if (obstacle.isEnforced()) {
+                        //Enforced, conflict
+                        conflict = true;
+                    } else {
+                        //Not enforced, conflict only if not excluded and is vectored
+                        conflict = !excl && aircraft.isVectored();
+                        obstacle.setConflict(conflict);
+                    }
                 }
             }
-            for (CircleObstacle circleObstacle : radarScreen.restArray) {
-                if (!aircraft.isTerrainConflict() && aircraft.getAltitude() < circleObstacle.getMinAlt() - 50 && circleObstacle.isIn(aircraft)) {
-                    aircraft.setConflict(true);
-                    circleObstacle.setConflict(true);
-                    active++;
-                }
+
+            if (conflict && !aircraft.isTerrainConflict()) {
+                aircraft.setConflict(true);
+                active++;
             }
         }
         return active;

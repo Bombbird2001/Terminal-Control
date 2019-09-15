@@ -14,10 +14,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.RangeCircle;
+import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.restrictions.PolygonObstacle;
-import com.bombbird.terminalcontrol.entities.restrictions.CircleObstacle;
+import com.bombbird.terminalcontrol.entities.obstacles.PolygonObstacle;
+import com.bombbird.terminalcontrol.entities.obstacles.CircleObstacle;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
@@ -74,8 +75,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private RangeCircle[] rangeCircles;
 
     //Create obstacle resources
-    public Array<PolygonObstacle> obsArray;
-    public Array<CircleObstacle> restArray;
+    public Array<Obstacle> obsArray;
 
     //Create airports
     public final HashMap<String, Airport> airports = new HashMap<String, Airport>();

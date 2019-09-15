@@ -1044,6 +1044,11 @@ public class Aircraft extends Actor {
         return null;
     }
 
+    /** Checks if aircraft is being manually vectored */
+    public boolean isVectored() {
+        return navState.getDispLatMode().last().contains("Turn") || navState.getDispLatMode().last().equals("Fly heading");
+    }
+
     public SidStar getSidStar() {
         return null;
     }
