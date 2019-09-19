@@ -307,6 +307,11 @@ public class Airport {
         for (int i = 0; i < departureZones.size; i++) {
             departureZones.get(i).updateStatus(takeoffRunways);
         }
+
+        //Updates altitude exclusion zone status
+        for (int i = 0; i < altitudeExclusionZones.size; i++) {
+            altitudeExclusionZones.get(i).updateStatus(landingRunways);
+        }
     }
 
     public HashMap<String, Star> getStars() {

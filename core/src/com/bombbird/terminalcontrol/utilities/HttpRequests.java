@@ -149,6 +149,7 @@ public class HttpRequests {
                     receiveMetar(metar, apiKey, false);
                     return;
                 }
+                TerminalControl.radarScreen.loadingPercent = "60%";
 
                 metar.randomWeather();
             }

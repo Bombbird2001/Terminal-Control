@@ -43,7 +43,7 @@ public class Metar {
         }
     }
 
-    public void updateTutorialMetar() {
+    private void updateTutorialMetar() {
         metarObject = new JSONObject();
 
         JSONObject rctpMetar = new JSONObject();
@@ -68,7 +68,6 @@ public class Metar {
     }
 
     private void updateAirports() {
-        if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) radarScreen.updateInformation();
         for (Airport airport: radarScreen.airports.values()) {
             airport.setMetar(metarObject);
         }
@@ -91,8 +90,7 @@ public class Metar {
             }
             jsonObject.put("windDirection", windDir);
 
-            int windSpd = metarObject.getJSONObject(airport).getInt("windSpeed") + MathUtils.random(-15, 15);
-            windSpd = MathUtils.clamp(windSpd, 5, 30);
+            int windSpd = WindspeedChance.getRandomWindspeed(airport);
             jsonObject.put("windSpeed", windSpd);
 
             String ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
@@ -124,7 +122,7 @@ public class Metar {
             String ws;
             visibility = (MathUtils.random(9) + 1) * 1000;
             windDir = (MathUtils.random(35)) * 10 + 10;
-            windSpd = MathUtils.random(25) + 5;
+            windSpd = WindspeedChance.getRandomWindspeed(airport);
 
             ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
 
@@ -156,6 +154,8 @@ public class Metar {
 
     public void updateRadarScreenState() {
         if (quit) return;
+        if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) radarScreen.updateInformation();
+        prevMetar = metarObject;
         updateAirports();
         radarScreen.ui.updateMetar();
         radarScreen.loadingPercent = "100%";
