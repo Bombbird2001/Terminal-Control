@@ -20,7 +20,7 @@ public class HttpRequests {
         jo.put("password", Values.SEND_ERROR_PASSWORD);
         jo.put("error", error);
         RequestBody body = RequestBody.create(jo.toString(), json);
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(Values.SEND_ERROR_URL)
                 .post(body)
                 .build();
@@ -35,7 +35,8 @@ public class HttpRequests {
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
+                    Gdx.app.log("sendError", response.toString());
+                    response.close();
                 } else {
                     if (response.body() != null) System.out.println(response.body().string());
                 }
@@ -57,8 +58,7 @@ public class HttpRequests {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                metar.setMetarObject(metar.getMetarObject() == null ? metar.generateRandomWeather() : metar.randomBasedOnCurrent());
-                metar.updateRadarScreenState();
+                metar.randomWeather();
             }
 
             @Override
@@ -66,14 +66,13 @@ public class HttpRequests {
                 if (!response.isSuccessful()) {
                     if (response.code() == 503 && retry) {
                         System.out.println("503 received: trying again");
+                        response.close();
                         TerminalControl.radarScreen.loadingPercent = "10%";
                         getMetar(metar, false);
-                        response.close();
                     } else {
                         //Generate offline weather
                         response.close();
-                        metar.setMetarObject(metar.getMetarObject() == null ? metar.generateRandomWeather() : metar.randomBasedOnCurrent());
-                        metar.updateRadarScreenState();
+                        metar.randomWeather();
                     }
                 } else {
                     String responseText = "";
@@ -83,7 +82,7 @@ public class HttpRequests {
                         //Server requested for METAR update
                         System.out.println("Update requested");
                         TerminalControl.radarScreen.loadingPercent = "20%";
-                        getApiKey(metar);
+                        getApiKey(metar, 0);
                     } else {
                         //METAR JSON text has been received
                         metar.setMetarObject(new JSONObject(responseText));
@@ -95,7 +94,7 @@ public class HttpRequests {
         });
     }
 
-    private static void getApiKey(final Metar metar) {
+    private static void getApiKey(final Metar metar, final int count) {
         RequestBody body = RequestBody.create("{\"password\":\"" + Values.API_PASSWORD + "\"}", json);
         Request request = new Request.Builder()
                 .url(Values.API_URL)
@@ -107,20 +106,35 @@ public class HttpRequests {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //If requests fails due to timeout
                 e.printStackTrace();
-                getApiKey(metar);
+                if (count <= 2) {
+                    getApiKey(metar, count + 1);
+                    return;
+                }
+                metar.randomWeather();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
+                    Gdx.app.log("getApiKey", response.toString());
+                    response.close();
+                    if (count <= 2) {
+                        getApiKey(metar, count + 1);
+                        return;
+                    }
+                    metar.randomWeather();
                 } else {
                     String apiKey = null;
                     if (response.body() != null) apiKey = response.body().string();
                     if (apiKey == null) {
-                        getApiKey(metar);
                         response.close();
-                        return;
+                        if (count <= 2) {
+                            getApiKey(metar, count + 1);
+                            return;
+                        } else {
+                            metar.randomWeather();
+                            return;
+                        }
                     }
                     receiveMetar(metar, apiKey, true);
                     TerminalControl.radarScreen.loadingPercent = "40%";
@@ -149,15 +163,20 @@ public class HttpRequests {
                     receiveMetar(metar, apiKey, false);
                     return;
                 }
-                TerminalControl.radarScreen.loadingPercent = "60%";
-
                 metar.randomWeather();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    if (response.body() != null) System.out.println(response.body().string());
+                    Gdx.app.log("receiveMetar", response.toString());
+                    response.close();
+                    if (retry) {
+                        Gdx.app.log("receiveMetar", "Retrying getting weather from API");
+                        receiveMetar(metar, apiKey, false);
+                        return;
+                    }
+                    metar.randomWeather();
                 } else {
                     String responseText = "";
                     if (response.body() != null) responseText = response.body().string();
@@ -188,13 +207,13 @@ public class HttpRequests {
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException(response.toString());
+                    Gdx.app.log("sendMetar", response.toString());
                 } else {
                     if (response.body() != null) System.out.println(response.body().string());
-                    getMetar(metar, true);
-                    TerminalControl.radarScreen.loadingPercent = "80%";
                 }
                 response.close();
+                getMetar(metar, true);
+                TerminalControl.radarScreen.loadingPercent = "80%";
             }
         });
     }

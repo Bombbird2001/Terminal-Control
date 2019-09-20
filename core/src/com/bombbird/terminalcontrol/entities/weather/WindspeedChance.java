@@ -44,7 +44,8 @@ public class WindspeedChance {
         return spds;
     }
 
-    public static int getRandomWindspeed(String arpt) {
+    public static int getRandomWindspeed(String arpt, int dir) {
+        if (dir == 0) return MathUtils.random(0, 5);
         Array<int[]> spds = windspdChances.get(arpt);
         int rand = MathUtils.random(1, spds.get(spds.size - 1)[0]);
 

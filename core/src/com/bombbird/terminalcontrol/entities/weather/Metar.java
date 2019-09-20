@@ -90,7 +90,8 @@ public class Metar {
             }
             jsonObject.put("windDirection", windDir);
 
-            int windSpd = WindspeedChance.getRandomWindspeed(airport);
+            int currentSpd = metarObject.getJSONObject(airport).getInt("windSpeed");
+            int windSpd = (2 * currentSpd + WindspeedChance.getRandomWindspeed(airport, windDir)) / 3;
             jsonObject.put("windSpeed", windSpd);
 
             String ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
@@ -121,8 +122,8 @@ public class Metar {
             int gust = -1;
             String ws;
             visibility = (MathUtils.random(9) + 1) * 1000;
-            windDir = (MathUtils.random(35)) * 10 + 10;
-            windSpd = WindspeedChance.getRandomWindspeed(airport);
+            windDir = WindDirChance.getRandomWindDir(airport);
+            windSpd = WindspeedChance.getRandomWindspeed(airport, windDir);
 
             ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
 

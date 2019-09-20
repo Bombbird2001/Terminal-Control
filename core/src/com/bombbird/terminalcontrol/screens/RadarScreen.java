@@ -27,6 +27,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager;
 import com.bombbird.terminalcontrol.entities.weather.Metar;
+import com.bombbird.terminalcontrol.entities.weather.WindDirChance;
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
 import com.bombbird.terminalcontrol.entities.weather.WindspeedChance;
 import com.bombbird.terminalcontrol.ui.*;
@@ -340,6 +341,7 @@ public class RadarScreen extends GameScreen {
         //Load weather chances
         WindshearChance.loadWsChance();
         WindspeedChance.loadWindSpdChance();
+        WindDirChance.loadWindDirChance();
 
         //Load METARs
         loadMetar();

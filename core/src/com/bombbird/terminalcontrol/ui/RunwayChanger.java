@@ -198,6 +198,7 @@ public class RunwayChanger {
         for (int i = 0; i < runways.size; i++) {
             airport.setActive(runways.get(i), tkofLdg.get(i)[2], tkofLdg.get(i)[1]);
         }
+        airport.updateZoneStatus();
     }
 
     public boolean containsLandingRunway(String icao, String rwy) {

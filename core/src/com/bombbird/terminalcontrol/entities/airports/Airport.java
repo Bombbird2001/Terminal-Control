@@ -127,20 +127,8 @@ public class Airport {
         takeoffManager = new TakeoffManager(this);
         runwayManager = new RunwayManager(this);
 
-        approachZones = ZoneLoader.loadApchZones(icao);
-        for (int i = 0; i < approachZones.size; i++) {
-            approachZones.get(i).updateStatus(landingRunways);
-        }
-
-        departureZones = ZoneLoader.loadDepZones(icao);
-        for (int i = 0; i < departureZones.size; i++) {
-            departureZones.get(i).updateStatus(takeoffRunways);
-        }
-
-        altitudeExclusionZones = ZoneLoader.loadAltExclZones(icao);
-        for (int i = 0; i < altitudeExclusionZones.size; i++) {
-            altitudeExclusionZones.get(i).updateStatus(landingRunways);
-        }
+        loadZones();
+        updateZoneStatus();
 
         RandomSTAR.loadEntryTiming(this);
     }
@@ -270,6 +258,31 @@ public class Airport {
         }
     }
 
+    /** Loads the departure/approach/exclusion zones for this airport */
+    public void loadZones() {
+        approachZones = ZoneLoader.loadApchZones(icao);
+        departureZones = ZoneLoader.loadDepZones(icao);
+        altitudeExclusionZones = ZoneLoader.loadAltExclZones(icao);
+    }
+
+    /** Updates the active status of departure/approach/exclusion zones */
+    public void updateZoneStatus() {
+        //Updates approach zone status
+        for (int i = 0; i < approachZones.size; i++) {
+            approachZones.get(i).updateStatus(landingRunways);
+        }
+
+        //Updates departure zone status
+        for (int i = 0; i < departureZones.size; i++) {
+            departureZones.get(i).updateStatus(takeoffRunways);
+        }
+
+        //Updates altitude exclusion zone status
+        for (int i = 0; i < altitudeExclusionZones.size; i++) {
+            altitudeExclusionZones.get(i).updateStatus(landingRunways);
+        }
+    }
+
     public void renderZones() {
         for (int i = 0; i < approachZones.size; i++) {
             approachZones.get(i).renderShape();
@@ -285,7 +298,7 @@ public class Airport {
     public void setMetar(JSONObject metar) {
         this.metar = metar.getJSONObject(icao);
         System.out.println("METAR of " + icao + ": " + this.metar.toString());
-        //Update active runways if METAR is updated
+        //Update active runways if METAR is updated (windHdg 0 is VRB wind)
         int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");
         ws = "";
         if (!this.metar.isNull("windshear")) {
@@ -298,20 +311,7 @@ public class Airport {
             runway.setWindshear(runway.isLanding() && ("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName())));
         }
 
-        //Updates approach zone status
-        for (int i = 0; i < approachZones.size; i++) {
-            approachZones.get(i).updateStatus(landingRunways);
-        }
-
-        //Updates departure zone status
-        for (int i = 0; i < departureZones.size; i++) {
-            departureZones.get(i).updateStatus(takeoffRunways);
-        }
-
-        //Updates altitude exclusion zone status
-        for (int i = 0; i < altitudeExclusionZones.size; i++) {
-            altitudeExclusionZones.get(i).updateStatus(landingRunways);
-        }
+        updateZoneStatus();
     }
 
     public HashMap<String, Star> getStars() {
