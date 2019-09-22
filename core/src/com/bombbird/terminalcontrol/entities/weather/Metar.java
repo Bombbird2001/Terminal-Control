@@ -78,9 +78,7 @@ public class Metar {
         JSONObject airports = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
             JSONObject jsonObject = new JSONObject();
-            int visibility = metarObject.getJSONObject(airport).getInt("visibility") + MathUtils.randomSign() * 1000;
-            visibility = MathUtils.clamp(visibility, 1000, 10000);
-            jsonObject.put("visibility", visibility);
+            jsonObject.put("visibility", VisibilityChance.getRandomVis());
 
             int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-2, 2) * 10;
             if (windDir > 360) {
@@ -121,7 +119,7 @@ public class Metar {
             int windSpd;
             int gust = -1;
             String ws;
-            visibility = (MathUtils.random(9) + 1) * 1000;
+            visibility = VisibilityChance.getRandomVis();
             windDir = WindDirChance.getRandomWindDir(airport);
             windSpd = WindspeedChance.getRandomWindspeed(airport, windDir);
 
