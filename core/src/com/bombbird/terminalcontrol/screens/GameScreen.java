@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
+import com.bombbird.terminalcontrol.ui.RequestFlasher;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.sounds.SoundManager;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
@@ -65,6 +66,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Create texture stuff
     public final ShapeRenderer shapeRenderer = new ShapeRenderer();
+
+    //Flashes rectangles to alert of user of aircraft with request if aircraft not within view
+    public RequestFlasher requestFlasher;
 
     //Sounds
     public SoundManager soundManager = new SoundManager();
@@ -306,6 +310,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         game.batch.begin();
                         labelStage.getViewport().apply();
                         labelStage.draw();
+
+                        //Special shape rendering here so it won't be blocked by labels
+                        requestFlasher.update();
                     }
                     game.batch.end();
 

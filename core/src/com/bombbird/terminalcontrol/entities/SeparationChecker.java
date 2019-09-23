@@ -61,6 +61,7 @@ public class SeparationChecker extends Actor {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             aircraft.setWarning(false);
             aircraft.setConflict(false);
+            aircraft.setTerrainConflict(false);
         }
         for (Label label: labels) {
             label.setText("");
@@ -261,6 +262,7 @@ public class SeparationChecker extends Actor {
             }
 
             if (conflict && !aircraft.isTerrainConflict()) {
+                aircraft.setTerrainConflict(true);
                 aircraft.setConflict(true);
                 active++;
             }
@@ -272,7 +274,7 @@ public class SeparationChecker extends Actor {
     public void renderShape() {
         int radius = (int)(MathTools.nmToPixel(radarScreen.separationMinima) / 2);
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isConflict()) {
+            if (aircraft.isConflict() || aircraft.isTerrainConflict()) {
                 radarScreen.shapeRenderer.setColor(Color.RED);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), radius);
                 radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - Gdx.graphics.getDeltaTime() * 0.025f);

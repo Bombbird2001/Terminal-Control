@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -41,32 +42,34 @@ public class RequestFlasher {
                 if (ratio < defaultRatio) maxX += xOffset / 2 * camera.zoom;
             }
         }
-        float margin = camera.zoom * 30;
+        float margin = camera.zoom * 80;
         minX += margin;
-        minX += margin;
+        minY += margin;
         maxX -= margin;
         maxY -= margin;
 
         float ctrX = (minX + maxX) / 2;
         float ctrY = (minY + maxY) / 2;
+        radarScreen.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isActionRequired() && (!MathTools.withinRange(aircraft.getRadarX(), minX, maxX) || !MathTools.withinRange(aircraft.getRadarY(), minY, maxY))) {
+            if ((aircraft.isEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict() || aircraft.isActionRequired()) && (!MathTools.withinRange(aircraft.getRadarX(), minX, maxX) || !MathTools.withinRange(aircraft.getRadarY(), minY, maxY))) {
                 float deltaX = aircraft.getRadarX() - ctrX;
                 float deltaY = aircraft.getRadarY() - ctrY;
                 float[] indicationPoint = MathTools.pointsAtBorder(new float[] {minX, maxX}, new float[] {minY, maxY}, (minX + maxX) / 2, (minY + maxY) / 2, 90 - MathUtils.radiansToDegrees * MathUtils.atan2(deltaY, deltaX));
                 Color color;
                 if (Calendar.getInstance().get(Calendar.SECOND) % 2 == 0) {
-                    if (aircraft.isEmergency() || aircraft.isConflict()) {
+                    if (aircraft.isEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict()) {
                         color = Color.RED;
                     } else if (aircraft instanceof Departure) {
                         color = Color.GREEN;
                     } else {
-                        color = Color.BLUE;
+                        color = new Color(0, 200 / 255f, 255, 1);
                     }
                     radarScreen.shapeRenderer.setColor(color);
-                    radarScreen.shapeRenderer.circle(indicationPoint[0], indicationPoint[1], 30 * camera.zoom);
+                    radarScreen.shapeRenderer.circle(indicationPoint[0], indicationPoint[1], 50 * camera.zoom);
                 }
             }
         }
+        radarScreen.shapeRenderer.end();
     }
 }
