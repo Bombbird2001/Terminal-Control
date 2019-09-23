@@ -45,20 +45,20 @@ public class MathTools {
     }
 
     /** Calculates the shortest distance required to reach the border supplied with a given track */
-    public static float distanceFromBorder(float[] xBorder, float[] yBorder, float x, float y, float track) {
-        float xDistRight = (xBorder[1] - x) / MathUtils.cosDeg(90 - track);
-        float xDistLeft = (xBorder[0] - x) / MathUtils.cosDeg(90 - track);
-        float yDistUp = (yBorder[1] - y) / MathUtils.sinDeg(90 - track);
-        float yDistDown = (yBorder[0] - y) / MathUtils.sinDeg(90 - track);
+    public static float distanceFromBorder(float[] xBorder, float[] yBorder, float x, float y, float direction) {
+        float xDistRight = (xBorder[1] - x) / MathUtils.cosDeg(90 - direction);
+        float xDistLeft = (xBorder[0] - x) / MathUtils.cosDeg(90 - direction);
+        float yDistUp = (yBorder[1] - y) / MathUtils.sinDeg(90 - direction);
+        float yDistDown = (yBorder[0] - y) / MathUtils.sinDeg(90 - direction);
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
         return Math.min(xDist, yDist);
     }
 
-    /** Calculates the point where the line from a point at a specified track meets the radar screen's border */
-    public static float[] pointsAtBorder(float[] xBorder, float[] yBorder, float x, float y, float track) {
-        float dist = distanceFromBorder(xBorder, yBorder, x, y, track);
-        return new float[] {x + dist * MathUtils.cosDeg(90 - track), y + dist * MathUtils.sinDeg(90 - track)};
+    /** Calculates the point where the line from a point at a specified track meets a rectangle's border */
+    public static float[] pointsAtBorder(float[] xBorder, float[] yBorder, float x, float y, float direction) {
+        float dist = distanceFromBorder(xBorder, yBorder, x, y, direction);
+        return new float[] {x + dist * MathUtils.cosDeg(90 - direction), y + dist * MathUtils.sinDeg(90 - direction)};
     }
 
     /** Checks whether integer is within range of 2 integers */

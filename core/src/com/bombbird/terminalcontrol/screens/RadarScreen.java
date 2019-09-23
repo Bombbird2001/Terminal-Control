@@ -99,6 +99,9 @@ public class RadarScreen extends GameScreen {
     //Runway change box for changing runway configuration
     private RunwayChanger runwayChanger;
 
+    //Flashes rectangles to alert of user of aircraft with request if aircraft not within view
+    private RequestFlasher requestFlasher;
+
     private Aircraft selectedAircraft;
 
     private JSONObject save;
@@ -335,6 +338,9 @@ public class RadarScreen extends GameScreen {
         //Load runway change box
         runwayChanger = new RunwayChanger();
 
+        //Load request flasher
+        requestFlasher = new RequestFlasher(this);
+
         //Initialise tutorial manager if is tutorial
         if (tutorial) tutorialManager.init();
 
@@ -472,6 +478,8 @@ public class RadarScreen extends GameScreen {
         }
 
         separationChecker.renderShape();
+
+        requestFlasher.update();
 
         if (tutorialManager != null) {
             tutorialManager.update();
