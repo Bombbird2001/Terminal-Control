@@ -52,13 +52,13 @@ public class RequestFlasher {
         float ctrY = (minY + maxY) / 2;
         radarScreen.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if ((aircraft.isEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict() || aircraft.isActionRequired()) && (!MathTools.withinRange(aircraft.getRadarX(), minX, maxX) || !MathTools.withinRange(aircraft.getRadarY(), minY, maxY))) {
+            if ((aircraft.isFuelEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict() || aircraft.isActionRequired()) && (!MathTools.withinRange(aircraft.getRadarX(), minX, maxX) || !MathTools.withinRange(aircraft.getRadarY(), minY, maxY))) {
                 float deltaX = aircraft.getRadarX() - ctrX;
                 float deltaY = aircraft.getRadarY() - ctrY;
                 float[] indicationPoint = MathTools.pointsAtBorder(new float[] {minX, maxX}, new float[] {minY, maxY}, (minX + maxX) / 2, (minY + maxY) / 2, 90 - MathUtils.radiansToDegrees * MathUtils.atan2(deltaY, deltaX));
                 Color color;
                 if (Calendar.getInstance().get(Calendar.SECOND) % 2 == 0) {
-                    if (aircraft.isEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict()) {
+                    if (aircraft.isFuelEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict()) {
                         color = Color.RED;
                     } else if (aircraft instanceof Departure) {
                         color = Color.GREEN;

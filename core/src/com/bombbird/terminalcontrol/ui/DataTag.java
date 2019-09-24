@@ -186,7 +186,7 @@ public class DataTag {
 
     /** Called to start flashing an aircraft's label borders during initial contact */
     public void flashIcon() {
-        if (aircraft.isActionRequired() && !aircraft.isEmergency()) {
+        if (aircraft.isActionRequired() && !aircraft.isFuelEmergency()) {
             NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_ORANGE);
             clickSpot.getStyle().up = ninePatchDrawable;
             clickSpot.getStyle().down = ninePatchDrawable;

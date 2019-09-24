@@ -349,9 +349,16 @@ public class Arrival extends Aircraft {
 
         if (fuel < 2700 && !requestPriority && getControlState() == 1) {
             //Low fuel, request priority
-            radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
+            if (getAirport().getLandingRunways().size() == 0) {
+                //Airport has no landing runways available, different msg
+                radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and will divert in 10 minutes if no landing runway is available.");
+                TerminalControl.tts.lowFuel(getVoice(), 3, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+            } else {
+                radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
+                TerminalControl.tts.lowFuel(getVoice(), 0, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+            }
+
             requestPriority = true;
-            TerminalControl.tts.lowFuel(getVoice(), 0, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
 
             setActionRequired(true);
             getDataTag().flashIcon();
@@ -359,53 +366,65 @@ public class Arrival extends Aircraft {
 
         if (fuel < 2100 && !declareEmergency && getControlState() == 1) {
             //Minimum fuel, declare emergency
-            radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " requests immediate landing within 10 minutes or will divert.");
-            declareEmergency = true;
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
-            TerminalControl.tts.lowFuel(getVoice(), 1, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+            if (getAirport().getLandingRunways().size() == 0) {
+                //Airport has no landing runways available, divert directly
+                radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and is diverting immediately.");
+                TerminalControl.tts.lowFuel(getVoice(), 4, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+                divertToAltn();
+            } else {
+                radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.");
+                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
+                TerminalControl.tts.lowFuel(getVoice(), 1, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+            }
 
-            if (!isEmergency()) setEmergency(true);
+            declareEmergency = true;
+            if (!isFuelEmergency()) setFuelEmergency(true);
             getDataTag().setEmergency();
         }
 
         if (fuel < 1500 && !divert && !isLocCap() && getControlState() == 1) {
             //Diverting to alternate
             radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
-
-            getNavState().getDispLatMode().clear();
-            getNavState().getDispLatMode().addFirst("Fly heading");
-            getNavState().getDispAltMode().clear();
-            getNavState().getDispAltMode().addFirst("Climb/descend to");
-            getNavState().getDispSpdMode().clear();
-            getNavState().getDispSpdMode().addFirst("No speed restrictions");
-
-            getNavState().getClearedHdg().clear();
-            getNavState().getClearedHdg().addFirst(radarScreen.divertHdg);
-            getNavState().getClearedDirect().clear();
-            getNavState().getClearedDirect().addFirst(null);
-            getNavState().getClearedAftWpt().clear();
-            getNavState().getClearedAftWpt().addFirst(null);
-            getNavState().getClearedAftWptHdg().clear();
-            getNavState().getClearedAftWptHdg().addFirst(radarScreen.divertHdg);
-            getNavState().getClearedHold().clear();
-            getNavState().getClearedHold().addFirst(null);
-            getNavState().getClearedIls().clear();
-            getNavState().getClearedIls().addFirst(null);
-            getNavState().getClearedAlt().clear();
-            getNavState().getClearedAlt().addFirst(10000);
-            getNavState().getClearedExpedite().clear();
-            getNavState().getClearedExpedite().addFirst(false);
-            getNavState().getClearedSpd().clear();
-            getNavState().getClearedSpd().addFirst(250);
-            getNavState().setLength(1);
-            getNavState().updateAircraftInfo();
-
-            setControlState(0);
-
-            divert = true;
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
             TerminalControl.tts.lowFuel(getVoice(), 2, getCallsign().substring(0, 3), getCallsign().substring(3), getWakeCat());
+            divertToAltn();
+
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
         }
+    }
+
+    /** Instructs the aircraft to divert to an alternate airport */
+    private void divertToAltn() {
+        getNavState().getDispLatMode().clear();
+        getNavState().getDispLatMode().addFirst("Fly heading");
+        getNavState().getDispAltMode().clear();
+        getNavState().getDispAltMode().addFirst("Climb/descend to");
+        getNavState().getDispSpdMode().clear();
+        getNavState().getDispSpdMode().addFirst("No speed restrictions");
+
+        getNavState().getClearedHdg().clear();
+        getNavState().getClearedHdg().addFirst(radarScreen.divertHdg);
+        getNavState().getClearedDirect().clear();
+        getNavState().getClearedDirect().addFirst(null);
+        getNavState().getClearedAftWpt().clear();
+        getNavState().getClearedAftWpt().addFirst(null);
+        getNavState().getClearedAftWptHdg().clear();
+        getNavState().getClearedAftWptHdg().addFirst(radarScreen.divertHdg);
+        getNavState().getClearedHold().clear();
+        getNavState().getClearedHold().addFirst(null);
+        getNavState().getClearedIls().clear();
+        getNavState().getClearedIls().addFirst(null);
+        getNavState().getClearedAlt().clear();
+        getNavState().getClearedAlt().addFirst(10000);
+        getNavState().getClearedExpedite().clear();
+        getNavState().getClearedExpedite().addFirst(false);
+        getNavState().getClearedSpd().clear();
+        getNavState().getClearedSpd().addFirst(250);
+        getNavState().setLength(1);
+        getNavState().updateAircraftInfo();
+
+        setControlState(0);
+
+        divert = true;
     }
 
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach */

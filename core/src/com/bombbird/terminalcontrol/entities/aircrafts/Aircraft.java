@@ -47,7 +47,7 @@ public class Aircraft extends Actor {
 
     private boolean selected;
     private boolean actionRequired;
-    private boolean emergency;
+    private boolean fuelEmergency;
 
     //Aircraft information
     private Airport airport;
@@ -319,8 +319,16 @@ public class Aircraft extends Actor {
 
         dataTag.setMinimized(!save.isNull("dataTagMin") && save.getBoolean("dataTagMin"));
 
-        emergency = !save.isNull("emergency") && save.getBoolean("emergency");
-        if (emergency) dataTag.setEmergency();
+        if (save.isNull("fuelEmergency")) {
+            if (save.isNull("emergency")) {
+                //Save from before fuel emergency update
+                fuelEmergency = false;
+            } else {
+                //Change key from emergency to fuel emergency
+                fuelEmergency = save.getBoolean("emergency");
+            }
+        }
+        if (fuelEmergency) dataTag.setEmergency();
 
         actionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired");
         if (actionRequired) dataTag.flashIcon();
@@ -1622,12 +1630,12 @@ public class Aircraft extends Actor {
         this.actionRequired = actionRequired;
     }
 
-    public boolean isEmergency() {
-        return emergency;
+    public boolean isFuelEmergency() {
+        return fuelEmergency;
     }
 
-    public void setEmergency(boolean emergency) {
-        this.emergency = emergency;
+    public void setFuelEmergency(boolean fuelEmergency) {
+        this.fuelEmergency = fuelEmergency;
     }
 
     public Route getRoute() {

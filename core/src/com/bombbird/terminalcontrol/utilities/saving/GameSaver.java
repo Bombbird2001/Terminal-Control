@@ -86,7 +86,7 @@ public class GameSaver {
 
             aircraftInfo.put("actionRequired", aircraft.isActionRequired()); //Whether aircraft label is flashing
             aircraftInfo.put("dataTagMin", aircraft.getDataTag().isMinimized()); //Whether aircraft label is minimized
-            aircraftInfo.put("emergency", aircraft.isEmergency()); //Whether aircraft is having a 7700
+            aircraftInfo.put("fuelEmergency", aircraft.isFuelEmergency()); //Whether aircraft is having a fuel emergency
 
             aircraftInfo.put("airport", aircraft.getAirport().getIcao()); //Airport
             aircraftInfo.put("runway", aircraft.getRunway() == null ? JSONObject.NULL : aircraft.getRunway().getName()); //Runway

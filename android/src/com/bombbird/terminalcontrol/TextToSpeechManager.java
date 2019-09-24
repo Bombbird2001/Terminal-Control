@@ -192,9 +192,13 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (status == 0) {
             text = "Pan-pan, pan-pan, pan-pan, " + callsign + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
         } else if (status == 1) {
-            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " requests immediate landing within 10 minutes or will divert.";
+            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.";
         } else if (status == 2) {
             text = callsign + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
+        } else if (status == 3) {
+            text = "Pan-pan, pan-pan, pan-pan, " + callsign + newFlightNo + " " + wake + " is low on fuel and will divert in 10 minutes if no landing runway is available.";
+        } else if (status == 4) {
+            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " is declaring a fuel emergency and is diverting immediately.";
         }
         sayText(text, voice);
     }
