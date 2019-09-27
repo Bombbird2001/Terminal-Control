@@ -73,6 +73,7 @@ public class Aircraft extends Actor {
     private boolean conflict;
     private boolean warning;
     private boolean terrainConflict;
+    private Emergency emergency;
 
     //Aircraft position
     private float x;
@@ -170,6 +171,7 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
+        emergency = new Emergency(this);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
@@ -203,6 +205,7 @@ public class Aircraft extends Actor {
         } else {
             terrainConflict = save.getBoolean("terrainConflict");
         }
+        emergency = new Emergency(this, save.getJSONObject("emergency"));
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
@@ -1652,5 +1655,9 @@ public class Aircraft extends Actor {
 
     public void setHoldingType(int holdingType) {
         this.holdingType = holdingType;
+    }
+
+    public Emergency getEmergency() {
+        return emergency;
     }
 }

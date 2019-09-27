@@ -110,6 +110,7 @@ public class GameSaver {
             aircraftInfo.put("conflict", aircraft.isConflict()); //Aircraft is in conflict
             aircraftInfo.put("warning", aircraft.isWarning()); //Aircraft is in warning state
             aircraftInfo.put("terrainConflict", aircraft.isTerrainConflict()); //Aircraft in conflict with terrain
+            aircraftInfo.put("emergency", getEmergency(aircraft)); //Emergency status
 
             aircraftInfo.put("x", (double) aircraft.getX()); //x coordinate
             aircraftInfo.put("y", (double) aircraft.getY()); //y coordinate
@@ -351,6 +352,20 @@ public class GameSaver {
         navState.put("length", aircraft.getNavState().getLength());
 
         return navState;
+    }
+
+    /** Gets emergency status for input aircraft */
+    private static JSONObject getEmergency(Aircraft aircraft) {
+        JSONObject emer = new JSONObject();
+        emer.put("emergency", aircraft.getEmergency().isEmergency());
+        emer.put("active", aircraft.getEmergency().isActive());
+        emer.put("type", aircraft.getEmergency().getType().name());
+        emer.put("timeRequired", aircraft.getEmergency().getTimeRequired());
+        emer.put("fuelDumpRequired", aircraft.getEmergency().isFuelDumpRequired());
+        emer.put("fuelDumpTime", aircraft.getEmergency().getFuelDumpTime());
+        emer.put("stayOnRwy", aircraft.getEmergency().isStayOnRwy());
+
+        return emer;
     }
 
     /** Returns a JSONArray given an input queue of strings */
