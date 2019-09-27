@@ -161,7 +161,7 @@ public class CommBox {
         }
         String inboundString = "";
         boolean inboundSaid = MathUtils.randomBoolean();
-        if (inboundSaid) {
+        if (inboundSaid && !aircraft.isGoAroundWindow() && aircraft.getDirect() != null) {
             inboundString = ", inbound " + aircraft.getDirect().getName();
         }
         String infoString = "";
@@ -279,14 +279,16 @@ public class CommBox {
 
         scrollTable.clearChildren();
         for (int i = 0; i < labels.size; i++) {
-            scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0);
+            scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
             scrollTable.row();
         }
 
         try {
             scrollPane.layout();
+            scrollPane.layout();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
+            scrollPane.layout();
             scrollPane.layout();
         }
         scrollPane.scrollTo(0, 0, 0, 0);

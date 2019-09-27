@@ -72,7 +72,7 @@ public class TutorialManager {
         Label label = new Label(msg, labelStyle);
         label.setWidth(scrollPane.getWidth() - 20);
         label.setWrap(true);
-        scrollTable.add(label).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0);
+        scrollTable.add(label).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
         scrollTable.row();
 
         scrollPane.layout();
