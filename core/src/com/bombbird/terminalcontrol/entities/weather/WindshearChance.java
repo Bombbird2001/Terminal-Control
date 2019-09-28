@@ -29,7 +29,7 @@ public class WindshearChance {
         float b0 = logRegCoefficients.get(icao)[0];
         float b1 = logRegCoefficients.get(icao)[1];
         float prob = (float)(1 / (1 + Math.exp(-b0 - b1 * speed)));
-        return MathUtils.random() < prob;
+        return MathUtils.randomBoolean(prob);
     }
 
     public static String getRandomWsForAllRwy(Airport airport, int speed) {
