@@ -283,7 +283,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     game.batch.begin();
                     boolean liveWeather = ((RadarScreen) this).liveWeather && !((RadarScreen) this).tutorial;
                     String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
-                    if (loading) {
+                    if (loading || !checkAircraftsLoaded()) {
                         //Write loading text if loading
                         loadingTime += delta;
                         loadedTime += delta;
@@ -359,6 +359,15 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         } catch (Exception e) {
             ErrorHandler.sendGenericError(e);
         }
+    }
+
+    /** Try to fix crash on some devices where navstate is null after loading */
+    private boolean checkAircraftsLoaded() {
+        for (Aircraft aircraft: aircrafts.values()) {
+            if (aircraft.getNavState() == null) return false;
+        }
+
+        return true;
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
