@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class FileLoader {
-    public static final String mainDir = "full".equals(Gdx.files.internal("game/type.type").readString()) ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
+    public static final String mainDir = TerminalControl.full ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
 
     public static Array<Obstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
@@ -329,14 +329,10 @@ public class FileLoader {
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             //If desktop, save to external roaming appData
-            String type = Gdx.files.internal("game/type.type").readString();
-            if ("lite".equals(type)) {
+            if (!TerminalControl.full) {
                 handle = Gdx.files.external("AppData/Roaming/TerminalControl/" + path);
-            } else if ("full".equals(type)) {
-                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/" + path);
             } else {
-                Gdx.app.log("Invalid game type", "Invalid game type " + type + ".");
-                handle = Gdx.files.external("AppData/Roaming/TerminalControl/");
+                handle = Gdx.files.external("AppData/Roaming/TerminalControlFull/" + path);
             }
         } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
             //If Android, check first if local storage available

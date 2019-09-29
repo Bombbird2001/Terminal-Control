@@ -23,8 +23,10 @@ public class TerminalControl extends Game {
     //Is html? (freetype not supported in html)
     public static boolean ishtml;
 
-    //Is full version?
+    //Version info
     public static boolean full;
+    public static String versionName;
+    public static int versionCode;
 
     //Active gameScreen instance
     public static RadarScreen radarScreen = null;
@@ -72,6 +74,13 @@ public class TerminalControl extends Game {
             soundSel = settings.getInt("sound");
             sendAnonCrash = settings.isNull("sendCrash") || settings.getBoolean("sendCrash");
         }
+    }
+
+    public static void loadVersionInfo() {
+        String[] info = Gdx.files.internal("game/type.type").readString().split(" ");
+        full = !"lite".equals(info[0]);
+        versionName = info[1];
+        versionCode = Integer.parseInt(info[2]);
     }
 
     @Override

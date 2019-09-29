@@ -18,6 +18,7 @@ android {
             res.srcDirs = ['resFull']
         }
     }
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
@@ -29,8 +30,10 @@ android {
         applicationId "com.bombbird.terminalcontrol"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 24
-        versionName "1.2.1910.2"
+        ext {
+            versionCode project.versionCode
+            versionName version
+        }
     }
     buildTypes {
         debug {
@@ -61,6 +64,35 @@ android {
     }
 }
 
+//Called before build to check that version information in internal game files are correct for each version
+task checkVersion() {
+    String gradleVersion = android.defaultConfig.versionName
+    String gradleVersionCode = android.defaultConfig.versionCode
+
+    def text = project.file("../android/assetsFull/game/type.type").text
+    def values = text.split(' ')
+    if (values[0] != "full") {
+        throw new GradleException("Incorrect type for full version: " + values[0])
+    }
+    if (values.size() < 3) {
+        throw new GradleException("Full version: Type string length is " + values.size() + ", needs 3")
+    }
+    if ((values[1] != gradleVersion) || (values[2] != gradleVersionCode)) {
+        throw new GradleException("Full version: " + values[0] + " " + values[1] + " code " + values[2] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
+    }
+    def text2 = project.file("../android/assetsLite/game/type.type").text
+    def values2 = text2.split(' ')
+    if (values2[0] != "lite") {
+        throw new GradleException("Incorrect type for lite version: " + values2[0])
+    }
+    if (values2.size() < 3) {
+        throw new GradleException("Lite version: Type string length is " + values2.size() + ", needs 3")
+    }
+    if ((values2[1] != gradleVersion) || (values2[2] != gradleVersionCode)) {
+        throw new GradleException("Lite version: " + values2[0] + " " + values2[1] + " code " + values2[2] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
+    }
+}
+assemble.dependsOn checkVersion
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders

@@ -58,8 +58,7 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         TerminalControl.loadSettings();
-
-        TerminalControl.full = !"lite".equals(Gdx.files.internal("game/type.type").readString());
+        TerminalControl.loadVersionInfo();
     }
 
     /** Loads the UI elements to be rendered on screen */
