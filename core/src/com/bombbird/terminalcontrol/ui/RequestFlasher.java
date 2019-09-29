@@ -13,8 +13,6 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
-import java.util.Calendar;
-
 public class RequestFlasher {
     private RadarScreen radarScreen;
     private OrthographicCamera camera;
