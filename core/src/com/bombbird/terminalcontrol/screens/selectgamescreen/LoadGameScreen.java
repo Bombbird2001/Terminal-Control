@@ -95,28 +95,37 @@ public class LoadGameScreen extends SelectGameScreen {
             deleteButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    if ("0".equals(deleteButton.getName())) {
-                        deleteButton.setText("Press again to\nconfirm delete");
-                        deleteButton.setName("" + 1);
-                    } else {
-                        GameSaver.deleteSave(jsonObject.getInt("saveId"));
-                        Cell cell = getScrollTable().getCell(deleteButton);
-                        Cell cell1 = getScrollTable().getCell(saveButton);
-                        getScrollTable().removeActor(deleteButton);
-                        getScrollTable().removeActor(saveButton);
-                        getScrollTable().getCells().removeValue(cell, true);
-                        getScrollTable().getCells().removeValue(cell1, true);
-                        getScrollTable().invalidate();
-                    }
-                    if (!getScrollTable().hasChildren()) {
-                        label.setVisible(true);
-                    }
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            if ("0".equals(deleteButton.getName())) {
+                                deleteButton.setText("Press again to\nconfirm delete");
+                                deleteButton.setName("" + 1);
+                            } else {
+                                GameSaver.deleteSave(jsonObject.getInt("saveId"));
+                                Cell cell = getScrollTable().getCell(deleteButton);
+                                Cell cell1 = getScrollTable().getCell(saveButton);
+                                getScrollTable().removeActor(deleteButton);
+                                getScrollTable().removeActor(saveButton);
+
+                                //Fix UI bug that may happen after deleting cells - set cell size to 0 rather than deleting them
+                                cell.size(cell.getPrefWidth(), 0);
+                                cell1.size(cell1.getPrefWidth(), 0);
+
+                                getScrollTable().invalidate();
+                            }
+                            if (!getScrollTable().hasChildren()) {
+                                label.setVisible(true);
+                            }
+                        }
+                    });
                 }
             });
             getScrollTable().add(deleteButton).width(MainMenuScreen.BUTTON_WIDTH * 0.4f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier);
             getScrollTable().row();
         }
         ScrollPane scrollPane = new ScrollPane(getScrollTable());
+        scrollPane.setFadeScrollBars(true);
         scrollPane.setupFadeScrollBars(1, 1.5f);
         scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.8f);
         scrollPane.setY(1620 * 0.2f);

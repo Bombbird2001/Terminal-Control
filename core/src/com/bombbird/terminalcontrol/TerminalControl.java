@@ -81,6 +81,7 @@ public class TerminalControl extends Game {
         full = !"lite".equals(info[0]);
         versionName = info[1];
         versionCode = Integer.parseInt(info[2]);
+        FileLoader.mainDir = TerminalControl.full ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
     }
 
     @Override

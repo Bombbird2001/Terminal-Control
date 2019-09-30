@@ -58,8 +58,8 @@ public class InfoScreen implements Screen {
         labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.WHITE;
 
-        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2019, Bombbird", labelStyle);
-        copyright.setPosition(918, 1425);
+        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2019, Bombbird\nVersion " + TerminalControl.versionName + ", build " + TerminalControl.versionCode, labelStyle);
+        copyright.setPosition(918, 1375);
         stage.addActor(copyright);
 
         Label licenses = new Label("Open source software/libraries used:\n\n" +

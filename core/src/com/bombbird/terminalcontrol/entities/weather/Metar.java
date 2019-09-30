@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.weather;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -153,11 +154,14 @@ public class Metar {
 
     public void updateRadarScreenState() {
         if (quit) return;
-        if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) radarScreen.updateInformation();
-        prevMetar = metarObject;
-        updateAirports();
-        radarScreen.ui.updateMetar();
-        radarScreen.loadingPercent = "100%";
+        if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) {
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    radarScreen.updateInformation();
+                }
+            });
+        }
         if (radarScreen.loadingTime < 4.5) {
             long deltaTime = (long)((4.5 - radarScreen.loadingTime) * 1000);
             try {
@@ -168,6 +172,10 @@ public class Metar {
                 e.printStackTrace();
             }
         }
+        prevMetar = metarObject;
+        updateAirports();
+        radarScreen.ui.updateMetar();
+        radarScreen.loadingPercent = "100%";
         radarScreen.loading = false;
     }
 

@@ -309,12 +309,12 @@ public class RunwayManager {
     private void updateVTBD(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
-            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("03L"))) {
-                airport.setActive("03L", true, false);
-                airport.setActive("03R", false, true);
-            } else {
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("21R"))) {
                 airport.setActive("21L", false, true);
                 airport.setActive("21R", true, false);
+            } else {
+                airport.setActive("03L", true, false);
+                airport.setActive("03R", false, true);
             }
         } else if (windDir != 0) {
             //Runways are in use, check if tailwind component exceeds limit of 5 knots
@@ -342,12 +342,12 @@ public class RunwayManager {
     private void updateVTBS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
-            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("01L"))) {
-                airport.setActive("01L", true, true);
-                airport.setActive("01R", true, true);
-            } else {
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("19L"))) {
                 airport.setActive("19L", true, true);
                 airport.setActive("19R", true, true);
+            } else {
+                airport.setActive("01L", true, true);
+                airport.setActive("01R", true, true);
             }
         } else if (windDir != 0) {
             //Runways are in use, check if tailwind component exceeds limit of 5 knots

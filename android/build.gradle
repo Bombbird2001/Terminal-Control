@@ -65,10 +65,12 @@ android {
 }
 
 tasks.whenTaskAdded { task ->
-    if (task.name.contains('assembleLite')) {
-        task.dependsOn checkVersionLite
-    } else if (task.name.contains('assembleFull')) {
-        task.dependsOn checkVersionFull
+    if (task.name.contains('assemble') || task.name.contains('bundle')) {
+        if (task.name.contains('Lite')) {
+            task.dependsOn checkVersionLite
+        } else if (task.name.contains('Full')) {
+            task.dependsOn checkVersionFull
+        }
     }
 }
 

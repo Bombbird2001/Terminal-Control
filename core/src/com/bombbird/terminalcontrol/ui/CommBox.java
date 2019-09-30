@@ -285,10 +285,8 @@ public class CommBox {
 
         try {
             scrollPane.layout();
-            scrollPane.layout();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
-            scrollPane.layout();
             scrollPane.layout();
         }
         scrollPane.scrollTo(0, 0, 0, 0);

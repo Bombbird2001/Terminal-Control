@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class FileLoader {
-    public static final String mainDir = TerminalControl.full ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
+    public static String mainDir;
 
     public static Array<Obstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
