@@ -13,6 +13,7 @@ public class AndroidLauncher extends TextToSpeechManager {
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        config.numSamples = 0;
         TerminalControl.ishtml = false;
         initialize(new TerminalControl(this, toastManager), config);
 

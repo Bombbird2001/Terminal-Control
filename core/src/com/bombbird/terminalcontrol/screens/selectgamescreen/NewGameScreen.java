@@ -36,7 +36,7 @@ public class NewGameScreen extends SelectGameScreen {
     public void loadScroll() {
         //Load airports
         String[] airports;
-        if ("full".equals(Gdx.files.internal("game/type.type").readString())) {
+        if (TerminalControl.full) {
             airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "RJTT\nTokyo Haneda Airport", "VHHH\nHong Kong International Airport", "RJBB\nOsaka Kansai International Airport", "VTBD\nBangkok Don Mueang International Airport"};
         } else {
             airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport"};

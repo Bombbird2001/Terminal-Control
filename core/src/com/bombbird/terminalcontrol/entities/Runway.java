@@ -41,6 +41,10 @@ public class Runway {
     //Label of runway
     private Label label;
 
+    //Position offsets not dependent on zoom
+    private float xOffsetL;
+    private float yOffsetL;
+
     //Set polygon to render later
     private Polygon polygon;
 
@@ -64,14 +68,12 @@ public class Runway {
 
         aircraftsOnAppr = new Array<Aircraft>();
 
-        //Calculate the position offsets
-        float xOffsetW = halfWidth * MathUtils.sinDeg(90 - trueHdg);
-        float yOffsetW = -halfWidth * MathUtils.cosDeg(90 - trueHdg);
-        float xOffsetL = pxLength * MathUtils.cosDeg(90 - trueHdg);
-        float yOffsetL = pxLength * MathUtils.sinDeg(90 - trueHdg);
+        //Calculate the position offsets that are not dependent on zoom
+        xOffsetL = pxLength * MathUtils.cosDeg(90 - trueHdg);
+        yOffsetL = pxLength * MathUtils.sinDeg(90 - trueHdg);
 
         //Create polygon
-        polygon = new Polygon(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});
+        polygon = new Polygon();
     }
 
     /** Parses the input string into relevant data for the runway */
@@ -113,6 +115,12 @@ public class Runway {
 
     /** Renders the runway rectangle */
     public void renderShape() {
+        //Calculate the position offsets depending on zoom
+        float zoom = radarScreen.camera.zoom;
+        float xOffsetW = halfWidth * zoom * MathUtils.sinDeg(90 - trueHdg);
+        float yOffsetW = -halfWidth * zoom * MathUtils.cosDeg(90 - trueHdg);
+        polygon.setVertices(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});
+
         if (landing || takeoff) {
             shapeRenderer.setColor(Color.WHITE);
         } else if (!oppRwy.takeoff && !oppRwy.landing) {

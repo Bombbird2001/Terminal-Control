@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.ui;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,8 +12,6 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
-
-import java.util.Calendar;
 
 public class RequestFlasher {
     private RadarScreen radarScreen;
@@ -57,7 +57,7 @@ public class RequestFlasher {
                 float deltaY = aircraft.getRadarY() - ctrY;
                 float[] indicationPoint = MathTools.pointsAtBorder(new float[] {minX, maxX}, new float[] {minY, maxY}, (minX + maxX) / 2, (minY + maxY) / 2, 90 - MathUtils.radiansToDegrees * MathUtils.atan2(deltaY, deltaX));
                 Color color;
-                if (Calendar.getInstance().get(Calendar.SECOND) % 2 == 0) {
+                if (System.currentTimeMillis() % 2000 >= 1000) {
                     if (aircraft.isFuelEmergency() || aircraft.isConflict() || aircraft.isTerrainConflict()) {
                         color = Color.RED;
                     } else if (aircraft instanceof Departure) {
@@ -66,7 +66,8 @@ public class RequestFlasher {
                         color = new Color(0, 200 / 255f, 255, 1);
                     }
                     radarScreen.shapeRenderer.setColor(color);
-                    radarScreen.shapeRenderer.circle(indicationPoint[0], indicationPoint[1], 50 * camera.zoom);
+                    int radius = Gdx.app.getType() == Application.ApplicationType.Android ? 50 : 30;
+                    radarScreen.shapeRenderer.circle(indicationPoint[0], indicationPoint[1], radius * camera.zoom);
                 }
             }
         }

@@ -8,8 +8,18 @@ import com.bombbird.terminalcontrol.ui.Ui;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class ErrorHandler {
+    private static String getVersionInfo() {
+        String type = "Unknown";
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            type = "Android";
+        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            type = "Desktop";
+        }
+        return type + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + "\n";
+    }
+
     public static void sendGenericError(Exception e) {
-        String error = ExceptionUtils.getStackTrace(e);
+        String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
         //Quit game
@@ -22,7 +32,7 @@ public class ErrorHandler {
     }
 
     public static void sendStringError(Exception e, String str) {
-        String error = ExceptionUtils.getStackTrace(e);
+        String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
         error = str + "\n" + error;
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
@@ -38,7 +48,7 @@ public class ErrorHandler {
     }
 
     public static void sendJSONErrorNoThrow(Exception e, String str) {
-        String error = ExceptionUtils.getStackTrace(e);
+        String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
         error = str + "\n" + error;
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
@@ -46,7 +56,7 @@ public class ErrorHandler {
     }
 
     public static void sendRepeatableError(String original, Exception e, int attempt) {
-        String error = "Try " + attempt + ":\n" + original + "\n" + ExceptionUtils.getStackTrace(e);
+        String error = getVersionInfo() + "Try " + attempt + ":\n" + original + "\n" + ExceptionUtils.getStackTrace(e);
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
         System.out.println(original);

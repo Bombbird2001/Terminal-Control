@@ -27,5 +27,4 @@ before_script:
   - chmod +x gradlew
 script:
   - ./gradlew desktop:distLite
-  - ./gradlew desktop:distFull
-  - ./gradlew android:assembleRelease
+  - ./gradlew android:assembleLiteRelease

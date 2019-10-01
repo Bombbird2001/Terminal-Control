@@ -1,9 +1,7 @@
 package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -252,7 +250,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         try {
             //Clear screen
             Gdx.gl.glClearColor(0, 0, 0, 0);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
             switch (state) {
                 case RUN:
@@ -283,7 +281,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     game.batch.begin();
                     boolean liveWeather = ((RadarScreen) this).liveWeather && !((RadarScreen) this).tutorial;
                     String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
-                    if (loading || !checkAircraftsLoaded()) {
+                    if (loading) {
                         //Write loading text if loading
                         loadingTime += delta;
                         loadedTime += delta;
@@ -303,7 +301,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
                         tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
                         tipLabel.draw(game.batch, 1);
-                    } else {
+                    } else if (checkAircraftsLoaded()) {
                         stage.draw();
                         game.batch.end();
                         game.batch.setProjectionMatrix(labelStage.getCamera().combined);
