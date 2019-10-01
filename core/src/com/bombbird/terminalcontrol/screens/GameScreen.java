@@ -281,7 +281,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     game.batch.begin();
                     boolean liveWeather = ((RadarScreen) this).liveWeather && !((RadarScreen) this).tutorial;
                     String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
-                    if (loading || !checkAircraftsLoaded()) {
+                    if (loading) {
                         //Write loading text if loading
                         loadingTime += delta;
                         loadedTime += delta;
@@ -301,7 +301,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
                         tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
                         tipLabel.draw(game.batch, 1);
-                    } else {
+                    } else if (checkAircraftsLoaded()) {
                         stage.draw();
                         game.batch.end();
                         game.batch.setProjectionMatrix(labelStage.getCamera().combined);
