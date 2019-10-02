@@ -35,7 +35,7 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
-    public void lowFuel(Aircraft aircraft, String wake, int status) {
+    public void lowFuel(Aircraft aircraft, char wakeCat, int status) {
         //No default implementation
     }
 

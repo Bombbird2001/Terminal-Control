@@ -17,7 +17,7 @@ public interface TextToSpeech {
 
     void contactOther(Aircraft aircraft, String wake, String frequency);
 
-    void lowFuel(Aircraft aircraft, String wake, int status);
+    void lowFuel(Aircraft aircraft, char wakeCat, int status);
 
     void cancel();
 

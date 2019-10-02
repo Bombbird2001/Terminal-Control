@@ -179,10 +179,16 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks aircraft's low fuel call */
     @Override
-    public void lowFuel(Aircraft aircraft, String wake, int status) {
+    public void lowFuel(Aircraft aircraft, char wakeCat, int status) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String wake = "";
+        if (wakeCat == 'H') {
+            wake = " heavy";
+        } else if (wakeCat == 'J') {
+            wake = " super";
+        }
         String text = "";
         if (status == 0) {
             text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
