@@ -7,6 +7,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
@@ -88,10 +89,10 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks the initial contact for arrivals */
     @Override
-    public void initArrContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
+    public void initArrContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = Pronunciation.callsigns.get(icao);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String newAction = Pronunciation.convertToFlightLevel(action);
         String starString = "";
         if (starSaid) {
@@ -111,43 +112,43 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (info.length() >= 2) {
             newInfo = info.split("information ")[0] + "information " + Pronunciation.alphabetPronunciations.get(info.charAt(info.length() - 1));
         }
-        String text = apchCallsign + greeting + ", " + callsign + " " + newFlightNo + " " + wake + " with you, " + newAction + starString + directString + newInfo;
-        sayText(text, voice);
+        String text = apchCallsign + greeting + ", " + icao + " " + newFlightNo + " " + wake + " with you, " + newAction + starString + directString + newInfo;
+        sayText(text, aircraft.getVoice());
     }
 
     /** Speaks the contact from arrivals after going around */
     @Override
-    public void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading) {
+    public void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = Pronunciation.callsigns.get(icao);
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newAction = Pronunciation.convertToFlightLevel(action);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String newHeading = StringUtils.join(heading.split(""), " ");
-        String text = apchCallsign + ", " + callsign + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
-        sayText(text, voice);
+        String text = apchCallsign + ", " + icao + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
+        sayText(text, aircraft.getVoice());
     }
 
     /** Speaks the initial contact for departures */
     @Override
-    public void initDepContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String airport, String outbound,  String action, String sid, boolean sidSaid) {
+    public void initDepContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String airport, String outbound,  String action, String sid, boolean sidSaid) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = Pronunciation.callsigns.get(icao);
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         action = Pronunciation.convertToFlightLevel(action);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String sidString = "";
         if (sidSaid) {
             sidString = ", " + sid + " departure";
         }
-        String text = apchCallsign + greeting + ", " + callsign + newFlightNo + " " + wake + " with you, " + outbound + action + sidString;
-        sayText(text, voice);
+        String text = apchCallsign + greeting + ", " + icao + newFlightNo + " " + wake + " with you, " + outbound + action + sidString;
+        sayText(text, aircraft.getVoice());
     }
 
     @Override
-    public void holdEstablishMsg(String voice, String icao, String flightNo, String wake, String wpt, int type) {
+    public void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = Pronunciation.callsigns.get(icao);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
-        String text = callsign + newFlightNo + " " + wake;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + " " + wake;
         String newWpt;
         if (Pronunciation.waypointPronunciations.containsKey(wpt)) {
             newWpt = Pronunciation.waypointPronunciations.get(wpt);
@@ -162,45 +163,39 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
             text += ", we're holding at " + newWpt;
         }
 
-        sayText(text, voice);
+        sayText(text, aircraft.getVoice());
     }
 
     /** Speaks handover of aircraft to other frequencies */
     @Override
-    public void contactOther(String voice, String frequency, String icao, String flightNo, String wake) {
+    public void contactOther(Aircraft aircraft, String wake, String frequency) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String newFreq = Pronunciation.convertNoToText(frequency);
-        String callsign = Pronunciation.callsigns.get(icao);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
-        String text = newFreq + ", good day, " + callsign + newFlightNo + " " + wake;
-        sayText(text, voice);
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = newFreq + ", good day, " + icao + newFlightNo + " " + wake;
+        sayText(text, aircraft.getVoice());
     }
 
     /** Speaks aircraft's low fuel call */
     @Override
-    public void lowFuel(String voice, int status, String icao, String flightNo, char wakeCat) {
+    public void lowFuel(Aircraft aircraft, String wake, int status) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
-        String callsign = Pronunciation.callsigns.get(icao);
-        String newFlightNo = Pronunciation.convertNoToText(flightNo);
-        String wake = "";
-        if (wakeCat == 'H') {
-            wake = " heavy";
-        } else if (wakeCat == 'J') {
-            wake = " super";
-        }
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String text = "";
         if (status == 0) {
-            text = "Pan-pan, pan-pan, pan-pan, " + callsign + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
+            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
         } else if (status == 1) {
-            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.";
+            text = "Mayday, mayday, mayday, " + icao + newFlightNo + " " + wake + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.";
         } else if (status == 2) {
-            text = callsign + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
+            text = icao + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
         } else if (status == 3) {
-            text = "Pan-pan, pan-pan, pan-pan, " + callsign + newFlightNo + " " + wake + " is low on fuel and will divert in 10 minutes if no landing runway is available.";
+            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + " " + wake + " is low on fuel and will divert in 10 minutes if no landing runway is available.";
         } else if (status == 4) {
-            text = "Mayday, mayday, mayday, " + callsign + newFlightNo + " " + wake + " is declaring a fuel emergency and is diverting immediately.";
+            text = "Mayday, mayday, mayday, " + icao + newFlightNo + " " + wake + " is declaring a fuel emergency and is diverting immediately.";
         }
-        sayText(text, voice);
+        sayText(text, aircraft.getVoice());
     }
 
     /** Stops all current and subsequent speeches */
@@ -208,6 +203,21 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         tts.stop();
     }
 
+    /** Gets the 3 letter ICAO code from callsign */
+    private String getIcaoCode(String callsign) {
+        if (callsign.length() < 3) Gdx.app.log("TTS", "Callsign is too short");
+        String icao = callsign.substring(0, 3);
+        if (!StringUtils.isAlpha(icao)) Gdx.app.log("TTS", "Invalid callsign");
+        return icao;
+    }
+
+    /** Gets the flight number from callsign, returns as a string */
+    private String getFlightNo(String callsign) {
+        if (callsign.length() < 4) Gdx.app.log("TTS", "Callsign is too short");
+        String flightNo = callsign.substring(3);
+        if (!StringUtils.isNumeric(flightNo)) Gdx.app.log("TTS", "Invalid callsign");
+        return flightNo;
+    }
 
     /** Test function */
     @Override

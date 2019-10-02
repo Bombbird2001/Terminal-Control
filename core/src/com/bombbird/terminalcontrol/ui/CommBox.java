@@ -145,8 +145,6 @@ public class CommBox {
         }
 
         String text = "";
-        String icao = aircraft.getCallsign().substring(0, 3);
-        String flightNo = aircraft.getCallsign().substring(3);
         String greeting = "";
         int random = MathUtils.random(2);
         if (random == 1) {
@@ -175,10 +173,10 @@ public class CommBox {
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow()) {
                 text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString;
-                TerminalControl.tts.initArrContact(aircraft.getVoice(), apchCallsign, greeting, icao, flightNo, wake, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
+                TerminalControl.tts.initArrContact(aircraft, wake, apchCallsign, greeting, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
             } else {
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
-                TerminalControl.tts.goAroundContact(aircraft.getVoice(), apchCallsign, icao, flightNo, wake, action, Integer.toString(aircraft.getClearedHeading()));
+                TerminalControl.tts.goAroundContact(aircraft, wake, apchCallsign, action, Integer.toString(aircraft.getClearedHeading()));
             }
         } else if (aircraft instanceof Departure) {
             String outboundText = "";
@@ -189,7 +187,7 @@ public class CommBox {
                 sidString = ", " + aircraft.getSidStar().getName() + " departure";
             }
             text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + sidString;
-            TerminalControl.tts.initDepContact(aircraft.getVoice(), apchCallsign, greeting, icao, flightNo, wake, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
+            TerminalControl.tts.initDepContact(aircraft, wake, apchCallsign, greeting, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
         }
 
         Label label = new Label(text, getLabelStyle(aircraft.getColor()));
@@ -201,8 +199,6 @@ public class CommBox {
 
     /** Adds a message for an aircraft established in hold over a waypoint */
     public void holdEstablishMsg(Aircraft aircraft, String wpt) {
-        String icao = aircraft.getCallsign().substring(0, 3);
-        String flightNo = aircraft.getCallsign().substring(3);
         String wake = "";
         if (aircraft.getWakeCat() == 'H') {
             wake = " heavy";
@@ -220,7 +216,7 @@ public class CommBox {
             text += ", we're holding at " + wpt;
         }
 
-        TerminalControl.tts.holdEstablishMsg(aircraft.getVoice(), icao, flightNo, wake, wpt, random);
+        TerminalControl.tts.holdEstablishMsg(aircraft, wake, wpt, random);
 
         Label label = new Label(text, getLabelStyle(aircraft.getColor()));
 

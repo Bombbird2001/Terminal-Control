@@ -301,6 +301,30 @@
       "125.5"
     ]
   },
+  "SITZE2A": {
+    "pronunciation": "SITZE 2 ALPHA",
+    "rwys": {
+      "10": {
+        "climb": "-1 -1 -1",
+        "wpts": [
+          "SITZE 4000 -1 -1 FO"
+        ]
+      }
+    },
+    "route": [
+      "APU 5000 -1 -1"
+    ],
+    "transitions": [
+      [
+        "WPT CAROL 5000 -1 -1",
+        "HDG 360"
+      ]
+    ],
+    "control": [
+      "Taipei Control",
+      "125.5"
+    ]
+  },
   "SULIN2H": {
     "pronunciation": "SULIN 2 HOTEL",
     "rwys": {

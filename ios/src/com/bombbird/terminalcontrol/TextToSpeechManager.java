@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol;
 
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
@@ -7,38 +8,39 @@ import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import java.util.HashMap;
 
 public class TextToSpeechManager implements TextToSpeech {
+
     @Override
-    public void lowFuel(String voice, int status, String icao, String flightNo, char wake) {
+    public void initArrContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
+        //No default implementation
+    }
+
+    @Override
+    public void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading) {
+        //No default implementation
+    }
+
+    @Override
+    public void initDepContact(Aircraft aircraft, String wake, String depCallsign, String greeting, String outbound, String airport, String action, String sid, boolean sidSaid) {
+        //No default implementation
+    }
+
+    @Override
+    public void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type) {
+        //No default implementation
+    }
+
+    @Override
+    public void contactOther(Aircraft aircraft, String wake, String frequency) {
+        //No default implementation
+    }
+
+    @Override
+    public void lowFuel(Aircraft aircraft, String wake, int status) {
         //No default implementation
     }
 
     @Override
     public void cancel() {
-        //No default implementation
-    }
-
-    @Override
-    public void initArrContact(String voice, String apchCallsign, String greeting, String icao, String flightNo, String wake, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
-        //No default implementation
-    }
-
-    @Override
-    public void goAroundContact(String voice, String apchCallsign, String icao, String flightNo, String wake, String action, String heading) {
-        //No default implementation
-    }
-
-    @Override
-    public void initDepContact(String voice, String apchCallsign, String greeting, String icao, String outbound, String flightNo, String wake, String airport, String action, String sid, boolean sidSaid) {
-        //No default implementation
-    }
-
-    @Override
-    public void holdEstablishMsg(String voice, String icao, String flightNo, String wake, String wpt, int type) {
-        //No default implementation
-    }
-
-    @Override
-    public void contactOther(String voice, String frequency, String icao, String flightNo, String wake) {
         //No default implementation
     }
 
