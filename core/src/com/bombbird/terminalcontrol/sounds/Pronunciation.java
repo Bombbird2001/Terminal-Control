@@ -62,8 +62,8 @@ public class Pronunciation {
     }
 
     /** Converts any number into text due to special pronunciation requirements for 0, 9 and . */
-    public static String convertNoToText(String altitude) {
-        String[] list = altitude.split("");
+    public static String convertNoToText(String number) {
+        String[] list = number.split("");
         for (int i = 0; i < list.length; i++) {
             if (list[i].equals("0")) list[i] = "zero";
             if (list[i].equals("9")) list[i] = "niner";
