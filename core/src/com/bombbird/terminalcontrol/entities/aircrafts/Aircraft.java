@@ -205,7 +205,7 @@ public class Aircraft extends Actor {
         } else {
             terrainConflict = save.getBoolean("terrainConflict");
         }
-        emergency = new Emergency(this, save.getJSONObject("emergency"));
+        emergency = save.isNull("emergency") ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");

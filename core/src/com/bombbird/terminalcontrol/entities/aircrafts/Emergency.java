@@ -40,6 +40,20 @@ public class Emergency {
         emergencyStartAlt = randomEmerAlt();
     }
 
+    public Emergency(Aircraft aircraft, boolean forceEmergency) {
+        //Special constructor used when you want to force an aircraft to have an emergency or not
+        this.aircraft = aircraft;
+        emergency = forceEmergency;
+        active = false;
+        type = Type.values()[MathUtils.random(Type.values().length - 1)];
+        timeRequired = MathUtils.random(180, 600); //Between 3 to 10 minutes
+        fuelDumpRequired = randomFuelDump();
+        fuelDumpTime = fuelDumpRequired ? MathUtils.random(600, 900) : 0;
+        readyForApproach = false;
+        stayOnRwy = randomStayOnRwy();
+        emergencyStartAlt = randomEmerAlt();
+    }
+
     public Emergency(Aircraft aircraft, JSONObject save) {
         this.aircraft = aircraft;
         emergency = save.getBoolean("emergency");
