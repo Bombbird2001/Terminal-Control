@@ -205,7 +205,7 @@ public class LatTab extends Tab {
         ils.clear();
         ils.add("Not cleared approach");
         for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
-            if (selectedAircraft.getAirport().getLandingRunways().keySet().contains(approach.getName().substring(3))) {
+            if (selectedAircraft.getAirport().getLandingRunways().containsKey(approach.getName().substring(3))) {
                 ils.add(approach.getName());
             }
         }
@@ -268,7 +268,7 @@ public class LatTab extends Tab {
             valueBox.setVisible(false);
 
             //And set ILS box visible
-            ilsBox.setVisible(selectedAircraft instanceof Arrival);
+            ilsBox.setVisible(selectedAircraft instanceof Arrival || selectedAircraft.getEmergency().isReadyForApproach());
         }
 
         //Show heading box if heading mode, otherwise hide it

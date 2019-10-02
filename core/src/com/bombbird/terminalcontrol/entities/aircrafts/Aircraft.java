@@ -455,10 +455,12 @@ public class Aircraft extends Actor {
                     goAroundTime = 0;
                 }
             }
+            emergency.update();
             return targetHeading;
         } else {
             gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
             updatePosition(0);
+            emergency.update();
             return 0;
         }
     }
@@ -1005,7 +1007,7 @@ public class Aircraft extends Actor {
     }
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
-    private void updateUISelections() {
+    public void updateUISelections() {
         ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
         LatTab.clearedHdg = clearedHeading;
         if (direct != null && ui.latTab.getSettingsBox().getSelected().contains(getSidStar().getName())) {
