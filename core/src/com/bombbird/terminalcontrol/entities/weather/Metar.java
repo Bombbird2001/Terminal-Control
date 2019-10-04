@@ -174,7 +174,12 @@ public class Metar {
         }
         prevMetar = metarObject;
         updateAirports();
-        radarScreen.ui.updateMetar();
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                radarScreen.ui.updateMetar();
+            }
+        });
         radarScreen.loadingPercent = "100%";
         radarScreen.loading = false;
     }

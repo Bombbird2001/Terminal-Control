@@ -85,6 +85,7 @@ public class Ui {
         setSelectedPane(null);
     }
 
+    /** Loads the textures for the UI pane */
     public static void generatePaneTextures() {
         hdgBoxBackground = new Texture(Gdx.files.internal("game/ui/BoxBackground.png"));
         transBackground = new Texture(Gdx.files.internal("game/ui/TransBackground.png"));
@@ -98,8 +99,8 @@ public class Ui {
         lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
     }
 
+    /** Updates the UI label after weather is updated */
     public void updateMetar() {
-        //Updates text in METAR label
         for (int i = 0; i < metarInfos.size; i++) {
             Label label = metarInfos.get(i);
             //Get airport: ICAO code is first 4 letters of label's text
