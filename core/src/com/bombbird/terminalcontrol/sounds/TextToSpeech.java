@@ -19,6 +19,16 @@ public interface TextToSpeech {
 
     void lowFuel(Aircraft aircraft, char wakeCat, int status);
 
+    void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent);
+
+    void sayReadyForDump(Aircraft aircraft);
+
+    void sayDumping(Aircraft aircraft);
+
+    void sayRemainingDumpTime(Aircraft aircraft, int min);
+
+    void sayReadyForApproach(Aircraft aircraft, boolean stayOnRwy);
+
     void cancel();
 
     void test(HashMap<String, Star> stars, HashMap<String, Sid> sids);

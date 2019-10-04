@@ -82,6 +82,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Says the text depending on API level */
     private void sayText(String text, String voice) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
         if (tts == null) return;
         tts.setVoice(new Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null));
         tts.speak(text, TextToSpeech.QUEUE_ADD, null, null);
@@ -201,6 +202,52 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         } else if (status == 4) {
             text = "Mayday, mayday, mayday, " + icao + newFlightNo + " " + wake + " is declaring a fuel emergency and is diverting immediately.";
         }
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String newIntent = Pronunciation.convertToFlightLevel(intent);
+        String text = icao + newFlightNo + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + fuelDump + newIntent;
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayReadyForDump(Aircraft aircraft) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + ", we are ready to dump fuel";
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayDumping(Aircraft aircraft) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + " is now dumping fuel";
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayRemainingDumpTime(Aircraft aircraft, int min) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + ", we'll need about " + min + " more minutes";
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayReadyForApproach(Aircraft aircraft, boolean stayOnRwy) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + " is ready for approach" + (stayOnRwy ? ", we will stay on the runway after landing" : "");
         sayText(text, aircraft.getVoice());
     }
 

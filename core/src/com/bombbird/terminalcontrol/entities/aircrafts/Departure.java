@@ -48,6 +48,7 @@ public class Departure extends Aircraft {
 
         if ("CAL641".equals(callsign) && radarScreen.tutorial) {
             sid = getAirport().getSids().get("CHALI1C");
+            getEmergency().setEmergency(false);
         }
 
         setRoute(new Route(this, sid, runway.getName()));

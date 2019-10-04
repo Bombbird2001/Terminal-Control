@@ -40,6 +40,31 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
+    public void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent) {
+        //No default implementation
+    }
+
+    @Override
+    public void sayReadyForDump(Aircraft aircraft) {
+        //No default implementation
+    }
+
+    @Override
+    public void sayDumping(Aircraft aircraft) {
+        //No default implementation
+    }
+
+    @Override
+    public void sayRemainingDumpTime(Aircraft aircraft, int min) {
+        //No default implementation
+    }
+
+    @Override
+    public void sayReadyForApproach(Aircraft aircraft, boolean stayOnRwy) {
+        //No default implementation
+    }
+
+    @Override
     public void cancel() {
         //No default implementation
     }

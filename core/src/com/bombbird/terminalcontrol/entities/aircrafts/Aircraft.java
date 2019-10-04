@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -154,6 +155,7 @@ public class Aircraft extends Actor {
         targetAltitude = 10000;
         verticalSpeed = 0;
         expedite = false;
+        expediteTime = 0;
         ias = 250;
         tas = MathTools.iasToTas(ias, altitude);
         gs = tas;
@@ -171,9 +173,70 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
-        emergency = new Emergency(this);
+        emergency = this instanceof Departure && airport.getIcao().equals("RCTP") ? new Emergency(this, true) : new Emergency(this);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
+    }
+
+    /** Constructs aircraft from another aircraft */
+    public Aircraft(Aircraft aircraft) {
+        loadResources();
+
+        callsign = aircraft.callsign;
+        stage.addActor(this);
+        this.icaoType = aircraft.icaoType;
+        wakeCat = aircraft.wakeCat;
+        v2 = aircraft.v2;
+        typClimb = aircraft.typClimb;
+        maxClimb = aircraft.maxClimb;
+        typDes = aircraft.typDes;
+        maxDes = aircraft.maxDes;
+        apchSpd = aircraft.apchSpd;
+        airport = aircraft.airport;
+        heading = aircraft.heading;
+        targetHeading = aircraft.targetHeading;
+        clearedHeading = aircraft.clearedHeading;
+        track = aircraft.track;
+        sidStarIndex = aircraft.sidStarIndex;
+        afterWptHdg = aircraft.afterWptHdg;
+        altitude = aircraft.altitude;
+        clearedAltitude = aircraft.clearedAltitude;
+        targetAltitude = aircraft.targetAltitude;
+        verticalSpeed = aircraft.verticalSpeed;
+        expedite = aircraft.expedite;
+        expediteTime = aircraft.expediteTime;
+        ias = aircraft.ias;
+        tas = aircraft.tas;
+        gs = aircraft.gs;
+        deltaPosition = aircraft.deltaPosition;
+        clearedIas = aircraft.clearedIas;
+        deltaIas = aircraft.deltaIas;
+        tkOfLdg = aircraft.tkOfLdg;
+        gsCap = aircraft.gsCap;
+        locCap = aircraft.locCap;
+        holdingType = aircraft.holdingType;
+        climbSpd = aircraft.climbSpd;
+        goAround = aircraft.goAround;
+        goAroundWindow = aircraft.goAroundWindow;
+        goAroundTime = aircraft.goAroundTime;
+        conflict = aircraft.conflict;
+        warning = aircraft.warning;
+        terrainConflict = aircraft.terrainConflict;
+        emergency = aircraft.emergency;
+        radarAlt = aircraft.radarAlt;
+        radarGs = aircraft.radarGs;
+        radarHdg = aircraft.radarHdg;
+        radarTrack = aircraft.radarTrack;
+        radarVs = aircraft.radarVs;
+        radarX = aircraft.radarX;
+        radarY = aircraft.radarY;
+        actionRequired = aircraft.actionRequired;
+        route = aircraft.route;
+        x = aircraft.x;
+        y = aircraft.y;
+        angularVelocity = aircraft.angularVelocity;
+
+        voice = aircraft.voice;
     }
 
     public Aircraft(JSONObject save) {
@@ -331,7 +394,7 @@ public class Aircraft extends Actor {
                 fuelEmergency = save.getBoolean("emergency");
             }
         }
-        if (fuelEmergency) dataTag.setEmergency();
+        if (fuelEmergency || emergency.isActive()) dataTag.setEmergency();
 
         actionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired");
         if (actionRequired) dataTag.flashIcon();
@@ -443,7 +506,7 @@ public class Aircraft extends Actor {
             targetHeading = info[0];
             updateHeading(targetHeading);
             updatePosition(info[1]);
-            updateAltitude(false, false);
+            if (!emergency.isActive()) updateAltitude(false, false);
             updateSpd();
             if (goAround) {
                 updateGoAround();
@@ -1340,6 +1403,13 @@ public class Aircraft extends Actor {
     public void addTrailDot() {
         if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
         dataTag.addTrailDot(x, y);
+    }
+
+    /** Returns heavy/super if wake category is heavy or super */
+    public String getWakeString() {
+        if (wakeCat == 'H') return " heavy";
+        if (wakeCat == 'J') return " super";
+        return "";
     }
 
     public float getVerticalSpeed() {

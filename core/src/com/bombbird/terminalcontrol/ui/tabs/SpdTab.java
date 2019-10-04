@@ -61,12 +61,12 @@ public class SpdTab extends Tab {
         if (lowestSpd % 10 != 0) {
             spds.add(Integer.toString(lowestSpd));
             int spdTracker = lowestSpd + (10 - lowestSpd % 10);
-            while (spdTracker <= (highestSpd > 250 ? 250 : highestSpd)) {
+            while (spdTracker <= (Math.min(highestSpd, 250))) {
                 spds.add(Integer.toString(spdTracker));
                 spdTracker += 10;
             }
         } else {
-            while (lowestSpd <= (highestSpd > 250 ? 250 : highestSpd)) {
+            while (lowestSpd <= (Math.min(highestSpd, 250))) {
                 spds.add(Integer.toString(lowestSpd));
                 lowestSpd += 10;
             }

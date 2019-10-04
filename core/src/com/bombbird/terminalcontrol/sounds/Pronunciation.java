@@ -72,7 +72,7 @@ public class Pronunciation {
         return StringUtils.join(list, " ");
     }
 
-    /** Converts any FLXXX in text to flight level X X X */
+    /** Converts any FLXXX in text to flight level X X X, returns joined text */
     public static String convertToFlightLevel(String action) {
         String[] actionList = action.split(" ");
         for (int i = 0; i < actionList.length; i++) {

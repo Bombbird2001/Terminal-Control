@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -56,6 +57,7 @@ public class Arrival extends Aircraft {
 
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
             star = arrival.getStars().get("TNN1A");
+            getEmergency().setEmergency(false);
         }
         RandomSTAR.starUsed(getAirport().getIcao(), star.getName());
 
@@ -202,6 +204,34 @@ public class Arrival extends Aircraft {
         loadOtherLabelInfo(save);
     }
 
+    public Arrival(Departure departure) {
+        //Convert departure emergency to arrival
+        super(departure);
+        setOnGround(false);
+        lowerSpdSet = false;
+        ilsSpdSet = false;
+        finalSpdSet = false;
+        willGoAround = false;
+        goAroundAlt = 0;
+        contactAlt = MathUtils.random(2000) + 22000;
+
+        loadLabel();
+        setNavState(departure.getNavState());
+        fuel = 99999; //Just assume they won't run out of fuel
+
+        setColor(new Color(0x00b3ffff));
+        setControlState(1);
+        int size = departure.getDataTag().getTrailDots().size;
+        for (int i = 0; i < size; i++) {
+            Image image = departure.getDataTag().getTrailDots().removeFirst();
+            getDataTag().addTrailDot(image.getX() + image.getWidth() / 2, image.getY() + image.getHeight() / 2);
+        }
+
+        star = getAirport().getStars().values().iterator().next(); //Assign any STAR for the sake of not crashing the game
+
+        if (getEmergency().isActive()) getDataTag().setEmergency();
+    }
+
     /** Calculates remaining distance on STAR from current aircraft position */
     private float distToGo() {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
@@ -336,7 +366,7 @@ public class Arrival extends Aircraft {
     public double update() {
         double info = super.update();
 
-        if (!isOnGround()) {
+        if (!isOnGround() && !getEmergency().isEmergency()) {
             updateFuel();
         }
 
