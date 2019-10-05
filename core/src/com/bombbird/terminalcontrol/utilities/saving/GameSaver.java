@@ -447,6 +447,13 @@ public class GameSaver {
             }
             airportInfo.put("runwayQueues", runwayQueues);
 
+            //Closed for emergency?
+            JSONObject runwayClosed = new JSONObject();
+            for (Runway runway: airport.getRunways().values()) {
+                runwayClosed.put(runway.getName(), runway.isEmergencyClosed());
+            }
+            airportInfo.put("emergencyClosed", runwayClosed);
+
             airportInfo.put("landings", airport.getLandings()); //Landings
             airportInfo.put("airborne", airport.getAirborne()); //Airborne
             airportInfo.put("congestion", airport.isCongested()); //Congestion

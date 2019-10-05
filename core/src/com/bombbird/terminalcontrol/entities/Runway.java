@@ -57,6 +57,9 @@ public class Runway {
     //Array of aircraft on approach
     private Array<Aircraft> aircraftsOnAppr;
 
+    //Whether emergency aircraft is staying on it
+    private boolean emergencyClosed;
+
     private RadarScreen radarScreen;
     private ShapeRenderer shapeRenderer;
 
@@ -67,6 +70,7 @@ public class Runway {
         parseInfo(toParse);
 
         aircraftsOnAppr = new Array<Aircraft>();
+        emergencyClosed = false;
 
         //Calculate the position offsets that are not dependent on zoom
         xOffsetL = pxLength * MathUtils.cosDeg(90 - trueHdg);
@@ -255,5 +259,13 @@ public class Runway {
 
     public float getPxLength() {
         return pxLength;
+    }
+
+    public boolean isEmergencyClosed() {
+        return emergencyClosed;
+    }
+
+    public void setEmergencyClosed(boolean emergencyClosed) {
+        this.emergencyClosed = emergencyClosed;
     }
 }

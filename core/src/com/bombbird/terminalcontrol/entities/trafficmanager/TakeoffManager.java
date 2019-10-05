@@ -108,7 +108,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("05L".equals(runway1.getName()) && checkPreceding("05R") && checkOppLanding(airport.getRunways().get("05R"))) {
                     runway = runway1;
                     dist = distance;
@@ -135,7 +135,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+            if (!runway1.isEmergencyClosed() && checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
                 runway = runway1;
                 dist = distance;
             }
@@ -149,7 +149,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("02L".equals(runway1.getName()) && checkPreceding("02C") && checkOppLanding(airport.getRunways().get("02C"))) {
                     runway = runway1;
                     dist = distance;
@@ -176,7 +176,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if (timers.get("05") >= 50 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
                     //Additional check for runway 05 departure - 50 seconds apart
                     runway = runway1;
@@ -225,7 +225,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("16L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16R"))) {
                     runway = runway1;
                     dist = distance;
@@ -252,7 +252,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("06L".equals(runway1.getName()) && checkPreceding("06R") && checkOppLanding(airport.getRunways().get("06R"))) {
                     runway = runway1;
                     dist = distance;
@@ -276,7 +276,7 @@ public class TakeoffManager {
     /** Checks takeoff status for Osaka Itami */
     private void updateRJOO() {
         Runway runway = airport.getRunways().get("32L");
-        if (runway.isTakeoff() && checkPreceding("32L") && checkLanding(runway)) {
+        if (!runway.isEmergencyClosed() && runway.isTakeoff() && checkPreceding("32L") && checkLanding(runway)) {
             updateRunway(runway);
         }
     }
@@ -284,7 +284,7 @@ public class TakeoffManager {
     /** Checks takeoff status for Kobe */
     private void updateRJBE() {
         Runway runway = airport.getRunways().get("09");
-        if (runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
+        if (!runway.isEmergencyClosed() && runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
             updateRunway(runway);
         }
     }
@@ -295,7 +295,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("07L".equals(runway1.getName()) && checkPreceding("07R") && checkOppLanding(airport.getRunways().get("07R"))) {
                     runway = runway1;
                     dist = distance;
@@ -322,7 +322,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+            if (!runway1.isEmergencyClosed() && checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
                 runway = runway1;
                 dist = distance;
             }
@@ -336,7 +336,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && distance > dist) {
                 if ("03R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("03L"))) {
                     runway = runway1;
                     dist = distance;
@@ -355,7 +355,7 @@ public class TakeoffManager {
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
-            if (checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("01L".equals(runway1.getName()) && checkPreceding("01R") && checkOppLanding(airport.getRunways().get("01R"))) {
                     runway = runway1;
                     dist = distance;

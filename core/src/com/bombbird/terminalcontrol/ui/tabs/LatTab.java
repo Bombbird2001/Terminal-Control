@@ -205,7 +205,8 @@ public class LatTab extends Tab {
         ils.clear();
         ils.add("Not cleared approach");
         for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
-            if (selectedAircraft.getAirport().getLandingRunways().containsKey(approach.getName().substring(3))) {
+            String rwy = approach.getName().substring(3);
+            if (selectedAircraft.getAirport().getLandingRunways().containsKey(rwy) && !selectedAircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
                 ils.add(approach.getName());
             }
         }

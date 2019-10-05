@@ -173,7 +173,8 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
-        emergency = this instanceof Departure && airport.getIcao().equals("RCTP") ? new Emergency(this, true) : new Emergency(this);
+        //emergency = this instanceof Departure && airport.getIcao().equals("RCTP") ? new Emergency(this, true) : new Emergency(this);
+        emergency = new Emergency(this);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
@@ -235,6 +236,9 @@ public class Aircraft extends Actor {
         x = aircraft.x;
         y = aircraft.y;
         angularVelocity = aircraft.angularVelocity;
+        onGround = aircraft.onGround;
+        navState = aircraft.navState;
+        navState.setAircraft(this);
 
         voice = aircraft.voice;
     }
@@ -506,7 +510,7 @@ public class Aircraft extends Actor {
             targetHeading = info[0];
             updateHeading(targetHeading);
             updatePosition(info[1]);
-            if (!emergency.isActive()) updateAltitude(false, false);
+            updateAltitude(false, false);
             updateSpd();
             if (goAround) {
                 updateGoAround();
@@ -1387,6 +1391,7 @@ public class Aircraft extends Actor {
         remove();
         radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
+        radarScreen.separationChecker.updateAircraftPositions();
     }
 
     /** Overriden method that sets the altitude restrictions of the aircraft */

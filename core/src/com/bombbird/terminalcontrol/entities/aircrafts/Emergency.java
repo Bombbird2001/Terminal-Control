@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 public class Emergency {
     private RadarScreen radarScreen;
+
     public enum Type {
         MEDICAL,
         ENGINE_FAIL,
@@ -35,6 +36,7 @@ public class Emergency {
     private int sayRemainingTime; //Time to notify approach of remaining time
     private boolean readyForApproach; //Ready for approach
     private boolean stayOnRwy; //Needs to stay on runway, close it after landing
+    private float stayOnRwyTime; //Time for staying on runway
 
     private int emergencyStartAlt; //Altitude where emergency occurs
 
@@ -54,6 +56,7 @@ public class Emergency {
         sayRemainingTime = (int)(0.5f * fuelDumpTime / 60);
         readyForApproach = false;
         stayOnRwy = randomStayOnRwy();
+        stayOnRwyTime = MathUtils.random(300, 600); //Runway stays closed for 5-10 minutes
         emergencyStartAlt = randomEmerAlt();
     }
 
@@ -74,6 +77,7 @@ public class Emergency {
         sayRemainingTime = (int)(0.5f * fuelDumpTime / 60);
         readyForApproach = false;
         stayOnRwy = randomStayOnRwy();
+        stayOnRwyTime = MathUtils.random(300, 600); //Runway stays closed for 5-10 minutes
         emergencyStartAlt = randomEmerAlt();
     }
 
@@ -93,6 +97,7 @@ public class Emergency {
         sayRemainingTime = save.optInt("sayRemainingTime", (int) (fuelDumpTime / 120));
         readyForApproach = save.getBoolean("readyForApproach");
         stayOnRwy = save.getBoolean("stayOnRwy");
+        stayOnRwyTime = (float) save.optDouble("stayOnRwyTime", MathUtils.random(300, 600));
         emergencyStartAlt = save.getInt("emergencyStartAlt");
     }
 
@@ -116,51 +121,66 @@ public class Emergency {
                 Arrival arrival = new Arrival((Departure) aircraft);
                 aircraft.removeAircraft();
                 radarScreen.aircrafts.put(arrival.getCallsign(), arrival);
+                radarScreen.separationChecker.updateAircraftPositions();
                 if (aircraft.isSelected()) {
                     radarScreen.ui.setSelectedPane(arrival);
-                    aircraft.setSelected(false);
                     arrival.setSelected(true);
+                    aircraft.setSelected(false);
                 }
+                aircraft = arrival;
                 return;
             }
-            if (active) {
-                //Emergency ongoing
-                timeRequired -= dt;
-                if (timeRequired < 0 && !readyForDump) {
-                    //Preparation time over
-                    readyForDump = true;
-                    if (fuelDumpRequired) {
-                        sayReadyForDump();
-                    }
-                }
-                if (readyForDump) {
-                    //Ready for fuel dumping (if available) or approach
-                    fuelDumpLag -= dt;
-                }
-                if (fuelDumpRequired && !dumpingFuel && fuelDumpLag < 0) {
-                    //Aircraft is dumping fuel
-                    dumpingFuel = true;
-                    sayDumping();
-                }
-                if (dumpingFuel) {
-                    //Fuel dump ongoing
-                    fuelDumpTime -= dt;
-                    if (!remainingTimeSaid && fuelDumpTime <= sayRemainingTime * 60) {
-                        remainingTimeSaid = true;
-                        sayRemainingDumpTime();
-                    }
-                }
-                if (!readyForApproach && fuelDumpTime <= 0 && timeRequired <= 0) {
-                    readyForApproach = true;
-                    if (aircraft.isSelected()) {
-                        aircraft.updateUISelections();
-                        aircraft.ui.updateState();
-                    }
-                    sayReadyForApproach();
+
+        }
+        if (active) {
+            //Emergency ongoing
+            timeRequired -= dt;
+            if (timeRequired < 0 && !readyForDump) {
+                //Preparation time over
+                readyForDump = true;
+                if (fuelDumpRequired) {
+                    sayReadyForDump();
                 }
             }
-        } else if (aircraft instanceof Arrival) {
-            //Inbound emergency?
+            if (readyForDump) {
+                //Ready for fuel dumping (if available) or approach
+                fuelDumpLag -= dt;
+            }
+            if (fuelDumpRequired && !dumpingFuel && fuelDumpLag < 0) {
+                //Aircraft is dumping fuel
+                dumpingFuel = true;
+                sayDumping();
+            }
+            if (dumpingFuel) {
+                //Fuel dump ongoing
+                fuelDumpTime -= dt;
+                if (!remainingTimeSaid && fuelDumpTime <= sayRemainingTime * 60) {
+                    remainingTimeSaid = true;
+                    sayRemainingDumpTime();
+                }
+            }
+            if (!readyForApproach && fuelDumpTime <= 0 && timeRequired <= 0) {
+                readyForApproach = true;
+                if (aircraft.isSelected()) {
+                    aircraft.updateUISelections();
+                    aircraft.ui.updateState();
+                }
+                sayReadyForApproach();
+            }
+            if (aircraft.isTkOfLdg() && stayOnRwy && stayOnRwyTime > 0) {
+                //Aircraft has touched down and needs to stay on runway
+                stayOnRwyTime -= dt;
+                String rwy = aircraft.getIls().getName().substring(3);
+                if (!aircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
+                    aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
+                    radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
+                }
+
+                if (stayOnRwyTime < 0) {
+                    aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
+                    stayOnRwy = false;
+                }
+            }
         }
     }
 
@@ -176,7 +196,7 @@ public class Emergency {
         aircraft.getNavState().getDispLatMode().clear();
         aircraft.getNavState().getDispLatMode().addFirst("Fly heading");
         aircraft.getNavState().getDispAltMode().clear();
-        aircraft.getNavState().getDispAltMode().addFirst("Climb/descend to");
+        aircraft.getNavState().getDispAltMode().addFirst(type == Type.PRESSURE_LOSS ? "Expedite climb/descent to" : "Climb/descend to");
         aircraft.getNavState().getDispSpdMode().clear();
         aircraft.getNavState().getDispSpdMode().addFirst("No speed restrictions");
 
@@ -305,8 +325,8 @@ public class Emergency {
 
     /** Adds comm box message, TTS when aircraft is halfway through fuel dump */
     private void sayRemainingDumpTime() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we'll need about " + sayRemainingTime / 60 + " more minutes");
-        TerminalControl.tts.sayRemainingDumpTime(aircraft, sayRemainingTime / 60);
+        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we'll need about " + sayRemainingTime + " more minutes");
+        TerminalControl.tts.sayRemainingDumpTime(aircraft, sayRemainingTime);
     }
 
     /** Adds comm box message, TTS when aircraft has finished dumping fuel, is ready for approach */

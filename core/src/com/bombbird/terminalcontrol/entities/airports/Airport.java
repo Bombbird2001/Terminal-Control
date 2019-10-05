@@ -92,8 +92,8 @@ public class Airport {
         }
     }
 
-    /** Loads the runway queue from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
-    public void updateRunwayQueue(JSONObject save) {
+    /** Loads other runway info from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
+    public void updateOtherRunwayInfo(JSONObject save) {
         for (Runway runway: runways.values()) {
             Array<Aircraft> aircraftsOnAppr = new Array<Aircraft>();
             JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
@@ -101,6 +101,7 @@ public class Airport {
                 aircraftsOnAppr.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
             }
             runway.setAircraftsOnAppr(aircraftsOnAppr);
+            runway.setEmergencyClosed(!save.isNull("emergencyClosed") && save.optBoolean(runway.getName()));
         }
     }
 

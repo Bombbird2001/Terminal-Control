@@ -32,7 +32,7 @@ public class GameLoader {
         for (int i = 0; i < airports.length(); i++) {
             Airport airport = TerminalControl.radarScreen.airports.get(airports.getJSONObject(i).getString("icao"));
             airport.getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
-            airport.updateRunwayQueue(airports.getJSONObject(i));
+            airport.updateOtherRunwayInfo(airports.getJSONObject(i));
         }
 
         JSONArray jsonArray = save.getJSONArray("allAircraft");

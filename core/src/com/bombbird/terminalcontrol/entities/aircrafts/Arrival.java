@@ -323,8 +323,8 @@ public class Arrival extends Aircraft {
             lowerSpdSet = true;
         }
         if (!ilsSpdSet && isLocCap()) {
-            if (getClearedIas() > 200) {
-                setClearedIas(200);
+            if (getClearedIas() > 190) {
+                setClearedIas(190);
                 super.updateSpd();
             }
             ilsSpdSet = true;
@@ -607,8 +607,14 @@ public class Arrival extends Aircraft {
             radarScreen.getCommBox().goAround(this, "windshear");
             return true;
         }
+        Aircraft firstAircraft = getIls().getRwy().getAircraftsOnAppr().size > 0 ? getIls().getRwy().getAircraftsOnAppr().get(0) : null;
         if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 3) {
             //If distance from runway is less than 3nm
+            if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign()) && firstAircraft.getEmergency().isActive() && firstAircraft.getEmergency().isStayOnRwy()) {
+                //If runway is closed due to emergency staying on runway
+                radarScreen.getCommBox().goAround(this, "runway closed");
+                return true;
+            }
             if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && !isGsCap()) {
                 //If ILS GS has not been captured
                 radarScreen.getCommBox().goAround(this, "being too high");
@@ -637,7 +643,7 @@ public class Arrival extends Aircraft {
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
-            if (!getIls().getRwy().getAircraftsOnAppr().get(0).getCallsign().equals(getCallsign())) {
+            if (firstAircraft!= null && !firstAircraft.getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
                 radarScreen.getCommBox().goAround(this, "traffic on runway");
                 return true;
@@ -669,10 +675,12 @@ public class Arrival extends Aircraft {
         setAltitude(getIls().getRwy().getElevation());
         setVerticalSpeed(0);
         setClearedIas(0);
-        if (getGs() <= 35) {
+        if (getGs() <= 35 && (!getEmergency().isActive() || !getEmergency().isStayOnRwy())) {
             int score = 1;
             if (!getSidStar().getRunways().contains(getIls().getRwy().getName(), false)) score = 3; //3 points if landing runway is not intended for SID (i.e. runway change occured)
-            if (!getAirport().isCongested() && getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + score); //Add score only if the airport is not congested
+            if (!getAirport().isCongested() && getExpediteTime() <= 120) score = 0; //Add score only if the airport is not congested
+            if (getEmergency().isEmergency()) score = 5; //5 points for landing an emergency!
+            radarScreen.setScore(radarScreen.getScore() + score);
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);

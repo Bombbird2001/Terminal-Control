@@ -587,4 +587,12 @@ public class NavState {
     public void setLength(int length) {
         this.length = length;
     }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
+    }
 }

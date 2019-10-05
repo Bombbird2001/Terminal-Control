@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.ui.Ui;
 
@@ -58,6 +59,9 @@ public class AltTab extends Tab {
             }
             if (highestAlt == -1) {
                 highestAlt = TerminalControl.radarScreen.maxAlt;
+            }
+            if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
+                highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
             }
             if (highestAlt < lowestAlt) highestAlt = lowestAlt;
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
