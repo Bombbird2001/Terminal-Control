@@ -526,6 +526,7 @@ public class Aircraft extends Actor {
             return targetHeading;
         } else {
             gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
+            if (gs < 0) gs = 0;
             updatePosition(0);
             emergency.update();
             return 0;

@@ -101,7 +101,7 @@ public class Airport {
                 aircraftsOnAppr.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
             }
             runway.setAircraftsOnAppr(aircraftsOnAppr);
-            runway.setEmergencyClosed(!save.isNull("emergencyClosed") && save.optBoolean(runway.getName()));
+            runway.setEmergencyClosed(!save.isNull("emergencyClosed") && save.getJSONObject("emergencyClosed").optBoolean(runway.getName()));
         }
     }
 

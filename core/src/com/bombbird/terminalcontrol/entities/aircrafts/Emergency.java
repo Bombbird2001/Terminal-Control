@@ -11,6 +11,14 @@ import org.json.JSONObject;
 public class Emergency {
     private RadarScreen radarScreen;
 
+    public float getStayOnRwyTime() {
+        return stayOnRwyTime;
+    }
+
+    public void setStayOnRwyTime(float stayOnRwyTime) {
+        this.stayOnRwyTime = stayOnRwyTime;
+    }
+
     public enum Type {
         MEDICAL,
         ENGINE_FAIL,
@@ -111,7 +119,7 @@ public class Emergency {
                 aircraft.getDataTag().setEmergency();
                 cancelSidStar();
                 active = true;
-                radarScreen.setPlanesToControl(Math.min(radarScreen.getPlanesToControl(), 5));
+                if (stayOnRwy) radarScreen.setPlanesToControl(Math.min(radarScreen.getPlanesToControl(), 5));
                 aircraft.getDataTag().setMinimized(false);
                 sayEmergency();
                 //Create new arrival with same callsign and everything, remove old departure
@@ -173,11 +181,16 @@ public class Emergency {
                 String rwy = aircraft.getIls().getName().substring(3);
                 if (!aircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
                     aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
+                    aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(true);
                     radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
+                    radarScreen.getCommBox().normalMsg("All emergency vehicles, proceed onto runway " + rwy);
                 }
 
                 if (stayOnRwyTime < 0) {
                     aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
+                    aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
+                    radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
+                    radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
                     stayOnRwy = false;
                 }
             }

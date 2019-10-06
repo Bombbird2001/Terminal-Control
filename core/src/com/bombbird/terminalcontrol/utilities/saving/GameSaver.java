@@ -370,6 +370,7 @@ public class GameSaver {
         emer.put("sayRemainingTime", aircraft.getEmergency().getSayRemainingTime());
         emer.put("readyForApproach", aircraft.getEmergency().isReadyForApproach());
         emer.put("stayOnRwy", aircraft.getEmergency().isStayOnRwy());
+        emer.put("stayOnRwyTime", (double) aircraft.getEmergency().getStayOnRwyTime());
         emer.put("emergencyStartAlt", aircraft.getEmergency().getEmergencyStartAlt());
 
         return emer;

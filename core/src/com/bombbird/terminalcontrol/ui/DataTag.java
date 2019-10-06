@@ -314,6 +314,9 @@ public class DataTag {
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
         }
+        if (aircraft.getEmergency().isActive() && aircraft.getEmergency().isReadyForApproach() && aircraft.getEmergency().isStayOnRwy()) {
+            updatedText = updatedText + "\nStay on rwy";
+        }
         label.setText(updatedText);
         label.pack();
         labelButton.setSize(label.getWidth() + 10, label.getHeight());
