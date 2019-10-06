@@ -305,7 +305,10 @@ public class DataTag {
         if (aircraft.getNavState().getClearedIls().last() != null) {
             labelText[8] = aircraft.getNavState().getClearedIls().last().getName();
         } else {
-            labelText[8] = aircraft.getSidStar().getName();
+            labelText[8] = "";
+            if (!aircraft.getEmergency().isEmergency() && !aircraft.getEmergency().isActive()) {
+                labelText[8] = aircraft.getSidStar().getName();
+            }
         }
         String exped = aircraft.getNavState().getClearedExpedite().last() ? " =>> " : " => ";
         String updatedText;

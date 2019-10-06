@@ -143,7 +143,12 @@ public class Aircraft extends Actor {
         typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor));
         maxDes = typDes + 1000;
         apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor));
-        this.airport = airport;
+        if (airport.getLandingRunways().size() == 0) {
+            //No landing runways available at departure airport, land at main airport instead
+            this.airport = radarScreen.airports.get(radarScreen.mainName);
+        } else {
+            this.airport = airport;
+        }
         heading = 0;
         targetHeading = 0;
         clearedHeading = (int)(heading);
@@ -173,7 +178,6 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
-        //emergency = this instanceof Departure && airport.getIcao().equals("RCTP") ? new Emergency(this, true) : new Emergency(this);
         emergency = new Emergency(this);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
