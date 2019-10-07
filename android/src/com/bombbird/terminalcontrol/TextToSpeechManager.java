@@ -206,12 +206,21 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     }
 
     @Override
-    public void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent) {
+    public void sayEmergency(Aircraft aircraft, String emergency, String intent) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String newIntent = Pronunciation.convertToFlightLevel(intent);
-        String text = icao + newFlightNo + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + fuelDump + newIntent;
+        String text = "Mayday, mayday, mayday, " + icao + newFlightNo + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + newIntent;
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void sayRemainingChecklists(Aircraft aircraft, boolean dumpFuel) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + ", we'll need a few more minutes to run checklists" + (dumpFuel ? " before dumping fuel" : "");
         sayText(text, aircraft.getVoice());
     }
 
@@ -253,6 +262,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Stops all current and subsequent speeches */
     public void cancel() {
+        if (tts == null) return;
         tts.stop();
     }
 

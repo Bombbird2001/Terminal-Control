@@ -361,6 +361,7 @@ public class GameSaver {
         emer.put("active", aircraft.getEmergency().isActive());
         emer.put("type", aircraft.getEmergency().getType().name());
         emer.put("timeRequired", (double) aircraft.getEmergency().getTimeRequired());
+        emer.put("checklistsSaid", aircraft.getEmergency().isChecklistsSaid());
         emer.put("readyForDump", aircraft.getEmergency().isReadyForDump());
         emer.put("fuelDumpLag", (double) aircraft.getEmergency().getFuelDumpLag());
         emer.put("dumpingFuel", aircraft.getEmergency().isDumpingFuel());

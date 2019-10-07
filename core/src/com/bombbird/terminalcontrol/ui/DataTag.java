@@ -306,7 +306,7 @@ public class DataTag {
             labelText[8] = aircraft.getNavState().getClearedIls().last().getName();
         } else {
             labelText[8] = "";
-            if (!aircraft.getEmergency().isEmergency() && !aircraft.getEmergency().isActive()) {
+            if (!aircraft.getEmergency().isEmergency() || !aircraft.getEmergency().isActive()) {
                 labelText[8] = aircraft.getSidStar().getName();
             }
         }
@@ -317,8 +317,16 @@ public class DataTag {
         } else {
             updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
         }
-        if (aircraft.getEmergency().isActive() && aircraft.getEmergency().isReadyForApproach() && aircraft.getEmergency().isStayOnRwy()) {
-            updatedText = updatedText + "\nStay on rwy";
+        if (aircraft.getEmergency().isActive()) {
+            if (aircraft.getEmergency().isReadyForApproach() && aircraft.getEmergency().isStayOnRwy()) {
+                updatedText = updatedText + "\nStay on rwy";
+            } else if (!aircraft.getEmergency().isReadyForApproach() && aircraft.getEmergency().isChecklistsSaid() && aircraft.getEmergency().isFuelDumpRequired()) {
+                if (aircraft.getEmergency().isDumpingFuel()) {
+                    updatedText = updatedText + "\nDumping fuel";
+                } else {
+                    updatedText = updatedText + "\nFuel dump req";
+                }
+            }
         }
         label.setText(updatedText);
         label.pack();

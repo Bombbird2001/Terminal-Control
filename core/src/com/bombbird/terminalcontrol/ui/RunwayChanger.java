@@ -163,35 +163,38 @@ public class RunwayChanger {
         } else if ("VTBS".equals(icao)) {
             updateVTBS(windDir, windSpd);
         }
-
-        if (runways.size != tkofLdg.size) Gdx.app.log("Runway changer", "Runway array length not equal to tkofldg array length for " + icao);
-        updateRunwayLabel();
-    }
-
-    private void updateRunwayLabel() {
         if (runways.size == 0) {
             newRunwaysLabel.setText("Runway change not permitted due to winds");
         } else {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < runways.size; i++) {
-                if (tkofLdg.get(i)[0]) {
-                    String tmp;
-                    if (tkofLdg.get(i)[1] && tkofLdg.get(i)[2]) {
-                        tmp = "takeoffs and landings.";
-                    } else if (tkofLdg.get(i)[1]) {
-                        tmp = "takeoffs.";
-                    } else {
-                        tmp = "landings.";
-                    }
-                    stringBuilder.append("Runway ");
-                    stringBuilder.append(runways.get(i));
-                    stringBuilder.append(" will be active for ");
-                    stringBuilder.append(tmp);
-                    stringBuilder.append("\n");
-                }
-            }
-            newRunwaysLabel.setText(stringBuilder.toString());
+            if (runways.size != tkofLdg.size) Gdx.app.log("Runway changer", "Runway array length not equal to tkofldg array length for " + icao);
+            updateRunwayLabel();
         }
+    }
+
+    private void updateRunwayLabel() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < runways.size; i++) {
+            if (tkofLdg.get(i)[0] && !airport.getRunways().get(runways.get(i)).isEmergencyClosed() && !airport.getRunways().get(runways.get(i)).getOppRwy().isEmergencyClosed()) {
+                String tmp;
+                if (tkofLdg.get(i)[1] && tkofLdg.get(i)[2]) {
+                    tmp = "takeoffs and landings.";
+                } else if (tkofLdg.get(i)[1]) {
+                    tmp = "takeoffs.";
+                } else {
+                    tmp = "landings.";
+                }
+                stringBuilder.append("Runway ");
+                stringBuilder.append(runways.get(i));
+                stringBuilder.append(" will be active for ");
+                stringBuilder.append(tmp);
+                stringBuilder.append("\n");
+            }
+        }
+        if (stringBuilder.length() == 0) {
+            newRunwaysLabel.setText("All runways are closed");
+            return;
+        }
+        newRunwaysLabel.setText(stringBuilder.toString());
     }
 
     private void updateRunways() {

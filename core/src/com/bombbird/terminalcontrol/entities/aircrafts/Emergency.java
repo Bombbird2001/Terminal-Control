@@ -11,14 +11,6 @@ import org.json.JSONObject;
 public class Emergency {
     private RadarScreen radarScreen;
 
-    public float getStayOnRwyTime() {
-        return stayOnRwyTime;
-    }
-
-    public void setStayOnRwyTime(float stayOnRwyTime) {
-        this.stayOnRwyTime = stayOnRwyTime;
-    }
-
     public enum Type {
         MEDICAL,
         ENGINE_FAIL,
@@ -35,6 +27,7 @@ public class Emergency {
     private boolean active;
     private Type type;
     private float timeRequired; //Preparation time required before dump/approach
+    private boolean checklistsSaid; //Whether aircraft has informed controller of running checklists, fuel dump
     private boolean readyForDump; //Preparation complete
     private float fuelDumpLag; //Time between preparation complete and fuel dump
     private boolean dumpingFuel; //Dumping fuel
@@ -54,9 +47,10 @@ public class Emergency {
         emergency = MathUtils.randomBoolean(1 / 200f); //1 in 200 chance of emergency
         active = false;
         type = Type.values()[MathUtils.random(Type.values().length - 1)];
-        timeRequired = MathUtils.random(180, 600); //Between 3 to 10 minutes
+        timeRequired = MathUtils.random(300, 600); //Between 5 to 10 minutes
+        checklistsSaid = false;
         readyForDump = false;
-        fuelDumpLag = MathUtils.random(30, 90); //Between half to 1.5 minutes of lag between ready for dump and actual dump start
+        fuelDumpLag = MathUtils.random(30, 60); //Between half to one minute of time between ready for dump and actual dump start
         dumpingFuel = false;
         fuelDumpRequired = randomFuelDump();
         fuelDumpTime = fuelDumpRequired ? MathUtils.random(600, 900) : 0;
@@ -75,7 +69,8 @@ public class Emergency {
         emergency = forceEmergency;
         active = false;
         type = Type.values()[MathUtils.random(Type.values().length - 1)];
-        timeRequired = MathUtils.random(180, 600); //Between 3 to 10 minutes
+        timeRequired = MathUtils.random(300, 600); //Between 5 to 10 minutes
+        checklistsSaid = false;
         readyForDump = false;
         fuelDumpLag = MathUtils.random(30, 60); //Between half to one minute of time between ready for dump and actual dump start
         dumpingFuel = false;
@@ -96,6 +91,7 @@ public class Emergency {
         active = save.getBoolean("active");
         type = Type.valueOf(save.getString("type"));
         timeRequired = (float) save.getDouble("timeRequired");
+        checklistsSaid = save.optBoolean("checklistsSaid");
         readyForDump = save.optBoolean("readyForDump");
         fuelDumpLag = (float) save.optDouble("fuelDumpLag", MathUtils.random(30, 60));
         dumpingFuel = save.optBoolean("dumpingFuel");
@@ -121,6 +117,10 @@ public class Emergency {
                 active = true;
                 if (stayOnRwy) radarScreen.setPlanesToControl(Math.min(radarScreen.getPlanesToControl(), 5));
                 aircraft.getDataTag().setMinimized(false);
+                if (type == Type.BIRD_STRIKE || type == Type.ENGINE_FAIL) {
+                    aircraft.setTypClimb((int) (aircraft.getTypClimb() * 0.5));
+                    aircraft.setMaxClimb((int) (aircraft.getMaxClimb() * 0.5));
+                }
                 sayEmergency();
                 //Create new arrival with same callsign and everything, remove old departure
                 if (aircraft.isSelected()) {
@@ -143,6 +143,11 @@ public class Emergency {
         if (active) {
             //Emergency ongoing
             timeRequired -= dt;
+            if (timeRequired < 180 && !checklistsSaid) {
+                //When aircraft needs 3 more minutes, inform controller of remaining time and whether fuel dump is required
+                checklistsSaid = true;
+                sayRunChecklists();
+            }
             if (timeRequired < 0 && !readyForDump) {
                 //Preparation time over
                 readyForDump = true;
@@ -183,12 +188,13 @@ public class Emergency {
                     aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
                     aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(true);
                     radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
-                    radarScreen.getCommBox().normalMsg("All emergency vehicles, proceed onto runway " + rwy);
+                    radarScreen.getCommBox().normalMsg("Emergency vehicles are proceeding onto runway " + rwy);
                 }
 
                 if (stayOnRwyTime < 0) {
                     aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
                     aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
+                    aircraft.getAirport().setMetar(aircraft.getAirport().getMetar());
                     radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
                     radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
                     stayOnRwy = false;
@@ -303,10 +309,15 @@ public class Emergency {
             String altitude = aircraft.getClearedAltitude() >= radarScreen.transLvl * 100 ? "FL" + aircraft.getClearedAltitude() / 100 : aircraft.getClearedAltitude() + " feet";
             intent = ", levelling off at " + altitude;
         }
-        String fuelDump = fuelDumpRequired ? " after dumping fuel" : "";
-        String text = "Mayday, mayday, mayday, " + aircraft.getCallsign() + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + fuelDump + intent;
+        String text = "Mayday, mayday, mayday, " + aircraft.getCallsign() + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + intent;
         radarScreen.getCommBox().warningMsg(text);
-        TerminalControl.tts.sayEmergency(aircraft, emergency, fuelDump, intent);
+        TerminalControl.tts.sayEmergency(aircraft, emergency, intent);
+    }
+
+    /** Adds comm box message, TTS to notify controller of intentions, whether fuel dump is required */
+    private void sayRunChecklists() {
+        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " will need a few more minutes to run checklists" + (fuelDumpRequired ? " before dumping fuel" : ""));
+        TerminalControl.tts.sayRemainingChecklists(aircraft, fuelDumpRequired);
     }
 
     /** Adds comm box message, TTS when aircraft is ready to dump fuel */
@@ -325,7 +336,7 @@ public class Emergency {
         if (MathTools.withinRange(bearing, 210, 240)) dir = "south-west";
         if (MathTools.withinRange(bearing, 240, 300)) dir = "west";
         if (MathTools.withinRange(bearing, 300, 330)) dir = "north-west";
-        String alt = aircraft.getAltitude() >= radarScreen.transLvl ? ((int) aircraft.getAltitude()) + " feet" : "FL" + (int)(aircraft.getAltitude() / 100);
+        String alt = aircraft.getAltitude() >= radarScreen.transLvl ? ((int)(aircraft.getAltitude() / 100)) * 100 + " feet" : "FL" + (int)(aircraft.getAltitude() / 100);
         radarScreen.getCommBox().normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.mainName + ", " + alt);
         TerminalControl.tts.sayReadyForDump(aircraft);
     }
@@ -431,5 +442,21 @@ public class Emergency {
 
     public int getSayRemainingTime() {
         return sayRemainingTime;
+    }
+
+    public float getStayOnRwyTime() {
+        return stayOnRwyTime;
+    }
+
+    public void setStayOnRwyTime(float stayOnRwyTime) {
+        this.stayOnRwyTime = stayOnRwyTime;
+    }
+
+    public boolean isChecklistsSaid() {
+        return checklistsSaid;
+    }
+
+    public void setChecklistsSaid(boolean checklistsSaid) {
+        this.checklistsSaid = checklistsSaid;
     }
 }

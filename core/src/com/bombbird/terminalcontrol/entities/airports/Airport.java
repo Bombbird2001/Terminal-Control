@@ -214,7 +214,7 @@ public class Airport {
         runway.setActive(landing, takeoff);
 
         //Message to inform user of runway change
-        if (ldgChange || tkofChange) {
+        if ((ldgChange || tkofChange) && !runway.isEmergencyClosed() && !runway.getOppRwy().isEmergencyClosed()) {
             String msg = "Runway " + rwy + " at " + icao + " is now active for ";
             if (ldgChange && tkofChange) {
                 msg += "takeoffs and landings.";
@@ -227,7 +227,7 @@ public class Airport {
             TerminalControl.radarScreen.soundManager.playRunwayChange();
         }
 
-        if (ldgOff || tkofOff) {
+        if ((ldgOff || tkofOff) && !runway.isEmergencyClosed() && !runway.getOppRwy().isEmergencyClosed()) {
             String msg = "Runway " + rwy + " at " + icao + " is no longer active for ";
             if (ldgOff && tkofOff) {
                 msg += "takeoffs and landings.";

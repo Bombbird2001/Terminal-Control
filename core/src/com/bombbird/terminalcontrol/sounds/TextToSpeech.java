@@ -19,7 +19,9 @@ public interface TextToSpeech {
 
     void lowFuel(Aircraft aircraft, char wakeCat, int status);
 
-    void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent);
+    void sayEmergency(Aircraft aircraft, String emergency, String intent);
+
+    void sayRemainingChecklists(Aircraft aircraft, boolean dumpFuel);
 
     void sayReadyForDump(Aircraft aircraft);
 

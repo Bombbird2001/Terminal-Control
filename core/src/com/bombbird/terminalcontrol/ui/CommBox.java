@@ -269,7 +269,7 @@ public class CommBox {
         label.setWidth(scrollPane.getWidth() - 20);
         label.setWrap(true);
 
-        while (labels.size > 10) {
+        while (labels.size > 15) {
             labels.removeFirst();
         }
 

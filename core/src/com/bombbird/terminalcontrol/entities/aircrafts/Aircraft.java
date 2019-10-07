@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -1741,5 +1740,9 @@ public class Aircraft extends Actor {
 
     public Emergency getEmergency() {
         return emergency;
+    }
+
+    public void setMaxClimb(int maxClimb) {
+        this.maxClimb = maxClimb;
     }
 }

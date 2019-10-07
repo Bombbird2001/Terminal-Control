@@ -40,7 +40,12 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
-    public void sayEmergency(Aircraft aircraft, String emergency, String fuelDump, String intent) {
+    public void sayEmergency(Aircraft aircraft, String emergency, String intent) {
+        //No default implementation
+    }
+
+    @Override
+    public void sayRemainingChecklists(Aircraft aircraft, boolean dumpFuel) {
         //No default implementation
     }
 
