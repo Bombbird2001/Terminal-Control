@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -44,6 +45,7 @@ public class GameSaver {
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
         jsonObject.put("sounds", radarScreen.soundSel);
+        jsonObject.put("emerChance", radarScreen.emerChance.toString());
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
@@ -572,7 +574,7 @@ public class GameSaver {
     }
 
     /** Saves the default settings */
-    public static void saveSettings(int trajectorySel, boolean weatherSel, int soundSel, boolean sendCrash) {
+    public static void saveSettings(int trajectorySel, boolean weatherSel, int soundSel, boolean sendCrash, Emergency.Chance emerChance) {
         FileHandle handle = FileLoader.getExtDir("settings.json");
 
         if (handle != null) {
@@ -581,6 +583,7 @@ public class GameSaver {
             settings.put("weather", weatherSel);
             settings.put("sound", soundSel);
             settings.put("sendCrash", sendCrash);
+            settings.put("emerChance", emerChance.toString());
 
             handle.writeString(settings.toString(4), false);
         }

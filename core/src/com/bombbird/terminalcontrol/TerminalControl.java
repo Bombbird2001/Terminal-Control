@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -48,6 +49,7 @@ public class TerminalControl extends Game {
     public static int trajectorySel;
     public static boolean weatherSel;
     public static int soundSel;
+    public static Emergency.Chance emerChance;
     public static boolean sendAnonCrash;
 
     public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
@@ -67,12 +69,18 @@ public class TerminalControl extends Game {
                 soundSel = 2;
             }
             sendAnonCrash = true;
-            GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash);
+            emerChance = Emergency.Chance.MEDIUM;
+            GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance);
         } else {
             trajectorySel = settings.getInt("trajectory");
             weatherSel = settings.getBoolean("weather");
             soundSel = settings.getInt("sound");
-            sendAnonCrash = settings.isNull("sendCrash") || settings.getBoolean("sendCrash");
+            sendAnonCrash = settings.optBoolean("sendCrash", true);
+            if (settings.isNull("emerChance")) {
+                emerChance = Emergency.Chance.MEDIUM;
+            } else {
+                emerChance = Emergency.Chance.valueOf(settings.getString("emerChance"));
+            }
         }
     }
 

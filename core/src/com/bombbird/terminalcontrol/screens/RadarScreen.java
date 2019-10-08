@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.*;
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
@@ -57,6 +58,7 @@ public class RadarScreen extends GameScreen {
     public int trajectoryLine;
     public boolean liveWeather;
     public int soundSel;
+    public Emergency.Chance emerChance;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Whether the game is a tutorial
@@ -129,6 +131,7 @@ public class RadarScreen extends GameScreen {
         trajectoryLine = TerminalControl.trajectorySel;
         liveWeather = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
+        emerChance = TerminalControl.emerChance;
 
         if (tutorial) {
             tutorialManager = new TutorialManager(this);
@@ -160,6 +163,11 @@ public class RadarScreen extends GameScreen {
         trajectoryLine = save.getInt("trajectoryLine");
         liveWeather = save.getBoolean("liveWeather");
         soundSel = save.isNull("sounds") ? 2 : save.getInt("sounds");
+        if (save.isNull("emerChance")) {
+            emerChance = Emergency.Chance.MEDIUM;
+        } else {
+            emerChance = Emergency.Chance.valueOf(save.getString("emerChance"));
+        }
     }
 
     private void loadStageCamTimer() {

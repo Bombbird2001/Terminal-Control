@@ -16,7 +16,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+
+import java.util.Locale;
 
 public class SettingsScreen implements Screen {
     public final TerminalControl game;
@@ -29,6 +32,7 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> trajectoryLine;
     public SelectBox<String> weather;
     public SelectBox<String> sound;
+    public SelectBox<String> emer;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -41,6 +45,9 @@ public class SettingsScreen implements Screen {
 
     public Label soundLabel;
     public int soundSel;
+
+    public Label emerChanceLabel;
+    public Emergency.Chance emerChance;
 
     public SettingsScreen(final TerminalControl game) {
         this.game = game;
@@ -118,7 +125,7 @@ public class SettingsScreen implements Screen {
             }
         });
         weather.setSize(1200, 300);
-        weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.6f + yOffset);
+        weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.65f + yOffset);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
         stage.addActor(weather);
@@ -144,10 +151,26 @@ public class SettingsScreen implements Screen {
             }
         });
         sound.setSize(1200, 300);
-        sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.4f + yOffset);
+        sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.5f + yOffset);
         sound.setAlignment(Align.center);
         sound.getList().setAlignment(Align.center);
         stage.addActor(sound);
+
+        emer = new SelectBox<String>(selectBoxStyle);
+        Array<String> options3 = new Array<String>(4);
+        options3.add("Off", "Low", "Medium", "High");
+        emer.setItems(options3);
+        emer.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                emerChance = Emergency.Chance.valueOf(emer.getSelected().toUpperCase(Locale.US));
+            }
+        });
+        emer.setSize(1200, 300);
+        emer.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.35f + yOffset);
+        emer.setAlignment(Align.center);
+        emer.getList().setAlignment(Align.center);
+        stage.addActor(emer);
     }
 
     /** Loads buttons */
@@ -172,6 +195,10 @@ public class SettingsScreen implements Screen {
         soundLabel = new Label("Sounds: ", labelStyle);
         soundLabel.setPosition(sound.getX() - 100 - soundLabel.getWidth(), sound.getY() + sound.getHeight() / 2 - soundLabel.getHeight() / 2);
         stage.addActor(soundLabel);
+
+        emerChanceLabel = new Label("Emergencies: ", labelStyle);
+        emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
+        stage.addActor(emerChanceLabel);
     }
 
     /** Sets relevant options into select boxes */
@@ -181,6 +208,8 @@ public class SettingsScreen implements Screen {
         int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
         if (soundIndex < 0) soundIndex = 0;
         sound.setSelectedIndex(soundIndex);
+        String tmp = emerChance.toString().toLowerCase(Locale.US);
+        emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
     }
 
     /** Confirms and applies the changes set */

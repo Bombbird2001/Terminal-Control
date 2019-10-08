@@ -29,6 +29,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         weatherSel = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         sendCrash = TerminalControl.sendAnonCrash;
+        emerChance = TerminalControl.emerChance;
 
         loadUI(-600, -200);
 
@@ -126,7 +127,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.weatherSel = weatherSel;
         TerminalControl.soundSel = soundSel;
         TerminalControl.sendAnonCrash = sendCrash;
+        TerminalControl.emerChance = emerChance;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, emerChance);
     }
 }

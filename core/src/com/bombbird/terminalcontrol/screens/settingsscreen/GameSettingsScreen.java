@@ -1,7 +1,5 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -61,6 +59,7 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.trajectoryLine = trajectorySel;
         radarScreen.liveWeather = weatherSel;
         radarScreen.soundSel = soundSel;
+        radarScreen.emerChance = emerChance;
     }
 
     /** Gets radarscreen settings before setting options */
@@ -69,6 +68,8 @@ public class GameSettingsScreen extends SettingsScreen {
         trajectorySel = radarScreen.trajectoryLine;
         weatherSel = radarScreen.liveWeather;
         soundSel = radarScreen.soundSel;
+        emerChance = radarScreen.emerChance;
+
         super.setOptions();
     }
 
@@ -80,6 +81,8 @@ public class GameSettingsScreen extends SettingsScreen {
         weatherLabel.setVisible(show);
         sound.setVisible(show);
         soundLabel.setVisible(show);
+        emer.setVisible(show);
+        emerChanceLabel.setVisible(show);
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
     }

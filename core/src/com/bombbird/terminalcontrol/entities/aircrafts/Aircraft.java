@@ -177,7 +177,7 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
-        emergency = new Emergency(this);
+        emergency = new Emergency(this, radarScreen.emerChance);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }

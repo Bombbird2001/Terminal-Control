@@ -19,6 +19,14 @@ public class Emergency {
         PRESSURE_LOSS,
         FUEL_LEAK
     }
+
+    public enum Chance {
+        OFF,
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+
     private static final String[] canDumpFuel = new String[] {"A332", "A333", "A342", "A343", "A345", "A346", "A359", "A35K", "A388", "B742", "B743", "B744", "B748", "B762", "B763", "B764",
             "B772", "B77L", "B773", "B77W", "B788", "B789", "B78X", "MD11"};
 
@@ -41,10 +49,18 @@ public class Emergency {
 
     private int emergencyStartAlt; //Altitude where emergency occurs
 
-    public Emergency(Aircraft aircraft) {
+    public Emergency(Aircraft aircraft, Chance emerChance) {
         radarScreen = TerminalControl.radarScreen;
         this.aircraft = aircraft;
-        emergency = MathUtils.randomBoolean(1 / 200f); //1 in 200 chance of emergency
+        if (emerChance == Chance.OFF) {
+            emergency = false;
+        } else {
+            float chance = 0;
+            if (emerChance == Chance.LOW) chance = 1 / 200f;
+            if (emerChance == Chance.MEDIUM) chance = 1 / 100f;
+            if (emerChance == Chance.HIGH) chance = 1 / 50f;
+            emergency = MathUtils.randomBoolean(chance); //Chance depends on emergency setting
+        }
         active = false;
         type = Type.values()[MathUtils.random(Type.values().length - 1)];
         timeRequired = MathUtils.random(300, 600); //Between 5 to 10 minutes
