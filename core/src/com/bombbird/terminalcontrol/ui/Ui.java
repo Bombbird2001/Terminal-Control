@@ -119,13 +119,13 @@ public class Ui {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
             //Wind: Speed + direction
-            if (airport.getWinds()[0] != 0) {
-                metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
+            if (airport.getWinds()[1] == 0) {
+                metarText[1] = "Winds: Calm";
             } else {
-                if (airport.getWinds()[1] != 0) {
-                    metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
+                if (airport.getWinds()[0] != 0) {
+                    metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
                 } else {
-                    metarText[1] = "Winds: Calm";
+                    metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
                 }
             }
             //Gusts
