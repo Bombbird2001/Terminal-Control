@@ -415,7 +415,7 @@ public class Aircraft extends Actor {
         dataTag.renderShape();
         if (controlState == 1 || controlState == 2) {
             shapeRenderer.setColor(color);
-            shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.cosDeg((float)(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * MathUtils.sinDeg((float)(90 - radarTrack)));
+            shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));
         }
     }
 
@@ -528,7 +528,7 @@ public class Aircraft extends Actor {
             emergency.update();
             return targetHeading;
         } else {
-            gs = tas - airport.getWinds()[1] * MathUtils.cosDeg(airport.getWinds()[0] - runway.getHeading());
+            gs = tas - airport.getWinds()[1] * (float) Math.cos(Math.toRadians(airport.getWinds()[0] - runway.getHeading()));
             if (gs < 0) gs = 0;
             updatePosition(0);
             emergency.update();
@@ -757,7 +757,7 @@ public class Aircraft extends Actor {
                     holdTargetPtSelected[1] = !holdTargetPtSelected[1];
                 }
                 distance -= MathTools.nmToPixel(0.5f);
-                targetHeading = calculatePointTargetHdg(new float[] {target[0] + distance * MathUtils.cosDeg(270 - track), target[1] + distance * MathUtils.sinDeg(270 - track)}, windHdg, windSpd);
+                targetHeading = calculatePointTargetHdg(new float[] {target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
             }
         } else {
             targetHeading = 0;
@@ -775,8 +775,8 @@ public class Aircraft extends Actor {
 
     private double calculateAngleDiff(double heading, int windHdg, int windSpd) {
         double angle = 180 - windHdg + heading;
-        gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * MathUtils.cosDeg((float) angle));
-        return Math.asin(windSpd * MathUtils.sinDeg((float)angle) / gs) * MathUtils.radiansToDegrees;
+        gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * Math.cos(Math.toRadians(angle)));
+        return Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / gs) * MathUtils.radiansToDegrees;
     }
 
     private double calculatePointTargetHdg(float[] position, int windHdg, int windSpd) {
@@ -797,7 +797,7 @@ public class Aircraft extends Actor {
         //Calculate required aircraft heading to account for winds
         //Using sine rule to determine angle between aircraft velocity and actual velocity
         double angle = windHdg - targetHeading;
-        angleDiff = Math.asin(windSpd * MathUtils.sinDeg((float)angle) / tas) * MathUtils.radiansToDegrees;
+        angleDiff = Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / tas) * MathUtils.radiansToDegrees;
         targetHeading -= angleDiff;  //Heading = track - anglediff
 
         //Add magnetic deviation to give magnetic heading
@@ -832,8 +832,8 @@ public class Aircraft extends Actor {
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds = track - heading
         track = heading - radarScreen.magHdgDev + angleDiff;
-        deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.cosDeg((float)(90 - track));
-        deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * MathUtils.sinDeg((float)(90 - track));
+        deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.cos(Math.toRadians(90 - track));
+        deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.sin(Math.toRadians((90 - track)));
         x += deltaPosition.x;
         y += deltaPosition.y;
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {

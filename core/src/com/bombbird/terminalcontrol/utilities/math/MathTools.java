@@ -1,7 +1,5 @@
 package com.bombbird.terminalcontrol.utilities.math;
 
-import com.badlogic.gdx.math.MathUtils;
-
 public class MathTools {
     //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel */
@@ -36,7 +34,7 @@ public class MathTools {
 
     /** Returns the distance between 2 points in pixels */
     public static float distanceBetween(float x, float y, float x2, float y2) {
-        return (float)Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
+        return (float) Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
     }
 
     /** Converts feet to metres */
@@ -46,10 +44,12 @@ public class MathTools {
 
     /** Calculates the shortest distance required to reach the border supplied with a given track */
     public static float distanceFromBorder(float[] xBorder, float[] yBorder, float x, float y, float direction) {
-        float xDistRight = (xBorder[1] - x) / MathUtils.cosDeg(90 - direction);
-        float xDistLeft = (xBorder[0] - x) / MathUtils.cosDeg(90 - direction);
-        float yDistUp = (yBorder[1] - y) / MathUtils.sinDeg(90 - direction);
-        float yDistDown = (yBorder[0] - y) / MathUtils.sinDeg(90 - direction);
+        float cos = (float) Math.cos(Math.toRadians(90 - direction));
+        float xDistRight = (xBorder[1] - x) / cos;
+        float xDistLeft = (xBorder[0] - x) / cos;
+        float sin = (float) Math.sin(Math.toRadians(90 - direction));
+        float yDistUp = (yBorder[1] - y) / sin;
+        float yDistDown = (yBorder[0] - y) / sin;
         float xDist = xDistRight > 0 ? xDistRight : xDistLeft;
         float yDist = yDistUp > 0 ? yDistUp : yDistDown;
         return Math.min(xDist, yDist);
@@ -58,7 +58,7 @@ public class MathTools {
     /** Calculates the point where the line from a point at a specified track meets a rectangle's border */
     public static float[] pointsAtBorder(float[] xBorder, float[] yBorder, float x, float y, float direction) {
         float dist = distanceFromBorder(xBorder, yBorder, x, y, direction);
-        return new float[] {x + dist * MathUtils.cosDeg(90 - direction), y + dist * MathUtils.sinDeg(90 - direction)};
+        return new float[] {x + dist * (float) Math.cos(Math.toRadians(90 - direction)), y + dist * (float) Math.sin(Math.toRadians(90 - direction))};
     }
 
     /** Checks whether integer is within range of 2 integers */
