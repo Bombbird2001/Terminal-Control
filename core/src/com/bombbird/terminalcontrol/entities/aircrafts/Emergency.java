@@ -210,7 +210,7 @@ public class Emergency {
                 if (stayOnRwyTime < 0) {
                     aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
                     aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
-                    aircraft.getAirport().setMetar(aircraft.getAirport().getMetar());
+                    aircraft.getAirport().setMetar(radarScreen.getMetar().getMetarObject());
                     radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
                     radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
                     stayOnRwy = false;
