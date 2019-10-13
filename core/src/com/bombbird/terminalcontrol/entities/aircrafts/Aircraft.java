@@ -684,7 +684,7 @@ public class Aircraft extends Actor {
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
             if (route.getWptFlyOver(direct.getName())) {
-                requiredDistance = 2;
+                requiredDistance = 4;
             } else {
                 requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));
             }

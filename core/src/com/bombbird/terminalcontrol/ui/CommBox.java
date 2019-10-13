@@ -133,13 +133,14 @@ public class CommBox {
         }
 
         String action;
-        if (aircraft.getVerticalSpeed() < -1000) {
+        float deltaAlt = aircraft.getClearedAltitude() - aircraft.getAltitude();
+        if (deltaAlt < -600) {
             action = "descending through " + altitude + " for " + clearedAltitude;
-        } else if (aircraft.getVerticalSpeed() > 1000) {
+        } else if (deltaAlt > 400) {
             action = "climbing through " + altitude + " for " + clearedAltitude;
         } else {
             action = "levelling off at " + clearedAltitude;
-            if (Math.abs(aircraft.getClearedAltitude() - aircraft.getAltitude()) <= 50) {
+            if (Math.abs(deltaAlt) <= 50) {
                 action = "at " + clearedAltitude;
             }
         }
