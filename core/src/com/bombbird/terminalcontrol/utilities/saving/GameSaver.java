@@ -50,6 +50,7 @@ public class GameSaver {
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
+        jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
 
         JSONArray jsonArray = new JSONArray();
         for (String aircraft: radarScreen.getAllAircraft().keySet()) {
@@ -116,6 +117,7 @@ public class GameSaver {
 
             aircraftInfo.put("x", (double) aircraft.getX()); //x coordinate
             aircraftInfo.put("y", (double) aircraft.getY()); //y coordinate
+            aircraftInfo.put("prevDistTravelled", (double) aircraft.getPrevDistTravelled()); //Distance travelled previously (for wake points)
             aircraftInfo.put("heading", aircraft.getHeading()); //Heading
             aircraftInfo.put("targetHeading", aircraft.getTargetHeading()); //Target heading
             aircraftInfo.put("clearedHeading", aircraft.getClearedHeading()); //Cleared heading

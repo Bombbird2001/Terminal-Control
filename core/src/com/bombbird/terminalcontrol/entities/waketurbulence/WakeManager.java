@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -16,8 +17,16 @@ public class WakeManager {
     }
 
     public WakeManager(JSONObject save) {
-        //TODO Get data from save
         this();
+        for (int i = 0; i < save.length(); i++) {
+            String callsign = save.names().getString(i);
+            JSONArray array = save.getJSONArray(callsign);
+            Array<WakePoint> wakePoints = new Array<>();
+            for (int j = 0; j < array.length(); j++) {
+                wakePoints.add(new WakePoint(array.getJSONObject(j)));
+            }
+            aircraftWakes.put(callsign, wakePoints);
+        }
     }
 
     /** Initialises aircraft array for new aircraft */
@@ -30,14 +39,11 @@ public class WakeManager {
         aircraftWakes.remove(callsign);
     }
 
-    /** Adds a new 1nm point from aircraft, updates subsequent points to decrement distance */
+    /** Called after 0.5nm travelled, adds a new point from aircraft, updates subsequent points to decrement distance, total maximum 16 points for 16nm */
     public void addPoint(Aircraft aircraft) {
-
-    }
-
-    /** Removes last point from aircraft wake points */
-    public void removeLastPoint(Aircraft aircraft) {
-
+        aircraftWakes.get(aircraft.getCallsign()).add(new WakePoint(aircraft.getX(), aircraft.getY(), (int) aircraft.getAltitude()));
+        int extra = aircraftWakes.get(aircraft.getCallsign()).size - 16;
+        if (extra > 0) aircraftWakes.get(aircraft.getCallsign()).removeRange(16, 16 + extra - 1);
     }
 
     /** Checks for aircraft separation from wake turbulence of other aircraft, returns true or false depending on whether separation infringed */
@@ -55,7 +61,18 @@ public class WakeManager {
     /** Returns a jsonobject used to save data for this wake manager */
     public JSONObject getSave() {
         JSONObject save = new JSONObject();
-        //TODO Add save in gameSaver, gameLoader
+        for (String callsign: aircraftWakes.keySet()) {
+            JSONArray array = new JSONArray();
+            Array<WakePoint> points = aircraftWakes.get(callsign);
+            for (int i = 0; i < points.size; i++) {
+                JSONObject point = new JSONObject();
+                WakePoint pt = points.get(i);
+                point.put("x", (double) pt.x);
+                point.put("y", (double) pt.y);
+                point.put("altitude", pt.altitude);
+                array.put(point);
+            }
+        }
         return save;
     }
 }

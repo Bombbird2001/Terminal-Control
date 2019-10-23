@@ -14,6 +14,8 @@ public class WakePoint {
     }
 
     public WakePoint(JSONObject save) {
-        //TODO Load point info from save
+        x = (float) save.getDouble("x");
+        y = (float) save.getDouble("y");
+        altitude = save.getInt("altitude");
     }
 }

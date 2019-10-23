@@ -97,6 +97,7 @@ public class Aircraft extends Actor {
     private boolean type1leg;
     private float[][] holdTargetPt;
     private boolean[] holdTargetPtSelected;
+    private float prevDistTravelled;
 
     //Altitude
     private float prevAlt;
@@ -164,6 +165,7 @@ public class Aircraft extends Actor {
         tas = MathTools.iasToTas(ias, altitude);
         gs = tas;
         deltaPosition = new Vector2();
+        prevDistTravelled = 0;
         clearedIas = 250;
         deltaIas = 0;
         tkOfLdg = false;
@@ -178,6 +180,8 @@ public class Aircraft extends Actor {
         warning = false;
         terrainConflict = false;
         emergency = new Emergency(this, radarScreen.emerChance);
+
+        radarScreen.wakeManager.addAircraft(callsign);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
@@ -213,6 +217,7 @@ public class Aircraft extends Actor {
         tas = aircraft.tas;
         gs = aircraft.gs;
         deltaPosition = aircraft.deltaPosition;
+        prevDistTravelled = aircraft.prevDistTravelled;
         clearedIas = aircraft.clearedIas;
         deltaIas = aircraft.deltaIas;
         tkOfLdg = aircraft.tkOfLdg;
@@ -279,6 +284,7 @@ public class Aircraft extends Actor {
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
+        prevDistTravelled = (float) save.optDouble("prevDistTravelled", 0);
         heading = save.getDouble("heading");
         targetHeading = save.getDouble("targetHeading");
         clearedHeading = save.getInt("clearedHeading");
@@ -836,6 +842,14 @@ public class Aircraft extends Actor {
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.sin(Math.toRadians((90 - track)));
         x += deltaPosition.x;
         y += deltaPosition.y;
+
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(0, 0, deltaPosition.x, deltaPosition.y));
+        prevDistTravelled += dist;
+        if (prevDistTravelled > 0.5) {
+            prevDistTravelled -= 0.5;
+            radarScreen.wakeManager.addPoint(this);
+        }
+
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
@@ -1396,6 +1410,7 @@ public class Aircraft extends Actor {
         radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
         radarScreen.separationChecker.updateAircraftPositions();
+        radarScreen.wakeManager.removeAircraft(callsign);
     }
 
     /** Overriden method that sets the altitude restrictions of the aircraft */
@@ -1744,5 +1759,13 @@ public class Aircraft extends Actor {
 
     public void setMaxClimb(int maxClimb) {
         this.maxClimb = maxClimb;
+    }
+
+    public float getPrevDistTravelled() {
+        return prevDistTravelled;
+    }
+
+    public void setPrevDistTravelled(float prevDistTravelled) {
+        this.prevDistTravelled = prevDistTravelled;
     }
 }
