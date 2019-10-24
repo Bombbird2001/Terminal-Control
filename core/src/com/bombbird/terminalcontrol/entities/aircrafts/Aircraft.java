@@ -59,6 +59,7 @@ public class Aircraft extends Actor {
     private String callsign;
     private String icaoType;
     private char wakeCat;
+    private char recat;
     private int v2;
     private int typClimb;
     private int maxClimb;
@@ -136,6 +137,7 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         this.icaoType = icaoType;
         wakeCat = AircraftType.getWakeCat(icaoType);
+        recat = AircraftType.getRecat(icaoType);
         float loadFactor = MathUtils.random(-1 , 1) / 40f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
@@ -194,6 +196,7 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         this.icaoType = aircraft.icaoType;
         wakeCat = aircraft.wakeCat;
+        recat = aircraft.recat;
         v2 = aircraft.v2;
         typClimb = aircraft.typClimb;
         maxClimb = aircraft.maxClimb;
@@ -263,6 +266,7 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         icaoType = save.getString("icaoType");
         wakeCat = save.getString("wakeCat").charAt(0);
+        recat = save.isNull("recat") ? AircraftType.getRecat(icaoType) : save.getString("recat").charAt(0);
         v2 = save.getInt("v2");
         typClimb = save.getInt("typClimb");
         maxClimb = save.getInt("maxClimb");
@@ -849,6 +853,7 @@ public class Aircraft extends Actor {
             prevDistTravelled -= 0.5;
             radarScreen.wakeManager.addPoint(this);
         }
+        radarScreen.wakeManager.checkAircraftWake(this);
 
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
@@ -1594,7 +1599,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
-        if (holdWpt == null && "Hold at".equals(LatTab.latMode)) holdWpt = radarScreen.waypoints.get(navState.getClearedHold());
+        if (holdWpt == null && "Hold at".equals(LatTab.latMode)) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().first().getName());
         return holdWpt;
     }
 
@@ -1767,5 +1772,13 @@ public class Aircraft extends Actor {
 
     public void setPrevDistTravelled(float prevDistTravelled) {
         this.prevDistTravelled = prevDistTravelled;
+    }
+
+    public char getRecat() {
+        return recat;
+    }
+
+    public void setRecat(char recat) {
+        this.recat = recat;
     }
 }

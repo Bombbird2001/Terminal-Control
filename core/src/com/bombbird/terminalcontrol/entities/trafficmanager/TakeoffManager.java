@@ -4,6 +4,7 @@ package com.bombbird.terminalcontrol.entities.trafficmanager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType;
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -387,27 +388,46 @@ public class TakeoffManager {
         }
     }
 
+    private int getReqTime(char prevAircraft, char nextAircraft) {
+        switch (prevAircraft) {
+            case 'A':
+                switch (nextAircraft) {
+                    case 'F': return 180;
+                    case 'E': return 140;
+                    case 'D':
+                    case 'C':
+                        return 120;
+                    case 'B': return 100;
+                }
+                break;
+            case 'B':
+                switch (nextAircraft) {
+                    case 'F': return 160;
+                    case 'E': return 120;
+                    case 'D': return 100;
+                }
+                break;
+            case 'C':
+                switch (nextAircraft) {
+                    case 'F': return 140;
+                    case 'E': return 100;
+                }
+                break;
+            case 'D':
+                if (nextAircraft == 'F') return 120;
+                break;
+            case 'E':
+                if (nextAircraft == 'F') return 100;
+                break;
+        }
+        return 80;
+    }
+
     /** Check the previous departure aircraft */
     private boolean checkPreceding(String runway) {
         float additionalTime = 100 - 15 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
         additionalTime = MathUtils.clamp(additionalTime, 0, 150);
-        //TODO Recat wake turbulence revised separation time
-        if (prevAircraft.get(runway) == null) {
-            //If no aircraft has taken off before
-            return true;
-        } else if (nextAircraft.get(runway)[1].equals("M")) {
-            if (prevAircraft.get(runway).getWakeCat() == 'H') {
-                //Previous is heavy, minimum 120 sec
-                return timers.get(runway) >= 120 + additionalTime;
-            } else {
-                //Previous is super, minimum 180 sec
-                return timers.get(runway) >= 180 + additionalTime;
-            }
-        } else if (nextAircraft.get(runway)[1].equals("H") && prevAircraft.get(runway).getWakeCat() == 'J') {
-            //Previous is super, minimum 120 sec
-            return timers.get(runway) >= 120 + additionalTime;
-        }
-        return timers.get(runway) >= 90 + additionalTime;
+        return prevAircraft.get(runway) == null || timers.get(runway) > getReqTime(prevAircraft.get(runway).getRecat(), AircraftType.getRecat(nextAircraft.get(runway)[1])) + additionalTime;
     }
 
     /** Check for any landing aircrafts */

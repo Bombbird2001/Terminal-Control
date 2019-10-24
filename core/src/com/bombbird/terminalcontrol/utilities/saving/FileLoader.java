@@ -132,12 +132,18 @@ public class FileLoader {
             //For each aircraft
             int index = 0;
             String icao = "";
-            int[] perfData = new int[5];
+            int[] perfData = new int[6];
             for (String s1: s.split(",")) {
                 if (index == 0) {
                     icao = s1; //Icao code of aircraft
-                } else if (index >= 1 && index <= 5) {
+                } else if (index >= 2 && index <= 5) {
                     perfData[index - 1] = Integer.parseInt(s1);
+                } else if (index == 1 || index == 6) {
+                    //Wake turb cat, recat
+                    char cat = s1.charAt(0);
+                    perfData[index - 1] = cat;
+                    if (index == 1 && !(cat == 'M' || cat == 'H' || cat == 'J')) Gdx.app.log("Wake cat error", "Unknown category for " + icao);
+                    if (index == 6 && !(cat >= 'A' && cat <= 'F')) Gdx.app.log("Recat error", "Unknown category for " + icao);
                 } else {
                     Gdx.app.log("Load error", "Unexpected additional parameter in game/aircrafts.air");
                 }

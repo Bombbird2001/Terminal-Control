@@ -175,7 +175,7 @@ public class RadarScreen extends GameScreen {
             emerChance = Emergency.Chance.valueOf(save.getString("emerChance"));
         }
 
-        wakeManager = new WakeManager(save.getJSONObject("wakeManager"));
+        wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
     }
 
     private void loadStageCamTimer() {

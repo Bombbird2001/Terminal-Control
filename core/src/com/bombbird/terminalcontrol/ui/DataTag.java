@@ -273,7 +273,7 @@ public class DataTag {
             vertSpd = " = ";
         }
         labelText[0] = aircraft.getCallsign();
-        labelText[1] = aircraft.getIcaoType() + "/" + aircraft.getWakeCat();
+        labelText[1] = aircraft.getIcaoType() + "/" + aircraft.getWakeCat() + "/" + aircraft.getRecat();
         labelText[2] = Integer.toString(MathUtils.round(aircraft.getRadarAlt() / 100));
         labelText[3] = aircraft.isGsCap() ? "GS" : Integer.toString(aircraft.getTargetAltitude() / 100);
         labelText[10] = Integer.toString(aircraft.getNavState().getClearedAlt().last() / 100);
