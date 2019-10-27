@@ -478,6 +478,17 @@ public class RadarScreen extends GameScreen {
             }
         }
 
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        //Draw filled flyover waypoints
+        for (Waypoint waypoint: flyOver) {
+            waypoint.renderShape();
+        }
+
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
         //Draw aircrafts
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.renderShape();
@@ -492,17 +503,15 @@ public class RadarScreen extends GameScreen {
 
         separationChecker.renderShape();
 
+        if (selectedAircraft != null) {
+            wakeManager.renderWake(selectedAircraft);
+        }
+
         if (tutorialManager != null) {
             tutorialManager.update();
         }
 
         shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        //Draw filled flyover waypoints
-        for (Waypoint waypoint: flyOver) {
-            waypoint.renderShape();
-        }
     }
 
     @Override

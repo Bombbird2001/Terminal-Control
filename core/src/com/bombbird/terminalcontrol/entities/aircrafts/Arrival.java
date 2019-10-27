@@ -518,6 +518,7 @@ public class Arrival extends Aircraft {
                     generateGoAround();
                     getIls().getRwy().addToArray(this);
                     goAroundSet = true;
+                    setWakeTolerance(MathUtils.clamp(getWakeTolerance(), 0, 20));
                 }
                 checkAircraftInFront();
             }
@@ -605,6 +606,11 @@ public class Arrival extends Aircraft {
         if (willGoAround && getAltitude() < goAroundAlt && (getAirport().getWindshear().contains(getIls().getRwy().getName()) || getAirport().getWindshear().equals("ALL RWY"))) {
             //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
             radarScreen.getCommBox().goAround(this, "windshear");
+            return true;
+        }
+        if (getWakeTolerance() > 25) {
+            //If aircraft has reached wake limits
+            radarScreen.getCommBox().goAround(this, "wake turbulence");
             return true;
         }
         Aircraft firstAircraft = getIls().getRwy().getAircraftsOnAppr().size > 0 ? getIls().getRwy().getAircraftsOnAppr().get(0) : null;

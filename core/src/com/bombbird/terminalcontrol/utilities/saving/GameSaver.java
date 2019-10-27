@@ -99,6 +99,9 @@ public class GameSaver {
             aircraftInfo.put("callsign", aircraft.getCallsign()); //Callsign
             aircraftInfo.put("icaoType", aircraft.getIcaoType()); //ICAO aircraft type
             aircraftInfo.put("wakeCat", String.valueOf(aircraft.getWakeCat())); //Wake turbulence category
+            aircraftInfo.put("recat", aircraft.getRecat()); //Recat code
+            aircraftInfo.put("wakeInfringe", aircraft.isWakeInfringe()); //Whether wake separation too low
+            aircraftInfo.put("wakeTolerance", (double) aircraft.getWakeTolerance()); //Wake tolerance of aircraft
             aircraftInfo.put("v2", aircraft.getV2()); //V2 speed
             aircraftInfo.put("typClimb", aircraft.getTypClimb()); //Typical climb rate
             aircraftInfo.put("maxClimb", aircraft.getMaxClimb()); //Max climb rate

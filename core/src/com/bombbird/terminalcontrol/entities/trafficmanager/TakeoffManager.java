@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType;
+import com.bombbird.terminalcontrol.entities.waketurbulence.SeparationMatrix;
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -388,46 +389,11 @@ public class TakeoffManager {
         }
     }
 
-    private int getReqTime(char prevAircraft, char nextAircraft) {
-        switch (prevAircraft) {
-            case 'A':
-                switch (nextAircraft) {
-                    case 'F': return 180;
-                    case 'E': return 140;
-                    case 'D':
-                    case 'C':
-                        return 120;
-                    case 'B': return 100;
-                }
-                break;
-            case 'B':
-                switch (nextAircraft) {
-                    case 'F': return 160;
-                    case 'E': return 120;
-                    case 'D': return 100;
-                }
-                break;
-            case 'C':
-                switch (nextAircraft) {
-                    case 'F': return 140;
-                    case 'E': return 100;
-                }
-                break;
-            case 'D':
-                if (nextAircraft == 'F') return 120;
-                break;
-            case 'E':
-                if (nextAircraft == 'F') return 100;
-                break;
-        }
-        return 80;
-    }
-
     /** Check the previous departure aircraft */
     private boolean checkPreceding(String runway) {
         float additionalTime = 100 - 15 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
         additionalTime = MathUtils.clamp(additionalTime, 0, 150);
-        return prevAircraft.get(runway) == null || timers.get(runway) > getReqTime(prevAircraft.get(runway).getRecat(), AircraftType.getRecat(nextAircraft.get(runway)[1])) + additionalTime;
+        return prevAircraft.get(runway) == null || timers.get(runway) > SeparationMatrix.getTakeoffSepTime(prevAircraft.get(runway).getRecat(), AircraftType.getRecat(nextAircraft.get(runway)[1])) + additionalTime;
     }
 
     /** Check for any landing aircrafts */

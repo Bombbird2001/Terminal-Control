@@ -60,6 +60,8 @@ public class Aircraft extends Actor {
     private String icaoType;
     private char wakeCat;
     private char recat;
+    private boolean wakeInfringe;
+    private float wakeTolerance;
     private int v2;
     private int typClimb;
     private int maxClimb;
@@ -138,6 +140,8 @@ public class Aircraft extends Actor {
         this.icaoType = icaoType;
         wakeCat = AircraftType.getWakeCat(icaoType);
         recat = AircraftType.getRecat(icaoType);
+        wakeInfringe = false;
+        wakeTolerance = 0;
         float loadFactor = MathUtils.random(-1 , 1) / 40f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
@@ -197,6 +201,8 @@ public class Aircraft extends Actor {
         this.icaoType = aircraft.icaoType;
         wakeCat = aircraft.wakeCat;
         recat = aircraft.recat;
+        wakeInfringe = aircraft.wakeInfringe;
+        wakeTolerance = aircraft.wakeTolerance;
         v2 = aircraft.v2;
         typClimb = aircraft.typClimb;
         maxClimb = aircraft.maxClimb;
@@ -266,7 +272,9 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         icaoType = save.getString("icaoType");
         wakeCat = save.getString("wakeCat").charAt(0);
-        recat = save.isNull("recat") ? AircraftType.getRecat(icaoType) : save.getString("recat").charAt(0);
+        recat = save.isNull("recat") ? AircraftType.getRecat(icaoType) : (char) save.getInt("recat");
+        wakeInfringe = save.optBoolean("wakeInfringe");
+        wakeTolerance = (float) save.optDouble("wakeTolerance", 0);
         v2 = save.getInt("v2");
         typClimb = save.getInt("typClimb");
         maxClimb = save.getInt("maxClimb");
@@ -848,12 +856,21 @@ public class Aircraft extends Actor {
         y += deltaPosition.y;
 
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(0, 0, deltaPosition.x, deltaPosition.y));
-        prevDistTravelled += dist;
+        if (!onGround) prevDistTravelled += dist;
         if (prevDistTravelled > 0.5) {
             prevDistTravelled -= 0.5;
             radarScreen.wakeManager.addPoint(this);
         }
-        radarScreen.wakeManager.checkAircraftWake(this);
+        float diffDist = radarScreen.wakeManager.checkAircraftWake(this);
+        if (diffDist < 0) {
+            //Safe separation
+            wakeInfringe = false;
+            wakeTolerance -= Gdx.graphics.getDeltaTime() * 2;
+        } else {
+            wakeInfringe = true;
+            wakeTolerance += Gdx.graphics.getDeltaTime() * diffDist;
+        }
+        if (wakeTolerance < 0) wakeTolerance = 0;
 
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
@@ -1003,6 +1020,8 @@ public class Aircraft extends Actor {
         dataTag.updateIcon(batch);
 
         dataTag.drawTrailDots(batch, parentAlpha);
+
+        if (selected) radarScreen.wakeManager.drawSepRequired(batch, parentAlpha, this);
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
@@ -1599,7 +1618,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
-        if (holdWpt == null && "Hold at".equals(LatTab.latMode)) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().first().getName());
+        if (holdWpt == null && "Hold at".equals(navState.getDispLatMode().last())) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().first().getName());
         return holdWpt;
     }
 
@@ -1780,5 +1799,21 @@ public class Aircraft extends Actor {
 
     public void setRecat(char recat) {
         this.recat = recat;
+    }
+
+    public boolean isWakeInfringe() {
+        return wakeInfringe;
+    }
+
+    public void setWakeInfringe(boolean wakeInfringe) {
+        this.wakeInfringe = wakeInfringe;
+    }
+
+    public float getWakeTolerance() {
+        return wakeTolerance;
+    }
+
+    public void setWakeTolerance(float wakeTolerance) {
+        this.wakeTolerance = wakeTolerance;
     }
 }

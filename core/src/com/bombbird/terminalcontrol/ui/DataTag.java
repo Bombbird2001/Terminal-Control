@@ -315,7 +315,7 @@ public class DataTag {
         if (!minimized && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         } else {
-            updatedText = labelText[0] + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
+            updatedText = labelText[0] + "/" + aircraft.getRecat() + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];
         }
         if (aircraft.getEmergency().isActive()) {
             if (aircraft.getEmergency().isReadyForApproach() && aircraft.getEmergency().isStayOnRwy()) {
@@ -327,6 +327,8 @@ public class DataTag {
                     updatedText = updatedText + "\nFuel dump req";
                 }
             }
+        } else if (aircraft.isWakeInfringe()) {
+            updatedText = updatedText + "\nWake alert";
         }
         label.setText(updatedText);
         label.pack();
