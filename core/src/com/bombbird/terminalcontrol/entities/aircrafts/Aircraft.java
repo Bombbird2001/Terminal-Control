@@ -1579,7 +1579,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
-        if (holdWpt == null && "Hold at".equals(LatTab.latMode)) holdWpt = radarScreen.waypoints.get(navState.getClearedHold());
+        if (holdWpt == null && "Hold at".equals(navState.getDispLatMode().last())) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().first().getName());
         return holdWpt;
     }
 
