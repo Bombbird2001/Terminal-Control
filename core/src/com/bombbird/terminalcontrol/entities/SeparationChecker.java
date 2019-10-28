@@ -72,6 +72,12 @@ public class SeparationChecker extends Actor {
         }
         int active = checkAircraftSep();
         active = checkRestrSep(active);
+        int tmpActive = active;
+        while (tmpActive > lastNumber) {
+            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
+            tmpActive--;
+        }
+        //Subtract wake separately (don't include 5% penalty)
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isWakeInfringe() && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
                 active++;
@@ -79,11 +85,6 @@ public class SeparationChecker extends Actor {
                 radarScreen.shapeRenderer.setColor(Color.RED);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 48.6f);
             }
-        }
-        int tmpActive = active;
-        while (tmpActive > lastNumber) {
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
-            tmpActive--;
         }
         if (time <= 0) {
             radarScreen.setScore(radarScreen.getScore() - active);

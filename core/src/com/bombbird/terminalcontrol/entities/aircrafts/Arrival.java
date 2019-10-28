@@ -530,7 +530,7 @@ public class Arrival extends Aircraft {
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
             }
-            if (checkGoAround()) {
+            if (isLocCap() && checkGoAround()) {
                 initializeGoAround();
             }
         } else {
@@ -649,7 +649,7 @@ public class Arrival extends Aircraft {
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
-            if (firstAircraft!= null && !firstAircraft.getCallsign().equals(getCallsign())) {
+            if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
                 radarScreen.getCommBox().goAround(this, "traffic on runway");
                 return true;

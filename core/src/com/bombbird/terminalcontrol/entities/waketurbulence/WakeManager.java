@@ -2,9 +2,11 @@ package com.bombbird.terminalcontrol.entities.waketurbulence;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
@@ -115,9 +117,31 @@ public class WakeManager {
         }
     }
 
-    /** Renders the wake lines/arc when aircraft is on the ILS with aircraft behind it */
-    public void renderIlsWake(Aircraft aircraft1, Aircraft aircraft2) {
-        //TODO Render ILS wake line
+    /** Renders the wake lines/arc when aircraft is on the ILS with aircraft behind it, call in shape renderer render method only */
+    public void renderIlsWake() {
+        for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
+            if (aircraft instanceof Departure) continue;
+            if (!aircraft.isLocCap()) continue;
+            if (aircraft.isOnGround()) continue;
+            Aircraft aircraft1 = null;
+            int index = aircraft.getIls().getRwy().getAircraftsOnAppr().size - 1;
+            while (true) {
+                if (index < 0) break;
+                if (aircraft.getIls().getRwy().getAircraftsOnAppr().get(index).getCallsign().equals(aircraft.getCallsign())) break;
+                aircraft1 = aircraft.getIls().getRwy().getAircraftsOnAppr().get(index);
+                index--;
+            }
+            if (aircraft1 == null) continue;
+            int reqDist = SeparationMatrix.getWakeSepDist(aircraft.getRecat(), aircraft1.getRecat());
+            if (reqDist < 3) continue;
+            Vector2 centre = aircraft.getIls().getPointAtDist(aircraft.getIls().getDistFrom(aircraft.getRadarX(), aircraft.getRadarY()) + reqDist);
+            int halfWidth = aircraft.isSelected() ? 50 : 30;
+            double trackRad = Math.toRadians(aircraft.getIls().getHeading() - TerminalControl.radarScreen.magHdgDev);
+            float xOffset = halfWidth * (float) Math.cos(trackRad);
+            float yOffset = halfWidth * (float) Math.sin(trackRad);
+            TerminalControl.radarScreen.shapeRenderer.setColor(aircraft.isSelected() ? Color.YELLOW : Color.ORANGE);
+            TerminalControl.radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset);
+        }
     }
 
     /** Returns a jsonobject used to save data for this wake manager */

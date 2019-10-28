@@ -506,6 +506,7 @@ public class RadarScreen extends GameScreen {
         if (selectedAircraft != null) {
             wakeManager.renderWake(selectedAircraft);
         }
+        wakeManager.renderIlsWake();
 
         if (tutorialManager != null) {
             tutorialManager.update();

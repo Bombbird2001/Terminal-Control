@@ -695,6 +695,7 @@ public class Aircraft extends Actor {
         if (vector && !locCap) {
             targetHeading = clearedHeading;
         } else if (sidstar && !holding) {
+            if (ils != null) setIls(null);
             targetHeading = calculatePointTargetHdg(new float[] {direct.getPosX(), direct.getPosY()}, windHdg, windSpd);
 
             //If within __px of waypoint, target next waypoint
@@ -720,11 +721,11 @@ public class Aircraft extends Actor {
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
-                Vector2 position = ils.getPointAhead(this);
+                Vector2 position = ils.getPointAhead(this, 0.75f);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {
-            if (!navState.getDispLatMode().first().equals("Hold at")) {
+            if (navState!= null && !navState.getDispLatMode().first().equals("Hold at")) {
                 holding = false;
                 return updateTargetHeading();
             }
@@ -1618,7 +1619,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
-        if (holdWpt == null && "Hold at".equals(navState.getDispLatMode().last())) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().first().getName());
+        if (holdWpt == null && "Hold at".equals(navState.getDispLatMode().last())) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().last().getName());
         return holdWpt;
     }
 
