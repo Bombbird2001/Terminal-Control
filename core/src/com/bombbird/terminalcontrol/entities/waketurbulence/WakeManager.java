@@ -34,7 +34,7 @@ public class WakeManager {
 
     /** Initialises aircraft array for new aircraft */
     public void addAircraft(String callsign) {
-        aircraftWakes.put(callsign, new Array<WakePoint>());
+        aircraftWakes.put(callsign, new Array<>());
     }
 
     /** Removes array for aircraft */
@@ -97,7 +97,7 @@ public class WakeManager {
     }
 
     /** Draws letter representing separation required for each recat category, call in draw method only */
-    public void drawSepRequired(Batch batch, float parentAlpha, Aircraft aircraft) {
+    public void drawSepRequired(Batch batch, Aircraft aircraft) {
         if (!aircraftWakes.containsKey(aircraft.getCallsign())) return;
         Array<WakePoint> points = aircraftWakes.get(aircraft.getCallsign());
         int prevDist = 0;

@@ -1021,7 +1021,7 @@ public class Aircraft extends Actor {
 
         dataTag.drawTrailDots(batch, parentAlpha);
 
-        if (selected) radarScreen.wakeManager.drawSepRequired(batch, parentAlpha, this);
+        if (selected) radarScreen.wakeManager.drawSepRequired(batch, this);
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
