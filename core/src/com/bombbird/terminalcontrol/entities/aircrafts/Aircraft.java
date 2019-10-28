@@ -662,8 +662,8 @@ public class Aircraft extends Actor {
             windSpd = 0;
         }
 
-        boolean sidstar = navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading") || navState.getDispLatMode().first().equals("Hold at");
-        boolean vector = !sidstar && navState.getDispLatMode().first().contains("heading");
+        boolean sidstar = navState != null && (navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading") || navState.getDispLatMode().first().equals("Hold at"));
+        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first().contains("heading");
 
         if (this instanceof Departure) {
             //Check if aircraft has climbed past initial climb
@@ -850,7 +850,7 @@ public class Aircraft extends Actor {
             if (this instanceof Arrival) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
                 radarScreen.getCommBox().warningMsg(callsign + " has left the airspace!");
-            } else if (this instanceof Departure && navState.getDispLatMode().last().contains("departure") && navState.getClearedAlt().last() == radarScreen.maxAlt) {
+            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last().contains("departure") && navState.getClearedAlt().last() == radarScreen.maxAlt) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
                 contactOther();
             }

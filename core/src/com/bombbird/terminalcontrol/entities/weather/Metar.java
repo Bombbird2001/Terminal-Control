@@ -30,14 +30,11 @@ public class Metar {
         if (radarScreen.liveWeather) {
             HttpRequests.getMetar(this, true);
         } else {
-            Runnable threadRunner = new Runnable() {
-                @Override
-                public void run() {
-                    if (tutorial) {
-                        updateTutorialMetar();
-                    } else {
-                        randomWeather();
-                    }
+            Runnable threadRunner = () -> {
+                if (tutorial) {
+                    updateTutorialMetar();
+                } else {
+                    randomWeather();
                 }
             };
             new Thread(threadRunner).start();
@@ -155,12 +152,7 @@ public class Metar {
     public void updateRadarScreenState() {
         if (quit) return;
         if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) {
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    radarScreen.updateInformation();
-                }
-            });
+            Gdx.app.postRunnable(() -> radarScreen.updateInformation());
         }
         if (radarScreen.loadingTime < 4.5) {
             long deltaTime = (long)((4.5 - radarScreen.loadingTime) * 1000);
@@ -174,12 +166,7 @@ public class Metar {
         }
         prevMetar = metarObject;
         updateAirports();
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                radarScreen.ui.updateMetar();
-            }
-        });
+        Gdx.app.postRunnable(() -> radarScreen.ui.updateMetar());
         radarScreen.loadingPercent = "100%";
         radarScreen.loading = false;
     }

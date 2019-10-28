@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -266,27 +267,29 @@ public class CommBox {
 
     /** Adds the label to queue and removes labels if necessary, updates scrollPane to show messages */
     private void updateLabelQueue(Label label) {
-        labels.addLast(label);
-        label.setWidth(scrollPane.getWidth() - 20);
-        label.setWrap(true);
+        Gdx.app.postRunnable(() -> {
+            labels.addLast(label);
+            label.setWidth(scrollPane.getWidth() - 20);
+            label.setWrap(true);
 
-        while (labels.size > 15) {
-            labels.removeFirst();
-        }
+            while (labels.size > 15) {
+                labels.removeFirst();
+            }
 
-        scrollTable.clearChildren();
-        for (int i = 0; i < labels.size; i++) {
-            scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
-            scrollTable.row();
-        }
+            scrollTable.clearChildren();
+            for (int i = 0; i < labels.size; i++) {
+                scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
+                scrollTable.row();
+            }
 
-        try {
-            scrollPane.layout();
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            scrollPane.layout();
-        }
-        scrollPane.scrollTo(0, 0, 0, 0);
+            try {
+                scrollPane.layout();
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                scrollPane.layout();
+            }
+            scrollPane.scrollTo(0, 0, 0, 0);
+        });
     }
 
     private Label.LabelStyle getLabelStyle(Color color) {
