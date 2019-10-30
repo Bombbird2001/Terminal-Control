@@ -414,7 +414,7 @@ public class NavState {
         Queue<Integer> newQueue = new Queue<Integer>();
         while (!clearedSpd.isEmpty()) {
             int first = clearedSpd.removeFirst();
-            newQueue.addLast(first < aircraft.getClearedIas() ? aircraft.getClearedIas() : first);
+            newQueue.addLast(Math.max(first, aircraft.getClearedIas()));
         }
         clearedSpd = newQueue;
     }

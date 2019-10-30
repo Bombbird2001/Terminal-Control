@@ -695,7 +695,10 @@ public class Aircraft extends Actor {
         if (vector && !locCap) {
             targetHeading = clearedHeading;
         } else if (sidstar && !holding) {
-            if (ils != null) setIls(null);
+            if (ils != null) {
+                setIls(null);
+                navState.voidAllIls();
+            }
             targetHeading = calculatePointTargetHdg(new float[] {direct.getPosX(), direct.getPosY()}, windHdg, windSpd);
 
             //If within __px of waypoint, target next waypoint
