@@ -98,6 +98,7 @@ public class InfoScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
                 game.setScreen(new MainMenuScreen(game, background));
+                dispose();
             }
         });
 
