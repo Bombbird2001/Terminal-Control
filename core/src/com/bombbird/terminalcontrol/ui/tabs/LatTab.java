@@ -193,6 +193,7 @@ public class LatTab extends Tab {
 
     @Override
     public void updateElements() {
+        if (selectedAircraft == null) return;
         notListening = true;
         if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getRoute().getWaypoints().size) {
             selectedAircraft.getNavState().getLatModes().removeValue(selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " arrival" : " departure"), false);

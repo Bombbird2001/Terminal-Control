@@ -47,7 +47,7 @@ public class ErrorHandler {
         if (Gdx.app.getType() == Application.ApplicationType.Android) throw new RuntimeException(e);
     }
 
-    public static void sendJSONErrorNoThrow(Exception e, String str) {
+    public static void sendSaveErrorNoThrow(Exception e, String str) {
         String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
         error = str + "\n" + error;
         HttpRequests.sendError(error, 0);

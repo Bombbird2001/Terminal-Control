@@ -75,9 +75,10 @@ public class CommBox {
                 color = new Color(Integer.parseInt(info.getString("color"), 16));
             }
 
-            Label label = new Label(info.getString("message"), getLabelStyle(color));
-
-            updateLabelQueue(label);
+            Gdx.app.postRunnable(() -> {
+                Label label = new Label(info.getString("message"), getLabelStyle(color));
+                updateLabelQueue(label);
+            });
         }
     }
 
@@ -92,22 +93,32 @@ public class CommBox {
 
         String bai = ", ";
         bai += callsign.contains("Tower") ? atcByeTwr.random() : atcByeCtr.random();
-        Label label = new Label(aircraft.getCallsign() + wake + ", contact " + callsign + " on " + freq + bai + ".", getLabelStyle(Color.BLACK));
-        updateLabelQueue(label);
+        if (aircraft.getEmergency().isActive()) bai = ", have a safe landing";
+        String finalWake = wake;
+        String finalBai = bai;
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(aircraft.getCallsign() + finalWake + ", contact " + callsign + " on " + freq + finalBai + ".", getLabelStyle(Color.BLACK));
+            updateLabelQueue(label);
+        });
 
         String bye = ", ";
         bye += pilotBye.random() + ", ";
-        Label label1 = new Label(freq + bye + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
-        updateLabelQueue(label1);
+        String finalBye = bye;
+        String finalWake1 = wake;
+        Gdx.app.postRunnable(() -> {
+            Label label1 = new Label(freq + finalBye + aircraft.getCallsign() + finalWake1, getLabelStyle(aircraft.getColor()));
+            updateLabelQueue(label1);
+        });
         //Remove lowkey annoying message from TTS
         //TerminalControl.tts.contactOther(aircraft.getVoice(), freq, aircraft.getCallsign().substring(0, 3), aircraft.getCallsign().substring(3), wake);
     }
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
     public void goAround(Aircraft aircraft, String reason) {
-        Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
-
-        updateLabelQueue(label);
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
+            updateLabelQueue(label);
+        });
     }
 
     /** Adds a message for an aircraft contacting the player for the first time */
@@ -192,9 +203,11 @@ public class CommBox {
             TerminalControl.tts.initDepContact(aircraft, wake, apchCallsign, greeting, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
         }
 
-        Label label = new Label(text, getLabelStyle(aircraft.getColor()));
-
-        updateLabelQueue(label);
+        String finalText = text;
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(finalText, getLabelStyle(aircraft.getColor()));
+            updateLabelQueue(label);
+        });
 
         TerminalControl.radarScreen.soundManager.playInitialContact();
     }
@@ -220,30 +233,36 @@ public class CommBox {
 
         TerminalControl.tts.holdEstablishMsg(aircraft, wake, wpt, random);
 
-        Label label = new Label(text, getLabelStyle(aircraft.getColor()));
-
-        updateLabelQueue(label);
+        String finalText = text;
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(finalText, getLabelStyle(aircraft.getColor()));
+            updateLabelQueue(label);
+        });
 
         TerminalControl.radarScreen.soundManager.playInitialContact();
     }
 
     /** Adds a normal message */
     public void normalMsg(String msg) {
-        for (int i = 0; i < 3; i++) {
-            try {
-                Label label = new Label(msg, getLabelStyle(Color.BLACK));
-                updateLabelQueue(label);
-                break;
-            } catch (NullPointerException e) {
-                ErrorHandler.sendRepeatableError("Normal message error", e, i + 1);
+        Gdx.app.postRunnable(() -> {
+            for (int i = 0; i < 3; i++) {
+                try {
+                    Label label = new Label(msg, getLabelStyle(Color.BLACK));
+                    updateLabelQueue(label);
+                    break;
+                } catch (NullPointerException e) {
+                    ErrorHandler.sendRepeatableError("Normal message error", e, i + 1);
+                }
             }
-        }
+        });
     }
 
     /** Adds a message in red for warnings */
     public void warningMsg(String msg) {
-        Label label = new Label(msg, getLabelStyle(Color.RED));
-        updateLabelQueue(label);
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(msg, getLabelStyle(Color.RED));
+            updateLabelQueue(label);
+        });
 
         TerminalControl.radarScreen.soundManager.playConflict();
     }
@@ -267,29 +286,27 @@ public class CommBox {
 
     /** Adds the label to queue and removes labels if necessary, updates scrollPane to show messages */
     private void updateLabelQueue(Label label) {
-        Gdx.app.postRunnable(() -> {
-            labels.addLast(label);
-            label.setWidth(scrollPane.getWidth() - 20);
-            label.setWrap(true);
+        labels.addLast(label);
+        label.setWidth(scrollPane.getWidth() - 20);
+        label.setWrap(true);
 
-            while (labels.size > 15) {
-                labels.removeFirst();
-            }
+        while (labels.size > 15) {
+            labels.removeFirst();
+        }
 
-            scrollTable.clearChildren();
-            for (int i = 0; i < labels.size; i++) {
-                scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
-                scrollTable.row();
-            }
+        scrollTable.clearChildren();
+        for (int i = 0; i < labels.size; i++) {
+            scrollTable.add(labels.get(i)).width(scrollPane.getWidth() - 20).pad(15, 10, 15, 0).getActor().invalidate();
+            scrollTable.row();
+        }
 
-            try {
-                scrollPane.layout();
-            } catch (IndexOutOfBoundsException e) {
-                e.printStackTrace();
-                scrollPane.layout();
-            }
-            scrollPane.scrollTo(0, 0, 0, 0);
-        });
+        try {
+            scrollPane.layout();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            scrollPane.layout();
+        }
+        scrollPane.scrollTo(0, 0, 0, 0);
     }
 
     private Label.LabelStyle getLabelStyle(Color color) {
