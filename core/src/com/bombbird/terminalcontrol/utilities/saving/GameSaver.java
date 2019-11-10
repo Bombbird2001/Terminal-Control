@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -69,10 +70,12 @@ public class GameSaver {
 
         FileHandle handle = FileLoader.getExtDir("saves/" + radarScreen.saveId + ".json");
         if (handle != null) {
+            String encode = Base64Coder.encodeString(jsonObject.toString());
             try {
-                handle.writeString(Base64Coder.encodeString(jsonObject.toString()), false);
+                handle.writeString(encode, false);
             } catch (GdxRuntimeException e) {
                 TerminalControl.toastManager.saveFail();
+                ErrorHandler.sendSaveErrorNoThrow(e, encode);
             }
         }
 

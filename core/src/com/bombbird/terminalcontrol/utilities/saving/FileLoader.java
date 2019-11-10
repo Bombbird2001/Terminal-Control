@@ -216,13 +216,13 @@ public class FileLoader {
                     saves.put(save);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ErrorHandler.sendJSONErrorNoThrow(e, saveString);
+                    ErrorHandler.sendSaveErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail();
                     Gdx.app.log("Corrupted save", "JSON parse failure");
                     if (GameSaver.deleteSave(Integer.parseInt(id))) Gdx.app.log("Save deleted", "Corrupted save deleted");
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
-                    ErrorHandler.sendJSONErrorNoThrow(e, saveString);
+                    ErrorHandler.sendSaveErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail();
                     Gdx.app.log("Corrupted save", "Base64 decode failure");
                     if (GameSaver.deleteSave(Integer.parseInt(id))) Gdx.app.log("Save deleted", "Corrupted save deleted");
