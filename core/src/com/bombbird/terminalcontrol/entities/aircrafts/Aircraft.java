@@ -292,7 +292,7 @@ public class Aircraft extends Actor {
         } else {
             terrainConflict = save.getBoolean("terrainConflict");
         }
-        emergency = save.isNull("emergency") ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
+        emergency = save.optJSONObject("emergency") == null ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
