@@ -45,6 +45,12 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class RadarScreen extends GameScreen {
+    public enum Weather {
+        LIVE,
+        RANDOM,
+        STATIC
+    }
+
     public int saveId;
     public String mainName;
     public float magHdgDev;
@@ -57,7 +63,7 @@ public class RadarScreen extends GameScreen {
     public String callsign;
     public String deptCallsign;
     public int trajectoryLine;
-    public boolean liveWeather;
+    public Weather liveWeather;
     public int soundSel;
     public Emergency.Chance emerChance;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
@@ -167,7 +173,14 @@ public class RadarScreen extends GameScreen {
         saveTime = 60f;
 
         trajectoryLine = save.getInt("trajectoryLine");
-        liveWeather = save.getBoolean("liveWeather");
+        String weather = save.optString("liveWeather");
+        if ("true".equals(weather)) {
+            liveWeather = Weather.LIVE;
+        } else if ("false".equals(weather)) {
+            liveWeather = Weather.RANDOM;
+        } else {
+            liveWeather = RadarScreen.Weather.valueOf(save.getString("liveWeather"));
+        }
         soundSel = save.isNull("sounds") ? 2 : save.getInt("sounds");
         if (save.isNull("emerChance")) {
             emerChance = Emergency.Chance.MEDIUM;

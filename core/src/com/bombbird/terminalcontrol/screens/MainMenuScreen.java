@@ -57,8 +57,8 @@ public class MainMenuScreen implements Screen {
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
-        TerminalControl.loadSettings();
         TerminalControl.loadVersionInfo();
+        TerminalControl.loadSettings();
     }
 
     /** Loads the UI elements to be rendered on screen */

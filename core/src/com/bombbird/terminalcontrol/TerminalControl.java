@@ -47,7 +47,7 @@ public class TerminalControl extends Game {
 
     //Default settings
     public static int trajectorySel;
-    public static boolean weatherSel;
+    public static RadarScreen.Weather weatherSel;
     public static int soundSel;
     public static Emergency.Chance emerChance;
     public static boolean sendAnonCrash;
@@ -62,7 +62,7 @@ public class TerminalControl extends Game {
         if (settings == null) {
             //Default settings if save unavailable
             trajectorySel = 90;
-            weatherSel = true;
+            weatherSel = RadarScreen.Weather.LIVE;
             if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
                 soundSel = 1;
             } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
@@ -73,7 +73,17 @@ public class TerminalControl extends Game {
             GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance);
         } else {
             trajectorySel = settings.getInt("trajectory");
-            weatherSel = settings.getBoolean("weather");
+            String weather = settings.optString("weather");
+            if ("true".equals(weather)) {
+                //Old format
+                weatherSel = RadarScreen.Weather.LIVE;
+            } else if ("false".equals(weather)) {
+                //Old format
+                weatherSel = RadarScreen.Weather.RANDOM;
+            } else {
+                //New format
+                weatherSel = RadarScreen.Weather.valueOf(settings.getString("weather"));
+            }
             soundSel = settings.getInt("sound");
             sendAnonCrash = settings.optBoolean("sendCrash", true);
             if (settings.isNull("emerChance")) {

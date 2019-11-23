@@ -27,13 +27,13 @@ public class Metar {
     }
 
     public void updateMetar(final boolean tutorial) {
-        if (radarScreen.liveWeather) {
+        if (radarScreen.liveWeather == RadarScreen.Weather.LIVE) {
             HttpRequests.getMetar(this, true);
         } else {
             Runnable threadRunner = () -> {
                 if (tutorial) {
                     updateTutorialMetar();
-                } else {
+                } else if (radarScreen.liveWeather == RadarScreen.Weather.RANDOM || metarObject == null) {
                     randomWeather();
                 }
             };

@@ -279,7 +279,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                     //Draw to the spritebatch
                     game.batch.begin();
-                    boolean liveWeather = ((RadarScreen) this).liveWeather && !((RadarScreen) this).tutorial;
+                    boolean liveWeather = ((RadarScreen) this).liveWeather == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
                     String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                     if (loading) {
                         //Write loading text if loading

@@ -526,7 +526,7 @@ public class GameSaver {
 
         Array<String> ids = null;
         if (handle.exists()) {
-            ids = new Array<String>(handle.readString().split(","));
+            ids = new Array<>(handle.readString().split(","));
         }
         if (ids != null) {
             if (!ids.contains(Integer.toString(id), false)) {
@@ -537,7 +537,7 @@ public class GameSaver {
             }
             ids.removeValue("", false); //Remove a random "" that is loaded into the array
         } else {
-            ids = new Array<String>();
+            ids = new Array<>();
             ids.add(Integer.toString(id));
         }
 
@@ -561,7 +561,7 @@ public class GameSaver {
 
         if (handle != null && handle.exists()) {
             String[] saveIDs = handle.readString().split(",");
-            Array<Integer> ids = new Array<Integer>();
+            Array<Integer> ids = new Array<>();
             for (String stringID : saveIDs) {
                 ids.add(Integer.parseInt(stringID));
             }
@@ -582,13 +582,13 @@ public class GameSaver {
     }
 
     /** Saves the default settings */
-    public static void saveSettings(int trajectorySel, boolean weatherSel, int soundSel, boolean sendCrash, Emergency.Chance emerChance) {
+    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, Emergency.Chance emerChance) {
         FileHandle handle = FileLoader.getExtDir("settings.json");
 
         if (handle != null) {
             JSONObject settings = new JSONObject();
             settings.put("trajectory", trajectorySel);
-            settings.put("weather", weatherSel);
+            settings.put("weather", weatherSel.toString());
             settings.put("sound", soundSel);
             settings.put("sendCrash", sendCrash);
             settings.put("emerChance", emerChance.toString());

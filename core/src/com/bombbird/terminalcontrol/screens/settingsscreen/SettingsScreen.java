@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
+import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.Locale;
@@ -41,7 +42,7 @@ public class SettingsScreen implements Screen {
     public int trajectorySel;
 
     public Label weatherLabel;
-    public boolean weatherSel;
+    public RadarScreen.Weather weatherSel;
 
     public Label soundLabel;
     public int soundSel;
@@ -115,13 +116,13 @@ public class SettingsScreen implements Screen {
         stage.addActor(trajectoryLine);
 
         weather = new SelectBox<String>(selectBoxStyle);
-        Array<String> options1 = new Array<String>(2);
-        options1.add("Live weather", "Random weather"); //TODO Add custom weather in future
+        Array<String> options1 = new Array<String>(3);
+        options1.add("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
         weather.setItems(options1);
         weather.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                weatherSel = "Live weather".equals(weather.getSelected());
+                weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
             }
         });
         weather.setSize(1200, 300);
@@ -204,7 +205,7 @@ public class SettingsScreen implements Screen {
     /** Sets relevant options into select boxes */
     public void setOptions() {
         trajectoryLine.setSelected(trajectorySel + " sec");
-        weather.setSelectedIndex(weatherSel ? 0 : 1);
+        weather.setSelected(weatherSel.toString().charAt(0) + weatherSel.toString().substring(1).toLowerCase() + " weather");
         int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
         if (soundIndex < 0) soundIndex = 0;
         sound.setSelectedIndex(soundIndex);
