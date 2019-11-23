@@ -146,9 +146,9 @@ public class Metar {
 
     public void randomWeather() {
         if (metarObject == null) {
-            generateRandomWeather();
+            metarObject = generateRandomWeather();
         } else if (radarScreen.liveWeather == RadarScreen.Weather.RANDOM) {
-            randomBasedOnCurrent();
+            metarObject = randomBasedOnCurrent();
         }
         updateRadarScreenState();
     }
