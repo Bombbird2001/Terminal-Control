@@ -51,6 +51,7 @@ public class GameSaver {
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
+        jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
 
         JSONArray jsonArray = new JSONArray();
         for (String aircraft: radarScreen.getAllAircraft().keySet()) {
@@ -101,6 +102,9 @@ public class GameSaver {
             aircraftInfo.put("callsign", aircraft.getCallsign()); //Callsign
             aircraftInfo.put("icaoType", aircraft.getIcaoType()); //ICAO aircraft type
             aircraftInfo.put("wakeCat", String.valueOf(aircraft.getWakeCat())); //Wake turbulence category
+            aircraftInfo.put("recat", aircraft.getRecat()); //Recat code
+            aircraftInfo.put("wakeInfringe", aircraft.isWakeInfringe()); //Whether wake separation too low
+            aircraftInfo.put("wakeTolerance", (double) aircraft.getWakeTolerance()); //Wake tolerance of aircraft
             aircraftInfo.put("v2", aircraft.getV2()); //V2 speed
             aircraftInfo.put("typClimb", aircraft.getTypClimb()); //Typical climb rate
             aircraftInfo.put("maxClimb", aircraft.getMaxClimb()); //Max climb rate
@@ -119,6 +123,7 @@ public class GameSaver {
 
             aircraftInfo.put("x", (double) aircraft.getX()); //x coordinate
             aircraftInfo.put("y", (double) aircraft.getY()); //y coordinate
+            aircraftInfo.put("prevDistTravelled", (double) aircraft.getPrevDistTravelled()); //Distance travelled previously (for wake points)
             aircraftInfo.put("heading", aircraft.getHeading()); //Heading
             aircraftInfo.put("targetHeading", aircraft.getTargetHeading()); //Target heading
             aircraftInfo.put("clearedHeading", aircraft.getClearedHeading()); //Cleared heading

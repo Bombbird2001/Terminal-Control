@@ -4,6 +4,8 @@ package com.bombbird.terminalcontrol.entities.trafficmanager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType;
+import com.bombbird.terminalcontrol.entities.waketurbulence.SeparationMatrix;
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -391,22 +393,7 @@ public class TakeoffManager {
     private boolean checkPreceding(String runway) {
         float additionalTime = 100 - 15 * (airport.getLandings() - airport.getAirborne()); //Additional time between departures when arrivals are not much higher than departures
         additionalTime = MathUtils.clamp(additionalTime, 0, 150);
-        if (prevAircraft.get(runway) == null) {
-            //If no aircraft has taken off before
-            return true;
-        } else if (nextAircraft.get(runway)[1].equals("M")) {
-            if (prevAircraft.get(runway).getWakeCat() == 'H') {
-                //Previous is heavy, minimum 120 sec
-                return timers.get(runway) >= 120 + additionalTime;
-            } else {
-                //Previous is super, minimum 180 sec
-                return timers.get(runway) >= 180 + additionalTime;
-            }
-        } else if (nextAircraft.get(runway)[1].equals("H") && prevAircraft.get(runway).getWakeCat() == 'J') {
-            //Previous is super, minimum 120 sec
-            return timers.get(runway) >= 120 + additionalTime;
-        }
-        return timers.get(runway) >= 90 + additionalTime;
+        return prevAircraft.get(runway) == null || timers.get(runway) > SeparationMatrix.getTakeoffSepTime(prevAircraft.get(runway).getRecat(), AircraftType.getRecat(nextAircraft.get(runway)[1])) + additionalTime;
     }
 
     /** Check for any landing aircrafts */

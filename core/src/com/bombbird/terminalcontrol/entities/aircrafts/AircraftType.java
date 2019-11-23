@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.entities.aircrafts;
 
-import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 import java.util.HashMap;
@@ -9,17 +8,11 @@ public class AircraftType {
     private static final HashMap<String, int[]> aircraftTypes = FileLoader.loadAircraftData();
 
     public static char getWakeCat(String type) {
-        int code = aircraftTypes.get(type)[0];
-        if (code == 0) {
-            return 'M';
-        } else if (code == 1) {
-            return 'H';
-        } else if (code == 2) {
-            return 'J';
-        } else {
-            Gdx.app.log("Invalid wake category", "Invalid wake turbulence category set for " + type + "!");
-            return 'M';
-        }
+        return (char) aircraftTypes.get(type)[0];
+    }
+
+    public static char getRecat(String type) {
+        return (char) aircraftTypes.get(type)[5];
     }
 
     public static int getV2(String type) {

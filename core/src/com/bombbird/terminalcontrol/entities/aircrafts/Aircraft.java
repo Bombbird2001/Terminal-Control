@@ -59,6 +59,9 @@ public class Aircraft extends Actor {
     private String callsign;
     private String icaoType;
     private char wakeCat;
+    private char recat;
+    private boolean wakeInfringe;
+    private float wakeTolerance;
     private int v2;
     private int typClimb;
     private int maxClimb;
@@ -97,6 +100,7 @@ public class Aircraft extends Actor {
     private boolean type1leg;
     private float[][] holdTargetPt;
     private boolean[] holdTargetPtSelected;
+    private float prevDistTravelled;
 
     //Altitude
     private float prevAlt;
@@ -135,6 +139,9 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         this.icaoType = icaoType;
         wakeCat = AircraftType.getWakeCat(icaoType);
+        recat = AircraftType.getRecat(icaoType);
+        wakeInfringe = false;
+        wakeTolerance = 0;
         float loadFactor = MathUtils.random(-1 , 1) / 40f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
@@ -164,6 +171,7 @@ public class Aircraft extends Actor {
         tas = MathTools.iasToTas(ias, altitude);
         gs = tas;
         deltaPosition = new Vector2();
+        prevDistTravelled = 0;
         clearedIas = 250;
         deltaIas = 0;
         tkOfLdg = false;
@@ -179,6 +187,8 @@ public class Aircraft extends Actor {
         terrainConflict = false;
         emergency = new Emergency(this, radarScreen.emerChance);
 
+        radarScreen.wakeManager.addAircraft(callsign);
+
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
     }
 
@@ -190,6 +200,9 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         this.icaoType = aircraft.icaoType;
         wakeCat = aircraft.wakeCat;
+        recat = aircraft.recat;
+        wakeInfringe = aircraft.wakeInfringe;
+        wakeTolerance = aircraft.wakeTolerance;
         v2 = aircraft.v2;
         typClimb = aircraft.typClimb;
         maxClimb = aircraft.maxClimb;
@@ -213,6 +226,7 @@ public class Aircraft extends Actor {
         tas = aircraft.tas;
         gs = aircraft.gs;
         deltaPosition = aircraft.deltaPosition;
+        prevDistTravelled = aircraft.prevDistTravelled;
         clearedIas = aircraft.clearedIas;
         deltaIas = aircraft.deltaIas;
         tkOfLdg = aircraft.tkOfLdg;
@@ -258,6 +272,9 @@ public class Aircraft extends Actor {
         stage.addActor(this);
         icaoType = save.getString("icaoType");
         wakeCat = save.getString("wakeCat").charAt(0);
+        recat = save.isNull("recat") ? AircraftType.getRecat(icaoType) : (char) save.getInt("recat");
+        wakeInfringe = save.optBoolean("wakeInfringe");
+        wakeTolerance = (float) save.optDouble("wakeTolerance", 0);
         v2 = save.getInt("v2");
         typClimb = save.getInt("typClimb");
         maxClimb = save.getInt("maxClimb");
@@ -275,10 +292,11 @@ public class Aircraft extends Actor {
         } else {
             terrainConflict = save.getBoolean("terrainConflict");
         }
-        emergency = save.isNull("emergency") ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
+        emergency = save.optJSONObject("emergency") == null ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
+        prevDistTravelled = (float) save.optDouble("prevDistTravelled", 0);
         heading = save.getDouble("heading");
         targetHeading = save.getDouble("targetHeading");
         clearedHeading = save.getInt("clearedHeading");
@@ -706,10 +724,11 @@ public class Aircraft extends Actor {
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
-                Vector2 position = ils.getPointAhead(this);
+                Vector2 position = ils.getPointAhead(this, 0.75f);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {
+            if (navState!= null && !navState.getDispLatMode().first().equals("Hold at")) {
             if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
                 holding = false;
                 return updateTargetHeading();
@@ -840,6 +859,24 @@ public class Aircraft extends Actor {
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.sin(Math.toRadians((90 - track)));
         x += deltaPosition.x;
         y += deltaPosition.y;
+
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(0, 0, deltaPosition.x, deltaPosition.y));
+        if (!onGround) prevDistTravelled += dist;
+        if (prevDistTravelled > 0.5) {
+            prevDistTravelled -= 0.5;
+            radarScreen.wakeManager.addPoint(this);
+        }
+        float diffDist = radarScreen.wakeManager.checkAircraftWake(this);
+        if (diffDist < 0) {
+            //Safe separation
+            wakeInfringe = false;
+            wakeTolerance -= Gdx.graphics.getDeltaTime() * 2;
+        } else {
+            wakeInfringe = true;
+            wakeTolerance += Gdx.graphics.getDeltaTime() * diffDist;
+        }
+        if (wakeTolerance < 0) wakeTolerance = 0;
+
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
@@ -988,6 +1025,8 @@ public class Aircraft extends Actor {
         dataTag.updateIcon(batch);
 
         dataTag.drawTrailDots(batch, parentAlpha);
+
+        if (selected) radarScreen.wakeManager.drawSepRequired(batch, this);
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
@@ -1400,6 +1439,7 @@ public class Aircraft extends Actor {
         radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
         radarScreen.separationChecker.updateAircraftPositions();
+        radarScreen.wakeManager.removeAircraft(callsign);
     }
 
     /** Overriden method that sets the altitude restrictions of the aircraft */
@@ -1748,5 +1788,37 @@ public class Aircraft extends Actor {
 
     public void setMaxClimb(int maxClimb) {
         this.maxClimb = maxClimb;
+    }
+
+    public float getPrevDistTravelled() {
+        return prevDistTravelled;
+    }
+
+    public void setPrevDistTravelled(float prevDistTravelled) {
+        this.prevDistTravelled = prevDistTravelled;
+    }
+
+    public char getRecat() {
+        return recat;
+    }
+
+    public void setRecat(char recat) {
+        this.recat = recat;
+    }
+
+    public boolean isWakeInfringe() {
+        return wakeInfringe;
+    }
+
+    public void setWakeInfringe(boolean wakeInfringe) {
+        this.wakeInfringe = wakeInfringe;
+    }
+
+    public float getWakeTolerance() {
+        return wakeTolerance;
+    }
+
+    public void setWakeTolerance(float wakeTolerance) {
+        this.wakeTolerance = wakeTolerance;
     }
 }

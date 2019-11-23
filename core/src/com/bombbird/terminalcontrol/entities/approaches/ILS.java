@@ -166,9 +166,9 @@ public class ILS extends Actor {
         return inAngle && inDist;
     }
 
-    /** Gets the coordinates of the point on the localiser 0.75nm ahead of aircraft */
-    public Vector2 getPointAhead(Aircraft aircraft) {
-        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - 0.75f);
+    /** Gets the coordinates of the point on the localiser a distance ahead (behind if -ve) of aircraft */
+    public Vector2 getPointAhead(Aircraft aircraft, float distAhead) {
+        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - distAhead);
     }
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
@@ -192,7 +192,7 @@ public class ILS extends Actor {
     }
 
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
-    private float getDistFrom(float planeX, float planeY) {
+    public float getDistFrom(float planeX, float planeY) {
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY));
     }
 

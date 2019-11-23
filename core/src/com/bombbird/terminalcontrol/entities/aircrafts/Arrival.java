@@ -518,6 +518,7 @@ public class Arrival extends Aircraft {
                     generateGoAround();
                     getIls().getRwy().addToArray(this);
                     goAroundSet = true;
+                    setWakeTolerance(MathUtils.clamp(getWakeTolerance(), 0, 20));
                 }
                 checkAircraftInFront();
             }
@@ -529,7 +530,7 @@ public class Arrival extends Aircraft {
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
             }
-            if (checkGoAround()) {
+            if (isLocCap() && checkGoAround()) {
                 initializeGoAround();
             }
         } else {
@@ -607,6 +608,11 @@ public class Arrival extends Aircraft {
             radarScreen.getCommBox().goAround(this, "windshear");
             return true;
         }
+        if (getWakeTolerance() > 25) {
+            //If aircraft has reached wake limits
+            radarScreen.getCommBox().goAround(this, "wake turbulence");
+            return true;
+        }
         Aircraft firstAircraft = getIls().getRwy().getAircraftsOnAppr().size > 0 ? getIls().getRwy().getAircraftsOnAppr().get(0) : null;
         if (MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 3) {
             //If distance from runway is less than 3nm
@@ -643,7 +649,7 @@ public class Arrival extends Aircraft {
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
-            if (firstAircraft!= null && !firstAircraft.getCallsign().equals(getCallsign())) {
+            if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
                 radarScreen.getCommBox().goAround(this, "traffic on runway");
                 return true;

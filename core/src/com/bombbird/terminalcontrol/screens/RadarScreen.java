@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
+import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -92,6 +93,9 @@ public class RadarScreen extends GameScreen {
     //Separation checker for checking separation between aircrafts & terrain
     public SeparationChecker separationChecker;
 
+    //Wake turbulence checker
+    public WakeManager wakeManager;
+
     //Tutorial manager
     private TutorialManager tutorialManager = null;
 
@@ -133,6 +137,8 @@ public class RadarScreen extends GameScreen {
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
 
+        wakeManager = new WakeManager();
+
         if (tutorial) {
             tutorialManager = new TutorialManager(this);
         }
@@ -168,6 +174,8 @@ public class RadarScreen extends GameScreen {
         } else {
             emerChance = Emergency.Chance.valueOf(save.getString("emerChance"));
         }
+
+        wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
     }
 
     private void loadStageCamTimer() {
@@ -470,6 +478,17 @@ public class RadarScreen extends GameScreen {
             }
         }
 
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        //Draw filled flyover waypoints
+        for (Waypoint waypoint: flyOver) {
+            waypoint.renderShape();
+        }
+
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
         //Draw aircrafts
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.renderShape();
@@ -484,17 +503,16 @@ public class RadarScreen extends GameScreen {
 
         separationChecker.renderShape();
 
+        if (selectedAircraft != null) {
+            wakeManager.renderWake(selectedAircraft);
+        }
+        wakeManager.renderIlsWake();
+
         if (tutorialManager != null) {
             tutorialManager.update();
         }
 
         shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        //Draw filled flyover waypoints
-        for (Waypoint waypoint: flyOver) {
-            waypoint.renderShape();
-        }
     }
 
     @Override
