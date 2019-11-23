@@ -728,7 +728,6 @@ public class Aircraft extends Actor {
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {
-            if (navState!= null && !navState.getDispLatMode().first().equals("Hold at")) {
             if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
                 holding = false;
                 return updateTargetHeading();
