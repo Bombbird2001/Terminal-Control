@@ -148,7 +148,7 @@ public class Arrival extends Aircraft {
         getNavState().getClearedAlt().removeLast();
         getNavState().getClearedAlt().addLast(getClearedAltitude());
 
-        setControlState(0);
+        setControlState(ControlState.UNCONTROLLED);
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
@@ -199,7 +199,16 @@ public class Arrival extends Aircraft {
 
         loadLabel();
         setColor(new Color(0x00b3ffff));
-        setControlState(save.getInt("controlState"));
+        String control = save.optString("controlState");
+        if ("0".equals(control)) {
+            setControlState(ControlState.UNCONTROLLED);
+        } else if ("1".equals(control)) {
+            setControlState(ControlState.ARRIVAL);
+        } else if ("2".equals(control)) {
+            setControlState(ControlState.DEPARTURE);
+        } else {
+            setControlState(ControlState.valueOf(control));
+        }
 
         loadOtherLabelInfo(save);
     }
@@ -220,7 +229,7 @@ public class Arrival extends Aircraft {
         fuel = 99999; //Just assume they won't run out of fuel
 
         setColor(new Color(0x00b3ffff));
-        setControlState(1);
+        setControlState(ControlState.ARRIVAL);
         int size = departure.getDataTag().getTrailDots().size;
         for (int i = 0; i < size; i++) {
             Image image = departure.getDataTag().getTrailDots().removeFirst();
@@ -377,7 +386,7 @@ public class Arrival extends Aircraft {
     private void updateFuel() {
         fuel -= Gdx.graphics.getDeltaTime();
 
-        if (fuel < 2700 && !requestPriority && getControlState() == 1) {
+        if (fuel < 2700 && !requestPriority && getControlState() == ControlState.ARRIVAL) {
             //Low fuel, request priority
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, different msg
@@ -394,7 +403,7 @@ public class Arrival extends Aircraft {
             getDataTag().flashIcon();
         }
 
-        if (fuel < 2100 && !declareEmergency && getControlState() == 1) {
+        if (fuel < 2100 && !declareEmergency && getControlState() == ControlState.ARRIVAL) {
             //Minimum fuel, declare emergency
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, divert directly
@@ -412,7 +421,7 @@ public class Arrival extends Aircraft {
             getDataTag().setEmergency();
         }
 
-        if (fuel < 1500 && !divert && !isLocCap() && getControlState() == 1) {
+        if (fuel < 1500 && !divert && !isLocCap() && getControlState() == ControlState.ARRIVAL) {
             //Diverting to alternate
             radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
             TerminalControl.tts.lowFuel(this, getWakeCat(), 2);
@@ -452,7 +461,7 @@ public class Arrival extends Aircraft {
         getNavState().setLength(1);
         getNavState().updateAircraftInfo();
 
-        setControlState(0);
+        setControlState(ControlState.UNCONTROLLED);
 
         divert = true;
     }
@@ -522,7 +531,7 @@ public class Arrival extends Aircraft {
                 }
                 checkAircraftInFront();
             }
-            if (getIls() != null && getControlState() == 1 && getAltitude() <= getAirport().getElevation() + 1300) {
+            if (getIls() != null && getControlState() == ControlState.ARRIVAL && getAltitude() <= getAirport().getElevation() + 1300) {
                 contactOther();
             }
             if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
@@ -541,8 +550,8 @@ public class Arrival extends Aircraft {
             goAroundSet = false;
             super.updateAltitude(holdAlt, fixedVs);
         }
-        if (getControlState() != 1 && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
-            setControlState(1);
+        if (getControlState() != ControlState.ARRIVAL && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
+            setControlState(ControlState.ARRIVAL);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
             getDataTag().flashIcon();
@@ -553,7 +562,7 @@ public class Arrival extends Aircraft {
     @Override
     public void contactOther() {
         //Contact the tower
-        setControlState(0);
+        setControlState(ControlState.UNCONTROLLED);
         setClearedIas(getApchSpd());
         float points = 0.6f - radarScreen.getPlanesToControl() / 30;
         points = MathUtils.clamp(points, 0.15f, 0.5f);
@@ -670,7 +679,7 @@ public class Arrival extends Aircraft {
         setClearedAltitude(getIls().getMissedApchProc().getClimbAlt());
         getNavState().replaceAllClearedAltMode();
         getNavState().replaceAllClearedAlt();
-        if (isSelected() && getControlState() == 1) {
+        if (isSelected() && getControlState() == ControlState.ARRIVAL) {
             ui.updateState();
         }
     }
@@ -703,8 +712,8 @@ public class Arrival extends Aircraft {
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
     @Override
     public void updateGoAround() {
-        if (getAltitude() >= 1600 && getControlState() == 0) {
-            setControlState(1);
+        if (getAltitude() >= 1600 && getControlState() == ControlState.UNCONTROLLED) {
+            setControlState(ControlState.ARRIVAL);
             setGoAround(false);
         }
     }
@@ -735,7 +744,7 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundSet = false;
-        if (isSelected() && getControlState() == 2) {
+        if (isSelected() && getControlState() == ControlState.DEPARTURE) {
             ui.updateState();
         }
         getDataTag().setMinimized(false);

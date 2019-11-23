@@ -406,7 +406,7 @@ public class RadarScreen extends GameScreen {
 
             arrivals = 0;
             for (Aircraft aircraft: aircrafts.values()) {
-                if (aircraft instanceof Arrival && aircraft.getControlState() == 1) arrivals++;
+                if (aircraft instanceof Arrival && aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) arrivals++;
             }
 
             spawnTimer -= deltaTime;
@@ -582,7 +582,7 @@ public class RadarScreen extends GameScreen {
             aircraft.setSelected(true);
         }
 
-        if (aircraft != null && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
+        if (aircraft != null && aircraft.isArrivalDeparture()) {
             ui.setSelectedPane(aircraft);
             ui.setNormalPane(false);
         } else {

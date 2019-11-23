@@ -107,7 +107,7 @@ public class DataTag {
                     TerminalControl.radarScreen.setSelectedAircraft(TerminalControl.radarScreen.aircrafts.get(actor.getName()));
                     tapCount++;
                     if (tapCount >= 2) {
-                        if (aircraft.getControlState() == 1 || aircraft.getControlState() == 2) minimized = !minimized;
+                        if (aircraft.isArrivalDeparture()) minimized = !minimized;
                         tapCount = 0;
                         tapTimer.clear();
                     }
@@ -170,14 +170,14 @@ public class DataTag {
     }
 
     /** Updates the icon colour depending on aircraft control state */
-    public void updateIconColors(int controlState) {
-        if (controlState == -1) { //En route aircraft - gray
+    public void updateIconColors(Aircraft.ControlState controlState) {
+        if (controlState == Aircraft.ControlState.ENROUTE) { //En route aircraft - gray
             icon.setStyle(BUTTON_STYLE_ENROUTE);
-        } else if (controlState == 0) { //Uncontrolled aircraft - yellow
+        } else if (controlState == Aircraft.ControlState.UNCONTROLLED) { //Uncontrolled aircraft - yellow
             icon.setStyle(BUTTON_STYLE_UNCTRL);
-        } else if (controlState == 1) { //Controlled arrival - blue
+        } else if (controlState == Aircraft.ControlState.ARRIVAL) { //Controlled arrival - blue
             icon.setStyle(BUTTON_STYLE_CTRL);
-        } else if (controlState == 2) { //Controlled departure - green
+        } else if (controlState == Aircraft.ControlState.DEPARTURE) { //Controlled departure - green
             icon.setStyle(BUTTON_STYLE_DEPT);
         } else {
             Gdx.app.log("Aircraft control state error", "Invalid control state " + controlState + " set!");
@@ -226,7 +226,7 @@ public class DataTag {
         int index = 0;
         int size = trailDots.size;
         for (Image trail: trailDots) {
-            if (aircraft.isSelected() || (size - index <= 5 && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2))) {
+            if (aircraft.isSelected() || (size - index <= 5 && aircraft.isArrivalDeparture())) {
                 trail.draw(batch, parentAlpha);
             }
             index++;
@@ -312,7 +312,7 @@ public class DataTag {
         }
         String exped = aircraft.getNavState().getClearedExpedite().last() ? " =>> " : " => ";
         String updatedText;
-        if (!minimized && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
+        if (!minimized && aircraft.isArrivalDeparture()) {
             updatedText = labelText[0] + " " + labelText[1] + "\n" + labelText[2] + vertSpd + labelText[3] + exped + labelText[10] + "\n" + labelText[4] + " " + labelText[5] + " " + labelText[8] + "\n" + labelText[6] + " " + labelText[7] + " " + labelText[9];
         } else {
             updatedText = labelText[0] + "/" + aircraft.getRecat() + "\n" + labelText[2] + " " + labelText[4] + "\n" + labelText[6];

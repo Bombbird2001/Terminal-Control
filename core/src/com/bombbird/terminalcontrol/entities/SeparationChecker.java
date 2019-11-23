@@ -79,7 +79,7 @@ public class SeparationChecker extends Actor {
         }
         //Subtract wake separately (don't include 5% penalty)
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isWakeInfringe() && (aircraft.getControlState() == 1 || aircraft.getControlState() == 2)) {
+            if (aircraft.isWakeInfringe() && aircraft.isArrivalDeparture()) {
                 active++;
                 aircraft.setConflict(true);
                 radarScreen.shapeRenderer.setColor(Color.RED);

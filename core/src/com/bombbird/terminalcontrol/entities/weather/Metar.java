@@ -33,7 +33,7 @@ public class Metar {
             Runnable threadRunner = () -> {
                 if (tutorial) {
                     updateTutorialMetar();
-                } else if (radarScreen.liveWeather == RadarScreen.Weather.RANDOM || metarObject == null) {
+                } else {
                     randomWeather();
                 }
             };
@@ -145,7 +145,11 @@ public class Metar {
     }
 
     public void randomWeather() {
-        metarObject = metarObject == null ? generateRandomWeather() : randomBasedOnCurrent();
+        if (metarObject == null) {
+            generateRandomWeather();
+        } else if (radarScreen.liveWeather == RadarScreen.Weather.RANDOM) {
+            randomBasedOnCurrent();
+        }
         updateRadarScreenState();
     }
 

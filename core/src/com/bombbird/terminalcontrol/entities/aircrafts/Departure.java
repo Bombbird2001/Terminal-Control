@@ -75,7 +75,7 @@ public class Departure extends Aircraft {
         loadLabel();
         setNavState(new NavState(this));
 
-        setControlState(0);
+        setControlState(ControlState.UNCONTROLLED);
         setColor(new Color(0x11ff00ff));
 
         //Set takeoff heading
@@ -113,7 +113,16 @@ public class Departure extends Aircraft {
 
         loadLabel();
         setColor(new Color(0x11ff00ff));
-        setControlState(save.getInt("controlState"));
+        String control = save.optString("controlState");
+        if ("0".equals(control)) {
+            setControlState(ControlState.UNCONTROLLED);
+        } else if ("1".equals(control)) {
+            setControlState(ControlState.ARRIVAL);
+        } else if ("2".equals(control)) {
+            setControlState(ControlState.DEPARTURE);
+        } else {
+            setControlState(ControlState.valueOf(control));
+        }
 
         loadOtherLabelInfo(save);
     }
@@ -156,7 +165,7 @@ public class Departure extends Aircraft {
             v2set = true;
         }
         if (getAltitude() - getAirport().getElevation() >= contactAlt && !contacted) {
-            setControlState(2);
+            setControlState(ControlState.DEPARTURE);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
             getDataTag().flashIcon();
@@ -220,7 +229,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getAltitude() > handoveralt && getControlState() == 0) {
+        if (getAltitude() > handoveralt && getControlState() == ControlState.UNCONTROLLED) {
             //Aircraft has been handed over
             setLowestAlt(cruiseAlt);
             setHighestAlt(cruiseAlt);
@@ -236,7 +245,7 @@ public class Departure extends Aircraft {
             }
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
-            } else if (contacted && getControlState() == 2) {
+            } else if (contacted && getControlState() == ControlState.DEPARTURE) {
                 setHighestAlt(radarScreen.maxAlt);
             } else {
                 setHighestAlt(cruiseAlt);
@@ -295,14 +304,14 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         super.updateAltitude(holdAlt, fixedVs);
-        if (getControlState() == 2 && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
+        if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
             contactOther();
         }
     }
 
     @Override
     public void contactOther() {
-        setControlState(0);
+        setControlState(ControlState.UNCONTROLLED);
         setClearedIas(getClimbSpd());
         super.updateSpd();
         setClearedAltitude(cruiseAlt);

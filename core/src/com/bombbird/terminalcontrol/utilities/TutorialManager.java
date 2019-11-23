@@ -313,7 +313,7 @@ public class TutorialManager {
     public void update() {
         if (radarScreen.aircrafts.get("CAL641") != null) {
             Aircraft aircraft = radarScreen.aircrafts.get("CAL641");
-            if (!deptContacted && aircraft.getControlState() == 2) {
+            if (!deptContacted && aircraft.getControlState() == Aircraft.ControlState.DEPARTURE) {
                 //Aircraft has contacted
                 deptContacted = true;
                 tutorialMsg("The departure has contacted us. Click on its label to select it, switch to the altitude tab at the top of the panel, set the altitude from 3000 to FL200 and tap transmit.");
@@ -342,7 +342,7 @@ public class TutorialManager {
 
         if (radarScreen.aircrafts.get("EVA226") != null) {
             Aircraft aircraft = radarScreen.aircrafts.get("EVA226");
-            if (!arrContacted && aircraft.getControlState() == 1) {
+            if (!arrContacted && aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) {
                 //Aircraft contacted
                 arrContacted = true;
                 tutorialMsg("The arrival has contacted us. Click on its label, go to the altitude tab, set the altitude to 4000 feet from FL150 and transmit.");
@@ -400,7 +400,7 @@ public class TutorialManager {
                 }, 50);
             }
 
-            if (prompt5 && aircraft.getControlState() == 0) {
+            if (prompt5 && aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED) {
                 prompt5 = false;
                 tutorialMsg("Alright! The aircraft has been handed off to the tower controller. For every departure that gets handed over, or for every arrival that lands, you receive 1 point to add to your score. But for every separation infringement, you will lose 5% of your points, and 1 point for every 5 seconds the incident continues. Be careful!");
                 timer.scheduleTask(new Timer.Task() {

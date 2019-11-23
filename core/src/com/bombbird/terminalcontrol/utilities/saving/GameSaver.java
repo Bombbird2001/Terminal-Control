@@ -111,7 +111,7 @@ public class GameSaver {
             aircraftInfo.put("typDes", aircraft.getTypDes()); //Typical descent rate
             aircraftInfo.put("maxDes", aircraft.getMaxDes()); //Max descent rate
             aircraftInfo.put("apchSpd", aircraft.getApchSpd()); //Approach speed
-            aircraftInfo.put("controlState", aircraft.getControlState()); //Control state
+            aircraftInfo.put("controlState", aircraft.getControlState().toString()); //Control state
             aircraftInfo.put("navState", getNavState(aircraft)); //Nav state
             aircraftInfo.put("goAround", aircraft.isGoAround()); //Go around
             aircraftInfo.put("goAroundWindow", aircraft.isGoAroundWindow()); //Go around window is active

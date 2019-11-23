@@ -86,7 +86,7 @@ public class ILS extends Actor {
     public void renderShape() {
         boolean landing = rwy.isLanding();
         Aircraft aircraft = radarScreen.getSelectedAircraft();
-        boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == 1 && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == 0 && this.equals(aircraft.getIls())));
+        boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED && this.equals(aircraft.getIls())));
         boolean rwyChange = radarScreen.getRunwayChanger().containsLandingRunway(airport.getIcao(), rwy.getName());
         if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed()) {
             radarScreen.shapeRenderer.setColor(Color.CYAN);

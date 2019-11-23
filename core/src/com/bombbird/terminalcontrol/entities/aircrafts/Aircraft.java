@@ -27,6 +27,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Aircraft extends Actor {
+    public enum ControlState {
+        UNCONTROLLED,
+        ARRIVAL,
+        DEPARTURE,
+        ENROUTE
+    }
+
     //Android text-to-speech
     private String voice;
     private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
@@ -68,7 +75,7 @@ public class Aircraft extends Actor {
     private int typDes;
     private int maxDes;
     private int apchSpd;
-    private int controlState;
+    private ControlState controlState;
     private NavState navState;
     private boolean goAround;
     private boolean goAroundWindow;
@@ -431,7 +438,7 @@ public class Aircraft extends Actor {
         dataTag.moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         dataTag.renderShape();
-        if (controlState == 1 || controlState == 2) {
+        if (isArrivalDeparture()) {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));
         }
@@ -452,7 +459,7 @@ public class Aircraft extends Actor {
             }
 
             //Draws selected status (from UI)
-            if (controlState == 1 || controlState == 2) {
+            if (isArrivalDeparture()) {
                 if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
                 } else if ("After waypoint, fly heading".equals(LatTab.latMode) && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
@@ -558,7 +565,7 @@ public class Aircraft extends Actor {
     public void updateSpd() {
         navState.getClearedSpd().removeFirst();
         navState.getClearedSpd().addFirst(clearedIas);
-        if (selected && (controlState == 1 || controlState == 2)) {
+        if (selected && isArrivalDeparture()) {
             updateUISelections();
             ui.updateState();
         }
@@ -990,7 +997,7 @@ public class Aircraft extends Actor {
             targetAngularVelocity = deltaHeading / 3;
             if (navState.getDispLatMode().first().contains("Turn")) {
                 navState.replaceAllHdgModes();
-                if (selected && (controlState == 1 || controlState == 2)) {
+                if (selected && isArrivalDeparture()) {
                     updateUISelections();
                     ui.updateState();
                 }
@@ -1072,7 +1079,7 @@ public class Aircraft extends Actor {
         updateAltRestrictions();
         updateTargetAltitude();
         updateClearedSpd();
-        if (selected && (controlState == 1 || controlState == 2)) {
+        if (selected && isArrivalDeparture()) {
             updateUISelections();
             ui.updateState();
         }
@@ -1098,18 +1105,18 @@ public class Aircraft extends Actor {
             navState.getLatModes().removeValue("After waypoint, fly heading", false);
             if (!"Hold at".equals(getNavState().getDispLatMode().last())) navState.getLatModes().removeValue("Hold at", false);
         }
-        if (selected && (controlState == 1 || controlState == 2)) {
+        if (selected && isArrivalDeparture()) {
             ui.updateState();
         }
     }
 
     /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected */
-    public void setControlState(int controlState) {
+    public void setControlState(ControlState controlState) {
         this.controlState = controlState;
         dataTag.updateIconColors(controlState);
-        actionRequired = actionRequired && (controlState == 1 || controlState == 2);
+        actionRequired = actionRequired && isArrivalDeparture();
         if (selected) {
-            if (controlState == -1 || controlState == 0) {
+            if (controlState == ControlState.UNCONTROLLED || controlState == ControlState.ENROUTE) {
                 ui.setNormalPane(true);
                 ui.setSelectedPane(null);
             } else {
@@ -1117,6 +1124,11 @@ public class Aircraft extends Actor {
                 ui.setSelectedPane(this);
             }
         }
+    }
+
+    /** Returns whether control state of aircraft is arrival or departure */
+    public boolean isArrivalDeparture() {
+        return controlState == ControlState.ARRIVAL || controlState == ControlState.DEPARTURE;
     }
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
@@ -1287,7 +1299,7 @@ public class Aircraft extends Actor {
         this.apchSpd = apchSpd;
     }
 
-    public int getControlState() {
+    public ControlState getControlState() {
         return controlState;
     }
 
@@ -1427,7 +1439,7 @@ public class Aircraft extends Actor {
         if (clearedIas > highestSpd) {
             clearedIas = highestSpd;
             navState.replaceAllClearedSpdToLower();
-            if (selected && (controlState == 1 || controlState == 2)) updateUISelections();
+            if (selected && isArrivalDeparture()) updateUISelections();
         }
     }
 
@@ -1596,7 +1608,7 @@ public class Aircraft extends Actor {
             if (this instanceof Arrival) ((Arrival) this).setNonPrecAlts(null);
             if (locCap) {
                 this.ils.getRwy().removeFromArray(this);
-                if (selected && (controlState == 1 || controlState == 2)) ui.updateState();
+                if (selected && isArrivalDeparture()) ui.updateState();
             }
             gsCap = false;
             locCap = false;
