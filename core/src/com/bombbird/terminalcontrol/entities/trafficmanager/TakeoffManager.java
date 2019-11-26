@@ -30,9 +30,9 @@ public class TakeoffManager {
         radarScreen = TerminalControl.radarScreen;
 
         this.airport = airport;
-        nextAircraft = new HashMap<String, String[]>();
-        prevAircraft = new HashMap<String, Aircraft>();
-        timers = new HashMap<String, Float>();
+        nextAircraft = new HashMap<>();
+        prevAircraft = new HashMap<>();
+        timers = new HashMap<>();
         for (Runway runway: airport.getRunways().values()) {
             timers.put(runway.getName(), 180f);
             prevAircraft.put(runway.getName(), null);
@@ -43,9 +43,9 @@ public class TakeoffManager {
         radarScreen = TerminalControl.radarScreen;
 
         this.airport = airport;
-        nextAircraft = new HashMap<String, String[]>();
-        prevAircraft = new HashMap<String, Aircraft>();
-        timers = new HashMap<String, Float>();
+        nextAircraft = new HashMap<>();
+        prevAircraft = new HashMap<>();
+        timers = new HashMap<>();
         for (Runway runway: airport.getRunways().values()) {
             JSONArray info = save.getJSONObject("nextAircraft").getJSONArray(runway.getName());
             if (info.length() == 2) {
@@ -100,6 +100,8 @@ public class TakeoffManager {
                 updateVTBD();
             } else if ("VTBS".equals(airport.getIcao())) {
                 updateVTBS();
+            } else if ("LEMD".equals(airport.getIcao())) {
+                updateLEMD();
             }
         }
     }
@@ -370,6 +372,33 @@ public class TakeoffManager {
                     if (distance > 24.9) break;
                     dist = distance;
                 } else if ("19R".equals(runway1.getName()) && checkPreceding("19L") && checkOppLanding(airport.getRunways().get("19L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Madrid Barajas */
+    private void updateLEMD() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+                if ("36L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("36R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36L"))) {
+                    runway = runway1;
+                    if (distance > 24.9) break;
+                    dist = distance;
+                } else if ("14L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14R"))) {
+                    runway = runway1;
+                    if (distance > 24.9) break;
+                    dist = distance;
+                } else if ("14R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14L"))) {
                     runway = runway1;
                     dist = distance;
                 }

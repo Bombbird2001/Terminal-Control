@@ -36,6 +36,8 @@ public class RunwayManager {
             updateVTBD(windDir, windSpd);
         } else if ("VTBS".equals(airport.getIcao())) {
             updateVTBS(windDir, windSpd);
+        } else if ("LEMD".equals(airport.getIcao())) {
+            updateLEMD(windDir, windSpd);
         }
     }
 
@@ -366,6 +368,92 @@ public class RunwayManager {
                     airport.setActive("01R", true, true);
                     airport.setActive("19L", false, false);
                     airport.setActive("19R", false, false);
+                }
+            }
+        }
+    }
+
+    /** Updates runway status for Madrid Barajas */
+    private void updateLEMD(int windDir, int windSpd) {
+        if (MaxTraffic.isNight("LEMD")) {
+            //Night mode witb only 1 landing runway, 1 departure runway
+            if (airport.getLandingRunways().size() == 0) {
+                //If is new game, no runways set yet
+                if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("36L"))) {
+                    airport.setActive("36L", false, true);
+                    airport.setActive("32R", true, false);
+                } else {
+                    airport.setActive("18L", true, false);
+                    airport.setActive("14L", false, true);
+                }
+            } else if (windDir != 0) {
+                //Runways are in use, check if tailwind component exceeds limit of 5 knots
+                if (airport.getLandingRunways().get("32R") != null) {
+                    //32s, 36s are active
+                    if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) < -7) {
+                        airport.setActive("18L", true, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, true);
+                        airport.setActive("14R", false, false);
+                        airport.setActive("36L", false, false);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", false, false);
+                    }
+                } else {
+                    //14s, 18s are active
+                    if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) < -7) {
+                        airport.setActive("36L", false, true);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", true, false);
+                        airport.setActive("18L", false, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, false);
+                        airport.setActive("14R", false, false);
+                    }
+                }
+            }
+        } else {
+            if (airport.getLandingRunways().size() == 0) {
+                //If is new game, no runways set yet
+                if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("36L"))) {
+                    airport.setActive("36L", false, true);
+                    airport.setActive("36R", false, true);
+                    airport.setActive("32L", true, false);
+                    airport.setActive("32R", true, false);
+                } else {
+                    airport.setActive("18L", true, false);
+                    airport.setActive("18R", true, false);
+                    airport.setActive("14L", false, true);
+                    airport.setActive("14R", false, true);
+                }
+            } else if (windDir != 0) {
+                //Runways are in use, check if tailwind component exceeds limit of 5 knots
+                if (airport.getLandingRunways().get("32R") != null) {
+                    //32s, 36s are active
+                    if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) < -7) {
+                        airport.setActive("18L", true, false);
+                        airport.setActive("18R", true, false);
+                        airport.setActive("14L", false, true);
+                        airport.setActive("14R", false, true);
+                        airport.setActive("36L", false, false);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", false, false);
+                    }
+                } else {
+                    //14s, 18s are active
+                    if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) < -7) {
+                        airport.setActive("36L", false, true);
+                        airport.setActive("36R", false, true);
+                        airport.setActive("32L", true, false);
+                        airport.setActive("32R", true, false);
+                        airport.setActive("18L", false, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, false);
+                        airport.setActive("14R", false, false);
+                    }
                 }
             }
         }
