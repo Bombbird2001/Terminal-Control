@@ -30,7 +30,7 @@ public class FileLoader {
 
     public static Array<Obstacle> loadObstacles() {
         FileHandle obstacles = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/obstacle.obs");
-        Array<Obstacle> obsArray = new Array<Obstacle>();
+        Array<Obstacle> obsArray = new Array<>();
         String[] indivObs = obstacles.readString().split("\\r?\\n");
         for (String s: indivObs) {
             if ("".equals(s)) break;
@@ -58,7 +58,7 @@ public class FileLoader {
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/waypoint.way");
         String wayptStr = handle.readString();
         String[] indivWpt = wayptStr.split("\\r?\\n");
-        HashMap <String, Waypoint> waypoints = new HashMap<String, Waypoint>(indivWpt.length + 1, 0.999f);
+        HashMap <String, Waypoint> waypoints = new HashMap<>(indivWpt.length + 1, 0.999f);
         for (String s: indivWpt) {
             //For each waypoint
             int index = 0;
@@ -82,7 +82,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, Runway> loadRunways(String icao) {
-        HashMap<String, Runway> runways = new HashMap<String, Runway>();
+        HashMap<String, Runway> runways = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/runway" + icao + ".rwy");
         String[] indivRwys = handle.readString().split("\\r?\\n");
         for (String s: indivRwys) {
@@ -95,7 +95,7 @@ public class FileLoader {
 
     public static HashMap<String, Star> loadStars(Airport airport) {
         //Load STARs
-        HashMap<String, Star> stars = new HashMap<String, Star>();
+        HashMap<String, Star> stars = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/star" + airport.getIcao() + ".star");
         JSONObject jo = new JSONObject(handle.readString());
         for (String name: jo.keySet()) {
@@ -109,7 +109,7 @@ public class FileLoader {
 
     public static HashMap<String, Sid> loadSids(Airport airport) {
         //Load SIDs
-        HashMap<String, Sid> sids = new HashMap<String, Sid>();
+        HashMap<String, Sid> sids = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/sid" + airport.getIcao() + ".sid");
         JSONObject jo = new JSONObject(handle.readString());
         for (String name: jo.keySet()) {
@@ -122,7 +122,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, int[]> loadAircraftData() {
-        HashMap<String, int[]> aircrafts = new HashMap<String, int[]>();
+        HashMap<String, int[]> aircrafts = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/aircrafts/aircrafts.air");
         String[] indivAircrafts = handle.readString().split("\\r?\\n");
         for (String s: indivAircrafts) {
@@ -155,7 +155,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, ILS> loadILS(Airport airport) {
-        HashMap<String, ILS> approaches = new HashMap<String, ILS>();
+        HashMap<String, ILS> approaches = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/ils" + airport.getIcao() + ".ils");
         String[] indivApches = handle.readString().split("\\r?\\n");
         for (String s: indivApches) {
@@ -174,7 +174,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, HoldingPoints> loadHoldingPoints(Airport airport) {
-        HashMap<String, HoldingPoints> holdingPoints = new HashMap<String, HoldingPoints>();
+        HashMap<String, HoldingPoints> holdingPoints = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/hold" + airport.getIcao() + ".hold");
         JSONObject jo = new JSONObject(handle.readString());
         for (String point: jo.keySet()) {
@@ -185,7 +185,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, MissedApproach> loadMissedInfo(Airport airport) {
-        HashMap<String, MissedApproach> missedApproaches = new HashMap<String, MissedApproach>();
+        HashMap<String, MissedApproach> missedApproaches = new HashMap<>();
         FileHandle handle = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/missedApch" + airport.getIcao() + ".miss");
         JSONObject jo = new JSONObject(handle.readString());
         for (String missed: jo.keySet()) {
@@ -200,7 +200,7 @@ public class FileLoader {
         FileHandle handle = getExtDir("saves/saves.saves");
 
         if (handle != null && handle.exists()) {
-            Array<String> saveIds = new Array<String>(handle.readString().split(","));
+            Array<String> saveIds = new Array<>(handle.readString().split(","));
             if ("".equals(saveIds.get(0))) {
                 //"" returned if saves.saves is empty
                 return saves;
@@ -240,7 +240,7 @@ public class FileLoader {
     }
 
     public static HashMap<Integer, String> loadAirlines(String icao) {
-        HashMap<Integer, String> airlines = new HashMap<Integer, String>();
+        HashMap<Integer, String> airlines = new HashMap<>();
         String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/airlines" + icao + ".airl").readString().split("\\r?\\n");
         int counter = 0;
         for (String indivAirline: info) {
@@ -256,7 +256,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, String> loadAirlineAircrafts(String icao) {
-        HashMap<String, String> aircrafts = new HashMap<String, String>();
+        HashMap<String, String> aircrafts = new HashMap<>();
         String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/airlines" + icao + ".airl").readString().split("\\r?\\n");
         for (String indivAirline: info) {
             aircrafts.put(indivAirline.split(",")[0], indivAirline.split(",")[2]);
@@ -266,7 +266,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, String> loadIcaoCallsigns() {
-        HashMap<String, String> callsigns = new HashMap<String, String>();
+        HashMap<String, String> callsigns = new HashMap<>();
         String[] info = Gdx.files.internal("game/aircrafts/callsigns.call").readString().split("\\r?\\n");
         for (String indivAirline: info) {
             callsigns.put(indivAirline.split(",")[0], indivAirline.split(",")[1]);
@@ -275,7 +275,7 @@ public class FileLoader {
     }
 
     public static HashMap<String, int[][]> loadNoise(String icao, boolean sid) {
-        HashMap<String, int[][]> noise = new HashMap<String, int[][]>();
+        HashMap<String, int[][]> noise = new HashMap<>();
         String fileName = sid ? "/noiseSid" : "/noiseStar";
         JSONObject jo = new JSONObject(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + fileName + icao + ".noi").readString());
         for (String name: jo.keySet()) {
@@ -295,15 +295,16 @@ public class FileLoader {
     }
 
     public static Array<Array<Integer>> loadShoreline() {
-        Array<Array<Integer>> shoreline = new Array<Array<Integer>>();
+        Array<Array<Integer>> shoreline = new Array<>();
         String[] info = Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + "/shoreline.shore").readString().split("\\r?\\n");
+        if ("".equals(info[0])) return shoreline;
 
-        Array<Integer> landmass = new Array<Integer>();
+        Array<Integer> landmass = new Array<>();
         for (String line: info) {
             if (line.charAt(0) == '\"') {
                 if (landmass.size > 0) {
                     shoreline.add(landmass);
-                    landmass = new Array<Integer>();
+                    landmass = new Array<>();
                 }
             } else {
                 String[] data = line.split(" ");

@@ -464,9 +464,14 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public boolean tap(float x, float y, int count, int button) {
         TerminalControl.radarScreen.setSelectedAircraft(null);
         if (count == 2 && !loading) {
+            //Gdx.app.postRunnable(() -> obsArray = FileLoader.loadObstacles()); Reload obstacles - Debug use only
             zooming = true;
             return true;
         }
+        //Shows approximate position of mouse pointer click in game world - Debug use only
+        //Vector3 vector3 = new Vector3(x, y, 0);
+        //Vector3 vector3_new = stage.getCamera().unproject(vector3);
+        //Gdx.app.log("Coordinates", vector3_new.toString());
         return false;
     }
 

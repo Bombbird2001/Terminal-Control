@@ -135,8 +135,8 @@ public class Departure extends Aircraft {
         super.updateSpd();
         setClearedAltitude(sid.getInitClimb(getRunway().getName())[1]);
         int clearedAltitude = sid.getInitClimb(getRunway().getName())[1];
-        if (clearedAltitude < 3000) {
-            clearedAltitude = 3000;
+        if (clearedAltitude < 3000 + Math.round(getAirport().getElevation() / 1000f) * 1000) {
+            clearedAltitude = 3000 + Math.round(getAirport().getElevation() / 1000f) * 1000;
         }
         if (clearedAltitude % 1000 != 0) {
             clearedAltitude += 1000 - getClearedAltitude() % 1000;
@@ -164,7 +164,7 @@ public class Departure extends Aircraft {
             setTargetHeading(getClearedHeading());
             v2set = true;
         }
-        if (getAltitude() - getAirport().getElevation() >= contactAlt && !contacted) {
+        if (getAltitude() >= contactAlt && !contacted) {
             setControlState(ControlState.DEPARTURE);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
