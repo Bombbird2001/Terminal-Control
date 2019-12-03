@@ -141,8 +141,10 @@ public class Departure extends Aircraft {
         if (clearedAltitude % 1000 != 0) {
             clearedAltitude += 1000 - getClearedAltitude() % 1000;
         }
-        if ("LEMD".equals(getAirport().getIcao()) && "14R".equals(getRunway().getName())) {
-            clearedAltitude = 7000;
+        if ("LEMD".equals(getAirport().getIcao())) {
+            if ("14R".equals(getRunway().getName()) || "36L".equals(getRunway().getName())) {
+                clearedAltitude = 7000;
+            }
         }
         updateAltRestrictions();
         setClearedAltitude(clearedAltitude);

@@ -387,9 +387,9 @@ public class RunwayManager {
                     airport.setActive("14L", false, true);
                 }
             } else if (windDir != 0) {
-                //Runways are in use, check if tailwind component exceeds limit of 5 knots
+                //Runways are in use, check if tailwind component exceeds limit of 7 knots
                 if (airport.getLandingRunways().get("32R") != null) {
-                    //32s, 36s are active
+                    //32R, 36L are active
                     if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) < -7) {
                         airport.setActive("18L", true, false);
                         airport.setActive("18R", false, false);
@@ -401,7 +401,7 @@ public class RunwayManager {
                         airport.setActive("32R", false, false);
                     }
                 } else {
-                    //14s, 18s are active
+                    //14L, 18L are active
                     if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) < -7) {
                         airport.setActive("36L", false, true);
                         airport.setActive("36R", false, false);
@@ -429,7 +429,7 @@ public class RunwayManager {
                     airport.setActive("14R", false, true);
                 }
             } else if (windDir != 0) {
-                //Runways are in use, check if tailwind component exceeds limit of 5 knots
+                //Runways are in use, check if tailwind component exceeds limit of 7 knots
                 if (airport.getLandingRunways().get("32R") != null) {
                     //32s, 36s are active
                     if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -7 || windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) < -7) {
