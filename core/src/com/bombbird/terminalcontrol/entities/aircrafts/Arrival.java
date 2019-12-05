@@ -58,6 +58,7 @@ public class Arrival extends Aircraft {
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
             star = arrival.getStars().get("TNN1A");
             getEmergency().setEmergency(false);
+            setTypDes(3500);
         }
         RandomSTAR.starUsed(getAirport().getIcao(), star.getName());
 
@@ -110,6 +111,9 @@ public class Arrival extends Aircraft {
                     initAlt = obstacle.getMinAlt();
                 }
             }
+        }
+        if (radarScreen.tutorial && "EVA226".equals(callsign)) {
+            initAlt = 26500;
         }
         setAltitude(initAlt);
         updateAltRestrictions();

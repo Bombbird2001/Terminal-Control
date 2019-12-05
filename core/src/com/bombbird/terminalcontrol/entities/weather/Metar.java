@@ -27,7 +27,7 @@ public class Metar {
     }
 
     public void updateMetar(final boolean tutorial) {
-        if (radarScreen.liveWeather == RadarScreen.Weather.LIVE) {
+        if (radarScreen.liveWeather == RadarScreen.Weather.LIVE && !tutorial) {
             HttpRequests.getMetar(this, true);
         } else {
             Runnable threadRunner = () -> {

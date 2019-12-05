@@ -131,7 +131,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("The 1st line is the aircraft's callsign. The 2nd line has 2 numbers: firstly the aircraft's altitude, while the second is its heading. For example, 234 50 means the aircraft is at about 23400 feet, flying a heading of 50.");
+                tutorialMsg("The 1st line is the aircraft's callsign and its recat wake category. The 2nd line has 2 numbers: firstly the aircraft's altitude, while the second is its heading. For example, 234 50 means the aircraft is at about 23400 feet, flying a heading of 50.");
             }
         }, 15);
 
@@ -145,7 +145,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Let's go back to our departure aircraft and look at the full label. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J.");
+                tutorialMsg("Let's go back to our departure aircraft and look at the full label. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J, then its recat wake category.");
             }
         }, 40);
 
