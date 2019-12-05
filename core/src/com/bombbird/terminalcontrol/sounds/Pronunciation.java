@@ -20,6 +20,12 @@ public class Pronunciation {
         waypointPronunciations.put("DANDE", "done day");
         waypointPronunciations.put("NLG", "Nun Lung");
         waypointPronunciations.put("SMT", "Siu Mo Tow");
+        waypointPronunciations.put("VTB", "Villa Tobas");
+        waypointPronunciations.put("TLD", "Toledo");
+        waypointPronunciations.put("NVS", "Navas Del Rey");
+        waypointPronunciations.put("CJN", "Caste Jon");
+        waypointPronunciations.put("RBO", "Roble Dillo");
+        waypointPronunciations.put("SIE", "Somo Sierra");
 
         callsigns = FileLoader.loadIcaoCallsigns();
 

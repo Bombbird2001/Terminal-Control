@@ -526,7 +526,7 @@
       }
     },
     "route": [
-      "OCTAN -1 -1 -1 FO",
+      "OCTAN -1 -1 -1",
       "PIANO -1 -1 -1"
     ],
     "transitions": [
@@ -550,7 +550,7 @@
       }
     },
     "route": [
-      "OCTAN -1 -1 -1 FO",
+      "OCTAN -1 -1 -1",
       "PIANO -1 -1 -1"
     ],
     "transitions": [
@@ -575,7 +575,7 @@
     },
     "route": [
       "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
+      "OCTAN -1 -1 -1",
       "PIANO -1 -1 -1"
     ],
     "transitions": [
@@ -600,7 +600,7 @@
     },
     "route": [
       "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
+      "OCTAN -1 -1 -1",
       "PIANO -1 -1 -1"
     ],
     "transitions": [
