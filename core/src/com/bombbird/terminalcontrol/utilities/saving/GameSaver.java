@@ -469,6 +469,7 @@ public class GameSaver {
             airportInfo.put("landings", airport.getLandings()); //Landings
             airportInfo.put("airborne", airport.getAirborne()); //Airborne
             airportInfo.put("congestion", airport.isCongested()); //Congestion
+            airportInfo.put("pendingRwyChange", airport.isPendingRwyChange()); //Whether is pending runway change
             airportInfo.put("rwyChangeTimer", (double) airport.getRwyChangeTimer()); //Runway change timer
 
             //STAR timers

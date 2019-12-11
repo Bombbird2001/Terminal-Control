@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 public class RunwayChanger {
     private Image background;
     private Label airportLabel;
+    private Label timeLabel;
     private TextButton changeButton;
     private Label newRunwaysLabel;
     private boolean doubleCfm;
@@ -95,6 +96,13 @@ public class RunwayChanger {
         newRunwaysLabel.setWrap(true);
         newRunwaysLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
         TerminalControl.radarScreen.uiStage.addActor(newRunwaysLabel);
+
+        /* TODO Add update loop for timer
+        int min = ((int) airport.getRwyChangeTimer()) / 60;
+        int sec = (int) airport.getRwyChangeTimer() - min * 60;
+        timeLabel = new Label("Time left: " + min + ":" + sec, labelStyle1);
+        timeLabel.setX();
+        */
 
         runways = new Array<>();
         tkofLdg = new Array<>();
@@ -172,6 +180,10 @@ public class RunwayChanger {
         } else {
             if (runways.size != tkofLdg.size) Gdx.app.log("Runway changer", "Runway array length not equal to tkofldg array length for " + icao);
             updateRunwayLabel();
+            if (airport.isPendingRwyChange()) {
+                doubleCfm = true;
+                changeButton.setText("Confirm runway change");
+            }
         }
     }
 
@@ -394,6 +406,11 @@ public class RunwayChanger {
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
                     runways.add( "36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                } else if (airport.getLandingRunways().containsKey("18R")) {
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    runways.add( "36L", "36R", "32L", "32R");
+                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
                 }
             } else if (airport.getLandingRunways().get("18L") != null) {
                 //14L, 18L active, change to 32R, 36L
@@ -402,6 +419,11 @@ public class RunwayChanger {
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                     runways.add( "36L", "36R", "32L", "32R");
                     tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
+                } else if (airport.getLandingRunways().containsKey("32L")) {
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
+                    runways.add( "36L", "36R", "32L", "32R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 }
             }
         } else {

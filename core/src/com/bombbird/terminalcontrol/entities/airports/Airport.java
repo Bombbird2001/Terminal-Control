@@ -52,6 +52,7 @@ public class Airport {
     private Array<DepartureZone> departureZones;
     private Array<AltitudeExclusionZone> altitudeExclusionZones;
 
+    private boolean pendingRwyChange;
     private float rwyChangeTimer;
 
     public Airport(String icao, int elevation, int aircraftRatio) {
@@ -66,7 +67,8 @@ public class Airport {
         congested = false;
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
-        rwyChangeTimer = 300; //In seconds
+        pendingRwyChange = false;
+        rwyChangeTimer = 301; //In seconds
     }
 
     public Airport(JSONObject save) {
@@ -81,7 +83,8 @@ public class Airport {
         aircraftRatio = save.getInt("aircraftRatio");
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
-        rwyChangeTimer = (float) save.optDouble("rwyChangeTimer", 300);
+        pendingRwyChange = save.optBoolean("pendingRwyChange", false);
+        rwyChangeTimer = (float) save.optDouble("rwyChangeTimer", 301);
 
         JSONArray landing = save.getJSONArray("landingRunways");
         for (int i = 0; i < landing.length(); i++) {
@@ -190,7 +193,7 @@ public class Airport {
     /** Sets the runway's active state, and removes or adds it into hashMap of takeoff & landing runways */
     public void setActive(String rwy, boolean landing, boolean takeoff) {
         //Ignore if countdown timer is not up yet
-        if (rwyChangeTimer > 0) return;
+        if (rwyChangeTimer > 0 || !pendingRwyChange) return;
 
         //Retrieves runway from hashtable
         Runway runway = runways.get(rwy);
@@ -267,7 +270,7 @@ public class Airport {
             runway.renderShape();
         }
 
-        rwyChangeTimer -= Gdx.graphics.getDeltaTime();
+        if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
     }
 
     /** Loads the departure/approach/exclusion zones for this airport */
@@ -444,5 +447,13 @@ public class Airport {
 
     public void setRwyChangeTimer(float rwyChangeTimer) {
         this.rwyChangeTimer = rwyChangeTimer;
+    }
+
+    public boolean isPendingRwyChange() {
+        return pendingRwyChange;
+    }
+
+    public void setPendingRwyChange(boolean pendingRwyChange) {
+        this.pendingRwyChange = pendingRwyChange;
     }
 }

@@ -12,37 +12,43 @@ public class RunwayManager {
     }
 
     public void updateRunways(int windDir, int windSpd) {
+        boolean pendingChange = false;
         if ("RCTP".equals(airport.getIcao())) {
-            updateRCTP(windDir, windSpd);
+            pendingChange = updateRCTP(windDir, windSpd);
         } else if ("RCSS".equals(airport.getIcao())) {
-            updateRCSS(windDir, windSpd);
+            pendingChange = updateRCSS(windDir, windSpd);
         } else if ("WSSS".equals(airport.getIcao())) {
-            updateWSSS(windDir, windSpd);
+            pendingChange = updateWSSS(windDir, windSpd);
         } else if ("RJTT".equals(airport.getIcao())) {
-            updateRJTT(windDir, windSpd);
+            pendingChange = updateRJTT(windDir, windSpd);
         } else if ("RJAA".equals(airport.getIcao())) {
-            updateRJAA(windDir, windSpd);
+            pendingChange = updateRJAA(windDir, windSpd);
         } else if ("RJBB".equals(airport.getIcao())) {
-            updateRJBB(windDir, windSpd);
+            pendingChange = updateRJBB(windDir, windSpd);
         } else if ("RJOO".equals(airport.getIcao())) {
-            updateRJOO(windDir, windSpd);
+            pendingChange = updateRJOO(windDir, windSpd);
         } else if ("RJBE".equals(airport.getIcao())) {
-            updateRJBE(windDir, windSpd);
+            pendingChange = updateRJBE(windDir, windSpd);
         } else if ("VHHH".equals(airport.getIcao())) {
-            updateVHHH(windDir, windSpd);
+            pendingChange = updateVHHH(windDir, windSpd);
         } else if ("VMMC".equals(airport.getIcao())) {
-            updateVMMC(windDir, windSpd);
+            pendingChange = updateVMMC(windDir, windSpd);
         } else if ("VTBD".equals(airport.getIcao())) {
-            updateVTBD(windDir, windSpd);
+            pendingChange = updateVTBD(windDir, windSpd);
         } else if ("VTBS".equals(airport.getIcao())) {
-            updateVTBS(windDir, windSpd);
+            pendingChange = updateVTBS(windDir, windSpd);
         } else if ("LEMD".equals(airport.getIcao())) {
-            updateLEMD(windDir, windSpd);
+            pendingChange = updateLEMD(windDir, windSpd);
+        }
+
+        if (pendingChange && !airport.isPendingRwyChange()) {
+            airport.setPendingRwyChange(true);
+            airport.setRwyChangeTimer(300);
         }
     }
 
     /** Updates runway status for Taiwan Taoyuan */
-    private void updateRCTP(int windDir, int windSpd) {
+    private boolean updateRCTP(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("05L"))) {
@@ -61,6 +67,7 @@ public class RunwayManager {
                     airport.setActive("23R", true, true);
                     airport.setActive("05L", false, false);
                     airport.setActive("05R", false, false);
+                    return true;
                 }
             } else {
                 //23s are active
@@ -69,13 +76,15 @@ public class RunwayManager {
                     airport.setActive("05R", true, true);
                     airport.setActive("23L", false, false);
                     airport.setActive("23R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Taipei Songshan */
-    private void updateRCSS(int windDir, int windSpd) {
+    private boolean updateRCSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("10"))) {
@@ -90,19 +99,22 @@ public class RunwayManager {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("10").getHeading()) < -5) {
                     airport.setActive("28", true, true);
                     airport.setActive("10", false, false);
+                    return true;
                 }
             } else {
                 //28 is active
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("28").getHeading()) < -5) {
                     airport.setActive("10", true, true);
                     airport.setActive("28", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Singapore Changi */
-    private void updateWSSS(int windDir, int windSpd) {
+    private boolean updateWSSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("02L"))) {
@@ -121,6 +133,7 @@ public class RunwayManager {
                     airport.setActive("20R", true, true);
                     airport.setActive("02L", false, false);
                     airport.setActive("02C", false, false);
+                    return true;
                 }
             } else {
                 //20s are active
@@ -129,13 +142,15 @@ public class RunwayManager {
                     airport.setActive("02C", true, true);
                     airport.setActive("20C", false, false);
                     airport.setActive("20R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Tokyo Haneda */
-    private void updateRJTT(int windDir, int windSpd) {
+    private boolean updateRJTT(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
@@ -150,6 +165,7 @@ public class RunwayManager {
                 airport.setActive("16R", false, false);
                 airport.setActive("22", false, false);
                 airport.setActive("23", false, false);
+                return true;
             } else {
                 airport.setActive("34L", false, false);
                 airport.setActive("34R", false, false);
@@ -159,12 +175,14 @@ public class RunwayManager {
                 airport.setActive("16R", false, true);
                 airport.setActive("22", true, false);
                 airport.setActive("23", true, false);
+                return true;
             }
         }
+        return false;
     }
 
     /** Updates runway status for Tokyo Narita */
-    private void updateRJAA(int windDir, int windSpd) {
+    private boolean updateRJAA(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("34L"))) {
@@ -183,6 +201,7 @@ public class RunwayManager {
                     airport.setActive("16R", true, true);
                     airport.setActive("34L", false, false);
                     airport.setActive("34R", false, false);
+                    return true;
                 }
             } else {
                 //16s are active
@@ -191,13 +210,15 @@ public class RunwayManager {
                     airport.setActive("34R", true, true);
                     airport.setActive("16L", false, false);
                     airport.setActive("16R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Osaka Kansai */
-    private void updateRJBB(int windDir, int windSpd) {
+    private boolean updateRJBB(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("06L"))) {
@@ -216,6 +237,7 @@ public class RunwayManager {
                     airport.setActive("06R", true, true);
                     airport.setActive("24L", false, false);
                     airport.setActive("24R", false, false);
+                    return true;
                 }
             } else {
                 //06s are active
@@ -224,31 +246,37 @@ public class RunwayManager {
                     airport.setActive("24R", true, true);
                     airport.setActive("06L", false, false);
                     airport.setActive("06R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Osaka Itami */
-    private void updateRJOO(int windDir, int windSpd) {
+    private boolean updateRJOO(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
             airport.setActive("32L", false, false);
+            return true;
         } else {
             airport.setActive("32L", true, true);
+            return false;
         }
     }
 
     /** Updates runway status for Kobe */
-    private void updateRJBE(int windDir, int windSpd) {
+    private boolean updateRJBE(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
             airport.setActive("09", false, false);
+            return true;
         } else {
             airport.setActive("09", true, true);
+            return false;
         }
     }
 
     /** Updates runway status for Hong Kong*/
-    private void updateVHHH(int windDir, int windSpd) {
+    private boolean updateVHHH(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("07L"))) {
@@ -267,6 +295,7 @@ public class RunwayManager {
                     airport.setActive("25R", true, true);
                     airport.setActive("07L", false, false);
                     airport.setActive("07R", false, false);
+                    return true;
                 }
             } else {
                 //23s are active
@@ -275,13 +304,15 @@ public class RunwayManager {
                     airport.setActive("07R", true, true);
                     airport.setActive("25L", false, false);
                     airport.setActive("25R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Macau */
-    private void updateVMMC(int windDir, int windSpd) {
+    private boolean updateVMMC(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("16"))) {
@@ -296,19 +327,22 @@ public class RunwayManager {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("16").getHeading()) < -5) {
                     airport.setActive("34", true, true);
                     airport.setActive("16", false, false);
+                    return true;
                 }
             } else {
                 //28 is active
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34").getHeading()) < -5) {
                     airport.setActive("16", true, true);
                     airport.setActive("34", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Bangkok Don Mueang */
-    private void updateVTBD(int windDir, int windSpd) {
+    private boolean updateVTBD(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("21R"))) {
@@ -327,6 +361,7 @@ public class RunwayManager {
                     airport.setActive("21R", true, false);
                     airport.setActive("03L", false, false);
                     airport.setActive("03R", false, false);
+                    return true;
                 }
             } else {
                 //21s are active
@@ -335,13 +370,15 @@ public class RunwayManager {
                     airport.setActive("03R", false, true);
                     airport.setActive("21L", false, false);
                     airport.setActive("21R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Bangkok Suvarnabhumi */
-    private void updateVTBS(int windDir, int windSpd) {
+    private boolean updateVTBS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("19L"))) {
@@ -360,6 +397,7 @@ public class RunwayManager {
                     airport.setActive("19R", true, true);
                     airport.setActive("01L", false, false);
                     airport.setActive("01R", false, false);
+                    return true;
                 }
             } else {
                 //19s are active
@@ -368,13 +406,15 @@ public class RunwayManager {
                     airport.setActive("01R", true, true);
                     airport.setActive("19L", false, false);
                     airport.setActive("19R", false, false);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /** Updates runway status for Madrid Barajas */
-    private void updateLEMD(int windDir, int windSpd) {
+    private boolean updateLEMD(int windDir, int windSpd) {
         if (MaxTraffic.isNight("LEMD")) {
             //Night mode witb only 1 landing runway, 1 departure runway
             if (airport.getLandingRunways().size() == 0) {
@@ -399,6 +439,18 @@ public class RunwayManager {
                         airport.setActive("36R", false, false);
                         airport.setActive("32L", false, false);
                         airport.setActive("32R", false, false);
+                        return true;
+                    } else if (airport.getLandingRunways().containsKey("32L")) {
+                        //Change 4 runways to 2 runways
+                        airport.setActive("36L", false, true);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", true, false);
+                        airport.setActive("18L", false, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, false);
+                        airport.setActive("14R", false, false);
+                        return true;
                     }
                 } else {
                     //14L, 18L are active
@@ -411,6 +463,18 @@ public class RunwayManager {
                         airport.setActive("18R", false, false);
                         airport.setActive("14L", false, false);
                         airport.setActive("14R", false, false);
+                        return true;
+                    } else if (airport.getLandingRunways().containsKey("18R")) {
+                        //Change 4 runways to 2 runways
+                        airport.setActive("18L", true, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, true);
+                        airport.setActive("14R", false, false);
+                        airport.setActive("36L", false, false);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", false, false);
+                        return true;
                     }
                 }
             }
@@ -441,6 +505,7 @@ public class RunwayManager {
                         airport.setActive("36R", false, false);
                         airport.setActive("32L", false, false);
                         airport.setActive("32R", false, false);
+                        return true;
                     }
                 } else {
                     //14s, 18s are active
@@ -453,10 +518,12 @@ public class RunwayManager {
                         airport.setActive("18R", false, false);
                         airport.setActive("14L", false, false);
                         airport.setActive("14R", false, false);
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
     private boolean runwayActiveForWind(int windHdg, Runway runway) {
