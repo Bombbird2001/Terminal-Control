@@ -469,6 +469,7 @@ public class GameSaver {
             airportInfo.put("landings", airport.getLandings()); //Landings
             airportInfo.put("airborne", airport.getAirborne()); //Airborne
             airportInfo.put("congestion", airport.isCongested()); //Congestion
+            airportInfo.put("rwyChangeTimer", (double) airport.getRwyChangeTimer()); //Runway change timer
 
             //STAR timers
             JSONObject starTimers = new JSONObject(RandomSTAR.getTime().get(airport.getIcao()));

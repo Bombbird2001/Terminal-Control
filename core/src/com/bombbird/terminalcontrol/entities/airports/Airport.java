@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.airports;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -51,32 +52,36 @@ public class Airport {
     private Array<DepartureZone> departureZones;
     private Array<AltitudeExclusionZone> altitudeExclusionZones;
 
+    private float rwyChangeTimer;
+
     public Airport(String icao, int elevation, int aircraftRatio) {
         this.icao = icao;
         this.elevation = elevation;
         this.aircraftRatio = aircraftRatio;
         runways = FileLoader.loadRunways(icao);
-        landingRunways = new HashMap<String, Runway>();
-        takeoffRunways = new HashMap<String, Runway>();
+        landingRunways = new HashMap<>();
+        takeoffRunways = new HashMap<>();
         landings = 0;
         airborne = 0;
         congested = false;
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
+        rwyChangeTimer = 300; //In seconds
     }
 
     public Airport(JSONObject save) {
         icao = save.getString("icao");
         elevation = save.getInt("elevation");
         runways = FileLoader.loadRunways(icao);
-        landingRunways = new HashMap<String, Runway>();
-        takeoffRunways = new HashMap<String, Runway>();
+        landingRunways = new HashMap<>();
+        takeoffRunways = new HashMap<>();
         landings = save.getInt("landings");
         airborne = save.getInt("airborne");
         congested = save.getBoolean("congestion");
         aircraftRatio = save.getInt("aircraftRatio");
         airlines = FileLoader.loadAirlines(icao);
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
+        rwyChangeTimer = (float) save.optDouble("rwyChangeTimer", 300);
 
         JSONArray landing = save.getJSONArray("landingRunways");
         for (int i = 0; i < landing.length(); i++) {
@@ -184,6 +189,9 @@ public class Airport {
 
     /** Sets the runway's active state, and removes or adds it into hashMap of takeoff & landing runways */
     public void setActive(String rwy, boolean landing, boolean takeoff) {
+        //Ignore if countdown timer is not up yet
+        if (rwyChangeTimer > 0) return;
+
         //Retrieves runway from hashtable
         Runway runway = runways.get(rwy);
         boolean ldgChange = false;
@@ -241,6 +249,7 @@ public class Airport {
         }
     }
 
+    /** Draws runways, also acts as update loop */
     public void renderRunways() {
         if (!TerminalControl.radarScreen.tutorial) {
             takeoffManager.update();
@@ -257,6 +266,8 @@ public class Airport {
             runway.setLabelColor(congested ? Color.ORANGE : Color.WHITE);
             runway.renderShape();
         }
+
+        rwyChangeTimer -= Gdx.graphics.getDeltaTime();
     }
 
     /** Loads the departure/approach/exclusion zones for this airport */
@@ -425,5 +436,13 @@ public class Airport {
 
     public Array<AltitudeExclusionZone> getAltitudeExclusionZones() {
         return altitudeExclusionZones;
+    }
+
+    public float getRwyChangeTimer() {
+        return rwyChangeTimer;
+    }
+
+    public void setRwyChangeTimer(float rwyChangeTimer) {
+        this.rwyChangeTimer = rwyChangeTimer;
     }
 }
