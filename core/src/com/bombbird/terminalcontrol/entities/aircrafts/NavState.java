@@ -299,6 +299,7 @@ public class NavState {
 
     /** Called before updating aircraft mode to ensure inputs are valid in case aircraft state changes during the pilot delay*/
     private void validateInputs() {
+        if (dispLatMode.size < 2 || clearedDirect.size < 2 || clearedAftWptHdg.size < 2 || clearedHdg.size < 2) return;
         String currentDispLatMode = dispLatMode.first();
         String clearedDispLatMode = dispLatMode.get(1);
         String currentDirect = clearedDirect.first() == null ? null : clearedDirect.first().getName();
