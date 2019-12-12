@@ -66,8 +66,24 @@ public class Metar {
     }
 
     private void updateAirports() {
+        if (!metarObject.isNull("RCTP")) {
+            metarObject.getJSONObject("RCTP").put("windDirection", 240);
+            metarObject.getJSONObject("RCTP").put("windSpeed", 10);
+        }
+        if (!metarObject.isNull("RCSS")) {
+            metarObject.getJSONObject("RCSS").put("windDirection", 270);
+            metarObject.getJSONObject("RCSS").put("windSpeed", 9);
+        }
         for (Airport airport: radarScreen.airports.values()) {
+            if (prevMetar == null) {
+                airport.setRwyChangeTimer(-1);
+                airport.setPendingRwyChange(true);
+            }
             airport.setMetar(metarObject);
+            if (prevMetar == null) {
+                airport.setRwyChangeTimer(301);
+                airport.setPendingRwyChange(false);
+            }
         }
     }
 
@@ -168,8 +184,8 @@ public class Metar {
                 e.printStackTrace();
             }
         }
-        prevMetar = metarObject;
         updateAirports();
+        prevMetar = metarObject;
         Gdx.app.postRunnable(() -> radarScreen.ui.updateMetar());
         radarScreen.loadingPercent = "100%";
         radarScreen.loading = false;

@@ -97,17 +97,28 @@ public class RunwayChanger {
         newRunwaysLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
         TerminalControl.radarScreen.uiStage.addActor(newRunwaysLabel);
 
-        /* TODO Add update loop for timer
-        int min = ((int) airport.getRwyChangeTimer()) / 60;
-        int sec = (int) airport.getRwyChangeTimer() - min * 60;
-        timeLabel = new Label("Time left: " + min + ":" + sec, labelStyle1);
-        timeLabel.setX();
-        */
+        timeLabel = new Label("Time left: ", labelStyle1);
+        timeLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
+        timeLabel.setY(3240 * 0.3f);
+        timeLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
+        TerminalControl.radarScreen.uiStage.addActor(timeLabel);
+        timeLabel.setVisible(false);
 
         runways = new Array<>();
         tkofLdg = new Array<>();
 
         hideAll();
+    }
+
+    public void update() {
+        if (airport == null) return;
+        if (airport.getRwyChangeTimer() < 0) {
+            hideAll();
+        }
+        int min = ((int) airport.getRwyChangeTimer()) / 60;
+        int sec = (int) airport.getRwyChangeTimer() - min * 60;
+        String secText = sec < 10 ? "0" + sec : Integer.toString(sec);
+        timeLabel.setText("Time left: " + min + ":" + secText);
     }
 
     public void setMainVisible(boolean visible) {
@@ -118,6 +129,7 @@ public class RunwayChanger {
 
     public void hideAll() {
         background.setVisible(false);
+        timeLabel.setVisible(false);
         airportLabel.setVisible(false);
         changeButton.setVisible(false);
         newRunwaysLabel.setVisible(false);
@@ -130,6 +142,8 @@ public class RunwayChanger {
         background.setX(0.1f * paneWidth);
         background.setWidth(0.8f * paneWidth);
 
+        timeLabel.setX(0.15f * paneWidth);
+
         airportLabel.setX(0.45f * paneWidth);
 
         changeButton.setX(0.15f * paneWidth);
@@ -140,10 +154,11 @@ public class RunwayChanger {
         runways.clear();
         tkofLdg.clear();
         doubleCfm = false;
-        newRunwaysLabel.setVisible(false);
+        newRunwaysLabel.setVisible(false);;
         changeButton.setText("Change runway configuration");
         airportLabel.setText(icao);
         airport = TerminalControl.radarScreen.airports.get(icao);
+        timeLabel.setVisible(airport.isPendingRwyChange());
         int windDir = airport.getMetar().isNull("windDirection") ? 0 : airport.getMetar().getInt("windDirection");
         int windSpd = airport.getMetar().getInt("windSpeed");
         if (windDir == 0) windSpd = 0;
@@ -183,6 +198,7 @@ public class RunwayChanger {
             if (airport.isPendingRwyChange()) {
                 doubleCfm = true;
                 changeButton.setText("Confirm runway change");
+                newRunwaysLabel.setVisible(true);
             }
         }
     }
@@ -213,11 +229,15 @@ public class RunwayChanger {
         newRunwaysLabel.setText(stringBuilder.toString());
     }
 
+    //Change runways
     private void updateRunways() {
+        airport.setRwyChangeTimer(-1);
         for (int i = 0; i < runways.size; i++) {
             airport.setActive(runways.get(i), tkofLdg.get(i)[2], tkofLdg.get(i)[1]);
         }
         airport.updateZoneStatus();
+        airport.setPendingRwyChange(false);
+        airport.setRwyChangeTimer(301);
     }
 
     public boolean containsLandingRunway(String icao, String rwy) {

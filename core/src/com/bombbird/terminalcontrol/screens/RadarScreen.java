@@ -400,7 +400,7 @@ public class RadarScreen extends GameScreen {
         if (!tutorial) {
             saveTime -= deltaTime;
             if (saveTime <= 0) {
-                GameSaver.saveGame();
+                //GameSaver.saveGame(); //TODO Re-enable later
                 saveTime += 60f;
             }
 
@@ -526,6 +526,8 @@ public class RadarScreen extends GameScreen {
         }
 
         shapeRenderer.end();
+
+        runwayChanger.update();
     }
 
     @Override

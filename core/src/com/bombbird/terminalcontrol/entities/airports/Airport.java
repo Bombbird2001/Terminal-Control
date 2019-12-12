@@ -271,6 +271,11 @@ public class Airport {
         }
 
         if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
+        if (rwyChangeTimer < 0) {
+            if (pendingRwyChange) setMetar(TerminalControl.radarScreen.getMetar().getMetarObject());
+            pendingRwyChange = false;
+            rwyChangeTimer = 301;
+        }
     }
 
     /** Loads the departure/approach/exclusion zones for this airport */
