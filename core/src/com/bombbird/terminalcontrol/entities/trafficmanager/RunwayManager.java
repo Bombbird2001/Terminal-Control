@@ -170,6 +170,7 @@ public class RunwayManager {
                 airport.setActive("16R", false, false);
                 airport.setActive("22", false, false);
                 airport.setActive("23", false, false);
+                return !airport.getLandingRunways().containsKey("34L");
             } else {
                 airport.setActive("34L", false, false);
                 airport.setActive("34R", false, false);
@@ -179,8 +180,8 @@ public class RunwayManager {
                 airport.setActive("16R", false, true);
                 airport.setActive("22", true, false);
                 airport.setActive("23", true, false);
+                return !airport.getLandingRunways().containsKey("23");
             }
-            return true;
         }
         return false;
     }
