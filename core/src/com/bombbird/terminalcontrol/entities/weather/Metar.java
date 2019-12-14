@@ -66,14 +66,6 @@ public class Metar {
     }
 
     private void updateAirports() {
-        if (!metarObject.isNull("RCTP")) {
-            metarObject.getJSONObject("RCTP").put("windDirection", 240);
-            metarObject.getJSONObject("RCTP").put("windSpeed", 10);
-        }
-        if (!metarObject.isNull("RCSS")) {
-            metarObject.getJSONObject("RCSS").put("windDirection", 270);
-            metarObject.getJSONObject("RCSS").put("windSpeed", 9);
-        }
         for (Airport airport: radarScreen.airports.values()) {
             if (prevMetar == null) {
                 airport.setRwyChangeTimer(-1);
