@@ -345,7 +345,7 @@ public class RadarScreen extends GameScreen {
         stage.addActor(separationChecker);
 
         //Load aircraft callsign hashMap
-        allAircraft = new HashMap<String, Boolean>();
+        allAircraft = new HashMap<>();
 
         //Load waypoint manager
         waypointManager = new WaypointManager();
@@ -449,7 +449,7 @@ public class RadarScreen extends GameScreen {
         Shoreline.renderShape();
 
         //Draw obstacles
-        Array<Obstacle> saveForLast = new Array<Obstacle>();
+        Array<Obstacle> saveForLast = new Array<>();
         for (Obstacle obstacle : obsArray) {
             if (obstacle.isEnforced() || obstacle.isConflict() || obstacle.getLabel().getText().toString().charAt(0) == '#') {
                 saveForLast.add(obstacle);
@@ -481,7 +481,7 @@ public class RadarScreen extends GameScreen {
         }
 
         //Draw waypoints
-        Array<Waypoint> flyOver = new Array<Waypoint>();
+        Array<Waypoint> flyOver = new Array<>();
         for (Waypoint waypoint: waypoints.values()) {
             if (waypoint.isFlyOver()) {
                 //Save flyovers for later
