@@ -400,7 +400,7 @@ public class RadarScreen extends GameScreen {
         if (!tutorial) {
             saveTime -= deltaTime;
             if (saveTime <= 0) {
-                //GameSaver.saveGame(); //TODO Re-enable later
+                GameSaver.saveGame();
                 saveTime += 60f;
             }
 
