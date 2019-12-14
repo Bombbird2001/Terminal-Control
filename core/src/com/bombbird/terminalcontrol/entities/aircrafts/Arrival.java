@@ -181,7 +181,7 @@ public class Arrival extends Aircraft {
             nonPrecAlts = null;
         } else {
             JSONArray nonPrec = save.getJSONArray("nonPrecAlts");
-            nonPrecAlts = new Queue<float[]>();
+            nonPrecAlts = new Queue<>();
             for (int i = 0; i < nonPrec.length(); i++) {
                 JSONArray data = nonPrec.getJSONArray(i);
                 nonPrecAlts.addLast(new float[] {(float) data.getDouble(0), (float) data.getDouble(1)});
@@ -493,7 +493,7 @@ public class Arrival extends Aircraft {
                     setMissedAlt();
                 }
                 if (nonPrecAlts == null) {
-                    nonPrecAlts = new Queue<float[]>();
+                    nonPrecAlts = new Queue<>();
                     Queue<float[]> copy = ((LDA) getIls()).getNonPrecAlts();
                     for (float[] data: copy) {
                         nonPrecAlts.addLast(data);
@@ -567,7 +567,6 @@ public class Arrival extends Aircraft {
     public void contactOther() {
         //Contact the tower
         setControlState(ControlState.UNCONTROLLED);
-        setClearedIas(getApchSpd());
         float points = 0.6f - radarScreen.getPlanesToControl() / 30;
         points = MathUtils.clamp(points, 0.15f, 0.5f);
         if (!getAirport().isCongested()) {
