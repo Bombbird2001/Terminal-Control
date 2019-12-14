@@ -29,16 +29,16 @@ public class CommBox {
     private Table scrollTable;
     private ScrollPane scrollPane;
 
-    private static final Array<String> atcByeCtr = new Array<String>();
-    private static final Array<String> atcByeTwr = new Array<String>();
-    private static final Array<String> pilotBye = new Array<String>();
+    private static final Array<String> atcByeCtr = new Array<>();
+    private static final Array<String> atcByeTwr = new Array<>();
+    private static final Array<String> pilotBye = new Array<>();
 
     public CommBox() {
         atcByeCtr.add("good day", "see you", "have a good flight", "have a safe flight");
         atcByeTwr.add("good day", "see you", "have a safe landing");
         pilotBye.add("good day", "see you", "have a nice day", "bye bye");
 
-        labels = new Queue<Label>();
+        labels = new Queue<>();
 
         header = new Label("Communication box", getLabelStyle(Color.WHITE));
         header.setPosition(0.3f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.42f);
@@ -69,10 +69,13 @@ public class CommBox {
             JSONObject info = save.getJSONObject(i);
 
             Color color;
-            if ("ff0000ff".equals(info.getString("color"))) {
+            String colorStr = info.getString("color");
+            if ("ff0000ff".equals(colorStr)) {
                 color = Color.RED;
+            } else if ("ffff00ff".equals(colorStr)) {
+                color = Color.YELLOW;
             } else {
-                color = new Color(Integer.parseInt(info.getString("color"), 16));
+                color = new Color(Integer.parseInt(colorStr, 16));
             }
 
             Gdx.app.postRunnable(() -> {
@@ -252,6 +255,21 @@ public class CommBox {
                     break;
                 } catch (NullPointerException e) {
                     ErrorHandler.sendRepeatableError("Normal message error", e, i + 1);
+                }
+            }
+        });
+    }
+
+    /** Adds an alert message in yellow */
+    public void alertMsg(String msg) {
+        Gdx.app.postRunnable(() -> {
+            for (int i = 0; i < 3; i++) {
+                try {
+                    Label label = new Label(msg, getLabelStyle(Color.YELLOW));
+                    updateLabelQueue(label);
+                    break;
+                } catch (NullPointerException e) {
+                    ErrorHandler.sendRepeatableError("Alert message error", e, i + 1);
                 }
             }
         });

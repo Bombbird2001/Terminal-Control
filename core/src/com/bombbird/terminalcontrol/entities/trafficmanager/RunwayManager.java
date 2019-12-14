@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 
@@ -44,6 +45,10 @@ public class RunwayManager {
         if (pendingChange && !airport.isPendingRwyChange()) {
             airport.setPendingRwyChange(true);
             airport.setRwyChangeTimer(300);
+            TerminalControl.radarScreen.getCommBox().alertMsg("Runway change will occur for " + airport.getIcao() + " soon due to change in winds. Tap the METAR label of " + airport.getIcao() + " for more information.");
+        } else if (!pendingChange && airport.isPendingRwyChange()) {
+            airport.setPendingRwyChange(false);
+            airport.setRwyChangeTimer(301);
         }
     }
 
@@ -165,7 +170,6 @@ public class RunwayManager {
                 airport.setActive("16R", false, false);
                 airport.setActive("22", false, false);
                 airport.setActive("23", false, false);
-                return true;
             } else {
                 airport.setActive("34L", false, false);
                 airport.setActive("34R", false, false);
@@ -175,8 +179,8 @@ public class RunwayManager {
                 airport.setActive("16R", false, true);
                 airport.setActive("22", true, false);
                 airport.setActive("23", true, false);
-                return true;
             }
+            return true;
         }
         return false;
     }

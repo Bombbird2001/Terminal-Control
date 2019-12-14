@@ -154,7 +154,7 @@ public class RunwayChanger {
         runways.clear();
         tkofLdg.clear();
         doubleCfm = false;
-        newRunwaysLabel.setVisible(false);;
+        newRunwaysLabel.setVisible(false);
         changeButton.setText("Change runway configuration");
         airportLabel.setText(icao);
         airport = TerminalControl.radarScreen.airports.get(icao);
@@ -197,7 +197,7 @@ public class RunwayChanger {
             updateRunwayLabel();
             if (airport.isPendingRwyChange()) {
                 doubleCfm = true;
-                changeButton.setText("Confirm runway change");
+                changeButton.setText("Change runways now");
                 newRunwaysLabel.setVisible(true);
             }
         }
