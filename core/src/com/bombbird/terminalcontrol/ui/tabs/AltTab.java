@@ -47,7 +47,7 @@ public class AltTab extends Tab {
                 highestAlt = restr[1];
             } else if (altMode.contains("STAR") && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
                 //Set alt restrictions in box
-                highestAlt = (int)selectedAircraft.getAltitude();
+                highestAlt = (int) selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
                 if ("RJOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
                     highestAlt = 3500;
@@ -59,6 +59,9 @@ public class AltTab extends Tab {
             }
             if (highestAlt == -1) {
                 highestAlt = TerminalControl.radarScreen.maxAlt;
+            }
+            if (highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
+                highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
             }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
