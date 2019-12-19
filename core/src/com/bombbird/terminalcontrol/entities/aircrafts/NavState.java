@@ -304,7 +304,7 @@ public class NavState {
         String clearedDispLatMode = dispLatMode.get(1);
         String currentDirect = clearedDirect.first() == null ? null : clearedDirect.first().getName();
         String newDirect = clearedDirect.get(1) == null ? null : clearedDirect.get(1).getName();
-        if (currentDispLatMode.contains("heading") && !"After waypoint, fly heading".equals(currentDispLatMode) && ("After waypoint, fky heading".equals(clearedDispLatMode) || "Hold at".equals(clearedDispLatMode))) {
+        if (currentDispLatMode.contains("heading") && !"After waypoint, fly heading".equals(currentDispLatMode) && ("After waypoint, fly heading".equals(clearedDispLatMode) || "Hold at".equals(clearedDispLatMode))) {
             //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
             dispLatMode.removeFirst();
             dispLatMode.removeFirst();
