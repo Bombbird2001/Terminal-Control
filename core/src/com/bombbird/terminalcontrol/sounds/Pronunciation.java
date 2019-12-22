@@ -26,6 +26,7 @@ public class Pronunciation {
         waypointPronunciations.put("CJN", "Caste Jon");
         waypointPronunciations.put("RBO", "Roble Dillo");
         waypointPronunciations.put("SIE", "Somo Sierra");
+        waypointPronunciations.put("CAD", "Chateau Dun");
 
         callsigns = FileLoader.loadIcaoCallsigns();
 
