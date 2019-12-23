@@ -23,11 +23,13 @@ public class WindspeedChance {
         windspdChances.put("VTBD", loadSpdArray("368,30,171,389,553,708,927,926,865,713,507,303,202,128,89,59,29,14,12,6,5,0,0,1,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"));
         windspdChances.put("VTBS", loadSpdArray("47,50,381,572,657,838,757,710,665,566,569,435,371,244,126,116,22,15,5,2,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"));
         windspdChances.put("LEMD", loadSpdArray("0,593,926,1127,757,574,461,410,382,345,266,252,242,204,148,125,89,50,47,18,10,8,6,3,4,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0"));
+        windspdChances.put("LFPG", loadSpdArray("15,23,96,247,401,420,513,520,541,550,614,442,378,282,229,214,145,159,89,70,33,34,15,6,6,3,4,5,3,0,0,1,0,0,0,0,0,0,0,0,0"));
+        windspdChances.put("LFPO", loadSpdArray("79,75,275,476,493,575,598,542,568,495,519,386,251,182,136,103,74,55,29,17,6,2,3,1,1,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0"));
     }
 
     private static Array<int[]> loadSpdArray(String toParse) {
         int total = 1;
-        Array<int[]> spds = new Array<int[]>();
+        Array<int[]> spds = new Array<>();
         String[] nos = toParse.split(",");
         for (String str: nos) {
             int[] range;

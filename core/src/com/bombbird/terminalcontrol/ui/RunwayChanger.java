@@ -78,7 +78,11 @@ public class RunwayChanger {
                         changeButton.setText("Confirm runway change");
                     }
                 } else if (runways.size > 0) {
+                    airport.setPendingRwyChange(true);
+                    airport.setRwyChangeTimer(-1);
                     updateRunways();
+                    airport.setPendingRwyChange(false);
+                    airport.setRwyChangeTimer(301);
                     doubleCfm = false;
                     hideAll();
                     TerminalControl.radarScreen.getCommBox().setVisible(true);
@@ -188,6 +192,12 @@ public class RunwayChanger {
             updateVTBS(windDir, windSpd);
         } else if ("LEMD".equals(icao)) {
             updateLEMD(windDir, windSpd);
+        } else if ("LFPG".equals(icao)) {
+            updateLFPG(windDir, windSpd);
+        } else if ("LFPO".equals(icao)) {
+            updateLFPO(windDir, windSpd);
+        } else {
+            Gdx.app.log("Runway changer", "Runway change settings for " + icao + " are unavailable.");
         }
 
         if (runways.size == 0) {
@@ -424,12 +434,12 @@ public class RunwayChanger {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 } else if (airport.getLandingRunways().containsKey("18R")) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
                 }
             } else if (airport.getLandingRunways().get("18L") != null) {
@@ -437,12 +447,12 @@ public class RunwayChanger {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
                 } else if (airport.getLandingRunways().containsKey("32L")) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 }
             }
@@ -453,7 +463,7 @@ public class RunwayChanger {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 }
             } else if (airport.getLandingRunways().get("18L") != null) {
@@ -461,9 +471,45 @@ public class RunwayChanger {
                 if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add( "36L", "36R", "32L", "32R");
+                    runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
                 }
+            }
+        }
+    }
+
+    private void updateLFPG(int windDir, int windSpd) {
+        if (airport.getLandingRunways().get("08R") != null) {
+            //08s, 09s active, change to 26s, 27s
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("26L").getHeading()) > -5) {
+                runways.add("26R", "26L", "27L", "27R");
+                tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
+                runways.add("08L", "08R", "09L", "09R");
+                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+            }
+        } else if (airport.getLandingRunways().get("26L") != null) {
+            //26s, 27s active, change to 08s, 09s
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("08R").getHeading()) > -5) {
+                runways.add("26R", "26L", "27L", "27R");
+                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                runways.add("08L", "09R", "08R", "09L");
+                tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+            }
+        }
+    }
+
+    private void updateLFPO(int windDir, int windSpd) {
+        if (airport.getLandingRunways().get("25") != null) {
+            //24, 25 are active, set to 06, 07
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06").getHeading()) > -5) {
+                runways.add("06", "07", "24", "25");
+                tkofLdg.add(LDG_ONLY, TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE);
+            }
+        } else {
+            //06, 07 are active, set to 24, 25
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25").getHeading()) > -5) {
+                runways.add("24", "25", "06", "07");
+                tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
             }
         }
     }

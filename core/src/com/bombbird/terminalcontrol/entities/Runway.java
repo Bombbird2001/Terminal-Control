@@ -69,7 +69,7 @@ public class Runway {
 
         parseInfo(toParse);
 
-        aircraftsOnAppr = new Array<Aircraft>();
+        aircraftsOnAppr = new Array<>();
         emergencyClosed = false;
 
         //Calculate the position offsets that are not dependent on zoom

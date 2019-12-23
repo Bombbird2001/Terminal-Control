@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
@@ -40,6 +41,12 @@ public class RunwayManager {
             pendingChange = updateVTBS(windDir, windSpd);
         } else if ("LEMD".equals(airport.getIcao())) {
             pendingChange = updateLEMD(windDir, windSpd);
+        } else if ("LFPG".equals(airport.getIcao())) {
+            pendingChange = updateLFPG(windDir, windSpd);
+        } else if ("LFPO".equals(airport.getIcao())) {
+            pendingChange = updateLFPO(windDir, windSpd);
+        } else {
+            Gdx.app.log("Runway manager", "Runway settings for " + airport.getIcao() + " are unavailable.");
         }
 
         if (pendingChange && !airport.isPendingRwyChange()) {
@@ -525,6 +532,90 @@ public class RunwayManager {
                         airport.setActive("14R", false, false);
                         return true;
                     }
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Updates runway status for Paris Charles de Gaulle */
+    private boolean updateLFPG(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("26L"))) {
+                airport.setActive("26L", true, false);
+                airport.setActive("27R", true, false);
+                airport.setActive("26R", false, true);
+                airport.setActive("27L", false, true);
+            } else {
+                airport.setActive("08L", false, true);
+                airport.setActive("09R", false, true);
+                airport.setActive("09L", true, false);
+                airport.setActive("08R", true, false);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("08R") != null) {
+                //08s, 09s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("08R").getHeading()) < -5) {
+                    airport.setActive("26L", true, false);
+                    airport.setActive("27R", true, false);
+                    airport.setActive("26R", false, true);
+                    airport.setActive("27L", false, true);
+                    airport.setActive("08L", false, false);
+                    airport.setActive("08R", false, false);
+                    airport.setActive("09L", false, false);
+                    airport.setActive("09R", false, false);
+                    return true;
+                }
+            } else {
+                //26s, 27s are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("26L").getHeading()) < -5) {
+                    airport.setActive("08L", false, true);
+                    airport.setActive("09R", false, true);
+                    airport.setActive("09L", true, false);
+                    airport.setActive("08R", true, false);
+                    airport.setActive("27L", false, false);
+                    airport.setActive("27R", false, false);
+                    airport.setActive("26L", false, false);
+                    airport.setActive("26R", false, false);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Updates runway status for Paris Orly */
+    private boolean updateLFPO(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("25"))) {
+                airport.setActive("25", true, false);
+                airport.setActive("24", false, true);
+            } else {
+                airport.setActive("06", true, false);
+                airport.setActive("07", false, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("06") != null) {
+                //06, 07 are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06").getHeading()) < -5) {
+                    airport.setActive("25", true, false);
+                    airport.setActive("24", false, true);
+                    airport.setActive("06", false, false);
+                    airport.setActive("07", false, false);
+                    return true;
+                }
+            } else {
+                //24, 25 are active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25").getHeading()) < -5) {
+                    airport.setActive("06", true, false);
+                    airport.setActive("07", false, true);
+                    airport.setActive("24", false, false);
+                    airport.setActive("25", false, false);
+                    return true;
                 }
             }
         }

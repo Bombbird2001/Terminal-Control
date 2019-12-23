@@ -23,6 +23,8 @@ public class WindshearChance {
         logRegCoefficients.put("VTBD", new float[] {-12.598352844435272f, 0.4759057515584942f});
         logRegCoefficients.put("VTBS", new float[] {-11.162357827620264f, 0.4884167870726882f});
         logRegCoefficients.put("LEMD", new float[] {-5.842837306470557f, 0.18198226237092718f});
+        logRegCoefficients.put("LFPG", new float[] {});
+        logRegCoefficients.put("LFPO", new float[] {});
     }
 
     private static boolean getRandomWs(String icao, int speed) {

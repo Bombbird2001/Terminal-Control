@@ -103,7 +103,8 @@ public class Arrival extends Aircraft {
                 initAlt = 28000;
             } else if (initAlt < 6000) {
                 initAlt = 6000;
-            } else if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
+            }
+            if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
                 initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
             }
             for (Obstacle obstacle : radarScreen.obsArray) {
