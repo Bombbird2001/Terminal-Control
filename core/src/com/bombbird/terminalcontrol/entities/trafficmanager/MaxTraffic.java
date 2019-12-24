@@ -17,6 +17,7 @@ public class MaxTraffic {
         maxTraffic.put("VHHH", 20f);
         maxTraffic.put("VTBD", 20f);
         maxTraffic.put("LEMD", 22f);
+        maxTraffic.put("LFPG", 24f);
 
         nightTime.put("RJTT", new int[][] {
             {2300, 2400},
