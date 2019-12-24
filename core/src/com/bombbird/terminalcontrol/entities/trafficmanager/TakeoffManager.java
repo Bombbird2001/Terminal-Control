@@ -102,6 +102,12 @@ public class TakeoffManager {
                 updateVTBS();
             } else if ("LEMD".equals(airport.getIcao())) {
                 updateLEMD();
+            } else if ("LFPG".equals(airport.getIcao())) {
+                updateLFPG();
+            } else if ("LFPO".equals(airport.getIcao())) {
+                updateLFPO();
+            } else {
+                Gdx.app.log("Takeoff manager", "Takeoff settings for " + airport.getIcao() + " are unavailable.");
             }
         }
     }
@@ -392,13 +398,55 @@ public class TakeoffManager {
                     dist = distance;
                 } else if ("36R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36L"))) {
                     runway = runway1;
-                    if (distance > 24.9) break;
                     dist = distance;
                 } else if ("14L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14R"))) {
                     runway = runway1;
-                    if (distance > 24.9) break;
                     dist = distance;
                 } else if ("14R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Paris Charles de Gaulle */
+    private void updateLFPG() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+                if ("26R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("26L"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("27L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("27R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("08L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("08R"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("09R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("09L"))) {
+                    runway = runway1;
+                    dist = distance;
+                }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Paris Orly */
+    private void updateLFPO() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
+                if ("07".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("06"))) {
+                    runway = runway1;
+                    dist = distance;
+                } else if ("24".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("25"))) {
                     runway = runway1;
                     dist = distance;
                 }
