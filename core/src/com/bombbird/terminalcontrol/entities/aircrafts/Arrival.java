@@ -147,6 +147,11 @@ public class Arrival extends Aircraft {
             setIas(250);
         }
 
+        if (distToGo() <= 20 && getClearedIas() > 220) {
+            setClearedIas(220);
+            setIas(220);
+        }
+
         getNavState().getClearedSpd().removeFirst();
         getNavState().getClearedSpd().addFirst(getClearedIas());
 

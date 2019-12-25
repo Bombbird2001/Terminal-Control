@@ -9,8 +9,6 @@ public class ZoneLoader {
             approachZones = loadApchRJTT();
         } else if ("WSSS".equals(icao)) {
             approachZones = loadApchWSSS();
-        } else if ("LEMD".equals(icao)) {
-            approachZones = loadApchLEMD();
         }
 
         return approachZones;
@@ -32,14 +30,6 @@ public class ZoneLoader {
         return approachZones;
     }
 
-    private static Array<ApproachZone> loadApchLEMD() {
-        Array<ApproachZone> approachZones = new Array<>();
-        approachZones.add(new ApproachZone("18L", "18R", 2870.9f, 1737.3f, 181, 3.1f, 25, 0.319f));
-        approachZones.add(new ApproachZone("32L", "32R", 2902.2f, 1611.4f, 323, 3.1f, 25, 0.329f));
-
-        return approachZones;
-    }
-
     public static Array<DepartureZone> loadDepZones(String icao) {
         Array<DepartureZone> departureZones = new Array<>();
         if ("RJTT".equals(icao)) {
@@ -48,6 +38,8 @@ public class ZoneLoader {
             departureZones = loadDepRJAA();
         } else if ("LEMD".equals(icao)) {
             departureZones = loadDepLEMD();
+        } else if ("LFPG".equals(icao)) {
+            departureZones = loadDepLFPG();
         }
 
         return departureZones;
@@ -70,8 +62,16 @@ public class ZoneLoader {
 
     private static Array<DepartureZone> loadDepLEMD() {
         Array<DepartureZone> departureZones = new Array<>();
-        departureZones.add(new DepartureZone("14L", "14R", 2902.2f, 1611.4f, 143, 3.1f, 16, 0.329f));
-        departureZones.add(new DepartureZone("36L", "36R", 2870.9f, 1737.3f, 1, 3.1f, 5, 0.329f));
+        departureZones.add(new DepartureZone("14L", "14R", 2869.7f, 1653.5f, 143, 3.1f, 16, 0.329f));
+        departureZones.add(new DepartureZone("36L", "36R", 2871.3f, 1676.2f, 1, 3.1f, 5, 0.329f));
+
+        return departureZones;
+    }
+
+    private static Array<DepartureZone> loadDepLFPG() {
+        Array<DepartureZone> departureZones = new Array<>();
+        departureZones.add(new DepartureZone("08L", "09R", 2837.8f, 1614.6f, 85, 3.1f, 16, 0.329f));
+        departureZones.add(new DepartureZone("26R", "27L", 2956.2f, 1624.9f, 265, 3.1f, 10, 0.329f));
 
         return departureZones;
     }
