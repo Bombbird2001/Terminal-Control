@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.speech.tts.TextToSpeech;
-import android.widget.Toast;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 public class AndroidLauncher extends TextToSpeechManager {
