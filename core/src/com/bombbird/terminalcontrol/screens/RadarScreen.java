@@ -20,7 +20,6 @@ import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
-import com.bombbird.terminalcontrol.entities.trafficmanager.ArrivalManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -304,7 +303,6 @@ public class RadarScreen extends GameScreen {
         }
         String[] aircraftInfo = RandomGenerator.randomPlane(airport);
         Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);
-        ArrivalManager.checkArrival(arrival);
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
 

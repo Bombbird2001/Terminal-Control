@@ -152,6 +152,8 @@ public class Arrival extends Aircraft {
             setIas(220);
         }
 
+        checkArrival();
+
         getNavState().getClearedSpd().removeFirst();
         getNavState().getClearedSpd().addFirst(getClearedIas());
 
@@ -759,6 +761,26 @@ public class Arrival extends Aircraft {
             ui.updateState();
         }
         getDataTag().setMinimized(false);
+    }
+
+    /** Check initial arrival spawn separation */
+    private void checkArrival() {
+        for (Aircraft aircraft : TerminalControl.radarScreen.aircrafts.values()) {
+            if (aircraft == this) continue;
+            if (getAltitude() - aircraft.getAltitude() < 2500 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), aircraft.getX(), aircraft.getY())) < 6) {
+                if (getTypDes() - aircraft.getTypDes() > 300) {
+                    setAltitude(aircraft.getAltitude() + 3500);
+                } else {
+                    setAltitude(aircraft.getAltitude() + 2500);
+                }
+                setClearedIas(aircraft.getClearedIas() > 250 ? 250 : aircraft.getClearedIas() - 10);
+                setIas(getClearedIas());
+
+                if (getClearedAltitude() < aircraft.getClearedAltitude() + 1000) {
+                    setClearedAltitude(aircraft.getClearedAltitude() + 1000);
+                }
+            }
+        }
     }
 
     @Override

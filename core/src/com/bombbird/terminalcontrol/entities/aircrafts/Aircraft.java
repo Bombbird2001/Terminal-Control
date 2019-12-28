@@ -624,7 +624,7 @@ public class Aircraft extends Actor {
         } else if (targetVertSpd < verticalSpeed - 100) {
             verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
         }
-        float multiplier = altitude > 20000 ? 0.7f : 0.9f;
+        float multiplier = altitude > 20000 ? 0.8f : 1;
         if (!expedite && verticalSpeed > typClimb * multiplier) {
             verticalSpeed = typClimb * multiplier;
         } else if (!expedite && verticalSpeed < -typDes * multiplier) {

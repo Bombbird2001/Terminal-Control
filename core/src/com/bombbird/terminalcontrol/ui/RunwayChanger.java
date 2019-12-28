@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -22,6 +22,7 @@ public class RunwayChanger {
     private Label airportLabel;
     private Label timeLabel;
     private TextButton changeButton;
+    private ScrollPane scrollPane;
     private Label newRunwaysLabel;
     private boolean doubleCfm;
     private Array<String> runways;
@@ -72,7 +73,7 @@ public class RunwayChanger {
             public void changed(ChangeEvent event, Actor actor) {
                 event.handle();
                 if (!doubleCfm) {
-                    newRunwaysLabel.setVisible(true);
+                    scrollPane.setVisible(true);
                     if (runways.size > 0) {
                         doubleCfm = true;
                         changeButton.setText("Confirm runway change");
@@ -98,8 +99,25 @@ public class RunwayChanger {
         newRunwaysLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
         newRunwaysLabel.setY(3240 * 0.1f);
         newRunwaysLabel.setWrap(true);
-        newRunwaysLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
-        TerminalControl.radarScreen.uiStage.addActor(newRunwaysLabel);
+
+        Table scrollTable = new Table();
+        scrollPane = new ScrollPane(scrollTable);
+        scrollPane.setX(0.12f * TerminalControl.radarScreen.ui.getPaneWidth());
+        scrollPane.setY(3240 * 0.05f);
+        scrollPane.setSize(0.78f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.15f);
+        scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
+        newRunwaysLabel.setWidth(scrollPane.getWidth() - 20);
+        scrollTable.add(newRunwaysLabel).width(scrollPane.getWidth() - 20).pad(10, 20, 15, 0).getActor().invalidate();
+
+        InputListener inputListener = null;
+        for (EventListener eventListener: scrollPane.getListeners()) {
+            if (eventListener instanceof InputListener) {
+                inputListener = (InputListener) eventListener;
+            }
+        }
+        if (inputListener != null) scrollPane.removeListener(inputListener);
+        scrollPane.setVisible(false);
+        TerminalControl.radarScreen.uiStage.addActor(scrollPane);
 
         timeLabel = new Label("Time left: ", labelStyle1);
         timeLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
@@ -136,7 +154,7 @@ public class RunwayChanger {
         timeLabel.setVisible(false);
         airportLabel.setVisible(false);
         changeButton.setVisible(false);
-        newRunwaysLabel.setVisible(false);
+        scrollPane.setVisible(false);
         runways.clear();
         tkofLdg.clear();
         doubleCfm = false;
@@ -158,7 +176,7 @@ public class RunwayChanger {
         runways.clear();
         tkofLdg.clear();
         doubleCfm = false;
-        newRunwaysLabel.setVisible(false);
+        scrollPane.setVisible(false);
         changeButton.setText("Change runway configuration");
         airportLabel.setText(icao);
         airport = TerminalControl.radarScreen.airports.get(icao);
@@ -208,7 +226,7 @@ public class RunwayChanger {
             if (airport.isPendingRwyChange()) {
                 doubleCfm = true;
                 changeButton.setText("Change runways now");
-                newRunwaysLabel.setVisible(true);
+                scrollPane.setVisible(true);
             }
         }
     }
