@@ -3,11 +3,12 @@ package com.bombbird.terminalcontrol;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.speech.tts.TextToSpeech;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 public class AndroidLauncher extends TextToSpeechManager {
+    //private PlayGamesManager playGamesManager;
+
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,5 +25,14 @@ public class AndroidLauncher extends TextToSpeechManager {
             e.printStackTrace();
             toastManager.initTTSFail();
         }
+
+        //playGamesManager = new PlayGamesManager();
+        //playGamesManager.gameSignIn(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //playGamesManager.onActivityResult(this, requestCode, resultCode, data);
     }
 }

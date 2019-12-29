@@ -164,6 +164,9 @@ task run(type: Exec) {
     commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.bombbird.terminalcontrol/com.bombbird.terminalcontrol.AndroidLauncher'
 }
 
+dependencies {
+}
+
 // sets up the Android Idea project, using the old Ant based build.
 idea {
     module {
