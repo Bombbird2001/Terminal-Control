@@ -91,7 +91,7 @@ public class SeparationChecker extends Actor {
             time += 5;
         }
         lastNumber = active;
-        time -= Gdx.graphics.getDeltaTime();
+        time -= Gdx.graphics.getDeltaTime() * radarScreen.speed;
 
         if (lastNumber > 0) {
             radarScreen.soundManager.playConflict();

@@ -65,6 +65,7 @@ public class TakeoffManager {
         }
     }
 
+    /** Update loop */
     public void update() {
         //Request takeoffs if takeoffs are less than 5 more than landings
         //Update the timers & next aircrafts to take off

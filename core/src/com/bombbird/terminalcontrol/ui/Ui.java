@@ -54,6 +54,9 @@ public class Ui {
     //Label that displays score & high score
     private Label scoreLabel;
 
+    //Label that displays simulation speed
+    private Label speedLabel;
+
     //TextButton that pauses the game
     private TextButton pauseButton;
 
@@ -193,6 +196,10 @@ public class Ui {
         scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
         radarScreen.uiStage.addActor(scoreLabel);
 
+        speedLabel = new Label("1x speed", labelStyle2);
+        speedLabel.setPosition(scoreLabel.getX() + 850, 3032);
+        radarScreen.uiStage.addActor(speedLabel);
+
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
         textButtonStyle.font = Fonts.defaultFont30;
@@ -217,7 +224,7 @@ public class Ui {
 
         Table metarTable = new Table();
         metarTable.align(Align.left);
-        metarInfos = new Array<Label>();
+        metarInfos = new Array<>();
         for (final Airport airport: radarScreen.airports.values()) {
             String[] metarText = new String[5];
             metarText[0] = airport.getIcao();
@@ -267,6 +274,7 @@ public class Ui {
             label.setVisible(show);
         }
         scoreLabel.setVisible(show);
+        speedLabel.setVisible(show && radarScreen.speed > 1);
         pauseButton.setVisible(show);
         if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
     }
@@ -579,6 +587,7 @@ public class Ui {
         labelButton.setSize(0.8f * paneImage.getWidth(), 270);
         labelButton.setX(0.1f * paneImage.getWidth());
         scoreLabel.setX(paneImage.getWidth() / 19.2f);
+        speedLabel.setX(scoreLabel.getX() + 850);
         pauseButton.setX(0.75f * paneImage.getWidth());
         metarPane.setX(paneImage.getWidth() / 19.2f);
         metarPane.setWidth(paneImage.getWidth() * 5 / 6);
@@ -616,6 +625,11 @@ public class Ui {
 
     public void updateScoreLabels() {
         scoreLabel.setText("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore());
+    }
+
+    public void updateSpeedLabel(int speed) {
+        speedLabel.setText(speed + "x speed");
+        speedLabel.setVisible(speed > 1);
     }
 
     public float getPaneWidth() {

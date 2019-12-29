@@ -252,12 +252,22 @@ public class Airport {
         }
     }
 
-    /** Draws runways, also acts as update loop */
-    public void renderRunways() {
+    /** Update loop */
+    public void update() {
         if (!TerminalControl.radarScreen.tutorial) {
             takeoffManager.update();
         }
 
+        if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
+        if (rwyChangeTimer < 0) {
+            if (pendingRwyChange) setMetar(TerminalControl.radarScreen.getMetar().getMetarObject());
+            pendingRwyChange = false;
+            rwyChangeTimer = 301;
+        }
+    }
+
+    /** Draws runways */
+    public void renderRunways() {
         if (landings - airborne > 12) {
             if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
             congested = true;
@@ -268,13 +278,6 @@ public class Airport {
         for (Runway runway: runways.values()) {
             runway.setLabelColor(congested ? Color.ORANGE : Color.WHITE);
             runway.renderShape();
-        }
-
-        if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
-        if (rwyChangeTimer < 0) {
-            if (pendingRwyChange) setMetar(TerminalControl.radarScreen.getMetar().getMetarObject());
-            pendingRwyChange = false;
-            rwyChangeTimer = 301;
         }
     }
 

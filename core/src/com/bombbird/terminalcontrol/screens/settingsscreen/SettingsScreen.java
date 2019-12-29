@@ -34,6 +34,7 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> weather;
     public SelectBox<String> sound;
     public SelectBox<String> emer;
+    public SelectBox<String> speed;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -49,6 +50,9 @@ public class SettingsScreen implements Screen {
 
     public Label emerChanceLabel;
     public Emergency.Chance emerChance;
+
+    public Label speedLabel;
+    public int speedSel;
 
     public SettingsScreen(final TerminalControl game) {
         this.game = game;
@@ -99,8 +103,8 @@ public class SettingsScreen implements Screen {
 
     /** Loads selectBox for settings */
     public void loadBoxes(int xOffset, int yOffset) {
-        trajectoryLine = new SelectBox<String>(selectBoxStyle);
-        Array<String> options = new Array<String>(3);
+        trajectoryLine = new SelectBox<>(selectBoxStyle);
+        Array<String> options = new Array<>(3);
         options.add("60 sec", "90 sec", "120 sec", "150 sec");
         trajectoryLine.setItems(options);
         trajectoryLine.addListener(new ChangeListener() {
@@ -115,8 +119,8 @@ public class SettingsScreen implements Screen {
         trajectoryLine.getList().setAlignment(Align.center);
         stage.addActor(trajectoryLine);
 
-        weather = new SelectBox<String>(selectBoxStyle);
-        Array<String> options1 = new Array<String>(3);
+        weather = new SelectBox<>(selectBoxStyle);
+        Array<String> options1 = new Array<>(3);
         options1.add("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
         weather.setItems(options1);
         weather.addListener(new ChangeListener() {
@@ -131,8 +135,8 @@ public class SettingsScreen implements Screen {
         weather.getList().setAlignment(Align.center);
         stage.addActor(weather);
 
-        sound = new SelectBox<String>(selectBoxStyle);
-        Array<String> options2 = new Array<String>(2);
+        sound = new SelectBox<>(selectBoxStyle);
+        Array<String> options2 = new Array<>(2);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             options2.add("Pilot voices + sound effects", "Sound effects only", "Off");
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
@@ -157,8 +161,8 @@ public class SettingsScreen implements Screen {
         sound.getList().setAlignment(Align.center);
         stage.addActor(sound);
 
-        emer = new SelectBox<String>(selectBoxStyle);
-        Array<String> options3 = new Array<String>(4);
+        emer = new SelectBox<>(selectBoxStyle);
+        Array<String> options3 = new Array<>(4);
         options3.add("Off", "Low", "Medium", "High");
         emer.setItems(options3);
         emer.addListener(new ChangeListener() {
@@ -172,6 +176,23 @@ public class SettingsScreen implements Screen {
         emer.setAlignment(Align.center);
         emer.getList().setAlignment(Align.center);
         stage.addActor(emer);
+
+        speed = new SelectBox<>(selectBoxStyle);
+        Array<String> options4 = new Array<>(3);
+        options4.add("1x", "2x", "4x");
+        speed.setItems(options4);
+        speed.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                speedSel = speed.getSelected().charAt(0) - 48;
+            }
+        });
+        speed.setSize(1200, 300);
+        speed.setPosition(5760 / 2f - 400 + xOffset + 1800, 3240 * 0.8f + yOffset);
+        speed.setAlignment(Align.center);
+        speed.getList().setAlignment(Align.center);
+        speed.setVisible(this instanceof GameSettingsScreen);
+        stage.addActor(speed);
     }
 
     /** Loads buttons */
@@ -200,6 +221,11 @@ public class SettingsScreen implements Screen {
         emerChanceLabel = new Label("Emergencies: ", labelStyle);
         emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
         stage.addActor(emerChanceLabel);
+
+        speedLabel = new Label("Speed: ", labelStyle);
+        speedLabel.setPosition(speed.getX() - 100 - speedLabel.getWidth(), speed.getY() + speed.getHeight() / 2 - speedLabel.getHeight() / 2);
+        speedLabel.setVisible(this instanceof GameSettingsScreen);
+        stage.addActor(speedLabel);
     }
 
     /** Sets relevant options into select boxes */
@@ -211,6 +237,7 @@ public class SettingsScreen implements Screen {
         sound.setSelectedIndex(soundIndex);
         String tmp = emerChance.toString().toLowerCase(Locale.US);
         emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
+        speed.setSelected(speedSel + "x");
     }
 
     /** Confirms and applies the changes set */

@@ -430,18 +430,28 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
-    public void renderShape() {
+    public void update() {
         //Update timers
         updateTimers();
 
         //Updates waypoints status
         waypointManager.update();
 
-        //Updates aircraft separation status
-        separationChecker.update();
-
         //Updates STAR timers
         RandomSTAR.update();
+
+        //Update airport stuff
+        for (Airport airport: airports.values()) {
+            airport.update();
+        }
+
+        runwayChanger.update();
+    }
+
+    @Override
+    public void renderShape() {
+        //Updates aircraft separation status
+        separationChecker.update();
 
         //Draw shoreline
         Shoreline.renderShape();
@@ -524,8 +534,6 @@ public class RadarScreen extends GameScreen {
         }
 
         shapeRenderer.end();
-
-        runwayChanger.update();
     }
 
     @Override

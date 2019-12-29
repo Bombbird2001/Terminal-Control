@@ -19,7 +19,7 @@ public class GameSettingsScreen extends SettingsScreen {
 
         this.radarScreen = radarScreen;
 
-        loadUI(0, 0);
+        loadUI(-1000, 0);
     }
 
     @Override
@@ -60,6 +60,8 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.liveWeather = weatherSel;
         radarScreen.soundSel = soundSel;
         radarScreen.emerChance = emerChance;
+        radarScreen.speed = speedSel;
+        radarScreen.ui.updateSpeedLabel(speedSel);
     }
 
     /** Gets radarscreen settings before setting options */
@@ -69,6 +71,7 @@ public class GameSettingsScreen extends SettingsScreen {
         weatherSel = radarScreen.liveWeather;
         soundSel = radarScreen.soundSel;
         emerChance = radarScreen.emerChance;
+        speedSel = radarScreen.speed;
 
         super.setOptions();
     }
@@ -83,6 +86,8 @@ public class GameSettingsScreen extends SettingsScreen {
         soundLabel.setVisible(show);
         emer.setVisible(show);
         emerChanceLabel.setVisible(show);
+        speed.setVisible(show);
+        speedLabel.setVisible(show);
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
     }

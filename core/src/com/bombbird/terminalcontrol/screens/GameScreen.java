@@ -78,10 +78,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public Array<Obstacle> obsArray;
 
     //Create airports
-    public final HashMap<String, Airport> airports = new HashMap<String, Airport>();
+    public final HashMap<String, Airport> airports = new HashMap<>();
 
     //HashMap of planes
-    public final HashMap<String, Aircraft> aircrafts = new HashMap<String, Aircraft>();
+    public final HashMap<String, Aircraft> aircrafts = new HashMap<>();
 
     //Create waypoints
     public HashMap<String, Waypoint> waypoints;
@@ -99,6 +99,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         SETTINGS
     }
     public static State state = State.RUN;
+
+    public int speed = 1;
 
     public GameScreen(final TerminalControl game) {
         this.game = game;
@@ -244,6 +246,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
+    /** Main update method, overriden in radarScreen */
+    public void update() {
+        //No default implementation
+    }
+
     /** Main rendering method for rendering to spriteBatch */
     @Override
     public void render(float delta) {
@@ -265,12 +272,17 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     shapeRenderer.setProjectionMatrix(camera.combined);
 
                     //Update stage
-                    stage.act(delta);
-                    labelStage.act(delta);
+                    for (int i = 0; i < speed; i++) {
+                        stage.act(delta);
+                        labelStage.act(delta);
+                    }
 
                     //Render each of the range circles, obstacles using shaperenderer
                     if (!loading) {
                         stage.getViewport().apply();
+                        for (int i = 0; i < speed; i++) {
+                            update();
+                        }
                         //Render shapes only if METAR has finished loading
                         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                         renderShape();
@@ -302,6 +314,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
                         tipLabel.draw(game.batch, 1);
                     } else if (checkAircraftsLoaded()) {
+                        /*
+                        for (int i = 0; i < speed; i++) {
+                            for (Aircraft aircraft: aircrafts.values()) {
+                                aircraft.update();
+                            }
+                        }
+                        */
                         stage.draw();
                         game.batch.end();
                         game.batch.setProjectionMatrix(labelStage.getCamera().combined);

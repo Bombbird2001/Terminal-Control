@@ -525,7 +525,7 @@ public class Aircraft extends Actor {
         route.getHoldProcedure().renderShape(radarScreen.waypoints.get(LatTab.holdWpt));
     }
 
-    /** The main update function, called during aircraft draw */
+    /** The main update function */
     public double update() {
         if (navState!= null) navState.updateTime();
         tas = MathTools.iasToTas(ias, altitude);
@@ -1026,7 +1026,9 @@ public class Aircraft extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        update();
+        for (int i = 0; i < radarScreen.speed; i++) {
+            update();
+        }
         dataTag.updateLabel();
         dataTag.updateIcon(batch);
 
