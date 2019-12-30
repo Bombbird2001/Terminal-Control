@@ -208,6 +208,7 @@ public class HttpRequests {
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Gdx.app.log("sendMetar", response.toString());
+                    metar.randomWeather();
                 } else {
                     if (response.body() != null) System.out.println(response.body().string());
                 }
