@@ -130,11 +130,10 @@ public class HttpRequests {
                         response.close();
                         if (count <= 2) {
                             getApiKey(metar, count + 1);
-                            return;
                         } else {
                             metar.randomWeather();
-                            return;
                         }
+                        return;
                     }
                     receiveMetar(metar, apiKey, true);
                     TerminalControl.radarScreen.loadingPercent = "40%";
@@ -209,6 +208,8 @@ public class HttpRequests {
                 if (!response.isSuccessful()) {
                     Gdx.app.log("sendMetar", response.toString());
                     metar.randomWeather();
+                    response.close();
+                    return;
                 } else {
                     if (response.body() != null) System.out.println(response.body().string());
                 }
