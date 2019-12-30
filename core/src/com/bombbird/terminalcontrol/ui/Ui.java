@@ -196,7 +196,11 @@ public class Ui {
         scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
         radarScreen.uiStage.addActor(scoreLabel);
 
-        speedLabel = new Label("1x speed", labelStyle2);
+        Label.LabelStyle labelStyle3 = new Label.LabelStyle();
+        labelStyle3.font = Fonts.defaultFont20;
+        labelStyle3.fontColor = Color.WHITE;
+
+        speedLabel = new Label("1x speed", labelStyle3);
         speedLabel.setPosition(scoreLabel.getX() + 850, 3032);
         radarScreen.uiStage.addActor(speedLabel);
 

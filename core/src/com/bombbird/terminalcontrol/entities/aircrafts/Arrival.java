@@ -58,7 +58,7 @@ public class Arrival extends Aircraft {
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
             star = arrival.getStars().get("TNN1A");
             getEmergency().setEmergency(false);
-            setTypDes(3500);
+            setTypDes(2900);
         }
         RandomSTAR.starUsed(getAirport().getIcao(), star.getName());
 

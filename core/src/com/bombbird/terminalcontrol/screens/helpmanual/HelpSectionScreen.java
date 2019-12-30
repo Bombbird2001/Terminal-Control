@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.selectgamescreen;
+package com.bombbird.terminalcontrol.screens.helpmanual;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -9,30 +9,26 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
+import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class SelectGameScreen implements Screen {
-    //Init game (set in constructor)
+public class HelpSectionScreen implements Screen {
     public final TerminalControl game;
     private Stage stage;
-    private Table scrollTable;
 
-    //Create new camera
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    //Styles
-    private Label.LabelStyle labelStyle;
-    private TextButton.TextButtonStyle buttonStyle;
+    private Image background;
+    private Table scrollTable;
+    private String page;
 
-    //Background image (from MainMenuScreen)
-    public Image background;
-
-    public SelectGameScreen(final TerminalControl game, Image background) {
+    public HelpSectionScreen(TerminalControl game, Image background, String page) {
         this.game = game;
 
         //Set camera params
@@ -46,37 +42,58 @@ public class SelectGameScreen implements Screen {
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
-        //Set table params (for scrollpane)
-        scrollTable = new Table();
-
         //Set background image to that shown on main menu screen
         this.background = background;
+
+        this.page = page;
     }
 
-    /** Loads the full UI of this screen */
-    private void loadUI() {
+    public void loadUI() {
         //Reset stage
         stage.clear();
 
         stage.addActor(background);
 
         loadLabel();
-        loadButtons();
         loadScroll();
+        loadContent();
+        loadButtons();
     }
 
-    /** Loads the appropriate labelStyle, and is overridden to load a label with the appropriate text */
     public void loadLabel() {
-        //Set label style
-        labelStyle = new Label.LabelStyle();
+        //Set label params
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
+        Label headerLabel = new Label(page, labelStyle);
+        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
+        headerLabel.setAlignment(Align.center);
+        stage.addActor(headerLabel);
+    }
+
+    private void loadScroll() {
+        scrollTable = new Table();
+        ScrollPane scrollPane = new ScrollPane(scrollTable);
+
+        scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH);
+        scrollPane.setY(1620 * 0.2f);
+        scrollPane.setWidth(MainMenuScreen.BUTTON_WIDTH * 2);
+        scrollPane.setHeight(1620 * 0.6f);
+        scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
+
+        stage.addActor(scrollPane);
+    }
+
+    private void loadContent() {
+        HelpManager.loadContent(scrollTable, page);
     }
 
     /** Loads the default button styles and back button */
     private void loadButtons() {
         //Set button textures
-        buttonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont12;
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
@@ -90,16 +107,12 @@ public class SelectGameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
-                game.setScreen(new MainMenuScreen(game, background));
+                game.setScreen(new HelpScreen(game, background));
+                dispose();
             }
         });
 
         stage.addActor(backButton);
-    }
-
-    /** Loads the contents of the scrollPane */
-    public void loadScroll() {
-        //No default implementation
     }
 
     /** Implements show method of screen */
@@ -112,7 +125,7 @@ public class SelectGameScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
 
@@ -126,8 +139,8 @@ public class SelectGameScreen implements Screen {
                 game.batch.end();
                 success = true;
             } catch (IndexOutOfBoundsException e) {
-                Gdx.app.log("SelectGameScreen", "stage.draw() render error");
-                game.batch.end();
+                Gdx.app.log("HelpSectionScreen", "stage.draw() render error");
+                stage.getBatch().end();
                 e.printStackTrace();
             }
         }
@@ -156,29 +169,13 @@ public class SelectGameScreen implements Screen {
     /** Implements hide method of screen */
     @Override
     public void hide() {
-        dispose();
+        //No default implementation
     }
 
-    /** Implements dispose method of screen, called to dispose assets once unneeded */
+    /** Implements dispose method of screen */
     @Override
     public void dispose() {
         stage.clear();
         stage.dispose();
-    }
-
-    public Label.LabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    public TextButton.TextButtonStyle getButtonStyle() {
-        return buttonStyle;
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Table getScrollTable() {
-        return scrollTable;
     }
 }

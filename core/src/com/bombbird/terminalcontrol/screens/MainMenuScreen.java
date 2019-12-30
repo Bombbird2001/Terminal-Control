@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.DefaultSettingsScreen;
@@ -159,6 +160,23 @@ public class MainMenuScreen implements Screen {
             }
         });
         stage.addActor(infoButton);
+
+        //Set help button
+        ImageButton.ImageButtonStyle imageButtonStyle2 = new ImageButton.ImageButtonStyle();
+        imageButtonStyle2.imageUp = TerminalControl.skin.getDrawable("Help_up");
+        imageButtonStyle2.imageDown = TerminalControl.skin.getDrawable("Help_down");
+        ImageButton helpButton = new ImageButton(imageButtonStyle2);
+        helpButton.setPosition(1440 - 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
+        helpButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
+        helpButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go to settings screen
+                game.setScreen(new HelpScreen(game, background));
+                dispose();
+            }
+        });
+        stage.addActor(helpButton);
 
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;
