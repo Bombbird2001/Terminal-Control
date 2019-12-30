@@ -85,7 +85,8 @@ public class HelpManager {
                 "Do take note that the minimum separation in Bangkok TMA is 5nm or 1000 feet rather than the standard 3nm or 1000 feet."});
         CONTENT_LIST.put("LEMD", new String[] {"LEMD, Madrid Barajas Airport", "Runways:", "14L-32R: 3500m", "14R-32L: 4100m", "18L-36R: 3500m", "18R-36L: 4350m", "Configurations: 36L, 36R, 32L and 32R or 14L, 14R, 18L or 18R",
                 "Simultaneous departures used for 36L and 36R or 14L and 14R. Simultaneous arrivals used for 18L and 18R or 32L or 32R",
-                "High terrain, restricted areas are present to the north-west of the airport, caution should be taken when vectoring aircrafts in that sector. Runway 18L, 18R STARs do take them into account."});
+                "High terrain, restricted areas are present to the north-west of the airport, caution should be taken when vectoring aircrafts in that sector. Runway 18L, 18R STARs do take them into account.",
+                "During night operations, only 2 runways are used. 14L or 36L is used for departure, 18L or 32R is used for arrivals."});
         CONTENT_LIST.put("LFPG", new String[] {"LFPG, Paris Charles de Gaulle Airport", "Runways:", "08L-26R: 4215m", "08R-26L: 2700m", "09L-27R: 2700m", "09R-27L: 4200m", "Configurations: 08L, 08R, 09L and 09R or 26L, 26R, 27L and 27R",
                 "Simultaneous departures used for 08L and 09R or 26R and 27L. Simultaneous arrivals used for 08R and 09L or 26L and 27R",
                 "LFPG STARs end early on, and aircrafts will need to be vectored manually to the ILS. When vectoring south-east or south-west arrivals, depending on the runway configuration, you will also need to be aware of the restricted area over Paris City, as well as LFPO traffic.",
