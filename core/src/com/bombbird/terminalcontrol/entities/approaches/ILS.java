@@ -29,7 +29,8 @@ public class ILS extends Actor {
     private Runway rwy;
     private MissedApproach missedApchProc;
 
-    private Array<Vector2> gsRings = new Array<Vector2>();
+    private Array<Vector2> gsRings = new Array<>();
+    int minAlt;
 
     private static final float distance1 = MathTools.nmToPixel(10);
     private static final int angle1 = 6;
@@ -77,8 +78,12 @@ public class ILS extends Actor {
 
     /** Calculates positions of the GS rings; overriden for LDAs */
     public void calculateGsRings() {
+        minAlt = -1;
         for (int i = 2; i <= gsAlt / 1000; i++) {
-            if (i * 1000 > airport.getElevation() + 1000) gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev)));
+            if (i * 1000 > airport.getElevation() + 1000) {
+                gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev)));
+                if (minAlt == -1) minAlt = i;
+            }
         }
     }
 
@@ -97,8 +102,11 @@ public class ILS extends Actor {
     }
 
     public void drawGsCircles() {
+        int i = 0;
         for (Vector2 vector2: gsRings) {
+            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !(this instanceof LDA) ? Color.GREEN : Color.CYAN);
             radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
+            i++;
         }
     }
 
