@@ -11,8 +11,8 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.helpmanual.HelpSectionScreen;
 
-public class HelpScreen extends SelectGameScreen {
-    public HelpScreen(TerminalControl game, Image background) {
+public class AirportHelpScreen extends SelectGameScreen {
+    public AirportHelpScreen(TerminalControl game, Image background) {
         super(game, background);
     }
 
@@ -21,7 +21,7 @@ public class HelpScreen extends SelectGameScreen {
     public void loadLabel() {
         //Set label params
         super.loadLabel();
-        Label headerLabel = new Label("Help Manual", getLabelStyle());
+        Label headerLabel = new Label("Airports", getLabelStyle());
         headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
         headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
@@ -33,18 +33,14 @@ public class HelpScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load help sections
-        String[] sections = {"Airports", "Aircraft instructions", "ILS, LDA", "Separation", "MVAs, restricted areas", "NTZs", "Wake turbulence"};
-        for (String section: sections) {
-            TextButton button = new TextButton(section, getButtonStyle());
-            button.setName(section);
+        String[] airports = TerminalControl.full ? new String[] {"RCTP", "WSSS", "RJTT", "VHHH", "RJBB", "VTBD", "LEMD", "LFPG"} : new String[] {"RCTP", "WSSS"};
+        for (String arpt: airports) {
+            TextButton button = new TextButton(arpt, getButtonStyle());
+            button.setName(arpt);
             button.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    if ("Airports".equals(button.getName())) {
-                        game.setScreen(new AirportHelpScreen(game, background));
-                    } else {
-                        game.setScreen(new HelpSectionScreen(game, background, button.getName()));
-                    }
+                    game.setScreen(new HelpSectionScreen(game, background, button.getName()));
                 }
             });
             getScrollTable().add(button).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT);

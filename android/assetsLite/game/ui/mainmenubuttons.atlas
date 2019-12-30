@@ -1,6 +1,6 @@
 
 mainmenubuttons.png
-size: 1024,512
+size: 2048,512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -32,16 +32,30 @@ FillerImage
   orig: 500, 100
   offset: 0, 0
   index: -1
+Help_down
+  rotate: false
+  xy: 742, 206
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Help_up
+  rotate: false
+  xy: 1612, 308
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
 Information_down
   rotate: false
-  xy: 644, 4
+  xy: 1410, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Information_up
   rotate: false
-  xy: 442, 2
+  xy: 1208, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
@@ -55,14 +69,14 @@ ListBackground
   index: -1
 Settings_down
   rotate: false
-  xy: 240, 2
+  xy: 1006, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Settings_up
   rotate: false
-  xy: 742, 206
+  xy: 240, 2
   size: 200, 200
   orig: 200, 200
   offset: 0, 0

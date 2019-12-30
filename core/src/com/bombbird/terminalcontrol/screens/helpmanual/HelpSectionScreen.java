@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
+import com.bombbird.terminalcontrol.screens.selectgamescreen.AirportHelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -107,7 +108,11 @@ public class HelpSectionScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
-                game.setScreen(new HelpScreen(game, background));
+                if (page.length() == 4) {
+                    game.setScreen(new AirportHelpScreen(game, background));
+                } else {
+                    game.setScreen(new HelpScreen(game, background));
+                }
                 dispose();
             }
         });
