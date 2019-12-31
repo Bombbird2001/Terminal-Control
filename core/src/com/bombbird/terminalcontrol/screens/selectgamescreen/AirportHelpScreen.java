@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.helpmanual.HelpSectionScreen;
+import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class AirportHelpScreen extends SelectGameScreen {
     public AirportHelpScreen(TerminalControl game, Image background) {
@@ -27,6 +28,31 @@ public class AirportHelpScreen extends SelectGameScreen {
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
         headerLabel.setAlignment(Align.center);
         getStage().addActor(headerLabel);
+    }
+
+    /** Loads the default button styles and back button */
+    @Override
+    public void loadButtons() {
+        //Set button textures
+        buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = Fonts.defaultFont12;
+        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up");
+        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
+
+        //Set back button params
+        TextButton backButton = new TextButton("<= Back", buttonStyle);
+        backButton.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        backButton.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f);
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go back to main menu
+                game.setScreen(new HelpScreen(game, background));
+            }
+        });
+
+        stage.addActor(backButton);
     }
 
     /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane */

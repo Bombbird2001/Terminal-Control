@@ -18,7 +18,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 public class SelectGameScreen implements Screen {
     //Init game (set in constructor)
     public final TerminalControl game;
-    private Stage stage;
+    public Stage stage;
     private Table scrollTable;
 
     //Create new camera
@@ -27,7 +27,7 @@ public class SelectGameScreen implements Screen {
 
     //Styles
     private Label.LabelStyle labelStyle;
-    private TextButton.TextButtonStyle buttonStyle;
+    public TextButton.TextButtonStyle buttonStyle;
 
     //Background image (from MainMenuScreen)
     public Image background;
@@ -74,7 +74,7 @@ public class SelectGameScreen implements Screen {
     }
 
     /** Loads the default button styles and back button */
-    private void loadButtons() {
+    public void loadButtons() {
         //Set button textures
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont12;

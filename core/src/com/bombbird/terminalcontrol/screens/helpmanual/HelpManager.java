@@ -79,7 +79,7 @@ public class HelpManager {
                 "Due to its proximity with RJBB traffic, care must be taken when handling RJBE departures."});
         CONTENT_LIST.put("VTBD", new String[] {"VTBD, Bangkok Don Mueang International Airport", "Runways:", "03L-21R: 3700m", "03R-21L: 3500m", "Configurations: 03L and 03R or 21L and 21R",
                 "Segregated runway operations are used, with 03L-21R used for arrivals, and 03R-21L used for departures.",
-                "In order to avoid a restricted area at Bangkok City, runway 21L SIDs have to make an early right turn to avoid it. Runway 03L STARs also need to navigate around the area before lining up for a relatively short final.",
+                "In order to avoid restricted areas at Bangkok City, runway 21L SIDs have to make an early right turn to avoid it. Runway 03L STARs also need to navigate around the area before lining up for a relatively short final.",
                 "VTBS, Bangkok Suvarnabhumi Airport", "Runways:", "01L-19R: 3700m", "01R-19L: 4000m", "Configurations: 01L and 01R or 19L or 19R",
                 "Segregated runway operations usually used, with 01R-19L used for arrivals, and 01L-19R used for departures.",
                 "Do take note that the minimum separation in Bangkok TMA is 5nm or 1000 feet rather than the standard 3nm or 1000 feet."});
