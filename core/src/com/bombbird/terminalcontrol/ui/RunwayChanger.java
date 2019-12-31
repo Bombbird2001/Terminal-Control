@@ -102,12 +102,12 @@ public class RunwayChanger {
 
         Table scrollTable = new Table();
         scrollPane = new ScrollPane(scrollTable);
-        scrollPane.setX(0.12f * TerminalControl.radarScreen.ui.getPaneWidth());
+        scrollPane.setX(0.11f * TerminalControl.radarScreen.ui.getPaneWidth());
         scrollPane.setY(3240 * 0.05f);
-        scrollPane.setSize(0.78f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.15f);
+        scrollPane.setSize(0.79f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.15f);
         scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
-        newRunwaysLabel.setWidth(scrollPane.getWidth() - 20);
-        scrollTable.add(newRunwaysLabel).width(scrollPane.getWidth() - 20).pad(10, 20, 15, 0).getActor().invalidate();
+        newRunwaysLabel.setWidth(scrollPane.getWidth());
+        scrollTable.add(newRunwaysLabel).width(scrollPane.getWidth()).pad(10, 0, 15, 0).getActor().invalidate();
 
         InputListener inputListener = null;
         for (EventListener eventListener: scrollPane.getListeners()) {

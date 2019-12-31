@@ -766,7 +766,7 @@ public class Arrival extends Aircraft {
     /** Check initial arrival spawn separation */
     private void checkArrival() {
         for (Aircraft aircraft : TerminalControl.radarScreen.aircrafts.values()) {
-            if (aircraft == this) continue;
+            if (aircraft == this || aircraft instanceof Departure) continue;
             if (getAltitude() - aircraft.getAltitude() < 2500 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), aircraft.getX(), aircraft.getY())) < 6) {
                 if (getTypDes() - aircraft.getTypDes() > 300) {
                     setAltitude(aircraft.getAltitude() + 3500);
