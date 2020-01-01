@@ -59,6 +59,7 @@ public class Arrival extends Aircraft {
             star = arrival.getStars().get("TNN1A");
             getEmergency().setEmergency(false);
             setTypDes(2900);
+            contactAlt = 22000;
         }
         RandomSTAR.starUsed(getAirport().getIcao(), star.getName());
 

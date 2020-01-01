@@ -413,7 +413,7 @@ public class TutorialManager {
             }
         } else if (prompt6) {
             prompt6 = false;
-            tutorialMsg("Congratulations, you have just handled an arrival and a departure! Are you ready to handle more aircrafts? If so, go ahead and start a new game! But feel free to revisit the tutorial again if you wish. All the best!");
+            tutorialMsg("Congratulations, you have just handled an arrival and a departure! Are you ready to handle more aircrafts? If so, go ahead and start a new game! But feel free to revisit the tutorial again if you wish. The help manual on the main menu also contains more detailed information regarding game mechanics and airports, do refer to it. All the best!");
 
             timer.scheduleTask(new Timer.Task() {
                 @Override
