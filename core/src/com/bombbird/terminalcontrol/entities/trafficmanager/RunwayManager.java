@@ -269,10 +269,10 @@ public class RunwayManager {
     private boolean updateRJOO(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
             airport.setActive("32L", false, false);
-            return true;
+            return airport.getLandingRunways().containsKey("32L");
         } else {
             airport.setActive("32L", true, true);
-            return false;
+            return !airport.getLandingRunways().containsKey("32L");
         }
     }
 
@@ -280,10 +280,10 @@ public class RunwayManager {
     private boolean updateRJBE(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
             airport.setActive("09", false, false);
-            return true;
+            return airport.getLandingRunways().containsKey("09");
         } else {
             airport.setActive("09", true, true);
-            return false;
+            return !airport.getLandingRunways().containsKey("09");
         }
     }
 
