@@ -49,12 +49,12 @@ public class NavState {
         radarScreen = TerminalControl.radarScreen;
 
         this.aircraft = aircraft;
-        altModes = new Array<String>(5);
-        spdModes = new Array<String>(3);
+        altModes = new Array<>(5);
+        spdModes = new Array<>(3);
 
         if (aircraft instanceof Arrival) {
             //Arrival
-            latModes = new Array<String>(6);
+            latModes = new Array<>(6);
             latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Hold at", "Fly heading");
             latModes.add("Turn left heading", "Turn right heading");
 
@@ -63,7 +63,7 @@ public class NavState {
             spdModes.add("STAR speed restrictions");
         } else if (aircraft instanceof Departure) {
             //Departure
-            latModes = new Array<String>(4);
+            latModes = new Array<>(4);
             latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
 
             altModes.add("Climb via SID");
@@ -72,47 +72,47 @@ public class NavState {
         } else {
             //Nani
             Gdx.app.log("Navstate type error", "Unknown navstate type specified!");
-            latModes = new Array<String>(1);
+            latModes = new Array<>(1);
         }
         altModes.add("Climb/descend to", "Expedite climb/descent to");
 
         spdModes.add("No speed restrictions");
 
-        dispLatMode = new Queue<String>();
+        dispLatMode = new Queue<>();
         dispLatMode.addLast(latModes.get(0));
-        dispAltMode = new Queue<String>();
+        dispAltMode = new Queue<>();
         dispAltMode.addLast(altModes.get(0));
-        dispSpdMode = new Queue<String>();
+        dispSpdMode = new Queue<>();
         dispSpdMode.addLast(spdModes.get(0));
 
-        timeQueue = new Array<Float>();
+        timeQueue = new Array<>();
 
-        clearedHdg = new Queue<Integer>();
+        clearedHdg = new Queue<>();
         clearedHdg.addLast(aircraft.getClearedHeading());
-        clearedDirect = new Queue<Waypoint>();
+        clearedDirect = new Queue<>();
         clearedDirect.addLast(aircraft.getDirect());
-        clearedAftWpt = new Queue<Waypoint>();
+        clearedAftWpt = new Queue<>();
         clearedAftWpt.addLast(aircraft.getAfterWaypoint());
-        clearedAftWptHdg = new Queue<Integer>();
+        clearedAftWptHdg = new Queue<>();
         clearedAftWptHdg.addLast(aircraft.getAfterWptHdg());
-        clearedHold = new Queue<Waypoint>();
+        clearedHold = new Queue<>();
         clearedHold.addFirst(null);
-        clearedIls = new Queue<ILS>();
+        clearedIls = new Queue<>();
         clearedIls.addLast(null);
 
-        clearedAlt = new Queue<Integer>();
+        clearedAlt = new Queue<>();
         clearedAlt.addLast(aircraft.getClearedAltitude());
-        clearedExpedite = new Queue<Boolean>();
+        clearedExpedite = new Queue<>();
         clearedExpedite.addLast(aircraft.isExpedite());
 
-        clearedSpd = new Queue<Integer>();
+        clearedSpd = new Queue<>();
         if (aircraft instanceof Departure) {
             clearedSpd.addLast(aircraft.getV2());
         } else {
             clearedSpd.addLast(aircraft.getClimbSpd());
         }
 
-        goAround = new Queue<Boolean>();
+        goAround = new Queue<>();
         goAround.addLast(false);
     }
 
@@ -120,29 +120,29 @@ public class NavState {
         radarScreen = TerminalControl.radarScreen;
         this.aircraft = aircraft;
 
-        latModes = new Array<String>();
-        altModes = new Array<String>();
-        spdModes = new Array<String>();
+        latModes = new Array<>();
+        altModes = new Array<>();
+        spdModes = new Array<>();
 
-        timeQueue = new Array<Float>();
+        timeQueue = new Array<>();
 
-        dispLatMode = new Queue<String>();
-        dispAltMode = new Queue<String>();
-        dispSpdMode = new Queue<String>();
+        dispLatMode = new Queue<>();
+        dispAltMode = new Queue<>();
+        dispSpdMode = new Queue<>();
 
-        clearedHdg = new Queue<Integer>();
-        clearedDirect = new Queue<Waypoint>();
-        clearedAftWpt = new Queue<Waypoint>();
-        clearedAftWptHdg = new Queue<Integer>();
-        clearedHold = new Queue<Waypoint>();
-        clearedIls = new Queue<ILS>();
+        clearedHdg = new Queue<>();
+        clearedDirect = new Queue<>();
+        clearedAftWpt = new Queue<>();
+        clearedAftWptHdg = new Queue<>();
+        clearedHold = new Queue<>();
+        clearedIls = new Queue<>();
 
-        clearedAlt = new Queue<Integer>();
-        clearedExpedite = new Queue<Boolean>();
+        clearedAlt = new Queue<>();
+        clearedExpedite = new Queue<>();
 
-        clearedSpd = new Queue<Integer>();
+        clearedSpd = new Queue<>();
 
-        goAround = new Queue<Boolean>();
+        goAround = new Queue<>();
 
         length = save.getInt("length");
 
@@ -253,27 +253,27 @@ public class NavState {
         } else {
             validateInputs();
 
-            dispLatMode.removeFirst();
-            dispAltMode.removeFirst();
-            dispSpdMode.removeFirst();
+            if (dispLatMode.size > 1) dispLatMode.removeFirst();
+            if (dispAltMode.size > 1) dispAltMode.removeFirst();
+            if (dispSpdMode.size > 1) dispSpdMode.removeFirst();
 
-            clearedHdg.removeFirst();
-            clearedDirect.removeFirst();
-            clearedAftWpt.removeFirst();
-            clearedAftWptHdg.removeFirst();
-            clearedHold.removeFirst();
-            clearedIls.removeFirst();
+            if (clearedHdg.size > 1) clearedHdg.removeFirst();
+            if (clearedDirect.size > 1) clearedDirect.removeFirst();
+            if (clearedAftWpt.size > 1) clearedAftWpt.removeFirst();
+            if (clearedAftWptHdg.size > 1) clearedAftWptHdg.removeFirst();
+            if (clearedHold.size > 1) clearedHold.removeFirst();
+            if (clearedIls.size > 1) clearedIls.removeFirst();
 
-            clearedAlt.removeFirst();
-            clearedExpedite.removeFirst();
+            if (clearedAlt.size > 1) clearedAlt.removeFirst();
+            if (clearedExpedite.size > 1) clearedExpedite.removeFirst();
 
-            clearedSpd.removeFirst();
+            if (clearedSpd.size > 1) clearedSpd.removeFirst();
 
-            goAround.removeFirst();
+            if (goAround.size > 1) goAround.removeFirst();
 
             updateAircraftInfo();
         }
-        length--;
+        if (length > 1) length--;
     }
 
     /** Sets the direct aircraft navigation states */
@@ -364,7 +364,7 @@ public class NavState {
 
     /** Replaces all turn left/right heading with fly heading, called after aircraft has finished a turn instructed in a specific direction */
     public void replaceAllHdgModes() {
-        Queue<String> newLatMode = new Queue<String>();
+        Queue<String> newLatMode = new Queue<>();
 
         int size = dispLatMode.size;
         for (int i = 0; i < size; i++) {
@@ -402,17 +402,17 @@ public class NavState {
 
     /** Gets current cleared aircraft speed and sets all subsequently cleared speed to that value if larger */
     public void replaceAllClearedSpdToLower() {
-        Queue<Integer> newQueue = new Queue<Integer>();
+        Queue<Integer> newQueue = new Queue<>();
         while (!clearedSpd.isEmpty()) {
             int first = clearedSpd.removeFirst();
-            newQueue.addLast(first > aircraft.getClearedIas() ? aircraft.getClearedIas() : first);
+            newQueue.addLast(Math.min(first, aircraft.getClearedIas()));
         }
         clearedSpd = newQueue;
     }
 
     /** Gets current cleared aircraft speed and sets all subsequently cleared speed to that value if smaller */
     public void replaceAllClearedSpdToHigher() {
-        Queue<Integer> newQueue = new Queue<Integer>();
+        Queue<Integer> newQueue = new Queue<>();
         while (!clearedSpd.isEmpty()) {
             int first = clearedSpd.removeFirst();
             newQueue.addLast(Math.max(first, aircraft.getClearedIas()));
@@ -469,12 +469,12 @@ public class NavState {
         dispLatMode.addLast(latMode);
         goAround.addLast(aircraft.isGoAround());
         length++;
-        fillUp(this.clearedHdg);
-        fillUp(clearedDirect);
-        fillUp(clearedAftWpt);
-        fillUp(clearedAftWptHdg);
-        fillUp(clearedHold);
-        fillUp(clearedIls);
+        fillUpInt(this.clearedHdg);
+        fillUpWpt(clearedDirect);
+        fillUpWpt(clearedAftWpt);
+        fillUpInt(clearedAftWptHdg);
+        fillUpWpt(clearedHold);
+        fillUpILS(clearedIls);
     }
 
     /** Adds new altitude instructions to queue, called after sendLat */
@@ -482,7 +482,7 @@ public class NavState {
         this.clearedAlt.addLast(clearedAlt);
         dispAltMode.addLast(altMode);
         clearedExpedite.addLast(altMode.contains("Expedite"));
-        fillUp(clearedExpedite);
+        fillUpBool(clearedExpedite);
     }
 
     /** Adds new speed instructions to queue, called after sendAlt */
@@ -496,7 +496,25 @@ public class NavState {
     }
 
     /** Fills up input queue to ideal length, with its last element */
-    private void fillUp(Queue queue) {
+    private void fillUpInt(Queue<Integer> queue) {
+        while (queue.size < length) {
+            queue.addLast(queue.last());
+        }
+    }
+
+    private void fillUpWpt(Queue<Waypoint> queue) {
+        while (queue.size < length) {
+            queue.addLast(queue.last());
+        }
+    }
+
+    private void fillUpBool(Queue<Boolean> queue) {
+        while (queue.size < length) {
+            queue.addLast(queue.last());
+        }
+    }
+
+    private void fillUpILS(Queue<ILS> queue) {
         while (queue.size < length) {
             queue.addLast(queue.last());
         }
