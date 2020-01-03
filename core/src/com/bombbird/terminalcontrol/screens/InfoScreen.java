@@ -73,15 +73,16 @@ public class InfoScreen implements Screen {
 
         Label sources = new Label("SID, STAR and other procedural data\nare manually parsed from the eAIP of:\n" +
                                     "CAA, Taiwan\nCAAS, Singapore" +
-                                    (TerminalControl.full ? "\nAIS, Japan\nAIS, Hong Kong\nAACM, Macau\nAIS, Thailand\nENAIRE, Spain\nSIA, France" : ""), labelStyle);
+                                    (TerminalControl.full ? "\nMLIT, Japan\nCAD, Hong Kong\nAACM, Macau\nCAAT, Thailand\nENAIRE, Spain\nDGAC, France" : ""), labelStyle);
         sources.setPosition(1950 - sources.getWidth() / 2f, 1000 - sources.getHeight() / 2f);
         stage.addActor(sources);
 
         Label disclaimer = new Label("While we make effort to ensure that this game is as realistic as possible, " +
                 "please note that this game is not a completely accurate representation of real life air traffic control " +
-                "and should not be used for purposes such as real life training.", labelStyle);
+                "and should not be used for purposes such as real life training. SID, STAR and other navigation data are not official " +
+                "and should never be used for real life navigation.", labelStyle);
         disclaimer.setWrap(true);
-        disclaimer.setWidth(1600);
+        disclaimer.setWidth(2000);
         disclaimer.setPosition(1465 - disclaimer.getWidth() / 2f, 460);
         stage.addActor(disclaimer);
     }
