@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
+import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
@@ -707,7 +708,7 @@ public class Arrival extends Aircraft {
             int score = 1;
             if (radarScreen.getArrivals() >= 12) score = 2; //2 points if you're controlling at least 12 planes at a time
             if (!getSidStar().getRunways().contains(getIls().getRwy().getName(), false)) score = 3; //3 points if landing runway is not intended for SID (i.e. runway change occured)
-            if (getAirport().isCongested() || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested and aircraft has not expedited for >2 mins
+            if ((getAirport().isCongested() && radarScreen.tfcMode != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
             if (getEmergency().isEmergency()) score = 5; //5 points for landing an emergency!
             radarScreen.setScore(radarScreen.getScore() + score);
             getAirport().setLandings(getAirport().getLandings() + 1);

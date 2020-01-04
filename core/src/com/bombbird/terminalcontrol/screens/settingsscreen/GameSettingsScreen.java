@@ -61,7 +61,8 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.soundSel = soundSel;
         radarScreen.emerChance = emerChance;
         radarScreen.speed = speedSel;
-        radarScreen.ui.updateSpeedLabel(speedSel);
+        radarScreen.tfcMode = tfcSel;
+        radarScreen.ui.updateSpeedLabel();
     }
 
     /** Gets radarscreen settings before setting options */
@@ -72,6 +73,7 @@ public class GameSettingsScreen extends SettingsScreen {
         soundSel = radarScreen.soundSel;
         emerChance = radarScreen.emerChance;
         speedSel = radarScreen.speed;
+        tfcSel = radarScreen.tfcMode;
 
         super.setOptions();
     }
@@ -88,6 +90,8 @@ public class GameSettingsScreen extends SettingsScreen {
         emerChanceLabel.setVisible(show);
         speed.setVisible(show);
         speedLabel.setVisible(show);
+        tfcMode.setVisible(show);
+        tfcLabel.setVisible(show);
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
     }

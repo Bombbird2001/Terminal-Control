@@ -50,6 +50,11 @@ public class RadarScreen extends GameScreen {
         STATIC
     }
 
+    public enum TfcMode {
+        NORMAL,
+        ARRIVALS_ONLY
+    }
+
     public int saveId;
     public String mainName;
     public float magHdgDev;
@@ -65,6 +70,7 @@ public class RadarScreen extends GameScreen {
     public Weather liveWeather;
     public int soundSel;
     public Emergency.Chance emerChance;
+    public TfcMode tfcMode;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Whether the game is a tutorial
@@ -141,6 +147,7 @@ public class RadarScreen extends GameScreen {
         liveWeather = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
+        tfcMode = TfcMode.NORMAL;
 
         wakeManager = new WakeManager();
 
@@ -185,6 +192,11 @@ public class RadarScreen extends GameScreen {
             emerChance = Emergency.Chance.MEDIUM;
         } else {
             emerChance = Emergency.Chance.valueOf(save.getString("emerChance"));
+        }
+        if (save.isNull("tfcMode")) {
+            tfcMode = TfcMode.NORMAL;
+        } else {
+            tfcMode = TfcMode.valueOf(save.getString("tfcMode"));
         }
 
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
@@ -291,6 +303,7 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new departure at the given airport */
     public void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
+        if (tfcMode == TfcMode.ARRIVALS_ONLY) return;
         aircrafts.put(callsign, new Departure(callsign, icaoType, airport, runway));
     }
 

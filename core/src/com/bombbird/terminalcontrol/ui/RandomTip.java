@@ -9,12 +9,12 @@ public class RandomTip {
     public static void loadTips() {
         tips.add("Double tap the label of a controlled aircraft to minimise/maximise it");
         tips.add("Separation is reduced to 2.5nm for aircrafts on the same ILS both within 10nm from touchdown");
-        tips.add("Separation is not required for aircrafts on approach to parallel runways");
+        tips.add("In this game, separation is not required for aircrafts on approach to parallel runways (varies in real life)");
         tips.add("Put aircrafts in holding patterns if the airspace is becoming congested");
         tips.add("Be careful of the MVAs (gray) when assigning headings manually");
         tips.add("MVAs (gray) do not apply to aircrafts following a SID/STAR");
         tips.add("Restricted areas (orange) must be avoided by all aircrafts");
-        tips.add("Windshear can cause aircrafts to go around");
+        tips.add("Windshear can cause an aircraft to go around");
         tips.add("Circles on the LDA indicate the step-down points for a non-precision approach");
         tips.add("Some waypoints are fly-over points; aircrafts will fly directly over it before turning");
         tips.add("Some aircraft climb/descend slower than others");
@@ -25,6 +25,8 @@ public class RandomTip {
         tips.add("Refer to the AIP of the relevant aviation authorities to learn more about an airport's SID/STARs");
         tips.add("Fly-over waypoints are indicated by a filled circle");
         tips.add("Tap on the METAR label of an airport (top left of screen) to change its runway configuration");
+        tips.add("Wake turbulence can cause an aircraft to go around");
+        tips.add("Check out the help manual for more detailed descriptions of airports, game mechanics");
         tips.add("Like this game? Please rate it on the Google Play Store!");
     }
 

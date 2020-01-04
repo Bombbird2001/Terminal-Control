@@ -35,6 +35,7 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> sound;
     public SelectBox<String> emer;
     public SelectBox<String> speed;
+    public SelectBox<String> tfcMode;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -53,6 +54,9 @@ public class SettingsScreen implements Screen {
 
     public Label speedLabel;
     public int speedSel;
+
+    public Label tfcLabel;
+    public RadarScreen.TfcMode tfcSel;
 
     public SettingsScreen(final TerminalControl game) {
         this.game = game;
@@ -193,6 +197,23 @@ public class SettingsScreen implements Screen {
         speed.getList().setAlignment(Align.center);
         speed.setVisible(this instanceof GameSettingsScreen);
         stage.addActor(speed);
+
+        tfcMode = new SelectBox<>(selectBoxStyle);
+        Array<String> options5 = new Array<>(3);
+        options5.add("Normal", "Arrivals only");
+        tfcMode.setItems(options5);
+        tfcMode.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                tfcSel = RadarScreen.TfcMode.valueOf(tfcMode.getSelected().toUpperCase(Locale.US).replaceAll(" ", "_"));
+            }
+        });
+        tfcMode.setSize(1200, 300);
+        tfcMode.setPosition(5760 / 2f - 400 + xOffset + 1800, 3240 * 0.65f + yOffset);
+        tfcMode.setAlignment(Align.center);
+        tfcMode.getList().setAlignment(Align.center);
+        tfcMode.setVisible(this instanceof GameSettingsScreen);
+        stage.addActor(tfcMode);
     }
 
     /** Loads buttons */
@@ -226,6 +247,11 @@ public class SettingsScreen implements Screen {
         speedLabel.setPosition(speed.getX() - 100 - speedLabel.getWidth(), speed.getY() + speed.getHeight() / 2 - speedLabel.getHeight() / 2);
         speedLabel.setVisible(this instanceof GameSettingsScreen);
         stage.addActor(speedLabel);
+
+        tfcLabel = new Label("Traffic: ", labelStyle);
+        tfcLabel.setPosition(tfcMode.getX() - 100 - tfcLabel.getWidth(), tfcMode.getY() + tfcMode.getHeight() / 2 - tfcLabel.getHeight() / 2);
+        tfcLabel.setVisible(this instanceof GameSettingsScreen);
+        stage.addActor(tfcLabel);
     }
 
     /** Sets relevant options into select boxes */
@@ -238,6 +264,8 @@ public class SettingsScreen implements Screen {
         String tmp = emerChance.toString().toLowerCase(Locale.US);
         emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
         speed.setSelected(speedSel + "x");
+        String tmp2 = tfcSel.toString().toLowerCase(Locale.US);
+        tfcMode.setSelected((tmp2.substring(0, 1).toUpperCase() + tmp2.substring(1)).replaceAll("_", " "));
     }
 
     /** Confirms and applies the changes set */

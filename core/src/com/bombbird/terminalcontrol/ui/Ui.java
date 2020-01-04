@@ -55,7 +55,7 @@ public class Ui {
     private Label scoreLabel;
 
     //Label that displays simulation speed
-    private Label speedLabel;
+    private Label infoLabel;
 
     //TextButton that pauses the game
     private TextButton pauseButton;
@@ -200,9 +200,10 @@ public class Ui {
         labelStyle3.font = Fonts.defaultFont20;
         labelStyle3.fontColor = Color.WHITE;
 
-        speedLabel = new Label("1x speed", labelStyle3);
-        speedLabel.setPosition(scoreLabel.getX() + 850, 3032);
-        radarScreen.uiStage.addActor(speedLabel);
+        infoLabel = new Label("", labelStyle3);
+        infoLabel.setPosition(paneImage.getWidth() * 0.6f, 2650);
+        radarScreen.uiStage.addActor(infoLabel);
+        updateSpeedLabel();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
@@ -278,7 +279,7 @@ public class Ui {
             label.setVisible(show);
         }
         scoreLabel.setVisible(show);
-        speedLabel.setVisible(show && radarScreen.speed > 1);
+        infoLabel.setVisible(show && infoLabel.getText().length > 0);
         pauseButton.setVisible(show);
         if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
     }
@@ -591,7 +592,7 @@ public class Ui {
         labelButton.setSize(0.8f * paneImage.getWidth(), 270);
         labelButton.setX(0.1f * paneImage.getWidth());
         scoreLabel.setX(paneImage.getWidth() / 19.2f);
-        speedLabel.setX(scoreLabel.getX() + 850);
+        infoLabel.setX(paneImage.getWidth() * 0.6f);
         pauseButton.setX(0.75f * paneImage.getWidth());
         metarPane.setX(paneImage.getWidth() / 19.2f);
         metarPane.setWidth(paneImage.getWidth() * 5 / 6);
@@ -631,9 +632,13 @@ public class Ui {
         scoreLabel.setText("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore());
     }
 
-    public void updateSpeedLabel(int speed) {
-        speedLabel.setText(speed + "x speed");
-        speedLabel.setVisible(speed > 1);
+    public void updateSpeedLabel() {
+        String text = "";
+        if (radarScreen.speed > 1) text = radarScreen.speed + "x speed";
+        if (!text.isEmpty() && radarScreen.tfcMode != RadarScreen.TfcMode.NORMAL) text += "\n";
+        if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) text += "Arrivals only";
+        infoLabel.setText(text);
+        infoLabel.setVisible(!text.isEmpty());
     }
 
     public float getPaneWidth() {
