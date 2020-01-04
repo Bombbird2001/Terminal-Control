@@ -263,9 +263,6 @@ public class SettingsScreen implements Screen {
         sound.setSelectedIndex(soundIndex);
         String tmp = emerChance.toString().toLowerCase(Locale.US);
         emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
-        speed.setSelected(speedSel + "x");
-        String tmp2 = tfcSel.toString().toLowerCase(Locale.US);
-        tfcMode.setSelected((tmp2.substring(0, 1).toUpperCase() + tmp2.substring(1)).replaceAll("_", " "));
     }
 
     /** Confirms and applies the changes set */

@@ -11,6 +11,8 @@ import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
+import java.util.Locale;
+
 public class GameSettingsScreen extends SettingsScreen {
     private RadarScreen radarScreen;
 
@@ -76,6 +78,10 @@ public class GameSettingsScreen extends SettingsScreen {
         tfcSel = radarScreen.tfcMode;
 
         super.setOptions();
+
+        speed.setSelected(speedSel + "x");
+        String tmp2 = tfcSel.toString().toLowerCase(Locale.US);
+        tfcMode.setSelected((tmp2.substring(0, 1).toUpperCase() + tmp2.substring(1)).replaceAll("_", " "));
     }
 
     /** Sets visibility of elements */
