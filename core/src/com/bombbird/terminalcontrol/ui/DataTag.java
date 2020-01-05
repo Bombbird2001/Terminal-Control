@@ -104,7 +104,7 @@ public class DataTag {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!dragging) {
-                    TerminalControl.radarScreen.setSelectedAircraft(TerminalControl.radarScreen.aircrafts.get(actor.getName()));
+                    if (radarScreen.tutorialManager == null || !radarScreen.tutorialManager.isPauseForReading()) TerminalControl.radarScreen.setSelectedAircraft(TerminalControl.radarScreen.aircrafts.get(actor.getName()));
                     tapCount++;
                     if (tapCount >= 2) {
                         if (aircraft.isArrivalDeparture()) minimized = !minimized;

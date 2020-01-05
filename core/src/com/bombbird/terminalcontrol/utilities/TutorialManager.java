@@ -18,6 +18,7 @@ public class TutorialManager {
     private Timer timer;
 
     private RadarScreen radarScreen;
+    private boolean pauseForReading;
 
     private boolean prompt1 = false;
     private boolean prompt2 = false;
@@ -38,6 +39,7 @@ public class TutorialManager {
 
     public TutorialManager(RadarScreen radarScreen) {
         this.radarScreen = radarScreen;
+        pauseForReading = false;
         timer = new Timer();
     }
 
@@ -124,65 +126,74 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("You can drag an aircraft's label around! Let's take a look at the simplified label, displayed when an aircraft is not under your control.");
+                tutorialMsg("You can drag an aircraft's label around! Let's take a look at EVA226's simplified label, displayed when an aircraft is not under your control. The game will now pause.");
+                setPause(true);
             }
         }, 10);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("The 1st line is the aircraft's callsign and its recat wake category. The 2nd line has 2 numbers: firstly the aircraft's altitude, while the second is its heading. For example, 234 50 means the aircraft is at about 23400 feet, flying a heading of 50.");
+                tutorialMsg("The 1st line is the aircraft's callsign and its recat wake category. The 2nd line has 2 numbers: firstly the aircraft's altitude, while the second is its heading. For example, 232 23 means the aircraft is at about 23200 feet, flying a heading of 23.");
             }
-        }, 15);
+        }, 20);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("The 3rd line has only 1 number: the aircraft's ground speed. 450 would mean the aircraft is travelling at a ground speed of 450 knots (450 nautical miles/hour).");
             }
-        }, 30);
-
-        timer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                tutorialMsg("Let's go back to our departure aircraft and look at the full label. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J, then its recat wake category.");
-            }
         }, 40);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("The 2nd line contains altitude information. The 1st number is the altitude, followed by an UP, DOWN or = representing whether the aircraft is climbing, descending or level respectively.");
+                tutorialMsg("Let's go back to CAL641 and look at the full label. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J, then its recat wake category.");
             }
         }, 55);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Continuing with the 2nd line, the 2nd number is the aircraft's \"target\" altitude which is the altitude the aircraft will fly taking into consideration altitude restrictions from SIDs or STARs. The 3rd number is the altitude that you have cleared it to.");
+                tutorialMsg("The 2nd line contains altitude information. The 1st number is the altitude, followed by an UP, DOWN or = representing whether the aircraft is climbing, descending or level respectively.");
             }
         }, 65);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
+                tutorialMsg("Continuing with the 2nd line, the 2nd number is the aircraft's \"target\" altitude which is the altitude the aircraft will fly taking into consideration altitude restrictions from SIDs or STARs. The 3rd number is the altitude that you have cleared it to.");
+            }
+        }, 85);
+
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
                 tutorialMsg("Now the 3rd line displays lateral information. The 1st number is the aircraft's heading. The 2nd number/text displays the aircraft's cleared heading OR it's cleared waypoint. The 3rd text displays the aircraft's SID, STAR or cleared ILS.");
             }
-        }, 80);
+        }, 105);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("Finally, the 4th line. The 1st number is the aircraft's ground speed, the 2nd is its cleared airspeed, and the 3rd text is its departure or arrival airport.");
             }
-        }, 90);
+        }, 125);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("You can double tap the label of a controlled aircraft to change between the full and simplified labels.");
             }
-        }, 100);
+        }, 145);
+
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                tutorialMsg("The game will now continue.");
+                setPause(false);
+            }
+        }, 150);
     }
 
     /** Initialises the 3rd part of the tutorial */
@@ -207,14 +218,14 @@ public class TutorialManager {
             public void run() {
                 tutorialMsg("If you wish, you can override this restriction by going to the altitude tab and select the climb/descend option. The aircraft will ignore altitude restrictions and descend directly to the altitude.");
             }
-        }, 35);
+        }, 40);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("If you do, you should ensure that the aircraft maintains separation from terrain and other aircraft; the SID/STAR altitude restrictions usually takes all this into account so it may be preferred to follow the restrictions");
+                tutorialMsg("If you do, you should ensure that the aircraft maintains separation from terrain and other aircraft; the SID/STAR altitude restrictions usually takes all this into account so it may be preferred to follow the restrictions.");
             }
-        }, 45);
+        }, 55);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -222,7 +233,7 @@ public class TutorialManager {
                 tutorialMsg("Since we have no aircrafts in front, lets clear the arrival to waypoint JAMMY directly. Select the aircraft, go to the lateral tab, select JAMMY from the drop down box and transmit.");
                 prompt1 = true;
             }
-        }, 60);
+        }, 70);
     }
 
     /** Initialises part 4 of tutorial */
@@ -253,21 +264,21 @@ public class TutorialManager {
             public void run() {
                 tutorialMsg("To capture the glide slope, the aircraft needs to be low enough. The rings on the ILS line represents the altitude at each point on the ILS: 1st ring is 2000 feet, 2nd ring is 3000 feet and so on. The aircraft should be at or below that altitude when intercepting.");
             }
-        }, 45);
+        }, 50);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("Here at RCTP, the maximum altitude for intercepting is 4000 feet, hence there are 3 rings. Other airports may have higher maximum altitudes to intercept.");
             }
-        }, 60);
+        }, 75);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("To prepare the aircraft for intercepting the ILS, let's ask it to fly a heading after reaching a waypoint.");
             }
-        }, 70);
+        }, 90);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -275,7 +286,7 @@ public class TutorialManager {
                 tutorialMsg("Select the arrival, and go to the lateral tab. At the 1st dropdown box, select \"After waypoint, fly heading\". After that, select JAMMY in the 2nd dropdown box, and select heading 90 in the heading box.");
                 prompt2 = true;
             }
-        }, 75);
+        }, 100);
     }
 
     /** Initialises part 5 of tutorial */
@@ -292,21 +303,21 @@ public class TutorialManager {
             public void run() {
                 tutorialMsg("Furthermore, you need to be mindful of the wind direction and speed when giving heading clearances, since the wind affects the aircraft's track. When flying in heading mode, the aircraft will also not follow any altitude restrictions, hence you have to keep it separated from terrain.");
             }
-        }, 25);
+        }, 30);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("You can specify the direction the aircraft turns by selecting the turn left/right heading option. By default the fly heading option chooses the quickest direction to turn.");
             }
-        }, 40);
+        }, 55);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 tutorialMsg("You can also instruct aircrafts to enter a holding pattern if there are too many aircrafts. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as published once it reaches the waypoint.");
             }
-        }, 50);
+        }, 80);
     }
 
     /** Updates timers */
@@ -340,7 +351,7 @@ public class TutorialManager {
             }
         }
 
-        if (radarScreen.aircrafts.get("EVA226") != null) {
+        if (radarScreen.aircrafts.containsKey("EVA226")) {
             Aircraft aircraft = radarScreen.aircrafts.get("EVA226");
             if (!arrContacted && aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) {
                 //Aircraft contacted
@@ -373,9 +384,9 @@ public class TutorialManager {
                 prompt4 = true;
             }
 
-            if (prompt4 && aircraft.getAirport().getApproaches().get("05L").equals(aircraft.getNavState().getClearedIls().last())) {
+            if (prompt4 && aircraft.getAirport().getApproaches().get("05L").equals(aircraft.getNavState().getClearedIls().first())) {
                 prompt4 = false;
-                tutorialMsg("Great job, the aircraft will now automatically capture the localizer and glide slope. Now we just need to wait to hand the aircraft over to the tower.");
+                tutorialMsg("Great job, the aircraft will now automatically capture the localizer and glide slope. Now we just need to wait for the aircraft to be established on the ILS before handing the aircraft over to the tower.");
                 prompt5 = true;
 
                 timer.scheduleTask(new Timer.Task() {
@@ -383,21 +394,28 @@ public class TutorialManager {
                     public void run() {
                         tutorialMsg("When the airspace becomes busy, parallel approaches can be conducted for parallel runways. However, you need to ensure the aircrafts maintain separated by the standard 3 nautical miles or 1000 feet until they are both established on the different localizers.");
                     }
-                }, 10);
+                }, 15);
+
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        tutorialMsg("For aircrafts established on parallel ILS approaches, you need to ensure a staggered separation of 2nm. Some airports have an NTZ for parallel approaches and will not require this separation.");
+                    }
+                }, 40);
 
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
                         tutorialMsg("For aircrafts on the same ILS, the standard 3nm or 1000 feet separation applies, but once both aircraft are less than 10nm from the runway, separation can be reduced to 2.5nm or 1000 feet.");
                     }
-                }, 30);
+                }, 60);
 
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        tutorialMsg("You can give manual speed assignments to the aircraft if needed, but the aircraft will slow down automatically as it approaches the airport.");
+                        tutorialMsg("You can also give manual speed assignments to the aircraft if needed, but the aircraft will slow down automatically as it approaches the airport.");
                     }
-                }, 50);
+                }, 80);
             }
 
             if (prompt5 && aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED) {
@@ -408,7 +426,7 @@ public class TutorialManager {
                     public void run() {
                         tutorialMsg("The airport can suffer from congestion if you let in the arrivals too quickly, causing aircrafts on the ground to be unable to take off. Hence, you will need to reduce the number of arrivals into the airport by reducing their speed or putting them in holding patterns. When an airport is congested, landing an aircraft into it will not score you any points!");
                     }
-                }, 15);
+                }, 20);
                 prompt6 = true;
             }
         } else if (prompt6) {
@@ -421,11 +439,20 @@ public class TutorialManager {
                     TerminalControl.radarScreen = null;
                     radarScreen.game.setScreen(new MainMenuScreen(radarScreen.game, null));
                 }
-            }, 10);
+            }, 15);
         }
+    }
+
+    private void setPause(boolean pause) {
+        pauseForReading = pause;
+        if (pause) radarScreen.setSelectedAircraft(null);
     }
 
     public ScrollPane getScrollPane() {
         return scrollPane;
+    }
+
+    public boolean isPauseForReading() {
+        return pauseForReading;
     }
 }

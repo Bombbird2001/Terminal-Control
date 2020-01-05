@@ -161,11 +161,6 @@ public class SeparationChecker extends Actor {
                         if (found) continue;
                     }
 
-                    if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
-                        //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs
-                        continue;
-                    }
-
                     if (plane1.isGoAroundWindow() || plane2.isGoAroundWindow()) {
                         //If either plane went around less than 2 minutes ago
                         continue;
@@ -173,6 +168,12 @@ public class SeparationChecker extends Actor {
 
                     float dist = MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY()));
                     float minima = radarScreen.separationMinima;
+
+                    if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
+                        //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce separation to 2nm (staggered separation)
+                        minima = 2f;
+                    }
+
                     if (plane1.getIls() != null && plane1.getIls().equals(plane2.getIls())) {
                         Runway runway = plane1.getIls().getRwy();
                         if (MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), runway.getX(), runway.getY())) < 10 &&

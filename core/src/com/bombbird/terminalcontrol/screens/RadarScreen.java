@@ -108,7 +108,7 @@ public class RadarScreen extends GameScreen {
     public WakeManager wakeManager;
 
     //Tutorial manager
-    private TutorialManager tutorialManager = null;
+    public TutorialManager tutorialManager = null;
 
     //Communication box to keep track of aircraft transmissions
     private CommBox commBox;

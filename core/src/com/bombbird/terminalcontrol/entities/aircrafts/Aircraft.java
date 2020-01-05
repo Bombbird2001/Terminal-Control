@@ -1027,6 +1027,7 @@ public class Aircraft extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         for (int i = 0; i < radarScreen.speed; i++) {
+            if (radarScreen.tutorialManager != null && radarScreen.tutorialManager.isPauseForReading()) break;
             update();
         }
         dataTag.updateLabel();

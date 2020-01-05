@@ -34,7 +34,7 @@ public class HelpManager {
                         "At a certain point, aircrafts are allowed to descend to a pre-determined minimum altitude. The circles on the LDA indicate the step down points.",
                 "Before reaching the runway, the aircraft will turn and line up with the runway before landing."});
         CONTENT_LIST.put("Separation", new String[] {"Aircrafts must be separated by a safe distance or altitude, otherwise you will lose points.", "Under normal circumstances, aircrafts must be seoarated from one another by at least 3 nautical miles (nm) or 1000 feet. (except some airports)",
-                "However, for aircrafts that are established on parallel ILS approaches, no separation is required. (In real life, dependent parallel approaches require staggered separation but it is not implemented in this game)",
+                "However, for aircrafts that are established on dependent parallel ILS approaches (parallel approached without an NTZ), staggered separation of 2nm is required.",
                 "For aircraft that are established on the same ILS, if both aircrafts are less than 10nm from the runway, separation is reduced to 2.5nm or 1000 feet.",
                 "Other separation standards also apply, such as wake turbulence separation and terrain separation. Refer to the MVAs, restricted areas and wake turbulence sections for more details."});
         CONTENT_LIST.put("MVAs, restricted areas", new String[] {"Aircrafts must be separated from terrain and restricted areas, or you will lose points.",

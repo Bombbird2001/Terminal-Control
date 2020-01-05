@@ -273,14 +273,16 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                     //Update stage
                     for (int i = 0; i < speed; i++) {
+                        if (checkTutorialPaused()) break;
                         stage.act(delta);
                         labelStage.act(delta);
                     }
 
-                    //Render each of the range circles, obstacles using shaperenderer
+                    //Render each of the range circles, obstacles using shaperenderer, update loop
                     if (!loading) {
                         stage.getViewport().apply();
                         for (int i = 0; i < speed; i++) {
+                            if (checkTutorialPaused()) break;
                             update();
                         }
                         //Render shapes only if METAR has finished loading
@@ -314,13 +316,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
                         tipLabel.draw(game.batch, 1);
                     } else if (checkAircraftsLoaded()) {
-                        /*
-                        for (int i = 0; i < speed; i++) {
-                            for (Aircraft aircraft: aircrafts.values()) {
-                                aircraft.update();
-                            }
-                        }
-                        */
                         stage.draw();
                         game.batch.end();
                         game.batch.setProjectionMatrix(labelStage.getCamera().combined);
@@ -385,6 +380,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
 
         return true;
+    }
+
+    /** Check if tutorial is in paused state */
+    private boolean checkTutorialPaused() {
+        return (((RadarScreen)this).tutorialManager != null && ((RadarScreen)this).tutorialManager.isPauseForReading());
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */

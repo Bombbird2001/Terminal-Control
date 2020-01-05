@@ -116,7 +116,7 @@ public class Arrival extends Aircraft {
             }
         }
         if (radarScreen.tutorial && "EVA226".equals(callsign)) {
-            initAlt = 26500;
+            initAlt = 23400;
         }
         setAltitude(initAlt);
         updateAltRestrictions();

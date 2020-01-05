@@ -9,7 +9,7 @@ public class RandomTip {
     public static void loadTips() {
         tips.add("Double tap the label of a controlled aircraft to minimise/maximise it");
         tips.add("Separation is reduced to 2.5nm for aircrafts on the same ILS both within 10nm from touchdown");
-        tips.add("In this game, separation is not required for aircrafts on approach to parallel runways (varies in real life)");
+        tips.add("Staggered separation of 2nm is required for aircrafts on approach to parallel runways (without an NTZ)");
         tips.add("Put aircrafts in holding patterns if the airspace is becoming congested");
         tips.add("Be careful of the MVAs (gray) when assigning headings manually");
         tips.add("MVAs (gray) do not apply to aircrafts following a SID/STAR");
