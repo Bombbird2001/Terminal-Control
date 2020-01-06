@@ -2,7 +2,6 @@ package com.bombbird.terminalcontrol.entities.approaches;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
@@ -81,7 +80,7 @@ public class ILS extends Actor {
         minAlt = -1;
         for (int i = 2; i <= gsAlt / 1000; i++) {
             if (i * 1000 > airport.getElevation() + 1000) {
-                gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev)));
+                gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev))));
                 if (minAlt == -1) minAlt = i;
             }
         }
@@ -96,7 +95,7 @@ public class ILS extends Actor {
         if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed()) {
             radarScreen.shapeRenderer.setColor(Color.CYAN);
             if (selectedIls || rwyChange) radarScreen.shapeRenderer.setColor(Color.YELLOW);
-            radarScreen.shapeRenderer.line(x, y, x + distance2 * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + distance2 * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev));
+            radarScreen.shapeRenderer.line(x, y, x + distance2 * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + distance2 * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev)));
             drawGsCircles();
         }
     }
@@ -127,7 +126,7 @@ public class ILS extends Actor {
                 planeHdg = 360;
             }
         } else {
-            double principleAngle = Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees;
+            double principleAngle = Math.toDegrees(Math.atan(deltaY / deltaX));
             if (deltaX > 0) {
                 //Quadrant 1/4
                 planeHdg = 270 - principleAngle;
@@ -181,7 +180,7 @@ public class ILS extends Actor {
 
     /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
     public Vector2 getPointAtDist(float dist) {
-        return new Vector2(x + MathTools.nmToPixel(dist) * MathUtils.cosDeg(270 - heading + radarScreen.magHdgDev), y + MathTools.nmToPixel(dist) * MathUtils.sinDeg(270 - heading + radarScreen.magHdgDev));
+        return new Vector2(x + MathTools.nmToPixel(dist) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + MathTools.nmToPixel(dist) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev)));
     }
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin */

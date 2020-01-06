@@ -731,7 +731,8 @@ public class Aircraft extends Actor {
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm ahead of plane
-                Vector2 position = ils.getPointAhead(this, 0.75f);
+                float distAhead = ils.getDistFrom(x, y) > 10 ? 1.5f : 0.75f;
+                Vector2 position = ils.getPointAhead(this, distAhead);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {

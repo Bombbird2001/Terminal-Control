@@ -191,7 +191,7 @@ public class RunwayChanger {
         } else if ("WSSS".equals(icao)) {
             updateWSSS(windDir, windSpd);
         } else if ("RJTT".equals(icao)) {
-            updateRJTT(windSpd);
+            updateRJTT(windDir, windSpd);
         } else if ("RJAA".equals(icao)) {
             updateRJAA(windDir, windSpd);
         } else if ("RJBB".equals(icao)) {
@@ -321,7 +321,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRJTT(int windSpd) {
+    private void updateRJTT(int windDir, int windSpd) {
         if (windSpd < 7) {
             //Runway change permitted only when wind speed is below 7 knots
             if (airport.getTakeoffRunways().get("05") != null) {
@@ -336,6 +336,18 @@ public class RunwayChanger {
                 tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
                 runways.add("16L", "16R", "22", "23");
                 tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+            }
+        } else {
+            if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
+                runways.add("34L", "34R", "05");
+                tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                runways.add("16L", "16R", "22", "23");
+                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+            } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
+                runways.add("16L", "16R", "22", "23");
+                tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                runways.add("34L", "34R", "05");
+                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
             }
         }
     }

@@ -8,15 +8,15 @@ public class RandomTip {
     /** Loads a list of tips to be shown during loading screen */
     public static void loadTips() {
         tips.add("Double tap the label of a controlled aircraft to minimise/maximise it");
-        tips.add("Separation is reduced to 2.5nm for aircrafts on the same ILS both within 10nm from touchdown");
-        tips.add("Staggered separation of 2nm is required for aircrafts on approach to parallel runways (without an NTZ)");
-        tips.add("Put aircrafts in holding patterns if the airspace is becoming congested");
+        tips.add("Separation is reduced to 2.5nm for aircraft on the same ILS both within 10nm from touchdown");
+        tips.add("Staggered separation of 2nm is required for planes on approach to parallel runways (without an NTZ)");
+        tips.add("Put planes in holding patterns if the airspace is becoming congested");
         tips.add("Be careful of the MVAs (gray) when assigning headings manually");
-        tips.add("MVAs (gray) do not apply to aircrafts following a SID/STAR");
-        tips.add("Restricted areas (orange) must be avoided by all aircrafts");
+        tips.add("MVAs (gray) do not apply to aircraft following a SID/STAR");
+        tips.add("Restricted areas (orange) must be avoided by all aircraft");
         tips.add("Windshear can cause an aircraft to go around");
         tips.add("Circles on the LDA indicate the step-down points for a non-precision approach");
-        tips.add("Some waypoints are fly-over points; aircrafts will fly directly over it before turning");
+        tips.add("Some waypoints are fly-over points; planes will fly directly over it before turning");
         tips.add("Some aircraft climb/descend slower than others");
         tips.add("An aircraft will go around if it is too high or too fast");
         tips.add("An aircraft will go around if there is another aircraft on the runway");

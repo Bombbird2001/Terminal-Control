@@ -9,6 +9,8 @@ public class ZoneLoader {
             approachZones = loadApchRJTT();
         } else if ("WSSS".equals(icao)) {
             approachZones = loadApchWSSS();
+        } else if ("RJAA".equals(icao)) {
+            approachZones = loadApchRJAA();
         }
 
         return approachZones;
@@ -26,6 +28,14 @@ public class ZoneLoader {
         Array<ApproachZone> approachZones = new Array<>();
         approachZones.add(new ApproachZone("02L", "02C", 2870.0f, 1594.5f, 23, 0.73f, 25, 0.329f));
         approachZones.add(new ApproachZone("20C", "20R", 2886.2f, 1630.7f, 203, 0.73f, 26, 0.329f));
+
+        return approachZones;
+    }
+
+    private static Array<ApproachZone> loadApchRJAA() {
+        Array<ApproachZone> approachZones = new Array<>();
+        approachZones.add(new ApproachZone("34L", "34R", 3863.9f, 2000.4f, 337, 1.18f, 25, 0.329f));
+        approachZones.add(new ApproachZone("16L", "16R", 3805.9f, 2098.3f, 157, 1.18f, 25, 0.329f));
 
         return approachZones;
     }

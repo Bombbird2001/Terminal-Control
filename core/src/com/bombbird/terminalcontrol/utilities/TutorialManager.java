@@ -230,7 +230,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Since we have no aircrafts in front, lets clear the arrival to waypoint JAMMY directly. Select the aircraft, go to the lateral tab, select JAMMY from the drop down box and transmit.");
+                tutorialMsg("Since we have no planes in front, lets clear the arrival to waypoint JAMMY directly. Select the aircraft, go to the lateral tab, select JAMMY from the drop down box and transmit.");
                 prompt1 = true;
             }
         }, 70);
@@ -315,7 +315,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("You can also instruct aircrafts to enter a holding pattern if there are too many aircrafts. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as published once it reaches the waypoint.");
+                tutorialMsg("You can also instruct an aircraft to enter a holding pattern if there are too many planes. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as published once it reaches the waypoint.");
             }
         }, 80);
     }
@@ -392,21 +392,21 @@ public class TutorialManager {
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        tutorialMsg("When the airspace becomes busy, parallel approaches can be conducted for parallel runways. However, you need to ensure the aircrafts maintain separated by the standard 3 nautical miles or 1000 feet until they are both established on the different localizers.");
+                        tutorialMsg("When the airspace becomes busy, parallel approaches can be conducted for parallel runways. However, you need to ensure planes are separated by the standard 3 nautical miles or 1000 feet until they are both established on the different localizers.");
                     }
                 }, 15);
 
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        tutorialMsg("For aircrafts established on parallel ILS approaches, you need to ensure a staggered separation of 2nm. Some airports have an NTZ for parallel approaches and will not require this separation.");
+                        tutorialMsg("For aircraft established on parallel ILS approaches, you need to ensure a staggered separation of 2nm. Some airports have an NTZ for parallel approaches and will not require this separation.");
                     }
                 }, 40);
 
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        tutorialMsg("For aircrafts on the same ILS, the standard 3nm or 1000 feet separation applies, but once both aircraft are less than 10nm from the runway, separation can be reduced to 2.5nm or 1000 feet.");
+                        tutorialMsg("For aircraft on the same ILS, the standard 3nm or 1000 feet separation applies, but once both aircraft are less than 10nm from the runway, separation can be reduced to 2.5nm or 1000 feet.");
                     }
                 }, 60);
 
@@ -424,14 +424,14 @@ public class TutorialManager {
                 timer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        tutorialMsg("The airport can suffer from congestion if you let in the arrivals too quickly, causing aircrafts on the ground to be unable to take off. Hence, you will need to reduce the number of arrivals into the airport by reducing their speed or putting them in holding patterns. When an airport is congested, landing an aircraft into it will not score you any points!");
+                        tutorialMsg("The airport can suffer from congestion if you let in the arrivals too quickly, causing aircraft on the ground to be unable to take off. Hence, you will need to reduce the number of arrivals into the airport by reducing their speed or putting them in holding patterns. When an airport is congested, landing an aircraft into it will not score you any points!");
                     }
                 }, 20);
                 prompt6 = true;
             }
         } else if (prompt6) {
             prompt6 = false;
-            tutorialMsg("Congratulations, you have just handled an arrival and a departure! Are you ready to handle more aircrafts? If so, go ahead and start a new game! But feel free to revisit the tutorial again if you wish. The help manual on the main menu also contains more detailed information regarding game mechanics and airports, do refer to it. All the best!");
+            tutorialMsg("Congratulations, you have just handled an arrival and a departure! Are you ready to handle more planes? If so, go ahead and start a new game! But feel free to revisit the tutorial again if you wish. The help manual on the main menu also contains more detailed information regarding game mechanics and airports, do refer to it. All the best!");
 
             timer.scheduleTask(new Timer.Task() {
                 @Override
