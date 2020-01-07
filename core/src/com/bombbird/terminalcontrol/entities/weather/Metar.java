@@ -51,7 +51,7 @@ public class Metar {
         rctpMetar.put("windDirection", 60);
         rctpMetar.put("windGust", JSONObject.NULL);
         rctpMetar.put("windshear", JSONObject.NULL);
-        metarObject.put("RCTP", rctpMetar);
+        metarObject.put("TCTP", rctpMetar);
 
         JSONObject rcssMetar = new JSONObject();
         rcssMetar.put("rain", JSONObject.NULL);
@@ -60,7 +60,7 @@ public class Metar {
         rcssMetar.put("windDirection", 100);
         rcssMetar.put("windGust", JSONObject.NULL);
         rcssMetar.put("windshear", JSONObject.NULL);
-        metarObject.put("RCSS", rcssMetar);
+        metarObject.put("TCSS", rcssMetar);
 
         updateRadarScreenState();
     }

@@ -53,6 +53,7 @@ public class GameSaver {
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
         jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
+        jsonObject.put("revision", RadarScreen.CURRENT_REVISION);
 
         JSONArray jsonArray = new JSONArray();
         for (String aircraft: radarScreen.getAllAircraft().keySet()) {

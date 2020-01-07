@@ -73,7 +73,7 @@ public class InfoScreen implements Screen {
 
         Label disclaimer = new Label("While we make effort to ensure that this game is as realistic as possible, " +
                 "please note that this game is not a completely accurate representation of real life air traffic control " +
-                "and should not be used for purposes such as real life training. SID, STAR and other navigation data are not official " +
+                "and should not be used for purposes such as real life training. SID, STAR and other navigation data are fictitious " +
                 "and should never be used for real life navigation.", labelStyle);
         disclaimer.setWrap(true);
         disclaimer.setWidth(2000);

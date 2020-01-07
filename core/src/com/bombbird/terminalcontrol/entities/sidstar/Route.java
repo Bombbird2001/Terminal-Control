@@ -25,9 +25,9 @@ public class Route {
     private Route() {
         radarScreen = TerminalControl.radarScreen;
 
-        wpts = new Array<Waypoint>();
-        restrictions = new Array<int[]>();
-        flyOver = new Array<Boolean>();
+        wpts = new Array<>();
+        restrictions = new Array<>();
+        flyOver = new Array<>();
     }
 
     //Merge previous save format to new route format
@@ -224,7 +224,7 @@ public class Route {
 
     public Array<Waypoint> getRemainingWaypoints(int start, int end) {
         //Returns array of waypoints starting from index
-        Array<Waypoint> newRange = new Array<Waypoint>(wpts);
+        Array<Waypoint> newRange = new Array<>(wpts);
         if (end >= start) {
             if (start > 0) {
                 newRange.removeRange(0, start - 1);

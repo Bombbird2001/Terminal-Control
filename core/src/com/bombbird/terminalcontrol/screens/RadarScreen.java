@@ -117,9 +117,12 @@ public class RadarScreen extends GameScreen {
     //Runway change box for changing runway configuration
     private RunwayChanger runwayChanger;
 
+    //The selected aircraft
     private Aircraft selectedAircraft;
 
     private JSONObject save;
+    private int revision; //Revision for indicating if save parser needs to do anything
+    public static final int CURRENT_REVISION = 1;
 
     public RadarScreen(final TerminalControl game, String name, int airac, int saveID, boolean tutorial) {
         //Creates new game
@@ -164,6 +167,7 @@ public class RadarScreen extends GameScreen {
         saveId = save.getInt("saveId");
         mainName = RenameManager.renameAirportICAO(save.getString("MAIN_NAME"));
         airac = save.getInt("AIRAC");
+        revision = save.optInt("revision", 0);
 
         planesToControl = (float) save.getDouble("planesToControl");
         score = save.getInt("score");
