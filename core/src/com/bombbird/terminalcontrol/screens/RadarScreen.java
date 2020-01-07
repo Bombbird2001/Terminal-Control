@@ -34,6 +34,7 @@ import com.bombbird.terminalcontrol.entities.weather.WindspeedChance;
 import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
@@ -161,7 +162,7 @@ public class RadarScreen extends GameScreen {
         super(game);
         this.save = save;
         saveId = save.getInt("saveId");
-        mainName = save.getString("MAIN_NAME");
+        mainName = RenameManager.renameAirportICAO(save.getString("MAIN_NAME"));
         airac = save.getInt("AIRAC");
 
         planesToControl = (float) save.getDouble("planesToControl");

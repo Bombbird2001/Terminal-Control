@@ -184,36 +184,36 @@ public class RunwayChanger {
         int windDir = airport.getMetar().isNull("windDirection") ? 0 : airport.getMetar().getInt("windDirection");
         int windSpd = airport.getMetar().getInt("windSpeed");
         if (windDir == 0) windSpd = 0;
-        if ("RCTP".equals(icao)) {
-            updateRCTP(windDir, windSpd);
-        } else if ("RCSS".equals(icao)) {
-            updateRCSS(windDir, windSpd);
-        } else if ("WSSS".equals(icao)) {
-            updateWSSS(windDir, windSpd);
-        } else if ("RJTT".equals(icao)) {
-            updateRJTT(windDir, windSpd);
-        } else if ("RJAA".equals(icao)) {
-            updateRJAA(windDir, windSpd);
-        } else if ("RJBB".equals(icao)) {
-            updateRJBB(windDir, windSpd);
-        } else if ("RJOO".equals(icao)) {
-            updateRJOO();
-        } else if ("RJBE".equals(icao)) {
-            updateRJBE();
-        } else if ("VHHH".equals(icao)) {
-            updateVHHH(windDir, windSpd);
-        } else if ("VMMC".equals(icao)) {
-            updateVMMC(windDir, windSpd);
-        } else if ("VTBD".equals(icao)) {
-            updateVTBD(windDir, windSpd);
-        } else if ("VTBS".equals(icao)) {
-            updateVTBS(windDir, windSpd);
-        } else if ("LEMD".equals(icao)) {
-            updateLEMD(windDir, windSpd);
-        } else if ("LFPG".equals(icao)) {
-            updateLFPG(windDir, windSpd);
-        } else if ("LFPO".equals(icao)) {
-            updateLFPO(windDir, windSpd);
+        if ("TCTP".equals(icao)) {
+            updateTCTP(windDir, windSpd);
+        } else if ("TCSS".equals(icao)) {
+            updateTCSS(windDir, windSpd);
+        } else if ("TCWS".equals(icao)) {
+            updateTCWS(windDir, windSpd);
+        } else if ("TCTT".equals(icao)) {
+            updateTCTT(windDir, windSpd);
+        } else if ("TCAA".equals(icao)) {
+            updateTCAA(windDir, windSpd);
+        } else if ("TCBB".equals(icao)) {
+            updateTCBB(windDir, windSpd);
+        } else if ("TCOO".equals(icao)) {
+            updateTCOO();
+        } else if ("TCBE".equals(icao)) {
+            updateTCBE();
+        } else if ("TCHH".equals(icao)) {
+            updateTCHH(windDir, windSpd);
+        } else if ("TCMC".equals(icao)) {
+            updateTCMC(windDir, windSpd);
+        } else if ("TCBD".equals(icao)) {
+            updateTCBD(windDir, windSpd);
+        } else if ("TCBS".equals(icao)) {
+            updateTCBS(windDir, windSpd);
+        } else if ("TCMD".equals(icao)) {
+            updateTCMD(windDir, windSpd);
+        } else if ("TCPG".equals(icao)) {
+            updateTCPG(windDir, windSpd);
+        } else if ("TCPO".equals(icao)) {
+            updateTCPO(windDir, windSpd);
         } else {
             Gdx.app.log("Runway changer", "Runway change settings for " + icao + " are unavailable.");
         }
@@ -273,7 +273,7 @@ public class RunwayChanger {
         return airport != null && icao.equals(airport.getIcao()) && index > -1 && tkofLdg.get(index)[0] && doubleCfm;
     }
 
-    private void updateRCTP(int windDir, int windSpd) {
+    private void updateTCTP(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("05L") != null) {
             //05s are active, set to 23s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("23L").getHeading()) > -5) {
@@ -289,7 +289,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRCSS(int windDir, int windSpd) {
+    private void updateTCSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("10") != null) {
             //10 is active, set to 28
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("28").getHeading()) > -5) {
@@ -305,7 +305,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateWSSS(int windDir, int windSpd) {
+    private void updateTCWS(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("02L") != null) {
             //02s are active, set to 20s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("20C").getHeading()) > -5) {
@@ -321,7 +321,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRJTT(int windDir, int windSpd) {
+    private void updateTCTT(int windDir, int windSpd) {
         if (windSpd < 7) {
             //Runway change permitted only when wind speed is below 7 knots
             if (airport.getTakeoffRunways().get("05") != null) {
@@ -352,7 +352,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRJAA(int windDir, int windSpd) {
+    private void updateTCAA(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("16L") != null) {
             //16s are active, set to 34s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34L").getHeading()) > -5) {
@@ -368,7 +368,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRJBB(int windDir, int windSpd) {
+    private void updateTCBB(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("06L") != null) {
             //06s are active, set to 24s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("24L").getHeading()) > -5) {
@@ -384,15 +384,15 @@ public class RunwayChanger {
         }
     }
 
-    private void updateRJOO() {
+    private void updateTCOO() {
         //RJOO cannot undergo runway change
     }
 
-    private void updateRJBE() {
+    private void updateTCBE() {
         //RJOO cannot undergo runway change
     }
 
-    private void updateVHHH(int windDir, int windSpd) {
+    private void updateTCHH(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("07L") != null) {
             //07s are active, set to 25s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25L").getHeading()) > -5) {
@@ -408,7 +408,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateVMMC(int windDir, int windSpd) {
+    private void updateTCMC(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("16") != null) {
             //16 is active, set to 34
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34").getHeading()) > -5) {
@@ -424,7 +424,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateVTBD(int windDir, int windSpd) {
+    private void updateTCBD(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("03L") != null) {
             //03s are active, set to 21s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("21L").getHeading()) > -5) {
@@ -440,7 +440,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateVTBS(int windDir, int windSpd) {
+    private void updateTCBS(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("01L") != null) {
             //01s are active, set to 19s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("19L").getHeading()) > -5) {
@@ -456,7 +456,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateLEMD(int windDir, int windSpd) {
+    private void updateTCMD(int windDir, int windSpd) {
         if (MaxTraffic.isNight("LEMD")) {
             //Night mode - 1 landing, 1 takeoff runway
             if (airport.getLandingRunways().get("32R") != null) {
@@ -508,7 +508,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateLFPG(int windDir, int windSpd) {
+    private void updateTCPG(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("08R") != null) {
             //08s, 09s active, change to 26s, 27s
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("26L").getHeading()) > -5) {
@@ -528,7 +528,7 @@ public class RunwayChanger {
         }
     }
 
-    private void updateLFPO(int windDir, int windSpd) {
+    private void updateTCPO(int windDir, int windSpd) {
         if (airport.getLandingRunways().get("25") != null) {
             //24, 25 are active, set to 06, 07
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06").getHeading()) > -5) {

@@ -18,6 +18,7 @@ import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.entities.zones.ZoneLoader;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -72,7 +73,7 @@ public class Airport {
     }
 
     public Airport(JSONObject save) {
-        icao = save.getString("icao");
+        icao = RenameManager.renameAirportICAO(save.getString("icao"));
         elevation = save.getInt("elevation");
         runways = FileLoader.loadRunways(icao);
         landingRunways = new HashMap<>();
@@ -319,7 +320,7 @@ public class Airport {
     }
 
     public void setMetar(JSONObject metar) {
-        this.metar = metar.getJSONObject(icao);
+        this.metar = metar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
         System.out.println("METAR of " + icao + ": " + this.metar.toString());
         //Update active runways if METAR is updated (windHdg 0 is VRB wind)
         int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");

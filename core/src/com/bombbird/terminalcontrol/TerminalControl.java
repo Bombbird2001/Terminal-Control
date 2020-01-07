@@ -11,6 +11,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
@@ -111,6 +112,8 @@ public class TerminalControl extends Game {
         buttonAtlas = new TextureAtlas(Gdx.files.internal("game/ui/mainmenubuttons.atlas"));
         skin = new Skin();
         skin.addRegions(TerminalControl.buttonAtlas);
+
+        RenameManager.loadMaps();
 
         Gdx.input.setCatchBackKey(true);
 

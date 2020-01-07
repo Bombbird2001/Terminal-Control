@@ -77,36 +77,36 @@ public class TakeoffManager {
             }
         }
         if (airport.getAirborne() - airport.getLandings() < 5) {
-            if ("RCTP".equals(airport.getIcao())) {
-                updateRCTP();
-            } else if ("RCSS".equals(airport.getIcao())) {
-                updateRCSS();
-            } else if ("WSSS".equals(airport.getIcao())) {
-                updateWSSS();
-            } else if ("RJTT".equals(airport.getIcao())) {
-                updateRJTT();
-            } else if ("RJAA".equals(airport.getIcao())) {
-                updateRJAA();
-            } else if ("RJBB".equals(airport.getIcao())) {
-                updateRJBB();
-            } else if ("RJOO".equals(airport.getIcao())) {
-                updateRJOO();
-            } else if ("RJBE".equals(airport.getIcao())) {
-                updateRJBE();
-            } else if ("VHHH".equals(airport.getIcao())) {
-                updateVHHH();
-            } else if ("VMMC".equals(airport.getIcao())) {
-                updateVMMC();
-            } else if ("VTBD".equals(airport.getIcao())) {
-                updateVTBD();
-            } else if ("VTBS".equals(airport.getIcao())) {
-                updateVTBS();
-            } else if ("LEMD".equals(airport.getIcao())) {
-                updateLEMD();
-            } else if ("LFPG".equals(airport.getIcao())) {
-                updateLFPG();
-            } else if ("LFPO".equals(airport.getIcao())) {
-                updateLFPO();
+            if ("TCTP".equals(airport.getIcao())) {
+                updateTCTP();
+            } else if ("TCSS".equals(airport.getIcao())) {
+                updateTCSS();
+            } else if ("TCWS".equals(airport.getIcao())) {
+                updateTCWS();
+            } else if ("TCTT".equals(airport.getIcao())) {
+                updateTCTT();
+            } else if ("TCAA".equals(airport.getIcao())) {
+                updateTCAA();
+            } else if ("TCBB".equals(airport.getIcao())) {
+                updateTCBB();
+            } else if ("TCOO".equals(airport.getIcao())) {
+                updateTCOO();
+            } else if ("TCBE".equals(airport.getIcao())) {
+                updateTCBE();
+            } else if ("TCHH".equals(airport.getIcao())) {
+                updateTCHH();
+            } else if ("TCMC".equals(airport.getIcao())) {
+                updateTCMC();
+            } else if ("TCBD".equals(airport.getIcao())) {
+                updateTCBD();
+            } else if ("TCBS".equals(airport.getIcao())) {
+                updateTCBS();
+            } else if ("TCMD".equals(airport.getIcao())) {
+                updateTCMD();
+            } else if ("TCPG".equals(airport.getIcao())) {
+                updateTCPG();
+            } else if ("TCPO".equals(airport.getIcao())) {
+                updateTCPO();
             } else {
                 Gdx.app.log("Takeoff manager", "Takeoff settings for " + airport.getIcao() + " are unavailable.");
             }
@@ -114,7 +114,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Taiwan Taoyuan */
-    private void updateRCTP() {
+    private void updateTCTP() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -141,7 +141,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Taipei Songshan */
-    private void updateRCSS() {
+    private void updateTCSS() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -155,7 +155,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Singapore Changi */
-    private void updateWSSS() {
+    private void updateTCWS() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -182,7 +182,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Tokyo Haneda */
-    private void updateRJTT() {
+    private void updateTCTT() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -231,7 +231,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Tokyo Narita */
-    private void updateRJAA() {
+    private void updateTCAA() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -258,7 +258,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Osaka Kansai */
-    private void updateRJBB() {
+    private void updateTCBB() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -285,7 +285,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Osaka Itami */
-    private void updateRJOO() {
+    private void updateTCOO() {
         Runway runway = airport.getRunways().get("32L");
         if (!runway.isEmergencyClosed() && runway.isTakeoff() && checkPreceding("32L") && checkLanding(runway)) {
             updateRunway(runway);
@@ -293,7 +293,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Kobe */
-    private void updateRJBE() {
+    private void updateTCBE() {
         Runway runway = airport.getRunways().get("09");
         if (!runway.isEmergencyClosed() && runway.isTakeoff() && checkPreceding("09") && checkLanding(runway)) {
             updateRunway(runway);
@@ -301,7 +301,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Hong Kong */
-    private void updateVHHH() {
+    private void updateTCHH() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -328,7 +328,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Macau */
-    private void updateVMMC() {
+    private void updateTCMC() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -342,7 +342,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Bangkok Don Mueang */
-    private void updateVTBD() {
+    private void updateTCBD() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -361,7 +361,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Bangkok Suvarnabhumi */
-    private void updateVTBS() {
+    private void updateTCBS() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -388,7 +388,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Madrid Barajas */
-    private void updateLEMD() {
+    private void updateTCMD() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -413,7 +413,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Paris Charles de Gaulle */
-    private void updateLFPG() {
+    private void updateTCPG() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {
@@ -438,7 +438,7 @@ public class TakeoffManager {
     }
 
     /** Checks takeoff status for Paris Orly */
-    private void updateLFPO() {
+    private void updateTCPO() {
         Runway runway = null;
         float dist = -1;
         for (Runway runway1: airport.getTakeoffRunways().values()) {

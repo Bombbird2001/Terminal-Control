@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.ui.Ui;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -270,7 +271,7 @@ public class Aircraft extends Actor {
     public Aircraft(JSONObject save) {
         loadResources();
 
-        airport = radarScreen.airports.get(save.getString("airport"));
+        airport = radarScreen.airports.get(RenameManager.renameAirportICAO(save.getString("airport")));
         runway = save.isNull("runway") ? null : airport.getRunways().get(save.getString("runway"));
         onGround = save.getBoolean("onGround");
         tkOfLdg = save.getBoolean("tkOfLdg");

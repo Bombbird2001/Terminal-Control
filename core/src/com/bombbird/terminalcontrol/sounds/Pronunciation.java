@@ -13,20 +13,7 @@ public class Pronunciation {
 
     /** Loads the pronunciations */
     public static void loadPronunciation() {
-        waypointPronunciations.put("APU", "un poo");
-        waypointPronunciations.put("YILAN", "yilan");
-        waypointPronunciations.put("HLG", "ho long");
-        waypointPronunciations.put("ZUH", "Lian Sheng Way");
-        waypointPronunciations.put("DANDE", "done day");
-        waypointPronunciations.put("NLG", "Nun Lung");
-        waypointPronunciations.put("SMT", "Siu Mo Tow");
-        waypointPronunciations.put("VTB", "Villa Tobas");
-        waypointPronunciations.put("TLD", "Toledo");
-        waypointPronunciations.put("NVS", "Navas Del Rey");
-        waypointPronunciations.put("CJN", "Caste Jon");
-        waypointPronunciations.put("RBO", "Roble Dillo");
-        waypointPronunciations.put("SIE", "Somo Sierra");
-        waypointPronunciations.put("CAD", "Chateau Dun");
+        //TODO add pronunciations after renaming waypoints
 
         callsigns = FileLoader.loadIcaoCallsigns();
 

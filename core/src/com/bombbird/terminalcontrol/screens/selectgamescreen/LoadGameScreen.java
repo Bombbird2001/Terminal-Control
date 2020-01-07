@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import org.json.JSONArray;
@@ -48,13 +49,13 @@ public class LoadGameScreen extends SelectGameScreen {
         for (int i = 0; i < saves.length(); i++) {
             float multiplier = 1f;
             final JSONObject jsonObject = saves.getJSONObject(i);
-            final String toDisplay = jsonObject.getString("MAIN_NAME") + " (Score: " + jsonObject.getInt("score") + "    High score: " + jsonObject.getInt("highScore") + ")\nPlanes landed: " + jsonObject.getInt("landings") + "    Planes taken off: " + jsonObject.getInt("airborne");
+            final String toDisplay = RenameManager.renameAirportICAO(jsonObject.getString("MAIN_NAME")) + " (Score: " + jsonObject.getInt("score") + "    High score: " + jsonObject.getInt("highScore") + ")\nPlanes landed: " + jsonObject.getInt("landings") + "    Planes departed: " + jsonObject.getInt("airborne");
 
             final TextButton saveButton = new TextButton(toDisplay, getButtonStyle());
             saveButton.setName(toDisplay.substring(0, 4));
 
             FileHandle handle = Gdx.files.internal("game/available.arpt");
-            Array<int[]> airacs = new Array<int[]>();
+            Array<int[]> airacs = new Array<>();
             String[] airports = handle.readString().split("\\r?\\n");
             for (String icao: airports) {
                 if (icao.split(":")[0].equals(saveButton.getName())) {
@@ -95,28 +96,25 @@ public class LoadGameScreen extends SelectGameScreen {
             deleteButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    Gdx.app.postRunnable(new Runnable() {
-                        @Override
-                        public void run() {
-                            if ("0".equals(deleteButton.getName())) {
-                                deleteButton.setText("Press again to\nconfirm delete");
-                                deleteButton.setName("" + 1);
-                            } else {
-                                GameSaver.deleteSave(jsonObject.getInt("saveId"));
-                                Cell cell = getScrollTable().getCell(deleteButton);
-                                Cell cell1 = getScrollTable().getCell(saveButton);
-                                getScrollTable().removeActor(deleteButton);
-                                getScrollTable().removeActor(saveButton);
+                    Gdx.app.postRunnable(() -> {
+                        if ("0".equals(deleteButton.getName())) {
+                            deleteButton.setText("Press again to\nconfirm delete");
+                            deleteButton.setName("" + 1);
+                        } else {
+                            GameSaver.deleteSave(jsonObject.getInt("saveId"));
+                            Cell<TextButton> cell = getScrollTable().getCell(deleteButton);
+                            Cell<TextButton> cell1 = getScrollTable().getCell(saveButton);
+                            getScrollTable().removeActor(deleteButton);
+                            getScrollTable().removeActor(saveButton);
 
-                                //Fix UI bug that may happen after deleting cells - set cell size to 0 rather than deleting them
-                                cell.size(cell.getPrefWidth(), 0);
-                                cell1.size(cell1.getPrefWidth(), 0);
+                            //Fix UI bug that may happen after deleting cells - set cell size to 0 rather than deleting them
+                            cell.size(cell.getPrefWidth(), 0);
+                            cell1.size(cell1.getPrefWidth(), 0);
 
-                                getScrollTable().invalidate();
-                            }
-                            if (!getScrollTable().hasChildren()) {
-                                label.setVisible(true);
-                            }
+                            getScrollTable().invalidate();
+                        }
+                        if (!getScrollTable().hasChildren()) {
+                            label.setVisible(true);
                         }
                     });
                 }

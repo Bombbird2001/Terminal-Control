@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.ui.CommBox;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,13 +31,13 @@ public class GameLoader {
         loadAircraft(save.getJSONArray("aircrafts"));
 
         for (int i = 0; i < airports.length(); i++) {
-            Airport airport = TerminalControl.radarScreen.airports.get(airports.getJSONObject(i).getString("icao"));
+            Airport airport = TerminalControl.radarScreen.airports.get(RenameManager.renameAirportICAO(airports.getJSONObject(i).getString("icao")));
             airport.getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
             airport.updateOtherRunwayInfo(airports.getJSONObject(i));
         }
 
         JSONArray jsonArray = save.getJSONArray("allAircraft");
-        HashMap<String, Boolean> allAircrafts = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> allAircrafts = new HashMap<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             allAircrafts.put(jsonArray.getString(i), true);
         }

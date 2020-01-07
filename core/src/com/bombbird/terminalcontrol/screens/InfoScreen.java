@@ -58,7 +58,7 @@ public class InfoScreen implements Screen {
         labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.WHITE;
 
-        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2019, Bombbird\nVersion " + TerminalControl.versionName + ", build " + TerminalControl.versionCode, labelStyle);
+        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2020, Bombbird\nVersion " + TerminalControl.versionName + ", build " + TerminalControl.versionCode, labelStyle);
         copyright.setPosition(918, 1375);
         stage.addActor(copyright);
 
@@ -68,14 +68,8 @@ public class InfoScreen implements Screen {
                 "OkHttp3 - Apache License 2.0\n" +
                 "Apache Commons Lang - Apache License 2.0\n" +
                 "Open Sans font - Apache License 2.0", labelStyle);
-        licenses.setPosition(850 - licenses.getWidth() / 2f, 825);
+        licenses.setPosition(1440 - licenses.getWidth() / 2f, 825);
         stage.addActor(licenses);
-
-        Label sources = new Label("SID, STAR and other procedural data\nare manually parsed from the eAIP of:\n" +
-                                    "CAA, Taiwan\nCAAS, Singapore" +
-                                    (TerminalControl.full ? "\nMLIT, Japan\nCAD, Hong Kong\nAACM, Macau\nCAAT, Thailand\nENAIRE, Spain\nDGAC, France" : ""), labelStyle);
-        sources.setPosition(1950 - sources.getWidth() / 2f, 1000 - sources.getHeight() / 2f);
-        stage.addActor(sources);
 
         Label disclaimer = new Label("While we make effort to ensure that this game is as realistic as possible, " +
                 "please note that this game is not a completely accurate representation of real life air traffic control " +

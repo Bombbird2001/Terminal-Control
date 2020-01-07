@@ -10,36 +10,36 @@ public class MaxTraffic {
     private static final HashMap<String, Float> nightMaxTraffic = new HashMap<>();
 
     public static void loadHashmaps() {
-        maxTraffic.put("RCTP", 20f);
-        maxTraffic.put("WSSS", 16f);
-        maxTraffic.put("RJTT", 26f);
-        maxTraffic.put("RJBB", 18f);
-        maxTraffic.put("VHHH", 20f);
-        maxTraffic.put("VTBD", 20f);
-        maxTraffic.put("LEMD", 22f);
-        maxTraffic.put("LFPG", 24f);
+        maxTraffic.put("TCTP", 20f);
+        maxTraffic.put("TCWS", 16f);
+        maxTraffic.put("TCTT", 26f);
+        maxTraffic.put("TCBB", 18f);
+        maxTraffic.put("TCHH", 20f);
+        maxTraffic.put("TCBD", 20f);
+        maxTraffic.put("TCMD", 22f);
+        maxTraffic.put("TCPG", 24f);
 
-        nightTime.put("RJTT", new int[][] {
+        nightTime.put("TCTT", new int[][] {
             {2300, 2400},
             {0, 600}
         });
-        nightTime.put("RJBB", new int[][] {
+        nightTime.put("TCBB", new int[][] {
                 {2230, 2400},
                 {0, 615}
         });
-        nightTime.put("VHHH", new int[][] {
+        nightTime.put("TCHH", new int[][] {
                 {2300, 2400},
                 {0, 700}
         });
-        nightTime.put("LEMD", new int[][] {
+        nightTime.put("TCMD", new int[][] {
                 {2300, 2400},
                 {0, 700}
         });
 
-        nightMaxTraffic.put("RJTT", 6f);
-        nightMaxTraffic.put("RJBB", 4f);
-        nightMaxTraffic.put("VHHH", 14f);
-        nightMaxTraffic.put("LEMD", 14f);
+        nightMaxTraffic.put("TCTT", 6f);
+        nightMaxTraffic.put("TCBB", 4f);
+        nightMaxTraffic.put("TCHH", 14f);
+        nightMaxTraffic.put("TCMD", 14f);
     }
 
     /** Checks if night time operations is active for airport */

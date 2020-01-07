@@ -15,36 +15,36 @@ public class RunwayManager {
 
     public void updateRunways(int windDir, int windSpd) {
         boolean pendingChange = false;
-        if ("RCTP".equals(airport.getIcao())) {
-            pendingChange = updateRCTP(windDir, windSpd);
-        } else if ("RCSS".equals(airport.getIcao())) {
-            pendingChange = updateRCSS(windDir, windSpd);
-        } else if ("WSSS".equals(airport.getIcao())) {
-            pendingChange = updateWSSS(windDir, windSpd);
-        } else if ("RJTT".equals(airport.getIcao())) {
-            pendingChange = updateRJTT(windDir, windSpd);
-        } else if ("RJAA".equals(airport.getIcao())) {
-            pendingChange = updateRJAA(windDir, windSpd);
-        } else if ("RJBB".equals(airport.getIcao())) {
-            pendingChange = updateRJBB(windDir, windSpd);
-        } else if ("RJOO".equals(airport.getIcao())) {
-            pendingChange = updateRJOO(windDir, windSpd);
-        } else if ("RJBE".equals(airport.getIcao())) {
-            pendingChange = updateRJBE(windDir, windSpd);
-        } else if ("VHHH".equals(airport.getIcao())) {
-            pendingChange = updateVHHH(windDir, windSpd);
-        } else if ("VMMC".equals(airport.getIcao())) {
-            pendingChange = updateVMMC(windDir, windSpd);
-        } else if ("VTBD".equals(airport.getIcao())) {
-            pendingChange = updateVTBD(windDir, windSpd);
-        } else if ("VTBS".equals(airport.getIcao())) {
-            pendingChange = updateVTBS(windDir, windSpd);
-        } else if ("LEMD".equals(airport.getIcao())) {
-            pendingChange = updateLEMD(windDir, windSpd);
-        } else if ("LFPG".equals(airport.getIcao())) {
-            pendingChange = updateLFPG(windDir, windSpd);
-        } else if ("LFPO".equals(airport.getIcao())) {
-            pendingChange = updateLFPO(windDir, windSpd);
+        if ("TCTP".equals(airport.getIcao())) {
+            pendingChange = updateTCTP(windDir, windSpd);
+        } else if ("TCSS".equals(airport.getIcao())) {
+            pendingChange = updateTCSS(windDir, windSpd);
+        } else if ("TCWS".equals(airport.getIcao())) {
+            pendingChange = updateTCWS(windDir, windSpd);
+        } else if ("TCTT".equals(airport.getIcao())) {
+            pendingChange = updateTCTT(windDir, windSpd);
+        } else if ("TCAA".equals(airport.getIcao())) {
+            pendingChange = updateTCAA(windDir, windSpd);
+        } else if ("TCBB".equals(airport.getIcao())) {
+            pendingChange = updateTCBB(windDir, windSpd);
+        } else if ("TCOO".equals(airport.getIcao())) {
+            pendingChange = updateTCOO(windDir, windSpd);
+        } else if ("TCBE".equals(airport.getIcao())) {
+            pendingChange = updateTCBE(windDir, windSpd);
+        } else if ("TCHH".equals(airport.getIcao())) {
+            pendingChange = updateTCHH(windDir, windSpd);
+        } else if ("TCMC".equals(airport.getIcao())) {
+            pendingChange = updateTCMC(windDir, windSpd);
+        } else if ("TCBD".equals(airport.getIcao())) {
+            pendingChange = updateTCBD(windDir, windSpd);
+        } else if ("TCBS".equals(airport.getIcao())) {
+            pendingChange = updateTCBS(windDir, windSpd);
+        } else if ("TCMD".equals(airport.getIcao())) {
+            pendingChange = updateTCMD(windDir, windSpd);
+        } else if ("TCPG".equals(airport.getIcao())) {
+            pendingChange = updateTCPG(windDir, windSpd);
+        } else if ("TCPO".equals(airport.getIcao())) {
+            pendingChange = updateTCPO(windDir, windSpd);
         } else {
             Gdx.app.log("Runway manager", "Runway settings for " + airport.getIcao() + " are unavailable.");
         }
@@ -60,7 +60,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Taiwan Taoyuan */
-    private boolean updateRCTP(int windDir, int windSpd) {
+    private boolean updateTCTP(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("05L"))) {
@@ -96,7 +96,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Taipei Songshan */
-    private boolean updateRCSS(int windDir, int windSpd) {
+    private boolean updateTCSS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("10"))) {
@@ -126,7 +126,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Singapore Changi */
-    private boolean updateWSSS(int windDir, int windSpd) {
+    private boolean updateTCWS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("02L"))) {
@@ -162,7 +162,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Tokyo Haneda */
-    private boolean updateRJTT(int windDir, int windSpd) {
+    private boolean updateTCTT(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
             airport.setActive("34R", true, true);
@@ -194,7 +194,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Tokyo Narita */
-    private boolean updateRJAA(int windDir, int windSpd) {
+    private boolean updateTCAA(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("34L"))) {
@@ -230,7 +230,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Osaka Kansai */
-    private boolean updateRJBB(int windDir, int windSpd) {
+    private boolean updateTCBB(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("06L"))) {
@@ -266,7 +266,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Osaka Itami */
-    private boolean updateRJOO(int windDir, int windSpd) {
+    private boolean updateTCOO(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
             airport.setActive("32L", false, false);
             return airport.getLandingRunways().containsKey("32L");
@@ -277,7 +277,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Kobe */
-    private boolean updateRJBE(int windDir, int windSpd) {
+    private boolean updateTCBE(int windDir, int windSpd) {
         if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
             airport.setActive("09", false, false);
             return airport.getLandingRunways().containsKey("09");
@@ -288,7 +288,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Hong Kong*/
-    private boolean updateVHHH(int windDir, int windSpd) {
+    private boolean updateTCHH(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("07L"))) {
@@ -324,7 +324,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Macau */
-    private boolean updateVMMC(int windDir, int windSpd) {
+    private boolean updateTCMC(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("16"))) {
@@ -354,7 +354,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Bangkok Don Mueang */
-    private boolean updateVTBD(int windDir, int windSpd) {
+    private boolean updateTCBD(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("21R"))) {
@@ -390,7 +390,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Bangkok Suvarnabhumi */
-    private boolean updateVTBS(int windDir, int windSpd) {
+    private boolean updateTCBS(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("19L"))) {
@@ -426,7 +426,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Madrid Barajas */
-    private boolean updateLEMD(int windDir, int windSpd) {
+    private boolean updateTCMD(int windDir, int windSpd) {
         if (MaxTraffic.isNight("LEMD")) {
             //Night mode witb only 1 landing runway, 1 departure runway
             if (airport.getLandingRunways().size() == 0) {
@@ -539,7 +539,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Paris Charles de Gaulle */
-    private boolean updateLFPG(int windDir, int windSpd) {
+    private boolean updateTCPG(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("26L"))) {
@@ -587,7 +587,7 @@ public class RunwayManager {
     }
 
     /** Updates runway status for Paris Orly */
-    private boolean updateLFPO(int windDir, int windSpd) {
+    private boolean updateTCPO(int windDir, int windSpd) {
         if (airport.getLandingRunways().size() == 0) {
             //If is new game, no runways set yet
             if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("25"))) {
