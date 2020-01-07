@@ -48,7 +48,10 @@ public class HttpRequests {
     public static void getMetar(final Metar metar, final boolean retry) {
         JSONObject jo = new JSONObject();
         jo.put("password", Values.GET_METAR_PASSWORD);
-        JSONArray apts = new JSONArray(TerminalControl.radarScreen.airports.keySet());
+        JSONArray apts = new JSONArray();
+        for (String newIcao: TerminalControl.radarScreen.airports.keySet()) {
+            apts.put(RenameManager.reverseNameAirportICAO(newIcao));
+        }
         jo.put("airports", apts);
         RequestBody body = RequestBody.create(jo.toString(), json);
         Request request = new Request.Builder()
@@ -144,10 +147,14 @@ public class HttpRequests {
     }
 
     private static void receiveMetar(final Metar metar, final String apiKey, final boolean retry) {
-        String str = TerminalControl.radarScreen.airports.keySet().toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String newIcao: TerminalControl.radarScreen.airports.keySet()) {
+            if (stringBuilder.length() > 0) stringBuilder.append(",");
+            stringBuilder.append(RenameManager.reverseNameAirportICAO(newIcao));
+        }
         final Request request = new Request.Builder()
                 .addHeader("X-API-KEY", apiKey)
-                .url("https://api.checkwx.com/metar/" + str.substring(1, str.length() - 1).replaceAll("\\s","") + "/decoded")
+                .url("https://api.checkwx.com/metar/" + stringBuilder.toString() + "/decoded")
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
