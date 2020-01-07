@@ -85,28 +85,28 @@ public class TutorialManager {
     /** Sets the initial transmissions */
     public void init() {
         loadScrollPane();
-        tutorialMsg("Welcome to Terminal Control! You are an air traffic controller in the Taipei Terminal Control Area, managing arrivals and departures from Taipei's 2 international airports.");
+        tutorialMsg("Welcome to Terminal Control! You are an air traffic controller in the ? Terminal Control Area, managing arrivals and departures from ?'s 2 international airports.");
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                Airport airport = radarScreen.airports.get("RCTP");
+                Airport airport = radarScreen.airports.get("TCTP");
                 radarScreen.newDeparture("CAL641", "A359", airport, airport.getRunways().get("05L"));
-                tutorialMsg("Firstly, we have Taoyuan International Airport (RCTP), Taiwan's main international airport. It has 2 runways: 05L-23R and 05R-23L.");
+                tutorialMsg("Firstly, we have ? International Airport (TCTP). It has 2 runways: 05L-23R and 05R-23L."); //TODO
             }
         }, 10);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Next, we have Taipei Songshan Airport (RCSS), located in downtown Taipei. It has 1 runway, 10-28.");
+                tutorialMsg("Next, we have ? Airport (TCSS). It has 1 runway, 10-28."); //TODO
             }
         }, 20);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Look, we have an aircraft taking off from RCTP's runway 05L. We'll wait for it to become airborne and contact us.");
+                tutorialMsg("Look, we have an aircraft taking off from TCTP's runway 05L. We'll wait for it to become airborne and contact us.");
             }
         }, 30);
     }
@@ -118,7 +118,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                radarScreen.aircrafts.put("EVA226", new Arrival("EVA226", "B77W", radarScreen.airports.get("RCTP")));
+                radarScreen.aircrafts.put("EVA226", new Arrival("EVA226", "B77W", radarScreen.airports.get("TCTP")));
                 tutorialMsg("Seems like we have a new arrival inbound. Let's wait for it to contact us.");
             }
         }, 5);
@@ -294,7 +294,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("You may notice that the line showing heading 90 is not exactly towards the east on the screen. This is because there is a deviation between true heading and magnetic heading, and here in Taipei that deviation is about 4 degrees west, which means a heading of 90 will give a track of about 86 degrees.");
+                tutorialMsg("You may notice that the line showing heading 90 is not exactly towards the east on the screen. This is because there is a deviation between true heading and magnetic heading, and here in ? that deviation is about 4 degrees west, which means a heading of 90 will give a track of about 86 degrees."); //TODO
             }
         }, 5);
 

@@ -59,7 +59,7 @@ public class AirportHelpScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load help sections
-        String[] airports = TerminalControl.full ? new String[] {"RCTP", "WSSS", "RJTT", "VHHH", "RJBB", "VTBD", "LEMD", "LFPG"} : new String[] {"RCTP", "WSSS"};
+        String[] airports = TerminalControl.full ? new String[] {"TCTP", "TCWS", "TCTT", "TCHH", "TCBB", "TCBD", "TCMD", "TCPG"} : new String[] {"TCTP", "TCWS"};
         for (String arpt: airports) {
             TextButton button = new TextButton(arpt, getButtonStyle());
             button.setName(arpt);

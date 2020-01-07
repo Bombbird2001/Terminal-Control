@@ -37,9 +37,9 @@ public class NewGameScreen extends SelectGameScreen {
         //Load airports
         String[] airports;
         if (TerminalControl.full) {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport", "RJTT\nTokyo Haneda Airport", "VHHH\nHong Kong International Airport", "RJBB\nOsaka Kansai International Airport", "VTBD\nBangkok Don Mueang International Airport", "LEMD\nMadrid Barajas Airport", "LFPG\nParis Charles de Gaulle Airport"};
+            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\n? International Airport", "TCWS\n? Airport", "TCTT\n? Airport", "TCHH\n? International Airport", "TCBB\n? International Airport", "TCBD\n? International Airport", "TCMD\n? Airport", "TCPG\n? Airport"};
         } else {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "RCTP\nTaiwan Taoyuan International Airport", "WSSS\nSingapore Changi Airport"};
+            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\n? International Airport", "TCWS\n? Airport"};
         }
         for (final String airport: airports) {
             TextButton airportButton = new TextButton(airport, getButtonStyle());
@@ -50,7 +50,7 @@ public class NewGameScreen extends SelectGameScreen {
                     String name = actor.getName();
                     boolean tutorial = false;
                     if ("Tuto".equals(name)) {
-                        name = "RCTP";
+                        name = "TCTP";
                         tutorial = true;
                     }
                     FileHandle handle = Gdx.files.internal("game/available.arpt");
