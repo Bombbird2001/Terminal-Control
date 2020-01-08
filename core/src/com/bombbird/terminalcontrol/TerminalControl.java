@@ -52,6 +52,8 @@ public class TerminalControl extends Game {
     public static int soundSel;
     public static Emergency.Chance emerChance;
     public static boolean sendAnonCrash;
+    public static int revision;
+    public static final int LATEST_REVISION = 1;
 
     public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
         TerminalControl.tts = tts;
@@ -71,7 +73,7 @@ public class TerminalControl extends Game {
             }
             sendAnonCrash = true;
             emerChance = Emergency.Chance.MEDIUM;
-            GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance);
+            revision = 0;
         } else {
             trajectorySel = settings.getInt("trajectory");
             String weather = settings.optString("weather");
@@ -92,7 +94,9 @@ public class TerminalControl extends Game {
             } else {
                 emerChance = Emergency.Chance.valueOf(settings.getString("emerChance"));
             }
+            revision = settings.optInt("revision", 0);
         }
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance, revision);
     }
 
     public static void loadVersionInfo() {
@@ -101,6 +105,13 @@ public class TerminalControl extends Game {
         versionName = info[1];
         versionCode = Integer.parseInt(info[2]);
         FileLoader.mainDir = TerminalControl.full ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
+    }
+
+    public static boolean updateRevision() {
+        boolean changed = revision < LATEST_REVISION;
+        revision = LATEST_REVISION;
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance, revision);
+        return changed;
     }
 
     @Override

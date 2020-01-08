@@ -24,6 +24,7 @@ import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.DefaultSettingsScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
@@ -105,7 +106,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Start new game -> Choose airport screen
-                game.setScreen(new NewGameScreen(game, background));
+                game.setScreen((TerminalControl.updateRevision() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new NewGameScreen(game, background));
                 dispose();
             }
         });
@@ -121,7 +122,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Load game -> Saved games screen
-                game.setScreen(new LoadGameScreen(game, background));
+                game.setScreen((TerminalControl.updateRevision() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new LoadGameScreen(game, background));
                 dispose();
             }
         });

@@ -129,6 +129,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.sendAnonCrash = sendCrash;
         TerminalControl.emerChance = emerChance;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, emerChance);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, emerChance, TerminalControl.revision);
     }
 }

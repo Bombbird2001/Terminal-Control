@@ -7,14 +7,17 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class InfoScreen implements Screen {
+public class NotifScreen implements Screen {
     public final TerminalControl game;
     private Stage stage;
 
@@ -23,7 +26,9 @@ public class InfoScreen implements Screen {
 
     private Image background;
 
-    public InfoScreen(final TerminalControl game, Image background) {
+    private static final Array<String> notifArray = new Array<>();
+
+    public NotifScreen(final TerminalControl game, Image background) {
         this.game = game;
 
         //Set camera params
@@ -39,14 +44,24 @@ public class InfoScreen implements Screen {
 
         //Set background image to that shown on main menu screen
         this.background = background;
+
+        loadNotifs();
+    }
+
+    /** Loads all the notifications needed */
+    private void loadNotifs() {
+        notifArray.add("Hello players, here's an important notice to take note of. In order to reduce resemblance to real life airports, " +
+                "airport names, airport ICAO codes, SID/STAR names, as well as waypoint names have been changed. However, the procedures " +
+                "themselves remain the same and is still based on that of the real airport. Saves will remain compatible - existing planes " +
+                "will continue using old SIDs and STARs, while newly generated ones will use the new SIDs and STARs. " +
+                "Old saves that have not been loaded for 6 months or more may not be compatible. We apologise for the inconvenience, " +
+                "and we thank you for your understanding and continued support of Terminal Control.");
     }
 
     /** Loads the full UI of this screen */
     private void loadUI() {
         //Reset stage
         stage.clear();
-
-        stage.addActor(background);
 
         loadLabel();
         loadButtons();
@@ -58,28 +73,11 @@ public class InfoScreen implements Screen {
         labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.WHITE;
 
-        Label copyright = new Label("Terminal Control" + (TerminalControl.full ? "" : ": Lite") + "\nCopyright \u00a9 2018-2020, Bombbird\nVersion " + TerminalControl.versionName + ", build " + TerminalControl.versionCode, labelStyle);
-        copyright.setPosition(918, 1375);
-        stage.addActor(copyright);
-
-        Label licenses = new Label("Open source software/libraries used:\n\n" +
-                "libGDX - Apache License 2.0\n" +
-                "JSON In Java - JSON License\n" +
-                "OkHttp3 - Apache License 2.0\n" +
-                "Apache Commons Lang - Apache License 2.0\n" +
-                "Open Sans font - Apache License 2.0", labelStyle);
-        licenses.setPosition(1440 - licenses.getWidth() / 2f, 825);
-        stage.addActor(licenses);
-
-        Label disclaimer = new Label("While we make effort to ensure that this game is as realistic as possible, " +
-                "please note that this game is not a completely accurate representation of real life air traffic control " +
-                "and should not be used for purposes such as real life training. SID, STAR and other navigation data are fictitious " +
-                "and should never be used for real life navigation. Names used are fictional, any resemblance to real world entities " +
-                "is purely coincidental.", labelStyle);
-        disclaimer.setWrap(true);
-        disclaimer.setWidth(2400);
-        disclaimer.setPosition(1465 - disclaimer.getWidth() / 2f, 460);
-        stage.addActor(disclaimer);
+        Label notif = new Label(notifArray.get(TerminalControl.revision - 1), labelStyle);
+        notif.setWrap(true);
+        notif.setWidth(2000);
+        notif.setPosition(1465 - notif.getWidth() / 2f, 800);
+        stage.addActor(notif);
     }
 
     /** Loads the default button styles and back button */
