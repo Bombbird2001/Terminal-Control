@@ -92,14 +92,14 @@ public class TutorialManager {
             public void run() {
                 Airport airport = radarScreen.airports.get("TCTP");
                 radarScreen.newDeparture("CAL641", "A359", airport, airport.getRunways().get("05L"));
-                tutorialMsg("Firstly, we have ? International Airport (TCTP). It has 2 runways: 05L-23R and 05R-23L."); //TODO
+                tutorialMsg("Firstly, we have Haoyuan International Airport (TCTP). It has 2 runways: 05L-23R and 05R-23L.");
             }
         }, 10);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("Next, we have ? Airport (TCSS). It has 1 runway, 10-28."); //TODO
+                tutorialMsg("Next, we have Rongshan Airport (TCSS). It has 1 runway, 10-28.");
             }
         }, 20);
 
@@ -294,7 +294,7 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("You may notice that the line showing heading 90 is not exactly towards the east on the screen. This is because there is a deviation between true heading and magnetic heading, and here in ? that deviation is about 4 degrees west, which means a heading of 90 will give a track of about 86 degrees."); //TODO
+                tutorialMsg("You may notice that the line showing heading 90 is not exactly towards the east on the screen. This is because there is a deviation between true heading and magnetic heading, and here that deviation is about 4 degrees west, which means a heading of 90 will give a track of about 86 degrees.");
             }
         }, 5);
 
