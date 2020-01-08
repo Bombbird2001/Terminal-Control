@@ -922,26 +922,26 @@ public class Aircraft extends Actor {
             }
         } else if (this instanceof Departure && navState.getDispLatMode().first().contains("departure")) {
             //Force directions for certain departure procedures
-            if (getSidStar().getName().contains("NANKO1") && runway.getName().contains("06") && direct != null && "NANKO".equals(direct.getName()) && heading > 90 && heading < 320) {
-                //RJBB NANKO1(6L) and NANKO1(6R) departures
+            if (getSidStar().getName().contains("ANNKO1") && runway.getName().contains("06") && direct != null && "ANNKO".equals(direct.getName()) && heading > 90 && heading < 320) {
+                //RJBB ANNKO1(6L) and ANNKO1(6R) departures
                 forceDirection = 1;
-            } else if (getSidStar().getName().contains("KANSAI1") && runway.getName().contains("24") && direct != null && "KNE".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJBB KANSAI1(24L) and KANSAI1(24R) departures
+            } else if (getSidStar().getName().contains("NKE1") && runway.getName().contains("24") && direct != null && "NKE".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJBB NKE1(24L) and NKE1(24R) departures
                 forceDirection = 2;
-            } else if ("ASUKA4".equals(getSidStar().getName()) && direct != null && "ASUKA".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO ASUKA4 departure
+            } else if ("SAUKA4".equals(getSidStar().getName()) && direct != null && "SAUKA".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO SAUKA4 departure
                 forceDirection = 1;
-            } else if ("OTSU5".equals(getSidStar().getName()) && direct != null && "D101P".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO OTSU5 departure
+            } else if ("APSU5".equals(getSidStar().getName()) && direct != null && "SHINY".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO APSU5 departure
                 forceDirection = 1;
-            } else if ("MINAC3".equals(getSidStar().getName()) && direct != null && "ITE16".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO MINAC3 departure
+            } else if ("IRNAC3".equals(getSidStar().getName()) && direct != null && "BOKUN".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO IRNAC3 departure
                 forceDirection = 1;
-            } else if ((getSidStar().getName().contains("NLG2D") || "SHL2D".equals(getSidStar().getName()) || "MIPAG2D".equals(getSidStar().getName())) && direct != null && "MCU".equals(direct.getName()) && heading > 90 && heading <= 360) {
-                //VMMC NLG2D, SHL2D and MIPAG2D departures
+            } else if ((getSidStar().getName().contains("LNG2D") || "HSL2D".equals(getSidStar().getName()) || "IMPAG2D".equals(getSidStar().getName())) && direct != null && "CMU".equals(direct.getName()) && heading > 90 && heading <= 360) {
+                //VMMC LNG2D, HSL2D and IMPAG2D departures
                 forceDirection = 2;
-            } else if ("OPPAR3".equals(getSidStar().getName()) && runway.getName().contains("16") && direct != null && "OPPAR".equals(direct.getName()) && heading < 165) {
-                //RJTT OPPAR3 departure
+            } else if ("POPAR3".equals(getSidStar().getName()) && runway.getName().contains("16") && direct != null && "POPAR".equals(direct.getName()) && heading < 165) {
+                //RJTT POPAR3 departure
                 forceDirection = 1;
             }
         }
