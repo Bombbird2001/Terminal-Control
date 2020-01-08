@@ -324,7 +324,11 @@ public class Departure extends Aircraft {
         getNavState().replaceAllClearedAlt();
         setExpedite(false);
         if (getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1);
-        radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
+        if (sid.getCentre() != null) {
+            radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
+        } else {
+            radarScreen.getCommBox().contactFreq(this, "Centre", "120.5");
+        }
     }
 
     @Override

@@ -76,7 +76,7 @@ public class Arrival extends Aircraft {
         setX(point[0]);
         setY(point[1]);
 
-        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) setDirect(getRoute().getWaypoint(1));
+        if ("BULLA-T".equals(star.getName()) || "KOPUS-T".equals(star.getName())) setDirect(getRoute().getWaypoint(1));
 
         loadLabel();
         setNavState(new NavState(this));
@@ -94,7 +94,7 @@ public class Arrival extends Aircraft {
         fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + 900 + MathUtils.random(-600, 600);
 
         float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes() * 0.8f;
-        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) {
+        if ("BULLA-T".equals(star.getName()) || "KOPUS-T".equals(star.getName())) {
             initAlt = 9000;
         } else {
             if (maxAltWpt != null) {
@@ -120,7 +120,7 @@ public class Arrival extends Aircraft {
         }
         setAltitude(initAlt);
         updateAltRestrictions();
-        if ("LUBLA-T".equals(star.getName()) || "SUPOK-T".equals(star.getName())) {
+        if ("BULLA-T".equals(star.getName()) || "KOPUS-T".equals(star.getName())) {
             setClearedAltitude(6000);
         } else if (initAlt > 15000) {
             setClearedAltitude(15000);

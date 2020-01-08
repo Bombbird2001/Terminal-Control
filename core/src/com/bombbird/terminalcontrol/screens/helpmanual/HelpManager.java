@@ -57,9 +57,9 @@ public class HelpManager {
                 "TCSS, ? Airport", "Runway:", "10-28: 2605m", "Configurations: 10 or 28", "Runway is used for both arrivals, departures. When 28 is in use, planes will use the LDA28 approach which is a non-precision approach with step down altitudes."});
         CONTENT_LIST.put("TCWS", new String[] {"WSSS, Singapore Changi Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
                 "Segregated runway operations usually used, where 02L-20R is usually used for arrivals, and 02C-20C used for departures. However when needed, independent simultaneous ILS approaches can be conducted for both runways. A 3rd runway, 02R-20L will also be open in the near future."});
-        CONTENT_LIST.put("TCTT", new String[] {"RJTT, ? Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23",
+        CONTENT_LIST.put("TCTT", new String[] {"TCTT, ? Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23",
                 "Simultaneous approaches are used for 34L, 34R. Simultaneous LDA approaches are also used for 22, 23, which are non-precision approaches. Simultaneous departures are used for 16L, 16R.",
-                "TCTT STARs get the aircraft to fly in an arc initially, and the controller can instruct the aircraft to fly direct towards ?, ? OR ? after ensuring sufficient separation.",
+                "TCTT STARs get the aircraft to fly in an arc initially, and the controller can instruct the aircraft to fly direct towards DEWWY, GLISS or CAMER after ensuring sufficient separation.",
                 "When night operations are active, STARs are modified to exclude the arc and various restrictions. Only 1 departure SID, ?, is used.",
                 "TCAA, ? Airport", "Runways:", "34L-16R: 4000m", "34R-16L: 2500m", "Configurations: 34L and 34R or 16L and 16R",
                 "Segregated runway operations usually used, with 34L-16R used for departures and 34R-16L used for arrivals. However, when needed, simultaneous arrivals and departures may be used for both runways.",
