@@ -491,7 +491,7 @@ public class RadarScreen extends GameScreen {
 
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
-        if ("RCTP".equals(mainName)) {
+        if ("TCTP".equals(mainName)) {
             shapeRenderer.line(4500, 2416, 4500, 2124);
             shapeRenderer.line(1256, 2050, 1256, 1180);
         }

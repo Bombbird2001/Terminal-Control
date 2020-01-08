@@ -1,19 +1,19 @@
 {
-  "CHALI1A": {
-    "pronunciation": "CHALI 1 ALPHA",
+  "HICAL1A": {
+    "pronunciation": "HICAL 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP060 -1 -1 -1 FO"
+          "IRINA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NOVAS -1 -1 -1",
-      "DECOY -1 -1 -1",
-      "SUMER 4000 -1 -1",
-      "CHALI 4000 -1 -1"
+      "SAVON -1 -1 -1",
+      "WATTS -1 -1 -1",
+      "MUSIC 4000 -1 -1",
+      "HICAL 4000 -1 -1"
     ],
     "transitions": [
       [
@@ -21,25 +21,25 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "126.7"
     ]
   },
-  "CHALI1C": {
-    "pronunciation": "CHALI 1 CHARLIE",
+  "HICAL1C": {
+    "pronunciation": "HICAL 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NOVAS -1 -1 -1",
-      "DECOY -1 -1 -1",
-      "SUMER 4000 -1 -1",
-      "CHALI 4000 -1 -1"
+      "SAVON -1 -1 -1",
+      "WATTS -1 -1 -1",
+      "MUSIC 4000 -1 -1",
+      "HICAL 4000 -1 -1"
     ],
     "transitions": [
       [
@@ -47,23 +47,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "126.7"
     ]
   },
-  "CHALI1B": {
-    "pronunciation": "CHALI 1 BRAVO",
+  "HICAL1B": {
+    "pronunciation": "HICAL 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 210 FO"
+          "DREKO -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "SUMER 4000 -1 -1",
-      "CHALI 4000 -1 -1"
+      "MUSIC 4000 -1 -1",
+      "HICAL 4000 -1 -1"
     ],
     "transitions": [
       [
@@ -71,23 +71,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "126.7"
     ]
   },
-  "CHALI1D": {
-    "pronunciation": "CHALI 1 DELTA",
+  "HICAL1D": {
+    "pronunciation": "HICAL 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 210 FO"
+          "UCHAN -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "SUMER 4000 -1 -1",
-      "CHALI 4000 -1 -1"
+      "MUSIC 4000 -1 -1",
+      "HICAL 4000 -1 -1"
     ],
     "transitions": [
       [
@@ -95,23 +95,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "126.7"
     ]
   },
-  "KUDOS1A": {
-    "pronunciation": "KUDOS 1 ALPHA",
+  "SODUK1A": {
+    "pronunciation": "SODUK 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP064 -1 -1 -1 FO"
+          "MIKAA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS 4500 -1 -1 FO",
-      "KUDOS 4500 -1 -1"
+      "ENPAS 4500 -1 -1 FO",
+      "SODUK 4500 -1 -1"
     ],
     "transitions": [
       [
@@ -122,23 +122,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "KUDOS1C": {
-    "pronunciation": "KUDOS 1 CHARLIE",
+  "SODUK1C": {
+    "pronunciation": "SODUK 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS 4500 -1 -1 FO",
-      "KUDOS 4500 -1 -1"
+      "ENPAS 4500 -1 -1 FO",
+      "SODUK 4500 -1 -1"
     ],
     "transitions": [
       [
@@ -149,24 +149,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "KUDOS1B": {
-    "pronunciation": "KUDOS 1 BRAVO",
+  "SODUK1B": {
+    "pronunciation": "SODUK 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 210 FO"
+          "DREKO -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "KUDOS -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "SODUK -1 -1 -1"
     ],
     "transitions": [
       [
@@ -177,24 +177,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "KUDOS1D": {
-    "pronunciation": "KUDOS 1 DELTA",
+  "SODUK1D": {
+    "pronunciation": "SODUK 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 210 FO"
+          "UCHAN -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "KUDOS -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "SODUK -1 -1 -1"
     ],
     "transitions": [
       [
@@ -205,26 +205,26 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "MOLKA1A": {
-    "pronunciation": "MOLKA 1 ALPHA",
+  "MOLEE1A": {
+    "pronunciation": "MOLEE 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP064 -1 -1 -1 FO"
+          "MIKAA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS -1 -1 -1 FO",
-      "ROBIN -1 -1 -1",
-      "PABSO -1 -1 -1",
-      "KIKIT -1 -1 -1",
-      "MOLKA -1 -1 -1"
+      "ENPAS -1 -1 -1 FO",
+      "ORBIN -1 -1 -1",
+      "APEGO -1 -1 -1",
+      "IKKIT -1 -1 -1",
+      "MOLEE -1 -1 -1"
     ],
     "transitions": [
       [
@@ -232,26 +232,26 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "MOLKA1C": {
-    "pronunciation": "MOLKA 1 CHARLIE",
+  "MOLEE1C": {
+    "pronunciation": "MOLEE 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS -1 -1 -1 FO",
-      "ROBIN -1 -1 -1",
-      "PABSO -1 -1 -1",
-      "KIKIT -1 -1 -1",
-      "MOLKA -1 -1 -1"
+      "ENPAS -1 -1 -1 FO",
+      "ORBIN -1 -1 -1",
+      "APEGO -1 -1 -1",
+      "IKKIT -1 -1 -1",
+      "MOLEE -1 -1 -1"
     ],
     "transitions": [
       [
@@ -259,27 +259,27 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "MOLKA1B": {
-    "pronunciation": "MOLKA 1 BRAVO",
+  "MOLEE1B": {
+    "pronunciation": "MOLEE 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 210 FO"
+          "DREKO -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "ROBIN -1 -1 -1",
-      "PABSO -1 -1 -1",
-      "KIKIT -1 -1 -1",
-      "MOLKA -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "ORBIN -1 -1 -1",
+      "APEGO -1 -1 -1",
+      "IKKIT -1 -1 -1",
+      "MOLEE -1 -1 -1"
     ],
     "transitions": [
       [
@@ -287,27 +287,27 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "MOLKA1D": {
-    "pronunciation": "MOLKA 1 DELTA",
+  "MOLEE1D": {
+    "pronunciation": "MOLEE 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 210 FO"
+          "UCHAN -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "ROBIN -1 -1 -1",
-      "PABSO -1 -1 -1",
-      "KIKIT -1 -1 -1",
-      "MOLKA -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "ORBIN -1 -1 -1",
+      "APEGO -1 -1 -1",
+      "IKKIT -1 -1 -1",
+      "MOLEE -1 -1 -1"
     ],
     "transitions": [
       [
@@ -315,23 +315,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "ROBIN1A": {
-    "pronunciation": "ROBIN 1 ALPHA",
+  "ORBIN1A": {
+    "pronunciation": "ORBIN 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP064 -1 -1 -1 FO"
+          "MIKAA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS -1 -1 -1 FO",
-      "ROBIN -1 -1 -1"
+      "ENPAS -1 -1 -1 FO",
+      "ORBIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -339,23 +339,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "ROBIN1C": {
-    "pronunciation": "ROBIN 1 CHARLIE",
+  "ORBIN1C": {
+    "pronunciation": "ORBIN 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS -1 -1 -1 FO",
-      "ROBIN -1 -1 -1"
+      "ENPAS -1 -1 -1 FO",
+      "ORBIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -363,24 +363,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "ROBIN1B": {
-    "pronunciation": "ROBIN 1 BRAVO",
+  "ORBIN1B": {
+    "pronunciation": "ORBIN 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 210 FO"
+          "DREKO -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "ROBIN -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "ORBIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -388,24 +388,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "ROBIN1D": {
-    "pronunciation": "ROBIN 1 DELTA",
+  "ORBIN1D": {
+    "pronunciation": "ORBIN 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 210 FO"
+          "UCHAN -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "ROBIN -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "ORBIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -413,23 +413,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "TINHO1A": {
-    "pronunciation": "TINHO 1 ALPHA",
+  "HOTIN1A": {
+    "pronunciation": "HOTIN 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP064 -1 -1 -1 FO"
+          "MIKAA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS 4500 -1 -1 FO",
-      "TINHO 4500 -1 -1"
+      "ENPAS 4500 -1 -1 FO",
+      "HOTIN 4500 -1 -1"
     ],
     "transitions": [
       [
@@ -437,23 +437,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "TINHO1C": {
-    "pronunciation": "TINHO 1 CHARLIE",
+  "HOTIN1C": {
+    "pronunciation": "HOTIN 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "NEPAS 4500 -1 -1 FO",
-      "TINHO 4500 -1 -1"
+      "ENPAS 4500 -1 -1 FO",
+      "HOTIN 4500 -1 -1"
     ],
     "transitions": [
       [
@@ -461,24 +461,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "TINHO1B": {
-    "pronunciation": "TINHO 1 BRAVO",
+  "HOTIN1B": {
+    "pronunciation": "HOTIN 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 210 FO"
+          "DREKO -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "TINHO -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "HOTIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -486,24 +486,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "TINHO1D": {
-    "pronunciation": "TINHO 1 DELTA",
+  "HOTIN1D": {
+    "pronunciation": "HOTIN 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 210 FO"
+          "UCHAN -1 -1 210 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1 FO",
-      "TINHO -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1 FO",
+      "HOTIN -1 -1 -1"
     ],
     "transitions": [
       [
@@ -511,23 +511,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "PIANO1A": {
-    "pronunciation": "PIANO 1 ALPHA",
+  "ONAIP1A": {
+    "pronunciation": "ONAIP 1 ALPHA",
     "rwys": {
       "05R": {
         "climb": "54 600 210",
         "wpts": [
-          "TP064 -1 -1 -1 FO"
+          "MIKAA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "OCTAN -1 -1 -1",
-      "PIANO -1 -1 -1"
+      "COTAN -1 -1 -1",
+      "ONAIP -1 -1 -1"
     ],
     "transitions": [
       [
@@ -535,23 +535,23 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "PIANO1C": {
-    "pronunciation": "PIANO 1 CHARLIE",
+  "ONAIP1C": {
+    "pronunciation": "ONAIP 1 CHARLIE",
     "rwys": {
       "05L": {
         "climb": "54 600 210",
         "wpts": [
-          "TP050 -1 -1 -1 FO"
+          "SHIBA -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "OCTAN -1 -1 -1",
-      "PIANO -1 -1 -1"
+      "COTAN -1 -1 -1",
+      "ONAIP -1 -1 -1"
     ],
     "transitions": [
       [
@@ -559,24 +559,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "PIANO1B": {
-    "pronunciation": "PIANO 1 BRAVO",
+  "ONAIP1B": {
+    "pronunciation": "ONAIP 1 BRAVO",
     "rwys": {
       "23L": {
         "climb": "234 600 210",
         "wpts": [
-          "TP240 -1 -1 -1 FO"
+          "DREKO -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1",
-      "PIANO -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1",
+      "ONAIP -1 -1 -1"
     ],
     "transitions": [
       [
@@ -584,24 +584,24 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   },
-  "PIANO1D": {
-    "pronunciation": "PIANO 1 DELTA",
+  "ONAIP1D": {
+    "pronunciation": "ONAIP 1 DELTA",
     "rwys": {
       "23R": {
         "climb": "234 600 210",
         "wpts": [
-          "TP230 -1 -1 -1 FO"
+          "UCHAN -1 -1 -1 FO"
         ]
       }
     },
     "route": [
-      "DECOY -1 -1 -1",
-      "OCTAN -1 -1 -1",
-      "PIANO -1 -1 -1"
+      "WATTS -1 -1 -1",
+      "COTAN -1 -1 -1",
+      "ONAIP -1 -1 -1"
     ],
     "transitions": [
       [
@@ -609,7 +609,7 @@
       ]
     ],
     "control": [
-      "Taipei Control",
+      "Control",
       "125.5"
     ]
   }

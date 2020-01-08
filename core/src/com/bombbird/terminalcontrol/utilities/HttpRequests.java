@@ -80,7 +80,6 @@ public class HttpRequests {
                 } else {
                     String responseText = "";
                     if (response.body() != null) responseText = response.body().string();
-                    System.out.println(responseText);
                     if ("Update".equals(responseText)) {
                         //Server requested for METAR update
                         System.out.println("Update requested");
