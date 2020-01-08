@@ -37,9 +37,9 @@ public class NewGameScreen extends SelectGameScreen {
         //Load airports
         String[] airports;
         if (TerminalControl.full) {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\n? International Airport", "TCWS\n? Airport", "TCTT\n? Airport", "TCHH\n? International Airport", "TCBB\n? International Airport", "TCBD\n? International Airport", "TCMD\n? Airport", "TCPG\n? Airport"};
+            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport", "TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport", "TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport"};
         } else {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\n? International Airport", "TCWS\n? Airport"};
+            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport"};
         }
         for (final String airport: airports) {
             TextButton airportButton = new TextButton(airport, getButtonStyle());

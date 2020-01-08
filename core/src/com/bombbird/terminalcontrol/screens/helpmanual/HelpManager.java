@@ -51,47 +51,46 @@ public class HelpManager {
                 "Separation is lost when the trail distance between the between the preceding aircraft and the trailing aircraft is less than required, and if the trailing aircraft is between 0 to ~1000 feet lower than the preceding aircraft when it was at the current location of the trailing aircraft.",
                 "On the ILS, an additional wake separation line is displayed for ease of reference. The position of the line depicts the separation required between a preceding and trailing aircraft.",
                 "If an aircraft experiences wake turbulence on approach, it risks going around. You also lose points if wake separation is infringed."});
-        //TODO update names
-        CONTENT_LIST.put("TCTP", new String[] {"TCTP, ? International Airport", "Runways:", "05L-23R: 3660m", "05R-23L: 3800m", "Configurations: 05L and 05R or 23L and 23R",
+        CONTENT_LIST.put("TCTP", new String[] {"TCTP, Haoyuan International Airport", "Runways:", "05L-23R: 3660m", "05R-23L: 3800m", "Configurations: 05L and 05R or 23L and 23R",
                 "Segregated runway operations usually used, where 1 runway is used for arrivals and the other for departures. Mixed mode is also used sometimes.",
-                "TCSS, ? Airport", "Runway:", "10-28: 2605m", "Configurations: 10 or 28", "Runway is used for both arrivals, departures. When 28 is in use, planes will use the LDA28 approach which is a non-precision approach with step down altitudes."});
-        CONTENT_LIST.put("TCWS", new String[] {"TCWS, ? Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
+                "TCSS, Rongshan Airport", "Runway:", "10-28: 2605m", "Configurations: 10 or 28", "Runway is used for both arrivals, departures. When 28 is in use, planes will use the LDA28 approach which is a non-precision approach with step down altitudes."});
+        CONTENT_LIST.put("TCWS", new String[] {"TCWS, Changli International Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
                 "Segregated runway operations usually used, where 02L-20R is usually used for arrivals, and 02C-20C used for departures. However when needed, independent simultaneous ILS approaches can be conducted for both runways. A 3rd runway, 02R-20L will also be open in the near future."});
-        CONTENT_LIST.put("TCTT", new String[] {"TCTT, ? Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23",
+        CONTENT_LIST.put("TCTT", new String[] {"TCTT, Naheda Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23",
                 "Simultaneous approaches are used for 34L, 34R. Simultaneous LDA approaches are also used for 22, 23, which are non-precision approaches. Simultaneous departures are used for 16L, 16R.",
                 "TCTT STARs get the aircraft to fly in an arc initially, and the controller can instruct the aircraft to fly direct towards DEWWY, GLISS or CAMER after ensuring sufficient separation.",
                 "When night operations are active, STARs are modified to exclude the arc and various restrictions. Only 1 departure SID, POPAR3, is used.",
-                "TCAA, ? Airport", "Runways:", "34L-16R: 4000m", "34R-16L: 2500m", "Configurations: 34L and 34R or 16L and 16R",
+                "TCAA, Tanari Airport", "Runways:", "34L-16R: 4000m", "34R-16L: 2500m", "Configurations: 34L and 34R or 16L and 16R",
                 "Segregated runway operations usually used, with 34L-16R used for departures and 34R-16L used for arrivals. However, when needed, simultaneous arrivals and departures may be used for both runways.",
                 "TCAA STARs also utilise the arc, however they are outside the game world and so are not seen in the game."});
-        CONTENT_LIST.put("TCHH", new String[] {"TCHH, ? International Airport", "Runways:", "07L-25R: 3800m", "07R-25L: 3800m", "Configurations: 07L and 07R or 25L and 25R",
+        CONTENT_LIST.put("TCHH", new String[] {"TCHH, Tang Gong International Airport", "Runways:", "07L-25R: 3800m", "07R-25L: 3800m", "Configurations: 07L and 07R or 25L and 25R",
                 "Segregated runway operations usually used, with 07L-25R used for arrivals and 07R-25L used for departures. High terrain around the airport means caution must be taken when vectoring planes.",
                 "Most holding waypoints are located outside the game world except SANTO and RANGE, hence delay vectors may be used instead.",
                 "When night operations are active, SIDs are modified to take the aircraft out to sea early during the climb to reduce noise on the city area.",
-                "TCMC, ? International Airport", "Runways:", "16-34: 3360m", "Configurations: 16 and 34", "Runway is used for both arrivals, departures. When 16 is in use, planes will use the LDA16 approach which is a non-precision approach",
+                "TCMC, Macaw International Airport", "Runways:", "16-34: 3360m", "Configurations: 16 and 34", "Runway is used for both arrivals, departures. When 16 is in use, planes will use the LDA16 approach which is a non-precision approach",
                 "TCMC STARs, SIDs have strict altitude, speed restrictions due to the busy airspace around it."});
-        CONTENT_LIST.put("TCBB", new String[] {"TCBB, ? International Airport", "Runways:", "06L-24R: 4000m", "06R-24L: 3500m", "Configurations: 06L and 06R or 24L and 24R",
+        CONTENT_LIST.put("TCBB", new String[] {"TCBB, Saikan International Airport", "Runways:", "06L-24R: 4000m", "06R-24L: 3500m", "Configurations: 06L and 06R or 24L and 24R",
                 "Segregated runway operations usually used, with 06L-24R used for arrivals, and 06R-24L used for departures.",
                 "When night operations are active, SIDs are restricted to TANKI1, WAIYU1, MELEN1, SANUS1. STARs for runways 24L/24R are also modified to bring the aircraft further from the city area to reduce noise.",
-                "TCOO, ? Airport", "Runways:", "32L-14R: 3000m", "32R-14L: 1800m", "Configuration: 32L",
+                "TCOO, Mitai Airport", "Runways:", "32L-14R: 3000m", "32R-14L: 1800m", "Configuration: 32L",
                 "Only a single runway, 32L-14R is used as 32R-14L is located too close and is likely too short. Furthermore, runway 14R has no ILS approach, hence circling approach is used which is not implemented in the game. As such, 14R is not used in the game.",
                 "There is relatively high terrain to the east of the airport, hence caution must be taken when vectoring aircraft.",
-                "TCBE, ? Airport", "Runways:", "09-27: 2500m", "Configuration: 09", "Runway 09 is used for both arrivals, departures. Runway 27 is not used in game due to it lacking an ILS approach and requiring a circling approach instead.",
+                "TCBE, Boke Airport", "Runways:", "09-27: 2500m", "Configuration: 09", "Runway 09 is used for both arrivals, departures. Runway 27 is not used in game due to it lacking an ILS approach and requiring a circling approach instead.",
                 "Due to its proximity with TCBB traffic, care must be taken when handling TCBE departures."});
-        CONTENT_LIST.put("TCBD", new String[] {"TCBD, ? International Airport", "Runways:", "03L-21R: 3700m", "03R-21L: 3500m", "Configurations: 03L and 03R or 21L and 21R",
+        CONTENT_LIST.put("TCBD", new String[] {"TCBD, Lon Man International Airport", "Runways:", "03L-21R: 3700m", "03R-21L: 3500m", "Configurations: 03L and 03R or 21L and 21R",
                 "Segregated runway operations are used, with 03L-21R used for arrivals, and 03R-21L used for departures.",
-                "In order to avoid restricted areas at ? City, runway 21L SIDs have to make an early right turn to avoid it. Runway 03L STARs also need to navigate around the area before lining up for a relatively short final.",
-                "TCBS, ? Airport", "Runways:", "01L-19R: 3700m", "01R-19L: 4000m", "Configurations: 01L and 01R or 19L or 19R",
+                "In order to avoid restricted areas at the city, runway 21L SIDs have to make an early right turn to avoid it. Runway 03L STARs also need to navigate around the area before lining up for a relatively short final.",
+                "TCBS, Huvarna Airport", "Runways:", "01L-19R: 3700m", "01R-19L: 4000m", "Configurations: 01L and 01R or 19L or 19R",
                 "Segregated runway operations usually used, with 01R-19L used for arrivals, and 01L-19R used for departures.",
-                "Do take note that the minimum separation in ? TMA is 5nm or 1000 feet rather than the standard 3nm or 1000 feet."});
-        CONTENT_LIST.put("LEMD", new String[] {"TCMD, ? Airport", "Runways:", "14L-32R: 3500m", "14R-32L: 4100m", "18L-36R: 3500m", "18R-36L: 4350m", "Configurations: 36L, 36R, 32L and 32R or 14L, 14R, 18L or 18R",
+                "Do take note that the minimum separation here is 5nm or 1000 feet rather than the standard 3nm or 1000 feet."});
+        CONTENT_LIST.put("TCMD", new String[] {"TCMD, Hadrise Airport", "Runways:", "14L-32R: 3500m", "14R-32L: 4100m", "18L-36R: 3500m", "18R-36L: 4350m", "Configurations: 36L, 36R, 32L and 32R or 14L, 14R, 18L or 18R",
                 "Simultaneous departures used for 36L and 36R or 14L and 14R. Simultaneous arrivals used for 18L and 18R or 32L or 32R",
                 "High terrain, restricted areas are present to the north-west of the airport, caution should be taken when vectoring aircraft in that sector. Runway 18L, 18R STARs do take them into account.",
                 "During night operations, only 2 runways are used. 14L or 36L is used for departure, 18L or 32R is used for arrivals."});
-        CONTENT_LIST.put("TCPG", new String[] {"TCPG, ? Airport", "Runways:", "08L-26R: 4215m", "08R-26L: 2700m", "09L-27R: 2700m", "09R-27L: 4200m", "Configurations: 08L, 08R, 09L and 09R or 26L, 26R, 27L and 27R",
+        CONTENT_LIST.put("TCPG", new String[] {"TCPG, Shartes o' Dickens Airport", "Runways:", "08L-26R: 4215m", "08R-26L: 2700m", "09L-27R: 2700m", "09R-27L: 4200m", "Configurations: 08L, 08R, 09L and 09R or 26L, 26R, 27L and 27R",
                 "Simultaneous departures used for 08L and 09R or 26R and 27L. Simultaneous arrivals used for 08R and 09L or 26L and 27R",
-                "TCPG STARs end early on, and planes will need to be vectored manually to the ILS. When vectoring south-east or south-west arrivals, depending on the runway configuration, you will also need to be aware of the restricted area over ? City, as well as TCPO traffic.",
-                "TCPO, ? Airport", "Runways:", "06-24: 3650m", "07-25: 3320m", "02-20: 2400m", "Configurations: 06 and 07 or 24 and 25",
+                "TCPG STARs end early on, and planes will need to be vectored manually to the ILS. When vectoring south-east or south-west arrivals, depending on the runway configuration, you will also need to be aware of the restricted area over the city, as well as TCPO traffic.",
+                "TCPO, Roly Airport", "Runways:", "06-24: 3650m", "07-25: 3320m", "02-20: 2400m", "Configurations: 06 and 07 or 24 and 25",
                 "Segregated runway operations are used, with 06 or 25 used for arrivals, and 07 or 24 used for departures. Runway 02-20 is almost always unused for IFR flights.",
                 "TCPO only uses STARs from the south-east or south-west to prevent conflict with TCPG traffic. These STARs also end early like those in TCPG. Take note of possible conflict between TCPO departures and TCPG arrivals from south-east or south-west."});
     }
