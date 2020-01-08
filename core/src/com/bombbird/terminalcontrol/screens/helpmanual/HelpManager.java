@@ -55,24 +55,24 @@ public class HelpManager {
         CONTENT_LIST.put("TCTP", new String[] {"TCTP, ? International Airport", "Runways:", "05L-23R: 3660m", "05R-23L: 3800m", "Configurations: 05L and 05R or 23L and 23R",
                 "Segregated runway operations usually used, where 1 runway is used for arrivals and the other for departures. Mixed mode is also used sometimes.",
                 "TCSS, ? Airport", "Runway:", "10-28: 2605m", "Configurations: 10 or 28", "Runway is used for both arrivals, departures. When 28 is in use, planes will use the LDA28 approach which is a non-precision approach with step down altitudes."});
-        CONTENT_LIST.put("TCWS", new String[] {"WSSS, Singapore Changi Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
+        CONTENT_LIST.put("TCWS", new String[] {"TCWS, ? Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
                 "Segregated runway operations usually used, where 02L-20R is usually used for arrivals, and 02C-20C used for departures. However when needed, independent simultaneous ILS approaches can be conducted for both runways. A 3rd runway, 02R-20L will also be open in the near future."});
         CONTENT_LIST.put("TCTT", new String[] {"TCTT, ? Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23",
                 "Simultaneous approaches are used for 34L, 34R. Simultaneous LDA approaches are also used for 22, 23, which are non-precision approaches. Simultaneous departures are used for 16L, 16R.",
                 "TCTT STARs get the aircraft to fly in an arc initially, and the controller can instruct the aircraft to fly direct towards DEWWY, GLISS or CAMER after ensuring sufficient separation.",
-                "When night operations are active, STARs are modified to exclude the arc and various restrictions. Only 1 departure SID, ?, is used.",
+                "When night operations are active, STARs are modified to exclude the arc and various restrictions. Only 1 departure SID, POPAR3, is used.",
                 "TCAA, ? Airport", "Runways:", "34L-16R: 4000m", "34R-16L: 2500m", "Configurations: 34L and 34R or 16L and 16R",
                 "Segregated runway operations usually used, with 34L-16R used for departures and 34R-16L used for arrivals. However, when needed, simultaneous arrivals and departures may be used for both runways.",
                 "TCAA STARs also utilise the arc, however they are outside the game world and so are not seen in the game."});
         CONTENT_LIST.put("TCHH", new String[] {"TCHH, ? International Airport", "Runways:", "07L-25R: 3800m", "07R-25L: 3800m", "Configurations: 07L and 07R or 25L and 25R",
                 "Segregated runway operations usually used, with 07L-25R used for arrivals and 07R-25L used for departures. High terrain around the airport means caution must be taken when vectoring planes.",
-                "Most holding waypoints are located outside the game world except ?, hence delay vectors may be used instead.",
+                "Most holding waypoints are located outside the game world except SANTO and RANGE, hence delay vectors may be used instead.",
                 "When night operations are active, SIDs are modified to take the aircraft out to sea early during the climb to reduce noise on the city area.",
                 "TCMC, ? International Airport", "Runways:", "16-34: 3360m", "Configurations: 16 and 34", "Runway is used for both arrivals, departures. When 16 is in use, planes will use the LDA16 approach which is a non-precision approach",
                 "TCMC STARs, SIDs have strict altitude, speed restrictions due to the busy airspace around it."});
         CONTENT_LIST.put("TCBB", new String[] {"TCBB, ? International Airport", "Runways:", "06L-24R: 4000m", "06R-24L: 3500m", "Configurations: 06L and 06R or 24L and 24R",
                 "Segregated runway operations usually used, with 06L-24R used for arrivals, and 06R-24L used for departures.",
-                "When night operations are active, SIDs are restricted to ?, ?, ?, ?. STARs for runways 24L/24R are also modified to bring the aircraft further from the city area to reduce noise.",
+                "When night operations are active, SIDs are restricted to TANKI1, WAIYU1, MELEN1, SANUS1. STARs for runways 24L/24R are also modified to bring the aircraft further from the city area to reduce noise.",
                 "TCOO, ? Airport", "Runways:", "32L-14R: 3000m", "32R-14L: 1800m", "Configuration: 32L",
                 "Only a single runway, 32L-14R is used as 32R-14L is located too close and is likely too short. Furthermore, runway 14R has no ILS approach, hence circling approach is used which is not implemented in the game. As such, 14R is not used in the game.",
                 "There is relatively high terrain to the east of the airport, hence caution must be taken when vectoring aircraft.",
