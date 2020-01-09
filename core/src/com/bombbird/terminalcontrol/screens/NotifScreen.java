@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -25,6 +26,7 @@ public class NotifScreen implements Screen {
     private Viewport viewport;
 
     private Image background;
+    private Timer timer;
 
     private static final Array<String> notifArray = new Array<>();
 
@@ -44,13 +46,14 @@ public class NotifScreen implements Screen {
 
         //Set background image to that shown on main menu screen
         this.background = background;
+        timer = new Timer();
 
         loadNotifs();
     }
 
     /** Loads all the notifications needed */
     private void loadNotifs() {
-        notifArray.add("Hello players, here's an important notice to take note of. In order to reduce resemblance to real life airports, " +
+        notifArray.add("As part of a recommendation by an aviation authority, in order to reduce resemblance to real life airports, " +
                 "airport names, airport ICAO codes, SID/STAR names, as well as waypoint names have been changed. However, the procedures " +
                 "themselves remain the same and is still based on that of the real airport. Saves will remain compatible - existing planes " +
                 "will continue using old SIDs and STARs, while newly generated ones will use the new SIDs and STARs. " +
@@ -73,7 +76,7 @@ public class NotifScreen implements Screen {
         labelStyle.font = Fonts.defaultFont12;
         labelStyle.fontColor = Color.WHITE;
 
-        Label notif = new Label(notifArray.get(TerminalControl.revision - 1), labelStyle);
+        Label notif = new Label("Hello players, here's a message from the developer:\n\n" + notifArray.get(TerminalControl.LATEST_REVISION - 1), labelStyle);
         notif.setWrap(true);
         notif.setWidth(2000);
         notif.setPosition(1465 - notif.getWidth() / 2f, 800);
@@ -89,7 +92,7 @@ public class NotifScreen implements Screen {
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Set back button params
-        TextButton backButton = new TextButton("<= Back", buttonStyle);
+        TextButton backButton = new TextButton("Ok!", buttonStyle);
         backButton.setWidth(MainMenuScreen.BUTTON_WIDTH);
         backButton.setHeight(MainMenuScreen.BUTTON_HEIGHT);
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f);
@@ -97,12 +100,21 @@ public class NotifScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
+                TerminalControl.updateRevision();
                 game.setScreen(new MainMenuScreen(game, background));
                 dispose();
             }
         });
+        backButton.setVisible(false);
 
         stage.addActor(backButton);
+
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(() -> {backButton.setVisible(true);});
+            }
+        }, 5f);
     }
 
     /** Implements show method of screen */

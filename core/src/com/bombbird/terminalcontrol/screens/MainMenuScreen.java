@@ -106,7 +106,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Start new game -> Choose airport screen
-                game.setScreen((TerminalControl.updateRevision() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new NewGameScreen(game, background));
+                game.setScreen((TerminalControl.revisionNeedsUpdate() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new NewGameScreen(game, background));
                 dispose();
             }
         });
@@ -122,7 +122,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Load game -> Saved games screen
-                game.setScreen((TerminalControl.updateRevision() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new LoadGameScreen(game, background));
+                game.setScreen((TerminalControl.revisionNeedsUpdate() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new LoadGameScreen(game, background));
                 dispose();
             }
         });

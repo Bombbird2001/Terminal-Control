@@ -107,11 +107,13 @@ public class TerminalControl extends Game {
         FileLoader.mainDir = TerminalControl.full ? "AppData/Roaming/TerminalControlFull" : "AppData/Roaming/TerminalControl";
     }
 
-    public static boolean updateRevision() {
-        boolean changed = revision < LATEST_REVISION;
+    public static boolean revisionNeedsUpdate() {
+        return revision < LATEST_REVISION;
+    }
+
+    public static void updateRevision() {
         revision = LATEST_REVISION;
         GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance, revision);
-        return changed;
     }
 
     @Override
