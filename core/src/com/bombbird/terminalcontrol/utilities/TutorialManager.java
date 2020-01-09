@@ -323,7 +323,6 @@ public class TutorialManager {
             @Override
             public void run() {
                 tutorialMsg("We will now wait for EVA226 to reach HAMMY.");
-
             }
         }, 105);
     }
@@ -424,6 +423,13 @@ public class TutorialManager {
                         tutorialMsg("You can also give manual speed assignments to the aircraft if needed, but the aircraft will slow down automatically as it approaches the airport.");
                     }
                 }, 80);
+
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        tutorialMsg("Let's wait till EVA226 is handed over to the tower.");
+                    }
+                }, 110);
             }
 
             if (prompt5 && aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED) {
