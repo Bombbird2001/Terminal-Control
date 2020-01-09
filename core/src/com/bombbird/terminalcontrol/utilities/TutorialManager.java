@@ -85,7 +85,7 @@ public class TutorialManager {
     /** Sets the initial transmissions */
     public void init() {
         loadScrollPane();
-        tutorialMsg("Welcome to Terminal Control! You are an air traffic controller in the ? Terminal Control Area, managing arrivals and departures from ?'s 2 international airports.");
+        tutorialMsg("Welcome to Terminal Control! You are an air traffic controller in the Terminal Control Area, managing arrivals and departures from 2 international airports in the area.");
 
         timer.scheduleTask(new Timer.Task() {
             @Override
