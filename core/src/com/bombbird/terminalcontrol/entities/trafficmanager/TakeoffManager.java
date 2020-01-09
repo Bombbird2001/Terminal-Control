@@ -217,10 +217,10 @@ public class TakeoffManager {
                         if (distance > 24.9) break;
                         dist = distance;
                     }
-                } else if ("16L".equals(runway1.getName()) && checkLandingRJTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
+                } else if ("16L".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
                     runway = runway1;
                     dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkLandingRJTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
+                } else if ("16R".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
                     runway = runway1;
                     if (distance > 24.9) break;
                     dist = distance;
@@ -485,9 +485,9 @@ public class TakeoffManager {
         }
     }
 
-    /** Checks specific case for RJTT's runway 23, same as above function but will also return true if aircraft has landed */
-    private boolean checkLandingRJTT23() {
-        if (!"RJTT".equals(airport.getIcao())) return false;
+    /** Checks specific case for TCTT's runway 23, same as above function but will also return true if aircraft has landed */
+    private boolean checkLandingTCTT23() {
+        if (!"TCTT".equals(airport.getIcao())) return false;
         Runway runway = airport.getRunways().get("23");
         if (runway == null) return false;
         if (runway.getAircraftsOnAppr().size == 0) {
