@@ -73,7 +73,7 @@ public class ZoneLoader {
     private static Array<DepartureZone> loadDepTCMD() {
         Array<DepartureZone> departureZones = new Array<>();
         departureZones.add(new DepartureZone("14L", "14R", 2869.7f, 1653.5f, 143, 3.1f, 16, 0.329f));
-        departureZones.add(new DepartureZone("36L", "36R", 2871.3f, 1676.2f, 1, 3.1f, 5, 0.329f));
+        departureZones.add(new DepartureZone("36L", "36R", 2871.3f, 1676.2f, 1, 3.1f, 6, 0.329f));
 
         return departureZones;
     }
