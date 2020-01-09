@@ -315,9 +315,17 @@ public class TutorialManager {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                tutorialMsg("You can also instruct an aircraft to enter a holding pattern if there are too many planes. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as published once it reaches the waypoint.");
+                tutorialMsg("You can also instruct an aircraft to enter a holding pattern if there are too many planes. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as shown once it reaches the waypoint.");
             }
         }, 80);
+
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                tutorialMsg("We will now wait for EVA226 to reach HAMMY.");
+
+            }
+        }, 105);
     }
 
     /** Updates timers */
