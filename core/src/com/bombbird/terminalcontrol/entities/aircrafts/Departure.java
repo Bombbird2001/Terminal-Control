@@ -47,7 +47,7 @@ public class Departure extends Aircraft {
         sid = RandomSID.randomSID(departure, runway.getName());
 
         if ("CAL641".equals(callsign) && radarScreen.tutorial) {
-            sid = getAirport().getSids().get("CHALI1C");
+            sid = getAirport().getSids().get("HICAL1C");
             getEmergency().setEmergency(false);
         }
 
