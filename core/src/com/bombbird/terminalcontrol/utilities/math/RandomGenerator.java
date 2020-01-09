@@ -36,7 +36,7 @@ public class RandomGenerator {
         int total = 0;
         HashMap<Airport, int[]> airportRange = new HashMap<Airport, int[]>();
         for (Airport airport: TerminalControl.radarScreen.airports.values()) {
-            String[] mainArpts = new String[] {"RCTP", "WSSS", "RJTT", "RJBB", "VHHH", "VTBS"};
+            String[] mainArpts = new String[] {"TCTP", "TCWS", "TCTT", "TCBB", "TCHH", "TCBS", "TCMD", "TCPG"};
             if (airport.isCongested() && !ArrayUtils.contains(mainArpts, airport.getIcao())) continue; //Don't spawn arrivals into a congested secondary airport
             total += airport.getAircraftRatio();
             airportRange.put(airport, new int[] {total - airport.getAircraftRatio(), total});

@@ -427,7 +427,7 @@ public class RunwayManager {
 
     /** Updates runway status for Madrid Barajas */
     private boolean updateTCMD(int windDir, int windSpd) {
-        if (MaxTraffic.isNight("LEMD")) {
+        if (MaxTraffic.isNight("TCMD")) {
             //Night mode witb only 1 landing runway, 1 departure runway
             if (airport.getLandingRunways().size() == 0) {
                 //If is new game, no runways set yet

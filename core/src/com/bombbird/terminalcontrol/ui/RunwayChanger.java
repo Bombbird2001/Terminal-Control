@@ -457,7 +457,7 @@ public class RunwayChanger {
     }
 
     private void updateTCMD(int windDir, int windSpd) {
-        if (MaxTraffic.isNight("LEMD")) {
+        if (MaxTraffic.isNight("TCMD")) {
             //Night mode - 1 landing, 1 takeoff runway
             if (airport.getLandingRunways().get("32R") != null) {
                 //32R, 36L active, change to 14L, 18L

@@ -63,8 +63,8 @@ public class Departure extends Aircraft {
         setAltitude(getRunway().getElevation());
 
         //Set initial position on runway
-        if ("RJTT".equals(getAirport().getIcao()) && "16R".equals(runway.getName())) {
-            //Special case for RJTT runway 16R intersection takeoff
+        if ("TCTT".equals(getAirport().getIcao()) && "16R".equals(runway.getName())) {
+            //Special case for TCTT runway 16R intersection takeoff
             setX(2864.2f);
             setY(1627.0f);
         } else {
@@ -141,7 +141,7 @@ public class Departure extends Aircraft {
         if (clearedAltitude % 1000 != 0) {
             clearedAltitude += 1000 - getClearedAltitude() % 1000;
         }
-        if ("LEMD".equals(getAirport().getIcao())) {
+        if ("TCMD".equals(getAirport().getIcao())) {
             if ("14R".equals(getRunway().getName()) || "36L".equals(getRunway().getName())) {
                 clearedAltitude = 7000;
             }
