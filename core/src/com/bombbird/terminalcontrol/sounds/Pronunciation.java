@@ -13,7 +13,17 @@ public class Pronunciation {
 
     /** Loads the pronunciations */
     public static void loadPronunciation() {
-        //TODO add pronunciations after renaming waypoints
+        waypointPronunciations.put("PAU", "pan on");
+        waypointPronunciations.put("LHG", "low hon");
+        waypointPronunciations.put("UZH", "sheng lian");
+        waypointPronunciations.put("LNG", "lung nan");
+        waypointPronunciations.put("MST", "mo she toe");
+        waypointPronunciations.put("TVB", "tilla vobas");
+        waypointPronunciations.put("LTD", "tornado");
+        waypointPronunciations.put("VNS", "vanas");
+        waypointPronunciations.put("JCN", "jo castin");
+        waypointPronunciations.put("BRO", "noble ditto");
+        waypointPronunciations.put("ISE", "momo terra");
 
         callsigns = FileLoader.loadIcaoCallsigns();
 
