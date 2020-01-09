@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.HttpRequests;
+import com.bombbird.terminalcontrol.utilities.RenameManager;
 import org.json.JSONObject;
 
 public class Metar {
@@ -147,7 +148,7 @@ public class Metar {
 
             object.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
-            jsonObject.put(airport, object);
+            jsonObject.put(RenameManager.reverseNameAirportICAO(airport), object);
         }
         return jsonObject;
     }
