@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 public class NewGameScreen extends SelectGameScreen {
     public NewGameScreen(final TerminalControl game, Image background) {
         super(game, background);
+        TerminalControl.updateRevision();
     }
 
     /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label */

@@ -19,6 +19,7 @@ import org.json.JSONObject;
 public class LoadGameScreen extends SelectGameScreen {
     public LoadGameScreen(final TerminalControl game, Image background) {
         super(game, background);
+        TerminalControl.updateRevision();
     }
 
     /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label */
