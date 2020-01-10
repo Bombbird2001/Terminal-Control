@@ -378,6 +378,11 @@ public class Arrival extends Aircraft {
             if (getDirect() != null) {
                 highestAlt = Math.max(getRoute().getWptMaxAlt(getDirect().getName()), ((int) getAltitude()) / 1000 * 1000);
                 lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
+                if ("TCOO".equals(getAirport().getIcao()) && getAltitude() >= 3499 && highestAlt == 3000) {
+                    highestAlt = 3500;
+                } else if ("TCHH".equals(getAirport().getIcao()) && getSidStar().getRunways().contains("25R", false) && getAltitude() >= 4499 && highestAlt == 4000) {
+                    highestAlt = 4500;
+                }
                 if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt;
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
