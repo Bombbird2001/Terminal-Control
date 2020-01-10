@@ -369,17 +369,17 @@ public class TakeoffManager {
             if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
                 if ("01L".equals(runway1.getName()) && checkPreceding("01R") && checkOppLanding(airport.getRunways().get("01R"))) {
                     runway = runway1;
+                    if (distance > 24.9) break;
                     dist = distance;
                 } else if ("01R".equals(runway1.getName()) && checkPreceding("01L") && checkOppLanding(airport.getRunways().get("01L"))) {
                     runway = runway1;
-                    if (distance > 24.9) break;
                     dist = distance;
                 } else if ("19L".equals(runway1.getName()) && checkPreceding("19R") && checkOppLanding(airport.getRunways().get("19R"))) {
                     runway = runway1;
-                    if (distance > 24.9) break;
                     dist = distance;
                 } else if ("19R".equals(runway1.getName()) && checkPreceding("19L") && checkOppLanding(airport.getRunways().get("19L"))) {
                     runway = runway1;
+                    if (distance > 24.9) break;
                     dist = distance;
                 }
             }
