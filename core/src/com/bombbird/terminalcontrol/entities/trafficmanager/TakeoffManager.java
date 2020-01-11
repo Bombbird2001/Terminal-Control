@@ -61,7 +61,7 @@ public class TakeoffManager {
     /** Called after aircraft load during game load since aircrafts have not been loaded during the initial airport loading */
     public void updatePrevAcft(JSONObject save) {
         for (Runway runway : airport.getRunways().values()) {
-            prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(save.getJSONObject("prevAircraft").isNull(runway.getName()) ? null : save.getJSONObject("prevAircraft").getString(runway.getName())));
+            prevAircraft.put(runway.getName(), save.getJSONObject("prevAircraft").isNull(runway.getName()) ? null : radarScreen.aircrafts.get(save.getJSONObject("prevAircraft").getString(runway.getName())));
         }
     }
 

@@ -87,7 +87,7 @@ public class Metar {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("visibility", VisibilityChance.getRandomVis());
 
-            int windDir = metarObject.getJSONObject(airport).getInt("windDirection") + MathUtils.random(-2, 2) * 10;
+            int windDir = metarObject.getJSONObject(RenameManager.reverseNameAirportICAO(airport)).getInt("windDirection") + MathUtils.random(-2, 2) * 10;
             if (windDir > 360) {
                 windDir -= 360;
             } else if (windDir <= 0) {
@@ -95,7 +95,7 @@ public class Metar {
             }
             jsonObject.put("windDirection", windDir);
 
-            int currentSpd = metarObject.getJSONObject(airport).getInt("windSpeed");
+            int currentSpd = metarObject.getJSONObject(RenameManager.reverseNameAirportICAO(airport)).getInt("windSpeed");
             int windSpd = (2 * currentSpd + WindspeedChance.getRandomWindspeed(airport, windDir)) / 3;
             jsonObject.put("windSpeed", windSpd);
 
@@ -111,7 +111,7 @@ public class Metar {
 
             jsonObject.put("rain", JSONObject.NULL);
 
-            airports.put(airport, jsonObject);
+            airports.put(RenameManager.reverseNameAirportICAO(airport), jsonObject);
         }
 
         return airports;

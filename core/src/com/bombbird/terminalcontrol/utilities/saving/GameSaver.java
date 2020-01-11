@@ -491,9 +491,10 @@ public class GameSaver {
         JSONObject nextAircraft = new JSONObject();
         for (String rwy: airport.getTakeoffManager().getNextAircraft().keySet()) {
             JSONArray aircraftInfo = new JSONArray();
-            if (airport.getTakeoffManager().getNextAircraft().get(rwy) == null) airport.getTakeoffManager().update();
-            for (String s: airport.getTakeoffManager().getNextAircraft().get(rwy)) {
-                aircraftInfo.put(s);
+            if (airport.getTakeoffManager().getNextAircraft().get(rwy) != null) {
+                for (String s: airport.getTakeoffManager().getNextAircraft().get(rwy)) {
+                    aircraftInfo.put(s);
+                }
             }
             nextAircraft.put(rwy, aircraftInfo);
         }
