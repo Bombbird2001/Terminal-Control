@@ -76,13 +76,12 @@ public class GameSaver {
             String encode = Base64Coder.encodeString(jsonObject.toString());
             try {
                 handle.writeString(encode, false);
+                saveID(radarScreen.saveId);
             } catch (GdxRuntimeException e) {
                 TerminalControl.toastManager.saveFail();
                 ErrorHandler.sendSaveErrorNoThrow(e, encode);
             }
         }
-
-        saveID(radarScreen.saveId);
     }
 
     /** Saves all aircraft information */
