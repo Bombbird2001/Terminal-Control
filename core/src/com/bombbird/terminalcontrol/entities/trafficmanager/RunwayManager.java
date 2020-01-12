@@ -267,7 +267,7 @@ public class RunwayManager {
 
     /** Updates runway status for Osaka Itami */
     private boolean updateTCOO(int windDir, int windSpd) {
-        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5) {
+        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5 && windDir != 0) {
             airport.setActive("32L", false, false);
             return airport.getLandingRunways().containsKey("32L");
         } else {
@@ -278,7 +278,7 @@ public class RunwayManager {
 
     /** Updates runway status for Kobe */
     private boolean updateTCBE(int windDir, int windSpd) {
-        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5) {
+        if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5 && windDir != 0) {
             airport.setActive("09", false, false);
             return airport.getLandingRunways().containsKey("09");
         } else {

@@ -49,11 +49,6 @@ public class AltTab extends Tab {
                 //Set alt restrictions in box
                 highestAlt = (int) selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
-                if ("TCOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
-                    highestAlt = 3500;
-                } else if ("TCHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
-                    highestAlt = 4500;
-                }
                 int starHighestAlt = selectedAircraft.getDirect() == null ? TerminalControl.radarScreen.maxAlt : selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
             }
@@ -62,6 +57,11 @@ public class AltTab extends Tab {
             }
             if (highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
                 highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
+            }
+            if ("TCOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
+                highestAlt = 3500;
+            } else if ("TCHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
+                highestAlt = 4500;
             }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss

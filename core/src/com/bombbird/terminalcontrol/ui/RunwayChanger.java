@@ -197,9 +197,9 @@ public class RunwayChanger {
         } else if ("TCBB".equals(icao)) {
             updateTCBB(windDir, windSpd);
         } else if ("TCOO".equals(icao)) {
-            updateTCOO();
+            updateTCOO(windDir, windSpd);
         } else if ("TCBE".equals(icao)) {
-            updateTCBE();
+            updateTCBE(windDir, windSpd);
         } else if ("TCHH".equals(icao)) {
             updateTCHH(windDir, windSpd);
         } else if ("TCMC".equals(icao)) {
@@ -384,12 +384,20 @@ public class RunwayChanger {
         }
     }
 
-    private void updateTCOO() {
-        //RJOO cannot undergo runway change
+    private void updateTCOO(int windDir, int windSpd) {
+        if (!airport.getLandingRunways().containsKey("32L") && (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) > -5 || windDir == 0)) {
+            //32L wasn't active, change to active
+            runways.add("32L");
+            tkofLdg.add(ALL_ACTIVE);
+        }
     }
 
-    private void updateTCBE() {
-        //RJOO cannot undergo runway change
+    private void updateTCBE(int windDir, int windSpd) {
+        if (!airport.getLandingRunways().containsKey("09") && (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) > -5 || windDir == 0)) {
+            //09 wasn't active, change to active
+            runways.add("09");
+            tkofLdg.add(ALL_ACTIVE);
+        }
     }
 
     private void updateTCHH(int windDir, int windSpd) {
