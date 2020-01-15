@@ -731,67 +731,74 @@ public class Aircraft extends Actor {
                 gsCap = false;
                 return updateTargetHeading();
             } else {
-                //Calculates x, y of point 0.75nm ahead of plane
+                //Calculates x, y of point 0.75nm or 1,5nm ahead of plane depending on distance from runway
                 float distAhead = ils.getDistFrom(x, y) > 10 ? 1.5f : 0.75f;
                 Vector2 position = ils.getPointAhead(this, distAhead);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }
         } else if (holding) {
-            if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
-                holding = false;
-                return updateTargetHeading();
+            if (holdWpt == null && navState != null) {
+                holdWpt = navState.getClearedHold().first();
             }
-            if (holdTargetPt == null) {
-                float[] point = route.getHoldProcedure().getOppPtAtWpt(holdWpt);
-                holdTargetPt = new float[][] {{holdWpt.getPosX(), holdWpt.getPosY()}, point};
-                holdTargetPtSelected = new boolean[] {false, false};
-                navState.initHold();
-            }
-            if (!init) {
-                if (holdingType == 0) holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
-                //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
-                if (holdingType == 1) {
-                    //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
-                    targetHeading = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
-                    if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
-                        //Once it has flown leg dist, turn back towards entry fix
-                        type1leg = true;
-                        targetHeading = calculatePointTargetHdg(new float[] {holdWpt.getPosX(), holdWpt.getPosY()}, windHdg, windSpd);
-                        //Once it reaches entry fix, init has ended
-                        if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
+            if (holdWpt != null) {
+                if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
+                    holding = false;
+                    return updateTargetHeading();
+                }
+                if (holdTargetPt == null) {
+                    float[] point = route.getHoldProcedure().getOppPtAtWpt(holdWpt);
+                    holdTargetPt = new float[][]{{holdWpt.getPosX(), holdWpt.getPosY()}, point};
+                    holdTargetPtSelected = new boolean[]{false, false};
+                    navState.initHold();
+                }
+                if (!init) {
+                    if (holdingType == 0) holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
+                    //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
+                    if (holdingType == 1) {
+                        //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
+                        targetHeading = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
+                        if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
+                            //Once it has flown leg dist, turn back towards entry fix
+                            type1leg = true;
+                            targetHeading = calculatePointTargetHdg(new float[]{holdWpt.getPosX(), holdWpt.getPosY()}, windHdg, windSpd);
+                            //Once it reaches entry fix, init has ended
+                            if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
+                                init = true;
+                                holdTargetPtSelected[1] = true;
+                            }
+                        }
+                    } else {
+                        //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
+                        targetHeading = calculatePointTargetHdg(holdTargetPt[1], windHdg, windSpd);
+                        holdTargetPtSelected[1] = true;
+                        double deltaHdg = findDeltaHeading(route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180);
+                        boolean left = route.getHoldProcedure().isLeftAtWpt(holdWpt);
+                        if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
+                            //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
                             init = true;
-                            holdTargetPtSelected[1] = true;
                         }
                     }
                 } else {
-                    //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
-                    targetHeading = calculatePointTargetHdg(holdTargetPt[1], windHdg, windSpd);
-                    holdTargetPtSelected[1] = true;
-                    double deltaHdg = findDeltaHeading(route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180);
-                    boolean left = route.getHoldProcedure().isLeftAtWpt(holdWpt);
-                    if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
-                        //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
-                        init = true;
+                    float track = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - radarScreen.magHdgDev;
+                    if (holdTargetPtSelected[1]) {
+                        track += 180;
                     }
+                    float[] target = holdTargetPtSelected[0] ? holdTargetPt[0] : holdTargetPt[1];
+                    //Just keep turning and turning and turning
+                    float distance = MathTools.distanceBetween(x, y, target[0], target[1]);
+                    if (distance <= 10) {
+                        //If reached target point
+                        holdTargetPtSelected[0] = !holdTargetPtSelected[0];
+                        holdTargetPtSelected[1] = !holdTargetPtSelected[1];
+                    }
+                    distance -= MathTools.nmToPixel(0.5f);
+                    targetHeading = calculatePointTargetHdg(new float[]{target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
                 }
             } else {
-                float track = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - radarScreen.magHdgDev;
-                if (holdTargetPtSelected[1]) {
-                    track += 180;
-                }
-                float[] target = holdTargetPtSelected[0] ? holdTargetPt[0] : holdTargetPt[1];
-                //Just keep turning and turning and turning
-                float distance = MathTools.distanceBetween(x, y, target[0], target[1]);
-                if (distance <= 10) {
-                    //If reached target point
-                    holdTargetPtSelected[0] = !holdTargetPtSelected[0];
-                    holdTargetPtSelected[1] = !holdTargetPtSelected[1];
-                }
-                distance -= MathTools.nmToPixel(0.5f);
-                targetHeading = calculatePointTargetHdg(new float[] {target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
+                targetHeading = heading;
             }
         } else {
-            targetHeading = 0;
+            targetHeading = heading;
             Gdx.app.log("Update target heading", "Oops, something went wrong");
         }
 
