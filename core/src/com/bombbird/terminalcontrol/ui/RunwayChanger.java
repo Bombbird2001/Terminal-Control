@@ -251,7 +251,7 @@ public class RunwayChanger {
             }
         }
         if (stringBuilder.length() == 0) {
-            newRunwaysLabel.setText("All runways are closed");
+            newRunwaysLabel.setText("All runways are/will be closed");
             return;
         }
         newRunwaysLabel.setText(stringBuilder.toString());
@@ -389,6 +389,10 @@ public class RunwayChanger {
             //32L wasn't active, change to active
             runways.add("32L");
             tkofLdg.add(ALL_ACTIVE);
+        } else if (airport.getLandingRunways().containsKey("32L") && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5 && windDir != 0) {
+            //32L was active, change to inactive
+            runways.add("32L");
+            tkofLdg.add(ALL_INACTIVE);
         }
     }
 
@@ -397,6 +401,10 @@ public class RunwayChanger {
             //09 wasn't active, change to active
             runways.add("09");
             tkofLdg.add(ALL_ACTIVE);
+        } else if (airport.getLandingRunways().containsKey("09") && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5 && windDir != 0) {
+            //09 was active, change to inactive
+            runways.add("09");
+            tkofLdg.add(ALL_INACTIVE);
         }
     }
 
