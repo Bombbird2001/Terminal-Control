@@ -795,7 +795,8 @@ public class Aircraft extends Actor {
                     targetHeading = calculatePointTargetHdg(new float[]{target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
                 }
             } else {
-                targetHeading = heading;
+                holding = false;
+                return updateTargetHeading();
             }
         } else {
             targetHeading = heading;
