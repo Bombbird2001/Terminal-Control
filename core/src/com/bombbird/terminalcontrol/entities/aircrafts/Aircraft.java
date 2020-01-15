@@ -796,6 +796,12 @@ public class Aircraft extends Actor {
                 }
             } else {
                 holding = false;
+                if (navState != null) {
+                    navState.getDispAltMode().removeFirst();
+                    navState.getDispAltMode().addFirst("Fly heading");
+                    navState.getClearedHdg().removeFirst();
+                    navState.getClearedHdg().addFirst((int) heading);
+                }
                 return updateTargetHeading();
             }
         } else {
