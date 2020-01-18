@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import org.json.JSONObject;
 
@@ -77,7 +78,7 @@ public class RandomSTAR {
     /** Check whether a STAR is allowed to be used for the airport at the current time */
     private static boolean checkNoise(Airport airport, String star) {
         if (!noise.get(airport.getIcao()).containsKey(star)) return true; //Star can be used both during day, night
-        return TerminalControl.radarScreen.dayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(star));
+        return DayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(star));
     }
 
     public static boolean starAvailable(String icao) {

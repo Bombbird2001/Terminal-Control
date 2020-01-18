@@ -20,7 +20,6 @@ import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
-import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -108,9 +107,6 @@ public class RadarScreen extends GameScreen {
 
     //Separation checker for checking separation between aircrafts & terrain
     public SeparationChecker separationChecker;
-
-    //Day night manager
-    public DayNightManager dayNightManager;
 
     //Wake turbulence checker
     public WakeManager wakeManager;
@@ -372,9 +368,6 @@ public class RadarScreen extends GameScreen {
         //Load separation checker
         separationChecker = new SeparationChecker();
         stage.addActor(separationChecker);
-
-        //Load day night manager
-        dayNightManager = new DayNightManager(this);
 
         //Load aircraft callsign hashMap
         allAircraft = new HashMap<>();

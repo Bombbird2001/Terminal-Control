@@ -261,7 +261,7 @@ public class Airport {
 
         if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
         if (rwyChangeTimer < 0) {
-            if (pendingRwyChange) setMetar(TerminalControl.radarScreen.getMetar().getMetarObject());
+            if (pendingRwyChange) updateRunwayUsage();
             pendingRwyChange = false;
             rwyChangeTimer = 301;
         }
@@ -322,7 +322,11 @@ public class Airport {
     public void setMetar(JSONObject metar) {
         this.metar = metar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
         System.out.println("METAR of " + icao + ": " + this.metar.toString());
-        //Update active runways if METAR is updated (windHdg 0 is VRB wind)
+        updateRunwayUsage();
+    }
+
+    public void updateRunwayUsage() {
+        //Update active runways (windHdg 0 is VRB wind)
         int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");
         ws = "";
         if (!this.metar.isNull("windshear")) {

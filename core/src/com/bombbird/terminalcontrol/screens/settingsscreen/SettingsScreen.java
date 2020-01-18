@@ -33,8 +33,6 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> weather;
     public SelectBox<String> sound;
     public SelectBox<String> emer;
-    public SelectBox<String> speed;
-    public SelectBox<String> tfcMode;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -50,12 +48,6 @@ public class SettingsScreen implements Screen {
 
     public Label emerChanceLabel;
     public Emergency.Chance emerChance;
-
-    public Label speedLabel;
-    public int speedSel;
-
-    public Label tfcLabel;
-    public RadarScreen.TfcMode tfcSel;
 
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;

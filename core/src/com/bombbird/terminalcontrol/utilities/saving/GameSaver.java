@@ -48,6 +48,9 @@ public class GameSaver {
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
         jsonObject.put("tfcMode", radarScreen.tfcMode.toString());
+        jsonObject.put("allowNight", radarScreen.allowNight);
+        jsonObject.put("nightStart", radarScreen.nightStart);
+        jsonObject.put("nightEnd", radarScreen.nightEnd);
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());

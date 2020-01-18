@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
 import java.util.HashMap;
@@ -35,6 +36,6 @@ public class RandomSID {
     /** Check whether a SID is allowed to be used for the airport at the current time */
     private static boolean checkNoise(Airport airport, String sid) {
         if (!noise.get(airport.getIcao()).containsKey(sid)) return true; //Sid can be used both during day, night
-        return TerminalControl.radarScreen.dayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(sid));
+        return DayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(sid));
     }
 }
