@@ -473,48 +473,62 @@ public class RunwayChanger {
     }
 
     private void updateTCMD(int windDir, int windSpd) {
-        if (MaxTraffic.isNight("TCMD")) {
+        if (MaxTraffic.isNight()) {
             //Night mode - 1 landing, 1 takeoff runway
             if (airport.getLandingRunways().get("32R") != null) {
-                //32R, 36L active, change to 14L, 18L
-                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                } else if (airport.getLandingRunways().containsKey("18R")) {
+                if (airport.getLandingRunways().size() == 2) {
+                    //Change 2 runways to 1 runway
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                     runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
+                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
+                    //32R, 36L active, change to 14L, 18L
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
+                    runways.add("36L", "36R", "32L", "32R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 }
             } else if (airport.getLandingRunways().get("18L") != null) {
-                //14L, 18L active, change to 32R, 36L
-                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
-                } else if (airport.getLandingRunways().containsKey("32L")) {
+                if (airport.getLandingRunways().size() == 2) {
+                    //Change 2 runways to 1 runway
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
                     runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
+                    //14L, 18L active, change to 32R, 36L
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    runways.add("36L", "36R", "32L", "32R");
+                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
                 }
             }
         } else {
             //Day mode - 2 landing, 2 takeoff runways
             if (airport.getLandingRunways().get("32R") != null) {
-                //32s, 36s active, change to 14s, 18s
-                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
+                if (airport.getLandingRunways().size() == 1) {
+                    //Change 1 runway to 2 runways
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    runways.add("36L", "36R", "32L", "32R");
+                    tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
+                    //32s, 36s active, change to 14s, 18s
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
                     runways.add("36L", "36R", "32L", "32R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                 }
             } else if (airport.getLandingRunways().get("18L") != null) {
-                //14s, 18s active, change to 32s, 36s
-                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
+                if (airport.getLandingRunways().size() == 1) {
+                    //Change 1 runway to 2 runways
+                    runways.add("14L", "18L", "14R", "18R");
+                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
+                    runways.add("36L", "36R", "32L", "32R");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
+                    //14s, 18s active, change to 32s, 36s
                     runways.add("14L", "18L", "14R", "18R");
                     tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
                     runways.add("36L", "36R", "32L", "32R");

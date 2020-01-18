@@ -427,8 +427,8 @@ public class RunwayManager {
 
     /** Updates runway status for Madrid Barajas */
     private boolean updateTCMD(int windDir, int windSpd) {
-        if (MaxTraffic.isNight("TCMD")) {
-            //Night mode witb only 1 landing runway, 1 departure runway
+        if (MaxTraffic.isNight()) {
+            //Night mode with only 1 landing runway, 1 departure runway
             if (airport.getLandingRunways().size() == 0) {
                 //If is new game, no runways set yet
                 if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("36L"))) {
@@ -518,6 +518,17 @@ public class RunwayManager {
                         airport.setActive("32L", false, false);
                         airport.setActive("32R", false, false);
                         return true;
+                    } else if (airport.getLandingRunways().size() == 1) {
+                        //Change 2 runways to 4 runways
+                        airport.setActive("36L", false, true);
+                        airport.setActive("36R", false, true);
+                        airport.setActive("32L", true, false);
+                        airport.setActive("32R", true, false);
+                        airport.setActive("18L", false, false);
+                        airport.setActive("18R", false, false);
+                        airport.setActive("14L", false, false);
+                        airport.setActive("14R", false, false);
+                        return true;
                     }
                 } else {
                     //14s, 18s are active
@@ -530,6 +541,16 @@ public class RunwayManager {
                         airport.setActive("18R", false, false);
                         airport.setActive("14L", false, false);
                         airport.setActive("14R", false, false);
+                        return true;
+                    } else if (airport.getLandingRunways().size() == 1) {
+                        airport.setActive("18L", true, false);
+                        airport.setActive("18R", true, false);
+                        airport.setActive("14L", false, true);
+                        airport.setActive("14R", false, true);
+                        airport.setActive("36L", false, false);
+                        airport.setActive("36R", false, false);
+                        airport.setActive("32L", false, false);
+                        airport.setActive("32R", false, false);
                         return true;
                     }
                 }

@@ -14,25 +14,26 @@ public class DayNightManager {
         NIGHT_AVAILABLE.add("TCTT", "TCHH", "TCBB", "TCMD");
     }
 
-    public static boolean checkNoiseAllowed(boolean night) {
+    public static boolean isNight() {
         RadarScreen radarScreen = TerminalControl.radarScreen;
-        if (!radarScreen.allowNight) return !night;
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
         int time = (calendar.get(Calendar.HOUR) + additional) * 100 + calendar.get(Calendar.MINUTE);
         if (radarScreen.nightEnd < radarScreen.nightStart) {
-            //Cross midnight, additional step needed
-            if (time >= radarScreen.nightStart || time < radarScreen.nightEnd) {
-                return night; //True if is night and star is night
-            } else {
-                return !night; //True if is day and star is day
-            }
+            //Cross midnight
+            return time >= radarScreen.nightStart || time < radarScreen.nightEnd;
         } else {
-            if (time >= radarScreen.nightStart && time < radarScreen.nightEnd) {
-                return night; //True if is night and star is night
-            } else {
-                return !night; //True if is day and star is day
-            }
+            return time >= radarScreen.nightStart && time < radarScreen.nightEnd;
+        }
+    }
+
+    public static boolean checkNoiseAllowed(boolean night) {
+        RadarScreen radarScreen = TerminalControl.radarScreen;
+        if (!radarScreen.allowNight) return !night;
+        if (isNight()) {
+            return night;
+        } else {
+            return !night;
         }
     }
 
