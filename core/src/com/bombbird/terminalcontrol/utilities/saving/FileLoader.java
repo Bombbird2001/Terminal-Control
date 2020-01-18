@@ -284,21 +284,17 @@ public class FileLoader {
         return callsigns;
     }
 
-    public static HashMap<String, int[][]> loadNoise(String icao, boolean sid) {
-        HashMap<String, int[][]> noise = new HashMap<>();
+    public static HashMap<String, Boolean> loadNoise(String icao, boolean sid) {
+        HashMap<String, Boolean> noise = new HashMap<>();
         String fileName = sid ? "/noiseSid" : "/noiseStar";
         JSONObject jo = new JSONObject(Gdx.files.internal("game/" + TerminalControl.radarScreen.mainName + "/" + TerminalControl.radarScreen.airac + fileName + icao + ".noi").readString());
-        for (String name: jo.keySet()) {
-            JSONArray times = jo.getJSONArray(name);
-            int[][] timeInfo = new int[times.length()][2];
-            for (int i = 0; i < times.length(); i++) {
-                String[] minMaxTime = times.getString(i).split("-");
-                int[] time = new int[2];
-                time[0] = Integer.parseInt(minMaxTime[0]);
-                time[1] = Integer.parseInt(minMaxTime[1]);
-                timeInfo[i] = time;
-            }
-            noise.put(name, timeInfo);
+        JSONArray nightArray = jo.getJSONArray("night");
+        for (int i = 0; i < nightArray.length(); i++) {
+            noise.put(nightArray.getString(i), true);
+        }
+        JSONArray dayArray = jo.getJSONArray("day");
+        for (int i = 0; i < dayArray.length(); i++) {
+            noise.put(dayArray.getString(i), false);
         }
 
         return noise;

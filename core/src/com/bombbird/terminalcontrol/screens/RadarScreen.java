@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -72,6 +73,9 @@ public class RadarScreen extends GameScreen {
     public int soundSel;
     public Emergency.Chance emerChance;
     public TfcMode tfcMode;
+    public boolean allowNight;
+    public int nightStart;
+    public int nightEnd;
     public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
 
     //Whether the game is a tutorial
@@ -105,6 +109,9 @@ public class RadarScreen extends GameScreen {
     //Separation checker for checking separation between aircrafts & terrain
     public SeparationChecker separationChecker;
 
+    //Day night manager
+    public DayNightManager dayNightManager;
+
     //Wake turbulence checker
     public WakeManager wakeManager;
 
@@ -121,7 +128,7 @@ public class RadarScreen extends GameScreen {
     private Aircraft selectedAircraft;
 
     private JSONObject save;
-    private int revision; //Revision for indicating if save parser needs to do anything
+    private int revision; //Revision for indicating if save parser needs to do anything special
     public static final int CURRENT_REVISION = 1;
 
     public RadarScreen(final TerminalControl game, String name, int airac, int saveID, boolean tutorial) {
@@ -152,6 +159,9 @@ public class RadarScreen extends GameScreen {
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
         tfcMode = TfcMode.NORMAL;
+        allowNight = true;
+        nightStart = 2200;
+        nightEnd = 600;
 
         wakeManager = new WakeManager();
 
@@ -203,6 +213,9 @@ public class RadarScreen extends GameScreen {
         } else {
             tfcMode = TfcMode.valueOf(save.getString("tfcMode"));
         }
+        allowNight = save.optBoolean("allowNight", true);
+        nightStart = save.optInt("nightStart", 2200);
+        nightEnd = save.optInt("nightEnd", 600);
 
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
     }
@@ -359,6 +372,9 @@ public class RadarScreen extends GameScreen {
         //Load separation checker
         separationChecker = new SeparationChecker();
         stage.addActor(separationChecker);
+
+        //Load day night manager
+        dayNightManager = new DayNightManager(this);
 
         //Load aircraft callsign hashMap
         allAircraft = new HashMap<>();
@@ -683,10 +699,6 @@ public class RadarScreen extends GameScreen {
 
     public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
         this.allAircraft = allAircraft;
-    }
-
-    public Timer getTimer() {
-        return timer;
     }
 
     public RunwayChanger getRunwayChanger() {

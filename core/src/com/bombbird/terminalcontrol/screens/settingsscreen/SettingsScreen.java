@@ -29,7 +29,6 @@ public class SettingsScreen implements Screen {
     public OrthographicCamera camera;
     public Viewport viewport;
 
-    public SelectBox.SelectBoxStyle selectBoxStyle;
     public SelectBox<String> trajectoryLine;
     public SelectBox<String> weather;
     public SelectBox<String> sound;
@@ -57,6 +56,9 @@ public class SettingsScreen implements Screen {
 
     public Label tfcLabel;
     public RadarScreen.TfcMode tfcSel;
+
+    public SelectBox.SelectBoxStyle selectBoxStyle;
+    public Label.LabelStyle labelStyle;
 
     public SettingsScreen(final TerminalControl game) {
         this.game = game;
@@ -180,40 +182,6 @@ public class SettingsScreen implements Screen {
         emer.setAlignment(Align.center);
         emer.getList().setAlignment(Align.center);
         stage.addActor(emer);
-
-        speed = new SelectBox<>(selectBoxStyle);
-        Array<String> options4 = new Array<>(3);
-        options4.add("1x", "2x", "4x");
-        speed.setItems(options4);
-        speed.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                speedSel = speed.getSelected().charAt(0) - 48;
-            }
-        });
-        speed.setSize(1200, 300);
-        speed.setPosition(5760 / 2f - 400 + xOffset + 1800, 3240 * 0.8f + yOffset);
-        speed.setAlignment(Align.center);
-        speed.getList().setAlignment(Align.center);
-        speed.setVisible(this instanceof GameSettingsScreen);
-        stage.addActor(speed);
-
-        tfcMode = new SelectBox<>(selectBoxStyle);
-        Array<String> options5 = new Array<>(3);
-        options5.add("Normal", "Arrivals only");
-        tfcMode.setItems(options5);
-        tfcMode.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                tfcSel = RadarScreen.TfcMode.valueOf(tfcMode.getSelected().toUpperCase(Locale.US).replaceAll(" ", "_"));
-            }
-        });
-        tfcMode.setSize(1200, 300);
-        tfcMode.setPosition(5760 / 2f - 400 + xOffset + 1800, 3240 * 0.65f + yOffset);
-        tfcMode.setAlignment(Align.center);
-        tfcMode.getList().setAlignment(Align.center);
-        tfcMode.setVisible(this instanceof GameSettingsScreen);
-        stage.addActor(tfcMode);
     }
 
     /** Loads buttons */
@@ -223,7 +191,7 @@ public class SettingsScreen implements Screen {
 
     /** Loads labels */
     public void loadLabel() {
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
 
@@ -242,16 +210,6 @@ public class SettingsScreen implements Screen {
         emerChanceLabel = new Label("Emergencies: ", labelStyle);
         emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
         stage.addActor(emerChanceLabel);
-
-        speedLabel = new Label("Speed: ", labelStyle);
-        speedLabel.setPosition(speed.getX() - 100 - speedLabel.getWidth(), speed.getY() + speed.getHeight() / 2 - speedLabel.getHeight() / 2);
-        speedLabel.setVisible(this instanceof GameSettingsScreen);
-        stage.addActor(speedLabel);
-
-        tfcLabel = new Label("Traffic: ", labelStyle);
-        tfcLabel.setPosition(tfcMode.getX() - 100 - tfcLabel.getWidth(), tfcMode.getY() + tfcMode.getHeight() / 2 - tfcLabel.getHeight() / 2);
-        tfcLabel.setVisible(this instanceof GameSettingsScreen);
-        stage.addActor(tfcLabel);
     }
 
     /** Sets relevant options into select boxes */

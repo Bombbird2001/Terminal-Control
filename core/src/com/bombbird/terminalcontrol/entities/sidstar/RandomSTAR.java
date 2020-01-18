@@ -3,19 +3,17 @@ package com.bombbird.terminalcontrol.entities.sidstar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 public class RandomSTAR {
-    private static final HashMap<String, HashMap<String, int[][]>> noise = new HashMap<String, HashMap<String, int[][]>>();
-    private static HashMap<String, HashMap<String, Float>> time = new HashMap<String, HashMap<String, Float>>();
+    private static final HashMap<String, HashMap<String, Boolean>> noise = new HashMap<>();
+    private static HashMap<String, HashMap<String, Float>> time = new HashMap<>();
 
     /** Loads STAR noise info for the airport */
     public static void loadStarNoise(String icao) {
@@ -24,7 +22,7 @@ public class RandomSTAR {
 
     /** Loads arrival entry timings */
     public static void loadEntryTiming(Airport airport) {
-        HashMap<String, Float> stars = new HashMap<String, Float>();
+        HashMap<String, Float> stars = new HashMap<>();
         for (Star star: airport.getStars().values()) {
             stars.put(star.getName(), 0f);
         }
@@ -52,7 +50,7 @@ public class RandomSTAR {
 
     /** Gets a random STAR for the airport and runway */
     public static Star randomSTAR(Airport airport, HashMap<String, Runway> rwys) {
-        Array<Star> possibleStars = new Array<Star>();
+        Array<Star> possibleStars = new Array<>();
         for (Star star: airport.getStars().values()) {
             boolean found = false;
             for (int i = 0; i < star.getRunways().size; i++) {
@@ -65,7 +63,7 @@ public class RandomSTAR {
         }
 
         if (possibleStars.size == 0) {
-            Array<String> runways = new Array<String>();
+            Array<String> runways = new Array<>();
             for (String rwy: rwys.keySet()) {
                 runways.add(rwy);
             }
@@ -78,14 +76,8 @@ public class RandomSTAR {
 
     /** Check whether a STAR is allowed to be used for the airport at the current time */
     private static boolean checkNoise(Airport airport, String star) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-        int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
-        int time = (calendar.get(Calendar.HOUR) + additional) * 100 + calendar.get(Calendar.MINUTE);
-        if (!noise.containsKey(airport.getIcao()) || !noise.get(airport.getIcao()).containsKey(star)) return true;
-        for (int[] timeSlot: noise.get(airport.getIcao()).get(star)) {
-            if (time >= timeSlot[0] && time < timeSlot[1]) return true;
-        }
-        return false;
+        if (!noise.get(airport.getIcao()).containsKey(star)) return true; //Star can be used both during day, night
+        return TerminalControl.radarScreen.dayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(star));
     }
 
     public static boolean starAvailable(String icao) {
