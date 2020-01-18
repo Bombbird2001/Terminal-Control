@@ -19,7 +19,7 @@ public class DayNightManager {
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
         int time = (calendar.get(Calendar.HOUR) + additional) * 100 + calendar.get(Calendar.MINUTE);
-        if (radarScreen.nightEnd < radarScreen.nightStart) {
+        if (radarScreen.nightEnd <= radarScreen.nightStart) {
             //Cross midnight
             return time >= radarScreen.nightStart || time < radarScreen.nightEnd;
         } else {
