@@ -236,7 +236,6 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.emerChance = emerChance;
         radarScreen.speed = speedSel;
         radarScreen.tfcMode = tfcSel;
-        radarScreen.ui.updateSpeedLabel();
         boolean changed;
         changed = radarScreen.allowNight != allowNight || radarScreen.nightStart != nightStart || radarScreen.nightEnd != nightEnd;
         radarScreen.allowNight = allowNight;
@@ -247,6 +246,7 @@ public class GameSettingsScreen extends SettingsScreen {
                 airport.updateRunwayUsage(); //Possible change in runway usage
             }
         }
+        radarScreen.ui.updateInfoLabel();
     }
 
     /** Gets radarscreen settings before setting options */

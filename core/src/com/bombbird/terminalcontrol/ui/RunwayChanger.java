@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class RunwayChanger {
@@ -473,7 +473,7 @@ public class RunwayChanger {
     }
 
     private void updateTCMD(int windDir, int windSpd) {
-        if (MaxTraffic.isNight()) {
+        if (DayNightManager.isNight()) {
             //Night mode - 1 landing, 1 takeoff runway
             if (airport.getLandingRunways().get("32R") != null) {
                 if (airport.getLandingRunways().size() == 2) {

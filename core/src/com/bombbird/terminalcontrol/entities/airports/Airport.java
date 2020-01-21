@@ -323,6 +323,7 @@ public class Airport {
         this.metar = metar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
         System.out.println("METAR of " + icao + ": " + this.metar.toString());
         updateRunwayUsage();
+        TerminalControl.radarScreen.ui.updateInfoLabel();
     }
 
     public void updateRunwayUsage() {

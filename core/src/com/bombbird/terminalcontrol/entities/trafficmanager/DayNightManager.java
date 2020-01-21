@@ -15,6 +15,7 @@ public class DayNightManager {
     }
 
     public static boolean isNight() {
+        if (!isNightAvailable() || !TerminalControl.radarScreen.allowNight) return false;
         RadarScreen radarScreen = TerminalControl.radarScreen;
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int additional = calendar.get(Calendar.AM_PM) == Calendar.PM ? 12 : 0;
@@ -28,8 +29,6 @@ public class DayNightManager {
     }
 
     public static boolean checkNoiseAllowed(boolean night) {
-        RadarScreen radarScreen = TerminalControl.radarScreen;
-        if (!radarScreen.allowNight) return !night;
         if (isNight()) {
             return night;
         } else {

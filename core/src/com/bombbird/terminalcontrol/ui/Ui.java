@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.AltTab;
@@ -203,7 +204,7 @@ public class Ui {
         infoLabel = new Label("", labelStyle3);
         infoLabel.setPosition(paneImage.getWidth() * 0.6f, 2650);
         radarScreen.uiStage.addActor(infoLabel);
-        updateSpeedLabel();
+        updateInfoLabel();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
@@ -632,11 +633,13 @@ public class Ui {
         scoreLabel.setText("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore());
     }
 
-    public void updateSpeedLabel() {
+    public void updateInfoLabel() {
         String text = "";
         if (radarScreen.speed > 1) text = radarScreen.speed + "x speed";
         if (!text.isEmpty() && radarScreen.tfcMode != RadarScreen.TfcMode.NORMAL) text += "\n";
         if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) text += "Arrivals only";
+        if (!text.isEmpty() && DayNightManager.isNight()) text += "\n";
+        if (DayNightManager.isNight()) text += "Night mode active";
         infoLabel.setText(text);
         infoLabel.setVisible(!text.isEmpty());
     }

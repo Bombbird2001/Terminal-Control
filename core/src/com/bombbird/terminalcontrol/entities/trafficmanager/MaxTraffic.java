@@ -1,8 +1,6 @@
 package com.bombbird.terminalcontrol.entities.trafficmanager;
 
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 public class MaxTraffic {
     private static final HashMap<String, Float> maxTraffic = new HashMap<>();
@@ -24,12 +22,7 @@ public class MaxTraffic {
         nightMaxTraffic.put("TCMD", 14f);
     }
 
-    /** Checks if night time operations is active for airport AND if airport has night time operations */
-    public static boolean isNight() {
-        return DayNightManager.isNight() && DayNightManager.isNightAvailable();
-    }
-
     public static float getMaxTraffic(String icao) {
-        return isNight() && nightMaxTraffic.containsKey(icao) ? nightMaxTraffic.get(icao) : maxTraffic.get(icao);
+        return DayNightManager.isNight() && nightMaxTraffic.containsKey(icao) ? nightMaxTraffic.get(icao) : maxTraffic.get(icao);
     }
 }
