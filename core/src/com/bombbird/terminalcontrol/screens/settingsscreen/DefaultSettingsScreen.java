@@ -5,7 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -18,6 +21,10 @@ public class DefaultSettingsScreen extends SettingsScreen {
     private boolean sendCrash;
     private CheckBox sendCrashBox;
 
+    private SelectBox<String> zoom;
+    private Label zoomLabel;
+    private boolean increaseZoom;
+
     public DefaultSettingsScreen(final TerminalControl game, Image background) {
         super(game);
 
@@ -29,6 +36,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         soundSel = TerminalControl.soundSel;
         sendCrash = TerminalControl.sendAnonCrash;
         emerChance = TerminalControl.emerChance;
+        increaseZoom = TerminalControl.increaseZoom;
 
         loadUI(-600, -200);
 
@@ -64,7 +72,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
             }
         });
 
-        backButton.setPosition(5760 / 2f - 2200, 3240 - 2300);
+        backButton.setPosition(5760 / 2f - 2500, 3240 - 2300);
         nextButton.setPosition(5760 / 2f + 500, 3240 - 2300);
     }
 
@@ -87,23 +95,41 @@ public class DefaultSettingsScreen extends SettingsScreen {
             }
         });
         stage.addActor(sendCrashBox);
+
+        zoom = new SelectBox<>(selectBoxStyle);
+        Array<String> options = new Array<>(2);
+        options.add("Off", "On");
+        zoom.setItems(options);
+        zoom.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                increaseZoom = "On".equals(zoom.getSelected());
+            }
+        });
+        zoom.setSize(1200, 300);
+        zoom.setPosition(trajectoryLine.getX(), trajectoryLine.getY());
+        zoom.setAlignment(Align.center);
+        zoom.getList().setAlignment(Align.center);
     }
 
     @Override
     public void loadLabel() {
         super.loadLabel();
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont20;
-        labelStyle.fontColor = Color.WHITE;
+        Label.LabelStyle labelStyle2 = new Label.LabelStyle();
+        labelStyle2.font = Fonts.defaultFont20;
+        labelStyle2.fontColor = Color.WHITE;
 
-        Label infoLabel = new Label("Set the default game settings below. You can still change these settings for individual games.", labelStyle);
+        Label infoLabel = new Label("Set the default game settings below. You can still change these settings for individual games.", labelStyle2);
         infoLabel.setPosition(5760 / 2f - infoLabel.getWidth() / 2f, 3240 - 300);
         stage.addActor(infoLabel);
 
-        Label sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle);
+        Label sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle2);
         sendLabel.setPosition(sendCrashBox.getX(), sendCrashBox.getY() - 475);
         stage.addActor(sendLabel);
+
+        zoomLabel = new Label("Increased radar zoom: ", labelStyle);
+        zoomLabel.setPosition(zoom.getX() - 100 - zoomLabel.getWidth(), zoom.getY() + zoom.getHeight() / 2 - zoomLabel.getHeight() / 2);
     }
 
     @Override
@@ -114,12 +140,17 @@ public class DefaultSettingsScreen extends SettingsScreen {
         tab1.addActors(sound, soundLabel);
         tab1.addActors(emer, emerChanceLabel);
         settingsTabs.add(tab1);
+
+        SettingsTab tab2 = new SettingsTab(this);
+        tab2.addActors(zoom, zoomLabel);
+        settingsTabs.add(tab2);
     }
 
     @Override
     public void setOptions() {
         super.setOptions();
         sendCrashBox.setChecked(TerminalControl.sendAnonCrash);
+        zoom.setSelected(TerminalControl.increaseZoom ? "On" : "Off");
     }
 
     @Override
@@ -128,8 +159,9 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.weatherSel = weatherSel;
         TerminalControl.soundSel = soundSel;
         TerminalControl.sendAnonCrash = sendCrash;
+        TerminalControl.increaseZoom = increaseZoom;
         TerminalControl.emerChance = emerChance;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, emerChance, TerminalControl.revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, increaseZoom, emerChance, TerminalControl.revision);
     }
 }

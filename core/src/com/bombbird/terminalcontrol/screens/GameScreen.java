@@ -185,16 +185,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     /** Prevents user from over or under zooming */
     private void moderateZoom() {
-        if (camera.zoom < 0.3f) {
-            camera.zoom = 0.3f;
+        float MIN_ZOOM = TerminalControl.increaseZoom ? 0.2f : 0.3f;
+        float MAX_ZOOM_ANDROID = 0.6f;
+        float MAX_ZOOM_DESKTOP = 1.0f;
+        if (camera.zoom < MIN_ZOOM) {
+            camera.zoom = MIN_ZOOM;
             zooming = false;
             zoomedIn = true;
-        } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > 0.6f && !loading) {
-            camera.zoom = 0.6f;
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android && camera.zoom > MAX_ZOOM_ANDROID && !loading) {
+            camera.zoom = MAX_ZOOM_ANDROID;
             zooming = false;
             zoomedIn = false;
-        } else if (camera.zoom > 1.0f) {
-            camera.zoom = 1.0f;
+        } else if (camera.zoom > MAX_ZOOM_DESKTOP) {
+            camera.zoom = MAX_ZOOM_DESKTOP;
             zooming = false;
             zoomedIn = false;
         }

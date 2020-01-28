@@ -589,7 +589,7 @@ public class GameSaver {
     }
 
     /** Saves the default settings */
-    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, Emergency.Chance emerChance, int revision) {
+    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, boolean increaseZoom, Emergency.Chance emerChance, int revision) {
         FileHandle handle = FileLoader.getExtDir("settings.json");
 
         if (handle != null) {
@@ -598,6 +598,7 @@ public class GameSaver {
             settings.put("weather", weatherSel.toString());
             settings.put("sound", soundSel);
             settings.put("sendCrash", sendCrash);
+            settings.put("increaseZoom", increaseZoom);
             settings.put("emerChance", emerChance.toString());
             settings.put("revision", revision);
 

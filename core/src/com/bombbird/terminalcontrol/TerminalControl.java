@@ -52,6 +52,7 @@ public class TerminalControl extends Game {
     public static int soundSel;
     public static Emergency.Chance emerChance;
     public static boolean sendAnonCrash;
+    public static boolean increaseZoom;
     public static int revision;
     public static final int LATEST_REVISION = 1;
 
@@ -72,6 +73,7 @@ public class TerminalControl extends Game {
                 soundSel = 2;
             }
             sendAnonCrash = true;
+            increaseZoom = false;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
         } else {
@@ -94,9 +96,10 @@ public class TerminalControl extends Game {
             } else {
                 emerChance = Emergency.Chance.valueOf(settings.getString("emerChance"));
             }
+            increaseZoom = settings.optBoolean("increaseZoom", false);
             revision = settings.optInt("revision", 0);
         }
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance, revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, emerChance, revision);
     }
 
     public static void loadVersionInfo() {
@@ -113,7 +116,7 @@ public class TerminalControl extends Game {
 
     public static void updateRevision() {
         revision = LATEST_REVISION;
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, emerChance, revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, emerChance, revision);
     }
 
     @Override

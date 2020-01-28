@@ -226,7 +226,6 @@ public class GameSettingsScreen extends SettingsScreen {
         tab1.addActors(night, nightLabel);
         tab1.addActors(nightStartHour, nightStartMin, nightEndHour, nightEndMin, timeLabel, timeLabel2);
         settingsTabs.add(tab1);
-        settingsTabs.add(new SettingsTab(this));
     }
 
     /** Confirms and applies the changes set */
