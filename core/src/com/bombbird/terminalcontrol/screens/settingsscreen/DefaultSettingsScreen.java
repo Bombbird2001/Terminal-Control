@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
@@ -44,14 +43,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
 
     @Override
     public void loadButton() {
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont30;
-        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
-
-        cancelButton = new TextButton("Cancel", textButtonStyle);
-        cancelButton.setSize(1200, 300);
-        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800);
+        super.loadButton();
         cancelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -61,11 +53,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 dispose();
             }
         });
-        stage.addActor(cancelButton);
 
-        confirmButton = new TextButton("Confirm", textButtonStyle);
-        confirmButton.setSize(1200, 300);
-        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800);
         confirmButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -75,12 +63,15 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 dispose();
             }
         });
-        stage.addActor(confirmButton);
+
+        backButton.setPosition(5760 / 2f - 2200, 3240 - 2300);
+        nextButton.setPosition(5760 / 2f + 500, 3240 - 2300);
     }
 
     @Override
     public void loadBoxes(int xOffset, int yOffset) {
         super.loadBoxes(xOffset, yOffset);
+
         CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
         checkBoxStyle.checkboxOn = TerminalControl.skin.getDrawable("Checked");
         checkBoxStyle.checkboxOff = TerminalControl.skin.getDrawable("Unchecked");
@@ -113,6 +104,16 @@ public class DefaultSettingsScreen extends SettingsScreen {
         Label sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle);
         sendLabel.setPosition(sendCrashBox.getX(), sendCrashBox.getY() - 475);
         stage.addActor(sendLabel);
+    }
+
+    @Override
+    public void loadTabs() {
+        SettingsTab tab1 = new SettingsTab(this);
+        tab1.addActors(trajectoryLine, trajectoryLabel);
+        tab1.addActors(weather, weatherLabel);
+        tab1.addActors(sound, soundLabel);
+        tab1.addActors(emer, emerChanceLabel);
+        settingsTabs.add(tab1);
     }
 
     @Override

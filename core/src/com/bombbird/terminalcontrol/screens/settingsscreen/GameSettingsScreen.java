@@ -51,25 +51,14 @@ public class GameSettingsScreen extends SettingsScreen {
 
     @Override
     public void loadButton() {
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont30;
-        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
-
-        cancelButton = new TextButton("Cancel", textButtonStyle);
-        cancelButton.setSize(1200, 300);
-        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800);
+        super.loadButton();
         cancelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 radarScreen.setGameState(GameScreen.State.PAUSE);
             }
         });
-        stage.addActor(cancelButton);
 
-        confirmButton = new TextButton("Confirm", textButtonStyle);
-        confirmButton.setSize(1200, 300);
-        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800);
         confirmButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -77,7 +66,6 @@ public class GameSettingsScreen extends SettingsScreen {
                 radarScreen.setGameState(GameScreen.State.PAUSE);
             }
         });
-        stage.addActor(confirmButton);
     }
 
     @Override
@@ -100,7 +88,6 @@ public class GameSettingsScreen extends SettingsScreen {
         speed.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.8f + yOffset);
         speed.setAlignment(Align.center);
         speed.getList().setAlignment(Align.center);
-        stage.addActor(speed);
 
         tfcMode = new SelectBox<>(selectBoxStyle);
         Array<String> options5 = new Array<>(3);
@@ -116,7 +103,6 @@ public class GameSettingsScreen extends SettingsScreen {
         tfcMode.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.65f + yOffset);
         tfcMode.setAlignment(Align.center);
         tfcMode.getList().setAlignment(Align.center);
-        stage.addActor(tfcMode);
 
         night = new SelectBox<>(selectBoxStyle);
         Array<String> options6 = new Array<>(2);
@@ -133,7 +119,6 @@ public class GameSettingsScreen extends SettingsScreen {
         night.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.5f + yOffset);
         night.setAlignment(Align.center);
         night.getList().setAlignment(Align.center);
-        stage.addActor(night);
 
         nightStartHour = new SelectBox<>(selectBoxStyle);
         Array<String> options7 = new Array<>(24);
@@ -147,7 +132,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightStartHour.setPosition(night.getX(), 3240 * 0.35f + yOffset);
         nightStartHour.setAlignment(Align.center);
         nightStartHour.getList().setAlignment(Align.center);
-        stage.addActor(nightStartHour);
+        nightStartHour.setName("night");
 
         nightStartMin = new SelectBox<>(selectBoxStyle);
         Array<String> options8 = new Array<>(4);
@@ -170,7 +155,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightStartMin.setPosition(nightStartHour.getX() + 400, nightStartHour.getY());
         nightStartMin.setAlignment(Align.center);
         nightStartMin.getList().setAlignment(Align.center);
-        stage.addActor(nightStartMin);
+        nightStartMin.setName("night");
 
         nightEndHour = new SelectBox<>(selectBoxStyle);
         nightEndHour.setItems(options7);
@@ -178,7 +163,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightEndHour.setPosition(nightStartMin.getX() + 550, nightStartHour.getY());
         nightEndHour.setAlignment(Align.center);
         nightEndHour.getList().setAlignment(Align.center);
-        stage.addActor(nightEndHour);
+        nightEndHour.setName("night");
 
         nightEndMin = new SelectBox<>(selectBoxStyle);
         nightEndMin.setItems(options8);
@@ -199,7 +184,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightEndMin.setPosition(nightEndHour.getX() + 400, nightStartHour.getY());
         nightEndMin.setAlignment(Align.center);
         nightEndMin.getList().setAlignment(Align.center);
-        stage.addActor(nightEndMin);
+        nightEndMin.setName("night");
     }
 
     @Override
@@ -208,23 +193,34 @@ public class GameSettingsScreen extends SettingsScreen {
 
         speedLabel = new Label("Speed: ", labelStyle);
         speedLabel.setPosition(speed.getX() - 100 - speedLabel.getWidth(), speed.getY() + speed.getHeight() / 2 - speedLabel.getHeight() / 2);
-        stage.addActor(speedLabel);
 
         tfcLabel = new Label("Traffic: ", labelStyle);
         tfcLabel.setPosition(tfcMode.getX() - 100 - tfcLabel.getWidth(), tfcMode.getY() + tfcMode.getHeight() / 2 - tfcLabel.getHeight() / 2);
-        stage.addActor(tfcLabel);
 
         nightLabel = new Label("Night mode: ", labelStyle);
         nightLabel.setPosition(night.getX() - 100 - nightLabel.getWidth(), night.getY() + night.getHeight() / 2 - nightLabel.getHeight() / 2);
-        stage.addActor(nightLabel);
 
         timeLabel = new Label("Active from:", labelStyle);
         timeLabel.setPosition(nightStartHour.getX() - 100 - nightLabel.getWidth(), nightStartHour.getY() + nightStartHour.getHeight() / 2 - timeLabel.getHeight() / 2);
-        stage.addActor(timeLabel);
+        timeLabel.setName("time");
 
         timeLabel2 = new Label("to", labelStyle);
         timeLabel2.setPosition(timeLabel.getX() + 1400, timeLabel.getY());
-        stage.addActor(timeLabel2);
+        timeLabel2.setName("time");
+    }
+
+    @Override
+    public void loadTabs() {
+        SettingsTab tab1 = new SettingsTab(this);
+        tab1.addActors(trajectoryLine, trajectoryLabel);
+        tab1.addActors(weather, weatherLabel);
+        tab1.addActors(sound, soundLabel);
+        tab1.addActors(emer, emerChanceLabel);
+        tab1.addActors(speed, speedLabel);
+        tab1.addActors(tfcMode, tfcLabel);
+        tab1.addActors(night, nightLabel);
+        tab1.addActors(nightStartHour, nightStartMin, nightEndHour, nightEndMin, timeLabel, timeLabel2);
+        settingsTabs.add(tab1);
     }
 
     /** Confirms and applies the changes set */
@@ -283,28 +279,7 @@ public class GameSettingsScreen extends SettingsScreen {
 
     /** Sets visibility of elements */
     public void setVisible(boolean show) {
-        trajectoryLine.setVisible(show);
-        trajectoryLabel.setVisible(show);
-        weather.setVisible(show);
-        weatherLabel.setVisible(show);
-        sound.setVisible(show);
-        soundLabel.setVisible(show);
-        emer.setVisible(show);
-        emerChanceLabel.setVisible(show);
-        speed.setVisible(show);
-        speedLabel.setVisible(show);
-        tfcMode.setVisible(show);
-        tfcLabel.setVisible(show);
-
-        boolean nightAvailable = DayNightManager.isNightAvailable();
-        night.setVisible(show && nightAvailable);
-        nightLabel.setVisible(show && nightAvailable);
-        nightStartHour.setVisible(show && nightAvailable && allowNight);
-        nightStartMin.setVisible(show && nightAvailable && allowNight);
-        nightEndHour.setVisible(show && nightAvailable && allowNight);
-        nightEndMin.setVisible(show && nightAvailable && allowNight);
-        timeLabel.setVisible(show && nightAvailable && allowNight);
-        timeLabel2.setVisible(show && nightAvailable && allowNight);
+        updateTabs(show);
 
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
@@ -320,5 +295,9 @@ public class GameSettingsScreen extends SettingsScreen {
 
     public Viewport getViewport() {
         return viewport;
+    }
+
+    public boolean isAllowNight() {
+        return allowNight;
     }
 }
