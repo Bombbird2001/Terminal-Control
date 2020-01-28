@@ -66,6 +66,9 @@ public class GameSettingsScreen extends SettingsScreen {
                 radarScreen.setGameState(GameScreen.State.PAUSE);
             }
         });
+
+        backButton.setPosition(5760 / 2f - 2400, 3240 - 2600);
+        nextButton.setPosition(5760 / 2f + 1900, 3240 - 2600);
     }
 
     @Override
@@ -119,6 +122,7 @@ public class GameSettingsScreen extends SettingsScreen {
         night.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.5f + yOffset);
         night.setAlignment(Align.center);
         night.getList().setAlignment(Align.center);
+        night.setName("night2");
 
         nightStartHour = new SelectBox<>(selectBoxStyle);
         Array<String> options7 = new Array<>(24);
@@ -199,14 +203,15 @@ public class GameSettingsScreen extends SettingsScreen {
 
         nightLabel = new Label("Night mode: ", labelStyle);
         nightLabel.setPosition(night.getX() - 100 - nightLabel.getWidth(), night.getY() + night.getHeight() / 2 - nightLabel.getHeight() / 2);
+        nightLabel.setName("night2");
 
         timeLabel = new Label("Active from:", labelStyle);
         timeLabel.setPosition(nightStartHour.getX() - 100 - nightLabel.getWidth(), nightStartHour.getY() + nightStartHour.getHeight() / 2 - timeLabel.getHeight() / 2);
-        timeLabel.setName("time");
+        timeLabel.setName("night");
 
         timeLabel2 = new Label("to", labelStyle);
         timeLabel2.setPosition(timeLabel.getX() + 1400, timeLabel.getY());
-        timeLabel2.setName("time");
+        timeLabel2.setName("night");
     }
 
     @Override
@@ -221,6 +226,7 @@ public class GameSettingsScreen extends SettingsScreen {
         tab1.addActors(night, nightLabel);
         tab1.addActors(nightStartHour, nightStartMin, nightEndHour, nightEndMin, timeLabel, timeLabel2);
         settingsTabs.add(tab1);
+        settingsTabs.add(new SettingsTab(this));
     }
 
     /** Confirms and applies the changes set */

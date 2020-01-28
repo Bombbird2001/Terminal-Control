@@ -22,7 +22,9 @@ public class SettingsTab {
 
     public void updateVisibility(boolean visible) {
         for (Actor actor: actors) {
-            if ("night".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
+            if ("night2".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
+                actor.setVisible(visible && DayNightManager.isNightAvailable());
+            } else if ("night".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
                 actor.setVisible(visible && DayNightManager.isNightAvailable() && ((GameSettingsScreen) settingsScreen).isAllowNight());
             } else {
                 actor.setVisible(visible);
