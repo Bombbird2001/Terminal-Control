@@ -15,7 +15,7 @@ public class ErrorHandler {
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             type = "Desktop";
         }
-        return type + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + "\n";
+        return type + " " + (TerminalControl.full ? "full" : "lite") + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + "\n";
     }
 
     public static void sendGenericError(Exception e) {
