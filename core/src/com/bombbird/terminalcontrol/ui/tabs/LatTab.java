@@ -285,6 +285,7 @@ public class LatTab extends Tab {
 
     @Override
     public void compareWithAC() {
+        if (selectedAircraft == null) return;
         latModeChanged = !latMode.equals(selectedAircraft.getNavState().getDispLatMode().last());
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
