@@ -598,7 +598,13 @@ public class Arrival extends Aircraft {
         int approachPosition = getIls().getRwy().getAircraftsOnAppr().indexOf(this, false);
         if (approachPosition > 0) {
             Aircraft aircraftInFront = getIls().getRwy().getAircraftsOnAppr().get(approachPosition - 1);
-            if (MathTools.distanceBetween(aircraftInFront.getX(), aircraftInFront.getY(), getIls().getX(), getIls().getY()) > MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) {
+            float targetX = getIls().getX();
+            float targetY = getIls().getY();
+            if (getIls() instanceof LDA) {
+                targetX = getIls().getRwy().getOppRwy().getX();
+                targetY = getIls().getRwy().getOppRwy().getY();
+            }
+            if (MathTools.distanceBetween(aircraftInFront.getX(), aircraftInFront.getY(), targetX, targetY) > MathTools.distanceBetween(getX(), getY(), targetX, targetY)) {
                 //If this aircraft overtakes the one in front of it
                 getIls().getRwy().swapAircrafts(this);
             }
