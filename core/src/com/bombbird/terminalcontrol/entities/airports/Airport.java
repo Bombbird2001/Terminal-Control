@@ -343,6 +343,10 @@ public class Airport {
         updateZoneStatus();
     }
 
+    public boolean allowSimultDep() {
+        return (landings - airborne) >= 6;
+    }
+
     public HashMap<String, Star> getStars() {
         return stars;
     }

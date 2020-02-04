@@ -138,7 +138,7 @@ public class Runway {
         aircraftsOnAppr.removeValue(aircraft, false);
     }
 
-    /** Called to add the aircraft to the array, automatically determines the position of the aircraft in the array, should be called during initial aircraft LOC capture, returns aircraft index in array */
+    /** Called to add the aircraft to the array, automatically determines the position of the aircraft in the array, should be called during initial aircraft LOC capture */
     public void addToArray(Aircraft aircraft) {
         aircraftsOnAppr.add(aircraft);
         if (aircraftsOnAppr.size > 1) {

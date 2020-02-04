@@ -318,7 +318,7 @@ public class Emergency {
         if (type == Type.PRESSURE_LOSS) emergency = "an emergency due to loss of cabin pressure";
         if (type == Type.FUEL_LEAK) emergency = "an emergency due to fuel leak";
 
-        String intent = "";
+        String intent;
         if (type == Type.PRESSURE_LOSS) {
             intent = ", we are initiating an emergency descent to 9000 feet";
         } else {

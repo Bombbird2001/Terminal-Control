@@ -792,7 +792,7 @@ public class Arrival extends Aircraft {
 
     @Override
     public void setIls(ILS ils) {
-        if (this.getIls() != ils) goAroundSet = false;
+        if (this.getIls() != ils && (!(this.getIls() instanceof LDA) || ils == null)) goAroundSet = false; //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
         super.setIls(ils);
     }
 

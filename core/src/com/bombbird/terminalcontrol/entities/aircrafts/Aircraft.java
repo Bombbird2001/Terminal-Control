@@ -555,7 +555,7 @@ public class Aircraft extends Actor {
             return targetHeading;
         } else {
             gs = tas - airport.getWinds()[1] * (float) Math.cos(Math.toRadians(airport.getWinds()[0] - runway.getHeading()));
-            if (gs < 0) gs = 0;
+            if (tas == 0 || gs < 0) gs = 0;
             updatePosition(0);
             emergency.update();
             return 0;
@@ -1626,7 +1626,7 @@ public class Aircraft extends Actor {
         if (this.ils != ils) {
             if (this instanceof Arrival) ((Arrival) this).setNonPrecAlts(null);
             if (locCap) {
-                this.ils.getRwy().removeFromArray(this);
+                if (!(this.ils instanceof LDA) || ils == null) this.ils.getRwy().removeFromArray(this); //Remove from runway array only if is not LDA or is LDA but new ILS is null
                 if (selected && isArrivalDeparture()) ui.updateState();
             }
             gsCap = false;

@@ -188,13 +188,14 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
-                if (timers.get("05") >= 50 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
+                if (airport.allowSimultDep() && timers.get("05") >= 50 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
                     //Additional check for runway 05 departure - 50 seconds apart
+                    //Don't use 34R if departure volume is low
                     runway = runway1;
                     dist = distance;
                 } else if (timers.get("34R") >= 50 && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
                     //Additional check for runway 34R departure - 50 seconds apart
-                    //Additional check if aircraft landing on 34R is no longer in conflict with 05
+                    //Additional check if aircraft landing on 34R has touched down; is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");
                     if (r34r.getAircraftsOnAppr().size == 0) {
@@ -217,12 +218,13 @@ public class TakeoffManager {
                         if (distance > 24.9) break;
                         dist = distance;
                     }
-                } else if ("16L".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
-                    runway = runway1;
-                    dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
+                } else if (airport.allowSimultDep() && "16L".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
                     runway = runway1;
                     if (distance > 24.9) break;
+                    dist = distance;
+                } else if (airport.allowSimultDep() && "16R".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
+                    //Use only 16L if departure volume is low
+                    runway = runway1;
                     dist = distance;
                 }
             }
@@ -237,18 +239,20 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
-                if ("16L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16R"))) {
+                if ("16L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16R")) && (checkPreceding("16R") || airport.allowSimultDep())) {
+                    //Prefer 16R if departure volume is low
                     runway = runway1;
                     dist = distance;
-                } else if ("16R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16L"))) {
-                    runway = runway1;
-                    if (distance > 24.9) break;
-                    dist = distance;
-                } else if ("34L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34R"))) {
+                } else if ("16R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("16L")) && (checkPreceding("16L") || airport.allowSimultDep())) {
                     runway = runway1;
                     if (distance > 24.9) break;
                     dist = distance;
-                } else if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34L"))) {
+                } else if ("34L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34R")) && (checkPreceding("34R") || airport.allowSimultDep())) {
+                    runway = runway1;
+                    if (distance > 24.9) break;
+                    dist = distance;
+                } else if ("34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34L")) && (checkPreceding("34L") || airport.allowSimultDep())) {
+                    //Prefer 34L if departure volume is low
                     runway = runway1;
                     dist = distance;
                 }
@@ -397,13 +401,15 @@ public class TakeoffManager {
                 if ("36L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("36R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36L"))) {
+                } else if (airport.allowSimultDep() && "36R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("36L"))) {
+                    //Use only 36L if departure volume is low
                     runway = runway1;
                     dist = distance;
                 } else if ("14L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("14R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14L"))) {
+                } else if (airport.allowSimultDep() && "14R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("14L"))) {
+                    //Use only 14L if departure volume is low
                     runway = runway1;
                     dist = distance;
                 }
@@ -422,13 +428,15 @@ public class TakeoffManager {
                 if ("26R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("26L"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("27L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("27R"))) {
+                } else if (airport.allowSimultDep() && "27L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("27R"))) {
+                    //Use only 26R if departure volume is low
                     runway = runway1;
                     dist = distance;
                 } else if ("08L".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("08R"))) {
                     runway = runway1;
                     dist = distance;
-                } else if ("09R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("09L"))) {
+                } else if (airport.allowSimultDep() && "09R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("09L"))) {
+                    //Use only 08L if departure volume is low
                     runway = runway1;
                     dist = distance;
                 }
