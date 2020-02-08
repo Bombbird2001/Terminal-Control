@@ -70,7 +70,8 @@ public class MainMenuScreen implements Screen {
 
         //Background image
         if (background == null) {
-            FileHandle fileHandle = Gdx.files.internal("game/ui/mainMenuImages/" + MathUtils.random(1, 2) + ".png");
+            int max = TerminalControl.full ? 8 : 2;
+            FileHandle fileHandle = Gdx.files.internal("game/ui/mainMenuImages/" + MathUtils.random(1, max) + ".png");
             background = new Image(new Texture(fileHandle));
             background.scaleBy(6.8f);
         }
