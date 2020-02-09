@@ -180,6 +180,25 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(helpButton);
 
+        //Set upgrade button (for full version only)
+        if (TerminalControl.full) {
+            ImageButton.ImageButtonStyle imageButtonStyle3 = new ImageButton.ImageButtonStyle();
+            imageButtonStyle3.imageUp = TerminalControl.skin.getDrawable("Upgrade_up");
+            imageButtonStyle3.imageDown = TerminalControl.skin.getDrawable("Upgrade_down");
+            ImageButton upgradeButton = new ImageButton(imageButtonStyle3);
+            upgradeButton.setPosition(1440 + 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
+            upgradeButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
+            upgradeButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    //Go to upgrade screen
+                    game.setScreen(new UpgradeScreen(game, background));
+                    dispose();
+                }
+            });
+            stage.addActor(upgradeButton);
+        }
+
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;
         TextButton quitButton = new TextButton("Quit", buttonStyle);
