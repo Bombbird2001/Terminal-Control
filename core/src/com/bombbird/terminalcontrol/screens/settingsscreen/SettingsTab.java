@@ -24,7 +24,6 @@ public class SettingsTab {
 
         //Add box
         box.setX(5760 / 2f - 400 + xOffset + (2000 * (float)(count / MAX_LENGTH)));
-        System.out.println(box.getX());
         box.setY(3240 * (0.8f - (count % MAX_LENGTH) * 0.15f) + yOffset);
         actors.add(box);
 
