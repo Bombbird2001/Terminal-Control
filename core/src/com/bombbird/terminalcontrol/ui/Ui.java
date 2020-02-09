@@ -641,7 +641,7 @@ public class Ui {
         if (!text.isEmpty() && DayNightManager.isNight()) text += "\n";
         if (DayNightManager.isNight()) text += "Night mode active";
         infoLabel.setText(text);
-        infoLabel.setVisible(!text.isEmpty());
+        infoLabel.setVisible(!text.isEmpty() && selectedAircraft == null);
     }
 
     public float getPaneWidth() {

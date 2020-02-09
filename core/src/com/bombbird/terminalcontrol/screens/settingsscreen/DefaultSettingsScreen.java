@@ -77,8 +77,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void loadBoxes(int xOffset, int yOffset) {
-        super.loadBoxes(xOffset, yOffset);
+    public void loadBoxes() {
+        super.loadBoxes();
 
         CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
         checkBoxStyle.checkboxOn = TerminalControl.skin.getDrawable("Checked");
@@ -87,7 +87,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         checkBoxStyle.fontColor = Color.WHITE;
 
         sendCrashBox = new CheckBox(" Send anonymous crash reports", checkBoxStyle);
-        sendCrashBox.setPosition(5760 / 2f + 1600 + xOffset, 3240 * 0.7f + yOffset);
+        sendCrashBox.setPosition(5760 / 2f + 1000, 3240 * 0.7f - 200);
         sendCrashBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -107,7 +107,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
             }
         });
         zoom.setSize(1200, 300);
-        zoom.setPosition(trajectoryLine.getX(), trajectoryLine.getY());
         zoom.setAlignment(Align.center);
         zoom.getList().setAlignment(Align.center);
     }
@@ -129,20 +128,19 @@ public class DefaultSettingsScreen extends SettingsScreen {
         stage.addActor(sendLabel);
 
         zoomLabel = new Label("Increased radar zoom: ", labelStyle);
-        zoomLabel.setPosition(zoom.getX() - 100 - zoomLabel.getWidth(), zoom.getY() + zoom.getHeight() / 2 - zoomLabel.getHeight() / 2);
     }
 
     @Override
-    public void loadTabs() {
-        SettingsTab tab1 = new SettingsTab(this);
-        tab1.addActors(trajectoryLine, trajectoryLabel);
-        tab1.addActors(weather, weatherLabel);
-        tab1.addActors(sound, soundLabel);
-        tab1.addActors(emer, emerChanceLabel);
+    public void loadTabs(int xOffset, int yOffset) {
+        SettingsTab tab1 = new SettingsTab(this, 1);
+        tab1.addActors(trajectoryLine, trajectoryLabel, xOffset, yOffset);
+        tab1.addActors(weather, weatherLabel, xOffset, yOffset);
+        tab1.addActors(sound, soundLabel, xOffset, yOffset);
+        tab1.addActors(emer, emerChanceLabel, xOffset, yOffset);
         settingsTabs.add(tab1);
 
-        SettingsTab tab2 = new SettingsTab(this);
-        tab2.addActors(zoom, zoomLabel);
+        SettingsTab tab2 = new SettingsTab(this, 1);
+        tab2.addActors(zoom, zoomLabel, xOffset, yOffset);
         settingsTabs.add(tab2);
     }
 

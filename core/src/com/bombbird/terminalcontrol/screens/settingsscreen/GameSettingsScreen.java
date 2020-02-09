@@ -10,10 +10,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.screens.GameScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.Locale;
 
@@ -72,10 +70,8 @@ public class GameSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void loadBoxes(int xOffset, int yOffset) {
-        super.loadBoxes(xOffset, yOffset);
-
-        int additionaOffsetX = 2000;
+    public void loadBoxes() {
+        super.loadBoxes();
 
         speed = new SelectBox<>(selectBoxStyle);
         Array<String> options4 = new Array<>(3);
@@ -88,7 +84,6 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
         speed.setSize(1200, 300);
-        speed.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.8f + yOffset);
         speed.setAlignment(Align.center);
         speed.getList().setAlignment(Align.center);
 
@@ -103,7 +98,6 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
         tfcMode.setSize(1200, 300);
-        tfcMode.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.65f + yOffset);
         tfcMode.setAlignment(Align.center);
         tfcMode.getList().setAlignment(Align.center);
 
@@ -119,7 +113,6 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
         night.setSize(1200, 300);
-        night.setPosition(5760 / 2f - 400 + xOffset + additionaOffsetX, 3240 * 0.5f + yOffset);
         night.setAlignment(Align.center);
         night.getList().setAlignment(Align.center);
         night.setName("night2");
@@ -133,7 +126,6 @@ public class GameSettingsScreen extends SettingsScreen {
         }
         nightStartHour.setItems(options7);
         nightStartHour.setSize(300, 300);
-        nightStartHour.setPosition(night.getX(), 3240 * 0.35f + yOffset);
         nightStartHour.setAlignment(Align.center);
         nightStartHour.getList().setAlignment(Align.center);
         nightStartHour.setName("night");
@@ -156,7 +148,7 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
         nightStartMin.setSize(300, 300);
-        nightStartMin.setPosition(nightStartHour.getX() + 400, nightStartHour.getY());
+        nightStartMin.setPosition(400, 0);
         nightStartMin.setAlignment(Align.center);
         nightStartMin.getList().setAlignment(Align.center);
         nightStartMin.setName("night");
@@ -164,7 +156,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightEndHour = new SelectBox<>(selectBoxStyle);
         nightEndHour.setItems(options7);
         nightEndHour.setSize(300, 300);
-        nightEndHour.setPosition(nightStartMin.getX() + 550, nightStartHour.getY());
+        nightEndHour.setPosition(950, 0);
         nightEndHour.setAlignment(Align.center);
         nightEndHour.getList().setAlignment(Align.center);
         nightEndHour.setName("night");
@@ -185,7 +177,7 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
         nightEndMin.setSize(300, 300);
-        nightEndMin.setPosition(nightEndHour.getX() + 400, nightStartHour.getY());
+        nightEndMin.setPosition(1350, 0);
         nightEndMin.setAlignment(Align.center);
         nightEndMin.getList().setAlignment(Align.center);
         nightEndMin.setName("night");
@@ -196,35 +188,31 @@ public class GameSettingsScreen extends SettingsScreen {
         super.loadLabel();
 
         speedLabel = new Label("Speed: ", labelStyle);
-        speedLabel.setPosition(speed.getX() - 100 - speedLabel.getWidth(), speed.getY() + speed.getHeight() / 2 - speedLabel.getHeight() / 2);
 
         tfcLabel = new Label("Traffic: ", labelStyle);
-        tfcLabel.setPosition(tfcMode.getX() - 100 - tfcLabel.getWidth(), tfcMode.getY() + tfcMode.getHeight() / 2 - tfcLabel.getHeight() / 2);
 
         nightLabel = new Label("Night mode: ", labelStyle);
-        nightLabel.setPosition(night.getX() - 100 - nightLabel.getWidth(), night.getY() + night.getHeight() / 2 - nightLabel.getHeight() / 2);
         nightLabel.setName("night2");
 
         timeLabel = new Label("Active from:", labelStyle);
-        timeLabel.setPosition(nightStartHour.getX() - 100 - nightLabel.getWidth(), nightStartHour.getY() + nightStartHour.getHeight() / 2 - timeLabel.getHeight() / 2);
         timeLabel.setName("night");
 
         timeLabel2 = new Label("to", labelStyle);
-        timeLabel2.setPosition(timeLabel.getX() + 1400, timeLabel.getY());
+        timeLabel2.setPosition(nightStartHour.getX() - nightLabel.getWidth() + 1300, nightStartHour.getY() + nightStartHour.getHeight() / 2 - timeLabel2.getHeight() / 2);
         timeLabel2.setName("night");
     }
 
     @Override
-    public void loadTabs() {
-        SettingsTab tab1 = new SettingsTab(this);
-        tab1.addActors(trajectoryLine, trajectoryLabel);
-        tab1.addActors(weather, weatherLabel);
-        tab1.addActors(sound, soundLabel);
-        tab1.addActors(emer, emerChanceLabel);
-        tab1.addActors(speed, speedLabel);
-        tab1.addActors(tfcMode, tfcLabel);
-        tab1.addActors(night, nightLabel);
-        tab1.addActors(nightStartHour, nightStartMin, nightEndHour, nightEndMin, timeLabel, timeLabel2);
+    public void loadTabs(int xOffset, int yOffset) {
+        SettingsTab tab1 = new SettingsTab(this, 2);
+        tab1.addActors(trajectoryLine, trajectoryLabel, xOffset, yOffset);
+        tab1.addActors(weather, weatherLabel, xOffset, yOffset);
+        tab1.addActors(sound, soundLabel, xOffset, yOffset);
+        tab1.addActors(emer, emerChanceLabel, xOffset, yOffset);
+        tab1.addActors(speed, speedLabel, xOffset, yOffset);
+        tab1.addActors(tfcMode, tfcLabel, xOffset, yOffset);
+        tab1.addActors(night, nightLabel, xOffset, yOffset);
+        tab1.addActors(nightStartHour, timeLabel, xOffset, yOffset, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
         settingsTabs.add(tab1);
     }
 

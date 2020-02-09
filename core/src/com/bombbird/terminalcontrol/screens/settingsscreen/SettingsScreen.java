@@ -78,13 +78,14 @@ public class SettingsScreen implements Screen {
     public void loadUI(int xOffset, int yOffset) {
         loadStyles();
 
-        loadBoxes(xOffset, yOffset);
+        //loadBoxes(xOffset, yOffset);
+        loadBoxes();
 
         loadButton();
 
         loadLabel();
 
-        loadTabs();
+        loadTabs(xOffset, yOffset);
 
         updateTabs(true);
     }
@@ -112,7 +113,7 @@ public class SettingsScreen implements Screen {
     }
 
     /** Loads selectBox for settings */
-    public void loadBoxes(int xOffset, int yOffset) {
+    public void loadBoxes() {
         trajectoryLine = new SelectBox<>(selectBoxStyle);
         Array<String> options = new Array<>(3);
         options.add("60 sec", "90 sec", "120 sec", "150 sec");
@@ -124,7 +125,7 @@ public class SettingsScreen implements Screen {
             }
         });
         trajectoryLine.setSize(1200, 300);
-        trajectoryLine.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.8f + yOffset);
+        //trajectoryLine.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.8f + yOffset);
         trajectoryLine.setAlignment(Align.center);
         trajectoryLine.getList().setAlignment(Align.center);
 
@@ -139,7 +140,7 @@ public class SettingsScreen implements Screen {
             }
         });
         weather.setSize(1200, 300);
-        weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.65f + yOffset);
+        //weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.65f + yOffset);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
 
@@ -164,7 +165,7 @@ public class SettingsScreen implements Screen {
             }
         });
         sound.setSize(1200, 300);
-        sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.5f + yOffset);
+        //sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.5f + yOffset);
         sound.setAlignment(Align.center);
         sound.getList().setAlignment(Align.center);
 
@@ -179,7 +180,7 @@ public class SettingsScreen implements Screen {
             }
         });
         emer.setSize(1200, 300);
-        emer.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.35f + yOffset);
+        //emer.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.35f + yOffset);
         emer.setAlignment(Align.center);
         emer.getList().setAlignment(Align.center);
     }
@@ -234,20 +235,20 @@ public class SettingsScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
 
         trajectoryLabel = new Label("Trajectory line timing: ", labelStyle);
-        trajectoryLabel.setPosition(trajectoryLine.getX() - 100 - trajectoryLabel.getWidth(), trajectoryLine.getY() + trajectoryLine.getHeight() / 2 - trajectoryLabel.getHeight() / 2);
+        //trajectoryLabel.setPosition(trajectoryLine.getX() - 100 - trajectoryLabel.getWidth(), trajectoryLine.getY() + trajectoryLine.getHeight() / 2 - trajectoryLabel.getHeight() / 2);
 
         weatherLabel = new Label("Weather: ", labelStyle);
-        weatherLabel.setPosition(weather.getX() - 100 - weatherLabel.getWidth(), weather.getY() + weather.getHeight() / 2 - weatherLabel.getHeight() / 2);
+        //weatherLabel.setPosition(weather.getX() - 100 - weatherLabel.getWidth(), weather.getY() + weather.getHeight() / 2 - weatherLabel.getHeight() / 2);
 
         soundLabel = new Label("Sounds: ", labelStyle);
-        soundLabel.setPosition(sound.getX() - 100 - soundLabel.getWidth(), sound.getY() + sound.getHeight() / 2 - soundLabel.getHeight() / 2);
+        //soundLabel.setPosition(sound.getX() - 100 - soundLabel.getWidth(), sound.getY() + sound.getHeight() / 2 - soundLabel.getHeight() / 2);
 
         emerChanceLabel = new Label("Emergencies: ", labelStyle);
-        emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
+        //emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
-    public void loadTabs() {
+    public void loadTabs(int xOffset, int yOffset) {
         //No default implementation
     }
 
