@@ -423,10 +423,13 @@ public class RadarScreen extends GameScreen {
         }
 
         if (!tutorial) {
-            saveTime -= deltaTime;
-            if (saveTime <= 0) {
-                GameSaver.saveGame();
-                saveTime += 60f;
+            if (TerminalControl.saveInterval > 0) {
+                //If autosave enabled
+                saveTime -= deltaTime;
+                if (saveTime <= 0) {
+                    GameSaver.saveGame();
+                    saveTime += TerminalControl.saveInterval;
+                }
             }
 
             arrivals = 0;
