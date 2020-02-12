@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -25,6 +26,10 @@ public class DefaultSettingsScreen extends SettingsScreen {
     private Label zoomLabel;
     private boolean increaseZoom;
 
+    private SelectBox<String> autosave;
+    private Label autosaveLabel;
+    private int saveInterval;
+
     public DefaultSettingsScreen(final TerminalControl game, Image background) {
         super(game);
 
@@ -37,6 +42,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         sendCrash = TerminalControl.sendAnonCrash;
         emerChance = TerminalControl.emerChance;
         increaseZoom = TerminalControl.increaseZoom;
+        saveInterval = TerminalControl.saveInterval;
 
         loadUI(-600, -200);
 
@@ -109,6 +115,30 @@ public class DefaultSettingsScreen extends SettingsScreen {
         zoom.setSize(1200, 300);
         zoom.setAlignment(Align.center);
         zoom.getList().setAlignment(Align.center);
+
+        autosave = new SelectBox<>(selectBoxStyle);
+        Array<String> options1 = new Array<>(5);
+        options1.add("Never", "30 sec", "1 min", "2 mins");
+        options1.add("5 mins");
+        autosave.setItems(options1);
+        autosave.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                String selected = autosave.getSelected();
+                if ("Never".equals(selected)) {
+                    saveInterval = -1;
+                } else if (selected.contains("sec")) {
+                    saveInterval = Integer.parseInt(selected.split(" ")[0]);
+                } else if (selected.contains("min")) {
+                    saveInterval = Integer.parseInt(selected.split(" ")[0]) * 60;
+                } else {
+                    Gdx.app.log("Default settings", "Invalid autosave setting: " + selected);
+                }
+            }
+        });
+        autosave.setSize(1200, 300);
+        autosave.setAlignment(Align.center);
+        autosave.getList().setAlignment(Align.center);
     }
 
     @Override
@@ -128,6 +158,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         stage.addActor(sendLabel);
 
         zoomLabel = new Label("Increased radar zoom: ", labelStyle);
+
+        autosaveLabel = new Label("Autosave interval:", labelStyle);
     }
 
     @Override
@@ -141,6 +173,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
 
         SettingsTab tab2 = new SettingsTab(this, 1);
         tab2.addActors(zoom, zoomLabel, xOffset, yOffset);
+        tab2.addActors(autosave, autosaveLabel, xOffset, yOffset);
         settingsTabs.add(tab2);
     }
 
@@ -149,6 +182,14 @@ public class DefaultSettingsScreen extends SettingsScreen {
         super.setOptions();
         sendCrashBox.setChecked(TerminalControl.sendAnonCrash);
         zoom.setSelected(TerminalControl.increaseZoom ? "On" : "Off");
+        if (TerminalControl.saveInterval == -1) {
+            autosave.setSelected("Never");
+        } else if (TerminalControl.saveInterval < 60) {
+            autosave.setSelected(TerminalControl.saveInterval + " sec");
+        } else {
+            int min = TerminalControl.saveInterval / 60;
+            autosave.setSelected(min + " min" + (min > 1 ? "s" : ""));
+        }
     }
 
     @Override
@@ -159,7 +200,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.sendAnonCrash = sendCrash;
         TerminalControl.increaseZoom = increaseZoom;
         TerminalControl.emerChance = emerChance;
+        TerminalControl.saveInterval = saveInterval;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, increaseZoom, emerChance, TerminalControl.revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, increaseZoom, saveInterval, emerChance, TerminalControl.revision);
     }
 }
