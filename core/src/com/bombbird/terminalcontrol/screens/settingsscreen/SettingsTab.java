@@ -47,7 +47,7 @@ public class SettingsTab {
     }
 
     public void updateVisibility(boolean visible) {
-        if (!DayNightManager.isNightAvailable()) settingsScreen.nextButton.setVisible(false); //TODO Temporary workaround, remove once more settings added
+        if (!DayNightManager.isNightAvailable() && settingsScreen instanceof GameSettingsScreen) settingsScreen.nextButton.setVisible(false); //TODO Temporary workaround, remove once more settings added
         for (Actor actor: actors) {
             if ("night2".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
                 actor.setVisible(visible && DayNightManager.isNightAvailable());
