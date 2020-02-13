@@ -2,17 +2,21 @@ package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.UnlockManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+
+import java.util.Map;
 
 public class UpgradeScreen implements Screen {
     //Init game (set in constructor)
@@ -22,6 +26,9 @@ public class UpgradeScreen implements Screen {
     //Create new camera
     private OrthographicCamera camera;
     private Viewport viewport;
+
+    //Scroll table
+    private Table scrollTable;
 
     //Background image
     private Image background;
@@ -59,6 +66,9 @@ public class UpgradeScreen implements Screen {
         stage.addActor(background);
 
         loadButtons();
+        loadLabel();
+        loadScroll();
+        loadUnlocks();
     }
 
     /** Loads the default button styles and back button */
@@ -84,6 +94,74 @@ public class UpgradeScreen implements Screen {
         });
 
         stage.addActor(backButton);
+    }
+
+    /** Loads the appropriate title for label */
+    private void loadLabel() {
+        //Set title label style
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont20;
+        labelStyle.fontColor = Color.WHITE;
+
+        //Set title label
+        Label headerLabel = new Label("Milestones & Unlocks", labelStyle);
+        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
+        headerLabel.setAlignment(Align.center);
+        stage.addActor(headerLabel);
+
+        //Set additional description label style
+        Label.LabelStyle labelStyle1 = new Label.LabelStyle();
+        labelStyle1.font = Fonts.defaultFont12;
+        labelStyle1.fontColor = Color.WHITE;
+
+        //Set description label
+        Label label = new Label("Once an option is unlocked, you can visit the settings page to change to the desired option\nTotal planes landed: " + UnlockManager.getPlanesLanded(), labelStyle1);
+        label.setPosition((2880 - label.getWidth()) / 2, 1620 * 0.75f);
+        label.setAlignment(Align.center);
+        stage.addActor(label);
+    }
+
+    /** Loads the scrollpane used to contain unlocks, milestones */
+    private void loadScroll() {
+        scrollTable = new Table();
+        ScrollPane scrollPane = new ScrollPane(scrollTable);
+
+        scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.8f);
+        scrollPane.setY(1620 * 0.2f);
+        scrollPane.setWidth(MainMenuScreen.BUTTON_WIDTH * 1.6f);
+        scrollPane.setHeight(1620 * 0.5f);
+        scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
+
+        stage.addActor(scrollPane);
+    }
+
+    /** Loads the unlocks into scroll pane */
+    private void loadUnlocks() {
+        //Set scroll pane label textures
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont12;
+        labelStyle.fontColor = Color.WHITE;
+        labelStyle.background = TerminalControl.skin.getDrawable("Button_up");
+
+        for (Map.Entry<String, Integer> entry: UnlockManager.unlockList.entrySet()) {
+            Label label = new Label("\n" + UnlockManager.unlockDescription.get(entry.getKey()) + "\n", labelStyle);
+            label.setWrap(true);
+            label.setAlignment(Align.center);
+            scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f);
+            //Layout twice to set correct width & height
+            scrollTable.layout();
+            scrollTable.layout();
+            int required = entry.getValue();
+            Label label1 = new Label(Math.min(UnlockManager.getPlanesLanded(), required) + "/" + required, labelStyle);
+            label1.setAlignment(Align.center);
+            scrollTable.add(label1).width(MainMenuScreen.BUTTON_WIDTH * 0.3f).height(label.getHeight());
+            Image image = new Image(TerminalControl.skin.getDrawable(UnlockManager.getPlanesLanded() >= required ? "Checked" : "Unchecked"));
+            float ratio = MainMenuScreen.BUTTON_WIDTH * 0.15f / image.getWidth();
+            scrollTable.add(image).width(MainMenuScreen.BUTTON_WIDTH * 0.15f).height(ratio * image.getHeight()).padLeft(MainMenuScreen.BUTTON_WIDTH * 0.025f).padRight(MainMenuScreen.BUTTON_WIDTH * 0.025f);
+            scrollTable.row();
+        }
     }
 
     /** Main rendering method for rendering to spriteBatch */

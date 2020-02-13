@@ -54,6 +54,7 @@ public class TerminalControl extends Game {
     public static boolean sendAnonCrash;
     public static boolean increaseZoom;
     public static int saveInterval;
+    public static float radarSweep;
     public static int revision;
     public static final int LATEST_REVISION = 1;
 
@@ -76,6 +77,7 @@ public class TerminalControl extends Game {
             sendAnonCrash = true;
             increaseZoom = false;
             saveInterval = 60;
+            radarSweep = 2;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
         } else {
@@ -100,9 +102,10 @@ public class TerminalControl extends Game {
             }
             increaseZoom = settings.optBoolean("increaseZoom", false);
             saveInterval = settings.optInt("saveInterval", 60);
+            radarSweep = (float) settings.optDouble("radarSweep", 2);
             revision = settings.optInt("revision", 0);
         }
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, saveInterval, emerChance, revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, saveInterval, radarSweep, emerChance, revision);
     }
 
     public static void loadVersionInfo() {
@@ -119,7 +122,7 @@ public class TerminalControl extends Game {
 
     public static void updateRevision() {
         revision = LATEST_REVISION;
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, saveInterval, emerChance, revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendAnonCrash, increaseZoom, saveInterval, radarSweep, emerChance, revision);
     }
 
     @Override

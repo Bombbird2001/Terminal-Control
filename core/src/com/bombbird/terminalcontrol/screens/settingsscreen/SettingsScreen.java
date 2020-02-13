@@ -16,10 +16,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class SettingsScreen implements Screen {
@@ -33,6 +36,7 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> weather;
     public SelectBox<String> sound;
     public SelectBox<String> emer;
+    public SelectBox<String> sweep;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -50,6 +54,9 @@ public class SettingsScreen implements Screen {
 
     public Label emerChanceLabel;
     public Emergency.Chance emerChance;
+
+    public Label sweepLabel;
+    public float radarSweep;
 
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
@@ -115,9 +122,7 @@ public class SettingsScreen implements Screen {
     /** Loads selectBox for settings */
     public void loadBoxes() {
         trajectoryLine = new SelectBox<>(selectBoxStyle);
-        Array<String> options = new Array<>(3);
-        options.add("60 sec", "90 sec", "120 sec", "150 sec");
-        trajectoryLine.setItems(options);
+        trajectoryLine.setItems("60 sec", "90 sec", "120 sec", "150 sec");
         trajectoryLine.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -125,14 +130,11 @@ public class SettingsScreen implements Screen {
             }
         });
         trajectoryLine.setSize(1200, 300);
-        //trajectoryLine.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.8f + yOffset);
         trajectoryLine.setAlignment(Align.center);
         trajectoryLine.getList().setAlignment(Align.center);
 
         weather = new SelectBox<>(selectBoxStyle);
-        Array<String> options1 = new Array<>(3);
-        options1.add("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
-        weather.setItems(options1);
+        weather.setItems("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
         weather.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -140,18 +142,17 @@ public class SettingsScreen implements Screen {
             }
         });
         weather.setSize(1200, 300);
-        //weather.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.65f + yOffset);
         weather.setAlignment(Align.center);
         weather.getList().setAlignment(Align.center);
 
         sound = new SelectBox<>(selectBoxStyle);
-        Array<String> options2 = new Array<>(2);
+        Array<String> options = new Array<>(2);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            options2.add("Pilot voices + sound effects", "Sound effects only", "Off");
+            options.add("Pilot voices + sound effects", "Sound effects only", "Off");
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            options2.add("Sound effects", "Off");
+            options.add("Sound effects", "Off");
         }
-        sound.setItems(options2);
+        sound.setItems(options);
         sound.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -165,14 +166,11 @@ public class SettingsScreen implements Screen {
             }
         });
         sound.setSize(1200, 300);
-        //sound.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.5f + yOffset);
         sound.setAlignment(Align.center);
         sound.getList().setAlignment(Align.center);
 
         emer = new SelectBox<>(selectBoxStyle);
-        Array<String> options3 = new Array<>(4);
-        options3.add("Off", "Low", "Medium", "High");
-        emer.setItems(options3);
+        emer.setItems("Off", "Low", "Medium", "High");
         emer.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -180,9 +178,20 @@ public class SettingsScreen implements Screen {
             }
         });
         emer.setSize(1200, 300);
-        //emer.setPosition(5760 / 2f - 400 + xOffset, 3240 * 0.35f + yOffset);
         emer.setAlignment(Align.center);
         emer.getList().setAlignment(Align.center);
+
+        sweep = new SelectBox<>(selectBoxStyle);
+        sweep.setItems(UnlockManager.getSweepAvailable());
+        sweep.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                radarSweep = Float.parseFloat(sweep.getSelected().substring(0, sweep.getSelected().length() - 1));
+            }
+        });
+        sweep.setSize(1200, 300);
+        sweep.setAlignment(Align.center);
+        sweep.getList().setAlignment(Align.center);
     }
 
     /** Loads buttons */
@@ -235,16 +244,14 @@ public class SettingsScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
 
         trajectoryLabel = new Label("Trajectory line timing: ", labelStyle);
-        //trajectoryLabel.setPosition(trajectoryLine.getX() - 100 - trajectoryLabel.getWidth(), trajectoryLine.getY() + trajectoryLine.getHeight() / 2 - trajectoryLabel.getHeight() / 2);
 
         weatherLabel = new Label("Weather: ", labelStyle);
-        //weatherLabel.setPosition(weather.getX() - 100 - weatherLabel.getWidth(), weather.getY() + weather.getHeight() / 2 - weatherLabel.getHeight() / 2);
 
         soundLabel = new Label("Sounds: ", labelStyle);
-        //soundLabel.setPosition(sound.getX() - 100 - soundLabel.getWidth(), sound.getY() + sound.getHeight() / 2 - soundLabel.getHeight() / 2);
 
         emerChanceLabel = new Label("Emergencies: ", labelStyle);
-        //emerChanceLabel.setPosition(emer.getX() - 100 - emerChanceLabel.getWidth(), emer.getY() + emer.getHeight() / 2 - emerChanceLabel.getHeight() / 2);
+
+        sweepLabel = new Label("Radar sweep: ", labelStyle);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
@@ -278,6 +285,9 @@ public class SettingsScreen implements Screen {
         sound.setSelectedIndex(soundIndex);
         String tmp = emerChance.toString().toLowerCase(Locale.US);
         emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
+        DecimalFormat df = new DecimalFormat("#.#");
+        df.setRoundingMode(RoundingMode.CEILING);
+        sweep.setSelected(df.format(radarSweep) + "s");
     }
 
     /** Confirms and applies the changes set */

@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -37,6 +36,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         this.background.scaleBy(specialScale);
 
         trajectorySel = TerminalControl.trajectorySel;
+        radarSweep = TerminalControl.radarSweep;
         weatherSel = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         sendCrash = TerminalControl.sendAnonCrash;
@@ -103,9 +103,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         stage.addActor(sendCrashBox);
 
         zoom = new SelectBox<>(selectBoxStyle);
-        Array<String> options = new Array<>(2);
-        options.add("Off", "On");
-        zoom.setItems(options);
+        zoom.setItems("Off", "On");
         zoom.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -117,10 +115,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         zoom.getList().setAlignment(Align.center);
 
         autosave = new SelectBox<>(selectBoxStyle);
-        Array<String> options1 = new Array<>(5);
-        options1.add("Never", "30 sec", "1 min", "2 mins");
-        options1.add("5 mins");
-        autosave.setItems(options1);
+        autosave.setItems("Never", "30 sec", "1 min", "2 mins", "5 mins");
         autosave.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -149,7 +144,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         labelStyle2.font = Fonts.defaultFont20;
         labelStyle2.fontColor = Color.WHITE;
 
-        Label infoLabel = new Label("Set the default game settings below. You can still change these settings for individual games.", labelStyle2);
+        Label infoLabel = new Label("Set the default game settings below. You can still change some of these settings for individual games.", labelStyle2);
         infoLabel.setPosition(5760 / 2f - infoLabel.getWidth() / 2f, 3240 - 300);
         stage.addActor(infoLabel);
 
@@ -172,6 +167,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 1);
+        if (TerminalControl.full) tab2.addActors(sweep, sweepLabel, xOffset, yOffset);
         tab2.addActors(zoom, zoomLabel, xOffset, yOffset);
         tab2.addActors(autosave, autosaveLabel, xOffset, yOffset);
         settingsTabs.add(tab2);
@@ -201,7 +197,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.increaseZoom = increaseZoom;
         TerminalControl.emerChance = emerChance;
         TerminalControl.saveInterval = saveInterval;
+        TerminalControl.radarSweep = radarSweep;
 
-        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, increaseZoom, saveInterval, emerChance, TerminalControl.revision);
+        GameSaver.saveSettings(trajectorySel, weatherSel, soundSel, sendCrash, increaseZoom, saveInterval, radarSweep, emerChance, TerminalControl.revision);
     }
 }

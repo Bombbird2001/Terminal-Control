@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.UnlockManager;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
@@ -61,6 +62,7 @@ public class MainMenuScreen implements Screen {
 
         TerminalControl.loadVersionInfo();
         TerminalControl.loadSettings();
+        UnlockManager.loadStats();
     }
 
     /** Loads the UI elements to be rendered on screen */

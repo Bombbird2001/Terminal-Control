@@ -74,9 +74,7 @@ public class GameSettingsScreen extends SettingsScreen {
         super.loadBoxes();
 
         speed = new SelectBox<>(selectBoxStyle);
-        Array<String> options4 = new Array<>(3);
-        options4.add("1x", "2x", "4x");
-        speed.setItems(options4);
+        speed.setItems("1x", "2x", "4x");
         speed.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -88,9 +86,7 @@ public class GameSettingsScreen extends SettingsScreen {
         speed.getList().setAlignment(Align.center);
 
         tfcMode = new SelectBox<>(selectBoxStyle);
-        Array<String> options5 = new Array<>(3);
-        options5.add("Normal", "Arrivals only");
-        tfcMode.setItems(options5);
+        tfcMode.setItems("Normal", "Arrivals only");
         tfcMode.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -102,9 +98,7 @@ public class GameSettingsScreen extends SettingsScreen {
         tfcMode.getList().setAlignment(Align.center);
 
         night = new SelectBox<>(selectBoxStyle);
-        Array<String> options6 = new Array<>(2);
-        options6.add("On", "Off");
-        night.setItems(options6);
+        night.setItems("On", "Off");
         night.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -131,9 +125,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightStartHour.setName("night");
 
         nightStartMin = new SelectBox<>(selectBoxStyle);
-        Array<String> options8 = new Array<>(4);
-        options8.add("00", "15", "30", "45");
-        nightStartMin.setItems(options8);
+        nightStartMin.setItems("00", "15", "30", "45");
         nightStartHour.addListener(new ChangeListener() {
             //Put here to prevent any potential NPE
             @Override
@@ -162,7 +154,7 @@ public class GameSettingsScreen extends SettingsScreen {
         nightEndHour.setName("night");
 
         nightEndMin = new SelectBox<>(selectBoxStyle);
-        nightEndMin.setItems(options8);
+        nightEndMin.setItems("00", "15", "30", "45");
         nightEndHour.addListener(new ChangeListener() {
             //Put here to prevent any potential NPE
             @Override
@@ -211,9 +203,13 @@ public class GameSettingsScreen extends SettingsScreen {
         tab1.addActors(emer, emerChanceLabel, xOffset, yOffset);
         tab1.addActors(speed, speedLabel, xOffset, yOffset);
         tab1.addActors(tfcMode, tfcLabel, xOffset, yOffset);
-        tab1.addActors(night, nightLabel, xOffset, yOffset);
-        tab1.addActors(nightStartHour, timeLabel, xOffset, yOffset, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
+        if (TerminalControl.full) tab1.addActors(sweep, sweepLabel, xOffset, yOffset);
         settingsTabs.add(tab1);
+
+        SettingsTab tab2 = new SettingsTab(this, 2);
+        tab2.addActors(night, nightLabel, xOffset, yOffset);
+        tab2.addActors(nightStartHour, timeLabel, xOffset, yOffset, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
+        settingsTabs.add(tab2);
     }
 
     /** Confirms and applies the changes set */
@@ -225,6 +221,8 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.emerChance = emerChance;
         radarScreen.speed = speedSel;
         radarScreen.tfcMode = tfcSel;
+        radarScreen.radarSweepDelay = radarSweep;
+        if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
         boolean changed;
         changed = radarScreen.allowNight != allowNight || radarScreen.nightStart != nightStart || radarScreen.nightEnd != nightEnd;
         radarScreen.allowNight = allowNight;
@@ -247,6 +245,7 @@ public class GameSettingsScreen extends SettingsScreen {
         emerChance = radarScreen.emerChance;
         speedSel = radarScreen.speed;
         tfcSel = radarScreen.tfcMode;
+        radarSweep = radarScreen.radarSweepDelay;
 
         super.setOptions();
 

@@ -338,6 +338,20 @@ public class FileLoader {
         return settings;
     }
 
+    public static JSONObject loadStats() {
+        JSONObject stats = null;
+        try {
+            FileHandle handle = getExtDir("stats.json");
+            if (handle != null && handle.exists()) {
+                stats = new JSONObject(handle.readString());
+            }
+        } catch (JSONException e) {
+            Gdx.app.log("Corrupted settings", "JSON parse failure");
+        }
+
+        return stats;
+    }
+
     public static FileHandle getExtDir(String path) {
         FileHandle handle = null;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {

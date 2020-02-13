@@ -45,6 +45,10 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class RadarScreen extends GameScreen {
+    public void setRadarTime(float radarTime) {
+        this.radarTime = radarTime;
+    }
+
     public enum Weather {
         LIVE,
         RANDOM,
@@ -75,7 +79,7 @@ public class RadarScreen extends GameScreen {
     public boolean allowNight;
     public int nightStart;
     public int nightEnd;
-    public float radarSweepDelay = 2f; //TODO Change radar sweep delay in settings for unlocks
+    public float radarSweepDelay;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -151,6 +155,7 @@ public class RadarScreen extends GameScreen {
         saveTime = 60f;
 
         trajectoryLine = TerminalControl.trajectorySel;
+        radarSweepDelay = TerminalControl.radarSweep;
         liveWeather = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
@@ -190,6 +195,7 @@ public class RadarScreen extends GameScreen {
         saveTime = 60f;
 
         trajectoryLine = save.getInt("trajectoryLine");
+        radarSweepDelay = (float) save.optDouble("radarSweep", 2);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             liveWeather = Weather.LIVE;
@@ -413,7 +419,11 @@ public class RadarScreen extends GameScreen {
         radarTime -= deltaTime;
         if (radarTime <= 0) {
             updateRadarInfo();
-            radarTime += radarSweepDelay;
+            if (radarSweepDelay / speed < 0.25f) {
+                radarTime += 0.25f * speed;
+            } else {
+                radarTime += radarSweepDelay;
+            }
         }
 
         trailTime -= deltaTime;

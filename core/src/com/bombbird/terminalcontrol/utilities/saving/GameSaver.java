@@ -24,6 +24,8 @@ import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashSet;
+
 public class GameSaver {
     /** Saves current game state */
     public static void saveGame() {
@@ -44,6 +46,7 @@ public class GameSaver {
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
+        jsonObject.put("radarSweep", (double) radarScreen.radarSweepDelay);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
@@ -589,7 +592,7 @@ public class GameSaver {
     }
 
     /** Saves the default settings */
-    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, boolean increaseZoom, int saveInterval, Emergency.Chance emerChance, int revision) {
+    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, boolean increaseZoom, int saveInterval, float radarSweep, Emergency.Chance emerChance, int revision) {
         FileHandle handle = FileLoader.getExtDir("settings.json");
 
         if (handle != null) {
@@ -600,10 +603,28 @@ public class GameSaver {
             settings.put("sendCrash", sendCrash);
             settings.put("increaseZoom", increaseZoom);
             settings.put("saveInterval", saveInterval);
+            settings.put("radarSweep", (double) radarSweep);
             settings.put("emerChance", emerChance.toString());
             settings.put("revision", revision);
 
             handle.writeString(settings.toString(4), false);
+        }
+    }
+
+    /** Saves game stats */
+    public static void saveStats(int planesLanded, HashSet<String> unlocks) {
+        FileHandle handle = FileLoader.getExtDir("stats.json");
+
+        if (handle != null) {
+            JSONObject stats = new JSONObject();
+            stats.put("planesLanded", planesLanded);
+            JSONArray unlockArray = new JSONArray();
+            for (String unlock: unlocks) {
+                unlockArray.put(unlock);
+            }
+            stats.put("unlocks", unlockArray);
+
+            handle.writeString(stats.toString(4), false);
         }
     }
 }

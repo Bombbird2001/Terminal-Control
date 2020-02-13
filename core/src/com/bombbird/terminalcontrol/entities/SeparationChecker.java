@@ -33,10 +33,10 @@ public class SeparationChecker extends Actor {
         lastNumber = 0;
         time = 3;
 
-        flightLevels = new Array<Array<Aircraft>>(true, radarScreen.maxAlt / 1000);
-        labels = new Array<Label>();
+        flightLevels = new Array<>(true, radarScreen.maxAlt / 1000);
+        labels = new Array<>();
         for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
-            flightLevels.add(new Array<Aircraft>());
+            flightLevels.add(new Array<>());
         }
     }
 
@@ -115,7 +115,7 @@ public class SeparationChecker extends Actor {
         int active = 0;
         for (int i = 0; i < flightLevels.size; i++) {
             //Get all the possible planes to check
-            Array<Aircraft> planesToCheck = new Array<Aircraft>();
+            Array<Aircraft> planesToCheck = new Array<>();
             if (i - 1 >= 0) {
                 planesToCheck.addAll(flightLevels.get(i - 1));
             }
@@ -130,6 +130,11 @@ public class SeparationChecker extends Actor {
                     Aircraft plane2 = planesToCheck.get(k);
 
                     //Split up exception cases to make it easier to read
+                    if (plane1.getEmergency().isActive() || plane2.getEmergency().isActive()) {
+                        //If either plane is an emergency
+                        continue;
+                    }
+
                     if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
                         //If either plane is below 1400 feet or above max alt
                         continue;
