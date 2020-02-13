@@ -554,7 +554,7 @@ public class Arrival extends Aircraft {
             if (getIls() != null && getControlState() == ControlState.ARRIVAL && getAltitude() <= getAirport().getElevation() + 1300) {
                 contactOther();
             }
-            if (getAltitude() <= getIls().getRwy().getElevation() + 10) {
+            if (getAltitude() <= getIls().getRwy().getElevation() + 10 && getIls() != null) {
                 setTkOfLdg(true);
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
