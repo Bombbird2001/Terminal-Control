@@ -206,7 +206,11 @@ public class SettingsScreen implements Screen {
         area.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                areaWarning = Integer.parseInt(area.getSelected().split(" ")[0]);
+                if ("Off".equals(area.getSelected())) {
+                    areaWarning = -1;
+                } else {
+                    areaWarning = Integer.parseInt(area.getSelected().split(" ")[0]);
+                }
             }
         });
         area.setSize(1200, 300);
@@ -218,7 +222,11 @@ public class SettingsScreen implements Screen {
         collision.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                collisionWarning = Integer.parseInt(collision.getSelected().split(" ")[0]);
+                if ("Off".equals(collision.getSelected())) {
+                    collisionWarning = -1;
+                } else {
+                    collisionWarning = Integer.parseInt(collision.getSelected().split(" ")[0]);
+                }
             }
         });
         collision.setSize(1200, 300);
@@ -324,6 +332,16 @@ public class SettingsScreen implements Screen {
         DecimalFormat df = new DecimalFormat("#.#");
         df.setRoundingMode(RoundingMode.CEILING);
         sweep.setSelected(df.format(radarSweep) + "s");
+        if (areaWarning == -1) {
+            area.setSelected("Off");
+        } else {
+            area.setSelected(areaWarning + " sec");
+        }
+        if (collisionWarning == -1) {
+            collision.setSelected("Off");
+        } else {
+            collision.setSelected(collisionWarning + " sec");
+        }
     }
 
     /** Confirms and applies the changes set */

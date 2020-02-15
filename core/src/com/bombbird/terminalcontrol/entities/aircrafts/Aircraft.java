@@ -447,6 +447,7 @@ public class Aircraft extends Actor {
         dataTag.moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         dataTag.renderShape();
+        trajectory.renderPoints();
         if (isArrivalDeparture()) {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));

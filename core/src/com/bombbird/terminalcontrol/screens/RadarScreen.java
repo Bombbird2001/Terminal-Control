@@ -201,7 +201,7 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = save.getInt("trajectoryLine");
         radarSweepDelay = (float) save.optDouble("radarSweep", 2);
-        areaWarning = save.optInt("saveWarning", -1);
+        areaWarning = save.optInt("areaWarning", -1);
         collisionWarning = save.optInt("collisionWarning", -1);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
