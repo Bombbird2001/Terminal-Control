@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.separation.Trajectory;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
@@ -62,6 +63,7 @@ public class Aircraft extends Actor {
     private Runway runway;
     private boolean onGround;
     private boolean tkOfLdg;
+    private Trajectory trajectory;
 
     //Aircraft characteristics
     private String callsign;
@@ -198,6 +200,8 @@ public class Aircraft extends Actor {
         radarScreen.wakeManager.addAircraft(callsign);
 
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
+
+        trajectory = new Trajectory(this);
     }
 
     /** Constructs aircraft from another aircraft */
@@ -266,6 +270,8 @@ public class Aircraft extends Actor {
         navState.setAircraft(this);
 
         voice = aircraft.voice;
+
+        trajectory = new Trajectory(this);
     }
 
     public Aircraft(JSONObject save) {
@@ -378,6 +384,8 @@ public class Aircraft extends Actor {
         radarVs = (float) save.getDouble("radarVs");
 
         voice = save.isNull("voice") ? VOICES[MathUtils.random(0, VOICES.length - 1)] : save.getString("voice");
+
+        trajectory = new Trajectory(this);
     }
 
     /** Loads & sets aircraft resources */
@@ -616,6 +624,12 @@ public class Aircraft extends Actor {
         }
     }
 
+    public float[] getEffectiveVertSpd() {
+        float multiplier = altitude > 20000 ? 0.8f : 1;
+        if (!expedite) return new float[] {-typDes * multiplier, typClimb * multiplier};
+        return new float[] {-maxDes * multiplier, maxClimb * multiplier};
+    }
+
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         float targetVertSpd = 0;
         if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f;
@@ -625,16 +639,8 @@ public class Aircraft extends Actor {
         } else if (targetVertSpd < verticalSpeed - 100) {
             verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
         }
-        float multiplier = altitude > 20000 ? 0.8f : 1;
-        if (!expedite && verticalSpeed > typClimb * multiplier) {
-            verticalSpeed = typClimb * multiplier;
-        } else if (!expedite && verticalSpeed < -typDes * multiplier) {
-            verticalSpeed = -typDes * multiplier;
-        } else if (expedite && verticalSpeed > maxClimb * multiplier) {
-            verticalSpeed = maxClimb * multiplier;
-        } else if (expedite && verticalSpeed < -maxDes * multiplier) {
-            verticalSpeed = -maxDes * multiplier;
-        }
+        float[] range = getEffectiveVertSpd();
+        verticalSpeed = MathUtils.clamp(verticalSpeed, range[0], range[1]);
         expediteTime += expedite ? Gdx.graphics.getDeltaTime() : 0;
         altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
 
@@ -670,18 +676,21 @@ public class Aircraft extends Actor {
         return 32.4 * radius / Math.tan(Math.toRadians(halfTheta)) + 5;
     }
 
+    public int[] getWinds() {
+        if (altitude - airport.getElevation() <= 4000) {
+            return airport.getWinds();
+        } else {
+            return radarScreen.airports.get(radarScreen.mainName).getWinds();
+        }
+    }
+
     /** Called to update the heading aircraft should turn towards to follow instructed lateral mode, returns the heading it should fly as well as the resulting difference in angle of the track due to winds */
     public double[] updateTargetHeading() {
         deltaPosition.setZero();
         double targetHeading;
 
         //Get wind data
-        int[] winds;
-        if (altitude - airport.getElevation() <= 4000) {
-            winds = airport.getWinds();
-        } else {
-            winds = radarScreen.airports.get(radarScreen.mainName).getWinds();
-        }
+        int[] winds = getWinds();
         int windHdg = winds[0] + 180;
         int windSpd = winds[1];
         if (winds[0] == 0) {
@@ -818,7 +827,7 @@ public class Aircraft extends Actor {
         return new double[] {targetHeading, calculateAngleDiff(heading, windHdg, windSpd)};
     }
 
-    private double calculateAngleDiff(double heading, int windHdg, int windSpd) {
+    public double calculateAngleDiff(double heading, int windHdg, int windSpd) {
         double angle = 180 - windHdg + heading;
         gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * Math.cos(Math.toRadians(angle)));
         return Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / gs) * MathUtils.radiansToDegrees;
@@ -994,6 +1003,7 @@ public class Aircraft extends Actor {
             default:
                 Gdx.app.log("Direction error", "Invalid turn direction specified!");
         }
+        trajectory.setDeltaHeading((float) deltaHeading);
         return deltaHeading;
     }
 

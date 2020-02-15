@@ -22,6 +22,7 @@ public class Route {
 
     private String name;
 
+    /** Basic constructor for Route, should only be called by other Route constructors */
     private Route() {
         radarScreen = TerminalControl.radarScreen;
 
@@ -30,7 +31,7 @@ public class Route {
         flyOver = new Array<>();
     }
 
-    //Merge previous save format to new route format
+    /** Create a new Route based on STAR, for compatibility with older versions */
     public Route(Star star) {
         this();
         Array<String> inbound = star.getRandomInbound();
@@ -50,7 +51,7 @@ public class Route {
         name = star.getName();
     }
 
-    //Merge previous save format to new route format
+    /** Create a new Route based on SID, for compatibility with older versions */
     public Route(Sid sid, String runway) {
         this();
         wpts.addAll(sid.getInitWpts(runway));
@@ -75,6 +76,7 @@ public class Route {
         name = sid.getName();
     }
 
+    /** Create new Route based on newly assigned STAR */
     public Route(Aircraft aircraft, Star star) {
         this();
         Array<String> inbound = star.getRandomInbound();
@@ -113,6 +115,7 @@ public class Route {
         name = star.getName();
     }
 
+    /** Create new Route based on newly assigned SID */
     public Route(Aircraft aircraft, Sid sid, String runway) {
         this();
         wpts.addAll(sid.getInitWpts(runway));
@@ -140,7 +143,8 @@ public class Route {
         name = sid.getName();
     }
 
-    public Route(JSONObject jo) {
+    /** Create new Route based on saved route, called only by other constructors */
+    private Route(JSONObject jo) {
         this();
 
         JSONArray waypoints = jo.getJSONArray("waypoints");
@@ -158,12 +162,14 @@ public class Route {
         name = jo.isNull("name") ? "null" : jo.getString("name");
     }
 
+    /** Create new Route based on saved route and SID name */
     public Route(JSONObject jo, Sid sid) {
         this(jo);
 
         if ("null".equals(name) && sid != null) name = sid.getName();
     }
 
+    /** Create new Route based on saved route and STAR name */
     public Route(JSONObject jo, Star star) {
         this(jo);
         holdProcedure = new HoldProcedure(star);
@@ -171,6 +177,7 @@ public class Route {
         name = star.getName();
     }
 
+    /** Draws the lines between aircraft, waypoints with shapeRenderer */
     public void joinLines(int start, int end, int outbound) {
         Waypoint prevPt = null;
         int index = start;
@@ -187,6 +194,7 @@ public class Route {
         }
     }
 
+    /** Draws the outbound track from waypoint (if latMode is After waypoint, fly heading) */
     private void drawOutbound(float previousX, float previousY, int outbound) {
         if (outbound != -1 && previousX <= 4500 && previousX >= 1260 && previousY <= 3240 && previousY >= 0) {
             float outboundTrack = outbound - radarScreen.magHdgDev;
@@ -206,6 +214,7 @@ public class Route {
         return wpts.get(index);
     }
 
+    /** Calculates distance between remaining points, excluding distance between aircraft and current waypoint */
     public float distBetRemainPts(int nextWptIndex) {
         int currentIndex = nextWptIndex;
         float dist = 0;
@@ -216,12 +225,14 @@ public class Route {
         return dist;
     }
 
+    /** Calculates distance between 2 waypoints in the route based on their indices */
     public float distBetween(int pt1, int pt2) {
         Waypoint waypoint1 = getWaypoint(pt1);
         Waypoint waypoint2 = getWaypoint(pt2);
         return MathTools.pixelToNm(MathTools.distanceBetween(waypoint1.getPosX(), waypoint1.getPosY(), waypoint2.getPosX(), waypoint2.getPosY()));
     }
 
+    /** Returns an array of waypoints from start to end index inclusive */
     public Array<Waypoint> getRemainingWaypoints(int start, int end) {
         //Returns array of waypoints starting from index
         Array<Waypoint> newRange = new Array<>(wpts);
