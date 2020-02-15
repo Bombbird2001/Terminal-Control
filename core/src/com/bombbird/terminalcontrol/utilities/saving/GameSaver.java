@@ -592,20 +592,22 @@ public class GameSaver {
     }
 
     /** Saves the default settings */
-    public static void saveSettings(int trajectorySel, RadarScreen.Weather weatherSel, int soundSel, boolean sendCrash, boolean increaseZoom, int saveInterval, float radarSweep, Emergency.Chance emerChance, int revision) {
+    public static void saveSettings() {
         FileHandle handle = FileLoader.getExtDir("settings.json");
 
         if (handle != null) {
             JSONObject settings = new JSONObject();
-            settings.put("trajectory", trajectorySel);
-            settings.put("weather", weatherSel.toString());
-            settings.put("sound", soundSel);
-            settings.put("sendCrash", sendCrash);
-            settings.put("increaseZoom", increaseZoom);
-            settings.put("saveInterval", saveInterval);
-            settings.put("radarSweep", (double) radarSweep);
-            settings.put("emerChance", emerChance.toString());
-            settings.put("revision", revision);
+            settings.put("trajectory", TerminalControl.trajectorySel);
+            settings.put("weather", TerminalControl.weatherSel.toString());
+            settings.put("sound", TerminalControl.soundSel);
+            settings.put("sendCrash", TerminalControl.sendAnonCrash);
+            settings.put("increaseZoom", TerminalControl.increaseZoom);
+            settings.put("saveInterval", TerminalControl.saveInterval);
+            settings.put("radarSweep", (double) TerminalControl.radarSweep);
+            settings.put("areaWarning", TerminalControl.areaWarning);
+            settings.put("collisionWarning", TerminalControl.collisionWarning);
+            settings.put("emerChance", TerminalControl.emerChance.toString());
+            settings.put("revision", TerminalControl.revision);
 
             handle.writeString(settings.toString(4), false);
         }

@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities;
+package com.bombbird.terminalcontrol.entities.separation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
@@ -192,7 +193,7 @@ public class SeparationChecker extends Actor {
                     if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 975 && dist < minima + 2) {
                         if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 900 && dist < minima) {
                             if ((!plane1.isConflict() || !plane2.isConflict())) {
-                                //TODO Change separation minima depending on visibility(?), and reduced separation for emergencies
+                                //TODO Change separation minima depending on visibility(?)
                                 //Aircrafts have infringed minima of 1000 feet and 3nm apart
                                 plane1.setConflict(true);
                                 plane2.setConflict(true);

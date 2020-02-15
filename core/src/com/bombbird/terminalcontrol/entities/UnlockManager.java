@@ -94,4 +94,24 @@ public class UnlockManager {
 
         return sweeps;
     }
+
+    public static Array<String> getAreaAvailable() {
+        Array<String> areas = new Array<>();
+        areas.add("Off");
+        if (unlocks.contains("area30s")) areas.add("30 sec");
+        if (unlocks.contains("area1m")) areas.add("60 sec");
+        if (unlocks.contains("area2m")) areas.add("120 sec");
+
+        return areas;
+    }
+
+    public static Array<String> getCollisionAvailable() {
+        Array<String> collisions = new Array<>();
+        collisions.add("Off");
+        if (unlocks.contains("collision30s")) collisions.add("30 sec");
+        if (unlocks.contains("collision1m")) collisions.add("60 sec");
+        if (unlocks.contains("collision2m")) collisions.add("120 sec");
+
+        return collisions;
+    }
 }

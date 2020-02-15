@@ -117,7 +117,7 @@ public class UpgradeScreen implements Screen {
         labelStyle1.fontColor = Color.WHITE;
 
         //Set description label
-        Label label = new Label("Once an option is unlocked, you can visit the settings page to change to the desired option\nTotal planes landed: " + UnlockManager.getPlanesLanded(), labelStyle1);
+        Label label = new Label("Once an option is unlocked, you can visit the settings page to change to the desired option.\nTotal planes landed: " + UnlockManager.getPlanesLanded(), labelStyle1);
         label.setPosition((2880 - label.getWidth()) / 2, 1620 * 0.75f);
         label.setAlignment(Align.center);
         stage.addActor(label);

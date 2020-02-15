@@ -1,19 +1,19 @@
-package com.bombbird.terminalcontrol.entities.waketurbulence;
+package com.bombbird.terminalcontrol.entities.separation;
 
 import org.json.JSONObject;
 
-public class WakePoint {
+public class PositionPoint {
     public float x;
     public float y;
     public int altitude;
 
-    public WakePoint(float x, float y, int altitude) {
+    public PositionPoint(float x, float y, int altitude) {
         this.x = x;
         this.y = y;
         this.altitude = altitude;
     }
 
-    public WakePoint(JSONObject save) {
+    public PositionPoint(JSONObject save) {
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
         altitude = save.getInt("altitude");

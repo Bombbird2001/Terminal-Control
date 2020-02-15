@@ -19,6 +19,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
+import com.bombbird.terminalcontrol.entities.separation.SeparationChecker;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
@@ -80,6 +81,8 @@ public class RadarScreen extends GameScreen {
     public int nightStart;
     public int nightEnd;
     public float radarSweepDelay;
+    public int areaWarning;
+    public int collisionWarning;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -110,7 +113,7 @@ public class RadarScreen extends GameScreen {
     private WaypointManager waypointManager;
 
     //Separation checker for checking separation between aircrafts & terrain
-    public SeparationChecker separationChecker;
+    public com.bombbird.terminalcontrol.entities.separation.SeparationChecker separationChecker;
 
     //Wake turbulence checker
     public WakeManager wakeManager;
@@ -156,6 +159,8 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = TerminalControl.trajectorySel;
         radarSweepDelay = TerminalControl.radarSweep;
+        areaWarning = TerminalControl.areaWarning;
+        collisionWarning = TerminalControl.collisionWarning;
         liveWeather = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
@@ -196,6 +201,8 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = save.getInt("trajectoryLine");
         radarSweepDelay = (float) save.optDouble("radarSweep", 2);
+        areaWarning = save.optInt("saveWarning", -1);
+        collisionWarning = save.optInt("collisionWarning", -1);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             liveWeather = Weather.LIVE;

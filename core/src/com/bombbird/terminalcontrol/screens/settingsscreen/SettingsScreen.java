@@ -37,6 +37,8 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> sound;
     public SelectBox<String> emer;
     public SelectBox<String> sweep;
+    public SelectBox<String> area;
+    public SelectBox<String> collision;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -57,6 +59,12 @@ public class SettingsScreen implements Screen {
 
     public Label sweepLabel;
     public float radarSweep;
+
+    public Label areaLabel;
+    public int areaWarning;
+
+    public Label collisionLabel;
+    public int collisionWarning;
 
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
@@ -192,6 +200,30 @@ public class SettingsScreen implements Screen {
         sweep.setSize(1200, 300);
         sweep.setAlignment(Align.center);
         sweep.getList().setAlignment(Align.center);
+
+        area = new SelectBox<>(selectBoxStyle);
+        area.setItems(UnlockManager.getAreaAvailable());
+        area.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                areaWarning = Integer.parseInt(area.getSelected().split(" ")[0]);
+            }
+        });
+        area.setSize(1200, 300);
+        area.setAlignment(Align.center);
+        area.getList().setAlignment(Align.center);
+
+        collision = new SelectBox<>(selectBoxStyle);
+        collision.setItems(UnlockManager.getCollisionAvailable());
+        collision.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                collisionWarning = Integer.parseInt(collision.getSelected().split(" ")[0]);
+            }
+        });
+        collision.setSize(1200, 300);
+        collision.setAlignment(Align.center);
+        collision.getList().setAlignment(Align.center);
     }
 
     /** Loads buttons */
@@ -252,6 +284,10 @@ public class SettingsScreen implements Screen {
         emerChanceLabel = new Label("Emergencies: ", labelStyle);
 
         sweepLabel = new Label("Radar sweep: ", labelStyle);
+
+        areaLabel = new Label("Area\npenetration\nalert:", labelStyle);
+
+        collisionLabel = new Label("Collision alert:", labelStyle);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */

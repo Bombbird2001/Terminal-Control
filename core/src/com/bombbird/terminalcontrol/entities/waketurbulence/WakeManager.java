@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.separation.PositionPoint;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class WakeManager {
-    private HashMap<String, Array<WakePoint>> aircraftWakes;
+    private HashMap<String, Array<PositionPoint>> aircraftWakes;
 
     public WakeManager() {
         aircraftWakes = new HashMap<>();
@@ -26,9 +27,9 @@ public class WakeManager {
         for (int i = 0; i < save.length(); i++) {
             String callsign = save.names().getString(i);
             JSONArray array = save.getJSONArray(callsign);
-            Array<WakePoint> wakePoints = new Array<>();
+            Array<PositionPoint> wakePoints = new Array<>();
             for (int j = 0; j < array.length(); j++) {
-                wakePoints.add(new WakePoint(array.getJSONObject(j)));
+                wakePoints.add(new PositionPoint(array.getJSONObject(j)));
             }
             aircraftWakes.put(callsign, wakePoints);
         }
@@ -47,7 +48,7 @@ public class WakeManager {
     /** Called after 0.5nm travelled, adds a new point from aircraft, updates subsequent points to decrement distance, total maximum 16 points for 8nm */
     public void addPoint(Aircraft aircraft) {
         if (!aircraftWakes.containsKey(aircraft.getCallsign())) aircraftWakes.put(aircraft.getCallsign(), new Array<>());
-        aircraftWakes.get(aircraft.getCallsign()).add(new WakePoint(aircraft.getX(), aircraft.getY(), (int) aircraft.getAltitude()));
+        aircraftWakes.get(aircraft.getCallsign()).add(new PositionPoint(aircraft.getX(), aircraft.getY(), (int) aircraft.getAltitude()));
         int extra = aircraftWakes.get(aircraft.getCallsign()).size - 16;
         if (extra > 0) aircraftWakes.get(aircraft.getCallsign()).removeRange(0, extra - 1);
     }
@@ -67,7 +68,7 @@ public class WakeManager {
             int reqDist = SeparationMatrix.getWakeSepDist(aircraft2.getRecat(), aircraft.getRecat());
             if (reqDist < 3) continue; //Skip if required separation is less than 3
             float dist = 0;
-            Array<WakePoint> wakePoints = aircraftWakes.get(callsign);
+            Array<PositionPoint> wakePoints = aircraftWakes.get(callsign);
             for (int i = wakePoints.size - 1; i >= 0; i--) {
                 if (i == wakePoints.size - 1) {
                     dist += MathTools.pixelToNm(MathTools.distanceBetween(aircraft2.getX(), aircraft2.getY(), wakePoints.get(i).x, wakePoints.get(i).y));
@@ -89,7 +90,7 @@ public class WakeManager {
         float prevX = aircraft.getRadarX();
         float prevY = aircraft.getRadarY();
         TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
-        Array<WakePoint> points = aircraftWakes.get(aircraft.getCallsign());
+        Array<PositionPoint> points = aircraftWakes.get(aircraft.getCallsign());
         for (int i = points.size - 2; i >= 0; i--) {
             TerminalControl.radarScreen.shapeRenderer.line(prevX, prevY, points.get(i).x, points.get(i).y);
             prevX = points.get(i).x;
@@ -101,7 +102,7 @@ public class WakeManager {
     /** Draws letter representing separation required for each recat category, call in draw method only */
     public void drawSepRequired(Batch batch, Aircraft aircraft) {
         if (!aircraftWakes.containsKey(aircraft.getCallsign())) return;
-        Array<WakePoint> points = aircraftWakes.get(aircraft.getCallsign());
+        Array<PositionPoint> points = aircraftWakes.get(aircraft.getCallsign());
         int prevDist = 0;
         for (int i = 0; i < 6; i++) {
             int reqDist = SeparationMatrix.getWakeSepDist(aircraft.getRecat(), (char)(i + 'A'));
@@ -149,10 +150,10 @@ public class WakeManager {
         JSONObject save = new JSONObject();
         for (String callsign: aircraftWakes.keySet()) {
             JSONArray array = new JSONArray();
-            Array<WakePoint> points = aircraftWakes.get(callsign);
+            Array<PositionPoint> points = aircraftWakes.get(callsign);
             for (int i = 0; i < points.size; i++) {
                 JSONObject point = new JSONObject();
-                WakePoint pt = points.get(i);
+                PositionPoint pt = points.get(i);
                 point.put("x", (double) pt.x);
                 point.put("y", (double) pt.y);
                 point.put("altitude", pt.altitude);
