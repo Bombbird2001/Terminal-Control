@@ -61,7 +61,7 @@ public class DataTag {
         this.aircraft = aircraft;
         radarScreen = aircraft.radarScreen;
 
-        trailDots = new Queue<Image>();
+        trailDots = new Queue<>();
 
         dragging = false;
 
@@ -211,6 +211,7 @@ public class DataTag {
                 }
             }, 2);
         }
+        //TODO flash if trajectory predicts conflict
     }
 
     /** Called to change aircraft label to red for emergencies */
