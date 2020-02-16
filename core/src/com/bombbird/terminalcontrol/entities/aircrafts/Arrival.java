@@ -726,7 +726,7 @@ public class Arrival extends Aircraft {
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);
-            if (UnlockManager.checkIncreaseLanded()) {
+            if (UnlockManager.checkIncreaseLanded() && TerminalControl.full) {
                 radarScreen.getCommBox().alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!");
             }
         }
