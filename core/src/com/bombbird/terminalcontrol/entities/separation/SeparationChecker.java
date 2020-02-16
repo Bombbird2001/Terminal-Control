@@ -126,8 +126,8 @@ public class SeparationChecker extends Actor {
             planesToCheck.addAll(flightLevels.get(i));
 
             for (int j = 0; j < planesToCheck.size; j++) {
+                Aircraft plane1 = planesToCheck.get(j);
                 for (int k = j + 1; k < planesToCheck.size; k++) {
-                    Aircraft plane1 = planesToCheck.get(j);
                     Aircraft plane2 = planesToCheck.get(k);
 
                     //Split up exception cases to make it easier to read
@@ -137,7 +137,7 @@ public class SeparationChecker extends Actor {
                     }
 
                     if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
-                        //If either plane is below 1400 feet or above max alt
+                        //If either plane is below 1400 feet or both above max alt
                         continue;
                     }
 

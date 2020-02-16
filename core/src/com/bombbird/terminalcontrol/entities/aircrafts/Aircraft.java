@@ -13,7 +13,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
-import com.bombbird.terminalcontrol.entities.separation.Trajectory;
+import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
@@ -29,6 +29,26 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Aircraft extends Actor {
+    public Trajectory getTrajectory() {
+        return trajectory;
+    }
+
+    public boolean isTrajectoryConflict() {
+        return trajectoryConflict;
+    }
+
+    public void setTrajectoryConflict(boolean trajectoryConflict) {
+        this.trajectoryConflict = trajectoryConflict;
+    }
+
+    public boolean isTrajectoryTerrainConflict() {
+        return trajectoryTerrainConflict;
+    }
+
+    public void setTrajectoryTerrainConflict(boolean trajectoryTerrainConflict) {
+        this.trajectoryTerrainConflict = trajectoryTerrainConflict;
+    }
+
     public enum ControlState {
         UNCONTROLLED,
         ARRIVAL,
@@ -64,6 +84,8 @@ public class Aircraft extends Actor {
     private boolean onGround;
     private boolean tkOfLdg;
     private Trajectory trajectory;
+    private boolean trajectoryConflict;
+    private boolean trajectoryTerrainConflict;
 
     //Aircraft characteristics
     private String callsign;
@@ -202,6 +224,8 @@ public class Aircraft extends Actor {
         voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
 
         trajectory = new Trajectory(this);
+        trajectoryConflict = false;
+        trajectoryTerrainConflict = false;
     }
 
     /** Constructs aircraft from another aircraft */
@@ -386,6 +410,8 @@ public class Aircraft extends Actor {
         voice = save.isNull("voice") ? VOICES[MathUtils.random(0, VOICES.length - 1)] : save.getString("voice");
 
         trajectory = new Trajectory(this);
+        trajectoryConflict = false;
+        trajectoryTerrainConflict = false;
     }
 
     /** Loads & sets aircraft resources */
@@ -447,7 +473,7 @@ public class Aircraft extends Actor {
         dataTag.moderateLabel();
         shapeRenderer.setColor(Color.WHITE);
         dataTag.renderShape();
-        trajectory.renderPoints();
+        trajectory.renderPoints(); //TODO Remove later
         if (isArrivalDeparture()) {
             shapeRenderer.setColor(color);
             shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));

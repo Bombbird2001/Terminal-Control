@@ -66,7 +66,7 @@ public class PolygonObstacle extends Obstacle {
 
     /** Checks whether the input aircraft is inside the polygon area */
     @Override
-    public boolean isIn(Aircraft aircraft) {
-        return polygon.contains(aircraft.getX(), aircraft.getY());
+    public boolean isIn(float x, float y) {
+        return polygon.contains(x, y);
     }
 }

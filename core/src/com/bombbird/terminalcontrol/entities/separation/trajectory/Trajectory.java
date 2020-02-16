@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.separation;
+package com.bombbird.terminalcontrol.entities.separation.trajectory;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -8,7 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class Trajectory {
-    private static final int INTERVAL = 5;
+    public static final int INTERVAL = 5;
 
     private Aircraft aircraft;
     private float deltaHeading;
@@ -61,29 +61,39 @@ public class Trajectory {
                     float remainingTime = INTERVAL - remainingAngle / turnRate;
                     centerToCircum.rotate(-remainingAngle);
                     Vector2 newVector = new Vector2(turnCenter);
-                    if (remainingAngle > 0.1 || remainingAngle < -0.1) prevPos = newVector.add(centerToCircum);
+                    if (Math.abs(remainingAngle) > 0.1) prevPos = newVector.add(centerToCircum);
                     remainingAngle = 0;
                     Vector2 straightVector = new Vector2(0, MathTools.nmToPixel(remainingTime * aircraft.getGs() / 3600));
                     straightVector.rotate(-targetTrack);
                     prevPos.add(straightVector);
                 }
-                positionPoints.add(new PositionPoint(prevPos.x, prevPos.y, 0));
+                positionPoints.add(new PositionPoint(aircraft, prevPos.x, prevPos.y, 0));
             }
         } else {
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 Vector2 trackVector = new Vector2(0, MathTools.nmToPixel(i * aircraft.getGs() / 3600));
                 trackVector.rotate(-targetTrack);
-                positionPoints.add(new PositionPoint(aircraft.getX() + trackVector.x, aircraft.getY() + trackVector.y, 0));
+                positionPoints.add(new PositionPoint(aircraft, aircraft.getX() + trackVector.x, aircraft.getY() + trackVector.y, 0));
             }
         }
 
-        //TODO Add altitude prediction
+        int index = 1;
+        for (PositionPoint positionPoint: positionPoints) {
+            int time = index * INTERVAL; //Time from now in seconds
+            if (aircraft.getAltitude() > aircraft.getTargetAltitude()) {
+                //Descending
+                positionPoint.altitude = (int) Math.max(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[0] * time / 60, aircraft.getTargetAltitude());
+            } else {
+                //Climbing
+                positionPoint.altitude = (int) Math.min(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[1] * time / 60, aircraft.getTargetAltitude());
+            }
+            index++;
+        }
     }
 
     public void renderPoints() {
         //TODO For testing: draw all points predicted
         if (!aircraft.isSelected()) return;
-        calculateTrajectory();
         TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
         for (PositionPoint positionPoint: positionPoints) {
             TerminalControl.radarScreen.shapeRenderer.circle(positionPoint.x, positionPoint.y, 5);
@@ -92,5 +102,9 @@ public class Trajectory {
 
     public void setDeltaHeading(float deltaHeading) {
         this.deltaHeading = deltaHeading;
+    }
+
+    public Array<PositionPoint> getPositionPoints() {
+        return positionPoints;
     }
 }

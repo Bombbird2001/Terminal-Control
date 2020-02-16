@@ -43,6 +43,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         emerChance = TerminalControl.emerChance;
         increaseZoom = TerminalControl.increaseZoom;
         saveInterval = TerminalControl.saveInterval;
+        areaWarning = TerminalControl.areaWarning;
+        collisionWarning = TerminalControl.collisionWarning;
 
         loadUI(-600, -200);
 

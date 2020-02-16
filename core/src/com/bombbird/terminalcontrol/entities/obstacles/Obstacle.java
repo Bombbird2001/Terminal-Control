@@ -42,7 +42,12 @@ public class Obstacle extends Actor {
 
     /** Checks if input aircraft is in the obstacle */
     public boolean isIn(Aircraft aircraft) {
-        //No default implementation
+        return isIn(aircraft.getX(), aircraft.getY());
+    }
+
+    /** Checks if input coordinates is in the obstacle */
+    public boolean isIn(float x, float y) {
+        //Mo default implementation
         return false;
     }
 

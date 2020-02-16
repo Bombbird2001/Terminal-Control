@@ -19,7 +19,10 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
+import com.bombbird.terminalcontrol.entities.separation.AreaPenetrationChecker;
+import com.bombbird.terminalcontrol.entities.separation.CollisionChecker;
 import com.bombbird.terminalcontrol.entities.separation.SeparationChecker;
+import com.bombbird.terminalcontrol.entities.separation.trajectory.TrajectoryStorage;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
@@ -113,7 +116,12 @@ public class RadarScreen extends GameScreen {
     private WaypointManager waypointManager;
 
     //Separation checker for checking separation between aircrafts & terrain
-    public com.bombbird.terminalcontrol.entities.separation.SeparationChecker separationChecker;
+    public SeparationChecker separationChecker;
+
+    //Trajectory storage, APW, STCAS
+    public TrajectoryStorage trajectoryStorage;
+    public AreaPenetrationChecker areaPenetrationChecker;
+    public CollisionChecker collisionChecker;
 
     //Wake turbulence checker
     public WakeManager wakeManager;
@@ -382,6 +390,11 @@ public class RadarScreen extends GameScreen {
         separationChecker = new SeparationChecker();
         stage.addActor(separationChecker);
 
+        //Load trajectory storage, APW, STCAS
+        trajectoryStorage = new TrajectoryStorage();
+        areaPenetrationChecker = new AreaPenetrationChecker();
+        collisionChecker = new CollisionChecker();
+
         //Load aircraft callsign hashMap
         allAircraft = new HashMap<>();
 
@@ -499,6 +512,13 @@ public class RadarScreen extends GameScreen {
     public void renderShape() {
         //Updates aircraft separation status
         separationChecker.update();
+
+        //Update trajectory stuff (full version only)
+        if (TerminalControl.full) {
+            trajectoryStorage.update();
+            areaPenetrationChecker.renderShape();
+            collisionChecker.renderShape();
+        }
 
         //Draw shoreline
         Shoreline.renderShape();

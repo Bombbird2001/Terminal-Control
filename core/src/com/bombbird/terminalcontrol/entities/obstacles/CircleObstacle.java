@@ -74,7 +74,7 @@ public class CircleObstacle extends Obstacle {
 
     /** Checks if input aircraft is in the circle */
     @Override
-    public boolean isIn(Aircraft aircraft) {
-        return circle.contains(aircraft.getX(), aircraft.getY());
+    public boolean isIn(float x, float y) {
+        return circle.contains(x, y);
     }
 }

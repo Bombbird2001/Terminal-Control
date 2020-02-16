@@ -67,4 +67,8 @@ public class AltitudeExclusionZone {
     public boolean isInside(Aircraft aircraft) {
         return polygon.contains(aircraft.getX(), aircraft.getY());
     }
+
+    public boolean isInside(float x, float y) {
+        return polygon.contains(x, y);
+    }
 }

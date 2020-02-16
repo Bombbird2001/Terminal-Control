@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.entities.separation.PositionPoint;
+import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
@@ -48,7 +48,7 @@ public class WakeManager {
     /** Called after 0.5nm travelled, adds a new point from aircraft, updates subsequent points to decrement distance, total maximum 16 points for 8nm */
     public void addPoint(Aircraft aircraft) {
         if (!aircraftWakes.containsKey(aircraft.getCallsign())) aircraftWakes.put(aircraft.getCallsign(), new Array<>());
-        aircraftWakes.get(aircraft.getCallsign()).add(new PositionPoint(aircraft.getX(), aircraft.getY(), (int) aircraft.getAltitude()));
+        aircraftWakes.get(aircraft.getCallsign()).add(new PositionPoint(aircraft, aircraft.getX(), aircraft.getY(), (int) aircraft.getAltitude()));
         int extra = aircraftWakes.get(aircraft.getCallsign()).size - 16;
         if (extra > 0) aircraftWakes.get(aircraft.getCallsign()).removeRange(0, extra - 1);
     }
