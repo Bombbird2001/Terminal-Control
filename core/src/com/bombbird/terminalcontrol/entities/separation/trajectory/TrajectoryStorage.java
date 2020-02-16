@@ -37,7 +37,7 @@ public class TrajectoryStorage {
     public void update() {
         timer -= Gdx.graphics.getDeltaTime();
         if (timer > 0) return;
-        timer += Trajectory.INTERVAL;
+        timer += Trajectory.INTERVAL / 2.0f;
         updateTrajPoints();
         radarScreen.areaPenetrationChecker.checkSeparation();
         radarScreen.collisionChecker.checkSeparation();

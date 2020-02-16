@@ -58,6 +58,11 @@ public class AreaPenetrationChecker {
                             continue;
                         }
 
+                        if (aircraft.getNavState().getClearedIls().first() != null) {
+                            //If aircraft is cleared for ILS approach, inhibit to prevent nuisance warnings
+                            continue;
+                        }
+
                         if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) || (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
                                 (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
                                 aircraft.isGoAroundWindow()) {

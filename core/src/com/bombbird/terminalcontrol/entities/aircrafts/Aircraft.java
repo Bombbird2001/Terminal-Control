@@ -29,26 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Aircraft extends Actor {
-    public Trajectory getTrajectory() {
-        return trajectory;
-    }
-
-    public boolean isTrajectoryConflict() {
-        return trajectoryConflict;
-    }
-
-    public void setTrajectoryConflict(boolean trajectoryConflict) {
-        this.trajectoryConflict = trajectoryConflict;
-    }
-
-    public boolean isTrajectoryTerrainConflict() {
-        return trajectoryTerrainConflict;
-    }
-
-    public void setTrajectoryTerrainConflict(boolean trajectoryTerrainConflict) {
-        this.trajectoryTerrainConflict = trajectoryTerrainConflict;
-    }
-
     public enum ControlState {
         UNCONTROLLED,
         ARRIVAL,
@@ -296,6 +276,8 @@ public class Aircraft extends Actor {
         voice = aircraft.voice;
 
         trajectory = new Trajectory(this);
+        trajectoryConflict = false;
+        trajectoryTerrainConflict = false;
     }
 
     public Aircraft(JSONObject save) {
@@ -652,6 +634,7 @@ public class Aircraft extends Actor {
     }
 
     public float[] getEffectiveVertSpd() {
+        if (gsCap) return new float[] {MathTools.nmToFeet(gs / 60) * (float) Math.tan(Math.toRadians(3)), typClimb};
         float multiplier = altitude > 20000 ? 0.8f : 1;
         if (!expedite) return new float[] {-typDes * multiplier, typClimb * multiplier};
         return new float[] {-maxDes * multiplier, maxClimb * multiplier};
@@ -1887,5 +1870,25 @@ public class Aircraft extends Actor {
 
     public void setWakeTolerance(float wakeTolerance) {
         this.wakeTolerance = wakeTolerance;
+    }
+
+    public Trajectory getTrajectory() {
+        return trajectory;
+    }
+
+    public boolean isTrajectoryConflict() {
+        return trajectoryConflict;
+    }
+
+    public void setTrajectoryConflict(boolean trajectoryConflict) {
+        this.trajectoryConflict = trajectoryConflict;
+    }
+
+    public boolean isTrajectoryTerrainConflict() {
+        return trajectoryTerrainConflict;
+    }
+
+    public void setTrajectoryTerrainConflict(boolean trajectoryTerrainConflict) {
+        this.trajectoryTerrainConflict = trajectoryTerrainConflict;
     }
 }

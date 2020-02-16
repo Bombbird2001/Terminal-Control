@@ -57,12 +57,17 @@ public class CollisionChecker {
                         }
 
                         if (aircraft1.isTrajectoryConflict() && aircraft2.isTrajectoryConflict()) {
-                            //If both aircrafts have been identified as potential conflicts already
+                            //If both aircraft have been identified as potential conflicts already
                             continue;
                         }
 
                         if (aircraft1.getEmergency().isActive() || aircraft2.getEmergency().isActive()) {
                             //If either plane is emergency
+                            continue;
+                        }
+
+                        if (aircraft1.isOnGround() || aircraft2.isOnGround()) {
+                            //If either aircraft is on the ground
                             continue;
                         }
 
@@ -83,7 +88,9 @@ public class CollisionChecker {
                         if (Math.abs(point1.altitude - point2.altitude) < 990 && dist < radarScreen.separationMinima + 0.2f) {
                             //Possible conflict, add to save arrays
                             aircraftStorage.add(new Aircraft[] {aircraft1, aircraft2});
+                            System.out.println(aircraft1.getCallsign() + " " + aircraft2.getCallsign());
                             pointStorage.add(new PositionPoint[] {point1, point2});
+                            System.out.println(point1.altitude + " " + point2.altitude);
                             aircraft1.setTrajectoryConflict(true);
                             aircraft2.setTrajectoryConflict(true);
                         }

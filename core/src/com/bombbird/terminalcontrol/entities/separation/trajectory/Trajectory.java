@@ -80,12 +80,14 @@ public class Trajectory {
         int index = 1;
         for (PositionPoint positionPoint: positionPoints) {
             int time = index * INTERVAL; //Time from now in seconds
+            float targetAlt = aircraft.getTargetAltitude();
+            if (aircraft.isGsCap()) targetAlt = -100;
             if (aircraft.getAltitude() > aircraft.getTargetAltitude()) {
                 //Descending
-                positionPoint.altitude = (int) Math.max(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[0] * time / 60, aircraft.getTargetAltitude());
+                positionPoint.altitude = (int) Math.max(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[0] * time / 60, targetAlt);
             } else {
                 //Climbing
-                positionPoint.altitude = (int) Math.min(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[1] * time / 60, aircraft.getTargetAltitude());
+                positionPoint.altitude = (int) Math.min(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[1] * time / 60, targetAlt);
             }
             index++;
         }
