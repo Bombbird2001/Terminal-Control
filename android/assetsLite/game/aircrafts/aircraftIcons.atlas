@@ -1,88 +1,96 @@
+
 aircraftIcons.png
-size: 140, 115
+size: 256,128
 format: RGBA8888
-filter: Linear,Linear
+filter: Nearest,Nearest
 repeat: none
-aircraftControlled
-  rotate: false
-  xy: 60, 0
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-aircraftDeparture
-  rotate: false
-  xy: 80, 0
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-aircraftEnroute
-  rotate: false
-  xy: 100, 0
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-aircraftNotControlled
-  rotate: false
-  xy: 120, 0
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
 DotsArrival
   rotate: false
-  xy: 16, 0
+  xy: 57, 14
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 DotsDeparture
   rotate: false
-  xy: 0, 0
+  xy: 46, 3
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 DotsEnroute
   rotate: false
-  xy: 8, 0
+  xy: 134, 56
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
+aircraftControlled
+  rotate: false
+  xy: 2, 2
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+aircraftDeparture
+  rotate: false
+  xy: 134, 77
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+aircraftEnroute
+  rotate: false
+  xy: 134, 99
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+aircraftNotControlled
+  rotate: false
+  xy: 24, 2
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
 labelBackgroundSmall
   rotate: false
-  xy: 0, 20
+  xy: 2, 24
   size: 130, 95
   orig: 130, 95
   offset: 0, 0
   index: -1
 labelBorderBlue
   rotate: false
-  xy: 42, 0
+  xy: 167, 110
   size: 9, 9
   orig: 9, 9
   offset: 0, 0
   index: -1
 labelBorderGreen
   rotate: false
-  xy: 24, 0
+  xy: 134, 66
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+labelBorderMagenta
+  rotate: false
+  xy: 156, 110
   size: 9, 9
   orig: 9, 9
   offset: 0, 0
   index: -1
 labelBorderOrange
   rotate: false
-  xy: 33, 0
+  xy: 46, 13
   size: 9, 9
   orig: 9, 9
   offset: 0, 0
   index: -1
 labelBorderRed
   rotate: false
-  xy: 51, 0
+  xy: 156, 99
   size: 9, 9
   orig: 9, 9
   offset: 0, 0

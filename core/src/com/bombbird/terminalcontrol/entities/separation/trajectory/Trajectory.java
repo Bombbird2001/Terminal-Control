@@ -72,7 +72,7 @@ public class Trajectory {
         } else {
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 Vector2 trackVector = new Vector2(0, MathTools.nmToPixel(i * aircraft.getGs() / 3600));
-                trackVector.rotate(-targetTrack);
+                trackVector.rotate(aircraft.isOnGround() ? -aircraft.getRunway().getHeading() + TerminalControl.radarScreen.magHdgDev : -targetTrack);
                 positionPoints.add(new PositionPoint(aircraft, aircraft.getX() + trackVector.x, aircraft.getY() + trackVector.y, 0));
             }
         }

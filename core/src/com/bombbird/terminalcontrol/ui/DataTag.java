@@ -34,6 +34,7 @@ public class DataTag {
     private static NinePatch LABEL_PATCH_BLUE;
     private static NinePatch LABEL_PATCH_ORANGE;
     private static NinePatch LABEL_PATCH_RED;
+    private static NinePatch LABEL_PATCH_MAGENTA;
     private static boolean LOADED_ICONS = false;
 
     private Aircraft aircraft;
@@ -44,6 +45,7 @@ public class DataTag {
     private Button labelButton;
     private Button clickSpot;
     private boolean dragging;
+    private boolean flashing;
 
     private int tapCount;
     private boolean minimized;
@@ -64,6 +66,7 @@ public class DataTag {
         trailDots = new Queue<>();
 
         dragging = false;
+        flashing = false;
 
         icon = new ImageButton(BUTTON_STYLE_UNCTRL);
         icon.setSize(20, 20);
@@ -151,7 +154,8 @@ public class DataTag {
             LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
             LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
             LABEL_PATCH_ORANGE = new NinePatch(SKIN.getRegion("labelBorderOrange"), 3, 3, 3, 3);
-            LABEL_PATCH_RED= new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
+            LABEL_PATCH_RED = new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
+            LABEL_PATCH_MAGENTA = new NinePatch(SKIN.getRegion("labelBorderMagenta"), 3, 3, 3, 3);
 
             LOADED_ICONS = true;
         }
@@ -184,9 +188,36 @@ public class DataTag {
         }
     }
 
-    /** Called to start flashing an aircraft's label borders during initial contact */
-    public void flashIcon() {
-        if (aircraft.isActionRequired() && !aircraft.isFuelEmergency()) {
+    /** Called to start flashing an aircraft's label borders during initial contact or when a conflict is predicted */
+    public void startFlash() {
+        if (flashing) return;
+        if (aircraft.hasEmergency()) return;
+        if (aircraft.isTrajectoryConflict() || aircraft.isTrajectoryTerrainConflict() || aircraft.isActionRequired()) {
+            flashing = true;
+            continuousFlashing();
+        }
+    }
+
+    /** Called by start flashing method and itself to keep flashing the label */
+    private void continuousFlashing() {
+        if (aircraft.isTrajectoryConflict() || aircraft.isTrajectoryTerrainConflict()) {
+            NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_MAGENTA);
+            clickSpot.getStyle().up = ninePatchDrawable;
+            clickSpot.getStyle().down = ninePatchDrawable;
+            clickSpot.getStyle().checked = ninePatchDrawable;
+            flashTimer.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    resetFlash();
+                }
+            }, 1);
+            flashTimer.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    continuousFlashing();
+                }
+            }, 2);
+        } else if (aircraft.isActionRequired()) {
             NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_ORANGE);
             clickSpot.getStyle().up = ninePatchDrawable;
             clickSpot.getStyle().down = ninePatchDrawable;
@@ -194,24 +225,33 @@ public class DataTag {
             flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
-                    NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
-                    if (aircraft instanceof Arrival) {
-                        ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
-                    }
-                    clickSpot.getStyle().up = ninePatchDrawable;
-                    clickSpot.getStyle().down = ninePatchDrawable;
-                    clickSpot.getStyle().checked = ninePatchDrawable;
+                    resetFlash();
                 }
             }, 1);
-
             flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
-                    flashIcon();
+                    continuousFlashing();
                 }
             }, 2);
+        } else {
+            flashing = false;
         }
-        //TODO flash if trajectory predicts conflict
+    }
+
+    /** Resets the border to blue/green depending on aircraft type */
+    private void resetFlash() {
+        if (aircraft.hasEmergency()) {
+            setEmergency();
+            return;
+        }
+        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
+        if (aircraft instanceof Arrival) {
+            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
+        }
+        clickSpot.getStyle().up = ninePatchDrawable;
+        clickSpot.getStyle().down = ninePatchDrawable;
+        clickSpot.getStyle().checked = ninePatchDrawable;
     }
 
     /** Called to change aircraft label to red for emergencies */

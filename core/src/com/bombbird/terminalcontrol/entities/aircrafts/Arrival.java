@@ -421,7 +421,7 @@ public class Arrival extends Aircraft {
             requestPriority = true;
 
             setActionRequired(true);
-            getDataTag().flashIcon();
+            getDataTag().startFlash();
         }
 
         if (fuel < 2100 && !declareEmergency && getControlState() == ControlState.ARRIVAL) {
@@ -575,7 +575,7 @@ public class Arrival extends Aircraft {
             setControlState(ControlState.ARRIVAL);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
-            getDataTag().flashIcon();
+            getDataTag().startFlash();
         }
     }
 

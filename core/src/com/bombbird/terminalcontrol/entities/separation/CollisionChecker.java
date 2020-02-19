@@ -88,11 +88,11 @@ public class CollisionChecker {
                         if (Math.abs(point1.altitude - point2.altitude) < 990 && dist < radarScreen.separationMinima + 0.2f) {
                             //Possible conflict, add to save arrays
                             aircraftStorage.add(new Aircraft[] {aircraft1, aircraft2});
-                            System.out.println(aircraft1.getCallsign() + " " + aircraft2.getCallsign());
                             pointStorage.add(new PositionPoint[] {point1, point2});
-                            System.out.println(point1.altitude + " " + point2.altitude);
                             aircraft1.setTrajectoryConflict(true);
                             aircraft2.setTrajectoryConflict(true);
+                            aircraft1.getDataTag().startFlash();
+                            aircraft2.getDataTag().startFlash();
                         }
                     }
                 }

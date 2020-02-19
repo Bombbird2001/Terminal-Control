@@ -173,7 +173,7 @@ public class Departure extends Aircraft {
             setControlState(ControlState.DEPARTURE);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
-            getDataTag().flashIcon();
+            getDataTag().startFlash();
             contacted = true;
         }
         if (getAltitude() - getAirport().getElevation() > 1500 && !accel) {

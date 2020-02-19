@@ -443,10 +443,10 @@ public class Aircraft extends Actor {
                 fuelEmergency = save.getBoolean("emergency");
             }
         }
-        if (fuelEmergency || emergency.isActive()) dataTag.setEmergency();
+        if (hasEmergency()) dataTag.setEmergency();
 
         actionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired");
-        if (actionRequired) dataTag.flashIcon();
+        if (actionRequired) dataTag.startFlash();
     }
 
     /** Renders shapes using shapeRenderer; all rendering should be called here */
@@ -1224,6 +1224,11 @@ public class Aircraft extends Actor {
     /** Checks if aircraft is being manually vectored */
     public boolean isVectored() {
         return navState.getDispLatMode().last().contains("Turn") || navState.getDispLatMode().last().equals("Fly heading");
+    }
+
+    /** Checks if aircraft has a sort of emergency (fuel or active emergency) */
+    public boolean hasEmergency() {
+        return fuelEmergency || emergency.isActive();
     }
 
     public SidStar getSidStar() {

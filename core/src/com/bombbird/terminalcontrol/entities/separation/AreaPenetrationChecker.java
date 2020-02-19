@@ -88,6 +88,7 @@ public class AreaPenetrationChecker {
                             aircraftStorage.add(aircraft);
                             pointStorage.add(positionPoint);
                             aircraft.setTrajectoryTerrainConflict(true);
+                            aircraft.getDataTag().startFlash();
                         }
                     }
                 }
