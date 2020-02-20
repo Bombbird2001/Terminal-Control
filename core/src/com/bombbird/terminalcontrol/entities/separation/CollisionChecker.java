@@ -4,8 +4,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory;
+import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
+import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
@@ -76,16 +80,43 @@ public class CollisionChecker {
                             continue;
                         }
 
-                        if (aircraft1.getIls() != null && aircraft2.getIls() != null && aircraft1.getIls().isInsideILS(aircraft1.getX(), aircraft1.getY()) && aircraft2.getIls().isInsideILS(aircraft2.getX(), aircraft2.getY())) {
-                            //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs
-                            continue;
+                        if (aircraft1 instanceof Arrival && aircraft2 instanceof Arrival && aircraft1.getAirport().getIcao().equals(aircraft2.getAirport().getIcao()) && aircraft1.getAltitude() < aircraft1.getAirport().getElevation() + 6000 && aircraft2.getAltitude() < aircraft2.getAirport().getElevation() + 6000) {
+                            //If both planes are arrivals into same airport, check whether they are in different NOZ for simultaneous approach
+                            Array<ApproachZone> approachZones = aircraft1.getAirport().getApproachZones();
+                            boolean found = false;
+                            for (int l = 0; l < approachZones.size; l++) {
+                                if (approachZones.get(l).checkSeparation(aircraft1, aircraft2)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found) continue;
                         }
 
-                        //NOZ/NTZ/go around will not be considered for collision warning
+                        if (aircraft1 instanceof Departure && aircraft2 instanceof Departure && aircraft1.getAirport().getIcao().equals(aircraft2.getAirport().getIcao())) {
+                            //If both planes are departures from same airport, check whether they are in different NOZ for simultaneous departure
+                            Array<DepartureZone> departureZones = aircraft1.getAirport().getDepartureZones();
+                            boolean found = false;
+                            for (int l = 0; l < departureZones.size; l++) {
+                                if (departureZones.get(l).checkSeparation(aircraft1, aircraft2)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found) continue;
+                        }
+
+                        //Go around will not be considered as exceptions to the collision warning
 
                         float dist = MathTools.pixelToNm(MathTools.distanceBetween(point1.x, point1.y, point2.x, point2.y));
+                        float minima = radarScreen.separationMinima;
 
-                        if (Math.abs(point1.altitude - point2.altitude) < 990 && dist < radarScreen.separationMinima + 0.2f) {
+                        if (aircraft1.getIls() != null && aircraft2.getIls() != null && aircraft1.getIls().isInsideILS(aircraft1.getX(), aircraft1.getY()) && aircraft2.getIls().isInsideILS(aircraft2.getX(), aircraft2.getY())) {
+                            //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm
+                            minima = 2;
+                        }
+
+                        if (Math.abs(point1.altitude - point2.altitude) < 990 && dist < minima + 0.2f) {
                             //Possible conflict, add to save arrays
                             aircraftStorage.add(new Aircraft[] {aircraft1, aircraft2});
                             pointStorage.add(new PositionPoint[] {point1, point2});

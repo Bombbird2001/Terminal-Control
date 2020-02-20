@@ -24,18 +24,24 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools;
 public class SeparationChecker extends Actor {
     private Array<Array<Aircraft>> flightLevels;
     private Array<Label> labels;
+    private Array<float[]> lineStorage;
 
     private RadarScreen radarScreen;
     private int lastNumber;
     private float time;
+    private float updateTimer;
+    private int active;
 
     public SeparationChecker() {
         radarScreen = TerminalControl.radarScreen;
         lastNumber = 0;
-        time = 3;
+        time = 0;
+        updateTimer = 0;
+        active = 0;
 
         flightLevels = new Array<>(true, radarScreen.maxAlt / 1000);
         labels = new Array<>();
+        lineStorage = new Array<>();
         for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
             flightLevels.add(new Array<>());
         }
@@ -59,40 +65,44 @@ public class SeparationChecker extends Actor {
 
     /** Updates the state of aircraft separation */
     public void update() {
-        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            aircraft.setWarning(false);
-            aircraft.setConflict(false);
-            aircraft.setTerrainConflict(false);
-        }
-        for (Label label: labels) {
-            label.setText("");
-            label.setName("");
-        }
-        for (Obstacle obstacle : radarScreen.obsArray) {
-            obstacle.setConflict(false);
-        }
-        int active = checkAircraftSep();
-        active = checkRestrSep(active);
-        int tmpActive = active;
-        while (tmpActive > lastNumber) {
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
-            tmpActive--;
-        }
-        //Subtract wake separately (don't include 5% penalty)
-        for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isWakeInfringe() && aircraft.isArrivalDeparture()) {
-                active++;
-                aircraft.setConflict(true);
-                radarScreen.shapeRenderer.setColor(Color.RED);
-                radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 48.6f);
+        updateTimer -= Gdx.graphics.getDeltaTime();
+        time -= Gdx.graphics.getDeltaTime();
+        if (updateTimer < 0) {
+            updateTimer += 0.5f;
+            for (Aircraft aircraft : radarScreen.aircrafts.values()) {
+                aircraft.setWarning(false);
+                aircraft.setConflict(false);
+                aircraft.setTerrainConflict(false);
             }
+            for (Label label : labels) {
+                label.setText("");
+                label.setName("");
+            }
+            for (Obstacle obstacle : radarScreen.obsArray) {
+                obstacle.setConflict(false);
+            }
+            active = checkAircraftSep();
+            active = checkRestrSep(active);
+            int tmpActive = active;
+            while (tmpActive > lastNumber) {
+                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
+                tmpActive--;
+            }
+            //Subtract wake separately (don't include 5% penalty)
+            for (Aircraft aircraft : radarScreen.aircrafts.values()) {
+                if (aircraft.isWakeInfringe() && aircraft.isArrivalDeparture()) {
+                    active++;
+                    aircraft.setConflict(true);
+                    radarScreen.shapeRenderer.setColor(Color.RED);
+                    radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), 48.6f);
+                }
+            }
+            lastNumber = active;
         }
         if (time <= 0) {
+            time += 3;
             radarScreen.setScore(radarScreen.getScore() - active);
-            time += 5;
         }
-        lastNumber = active;
-        time -= Gdx.graphics.getDeltaTime() * radarScreen.speed;
 
         if (lastNumber > 0) {
             radarScreen.soundManager.playConflict();
@@ -113,6 +123,7 @@ public class SeparationChecker extends Actor {
 
     /** Checks that each aircraft is separated from one another */
     private int checkAircraftSep() {
+        lineStorage.clear();
         int active = 0;
         for (int i = 0; i < flightLevels.size; i++) {
             //Get all the possible planes to check
@@ -197,16 +208,14 @@ public class SeparationChecker extends Actor {
                                 //Aircrafts have infringed minima of 1000 feet and 3nm apart
                                 plane1.setConflict(true);
                                 plane2.setConflict(true);
-                                radarScreen.shapeRenderer.setColor(Color.RED);
-                                radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                                lineStorage.add(new float[] {plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY(), 1});
                                 active++;
                             }
                         } else if (!plane1.isWarning() || !plane2.isWarning()) {
                             //Aircrafts within 1000 feet, 5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
-                            radarScreen.shapeRenderer.setColor(Color.YELLOW);
-                            radarScreen.shapeRenderer.line(plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY());
+                            lineStorage.add(new float[] {plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY(), 0});
                         }
                         boolean found = false;
                         for (Label label : labels) {
@@ -298,6 +307,10 @@ public class SeparationChecker extends Actor {
                 radarScreen.shapeRenderer.setColor(Color.YELLOW);
                 radarScreen.shapeRenderer.circle(aircraft.getRadarX(), aircraft.getRadarY(), radius);
             }
+        }
+        for (float[] coords: lineStorage) {
+            radarScreen.shapeRenderer.setColor(coords[4] == 0 ? Color.YELLOW : Color.RED);
+            radarScreen.shapeRenderer.line(coords[0], coords[1], coords[2], coords[3]);
         }
     }
 
