@@ -19,7 +19,7 @@ public class AltTab extends Tab {
 
     public AltTab(Ui ui) {
         super(ui);
-        alts = new Array<String>();
+        alts = new Array<>();
     }
 
     @Override

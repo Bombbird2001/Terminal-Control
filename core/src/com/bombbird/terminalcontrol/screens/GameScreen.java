@@ -372,7 +372,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
             }
         } catch (Exception e) {
-            ErrorHandler.sendGenericError(e);
+            ErrorHandler.sendGenericError(e, true);
         }
     }
 

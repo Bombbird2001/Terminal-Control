@@ -18,10 +18,11 @@ public class ErrorHandler {
         return type + " " + (TerminalControl.full ? "full" : "lite") + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + "\n";
     }
 
-    public static void sendGenericError(Exception e) {
-        String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
+    public static void sendGenericError(Exception e, boolean exit) {
+        String error = getVersionInfo() + (exit ? "Crash" : "No crash") + "\n" + ExceptionUtils.getStackTrace(e);
         HttpRequests.sendError(error, 0);
         e.printStackTrace();
+        if (!exit) return;
         //Quit game
         TerminalControl.radarScreen.getMetar().setQuit(true);
         RadarScreen.disposeStatic();
@@ -48,7 +49,7 @@ public class ErrorHandler {
     }
 
     public static void sendSaveErrorNoThrow(Exception e, String str) {
-        String error = getVersionInfo() + ExceptionUtils.getStackTrace(e);
+        String error = getVersionInfo() + "No crash\n" + ExceptionUtils.getStackTrace(e);
         error = str + "\n" + error;
         HttpRequests.sendError(error, 0);
         e.printStackTrace();

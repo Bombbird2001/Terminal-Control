@@ -61,7 +61,7 @@ public class Tab {
         }
         loadSelect();
         loadResetButton();
-        infoQueue = new Queue<Object[]>();
+        infoQueue = new Queue<>();
     }
 
     private void loadStyles() {
@@ -87,7 +87,7 @@ public class Tab {
         boxStyle.background = Ui.lightBoxBackground;
 
         //Settings box for modes
-        settingsBox = new SelectBox<String>(boxStyle);
+        settingsBox = new SelectBox<>(boxStyle);
         settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1020);
         settingsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         settingsBox.setAlignment(Align.center);
@@ -102,7 +102,7 @@ public class Tab {
                         compareWithAC();
                         updateElementColours();
                     } catch (Exception e) {
-                        ErrorHandler.sendGenericError(e);
+                        ErrorHandler.sendGenericError(e, false);
                     }
                 }
                 event.handle();
@@ -118,7 +118,7 @@ public class Tab {
         boxStyle2.background = Ui.lightBoxBackground;
 
         //Valuebox for waypoint/altitude/speed selections
-        valueBox = new SelectBox<String>(boxStyle2);
+        valueBox = new SelectBox<>(boxStyle2);
         valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
         valueBox.setSize(0.8f * getPaneWidth(), boxHeight);
         valueBox.setAlignment(Align.center);
@@ -133,7 +133,7 @@ public class Tab {
                         compareWithAC();
                         updateElementColours();
                     } catch (Exception e) {
-                        ErrorHandler.sendGenericError(e);
+                        ErrorHandler.sendGenericError(e, false);
                     }
                 }
                 event.handle();
@@ -160,7 +160,7 @@ public class Tab {
                 try {
                     resetTab();
                 } catch (Exception e) {
-                    ErrorHandler.sendGenericError(e);
+                    ErrorHandler.sendGenericError(e, false);
                 }
                 event.handle();
             }
