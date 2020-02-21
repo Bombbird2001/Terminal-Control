@@ -322,30 +322,31 @@ public class RunwayChanger {
     }
 
     private void updateTCTT(int windDir, int windSpd) {
+        boolean simulDep = !DayNightManager.isNight();
         if (windSpd < 7) {
             //Runway change permitted only when wind speed is below 7 knots
             if (airport.getTakeoffRunways().get("05") != null) {
                 //34s for landing, 05 and 34R for takeoff, set to 16s for takeoff, 22 and 23 for landings
                 runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                tkofLdg.add(TKOFF_ONLY, simulDep ? TKOFF_ONLY : ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
                 runways.add("34L", "34R", "05");
                 tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
             } else {
                 //16s for takeoff, 22 and 23 for landing, set to 34s for landing, 05 and 34R for takeoff
                 runways.add("34L", "34R", "05");
-                tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                tkofLdg.add(LDG_ONLY, simulDep ? ALL_ACTIVE : LDG_ONLY, TKOFF_ONLY);
                 runways.add("16L", "16R", "22", "23");
                 tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
             }
         } else {
             if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
                 runways.add("34L", "34R", "05");
-                tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                tkofLdg.add(LDG_ONLY, simulDep ? ALL_ACTIVE : LDG_ONLY, TKOFF_ONLY);
                 runways.add("16L", "16R", "22", "23");
                 tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
             } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
                 runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                tkofLdg.add(TKOFF_ONLY, simulDep ? TKOFF_ONLY : ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
                 runways.add("34L", "34R", "05");
                 tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
             }

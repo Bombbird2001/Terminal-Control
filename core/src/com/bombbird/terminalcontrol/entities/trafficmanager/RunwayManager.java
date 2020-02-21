@@ -163,14 +163,15 @@ public class RunwayManager {
 
     /** Updates runway status for Tokyo Haneda */
     private boolean updateTCTT(int windDir, int windSpd) {
+        boolean simultDep = !DayNightManager.isNight();
         if (airport.getLandingRunways().size() == 0 && windDir == 0) {
             airport.setActive("34L", true, false);
-            airport.setActive("34R", true, true);
+            airport.setActive("34R", true, simultDep);
             airport.setActive("05", false, true);
         } else if (windDir != 0 && windSpd >= 7 || airport.getLandingRunways().size() == 0) {
             if (windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) {
                 airport.setActive("34L", true, false);
-                airport.setActive("34R", true, true);
+                airport.setActive("34R", true, simultDep);
                 airport.setActive("04", false, false);
                 airport.setActive("05", false, true);
                 airport.setActive("16L", false, false);
@@ -184,7 +185,7 @@ public class RunwayManager {
                 airport.setActive("04", false, false);
                 airport.setActive("05", false, false);
                 airport.setActive("16L", false, true);
-                airport.setActive("16R", false, true);
+                airport.setActive("16R", false, simultDep);
                 airport.setActive("22", true, false);
                 airport.setActive("23", true, false);
                 return !airport.getLandingRunways().containsKey("23");

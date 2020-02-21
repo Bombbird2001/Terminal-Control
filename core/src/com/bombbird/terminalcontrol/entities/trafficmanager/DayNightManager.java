@@ -14,6 +14,7 @@ public class DayNightManager {
         NIGHT_AVAILABLE.add("TCTT", "TCHH", "TCBB", "TCMD");
     }
 
+    /** Checks whether airport is utilising night operations */
     public static boolean isNight() {
         if (!isNightAvailable() || !TerminalControl.radarScreen.allowNight) return false;
         RadarScreen radarScreen = TerminalControl.radarScreen;
@@ -28,6 +29,7 @@ public class DayNightManager {
         }
     }
 
+    /** Checks if a SID/STAR is allowed depending on whether night mode is active */
     public static boolean checkNoiseAllowed(boolean night) {
         if (isNight()) {
             return night;
@@ -36,6 +38,7 @@ public class DayNightManager {
         }
     }
 
+    /** Check whether this airport has night operations available */
     public static boolean isNightAvailable() {
         if (NIGHT_AVAILABLE.size == 0) loadArray();
         if (TerminalControl.radarScreen == null) return false;
