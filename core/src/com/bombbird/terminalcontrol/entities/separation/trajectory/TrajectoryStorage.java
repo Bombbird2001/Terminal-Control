@@ -18,7 +18,7 @@ public class TrajectoryStorage {
         points = new Array<>(true, requiredSize);
         resetStorage();
 
-        timer = 0;
+        timer = 2.5f;
     }
 
     /** Clears the storage before updating with new points */

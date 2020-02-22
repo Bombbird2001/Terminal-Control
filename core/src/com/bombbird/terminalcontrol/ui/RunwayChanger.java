@@ -322,33 +322,99 @@ public class RunwayChanger {
     }
 
     private void updateTCTT(int windDir, int windSpd) {
-        boolean simulDep = !DayNightManager.isNight();
-        if (windSpd < 7) {
-            //Runway change permitted only when wind speed is below 7 knots
-            if (airport.getTakeoffRunways().get("05") != null) {
-                //34s for landing, 05 and 34R for takeoff, set to 16s for takeoff, 22 and 23 for landings
-                runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(TKOFF_ONLY, simulDep ? TKOFF_ONLY : ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
-                runways.add("34L", "34R", "05");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+        if (DayNightManager.isNight()) {
+            if (airport.getTakeoffRunways().size() == 2) {
+                //2 tkof runways in use, change to 1 tkof runway while keeping landing configuration
+                if (airport.getTakeoffRunways().containsKey("16L")) {
+                    //22 and 23 for landing, 16s for takeoff, set to 16L for takeoff, 22 and 23 for landings
+                    runways.add("16L", "16R", "22", "23");
+                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
+                    runways.add("34L", "34R", "05");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                } else {
+                    //05 and 34R for takeoff, 34s for landing, set to 34s for landing, 05 for takeoff
+                    runways.add("34L", "34R", "05");
+                    tkofLdg.add(LDG_ONLY, LDG_ONLY, TKOFF_ONLY);
+                    runways.add("16L", "16R", "22", "23");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                }
             } else {
-                //16s for takeoff, 22 and 23 for landing, set to 34s for landing, 05 and 34R for takeoff
-                runways.add("34L", "34R", "05");
-                tkofLdg.add(LDG_ONLY, simulDep ? ALL_ACTIVE : LDG_ONLY, TKOFF_ONLY);
-                runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                //Change whole configuration
+                if (windSpd < 7) {
+                    //Runway change permitted only when wind speed is below 7 knots or change in day-night operations
+                    if (airport.getTakeoffRunways().containsKey("05")) {
+                        //34s for landing, 05 for takeoff, set to 16L for takeoff, 22 and 23 for landings
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    } else {
+                        //16L for takeoff, 22 and 23 for landing, set to 34s for landing, 05 for takeoff
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(LDG_ONLY, LDG_ONLY, TKOFF_ONLY);
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    }
+                } else {
+                    if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    }
+                }
             }
         } else {
-            if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
-                runways.add("34L", "34R", "05");
-                tkofLdg.add(LDG_ONLY, simulDep ? ALL_ACTIVE : LDG_ONLY, TKOFF_ONLY);
-                runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
-                runways.add("16L", "16R", "22", "23");
-                tkofLdg.add(TKOFF_ONLY, simulDep ? TKOFF_ONLY : ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
-                runways.add("34L", "34R", "05");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+            if (airport.getTakeoffRunways().size() == 1) {
+                //Only 1 tkof runway in use, change to 2 tkof runways while keeping landing configuration constant
+                if (airport.getTakeoffRunways().containsKey("16L")) {
+                    //22 and 23 for landing, 16L for takeoff, set to 16s for takeoff, 22 and 23 for landings
+                    runways.add("16L", "16R", "22", "23");
+                    tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                    runways.add("34L", "34R", "05");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                } else {
+                    //05 for takeoff, 34s for landing, set to 34s for landing, 05 and 34R for takeoff
+                    runways.add("34L", "34R", "05");
+                    tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                    runways.add("16L", "16R", "22", "23");
+                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                }
+            } else {
+                //Change whole configuration
+                if (windSpd < 7) {
+                    //Runway change permitted only when wind speed is below 7 knots or change in day-night operations
+                    if (airport.getTakeoffRunways().containsKey("05")) {
+                        //34s for landing, 05 and 34R for takeoff, set to 16s for takeoff, 22 and 23 for landings
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    } else {
+                        //16s for takeoff, 22 and 23 for landing, set to 34s for landing, 05 and 34R for takeoff
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    }
+                } else {
+                    if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
+                        runways.add("16L", "16R", "22", "23");
+                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
+                        runways.add("34L", "34R", "05");
+                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
+                    }
+                }
             }
         }
     }

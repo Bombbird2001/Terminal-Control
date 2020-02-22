@@ -193,7 +193,7 @@ public class TakeoffManager {
                     //Don't use 34R if departure volume is low
                     runway = runway1;
                     dist = distance;
-                } else if (timers.get("34R") >= 50 && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
+                } else if ((!airport.allowSimultDep() || timers.get("34R") >= 50) && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
                     //Additional check for runway 34R departure - 50 seconds apart
                     //Additional check if aircraft landing on 34R has touched down; is no longer in conflict with 05
                     boolean tkof = false;
@@ -218,7 +218,7 @@ public class TakeoffManager {
                         if (distance > 24.9) break;
                         dist = distance;
                     }
-                } else if (airport.allowSimultDep() && "16L".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
+                } else if ("16L".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16R")) && checkPreceding("05")) {
                     runway = runway1;
                     if (distance > 24.9) break;
                     dist = distance;
