@@ -26,6 +26,7 @@ import com.bombbird.terminalcontrol.entities.separation.trajectory.TrajectorySto
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic;
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager;
+import com.bombbird.terminalcontrol.entities.waypoints.BackupWaypoints;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -237,6 +238,32 @@ public class RadarScreen extends GameScreen {
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
     }
 
+    private void loadBackupWaypoints() {
+        if (save == null) return;
+        if (save.isNull("backupWpts")) {
+            //No backup waypoints saved, add possible backup ones in here
+            HashMap<String, int[]> backup = BackupWaypoints.loadBackupWpts(mainName);
+            for (Map.Entry<String, int[]> entry: backup.entrySet()) {
+                if (waypoints.containsKey(entry.getKey())) continue;
+                Waypoint newWpt = new Waypoint(entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
+                waypoints.put(entry.getKey(), newWpt);
+                stage.addActor(newWpt);
+            }
+        } else {
+            //Waypoints saved, load them directly instead
+            JSONObject wpts = save.getJSONObject("backupWpts");
+            for (String wptName: wpts.keySet()) {
+                JSONObject wpt = wpts.getJSONObject(wptName);
+                //Add the waypoint only if it doesn't exist
+                if (!waypoints.containsKey(wptName)) {
+                    Waypoint newWpt = new Waypoint(wptName, wpt.getInt("x"), wpt.getInt("y"));
+                    waypoints.put(wptName, newWpt);
+                    stage.addActor(newWpt);
+                }
+            }
+        }
+    }
+
     private void loadStageCamTimer() {
         //Set stage params
         stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
@@ -376,6 +403,7 @@ public class RadarScreen extends GameScreen {
 
         //Load waypoints
         waypoints = FileLoader.loadWaypoints();
+        loadBackupWaypoints();
 
         //Load specific waypoint pronunciation
         Pronunciation.loadPronunciation();

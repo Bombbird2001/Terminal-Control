@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -24,12 +23,18 @@ import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class GameSaver {
+    private static HashMap<String, int[]> backupWpts;
+
     /** Saves current game state */
     public static void saveGame() {
         RadarScreen radarScreen = TerminalControl.radarScreen;
+
+        backupWpts = new HashMap<>();
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
@@ -78,6 +83,15 @@ public class GameSaver {
 
         jsonObject.put("landings", aircraftsLanded);
         jsonObject.put("airborne", aircraftsAirborne);
+
+        JSONObject backup = new JSONObject();
+        for (Map.Entry<String, int[]> entry: backupWpts.entrySet()) {
+            JSONObject wpt = new JSONObject();
+            wpt.put("x", entry.getValue()[0]);
+            wpt.put("y", entry.getValue()[1]);
+            backup.put(entry.getKey(), wpt);
+        }
+        jsonObject.put("backupWpts", backup);
 
         FileHandle handle = FileLoader.getExtDir("saves/" + radarScreen.saveId + ".json");
         if (handle != null) {
@@ -275,7 +289,11 @@ public class GameSaver {
             JSONArray restrictions = new JSONArray();
             JSONArray flyOver = new JSONArray();
             for (int i = 0; i < aircraft.getRoute().getWaypoints().size; i++) {
-                wpts.put(aircraft.getRoute().getWaypoints().get(i).getName());
+                String wptName = aircraft.getRoute().getWaypoints().get(i).getName();
+                //Add all used waypoints into the backup save hashMap
+                Waypoint wpt = TerminalControl.radarScreen.waypoints.get(wptName);
+                backupWpts.put(wptName, new int[] {wpt.getPosX(), wpt.getPosY()});
+                wpts.put(wptName);
                 int[] data = aircraft.getRoute().getRestrictions().get(i);
                 String stuff = data[0] + " " + data[1] + " " + data[2];
                 restrictions.put(stuff);

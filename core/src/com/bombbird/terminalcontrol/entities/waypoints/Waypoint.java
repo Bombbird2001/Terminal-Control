@@ -19,7 +19,7 @@ public class Waypoint extends Actor {
 
     private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
 
-    public static final HashMap<String, Boolean> flyOverPts = new HashMap<String, Boolean>();
+    public static final HashMap<String, Boolean> flyOverPts = new HashMap<>();
 
     public Waypoint(String name, int posX, int posY) {
         this.name = name;
@@ -67,16 +67,8 @@ public class Waypoint extends Actor {
         return posX;
     }
 
-    public void setPosX(int posX) {
-        this.posX = posX;
-    }
-
     public int getPosY() {
         return posY;
-    }
-
-    public void setPosY(int posY) {
-        this.posY = posY;
     }
 
     public Label getLabel() {
