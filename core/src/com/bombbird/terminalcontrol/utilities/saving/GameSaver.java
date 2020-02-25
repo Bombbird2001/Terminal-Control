@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -29,12 +30,17 @@ import java.util.Map;
 
 public class GameSaver {
     private static HashMap<String, int[]> backupWpts;
+    private static HashMap<String, HashMap<String, HoldingPoints>> backupHoldingPts;
 
     /** Saves current game state */
     public static void saveGame() {
         RadarScreen radarScreen = TerminalControl.radarScreen;
 
         backupWpts = new HashMap<>();
+        backupHoldingPts = new HashMap<>();
+        for (String icao: radarScreen.airports.keySet()) {
+            backupHoldingPts.put(icao, new HashMap<>());
+        }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
@@ -290,6 +296,11 @@ public class GameSaver {
             JSONArray flyOver = new JSONArray();
             for (int i = 0; i < aircraft.getRoute().getWaypoints().size; i++) {
                 String wptName = aircraft.getRoute().getWaypoints().get(i).getName();
+                //Add into used holding waypoints if applicable
+                if (aircraft instanceof Arrival && aircraft.getAirport().getHoldingPoints().containsKey(wptName)) {
+                    //Must be arrival, and holdingPoints map must contain the wpt
+                    backupHoldingPts.get(aircraft.getAirport().getIcao()).put(wptName, aircraft.getAirport().getHoldingPoints().get(wptName));
+                }
                 //Add all used waypoints into the backup save hashMap
                 Waypoint wpt = TerminalControl.radarScreen.waypoints.get(wptName);
                 backupWpts.put(wptName, new int[] {wpt.getPosX(), wpt.getPosY()});
@@ -502,6 +513,21 @@ public class GameSaver {
             //STAR timers
             JSONObject starTimers = new JSONObject(RandomSTAR.getTime().get(airport.getIcao()));
             airportInfo.put("starTimers", starTimers);
+
+            //Backup holding points
+            JSONObject backupPts = new JSONObject();
+            for (Map.Entry<String, HoldingPoints> entry: backupHoldingPts.get(airport.getIcao()).entrySet()) {
+                JSONObject pt = new JSONObject();
+                HoldingPoints wpt = entry.getValue();
+                pt.put("minAlt", wpt.getAltRestrictions()[0]);
+                pt.put("maxAlt", wpt.getAltRestrictions()[1]);
+                pt.put("maxSpd", wpt.getMaxSpd());
+                pt.put("left", wpt.isLeft());
+                pt.put("inboundHdg", wpt.getInboundHdg());
+                pt.put("legDist", (double) wpt.getLegDist());
+                backupPts.put(entry.getKey(), pt);
+            }
+            airportInfo.put("backupPts", backupPts);
 
             airports.put(airportInfo);
         }

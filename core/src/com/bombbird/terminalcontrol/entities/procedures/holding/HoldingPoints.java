@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.procedures;
+package com.bombbird.terminalcontrol.entities.procedures.holding;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -24,18 +24,22 @@ public class HoldingPoints {
     private RadarScreen radarScreen;
     private ShapeRenderer shapeRenderer;
 
-    public HoldingPoints(String wpt, JSONObject jo) {
+    public HoldingPoints(String wpt, int[] altRestrictions, int maxSpd, boolean left, int inboundHdg, float legDist) {
         radarScreen = TerminalControl.radarScreen;
         shapeRenderer = radarScreen.shapeRenderer;
 
-        waypoint = TerminalControl.radarScreen.waypoints.get(wpt);
-        altRestrictions = new int[] {jo.getInt("minAlt"), jo.getInt("maxAlt")};
-        maxSpd = jo.getInt("maxSpd");
-        left = jo.getBoolean("left");
-        inboundHdg = jo.getInt("inboundHdg");
-        legDist = (float) jo.getDouble("legDist");
+        waypoint = radarScreen.waypoints.get(wpt);
+        this.altRestrictions = altRestrictions;
+        this.maxSpd = maxSpd;
+        this.left = left;
+        this.inboundHdg = inboundHdg;
+        this.legDist = legDist;
 
         calculateOppPoint();
+    }
+
+    public HoldingPoints(String wpt, JSONObject jo) {
+        this(wpt, new int[] {jo.getInt("minAlt"), jo.getInt("maxAlt")}, jo.getInt("maxSpd"), jo.getBoolean("left"), jo.getInt("inboundHdg"), (float) jo.getDouble("legDist"));
     }
 
     /** Calculates the coordinates of the point opposite to the fix in the holding pattern, using the given turn diameter and leg distance */

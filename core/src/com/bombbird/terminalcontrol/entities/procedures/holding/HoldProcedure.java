@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.entities.procedures;
+package com.bombbird.terminalcontrol.entities.procedures.holding;
 
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;

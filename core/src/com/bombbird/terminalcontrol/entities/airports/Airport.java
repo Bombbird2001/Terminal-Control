@@ -8,6 +8,8 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.procedures.*;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
+import com.bombbird.terminalcontrol.entities.procedures.holding.BackupHoldingPoints;
+import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSID;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
@@ -27,10 +29,12 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class Airport {
+    private JSONObject save;
+
     private HashMap<String, Runway> runways;
     private HashMap<String, Runway> landingRunways;
     private HashMap<String, Runway> takeoffRunways;
-    private HashMap<String, HoldingPoints> holdingPoints;
+    private HashMap<String, com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints> holdingPoints;
     private HashMap<String, MissedApproach> missedApproaches;
     private HashMap<String, ILS> approaches;
     private String icao;
@@ -57,6 +61,7 @@ public class Airport {
     private float rwyChangeTimer;
 
     public Airport(String icao, int elevation, int aircraftRatio) {
+        save = null;
         this.icao = icao;
         this.elevation = elevation;
         this.aircraftRatio = aircraftRatio;
@@ -73,6 +78,7 @@ public class Airport {
     }
 
     public Airport(JSONObject save) {
+        this.save = save;
         icao = RenameManager.renameAirportICAO(save.getString("icao"));
         elevation = save.getInt("elevation");
         runways = FileLoader.loadRunways(icao);
@@ -104,7 +110,7 @@ public class Airport {
     /** Loads other runway info from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
     public void updateOtherRunwayInfo(JSONObject save) {
         for (Runway runway: runways.values()) {
-            Array<Aircraft> aircraftsOnAppr = new Array<Aircraft>();
+            Array<Aircraft> aircraftsOnAppr = new Array<>();
             JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
             for (int i = 0; i < queue.length(); i++) {
                 aircraftsOnAppr.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
@@ -117,6 +123,7 @@ public class Airport {
     /** Loads the necessary resources that cannot be loaded in constructor */
     public void loadOthers() {
         holdingPoints = FileLoader.loadHoldingPoints(this);
+        loadBackupHoldingPts();
         missedApproaches = FileLoader.loadMissedInfo(this);
         approaches = FileLoader.loadILS(this);
         for (Runway runway: runways.values()) {
@@ -143,12 +150,29 @@ public class Airport {
         RandomSTAR.loadEntryTiming(this);
     }
 
+    /** Loads the backup holding waypoints from before waypoint overhaul */
+    private void loadBackupHoldingPts() {
+        if (save == null) return;
+        //If not a new game, load the backupPts as needed
+        if (save.isNull("backupPts")) {
+            //Not a new game and no previous backupPts save - load the possible default used backupPts
+            holdingPoints = BackupHoldingPoints.loadBackupPoints(icao, holdingPoints);
+        } else {
+            JSONObject pts = save.getJSONObject("backupPts");
+            for (String name: pts.keySet()) {
+                if (holdingPoints.containsKey(name)) continue;
+                JSONObject pt = pts.getJSONObject(name);
+                holdingPoints.put(name, new HoldingPoints(name, new int[] {pt.getInt("minAlt"), pt.getInt("maxAlt")}, pt.getInt("maxSpd"), pt.getBoolean("left"), pt.getInt("inboundHdg"), (float) pt.getDouble("legDist")));
+            }
+        }
+    }
+
     /** loadOthers from JSON save */
     public void loadOthers(JSONObject save) {
         loadOthers();
 
         for (Runway runway: runways.values()) {
-            Array<Aircraft> queueArray = new Array<Aircraft>();
+            Array<Aircraft> queueArray = new Array<>();
             JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
             for (int i = 0; i < queue.length(); i++) {
                 queueArray.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
