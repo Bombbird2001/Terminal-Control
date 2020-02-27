@@ -313,7 +313,7 @@ public class SettingsScreen implements Screen {
 
         sweepLabel = new Label("Radar sweep: ", labelStyle);
 
-        advTrajLabel = new Label("Advanced trajectory: ", labelStyle);
+        advTrajLabel = new Label("Advanced\ntrajectory: ", labelStyle);
 
         areaLabel = new Label("Area\npenetration\nalert:", labelStyle);
 
