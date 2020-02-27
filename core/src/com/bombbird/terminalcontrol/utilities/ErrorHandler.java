@@ -62,6 +62,4 @@ public class ErrorHandler {
         e.printStackTrace();
         System.out.println(original);
     }
-
-
 }

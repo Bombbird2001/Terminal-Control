@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.desktop;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
 
@@ -16,7 +17,7 @@ public class DesktopLauncher {
 		TerminalControl.ishtml = false;
 		new Lwjgl3Application(new TerminalControl(new TextToSpeechManager(), new ToastManager() {
 			@Override
-			public void saveFail() {
+			public void saveFail(GdxRuntimeException e) {
 				//No default implementation
 			}
 

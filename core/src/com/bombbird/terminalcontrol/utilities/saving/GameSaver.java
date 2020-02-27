@@ -107,7 +107,7 @@ public class GameSaver {
                 handle.writeString(encode, false);
                 saveID(radarScreen.saveId);
             } catch (GdxRuntimeException e) {
-                TerminalControl.toastManager.saveFail();
+                TerminalControl.toastManager.saveFail(e);
                 ErrorHandler.sendSaveErrorNoThrow(e, encode);
             }
         }

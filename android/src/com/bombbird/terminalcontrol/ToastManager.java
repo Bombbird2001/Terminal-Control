@@ -1,6 +1,11 @@
 package com.bombbird.terminalcontrol;
 
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.widget.Toast;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.io.IOException;
 
 public class ToastManager implements com.bombbird.terminalcontrol.utilities.ToastManager {
     private AndroidLauncher androidLauncher;
@@ -10,9 +15,16 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
     }
 
     @Override
-    public void saveFail() {
+    public void saveFail(GdxRuntimeException e) {
+        String error = "Failed to save game: Check your storage space or settings and try again.";
+        Throwable nextE = e.getCause();
+        if (nextE instanceof IOException && nextE.getCause() instanceof android.system.ErrnoException) {
+            ErrnoException finalE = (ErrnoException) nextE.getCause();
+            if (finalE.errno == OsConstants.ENOSPC) error = "Failed to save game: Your device has insufficient storage space.";
+        }
+        String finalError = error;
         androidLauncher.runOnUiThread(() -> {
-            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "Failed to save game: Check your storage space or settings and try again.", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), finalError, Toast.LENGTH_LONG);
             toast.show();
         });
     }

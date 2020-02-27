@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol;
 
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
@@ -13,7 +14,7 @@ public class IOSLauncher extends IOSApplication.Delegate {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
         return new IOSApplication(new TerminalControl(new TextToSpeechManager(), new ToastManager() {
             @Override
-            public void saveFail() {
+            public void saveFail(GdxRuntimeException e) {
                 //No default implementation
             }
 
