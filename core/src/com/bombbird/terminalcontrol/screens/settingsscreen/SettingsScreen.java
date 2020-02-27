@@ -315,9 +315,9 @@ public class SettingsScreen implements Screen {
 
         advTrajLabel = new Label("Advanced\ntrajectory: ", labelStyle);
 
-        areaLabel = new Label("Area\npenetration\nalert:", labelStyle);
+        areaLabel = new Label("Area\npenetration\nalert: ", labelStyle);
 
-        collisionLabel = new Label("Collision alert:", labelStyle);
+        collisionLabel = new Label("Collision alert: ", labelStyle);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
