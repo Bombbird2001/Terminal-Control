@@ -98,6 +98,7 @@ public class Trajectory {
         if (!aircraft.isSelected()) return;
         TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
         for (int i = 0; i < TerminalControl.radarScreen.advTraj / 5; i++) {
+            if (i >= positionPoints.size) break;
             PositionPoint positionPoint = positionPoints.get(i);
             TerminalControl.radarScreen.shapeRenderer.circle(positionPoint.x, positionPoint.y, 5);
         }
