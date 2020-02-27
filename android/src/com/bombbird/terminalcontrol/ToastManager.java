@@ -18,7 +18,7 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
     public void saveFail(GdxRuntimeException e) {
         String error = "Failed to save game: Check your storage space or settings and try again.";
         Throwable nextE = e.getCause();
-        if (nextE instanceof IOException && nextE.getCause() instanceof android.system.ErrnoException) {
+        if (nextE instanceof IOException && nextE.getCause() instanceof ErrnoException) {
             ErrnoException finalE = (ErrnoException) nextE.getCause();
             if (finalE.errno == OsConstants.ENOSPC) error = "Failed to save game: Your device has insufficient storage space.";
         }
