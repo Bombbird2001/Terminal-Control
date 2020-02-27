@@ -37,7 +37,7 @@ public class TrajectoryStorage {
 
     /** Main update function, updates every 5 seconds */
     public void update() {
-        timer -= Gdx.graphics.getDeltaTime();
+        timer -= Gdx.graphics.getDeltaTime() * radarScreen.speed;
         if (timer > 0) return;
         timer += Trajectory.INTERVAL / 2.0f;
         updateTrajPoints();

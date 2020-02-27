@@ -732,7 +732,17 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            if (route.getWptFlyOver(direct.getName())) {
+            if (direct != null && holdWpt != null && direct.getName().equals(holdWpt.getName())) {
+                holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
+                if (holdingType == 1) {
+                    int requiredHdg = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
+                    int turnDir = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1; //Inverse left & right directions for initial turn
+                    requiredDistance = findRequiredDistance(Math.abs(findDeltaHeading(requiredHdg, turnDir, heading)));
+                    requiredDistance = MathUtils.clamp(requiredDistance, 4, 180);
+                } else {
+                    requiredDistance = 4;
+                }
+            } else if (direct != null && route.getWptFlyOver(direct.getName())) {
                 requiredDistance = 4;
             } else {
                 requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));
