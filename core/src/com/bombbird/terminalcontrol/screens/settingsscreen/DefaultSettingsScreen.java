@@ -43,6 +43,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         emerChance = TerminalControl.emerChance;
         increaseZoom = TerminalControl.increaseZoom;
         saveInterval = TerminalControl.saveInterval;
+        advTrajTime = TerminalControl.advTraj;
         areaWarning = TerminalControl.areaWarning;
         collisionWarning = TerminalControl.collisionWarning;
 
@@ -171,11 +172,12 @@ public class DefaultSettingsScreen extends SettingsScreen {
         SettingsTab tab2 = new SettingsTab(this, 1);
         if (TerminalControl.full) {
             tab2.addActors(sweep, sweepLabel, xOffset, yOffset);
+            tab2.addActors(advTraj, advTrajLabel, xOffset, yOffset);
             tab2.addActors(area, areaLabel, xOffset, yOffset);
             tab2.addActors(collision, collisionLabel, xOffset, yOffset);
-            tab2.addActors(zoom, zoomLabel, xOffset, yOffset);
             settingsTabs.add(tab2);
             SettingsTab tab3 = new SettingsTab(this, 1);
+            tab3.addActors(zoom, zoomLabel, xOffset, yOffset);
             tab3.addActors(autosave, autosaveLabel, xOffset, yOffset);
             settingsTabs.add(tab3);
         } else {
@@ -210,6 +212,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.emerChance = emerChance;
         TerminalControl.saveInterval = saveInterval;
         TerminalControl.radarSweep = radarSweep;
+        TerminalControl.advTraj = advTrajTime;
         TerminalControl.areaWarning = areaWarning;
         TerminalControl.collisionWarning = collisionWarning;
 

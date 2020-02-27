@@ -23,6 +23,7 @@ public class Trajectory {
     public void calculateTrajectory() {
         //Calculate simple linear trajectory, plus arc if aircraft is turning > 5 degrees
         int requiredTime = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning);
+        requiredTime = Math.max(requiredTime, TerminalControl.radarScreen.advTraj);
         positionPoints.clear();
         float targetHeading = (float) aircraft.getHeading() + deltaHeading;
         float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading, aircraft.getWinds()[0] + 180, aircraft.getWinds()[1]) - TerminalControl.radarScreen.magHdgDev;
@@ -94,10 +95,10 @@ public class Trajectory {
     }
 
     public void renderPoints() {
-        //TODO For testing: draw all points predicted
         if (!aircraft.isSelected()) return;
         TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
-        for (PositionPoint positionPoint: positionPoints) {
+        for (int i = 0; i < TerminalControl.radarScreen.advTraj / 5; i++) {
+            PositionPoint positionPoint = positionPoints.get(i);
             TerminalControl.radarScreen.shapeRenderer.circle(positionPoint.x, positionPoint.y, 5);
         }
     }

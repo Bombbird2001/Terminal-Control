@@ -23,12 +23,15 @@ public class UnlockManager {
             addUnlock("sweep4s", 200, "Unlock 4-second radar sweep");
             addUnlock("sweep8s", 300, "Unlock 8-second radar sweep");
             addUnlock("sweep0.5s", 400, "Unlock 0.5-second radar sweep");
-            addUnlock("area30s", 500, "Unlock area penetration warning 30 seconds look-ahead");
-            addUnlock("area1m", 600, "Unlock area penetration warning 1 minute look-ahead");
-            addUnlock("area2m", 700, "Unlock area penetration warning 2 minutes look-ahead");
-            addUnlock("collision30s", 800, "Unlock short term collision alert 30 seconds look-ahead");
-            addUnlock("collision1m", 900, "Unlock short term collision alert 1 minute look-ahead");
-            addUnlock("collision2m", 1000, "Unlock short term collision alert 2 minutes look-ahead");
+            addUnlock("traj30s", 500, "Unlock 30-second advanced trajectory prediction");
+            addUnlock("traj1m", 600, "Unlock 30-second advanced trajectory prediction");
+            addUnlock("traj2m", 700, "Unlock 30-second advanced trajectory prediction");
+            addUnlock("area30s", 800, "Unlock area penetration warning 30 seconds look-ahead");
+            addUnlock("area1m", 900, "Unlock area penetration warning 1 minute look-ahead");
+            addUnlock("area2m", 1000, "Unlock area penetration warning 2 minutes look-ahead");
+            addUnlock("collision30s", 1100, "Unlock short term collision alert 30 seconds look-ahead");
+            addUnlock("collision1m", 1200, "Unlock short term collision alert 1 minute look-ahead");
+            addUnlock("collision2m", 1300, "Unlock short term collision alert 2 minutes look-ahead");
         }
     }
 
@@ -93,6 +96,16 @@ public class UnlockManager {
         if (unlocks.contains("sweep8s")) sweeps.add("8s");
 
         return sweeps;
+    }
+
+    public static Array<String> getTrajAvailable() {
+        Array<String> areas = new Array<>();
+        areas.add("Off");
+        if (unlocks.contains("traj30s")) areas.add("30 sec");
+        if (unlocks.contains("traj1m")) areas.add("60 sec");
+        if (unlocks.contains("traj2m")) areas.add("120 sec");
+
+        return areas;
     }
 
     public static Array<String> getAreaAvailable() {

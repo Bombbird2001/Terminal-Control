@@ -204,10 +204,11 @@ public class GameSettingsScreen extends SettingsScreen {
         tab1.addActors(speed, speedLabel, xOffset, yOffset);
         tab1.addActors(tfcMode, tfcLabel, xOffset, yOffset);
         if (TerminalControl.full) tab1.addActors(sweep, sweepLabel, xOffset, yOffset);
-        if (TerminalControl.full) tab1.addActors(area, areaLabel, xOffset, yOffset);
+        if (TerminalControl.full) tab1.addActors(advTraj, advTrajLabel, xOffset, yOffset);
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
+        if (TerminalControl.full) tab2.addActors(area, areaLabel, xOffset, yOffset);
         if (TerminalControl.full) tab2.addActors(collision, collisionLabel, xOffset, yOffset);
         tab2.addActors(night, nightLabel, xOffset, yOffset);
         tab2.addActors(nightStartHour, timeLabel, xOffset, yOffset, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
@@ -225,6 +226,7 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.tfcMode = tfcSel;
         radarScreen.radarSweepDelay = radarSweep;
         if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
+        radarScreen.advTraj = advTrajTime;
         radarScreen.areaWarning = areaWarning;
         radarScreen.collisionWarning = collisionWarning;
 
@@ -251,6 +253,7 @@ public class GameSettingsScreen extends SettingsScreen {
         speedSel = radarScreen.speed;
         tfcSel = radarScreen.tfcMode;
         radarSweep = radarScreen.radarSweepDelay;
+        advTrajTime = radarScreen.advTraj;
         areaWarning = radarScreen.areaWarning;
         collisionWarning = radarScreen.collisionWarning;
 

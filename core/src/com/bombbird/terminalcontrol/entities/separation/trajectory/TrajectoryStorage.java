@@ -14,7 +14,7 @@ public class TrajectoryStorage {
     public TrajectoryStorage() {
         radarScreen = TerminalControl.radarScreen;
 
-        int requiredSize = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning) / Trajectory.INTERVAL;
+        int requiredSize = Math.max(Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning), TerminalControl.radarScreen.advTraj) / Trajectory.INTERVAL;
         points = new Array<>(true, requiredSize);
         resetStorage();
 
@@ -24,7 +24,9 @@ public class TrajectoryStorage {
     /** Clears the storage before updating with new points */
     private void resetStorage() {
         points.clear();
-        for (int j = 0; j < Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning) / Trajectory.INTERVAL; j++) {
+        int maxTime = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning);
+        maxTime = Math.max(maxTime, TerminalControl.radarScreen.advTraj);
+        for (int j = 0; j < maxTime / Trajectory.INTERVAL; j++) {
             Array<Array<PositionPoint>> altitudePositionMatrix = new Array<>();
             for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
                 altitudePositionMatrix.add(new Array<>());

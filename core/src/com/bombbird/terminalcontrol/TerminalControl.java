@@ -55,6 +55,7 @@ public class TerminalControl extends Game {
     public static boolean increaseZoom;
     public static int saveInterval;
     public static float radarSweep;
+    public static int advTraj;
     public static int areaWarning;
     public static int collisionWarning;
     public static int revision;
@@ -80,6 +81,7 @@ public class TerminalControl extends Game {
             increaseZoom = false;
             saveInterval = 60;
             radarSweep = 2;
+            advTraj = -1;
             areaWarning = -1;
             collisionWarning = -1;
             emerChance = Emergency.Chance.MEDIUM;
@@ -107,6 +109,7 @@ public class TerminalControl extends Game {
             increaseZoom = settings.optBoolean("increaseZoom", false);
             saveInterval = settings.optInt("saveInterval", 60);
             radarSweep = (float) settings.optDouble("radarSweep", 2);
+            advTraj = settings.optInt("advTraj", -1);
             areaWarning = settings.optInt("areaWarning", -1);
             collisionWarning = settings.optInt("collisionWarning", -1);
             revision = settings.optInt("revision", 0);

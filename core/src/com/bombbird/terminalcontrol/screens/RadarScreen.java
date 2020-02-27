@@ -85,6 +85,7 @@ public class RadarScreen extends GameScreen {
     public int nightStart;
     public int nightEnd;
     public float radarSweepDelay;
+    public int advTraj;
     public int areaWarning;
     public int collisionWarning;
 
@@ -168,6 +169,7 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = TerminalControl.trajectorySel;
         radarSweepDelay = TerminalControl.radarSweep;
+        advTraj = TerminalControl.advTraj;
         areaWarning = TerminalControl.areaWarning;
         collisionWarning = TerminalControl.collisionWarning;
         liveWeather = TerminalControl.weatherSel;
@@ -210,6 +212,7 @@ public class RadarScreen extends GameScreen {
 
         trajectoryLine = save.getInt("trajectoryLine");
         radarSweepDelay = (float) save.optDouble("radarSweep", 2);
+        advTraj = save.optInt("advTraj", -1);
         areaWarning = save.optInt("areaWarning", -1);
         collisionWarning = save.optInt("collisionWarning", -1);
         String weather = save.optString("liveWeather");

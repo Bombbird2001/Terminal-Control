@@ -58,6 +58,7 @@ public class GameSaver {
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
         jsonObject.put("radarSweep", (double) radarScreen.radarSweepDelay);
+        jsonObject.put("advTraj", radarScreen.advTraj);
         jsonObject.put("areaWarning", radarScreen.areaWarning);
         jsonObject.put("collisionWarning", radarScreen.collisionWarning);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
@@ -650,6 +651,7 @@ public class GameSaver {
             settings.put("increaseZoom", TerminalControl.increaseZoom);
             settings.put("saveInterval", TerminalControl.saveInterval);
             settings.put("radarSweep", (double) TerminalControl.radarSweep);
+            settings.put("advTraj", TerminalControl.advTraj);
             settings.put("areaWarning", TerminalControl.areaWarning);
             settings.put("collisionWarning", TerminalControl.collisionWarning);
             settings.put("emerChance", TerminalControl.emerChance.toString());

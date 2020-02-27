@@ -37,6 +37,7 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> sound;
     public SelectBox<String> emer;
     public SelectBox<String> sweep;
+    public SelectBox<String> advTraj;
     public SelectBox<String> area;
     public SelectBox<String> collision;
 
@@ -59,6 +60,9 @@ public class SettingsScreen implements Screen {
 
     public Label sweepLabel;
     public float radarSweep;
+
+    public Label advTrajLabel;
+    public int advTrajTime;
 
     public Label areaLabel;
     public int areaWarning;
@@ -201,6 +205,22 @@ public class SettingsScreen implements Screen {
         sweep.setAlignment(Align.center);
         sweep.getList().setAlignment(Align.center);
 
+        advTraj = new SelectBox<>(selectBoxStyle);
+        advTraj.setItems(UnlockManager.getTrajAvailable());
+        advTraj.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Off".equals(advTraj.getSelected())) {
+                    advTrajTime = -1;
+                } else {
+                    advTrajTime = Integer.parseInt(advTraj.getSelected().split(" ")[0]);
+                }
+            }
+        });
+        advTraj.setSize(1200, 300);
+        advTraj.setAlignment(Align.center);
+        advTraj.getList().setAlignment(Align.center);
+
         area = new SelectBox<>(selectBoxStyle);
         area.setItems(UnlockManager.getAreaAvailable());
         area.addListener(new ChangeListener() {
@@ -293,6 +313,8 @@ public class SettingsScreen implements Screen {
 
         sweepLabel = new Label("Radar sweep: ", labelStyle);
 
+        advTrajLabel = new Label("Advanced trajectory: ", labelStyle);
+
         areaLabel = new Label("Area\npenetration\nalert:", labelStyle);
 
         collisionLabel = new Label("Collision alert:", labelStyle);
@@ -332,6 +354,11 @@ public class SettingsScreen implements Screen {
         DecimalFormat df = new DecimalFormat("#.#");
         df.setRoundingMode(RoundingMode.CEILING);
         sweep.setSelected(df.format(radarSweep) + "s");
+        if (advTrajTime == -1) {
+            advTraj.setSelected("Off");
+        } else {
+            advTraj.setSelected(advTrajTime + " sec");
+        }
         if (areaWarning == -1) {
             area.setSelected("Off");
         } else {
