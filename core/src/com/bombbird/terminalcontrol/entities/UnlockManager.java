@@ -24,8 +24,8 @@ public class UnlockManager {
             addUnlock("sweep8s", 300, "Unlock 8-second radar sweep");
             addUnlock("sweep0.5s", 400, "Unlock 0.5-second radar sweep");
             addUnlock("traj30s", 500, "Unlock 30-second advanced trajectory prediction");
-            addUnlock("traj1m", 600, "Unlock 30-second advanced trajectory prediction");
-            addUnlock("traj2m", 700, "Unlock 30-second advanced trajectory prediction");
+            addUnlock("traj1m", 600, "Unlock 1-minute advanced trajectory prediction");
+            addUnlock("traj2m", 700, "Unlock 2-minute advanced trajectory prediction");
             addUnlock("area30s", 800, "Unlock area penetration warning 30 seconds look-ahead");
             addUnlock("area1m", 900, "Unlock area penetration warning 1 minute look-ahead");
             addUnlock("area2m", 1000, "Unlock area penetration warning 2 minutes look-ahead");
