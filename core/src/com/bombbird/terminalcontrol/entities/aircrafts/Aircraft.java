@@ -760,7 +760,7 @@ public class Aircraft extends Actor {
                 gsCap = false;
                 return updateTargetHeading();
             } else {
-                //Calculates x, y of point 0.75nm or 1,5nm ahead of plane depending on distance from runway
+                //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
                 float distAhead = ils.getDistFrom(x, y) > 10 ? 1.5f : 0.75f;
                 Vector2 position = ils.getPointAhead(this, distAhead);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
