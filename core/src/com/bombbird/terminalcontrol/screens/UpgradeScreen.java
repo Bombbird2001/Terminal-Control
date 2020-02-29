@@ -162,6 +162,24 @@ public class UpgradeScreen implements Screen {
             scrollTable.add(image).width(MainMenuScreen.BUTTON_WIDTH * 0.15f).height(ratio * image.getHeight()).padLeft(MainMenuScreen.BUTTON_WIDTH * 0.025f).padRight(MainMenuScreen.BUTTON_WIDTH * 0.025f);
             scrollTable.row();
         }
+
+        for (Map.Entry<String, String> entry: UnlockManager.easterEggList.entrySet()) {
+            boolean unlocked = UnlockManager.unlocks.contains(entry.getKey());
+            Label label = new Label("\n" + (unlocked ? entry.getValue() : "?????")+ "\n", labelStyle);
+            label.setWrap(true);
+            label.setAlignment(Align.center);
+            scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f);
+            //Layout twice to set correct width & height
+            scrollTable.layout();
+            scrollTable.layout();
+            Label label1 = new Label("- / -", labelStyle);
+            label1.setAlignment(Align.center);
+            scrollTable.add(label1).width(MainMenuScreen.BUTTON_WIDTH * 0.3f).height(label.getHeight());
+            Image image = new Image(TerminalControl.skin.getDrawable(unlocked ? "Checked" : "Unchecked"));
+            float ratio = MainMenuScreen.BUTTON_WIDTH * 0.15f / image.getWidth();
+            scrollTable.add(image).width(MainMenuScreen.BUTTON_WIDTH * 0.15f).height(ratio * image.getHeight()).padLeft(MainMenuScreen.BUTTON_WIDTH * 0.025f).padRight(MainMenuScreen.BUTTON_WIDTH * 0.025f);
+            scrollTable.row();
+        }
     }
 
     /** Main rendering method for rendering to spriteBatch */

@@ -140,6 +140,9 @@ public class RadarScreen extends GameScreen {
     //The selected aircraft
     private Aircraft selectedAircraft;
 
+    //Easter egg thing yey
+    private com.badlogic.gdx.utils.Queue<Character> lastTapped;
+
     private JSONObject save;
     private int revision; //Revision for indicating if save parser needs to do anything special
     public static final int CURRENT_REVISION = 1;
@@ -181,6 +184,8 @@ public class RadarScreen extends GameScreen {
         nightEnd = 600;
 
         wakeManager = new WakeManager();
+
+        loadEasterEggQueue();
 
         if (tutorial) {
             tutorialManager = new TutorialManager(this);
@@ -239,6 +244,14 @@ public class RadarScreen extends GameScreen {
         nightEnd = save.optInt("nightEnd", 600);
 
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
+
+        loadEasterEggQueue();
+    }
+
+    private void loadEasterEggQueue() {
+        lastTapped = new com.badlogic.gdx.utils.Queue<>();
+        lastTapped.addLast(' ');
+        lastTapped.addLast(' ');
     }
 
     private void loadBackupWaypoints() {
@@ -632,6 +645,21 @@ public class RadarScreen extends GameScreen {
         }
 
         shapeRenderer.end();
+    }
+
+    public void addToEasterEggQueue(Aircraft aircraft) {
+        lastTapped.removeFirst();
+        lastTapped.addLast(aircraft.getCallsign().charAt(0));
+        checkEasterEgg();
+    }
+
+    private void checkEasterEgg() {
+        if (lastTapped.size < 2) return;
+        if (lastTapped.first() == 'H' && lastTapped.last() == 'X') {
+            //Easter egg unlocked
+            UnlockManager.unlockEgg("tchx");
+            commBox.alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
+        }
     }
 
     @Override

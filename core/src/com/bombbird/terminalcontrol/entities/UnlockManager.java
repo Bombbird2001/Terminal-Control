@@ -16,6 +16,8 @@ public class UnlockManager {
     public static final LinkedHashMap<String, Integer> unlockList = new LinkedHashMap<>();
     public static final HashMap<String, String> unlockDescription = new HashMap<>();
 
+    public static final LinkedHashMap<String, String> easterEggList = new LinkedHashMap<>();
+
     public static void loadUnlockList() {
         if (unlockList.size() == 0) {
             //TODO Add more achievements
@@ -32,6 +34,9 @@ public class UnlockManager {
             addUnlock("collision30s", 1100, "Unlock short term collision alert 30 seconds look-ahead");
             addUnlock("collision1m", 1200, "Unlock short term collision alert 1 minute look-ahead");
             addUnlock("collision2m", 1300, "Unlock short term collision alert 2 minutes look-ahead");
+        }
+        if (easterEggList.size() == 0) {
+            easterEggList.put("tchx", "Unlock Tai Kek International Airport, TCHX");
         }
     }
 
@@ -63,7 +68,7 @@ public class UnlockManager {
         GameSaver.saveStats(planesLanded, unlocks);
     }
 
-    public static boolean checkIncreaseLanded() {
+    public static boolean incrementLanded() {
         planesLanded++;
         boolean changed = checkNewUnlocks();
         GameSaver.saveStats(planesLanded, unlocks);
@@ -81,6 +86,11 @@ public class UnlockManager {
         }
 
         return newUnlock;
+    }
+
+    public static void unlockEgg(String name) {
+        if (easterEggList.containsKey(name)) unlocks.add(name);
+        GameSaver.saveStats(planesLanded, unlocks);
     }
 
     public static int getPlanesLanded() {
