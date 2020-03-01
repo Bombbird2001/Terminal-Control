@@ -726,7 +726,7 @@ public class Aircraft extends Actor {
                 setIls(null);
                 navState.voidAllIls();
             }
-            targetHeading = calculatePointTargetHdg(new float[] {direct.getPosX(), direct.getPosY()}, windHdg, windSpd);
+            targetHeading = calculateWaypointTargetHdg(direct, windHdg, windSpd);
 
             //If within __px of waypoint, target next waypoint
             //Distance determined by angle that needs to be turned
@@ -789,7 +789,7 @@ public class Aircraft extends Actor {
                         if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
                             //Once it has flown leg dist, turn back towards entry fix
                             type1leg = true;
-                            targetHeading = calculatePointTargetHdg(new float[]{holdWpt.getPosX(), holdWpt.getPosY()}, windHdg, windSpd);
+                            targetHeading = calculateWaypointTargetHdg(holdWpt, windHdg, windSpd);
                             //Once it reaches entry fix, init has ended
                             if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
                                 init = true;
@@ -851,6 +851,10 @@ public class Aircraft extends Actor {
         double angle = 180 - windHdg + heading;
         gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * Math.cos(Math.toRadians(angle)));
         return Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / gs) * MathUtils.radiansToDegrees;
+    }
+
+    private double calculateWaypointTargetHdg(Waypoint waypoint, int windHdg, int windSpd) {
+        return calculatePointTargetHdg(waypoint.getPosX() - x, waypoint.getPosY() - y, windHdg, windSpd);
     }
 
     private double calculatePointTargetHdg(float[] position, int windHdg, int windSpd) {
