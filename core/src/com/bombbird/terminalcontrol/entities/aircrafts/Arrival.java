@@ -491,7 +491,7 @@ public class Arrival extends Aircraft {
     @Override
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         if (getIls() != null) {
-            if (!(getIls() instanceof LDA) || !((LDA) getIls()).isNpa()) {
+            if (!(getIls() instanceof LDA) || !getIls().isNpa()) {
                 if (!isGsCap()) {
                     super.updateAltitude(getAltitude() < getIls().getGSAlt(this) && getIls().getName().contains("IMG"), false);
                     if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {

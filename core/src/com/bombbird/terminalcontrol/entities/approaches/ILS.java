@@ -27,6 +27,7 @@ public class ILS extends Actor {
     private String[] towerFreq;
     private Runway rwy;
     private MissedApproach missedApchProc;
+    private boolean npa;
 
     private Array<Vector2> gsRings = new Array<>();
     int minAlt;
@@ -47,6 +48,7 @@ public class ILS extends Actor {
 
         String missed = name;
         if ("IMG".equals(name.substring(0, 3))) missed = "LDA" + name.substring(3);
+        if ("TCHX".equals(airport.getIcao()) && "IMG13".equals(name)) missed = "IGS13";
         missedApchProc = airport.getMissedApproaches().get(missed);
 
         calculateGsRings();
@@ -55,6 +57,7 @@ public class ILS extends Actor {
     /** Parses the input string into info for the ILS */
     public void parseInfo(String toParse) {
         int index = 0;
+        npa = false;
         for (String s1: toParse.split(",")) {
             switch (index) {
                 case 0: name = s1; break;
@@ -103,7 +106,7 @@ public class ILS extends Actor {
     public void drawGsCircles() {
         int i = 0;
         for (Vector2 vector2: gsRings) {
-            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !(this instanceof LDA) ? Color.GREEN : Color.CYAN);
+            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !(this instanceof LDA && npa) ? Color.GREEN : Color.CYAN);
             radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
             i++;
         }
@@ -257,5 +260,13 @@ public class ILS extends Actor {
 
     public void setGsRings(Array<Vector2> gsRings) {
         this.gsRings = gsRings;
+    }
+
+    public boolean isNpa() {
+        return npa;
+    }
+
+    public void setNpa(boolean npa) {
+        this.npa = npa;
     }
 }

@@ -58,9 +58,10 @@ public class AltTab extends Tab {
             if (highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
                 highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
             }
-            if ("TCOO".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
+            String icao = selectedAircraft.getAirport().getIcao();
+            if ("TCOO".equals(icao) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
                 highestAlt = 3500;
-            } else if ("TCHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
+            } else if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
                 highestAlt = 4500;
             }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
@@ -77,22 +78,23 @@ public class AltTab extends Tab {
         }
         clearedAlt = MathUtils.clamp(clearedAlt, lowestAlt, highestAlt);
         //Adds the possible altitudes between range to array
+        String icao = selectedAircraft.getAirport().getIcao();
         if (lowestAlt % 1000 != 0) {
             alts.add(Integer.toString(lowestAlt));
             int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
             while (altTracker <= highestAlt) {
                 String toAdd = altTracker / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + altTracker / 100 : Integer.toString(altTracker);
                 alts.add(toAdd);
-                if ("TCOO".equals(selectedAircraft.getAirport().getIcao()) && altTracker == 3000) alts.add("3500");
-                if ("TCHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && altTracker == 4000) alts.add("4500");
+                if ("TCOO".equals(icao) && altTracker == 3000) alts.add("3500");
+                if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && altTracker == 4000) alts.add("4500");
                 altTracker += 1000;
             }
         } else {
             while (lowestAlt <= highestAlt) {
                 String toAdd = lowestAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + lowestAlt / 100 : Integer.toString(lowestAlt);
                 alts.add(toAdd);
-                if ("TCOO".equals(selectedAircraft.getAirport().getIcao()) && lowestAlt == 3000) alts.add("3500");
-                if ("TCHH".equals(selectedAircraft.getAirport().getIcao()) && selectedAircraft.getSidStar().getRunways().contains("25R", false) && lowestAlt == 4000) alts.add("4500");
+                if ("TCOO".equals(icao) && lowestAlt == 3000) alts.add("3500");
+                if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && lowestAlt == 4000) alts.add("4500");
                 lowestAlt += 1000;
             }
         }

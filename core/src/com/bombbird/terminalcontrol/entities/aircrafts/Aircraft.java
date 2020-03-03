@@ -757,11 +757,19 @@ public class Aircraft extends Actor {
             }
             if (ils instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) ils).getLineUpDist()) {
                 ils = ((LDA) ils).getImaginaryIls();
-                gsCap = false;
+                gsCap = !getIls().isNpa();
                 return updateTargetHeading();
             } else {
                 //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
-                float distAhead = ils.getDistFrom(x, y) > 10 ? 1.5f : 0.75f;
+                float distAhead;
+                float distFromIls = ils.getDistFrom(x, y);
+                if (distFromIls > 10) {
+                    distAhead = 1.5f;
+                } else if (distFromIls > 2) {
+                    distAhead = 0.75f;
+                } else {
+                    distAhead = 0.25f;
+                }
                 Vector2 position = ils.getPointAhead(this, distAhead);
                 targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
             }

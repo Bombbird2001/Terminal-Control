@@ -163,7 +163,7 @@ public class FileLoader {
             if (s.contains("ILS")) {
                 ILS ils = new ILS(airport, s);
                 approaches.put(ils.getRwy().getName(), ils);
-            } else if (s.contains("LDA")) {
+            } else if (s.contains("LDA") || s.contains("IGS")) {
                 LDA lda = new LDA(airport, s);
                 approaches.put(lda.getRwy().getName(), lda);
             } else {
