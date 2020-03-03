@@ -10,7 +10,7 @@ public class HoldProcedure {
     private HashMap<String, HoldingPoints> holdingPoints;
 
     public HoldProcedure() {
-        holdingPoints = new HashMap<String, HoldingPoints>();
+        holdingPoints = new HashMap<>();
     }
 
     public HoldProcedure(Star star) {

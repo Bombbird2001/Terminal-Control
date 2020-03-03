@@ -33,10 +33,10 @@ public class SidStar {
     public SidStar(Airport airport, JSONArray wpts, JSONArray restriction, JSONArray fo, String name) {
         this(airport);
 
-        runways = new Array<String>();
-        waypoints = new Array<Waypoint>();
-        restrictions = new Array<int[]>();
-        flyOver = new Array<Boolean>();
+        runways = new Array<>();
+        waypoints = new Array<>();
+        restrictions = new Array<>();
+        flyOver = new Array<>();
 
         pronunciation = "null";
         this.name = name;
@@ -51,10 +51,10 @@ public class SidStar {
 
     /** Overriden method in SID, STAR to parse relevant information */
     public void parseInfo(JSONObject jo) {
-        runways = new Array<String>();
-        waypoints = new Array<Waypoint>();
-        restrictions = new Array<int[]>();
-        flyOver = new Array<Boolean>();
+        runways = new Array<>();
+        waypoints = new Array<>();
+        restrictions = new Array<>();
+        flyOver = new Array<>();
 
         pronunciation = jo.getString("pronunciation");
 

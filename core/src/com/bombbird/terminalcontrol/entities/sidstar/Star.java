@@ -23,12 +23,12 @@ public class Star extends SidStar {
     public Star(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo, String name) {
         super(airport, wpts, restrictions, fo, name);
 
-        inbound = new Array<Array<String>>();
-        rwyWpts = new HashMap<String, Array<Waypoint>>();
-        rwyRestrictions = new HashMap<String, Array<int[]>>();
-        rwyFlyOver = new HashMap<String, Array<Boolean>>();
+        inbound = new Array<>();
+        rwyWpts = new HashMap<>();
+        rwyRestrictions = new HashMap<>();
+        rwyFlyOver = new HashMap<>();
 
-        Array<String> inbound1 = new Array<String>();
+        Array<String> inbound1 = new Array<>();
         inbound1.add("HDG 360");
         inbound.add(inbound1);
     }
@@ -37,17 +37,17 @@ public class Star extends SidStar {
     public void parseInfo(JSONObject jo) {
         super.parseInfo(jo);
 
-        inbound = new Array<Array<String>>();
-        rwyWpts = new HashMap<String, Array<Waypoint>>();
-        rwyRestrictions = new HashMap<String, Array<int[]>>();
-        rwyFlyOver = new HashMap<String, Array<Boolean>>();
+        inbound = new Array<>();
+        rwyWpts = new HashMap<>();
+        rwyRestrictions = new HashMap<>();
+        rwyFlyOver = new HashMap<>();
 
         JSONObject rwys = jo.getJSONObject("rwys");
         for (String rwy: rwys.keySet()) {
             getRunways().add(rwy);
-            Array<Waypoint> wpts = new Array<Waypoint>();
-            Array<int[]> restrictions = new Array<int[]>();
-            Array<Boolean> flyOver = new Array<Boolean>();
+            Array<Waypoint> wpts = new Array<>();
+            Array<int[]> restrictions = new Array<>();
+            Array<Boolean> flyOver = new Array<>();
 
             JSONArray rwyObject = rwys.getJSONArray(rwy);
             for (int i = 0; i < rwyObject.length(); i++) {
@@ -67,7 +67,7 @@ public class Star extends SidStar {
         JSONArray inbounds = jo.getJSONArray("inbound");
         for (int i = 0; i < inbounds.length(); i++) {
             JSONArray trans = inbounds.getJSONArray(i);
-            Array<String> transData = new Array<String>();
+            Array<String> transData = new Array<>();
             for (int j = 0; j < trans.length(); j++) {
                 transData.add(trans.getString(j));
             }
@@ -76,7 +76,7 @@ public class Star extends SidStar {
     }
 
     public Array<String> getAllInboundWpt() {
-        Array<String> wpts = new Array<String>();
+        Array<String> wpts = new Array<>();
         for (int i = 0; i < inbound.size; i++) {
             Array<String> inboundPts = inbound.get(i);
             if (inboundPts.size > 1) {
