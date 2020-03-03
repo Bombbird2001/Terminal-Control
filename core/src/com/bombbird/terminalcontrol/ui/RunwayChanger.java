@@ -214,6 +214,8 @@ public class RunwayChanger {
             updateTCPG(windDir, windSpd);
         } else if ("TCPO".equals(icao)) {
             updateTCPO(windDir, windSpd);
+        } else if ("TCHX".equals(icao)) {
+            updateTCHX(windDir, windSpd);
         } else {
             Gdx.app.log("Runway changer", "Runway change settings for " + icao + " are unavailable.");
         }
@@ -637,6 +639,22 @@ public class RunwayChanger {
             if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25").getHeading()) > -5) {
                 runways.add("24", "25", "06", "07");
                 tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
+            }
+        }
+    }
+
+    private void updateTCHX(int windDir, int windSpd) {
+        if (airport.getLandingRunways().get("13") != null) {
+            //13 is active, set to 31
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("31").getHeading()) > -5) {
+                runways.add("31", "13");
+                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
+            }
+        } else {
+            //31 is active, set to 13
+            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("13").getHeading()) > -5) {
+                runways.add("13", "31");
+                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
             }
         }
     }

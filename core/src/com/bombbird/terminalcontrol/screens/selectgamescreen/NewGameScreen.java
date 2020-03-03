@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.UnlockManager;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
@@ -36,12 +37,13 @@ public class NewGameScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load airports
-        String[] airports;
+        Array<String> airports = new Array<>();
+        airports.add("Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport");
         if (TerminalControl.full) {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport", "TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport", "TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport"};
-        } else {
-            airports = new String[] {"Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport"};
+            airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport");
+            airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport");
         }
+        if (UnlockManager.isTCHXAvailable()) airports.add("TCHX\nTai Kek International Airport");
         for (final String airport: airports) {
             TextButton airportButton = new TextButton(airport, getButtonStyle());
             airportButton.setName(airport.substring(0, 4));
@@ -78,7 +80,7 @@ public class NewGameScreen extends SelectGameScreen {
                     }
                     int slot = 0;
                     if (handle1.exists()) {
-                        Array<String> saves = new Array<String>(handle1.readString().split(","));
+                        Array<String> saves = new Array<>(handle1.readString().split(","));
                         while (saves.contains(Integer.toString(slot), false)) {
                             slot++;
                         }

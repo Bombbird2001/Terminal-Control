@@ -7,7 +7,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import java.util.HashMap;
 
 public class WindshearChance {
-    private static final HashMap<String, float[]> logRegCoefficients = new HashMap<String, float[]>();
+    private static final HashMap<String, float[]> logRegCoefficients = new HashMap<>();
 
     public static void loadWsChance() {
         logRegCoefficients.put("TCTP", new float[] {-7.828657998633319f, 0.3877695849020738f});
@@ -25,6 +25,7 @@ public class WindshearChance {
         logRegCoefficients.put("TCMD", new float[] {-5.842837306470557f, 0.18198226237092718f});
         logRegCoefficients.put("TCPG", new float[] {});
         logRegCoefficients.put("TCPO", new float[] {});
+        logRegCoefficients.put("TCHX", logRegCoefficients.get("TCHH"));
     }
 
     private static boolean getRandomWs(String icao, int speed) {

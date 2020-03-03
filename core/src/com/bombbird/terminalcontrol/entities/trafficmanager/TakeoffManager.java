@@ -107,6 +107,8 @@ public class TakeoffManager {
                 updateTCPG();
             } else if ("TCPO".equals(airport.getIcao())) {
                 updateTCPO();
+            } else if ("TCHX".equals(airport.getIcao())) {
+                updateTCHX();
             } else {
                 Gdx.app.log("Takeoff manager", "Takeoff settings for " + airport.getIcao() + " are unavailable.");
             }
@@ -459,6 +461,20 @@ public class TakeoffManager {
                     runway = runway1;
                     dist = distance;
                 }
+            }
+        }
+        updateRunway(runway);
+    }
+
+    /** Checks takeoff status for Kai Tak (old Hong Kong airport) */
+    private void updateTCHX() {
+        Runway runway = null;
+        float dist = -1;
+        for (Runway runway1: airport.getTakeoffRunways().values()) {
+            float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
+            if (!runway1.isEmergencyClosed() && checkPreceding("13") && checkPreceding("31") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+                runway = runway1;
+                dist = distance;
             }
         }
         updateRunway(runway);

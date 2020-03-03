@@ -45,6 +45,8 @@ public class RunwayManager {
             pendingChange = updateTCPG(windDir, windSpd);
         } else if ("TCPO".equals(airport.getIcao())) {
             pendingChange = updateTCPO(windDir, windSpd);
+        } else if ("TCHX".equals(airport.getIcao())) {
+            pendingChange = updateTCHX(windDir, windSpd);
         } else {
             Gdx.app.log("Runway manager", "Runway settings for " + airport.getIcao() + " are unavailable.");
         }
@@ -667,6 +669,36 @@ public class RunwayManager {
                     airport.setActive("07", false, true);
                     airport.setActive("24", false, false);
                     airport.setActive("25", false, false);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Updates runway status for Kai Tak (old Hong Kong airport) */
+    private boolean updateTCHX(int windDir, int windSpd) {
+        if (airport.getLandingRunways().size() == 0) {
+            //If is new game, no runways set yet
+            if (windDir == 0 || runwayActiveForWind(windDir, airport.getRunways().get("13"))) {
+                airport.setActive("13", true, true);
+            } else {
+                airport.setActive("31", true, true);
+            }
+        } else if (windDir != 0) {
+            //Runways are in use, check if tailwind component exceeds limit of 5 knots
+            if (airport.getLandingRunways().get("13") != null) {
+                //13 is active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("13").getHeading()) < -5) {
+                    airport.setActive("31", true, true);
+                    airport.setActive("13", false, false);
+                    return true;
+                }
+            } else {
+                //31 is active
+                if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("31").getHeading()) < -5) {
+                    airport.setActive("13", true, true);
+                    airport.setActive("31", false, false);
                     return true;
                 }
             }

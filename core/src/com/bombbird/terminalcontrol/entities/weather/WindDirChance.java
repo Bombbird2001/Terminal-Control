@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import java.util.HashMap;
 
 public class WindDirChance {
-    private static final HashMap<String, Array<int[]>> windDirChances = new HashMap<String, Array<int[]>>();
+    private static final HashMap<String, Array<int[]>> windDirChances = new HashMap<>();
 
     public static void loadWindDirChance() {
         windDirChances.put("TCTP", loadDirArray("387,150,225,297,479,488,363,332,292,145,126,109,117,105,103,136,157,164,107,108,154,185,414,818,681,236,113,94,128,107,119,112,107,101,95,94,115"));
@@ -25,11 +25,12 @@ public class WindDirChance {
         windDirChances.put("TCMD", loadDirArray("931,273,165,126,115,99,75,44,44,55,40,62,99,173,130,167,167,219,225,219,222,295,343,369,290,189,153,197,170,119,66,56,63,124,244,340,382"));
         windDirChances.put("TCPG", loadDirArray("228,160,145,126,126,124,99,58,57,74,95,76,94,137,130,194,222,305,354,449,329,350,330,275,292,221,183,155,112,88,75,71,72,70,51,54,77"));
         windDirChances.put("TCPO", loadDirArray("461,91,94,116,148,116,92,69,89,85,77,57,48,48,56,77,109,159,242,410,418,423,346,492,350,261,184,169,141,111,91,69,70,53,46,45,34"));
+        windDirChances.put("TCHX", windDirChances.get("TCHH"));
     }
 
     private static Array<int[]> loadDirArray(String toParse) {
         int total = 1;
-        Array<int[]> directions = new Array<int[]>();
+        Array<int[]> directions = new Array<>();
         String[] nos = toParse.split(",");
         for (String str: nos) {
             int[] range;

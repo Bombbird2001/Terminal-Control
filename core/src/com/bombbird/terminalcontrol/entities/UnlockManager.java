@@ -137,4 +137,8 @@ public class UnlockManager {
 
         return collisions;
     }
+
+    public static boolean isTCHXAvailable() {
+        return unlocks.contains("tchx");
+    }
 }

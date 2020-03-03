@@ -149,7 +149,9 @@ public class HttpRequests {
         StringBuilder stringBuilder = new StringBuilder();
         for (String newIcao: TerminalControl.radarScreen.airports.keySet()) {
             if (stringBuilder.length() > 0) stringBuilder.append(",");
-            stringBuilder.append(RenameManager.reverseNameAirportICAO(newIcao));
+            String arpt = RenameManager.reverseNameAirportICAO(newIcao);
+            if ("VHHX".equals(arpt)) arpt = "VHHH";
+            stringBuilder.append(arpt);
         }
         final Request request = new Request.Builder()
                 .addHeader("X-API-KEY", apiKey)

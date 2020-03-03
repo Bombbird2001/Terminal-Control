@@ -5,8 +5,6 @@ import java.util.HashMap;
 public class RenameManager {
     private static final HashMap<String, String> icaoMap = new HashMap<>();
     private static final HashMap<String, String> reverseIcaoMap = new HashMap<>();
-    private static final HashMap<String, String> starMap = new HashMap<>();
-    private static final HashMap<String, String> sidMap = new HashMap<>();
 
     public static void loadMaps() {
         if (icaoMap.size() == 0) {
@@ -25,6 +23,7 @@ public class RenameManager {
             icaoMap.put("LEMD", "TCMD");
             icaoMap.put("LFPG", "TCPG");
             icaoMap.put("LFPO", "TCPO");
+            icaoMap.put("VHHX", "TCHX");
         }
         if (reverseIcaoMap.size() == 0) {
             reverseIcaoMap.put("TCTP", "RCTP");
@@ -42,12 +41,7 @@ public class RenameManager {
             reverseIcaoMap.put("TCMD", "LEMD");
             reverseIcaoMap.put("TCPG", "LFPG");
             reverseIcaoMap.put("TCPO", "LFPO");
-        }
-        if (starMap.size() == 0) {
-
-        }
-        if (sidMap.size() == 0) {
-
+            reverseIcaoMap.put("TCHX", "VHHX");
         }
     }
 
