@@ -67,6 +67,10 @@ public class Departure extends Aircraft {
             //Special case for TCTT runway 16R intersection takeoff
             setX(2864.2f);
             setY(1627.0f);
+        } else if ("TCHX".equals(getAirport().getIcao()) && "13".equals(runway.getName())) {
+            //TCHX departure adjustment since runway data does not include threshold
+            setX(2862.0f);
+            setY(1635.2f);
         } else {
             setX(getRunway().getPosition()[0]);
             setY(getRunway().getPosition()[1]);
