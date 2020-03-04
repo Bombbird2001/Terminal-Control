@@ -833,6 +833,7 @@ public class Aircraft extends Actor {
                 }
             } else {
                 holding = false;
+                holdingType = 0;
                 if (navState != null) {
                     navState.getDispAltMode().removeFirst();
                     navState.getDispAltMode().addFirst("Fly heading");
