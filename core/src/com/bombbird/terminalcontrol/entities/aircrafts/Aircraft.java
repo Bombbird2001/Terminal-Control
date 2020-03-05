@@ -779,7 +779,7 @@ public class Aircraft extends Actor {
             }
             if (holdWpt != null) {
                 if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
-                    holding = false;
+                    resetHoldParameters();
                     return updateTargetHeading();
                 }
                 if (holdTargetPt == null) {
@@ -832,11 +832,10 @@ public class Aircraft extends Actor {
                     targetHeading = calculatePointTargetHdg(new float[]{target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
                 }
             } else {
-                holding = false;
-                holdingType = 0;
-                if (navState != null) {
-                    navState.getDispAltMode().removeFirst();
-                    navState.getDispAltMode().addFirst("Fly heading");
+                resetHoldParameters();
+                if (navState != null && "Hold at".equals(navState.getDispLatMode().first()) && holdWpt == null) {
+                    navState.getDispLatMode().removeFirst();
+                    navState.getDispLatMode().addFirst("Fly heading");
                     navState.getClearedHdg().removeFirst();
                     navState.getClearedHdg().addFirst((int) heading);
                 }
@@ -854,6 +853,13 @@ public class Aircraft extends Actor {
         }
 
         return new double[] {targetHeading, calculateAngleDiff(heading, windHdg, windSpd)};
+    }
+
+    private void resetHoldParameters() {
+        holding = false;
+        holdTargetPt = null;
+        holdTargetPtSelected = null;
+        init = false;
     }
 
     public double calculateAngleDiff(double heading, int windHdg, int windSpd) {
