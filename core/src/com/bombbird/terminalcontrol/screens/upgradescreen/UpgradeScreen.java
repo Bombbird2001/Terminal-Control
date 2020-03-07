@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens;
+package com.bombbird.terminalcontrol.screens.upgradescreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,7 +13,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.UnlockManager;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
+import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.Map;
@@ -21,14 +22,14 @@ import java.util.Map;
 public class UpgradeScreen implements Screen {
     //Init game (set in constructor)
     private final TerminalControl game;
-    private Stage stage;
+    public Stage stage;
 
     //Create new camera
     private OrthographicCamera camera;
     private Viewport viewport;
 
     //Scroll table
-    private Table scrollTable;
+    public Table scrollTable;
 
     //Background image
     private Image background;
@@ -97,7 +98,7 @@ public class UpgradeScreen implements Screen {
     }
 
     /** Loads the appropriate title for label */
-    private void loadLabel() {
+    public void loadLabel() {
         //Set title label style
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
@@ -124,7 +125,7 @@ public class UpgradeScreen implements Screen {
     }
 
     /** Loads the scrollpane used to contain unlocks, milestones */
-    private void loadScroll() {
+    public void loadScroll() {
         scrollTable = new Table();
         ScrollPane scrollPane = new ScrollPane(scrollTable);
 
@@ -138,7 +139,7 @@ public class UpgradeScreen implements Screen {
     }
 
     /** Loads the unlocks into scroll pane */
-    private void loadUnlocks() {
+    public void loadUnlocks() {
         //Set scroll pane label textures
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont12;
@@ -158,24 +159,6 @@ public class UpgradeScreen implements Screen {
             label1.setAlignment(Align.center);
             scrollTable.add(label1).width(MainMenuScreen.BUTTON_WIDTH * 0.3f).height(label.getHeight());
             Image image = new Image(TerminalControl.skin.getDrawable(UnlockManager.getPlanesLanded() >= required ? "Checked" : "Unchecked"));
-            float ratio = MainMenuScreen.BUTTON_WIDTH * 0.15f / image.getWidth();
-            scrollTable.add(image).width(MainMenuScreen.BUTTON_WIDTH * 0.15f).height(ratio * image.getHeight()).padLeft(MainMenuScreen.BUTTON_WIDTH * 0.025f).padRight(MainMenuScreen.BUTTON_WIDTH * 0.025f);
-            scrollTable.row();
-        }
-
-        for (Map.Entry<String, String> entry: UnlockManager.easterEggList.entrySet()) {
-            boolean unlocked = UnlockManager.unlocks.contains(entry.getKey());
-            Label label = new Label("\n" + (unlocked ? entry.getValue() : "?????")+ "\n", labelStyle);
-            label.setWrap(true);
-            label.setAlignment(Align.center);
-            scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f);
-            //Layout twice to set correct width & height
-            scrollTable.layout();
-            scrollTable.layout();
-            Label label1 = new Label("- / -", labelStyle);
-            label1.setAlignment(Align.center);
-            scrollTable.add(label1).width(MainMenuScreen.BUTTON_WIDTH * 0.3f).height(label.getHeight());
-            Image image = new Image(TerminalControl.skin.getDrawable(unlocked ? "Checked" : "Unchecked"));
             float ratio = MainMenuScreen.BUTTON_WIDTH * 0.15f / image.getWidth();
             scrollTable.add(image).width(MainMenuScreen.BUTTON_WIDTH * 0.15f).height(ratio * image.getHeight()).padLeft(MainMenuScreen.BUTTON_WIDTH * 0.025f).padRight(MainMenuScreen.BUTTON_WIDTH * 0.025f);
             scrollTable.row();

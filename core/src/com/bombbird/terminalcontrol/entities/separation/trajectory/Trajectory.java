@@ -26,7 +26,10 @@ public class Trajectory {
         requiredTime = Math.max(requiredTime, TerminalControl.radarScreen.advTraj);
         positionPoints.clear();
         float targetHeading = (float) aircraft.getHeading() + deltaHeading;
-        float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading, aircraft.getWinds()[0] + 180, aircraft.getWinds()[1]) - TerminalControl.radarScreen.magHdgDev;
+        int windSpd = aircraft.getWinds()[1];
+        int windHdg = aircraft.getWinds()[0];
+        if (windHdg == 0) windSpd = 0;
+        float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading,  windHdg + 180, windSpd) - TerminalControl.radarScreen.magHdgDev;
         if (Math.abs(deltaHeading) > 5) {
             //Calculate arc if aircraft is turning > 5 degrees
             float turnRate = aircraft.getIas() > 250 ? 1.5f : 3f; //In degrees/second

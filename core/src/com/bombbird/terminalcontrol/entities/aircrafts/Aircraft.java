@@ -1227,6 +1227,7 @@ public class Aircraft extends Actor {
     }
 
     public Array<Waypoint> getRemainingWaypoints() {
+        if (navState.getClearedDirect().last() == null) return new Array<>();
         if (navState.getDispLatMode().last().contains(getSidStar().getName())) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.getWaypoints().size - 1);
         } else if ("After waypoint, fly heading".equals(navState.getDispLatMode().last())) {
@@ -1234,7 +1235,7 @@ public class Aircraft extends Actor {
         } else if ("Hold at".equals(navState.getDispLatMode().last())) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedHold().last().getName()));
         }
-        return null;
+        return new Array<>();
     }
 
     public Array<Waypoint> getUiRemainingWaypoints() {

@@ -18,11 +18,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.UnlockManager;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.DefaultSettingsScreen;
+import com.bombbird.terminalcontrol.screens.upgradescreen.AchievementScreen;
+import com.bombbird.terminalcontrol.screens.upgradescreen.UpgradeScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
@@ -200,6 +202,23 @@ public class MainMenuScreen implements Screen {
             });
             stage.addActor(upgradeButton);
         }
+
+        //Set achievement button
+        ImageButton.ImageButtonStyle imageButtonStyle4 = new ImageButton.ImageButtonStyle();
+        imageButtonStyle4.imageUp = TerminalControl.skin.getDrawable("Upgrade_up"); //TODO Create new achievement texture
+        imageButtonStyle4.imageDown = TerminalControl.skin.getDrawable("Upgrade_down");
+        ImageButton achievementButton = new ImageButton(imageButtonStyle4);
+        achievementButton.setPosition(1440 + 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
+        achievementButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
+        achievementButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go to upgrade screen
+                game.setScreen(new AchievementScreen(game, background));
+                dispose();
+            }
+        });
+        stage.addActor(achievementButton);
 
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;

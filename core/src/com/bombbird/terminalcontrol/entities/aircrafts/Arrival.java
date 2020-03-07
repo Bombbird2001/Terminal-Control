@@ -7,7 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.UnlockManager;
+import com.bombbird.terminalcontrol.entities.achievements.Achievement;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
@@ -728,6 +729,9 @@ public class Arrival extends Aircraft {
             getIls().getRwy().removeFromArray(this);
             if (UnlockManager.incrementLanded() && TerminalControl.full) {
                 radarScreen.getCommBox().alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!");
+            }
+            if (UnlockManager.checkAchievement(Achievement.PLANES_LANDED)) {
+                radarScreen.getCommBox().alertMsg("Congratulations, you have unlocked an achievement: " + UnlockManager.getPreviousUnlock());
             }
         }
     }

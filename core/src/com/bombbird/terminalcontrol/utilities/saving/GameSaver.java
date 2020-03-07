@@ -662,12 +662,15 @@ public class GameSaver {
     }
 
     /** Saves game stats */
-    public static void saveStats(int planesLanded, HashSet<String> unlocks) {
+    public static void saveStats(int planesLanded, int emergenciesLanded, int conflicts, int wakeConflictTime, HashSet<String> unlocks) {
         FileHandle handle = FileLoader.getExtDir("stats.json");
 
         if (handle != null) {
             JSONObject stats = new JSONObject();
             stats.put("planesLanded", planesLanded);
+            stats.put("emergenciesLanded", emergenciesLanded);
+            stats.put("conflicts", conflicts);
+            stats.put("wakeConflictTime", wakeConflictTime);
             JSONArray unlockArray = new JSONArray();
             for (String unlock: unlocks) {
                 unlockArray.put(unlock);
