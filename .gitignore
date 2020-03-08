@@ -102,7 +102,6 @@ nb-configuration.xml
 .gradle/
 gradle-app.setting
 /android/assetsFull/
-/android/resFull/
 /android/lite/
 /android/full/
 
