@@ -101,9 +101,10 @@ nb-configuration.xml
 /local.properties
 .gradle/
 gradle-app.setting
-/android/assetsFull
-/android/lite/
+/android/assetsFull/
 /android/resFull/
+/android/lite/
+/android/full/
 
 ## OS Specific
 .DS_Store
