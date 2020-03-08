@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
@@ -25,7 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class GameSaver {
@@ -662,17 +662,17 @@ public class GameSaver {
     }
 
     /** Saves game stats */
-    public static void saveStats(int planesLanded, int emergenciesLanded, int conflicts, int wakeConflictTime, HashSet<String> unlocks) {
+    public static void saveStats() {
         FileHandle handle = FileLoader.getExtDir("stats.json");
 
         if (handle != null) {
             JSONObject stats = new JSONObject();
-            stats.put("planesLanded", planesLanded);
-            stats.put("emergenciesLanded", emergenciesLanded);
-            stats.put("conflicts", conflicts);
-            stats.put("wakeConflictTime", wakeConflictTime);
+            stats.put("planesLanded", UnlockManager.getPlanesLanded());
+            stats.put("emergenciesLanded", UnlockManager.getEmergenciesLanded());
+            stats.put("conflicts", UnlockManager.getConflicts());
+            stats.put("wakeConflictTime", (double) UnlockManager.getWakeConflictTime());
             JSONArray unlockArray = new JSONArray();
-            for (String unlock: unlocks) {
+            for (String unlock: UnlockManager.unlocks) {
                 unlockArray.put(unlock);
             }
             stats.put("unlocks", unlockArray);

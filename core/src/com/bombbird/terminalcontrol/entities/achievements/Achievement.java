@@ -35,18 +35,19 @@ public class Achievement {
         if (type == PLANES_LANDED) return UnlockManager.getPlanesLanded() >= valueNeeded;
         if (type == EMERGENCIES_LANDED) return UnlockManager.getEmergenciesLanded() >= valueNeeded;
         if (type == CONFLICTS) return UnlockManager.getConflicts() >= valueNeeded;
-        if (type == WAKE_CONFLICT_TIME) return UnlockManager.getWakeConflictTime() >= valueNeeded;
+        if (type == WAKE_CONFLICT_TIME) return (int) UnlockManager.getWakeConflictTime() >= valueNeeded;
         Gdx.app.log("Achievement", "Unknown type " + type + " for " + name);
         return false;
     }
 
-    /** Returns the current progress of achievement depending on type, returns -1 if type is NONE */
+    /** Returns the current progress of achievement depending on type, returns -1 if type is NONE
+     * If value is not of type int, returns (int) value */
     public int getCurrentValue() {
         if (type == NONE) return -1;
         if (type == PLANES_LANDED) return UnlockManager.getPlanesLanded();
         if (type == EMERGENCIES_LANDED) return UnlockManager.getEmergenciesLanded();
         if (type == CONFLICTS) return UnlockManager.getConflicts();
-        if (type == WAKE_CONFLICT_TIME) return UnlockManager.getWakeConflictTime();
+        if (type == WAKE_CONFLICT_TIME) return (int) UnlockManager.getWakeConflictTime();
         Gdx.app.log("Achievement", "Unknown type " + type + " for " + name);
         return -1;
     }

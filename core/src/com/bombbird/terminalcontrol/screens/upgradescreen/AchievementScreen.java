@@ -81,7 +81,7 @@ public class AchievementScreen extends UpgradeScreen {
 
         for (Map.Entry<String, String> entry: UnlockManager.easterEggList.entrySet()) {
             boolean unlocked = UnlockManager.unlocks.contains(entry.getKey());
-            Label label = new Label("\n" + entry.getKey() + "\n" + (unlocked ? entry.getValue() : "?????")+ "\n", labelStyle);
+            Label label = new Label("\n[ " + entry.getKey() + " ]\n" + (unlocked ? entry.getValue() : "?????")+ "\n", labelStyle);
             label.setWrap(true);
             label.setAlignment(Align.center);
             scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f);

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
@@ -82,14 +83,15 @@ public class SeparationChecker extends Actor {
                 obstacle.setConflict(false);
             }
             active = checkAircraftSep();
-            active = checkRestrSep(active);
+            active += checkRestrSep();
             int tmpActive = active;
             while (tmpActive > lastNumber) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
+                UnlockManager.incrementConflicts();
                 tmpActive--;
             }
             //Subtract wake separately (don't include 5% penalty)
-            for (Aircraft aircraft : radarScreen.aircrafts.values()) {
+            for (Aircraft aircraft: radarScreen.aircrafts.values()) {
                 if (aircraft.isWakeInfringe() && aircraft.isArrivalDeparture()) {
                     active++;
                     aircraft.setConflict(true);
@@ -210,6 +212,7 @@ public class SeparationChecker extends Actor {
                                 plane2.setConflict(true);
                                 lineStorage.add(new float[] {plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY(), 1});
                                 active++;
+                                if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 200 && dist < 0.5f) UnlockManager.completeAchievement("thatWasClose");
                             }
                         } else if (!plane1.isWarning() || !plane2.isWarning()) {
                             //Aircrafts within 1000 feet, 5nm of each other
@@ -249,7 +252,8 @@ public class SeparationChecker extends Actor {
     }
 
     /** Checks that each aircraft is separated from each obstacles/restricted area */
-    private int checkRestrSep(int active) {
+    private int checkRestrSep() {
+        int terrainActive = 0;
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) || (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
                     (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
@@ -289,10 +293,10 @@ public class SeparationChecker extends Actor {
             if (conflict && !aircraft.isTerrainConflict()) {
                 aircraft.setTerrainConflict(true);
                 aircraft.setConflict(true);
-                active++;
+                terrainActive++;
             }
         }
-        return active;
+        return terrainActive;
     }
 
     /** Renders the separation rings if aircraft is in conflict */

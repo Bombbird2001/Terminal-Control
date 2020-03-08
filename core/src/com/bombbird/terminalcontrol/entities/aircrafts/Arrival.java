@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.achievements.Achievement;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
@@ -22,6 +21,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -722,17 +722,18 @@ public class Arrival extends Aircraft {
             if (radarScreen.getArrivals() >= 12) score = 2; //2 points if you're controlling at least 12 planes at a time
             if (!getSidStar().getRunways().contains(getIls().getRwy().getName(), false)) score = 3; //3 points if landing runway is not intended for SID (i.e. runway change occured)
             if ((getAirport().isCongested() && radarScreen.tfcMode != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
-            if (getEmergency().isEmergency()) score = 5; //5 points for landing an emergency!
+            if (getEmergency().isEmergency()) {
+                score = 5; //5 points for landing an emergency!
+                UnlockManager.incrementEmergency();
+            }
             radarScreen.setScore(radarScreen.getScore() + score);
             getAirport().setLandings(getAirport().getLandings() + 1);
             removeAircraft();
             getIls().getRwy().removeFromArray(this);
-            if (UnlockManager.incrementLanded() && TerminalControl.full) {
-                radarScreen.getCommBox().alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!");
-            }
-            if (UnlockManager.checkAchievement(Achievement.PLANES_LANDED)) {
-                radarScreen.getCommBox().alertMsg("Congratulations, you have unlocked an achievement: " + UnlockManager.getPreviousUnlock());
-            }
+            UnlockManager.incrementLanded();
+            String[] typhoonList = new String[] {"TCTP", "TCSS", "TCTT", "TCAA", "TCHH", "TCMC"};
+            if (ArrayUtils.contains(typhoonList, getAirport().getIcao()) && getAirport().getWinds()[1] >= 40) UnlockManager.completeAchievement("typhoon");
+            if ("TCWS".equals(getAirport().getIcao()) && getAirport().getVisibility() <= 2000) UnlockManager.completeAchievement("haze");
         }
     }
 

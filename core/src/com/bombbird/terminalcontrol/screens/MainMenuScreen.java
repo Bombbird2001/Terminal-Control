@@ -205,8 +205,8 @@ public class MainMenuScreen implements Screen {
 
         //Set achievement button
         ImageButton.ImageButtonStyle imageButtonStyle4 = new ImageButton.ImageButtonStyle();
-        imageButtonStyle4.imageUp = TerminalControl.skin.getDrawable("Upgrade_up"); //TODO Create new achievement texture
-        imageButtonStyle4.imageDown = TerminalControl.skin.getDrawable("Upgrade_down");
+        imageButtonStyle4.imageUp = TerminalControl.skin.getDrawable("Medal_up");
+        imageButtonStyle4.imageDown = TerminalControl.skin.getDrawable("Medal_down");
         ImageButton achievementButton = new ImageButton(imageButtonStyle4);
         achievementButton.setPosition(1440 + 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL);
         achievementButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);

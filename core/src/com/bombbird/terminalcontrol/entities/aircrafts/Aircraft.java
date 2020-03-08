@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.Runway;
@@ -944,6 +945,7 @@ public class Aircraft extends Actor {
         } else {
             wakeInfringe = true;
             wakeTolerance += Gdx.graphics.getDeltaTime() * diffDist;
+            UnlockManager.incrementWakeConflictTime(Gdx.graphics.getDeltaTime());
         }
         if (wakeTolerance < 0) wakeTolerance = 0;
 

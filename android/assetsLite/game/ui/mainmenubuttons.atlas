@@ -41,21 +41,21 @@ Help_down
   index: -1
 Help_up
   rotate: false
-  xy: 1612, 308
+  xy: 442, 2
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Information_down
   rotate: false
-  xy: 1410, 308
+  xy: 1814, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Information_up
   rotate: false
-  xy: 1208, 308
+  xy: 1612, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
@@ -67,16 +67,30 @@ ListBackground
   orig: 500, 100
   offset: 0, 0
   index: -1
-Settings_down
+Medal_down
   rotate: false
   xy: 1006, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
-Settings_up
+Medal_up
   rotate: false
   xy: 240, 2
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Settings_down
+  rotate: false
+  xy: 1410, 308
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Settings_up
+  rotate: false
+  xy: 1208, 308
   size: 200, 200
   orig: 200, 200
   offset: 0, 0

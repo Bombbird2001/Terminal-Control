@@ -1,6 +1,8 @@
 package com.bombbird.terminalcontrol.entities.achievements;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import org.json.JSONArray;
@@ -15,8 +17,8 @@ public class UnlockManager {
     private static int planesLanded;
     private static int emergenciesLanded;
     private static int conflicts;
-    private static int wakeConflictTime;
-    private static String previousUnlock = "";
+    private static float prevWakeConflictTime;
+    private static float wakeConflictTime;
     public static final HashSet<String> unlocks = new HashSet<>();
 
     public static final LinkedHashMap<String, Integer> unlockList = new LinkedHashMap<>();
@@ -26,6 +28,7 @@ public class UnlockManager {
 
     public static final LinkedHashMap<String, String> easterEggList = new LinkedHashMap<>();
 
+    /** Loads all the milestones, achievements and easter eggs */
     public static void loadUnlockList() {
         if (unlockList.size() == 0) {
             //TODO Add more unlocks
@@ -51,7 +54,7 @@ public class UnlockManager {
             addAchievement("veteran", "Veteran", "Land 1000 planes", 1000, Achievement.PLANES_LANDED);
             addAchievement("godly", "Godly", "Land 5000 planes", 5000, Achievement.PLANES_LANDED);
             addAchievement("thatWasClose", "That was close", "Have two planes come within 200 feet and 0.5nm of each other", -1, Achievement.NONE);
-            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS with at least 40-knot winds", -1, Achievement.NONE);
+            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS" + (TerminalControl.full ? "/TCTT/TCAA/TCHH/TCMC" : "") + " with at least 40-knot winds", -1, Achievement.NONE);
             addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2000 metres", -1, Achievement.NONE);
             addAchievement("mayday", "Mayday", "Land your first emergency", 1, Achievement.EMERGENCIES_LANDED);
             addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED);
@@ -63,15 +66,18 @@ public class UnlockManager {
         }
     }
 
+    /** Helper function to add a new milestone/unlock */
     private static void addUnlock(String name, int planesNeeded, String description) {
         unlockList.put(name, planesNeeded);
         unlockDescription.put(name, description);
     }
 
+    /** Helper function to add a new achievement */
     private static void addAchievement(String name, String title, String description, int value, int type) {
         achievementList.put(name, new Achievement(name, title, description, value, type));
     }
 
+    /** Function called on game launch to load achievements, milestones and stats */
     public static void loadStats() {
         loadUnlockList();
         JSONObject stats = FileLoader.loadStats();
@@ -85,32 +91,73 @@ public class UnlockManager {
             }
             emergenciesLanded = 0;
             conflicts = 0;
+            prevWakeConflictTime = 0;
             wakeConflictTime = 0;
         } else {
             //Load saved stats
             planesLanded = stats.optInt("planesLanded", 0);
             emergenciesLanded = stats.optInt("emergenciesLanded", 0);
             conflicts = stats.optInt("conflicts", 0);
-            wakeConflictTime = stats.optInt("wakeConflictTime", 0);
+            wakeConflictTime = (float) stats.optDouble("wakeConflictTime", 0);
+            prevWakeConflictTime = wakeConflictTime;
             JSONArray unlockArray = stats.getJSONArray("unlocks");
             for (int i = 0; i < unlockArray.length(); i++) {
                 unlocks.add(unlockArray.getString(i));
             }
         }
         checkNewUnlocks();
-        checkAllAchievements();
         setAchievementStatus();
-        GameSaver.saveStats(planesLanded, emergenciesLanded, conflicts, wakeConflictTime, unlocks);
+        checkAllAchievements();
+        GameSaver.saveStats();
     }
 
-    public static boolean incrementLanded() {
+    /** Called when an aircraft has landed; further checks whether any new milestone or achievement has been unlocked */
+    public static void incrementLanded() {
         planesLanded++;
-        boolean changed = checkNewUnlocks();
-        GameSaver.saveStats(planesLanded, emergenciesLanded, conflicts, wakeConflictTime, unlocks);
-
-        return changed;
+        if (checkNewUnlocks() && TerminalControl.full) {
+            TerminalControl.radarScreen.getCommBox().alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!");
+        }
+        checkAchievement(Achievement.PLANES_LANDED);
+        GameSaver.saveStats();
     }
 
+    /** Called when an emergency has landed; further checks whether any new milestone or achievement has been unlocked */
+    public static void incrementEmergency() {
+        emergenciesLanded++;
+        checkAchievement(Achievement.EMERGENCIES_LANDED);
+        GameSaver.saveStats();
+    }
+
+    /** Called when a new conflict has occurred; further checks whether any new milestone or achievement has been unlocked */
+    public static void incrementConflicts() {
+        conflicts++;
+        checkAchievement(Achievement.CONFLICTS);
+        GameSaver.saveStats();
+    }
+
+    /** Called when wake separation infringement time is increased by the specified time; further checks whether any new milestone or achievement has been unlocked */
+    public static void incrementWakeConflictTime(float time) {
+        wakeConflictTime += time;
+        if (wakeConflictTime > prevWakeConflictTime + 2) { //Save & check every 2 seconds of wake time to reduce File I/O load
+            checkAchievement(Achievement.WAKE_CONFLICT_TIME);
+            GameSaver.saveStats();
+            prevWakeConflictTime = wakeConflictTime;
+        }
+    }
+
+    /** Called to unlock a new achievement that cannot be unlocked using planesLanded, emergenciesLanded, conflicts or wakeConflictTime */
+    public static void completeAchievement(String name) {
+        if (!achievementList.containsKey(name)) {
+            Gdx.app.log("UnlockManager", "Unknown achievement " + name);
+            return;
+        }
+        if (unlocks.contains(name)) return;
+        unlocks.add(name);
+        TerminalControl.radarScreen.getCommBox().alertMsg("Congratulations, you have unlocked an achievement: " + achievementList.get(name).getTitle());
+        GameSaver.saveStats();
+    }
+
+    /** Called to check for whether a new milestone has been reached (depending on planesLanded only) */
     private static boolean checkNewUnlocks() {
         boolean newUnlock = false;
         for (String unlockName: unlockList.keySet()) {
@@ -122,18 +169,18 @@ public class UnlockManager {
         return newUnlock;
     }
 
-    public static boolean checkAchievement(int type) {
-        boolean unlocked = false;
+    /** Called to iterate through all achievements and checking those of the required type as specified in the Achievement class */
+    public static void checkAchievement(int type) {
         for (Map.Entry<String, Achievement> entry: achievementList.entrySet()) {
-            if (entry.getValue().checkAchievement(type)) {
-                unlocked = true;
+            if (entry.getValue().checkAchievement(type) && !unlocks.contains(entry.getKey())) {
                 unlocks.add(entry.getKey());
+                entry.getValue().setUnlocked(true);
+                if (TerminalControl.radarScreen != null) TerminalControl.radarScreen.getCommBox().alertMsg("Congratulations, you have unlocked an achievement: " + entry.getValue().getTitle());
             }
-            previousUnlock = entry.getValue().getTitle();
         }
-        return unlocked;
     }
 
+    /** Called in loadStats to check if the quantifiable achievements are completed */
     private static void checkAllAchievements() {
         checkAchievement(Achievement.PLANES_LANDED);
         checkAchievement(Achievement.EMERGENCIES_LANDED);
@@ -141,21 +188,20 @@ public class UnlockManager {
         checkAchievement(Achievement.WAKE_CONFLICT_TIME);
     }
 
+    /** Called in loadStats to check which achievements are unlocked already in stats file */
     private static void setAchievementStatus() {
         for (Map.Entry<String, Achievement> entry: achievementList.entrySet()) {
             entry.getValue().setUnlocked(unlocks.contains(entry.getKey()));
         }
     }
 
+    /** Called to unlock an easter egg with the given name */
     public static void unlockEgg(String name) {
         if (easterEggList.containsKey(name)) unlocks.add(name);
-        GameSaver.saveStats(planesLanded, emergenciesLanded, conflicts, wakeConflictTime, unlocks);
+        GameSaver.saveStats();
     }
 
-    public static int getPlanesLanded() {
-        return planesLanded;
-    }
-
+    /** Returns the sweep times available depending on milestones unlocked */
     public static Array<String> getSweepAvailable() {
         Array<String> sweeps = new Array<>();
         if (unlocks.contains("sweep0.5s")) sweeps.add("0.5s");
@@ -167,6 +213,7 @@ public class UnlockManager {
         return sweeps;
     }
 
+    /** Returns the trajectory times available depending on milestones unlocked */
     public static Array<String> getTrajAvailable() {
         Array<String> areas = new Array<>();
         areas.add("Off");
@@ -177,6 +224,7 @@ public class UnlockManager {
         return areas;
     }
 
+    /** Returns the APW times available depending on milestones unlocked */
     public static Array<String> getAreaAvailable() {
         Array<String> areas = new Array<>();
         areas.add("Off");
@@ -187,6 +235,7 @@ public class UnlockManager {
         return areas;
     }
 
+    /** Returns the STCAS times available depending on milestones unlocked */
     public static Array<String> getCollisionAvailable() {
         Array<String> collisions = new Array<>();
         collisions.add("Off");
@@ -197,8 +246,13 @@ public class UnlockManager {
         return collisions;
     }
 
+    /** Returns whether the TCHX easter egg has been unlocked */
     public static boolean isTCHXAvailable() {
         return unlocks.contains("HX");
+    }
+
+    public static int getPlanesLanded() {
+        return planesLanded;
     }
 
     public static int getEmergenciesLanded() {
@@ -209,11 +263,7 @@ public class UnlockManager {
         return conflicts;
     }
 
-    public static int getWakeConflictTime() {
+    public static float getWakeConflictTime() {
         return wakeConflictTime;
-    }
-
-    public static String getPreviousUnlock() {
-        return previousUnlock;
     }
 }
