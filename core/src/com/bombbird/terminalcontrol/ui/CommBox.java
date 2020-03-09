@@ -187,7 +187,7 @@ public class CommBox {
             }
         }
         if (aircraft instanceof Arrival) {
-            if (!aircraft.isGoAroundWindow()) {
+            if (!aircraft.isGoAroundWindow() && aircraft.getDirect() != null) {
                 text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString;
                 TerminalControl.tts.initArrContact(aircraft, wake, apchCallsign, greeting, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
             } else {
