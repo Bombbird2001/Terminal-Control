@@ -68,7 +68,7 @@ public class AltTab extends Tab {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
             }
             if (highestAlt < lowestAlt) highestAlt = lowestAlt;
-            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() instanceof LDA && selectedAircraft.isLocCap())) {
+            if (selectedAircraft.isGsCap() || (!selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
         } else {

@@ -15,7 +15,8 @@ public class ErrorHandler {
         } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             type = "Desktop";
         }
-        return type + " " + (TerminalControl.full ? "full" : "lite") + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + "\n";
+        String arpt = TerminalControl.radarScreen == null ? "unknown airport" : TerminalControl.radarScreen.mainName;
+        return type + " " + (TerminalControl.full ? "full" : "lite") + " version " + TerminalControl.versionName + ", build " + TerminalControl.versionCode + ", " + arpt + "\n";
     }
 
     public static void sendGenericError(Exception e, boolean exit) {
