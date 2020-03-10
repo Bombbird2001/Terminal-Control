@@ -106,7 +106,7 @@ public class ILS extends Actor {
     public void drawGsCircles() {
         int i = 0;
         for (Vector2 vector2: gsRings) {
-            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !(this instanceof LDA && npa) ? Color.GREEN : Color.CYAN);
+            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !npa ? Color.GREEN : Color.CYAN);
             radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
             i++;
         }

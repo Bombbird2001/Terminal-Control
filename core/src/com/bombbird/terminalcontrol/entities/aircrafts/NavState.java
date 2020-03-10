@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -333,14 +332,14 @@ public class NavState {
             //Case 4: Aircraft captured LOC during delay: Replace all set headings to ILS heading
             replaceAllClearedHdg();
 
-            if (aircraft.getIls() instanceof LDA) {
+            if (aircraft.getIls().isNpa()) {
                 //Case 4b: Aircraft on LDA has captured LOC and is performing non precision approach: Replace all set altitude to missed approach altitude
                 replaceAllClearedAltMode();
                 replaceAllClearedAlt();
             }
         }
 
-        if (aircraft.isGsCap() || (aircraft.getIls() instanceof LDA && aircraft.isLocCap())) {
+        if (aircraft.isGsCap() || (aircraft.getIls() != null && aircraft.getIls().isNpa() && aircraft.isLocCap())) {
             //Case 5: Aircraft captured GS during delay: Replace all set altitude to missed approach altitude
             replaceAllClearedAltMode();
             replaceAllClearedAlt();
