@@ -107,7 +107,7 @@ public class Airport {
         }
     }
 
-    /** Loads other runway info from save file separately after loading main airport data (since aircrafts have not been loaded during the main airport loading stage) */
+    /** Loads other runway info from save file separately after loading main airport data (since aircraft have not been loaded during the main airport loading stage) */
     public void updateOtherRunwayInfo(JSONObject save) {
         for (Runway runway: runways.values()) {
             Array<Aircraft> aircraftsOnAppr = new Array<>();
@@ -294,7 +294,7 @@ public class Airport {
     /** Draws runways */
     public void renderRunways() {
         if (landings - airborne > 12) {
-            if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircrafts on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
+            if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircraft on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
             congested = true;
         } else {
             congested = false;

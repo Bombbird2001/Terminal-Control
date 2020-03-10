@@ -56,7 +56,7 @@ public class WaypointManager {
         }
     }
 
-    /** Updates the waypoints selected based on whether the aircrafts' next direct is it */
+    /** Updates the waypoints selected based on whether the aircraft's next direct is it */
     private void updateAircraftDirects() {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isHolding() && aircraft.getHoldWpt() != null) {

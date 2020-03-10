@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.helpmanual.HelpSectionScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -59,7 +61,13 @@ public class AirportHelpScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load help sections
-        String[] airports = TerminalControl.full ? new String[] {"TCTP", "TCWS", "TCTT", "TCHH", "TCBB", "TCBD", "TCMD", "TCPG"} : new String[] {"TCTP", "TCWS"};
+        Array<String> airports = new Array<>();
+        airports.add("TCTP", "TCWS");
+        if (TerminalControl.full) {
+            airports.add("TCTT", "TCHH",  "TCBB", "TCBD");
+            airports.add("TCMD", "TCPG");
+        }
+        if (UnlockManager.isTCHXAvailable()) airports.add("TCHX");
         for (String arpt: airports) {
             TextButton button = new TextButton(arpt, getButtonStyle());
             button.setName(arpt);

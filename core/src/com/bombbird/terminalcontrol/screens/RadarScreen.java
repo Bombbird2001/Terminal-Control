@@ -112,13 +112,13 @@ public class RadarScreen extends GameScreen {
     private float trailTime;
     private float saveTime;
 
-    //Stores callsigns of all aircrafts generated and aircrafts waiting to be generated (for take offs)
+    //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
     private HashMap<String, Boolean> allAircraft;
 
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
 
-    //Separation checker for checking separation between aircrafts & terrain
+    //Separation checker for checking separation between aircraft & terrain
     public SeparationChecker separationChecker;
 
     //Trajectory storage, APW, STCAS
@@ -622,7 +622,7 @@ public class RadarScreen extends GameScreen {
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-        //Draw aircrafts
+        //Draw aircraft
         for (Aircraft aircraft: aircrafts.values()) {
             aircraft.renderShape();
         }
