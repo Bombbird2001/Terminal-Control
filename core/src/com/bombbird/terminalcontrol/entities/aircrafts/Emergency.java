@@ -52,14 +52,14 @@ public class Emergency {
     public Emergency(Aircraft aircraft, Chance emerChance) {
         radarScreen = TerminalControl.radarScreen;
         this.aircraft = aircraft;
-        if (emerChance == Chance.OFF) {
+        if (emerChance == Chance.OFF || !(aircraft instanceof Departure)) {
             emergency = false;
         } else {
             float chance = 0;
             if (emerChance == Chance.LOW) chance = 1 / 200f;
             if (emerChance == Chance.MEDIUM) chance = 1 / 100f;
             if (emerChance == Chance.HIGH) chance = 1 / 50f;
-            emergency = MathUtils.randomBoolean(chance); //Chance depends on emergency setting
+            emergency = MathUtils.randomBoolean(chance); //Chance depends on emergency setting and must be a departure (for now)
         }
         active = false;
         type = Type.values()[MathUtils.random(Type.values().length - 1)];
