@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Load_fail">无法载入已储存的游戏：请检查设备的储存空间或设定</string>
+    <string name="Save_corrupt">无法载入已储存的游戏：某些档案可能遭到损坏</string>
+    <string name="No_space">游戏储存失败：您的设备储存空间不足</string>
+    <string name="Save_fail">游戏储存失败：请检查设备的储存空间或设定</string>
+    <string name="TTS_language_no_support">您的设备无法支援某些文字转语音的语言</string>
+    <string name="TTS_not_compatible">无法启动文字转语音功能：您的设备可能不支援</string>
+</resources>

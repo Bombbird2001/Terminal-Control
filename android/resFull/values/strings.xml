@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="app_name" translatable="false">Terminal Control</string>
+    <string name="Save_fail">Failed to save game: Check your storage space or settings and try again.</string>
+    <string name="No_space">Failed to save game: Your device has insufficient storage space.</string>
+    <string name="Load_fail">Failed to load saves: Check your storage space or settings and try again.</string>
+    <string name="Save_corrupt">Failed to load saves: one or more saves may be corrupted.</string>
+    <string name="TTS_not_compatible">Text-to-speech initialisation failed: Your device may not be compatible.</string>
+    <string name="TTS_language_no_support">Text-to-speech language is not supported.</string>
 </resources>

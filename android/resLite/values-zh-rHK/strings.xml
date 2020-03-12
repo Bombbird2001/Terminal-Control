@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Load_fail">無法載入已儲存的游戲：請檢查設備的儲存空間或設定</string>
+    <string name="No_space">游戲儲存失敗：您的設備儲存空間不足</string>
+    <string name="Save_corrupt">無法載入已儲存的游戲：某些檔案可能遭到損壞</string>
+    <string name="Save_fail">游戲儲存失敗：請檢查設備的儲存空間或設定</string>
+    <string name="TTS_language_no_support">您的設備無法支援某些文字轉語音的語言</string>
+    <string name="TTS_not_compatible">無法啓動文字轉語音功能：您的設備可能不支援</string>
+</resources>

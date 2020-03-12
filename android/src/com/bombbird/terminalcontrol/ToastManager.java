@@ -16,11 +16,11 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
 
     @Override
     public void saveFail(GdxRuntimeException e) {
-        String error = "Failed to save game: Check your storage space or settings and try again.";
+        String error = androidLauncher.getResources().getString(R.string.Save_fail);
         Throwable nextE = e.getCause();
         if (nextE instanceof IOException && nextE.getCause() instanceof ErrnoException) {
             ErrnoException finalE = (ErrnoException) nextE.getCause();
-            if (finalE.errno == OsConstants.ENOSPC) error = "Failed to save game: Your device has insufficient storage space.";
+            if (finalE.errno == OsConstants.ENOSPC) error = androidLauncher.getResources().getString(R.string.No_space);
         }
         String finalError = error;
         androidLauncher.runOnUiThread(() -> {
@@ -32,7 +32,7 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
     @Override
     public void readStorageFail() {
         androidLauncher.runOnUiThread(() -> {
-            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "Failed to load saves: Check your storage space or settings and try again.", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), androidLauncher.getResources().getString(R.string.Load_fail), Toast.LENGTH_LONG);
             toast.show();
         });
     }
@@ -40,21 +40,21 @@ public class ToastManager implements com.bombbird.terminalcontrol.utilities.Toas
     @Override
     public void jsonParseFail() {
         androidLauncher.runOnUiThread(() -> {
-            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "Failed to load saves: 1 or more saves may be corrupted.", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), androidLauncher.getResources().getString(R.string.Save_corrupt), Toast.LENGTH_LONG);
             toast.show();
         });
     }
 
     public void initTTSFail() {
         androidLauncher.runOnUiThread(() -> {
-            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "Text-to-speech initialisation failed: Your device may not be compatible", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), androidLauncher.getResources().getString(R.string.TTS_not_compatible), Toast.LENGTH_LONG);
             toast.show();
         });
     }
 
     public void ttsLangNotSupported() {
         androidLauncher.runOnUiThread(() -> {
-            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), "TTS language is not supported", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(androidLauncher.getApplicationContext(), androidLauncher.getResources().getString(R.string.TTS_language_no_support), Toast.LENGTH_LONG);
             toast.show();
         });
     }
