@@ -533,7 +533,7 @@ public class Aircraft extends Actor {
     /** Draws the cleared holding pattern when selected */
     public void drawHoldPattern() {
         shapeRenderer.setColor(Color.WHITE);
-        if (!holding) shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
+        if (!holding && direct != null) shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
         route.getHoldProcedure().renderShape(navState.getClearedHold().last());
     }
 
