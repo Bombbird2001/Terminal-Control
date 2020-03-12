@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
+import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
 import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
@@ -343,23 +344,28 @@ public class Airport {
         }
     }
 
-    public void setMetar(JSONObject metar) {
-        this.metar = metar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
-        System.out.println("METAR of " + icao + ": " + this.metar.toString());
+    public void setMetar(JSONObject newMetar) {
+        metar = newMetar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
+        if ("TCHX".equals(icao)) {
+            //Use random windshear for TCHX since TCHH windshear doesn't apply
+            String ws = WindshearChance.getRandomWsForAllRwy(this, metar.getInt("windSpeed"));
+            metar.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
+        }
+        System.out.println("METAR of " + icao + ": " + metar.toString());
         updateRunwayUsage();
         TerminalControl.radarScreen.ui.updateInfoLabel();
     }
 
     public void updateRunwayUsage() {
         //Update active runways (windHdg 0 is VRB wind)
-        int windHdg = this.metar.isNull("windDirection") ? 0 : this.metar.getInt("windDirection");
+        int windHdg = metar.isNull("windDirection") ? 0 : metar.getInt("windDirection");
         ws = "";
-        if (!this.metar.isNull("windshear")) {
-            ws = this.metar.getString("windshear");
+        if (!metar.isNull("windshear")) {
+            ws = metar.getString("windshear");
         } else {
             ws = "None";
         }
-        runwayManager.updateRunways(windHdg, this.metar.getInt("windSpeed"));
+        runwayManager.updateRunways(windHdg, metar.getInt("windSpeed"));
         for (Runway runway: runways.values()) {
             runway.setWindshear(runway.isLanding() && ("ALL RWY".equals(ws) || ArrayUtils.contains(ws.split(" "), "R" + runway.getName())));
         }
