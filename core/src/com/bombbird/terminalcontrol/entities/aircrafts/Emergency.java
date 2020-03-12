@@ -131,7 +131,7 @@ public class Emergency {
                 aircraft.getDataTag().setEmergency();
                 cancelSidStar();
                 active = true;
-                if (stayOnRwy) radarScreen.setPlanesToControl(Math.min(radarScreen.getPlanesToControl(), 5));
+                radarScreen.setPlanesToControl(Math.min(radarScreen.getPlanesToControl(), 5));
                 aircraft.getDataTag().setMinimized(false);
                 if (type == Type.BIRD_STRIKE || type == Type.ENGINE_FAIL) {
                     aircraft.setTypClimb((int) (aircraft.getTypClimb() * 0.5));
