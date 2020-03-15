@@ -20,6 +20,7 @@ public class Trajectory {
         positionPoints = new Array<>();
     }
 
+    /** Calculates trajectory of aircraft, adds points to array */
     public void calculateTrajectory() {
         //Calculate simple linear trajectory, plus arc if aircraft is turning > 5 degrees
         int requiredTime = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning);
@@ -30,6 +31,7 @@ public class Trajectory {
         int windHdg = aircraft.getWinds()[0];
         if (windHdg == 0) windSpd = 0;
         float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading,  windHdg + 180, windSpd) - TerminalControl.radarScreen.magHdgDev;
+        targetTrack = (float) MathTools.modulateHeading(targetTrack);
         if (Math.abs(deltaHeading) > 5) {
             //Calculate arc if aircraft is turning > 5 degrees
             float turnRate = aircraft.getIas() > 250 ? 1.5f : 3f; //In degrees/second
@@ -55,12 +57,20 @@ public class Trajectory {
             }
             float remainingAngle = deltaHeading;
             Vector2 prevPos = new Vector2();
+            boolean sidStarMode = aircraft.getNavState() != null && (aircraft.getNavState().getDispLatMode().first().contains("arrival") || aircraft.getNavState().getDispLatMode().first().contains("departure"));
+            float prevTargetTrack = targetTrack;
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 if (remainingAngle / turnRate > INTERVAL) {
                     remainingAngle -= turnRate * INTERVAL;
                     centerToCircum.rotate(-turnRate * INTERVAL);
                     Vector2 newVector = new Vector2(turnCenter);
                     prevPos = newVector.add(centerToCircum);
+                    if (sidStarMode && aircraft.getDirect() != null) {
+                        //Do additional turn checking
+                        float newTrack = (float) MathTools.modulateHeading(MathTools.getRequiredTrack(prevPos.x, prevPos.y, aircraft.getDirect().getPosX(), aircraft.getDirect().getPosY()));
+                        remainingAngle += (newTrack - prevTargetTrack); //Add the difference in target track to remaining angle
+                        prevTargetTrack = newTrack;
+                    }
                 } else {
                     float remainingTime = INTERVAL - remainingAngle / turnRate;
                     centerToCircum.rotate(-remainingAngle);
@@ -68,7 +78,7 @@ public class Trajectory {
                     if (Math.abs(remainingAngle) > 0.1) prevPos = newVector.add(centerToCircum);
                     remainingAngle = 0;
                     Vector2 straightVector = new Vector2(0, MathTools.nmToPixel(remainingTime * aircraft.getGs() / 3600));
-                    straightVector.rotate(-targetTrack);
+                    straightVector.rotate(-prevTargetTrack);
                     prevPos.add(straightVector);
                 }
                 positionPoints.add(new PositionPoint(aircraft, prevPos.x, prevPos.y, 0));

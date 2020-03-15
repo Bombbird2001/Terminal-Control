@@ -847,11 +847,7 @@ public class Aircraft extends Actor {
             Gdx.app.log("Update target heading", "Oops, something went wrong");
         }
 
-        if (targetHeading > 360) {
-            targetHeading -= 360;
-        } else if (targetHeading <= 0) {
-            targetHeading += 360;
-        }
+        targetHeading = MathTools.modulateHeading(targetHeading);
 
         return new double[] {targetHeading, calculateAngleDiff(heading, windHdg, windSpd)};
     }
@@ -1084,11 +1080,7 @@ public class Aircraft extends Actor {
 
         //Add angular velocity to heading
         heading = heading + angularVelocity * Gdx.graphics.getDeltaTime();
-        if (heading > 360) {
-            heading -= 360;
-        } else if (heading <= 0) {
-            heading += 360;
-        }
+        heading = MathTools.modulateHeading(heading);
     }
 
     @Override

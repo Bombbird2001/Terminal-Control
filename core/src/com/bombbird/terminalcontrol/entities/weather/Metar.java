@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.HttpRequests;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONObject;
 
 public class Metar {
@@ -88,11 +89,7 @@ public class Metar {
             jsonObject.put("visibility", VisibilityChance.getRandomVis());
 
             int windDir = metarObject.getJSONObject(RenameManager.reverseNameAirportICAO(airport)).getInt("windDirection") + MathUtils.random(-2, 2) * 10;
-            if (windDir > 360) {
-                windDir -= 360;
-            } else if (windDir <= 0) {
-                windDir += 360;
-            }
+            windDir = MathTools.modulateHeading(windDir);
             jsonObject.put("windDirection", windDir);
 
             int currentSpd = metarObject.getJSONObject(RenameManager.reverseNameAirportICAO(airport)).getInt("windSpeed");

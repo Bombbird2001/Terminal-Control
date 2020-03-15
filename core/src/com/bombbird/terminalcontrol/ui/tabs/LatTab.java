@@ -16,6 +16,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 import java.util.HashMap;
 
@@ -165,11 +166,7 @@ public class LatTab extends Tab {
                 }
             }
             afterWptHdg += hdgChange;
-            if (afterWptHdg <= 0) {
-                afterWptHdg += 360;
-            } else if (afterWptHdg > 360) {
-                afterWptHdg -= 360;
-            }
+            afterWptHdg = MathTools.modulateHeading(afterWptHdg);
         } else {
             int remainder = clearedHdg % 5;
             if (remainder != 0) {
@@ -180,11 +177,7 @@ public class LatTab extends Tab {
                 }
             }
             clearedHdg += hdgChange;
-            if (clearedHdg <= 0) {
-                clearedHdg += 360;
-            } else if (clearedHdg > 360) {
-                clearedHdg -= 360;
-            }
+            clearedHdg = MathTools.modulateHeading(clearedHdg);
         }
         updateElements();
         compareWithAC();

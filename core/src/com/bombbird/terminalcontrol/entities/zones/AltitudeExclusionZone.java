@@ -20,7 +20,7 @@ public class AltitudeExclusionZone {
 
     //All dimensions in nautical miles
     public AltitudeExclusionZone(String[] rwys, float xMid, float yMid, int apchHdg, float length, float width) {
-        runways = new Array<String>(rwys);
+        runways = new Array<>(rwys);
 
         float angle = 90 - apchHdg + TerminalControl.radarScreen.magHdgDev;
         float[] coords = new float[8];

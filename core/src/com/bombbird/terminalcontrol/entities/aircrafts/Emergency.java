@@ -342,8 +342,7 @@ public class Emergency {
         float bearing = 90 - MathUtils.radiansToDegrees * MathUtils.atan2(aircraft.getY() - 1620, aircraft.getX() - 2880);
         int dist = (int) MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), 2880, 1620));
         String dir = "";
-        if (bearing <= 0) bearing += 360;
-        if (bearing > 360) bearing -= 360;
+        bearing = (float) MathTools.modulateHeading(bearing);
         if (bearing >= 330 || bearing < 30) dir = "north";
         if (MathTools.withinRange(bearing, 30, 60)) dir = "north-east";
         if (MathTools.withinRange(bearing, 60, 120)) dir = "east";

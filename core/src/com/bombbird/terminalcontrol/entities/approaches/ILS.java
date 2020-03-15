@@ -140,12 +140,7 @@ public class ILS extends Actor {
         }
 
         planeHdg += radarScreen.magHdgDev;
-
-        if (planeHdg <= 0) {
-            planeHdg += 360;
-        } else if (planeHdg > 360) {
-            planeHdg -= 360;
-        }
+        planeHdg = MathTools.modulateHeading(planeHdg);
 
         float smallRange = heading - angle / 2f;
         float bigRange = smallRange + angle;

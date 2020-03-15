@@ -70,4 +70,30 @@ public class MathTools {
     public static boolean withinRange(float no, float min, float max) {
         return no > min && no < max;
     }
+
+    /** Calculates the required track to achieve a displacement of deltaX, deltaY */
+    public static float getRequiredTrack(float deltaX, float deltaY) {
+        return 90 - (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
+    }
+
+    /** Calculates the required track to go from initial point with x, y to destination point with destX, destY */
+    public static float getRequiredTrack(float x, float y, float destX, float destY) {
+        return getRequiredTrack(destX - x, destY - y);
+    }
+
+    /** Ensures the heading/track supplied is > 0 and <= 360 */
+    public static double modulateHeading(double heading) {
+        double newHeading = heading;
+        while (newHeading > 360) newHeading -= 360;
+        while (newHeading <= 0) newHeading += 360;
+        return newHeading;
+    }
+
+    /** Ensures the heading/track supplied is > 0 and <= 360 */
+    public static int modulateHeading(int heading) {
+        int newHeading = heading;
+        while (newHeading > 360) newHeading -= 360;
+        while (newHeading <= 0) newHeading += 360;
+        return newHeading;
+    }
 }
