@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
@@ -17,8 +18,21 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class LoadGameScreen extends SelectGameScreen {
+    class MultithreadLoad implements Runnable {
+        @Override
+        public void run() {
+            JSONArray saves = FileLoader.loadSaves();
+            loadSavedGamesUI(saves);
+            stopAnimatingLabel();
+        }
+    }
+
+    private Timer timer;
+    private Label loadingLabel;
+
     public LoadGameScreen(final TerminalControl game, Image background) {
         super(game, background);
+        timer = new Timer();
         TerminalControl.updateRevision();
     }
 
@@ -38,12 +52,21 @@ public class LoadGameScreen extends SelectGameScreen {
     /** Overrides loadScroll method in SelectGameScreen to load save info into scrollPane */
     @Override
     public void loadScroll() {
+        loadingLabel = new Label("", getLabelStyle());
+        loadingLabel.setPosition(2880 / 2.0f - loadingLabel.getWidth() / 2.0f, 1620 * 0.5f);
+        loadingLabel.setVisible(true);
+        stage.addActor(loadingLabel);
+        animateLoadingLabel();
+
+        new Thread(new MultithreadLoad()).start(); //Load the saves from another thread
+    }
+
+    /** Called after file I/O is complete to display the loaded saves */
+    private void loadSavedGamesUI(JSONArray saves) {
         final Label label = new Label("No saves found!", getLabelStyle());
         label.setPosition(2880 / 2.0f - label.getWidth() / 2.0f, 1620 * 0.5f);
         label.setVisible(false);
-        getStage().addActor(label);
-
-        JSONArray saves = FileLoader.loadSaves();
+        stage.addActor(label);
         if (saves.length() == 0) {
             label.setVisible(true);
         }
@@ -132,5 +155,36 @@ public class LoadGameScreen extends SelectGameScreen {
         scrollPane.setHeight(1620 * 0.6f);
 
         getStage().addActor(scrollPane);
+    }
+
+    /** Starts animating the loading label */
+    private void animateLoadingLabel() {
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading."));
+            }
+        }, 0.25f);
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading.."));
+            }
+        }, 0.5f);
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading.."));
+                animateLoadingLabel();
+            }
+        }, 0.75f);
+    }
+
+    /** Stops animating the loading label */
+    private void stopAnimatingLabel() {
+        Gdx.app.postRunnable(() -> {
+            loadingLabel.setVisible(false);
+            timer.clear();
+        });
     }
 }

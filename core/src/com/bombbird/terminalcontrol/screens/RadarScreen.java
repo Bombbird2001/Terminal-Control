@@ -658,7 +658,7 @@ public class RadarScreen extends GameScreen {
         if (lastTapped.size < 2) return;
         if (lastTapped.first() == 'H' && lastTapped.last() == 'X') {
             //Easter egg unlocked
-            UnlockManager.unlockEgg("tchx");
+            UnlockManager.unlockEgg("HX");
             commBox.alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
         }
     }
