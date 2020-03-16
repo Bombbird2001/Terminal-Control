@@ -18,6 +18,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class LoadGameScreen extends SelectGameScreen {
+    private Timer timer;
+    private Label loadingLabel;
+
     class MultithreadLoad implements Runnable {
         @Override
         public void run() {
@@ -26,9 +29,6 @@ public class LoadGameScreen extends SelectGameScreen {
             stopAnimatingLabel();
         }
     }
-
-    private Timer timer;
-    private Label loadingLabel;
 
     public LoadGameScreen(final TerminalControl game, Image background) {
         super(game, background);
@@ -162,19 +162,28 @@ public class LoadGameScreen extends SelectGameScreen {
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading."));
+                Gdx.app.postRunnable(() -> {
+                    loadingLabel.setText("Loading.");
+                    loadingLabel.setPosition(2880 / 2.0f - loadingLabel.getPrefWidth() / 2.0f, 1620 * 0.5f);
+                });
             }
         }, 0.25f);
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading.."));
+                Gdx.app.postRunnable(() -> {
+                    loadingLabel.setText("Loading..");
+                    loadingLabel.setPosition(2880 / 2.0f - loadingLabel.getPrefWidth() / 2.0f, 1620 * 0.5f);
+                });
             }
         }, 0.5f);
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                Gdx.app.postRunnable(() -> loadingLabel.setText("Loading.."));
+                Gdx.app.postRunnable(() -> {
+                    loadingLabel.setText("Loading...");
+                    loadingLabel.setPosition(2880 / 2.0f - loadingLabel.getPrefWidth() / 2.0f, 1620 * 0.5f);
+                });
                 animateLoadingLabel();
             }
         }, 0.75f);
