@@ -21,7 +21,6 @@ import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -108,7 +107,7 @@ public class GameSaver {
                 saveID(radarScreen.saveId);
             } catch (GdxRuntimeException e) {
                 TerminalControl.toastManager.saveFail(e);
-                ErrorHandler.sendSaveErrorNoThrow(e, encode);
+                //ErrorHandler.sendSaveErrorNoThrow(e, encode);
             }
         }
     }
