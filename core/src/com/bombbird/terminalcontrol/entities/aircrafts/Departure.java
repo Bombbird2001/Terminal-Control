@@ -226,7 +226,7 @@ public class Departure extends Aircraft {
     /** Overrides method in Aircraft class to set to outbound heading */
     @Override
     public void setAfterLastWpt() {
-        getNavState().getLatModes().removeValue(sid.getName() + " departure", false);
+        getNavState().updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true);
         setClearedHeading(outboundHdg);
         getNavState().getClearedHdg().removeFirst();
         getNavState().getClearedHdg().addFirst(getClearedHeading());

@@ -221,12 +221,9 @@ public class Emergency {
 
     /** Changes SID/STAR mode to vector mode after emergency occurs */
     private void cancelSidStar() {
-        aircraft.getNavState().getLatModes().clear();
-        aircraft.getNavState().getLatModes().add("Fly heading", "Turn left heading", "Turn right heading");
-        aircraft.getNavState().getAltModes().removeValue("Climb via SID", false);
-        aircraft.getNavState().getAltModes().removeValue("Descend vis STAR", false);
-        aircraft.getNavState().getAltModes().removeValue("SID speed restrictions", false);
-        aircraft.getNavState().getAltModes().removeValue("STAR speed restrictions", false);
+        aircraft.getNavState().updateLatModes(NavState.REMOVE_ALL_SIDSTAR, false);
+        aircraft.getNavState().updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
+        aircraft.getNavState().updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, true);
 
         aircraft.getNavState().getDispLatMode().clear();
         aircraft.getNavState().getDispLatMode().addFirst("Fly heading");

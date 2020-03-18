@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
@@ -189,9 +190,11 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         notListening = true;
         if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getRoute().getWaypoints().size) {
-            selectedAircraft.getNavState().getLatModes().removeValue(selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " arrival" : " departure"), false);
-            selectedAircraft.getNavState().getLatModes().removeValue("After waypoint, fly heading", false);
-            if (!"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last())) selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
+            if ("Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last())) {
+                selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, false); //Don't remove hold at if aircraft is gonna hold
+            } else {
+                selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_ALL_SIDSTAR, false);
+            }
         }
         settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
         settingsBox.setSelected(latMode);
@@ -478,18 +481,18 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         notListening = true;
         if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
-            selectedAircraft.getNavState().getAltModes().add("Descend via STAR");
+            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
-            selectedAircraft.getNavState().getAltModes().add("Climb via SID");
+            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
         } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
             ui.altTab.settingsBox.setSelected("Climb/descend to");
             altMode = "Climb/descend to";
         }
 
         if (latMode.contains("arrival") && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
-            selectedAircraft.getNavState().getSpdModes().add("STAR speed restrictions");
+            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
         } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
-            selectedAircraft.getNavState().getSpdModes().add("SID speed restrictions");
+            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
         } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
             ui.spdTab.settingsBox.setSelected("No speed restrictions");
             spdMode = "No speed restrictions";
@@ -507,7 +510,7 @@ public class LatTab extends Tab {
             }
 
             if (!found) {
-                selectedAircraft.getNavState().getLatModes().removeValue("Hold at", false);
+                selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_HOLD_ONLY, false);
             }
         }
 

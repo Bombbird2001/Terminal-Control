@@ -12,6 +12,16 @@ import org.json.JSONObject;
 
 public class NavState {
     public static float timeDelay = 2f;
+    public static final int REMOVE_ALL_SIDSTAR = 0; //Removes all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
+    public static final int REMOVE_AFTERHDG_HOLD = 1; //Removes after waypoint fly heading, hold at
+    public static final int REMOVE_SIDSTAR_ONLY = 2; //Removes only the SID, STAR mode
+    public static final int REMOVE_SIDSTAR_AFTERHDG = 3; //Removes SID, STAR, after waypoint fly heading
+    public static final int REMOVE_HOLD_ONLY = 4; //Removes only hold at
+    public static final int REMOVE_AFTERHDG_ONLY = 5; //Removes only after waypoint fly heading
+    public static final int ADD_ALL_SIDSTAR = 6; //Adds all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
+
+    public static final int REMOVE_SIDSTAR_RESTR = 10; //Removes SID/STAR alt/speed restrictions
+    public static final int ADD_SIDSTAR_RESTR = 11; //Adds SID/STAR alt/speed restrictions
 
     private Aircraft aircraft;
 
@@ -430,8 +440,8 @@ public class NavState {
 
     /** Called after aircraft enters holding mode */
     public void initHold() {
-        altModes.removeValue("Descend via STAR", false);
-        spdModes.removeValue("STAR speed restrictions", false);
+        updateAltModes(REMOVE_SIDSTAR_RESTR, false);
+        updateSpdModes(REMOVE_SIDSTAR_RESTR, false);
         replaceAllClearedAltMode();
         replaceAllClearedSpdToLower();
     }
@@ -441,12 +451,7 @@ public class NavState {
         if (latMode.contains(aircraft.getSidStar().getName())) {
             clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
             if (latMode.contains("arrival")) {
-                if (!latModes.contains("After waypoint, fly heading", false)) {
-                    latModes.add("After waypoint, fly heading");
-                }
-                if (!latModes.contains("Hold at", false)) {
-                    latModes.add("Hold at");
-                }
+                updateLatModes(ADD_ALL_SIDSTAR, false);
             }
             if (clearedHold.last() != null) {
                 clearedHold.removeLast();
@@ -457,12 +462,12 @@ public class NavState {
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if ("Hold at".equals(latMode)) {
             clearedHold.addLast(radarScreen.waypoints.get(holdWpt));
-            latModes.removeValue("After waypoint, fly heading", false);
+            updateLatModes(REMOVE_AFTERHDG_ONLY, false);
         } else {
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {
                 clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
-                latModes.removeValue("Hold at", false);
+                updateLatModes(REMOVE_HOLD_ONLY, false);
             }
         }
         dispLatMode.addLast(latMode);
@@ -528,6 +533,83 @@ public class NavState {
             timeQueue.removeIndex(0);
             sendInstructions();
         }
+    }
+
+    /** Replaces the selections in latModes depending on input mode, and will update the current UI if updateUI is true */
+    public void updateLatModes(int mode, boolean updateUI) {
+        //Will not throw exception even if element not in array
+        switch (mode) {
+            case REMOVE_ALL_SIDSTAR:
+                latModes.clear();
+                latModes.add("Fly heading", "Turn left heading", "Turn right heading");
+            case REMOVE_AFTERHDG_HOLD:
+                latModes.removeValue("After waypoint, fly heading", false);
+                latModes.removeValue("Hold at", false);
+            case REMOVE_SIDSTAR_ONLY:
+                latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
+                latModes.removeValue(aircraft.getSidStar().getName() + " departure", false);
+            case REMOVE_SIDSTAR_AFTERHDG:
+                latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
+                latModes.removeValue(aircraft.getSidStar().getName() + " departure", false);
+                latModes.removeValue("After waypoint, fly heading", false);
+            case REMOVE_HOLD_ONLY:
+                latModes.removeValue("Hold at", false);
+            case REMOVE_AFTERHDG_ONLY:
+                latModes.removeValue("After waypoint, fly heading", false);
+            case ADD_ALL_SIDSTAR:
+                latModes.clear();
+                if (aircraft instanceof Arrival) {
+                    latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Hold at", "Fly heading");
+                    latModes.add("Turn left heading", "Turn right heading");
+                } else if (aircraft instanceof Departure) {
+                    latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
+                }
+            default:
+                Gdx.app.log("NavState", "Invalid latModes update mode: " + mode);
+        }
+        if (updateUI && aircraft.isSelected() && aircraft.isArrivalDeparture()) aircraft.ui.updateState();
+    }
+
+    /** Replaces the selections in altModes depending on input mode, and will update the current UI if updateUI is true */
+    public void updateAltModes(int mode, boolean updateUI) {
+        //Will not throw exception even if element not in array
+        switch (mode) {
+            case REMOVE_SIDSTAR_RESTR:
+                altModes.removeValue("Climb via SID", false);
+                altModes.removeValue("Descend via STAR", false);
+            case ADD_SIDSTAR_RESTR:
+                altModes.clear();
+                if (aircraft instanceof Arrival) {
+                    altModes.add("Descend via STAR");
+                } else if (aircraft instanceof Departure) {
+                    altModes.add("Climb via SID");
+                }
+                altModes.add("Climb/descend to", "Expedite climb/descent to");
+            default:
+                Gdx.app.log("NavState", "Invalid altModes update mode: " + mode);
+        }
+        if (updateUI && aircraft.isSelected() && aircraft.isArrivalDeparture()) aircraft.ui.updateState();
+    }
+
+    /** Replaces the selections in spdModes depending on input mode, and will update the current UI if updateUI is true */
+    public void updateSpdModes(int mode, boolean updateUI) {
+        //Will not throw exception even if element not in array
+        switch (mode) {
+            case REMOVE_SIDSTAR_RESTR:
+                spdModes.removeValue("SID speed restrictions", false);
+                spdModes.removeValue("STAR speed restrictions", false);
+            case ADD_SIDSTAR_RESTR:
+                spdModes.clear();
+                if (aircraft instanceof Arrival) {
+                    spdModes.add("STAR speed restrictions");
+                } else if (aircraft instanceof Departure) {
+                    spdModes.add("SID speed restrictions");
+                }
+                spdModes.add("No speed restrictions");
+            default:
+                Gdx.app.log("NavState", "Invalid spdModes update mode: " + mode);
+        }
+        if (updateUI && aircraft.isSelected() && aircraft.isArrivalDeparture()) aircraft.ui.updateState();
     }
 
     public Array<String> getLatModes() {

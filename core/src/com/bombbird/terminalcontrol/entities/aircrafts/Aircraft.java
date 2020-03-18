@@ -948,12 +948,7 @@ public class Aircraft extends Actor {
         if (!locCap && ils != null && ils.isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
-            navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
-            navState.getLatModes().removeValue("After waypoint, fly heading", false);
-            navState.getLatModes().removeValue("Hold at", false);
-            if (selected) {
-                ui.updateState();
-            }
+            navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
@@ -1102,8 +1097,7 @@ public class Aircraft extends Actor {
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
             clearedHeading = afterWptHdg;
-            navState.getLatModes().removeValue("After waypoint, fly heading", false);
-            navState.getLatModes().removeValue("Hold at", false);
+            navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, true);
             if (navState.getDispAltMode().first().contains("STAR")) {
                 navState.getDispAltMode().removeFirst();
                 navState.getDispAltMode().addFirst("Climb/descend to");
@@ -1124,7 +1118,7 @@ public class Aircraft extends Actor {
             }
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {
-                navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false);
+                navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true);
             }
             radarScreen.getCommBox().holdEstablishMsg(this, holdWpt.getName());
         } else {
@@ -1161,14 +1155,10 @@ public class Aircraft extends Actor {
 
     /** Removes the SID/STAR options from aircraft UI after there are no waypoints left*/
     public void removeSidStarMode() {
-        if (!navState.getLatModes().removeValue(getSidStar().getName() + " arrival", false)) {
-            navState.getLatModes().removeValue(getSidStar().getName() + " departure", false);
+        if ("Hold at".equals(getNavState().getDispLatMode().last())) {
+            navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, true); //Don't remove hold at if aircraft is gonna hold
         } else {
-            navState.getLatModes().removeValue("After waypoint, fly heading", false);
-            if (!"Hold at".equals(getNavState().getDispLatMode().last())) navState.getLatModes().removeValue("Hold at", false);
-        }
-        if (selected && isArrivalDeparture()) {
-            ui.updateState();
+            navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
         }
     }
 
