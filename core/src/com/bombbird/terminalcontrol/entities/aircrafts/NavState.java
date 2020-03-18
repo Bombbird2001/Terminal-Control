@@ -542,20 +542,26 @@ public class NavState {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
                 latModes.add("Fly heading", "Turn left heading", "Turn right heading");
+                break;
             case REMOVE_AFTERHDG_HOLD:
                 latModes.removeValue("After waypoint, fly heading", false);
                 latModes.removeValue("Hold at", false);
+                break;
             case REMOVE_SIDSTAR_ONLY:
                 latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
                 latModes.removeValue(aircraft.getSidStar().getName() + " departure", false);
+                break;
             case REMOVE_SIDSTAR_AFTERHDG:
                 latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
                 latModes.removeValue(aircraft.getSidStar().getName() + " departure", false);
                 latModes.removeValue("After waypoint, fly heading", false);
+                break;
             case REMOVE_HOLD_ONLY:
                 latModes.removeValue("Hold at", false);
+                break;
             case REMOVE_AFTERHDG_ONLY:
                 latModes.removeValue("After waypoint, fly heading", false);
+                break;
             case ADD_ALL_SIDSTAR:
                 latModes.clear();
                 if (aircraft instanceof Arrival) {
@@ -564,6 +570,7 @@ public class NavState {
                 } else if (aircraft instanceof Departure) {
                     latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
                 }
+                break;
             default:
                 Gdx.app.log("NavState", "Invalid latModes update mode: " + mode);
         }
@@ -577,6 +584,7 @@ public class NavState {
             case REMOVE_SIDSTAR_RESTR:
                 altModes.removeValue("Climb via SID", false);
                 altModes.removeValue("Descend via STAR", false);
+                break;
             case ADD_SIDSTAR_RESTR:
                 altModes.clear();
                 if (aircraft instanceof Arrival) {
@@ -585,6 +593,7 @@ public class NavState {
                     altModes.add("Climb via SID");
                 }
                 altModes.add("Climb/descend to", "Expedite climb/descent to");
+                break;
             default:
                 Gdx.app.log("NavState", "Invalid altModes update mode: " + mode);
         }
@@ -598,6 +607,7 @@ public class NavState {
             case REMOVE_SIDSTAR_RESTR:
                 spdModes.removeValue("SID speed restrictions", false);
                 spdModes.removeValue("STAR speed restrictions", false);
+                break;
             case ADD_SIDSTAR_RESTR:
                 spdModes.clear();
                 if (aircraft instanceof Arrival) {
@@ -606,6 +616,7 @@ public class NavState {
                     spdModes.add("SID speed restrictions");
                 }
                 spdModes.add("No speed restrictions");
+                break;
             default:
                 Gdx.app.log("NavState", "Invalid spdModes update mode: " + mode);
         }
