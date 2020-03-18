@@ -46,7 +46,7 @@ public class LatTab extends Tab {
         super(ui);
         loadHdgElements();
         loadILSBox();
-        waypoints = new Array<String>();
+        waypoints = new Array<>();
     }
 
     private void loadILSBox() {
@@ -58,8 +58,8 @@ public class LatTab extends Tab {
         boxStyle.scrollStyle = paneStyle;
         boxStyle.background = Ui.lightBoxBackground;
 
-        ils = new Array<String>();
-        ilsBox = new SelectBox<String>(boxStyle);
+        ils = new Array<>();
+        ilsBox = new SelectBox<>(boxStyle);
         ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
         ilsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         ilsBox.setAlignment(Align.center);
@@ -354,6 +354,8 @@ public class LatTab extends Tab {
 
     @Override
     public void updateMode() {
+        if (selectedAircraft == null) return;
+        if (selectedAircraft.getNavState() == null) return;
         selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS);
     }
 
