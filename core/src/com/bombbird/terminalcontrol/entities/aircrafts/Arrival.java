@@ -389,6 +389,12 @@ public class Arrival extends Aircraft {
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
             setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
+        } else if ("Hold at".equals(getNavState().getDispLatMode().first()) && isHolding() && getHoldWpt() != null) {
+            int[] altRestr = getRoute().getHoldProcedure().getAltRestAtWpt(getHoldWpt());
+            int highestAlt = altRestr[1];
+            int lowestAlt = altRestr[0];
+            setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
+            setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
         }
     }
 
