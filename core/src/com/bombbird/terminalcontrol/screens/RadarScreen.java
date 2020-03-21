@@ -52,10 +52,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RadarScreen extends GameScreen {
-    public void setRadarTime(float radarTime) {
-        this.radarTime = radarTime;
-    }
-
     public enum Weather {
         LIVE,
         RANDOM,
@@ -807,5 +803,9 @@ public class RadarScreen extends GameScreen {
         information++;
         if (information > 90) information -= 26;
         if (commBox != null) commBox.normalMsg("Information " + information + " is now current");
+    }
+
+    public void setRadarTime(float radarTime) {
+        this.radarTime = radarTime;
     }
 }
