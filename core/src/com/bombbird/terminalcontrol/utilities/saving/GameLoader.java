@@ -12,7 +12,7 @@ import com.bombbird.terminalcontrol.utilities.RenameManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 public class GameLoader {
     /** Loads save information from the save JSONObject */
@@ -37,7 +37,7 @@ public class GameLoader {
         }
 
         JSONArray jsonArray = save.getJSONArray("allAircraft");
-        ConcurrentHashMap<String, Boolean> allAircrafts = new ConcurrentHashMap<>();
+        HashMap<String, Boolean> allAircrafts = new HashMap<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             allAircrafts.put(jsonArray.getString(i), true);
         }

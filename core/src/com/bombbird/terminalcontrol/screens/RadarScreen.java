@@ -49,7 +49,6 @@ import com.bombbird.terminalcontrol.utilities.TutorialManager;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RadarScreen extends GameScreen {
     public enum Weather {
@@ -110,7 +109,7 @@ public class RadarScreen extends GameScreen {
     private float saveTime;
 
     //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
-    private ConcurrentHashMap<String, Boolean> allAircraft;
+    private HashMap<String, Boolean> allAircraft;
 
     //Waypoint manager for managing waypoint selected status
     private WaypointManager waypointManager;
@@ -438,7 +437,7 @@ public class RadarScreen extends GameScreen {
         collisionChecker = new CollisionChecker();
 
         //Load aircraft callsign hashMap
-        allAircraft = new ConcurrentHashMap<>();
+        allAircraft = new HashMap<>();
 
         //Load waypoint manager
         waypointManager = new WaypointManager();
@@ -783,11 +782,11 @@ public class RadarScreen extends GameScreen {
         this.commBox = commBox;
     }
 
-    public ConcurrentHashMap<String, Boolean> getAllAircraft() {
+    public HashMap<String, Boolean> getAllAircraft() {
         return allAircraft;
     }
 
-    public void setAllAircraft(ConcurrentHashMap<String, Boolean> allAircraft) {
+    public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
         this.allAircraft = allAircraft;
     }
 
