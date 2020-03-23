@@ -64,13 +64,16 @@ public class Waypoint extends Actor {
         }
     }
 
+    /** Checks whether the waypoint is marked as a flyover waypoint for correct rendering */
     public boolean isFlyOver() {
         Aircraft selectedAircraft = TerminalControl.radarScreen.getSelectedAircraft();
-        //directFlyOver is to show whether a selected aircraft has the waypoint as a flyover one; if selected aircraft does not have it as flyover or has already passed it
-        //then it will not be displayed even if other aircraft have it as flyover
-        //Will be false if no aircraft selected
-        boolean directFlyOver = selectedAircraft != null && selectedAircraft.getRemainingWaypoints().contains(this, true) && selectedAircraft.getRoute().getWptFlyOver(name);
-        return directFlyOver || flyOver;
+        if (selectedAircraft != null && selectedAircraft.getRemainingWaypoints().contains(this, true)) {
+            //If there is aircraft selected, and remaining waypoints contains this waypoint, return whether this waypoint is flyover
+            return selectedAircraft.getRoute().getWptFlyOver(name);
+        } else {
+            //Otherwise, just use the flyOver waypoint which should be updated earlier
+            return flyOver;
+        }
     }
 
     @Override

@@ -1137,6 +1137,7 @@ public class Aircraft extends Actor {
         updateTargetAltitude();
         updateClearedSpd();
         prevDirect.updateFlyOverStatus();
+        if (direct != null) direct.updateFlyOverStatus();
         if (selected && isArrivalDeparture()) {
             updateUISelections();
             ui.updateState();
