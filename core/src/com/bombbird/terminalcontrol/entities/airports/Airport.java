@@ -176,14 +176,15 @@ public class Airport {
             Array<Aircraft> queueArray = new Array<>();
             JSONArray queue = save.getJSONObject("runwayQueues").getJSONArray(runway.getName());
             for (int i = 0; i < queue.length(); i++) {
-                queueArray.add(TerminalControl.radarScreen.aircrafts.get(queue.getString(i)));
+                Aircraft aircraft = TerminalControl.radarScreen.aircrafts.get(queue.getString(i));
+                if (aircraft != null) queueArray.add(aircraft);
             }
         }
 
         takeoffManager = new TakeoffManager(this, save.getJSONObject("takeoffManager"));
 
         if (save.isNull("starTimers")) {
-            com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR.loadEntryTiming(this);
+            RandomSTAR.loadEntryTiming(this);
         } else {
             RandomSTAR.loadEntryTiming(this, save.getJSONObject("starTimers"));
         }
