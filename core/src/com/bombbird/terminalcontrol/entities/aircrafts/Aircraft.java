@@ -1094,6 +1094,7 @@ public class Aircraft extends Actor {
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
     private void updateDirect() {
+        Waypoint prevDirect = direct;
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
             clearedHeading = afterWptHdg;
@@ -1135,6 +1136,7 @@ public class Aircraft extends Actor {
         updateAltRestrictions();
         updateTargetAltitude();
         updateClearedSpd();
+        prevDirect.updateFlyOverStatus();
         if (selected && isArrivalDeparture()) {
             updateUISelections();
             ui.updateState();
@@ -1223,7 +1225,7 @@ public class Aircraft extends Actor {
     }
 
     public Array<Waypoint> getUiRemainingWaypoints() {
-        if (selected) {
+        if (selected && isArrivalDeparture()) {
             if (Tab.latMode.contains(getSidStar().getName())) {
                 return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.getWaypoints().size - 1);
             } else if ("After waypoint, fly heading".equals(Tab.latMode)) {

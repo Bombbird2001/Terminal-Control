@@ -473,6 +473,13 @@ public class RadarScreen extends GameScreen {
         loadInputProcessors();
     }
 
+    /** Updates the display state (flyover or not) for all waypoints */
+    private void updateWaypointDisplay() {
+        for (Waypoint waypoint: waypoints.values()) {
+            waypoint.updateFlyOverStatus();
+        }
+    }
+
     /** Updates the time values for each timer & runs tasks when time is reached */
     private void updateTimers() {
         float deltaTime = Gdx.graphics.getDeltaTime();
@@ -652,7 +659,7 @@ public class RadarScreen extends GameScreen {
 
     private void checkEasterEgg() {
         if (lastTapped.size < 2) return;
-        if (lastTapped.first() == 'H' && lastTapped.last() == 'X') {
+        if (!UnlockManager.isTCHXAvailable() && lastTapped.first() == 'H' && lastTapped.last() == 'X') {
             //Easter egg unlocked
             UnlockManager.unlockEgg("HX");
             commBox.alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
@@ -678,6 +685,7 @@ public class RadarScreen extends GameScreen {
         //Implements show method of screen, loads UI & save (if available) after show is called
         loadUI();
         GameLoader.loadSaveData(save);
+        updateWaypointDisplay();
     }
 
     @Override

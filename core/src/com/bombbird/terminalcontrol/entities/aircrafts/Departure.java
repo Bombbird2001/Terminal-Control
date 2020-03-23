@@ -54,6 +54,7 @@ public class Departure extends Aircraft {
         setRoute(new Route(this, sid, runway.getName()));
 
         setDirect(getRoute().getWaypoint(0));
+        getDirect().updateFlyOverStatus();
 
         //Set initial IAS due to wind + 10 knots ground speed
         setGs(5);
