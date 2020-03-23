@@ -78,7 +78,8 @@ public class Departure extends Aircraft {
 
         loadLabel();
         setNavState(new NavState(this));
-        getDirect().updateFlyOverStatus();
+
+        if (getDirect() != null && getRoute().getWptFlyOver(getDirect().getName())) getDirect().setDepFlyOver(); //Set the flyOver separately if is flyover waypoint
 
         setControlState(ControlState.UNCONTROLLED);
         setColor(new Color(0x11ff00ff));

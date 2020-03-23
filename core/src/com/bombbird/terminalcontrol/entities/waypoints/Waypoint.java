@@ -64,6 +64,11 @@ public class Waypoint extends Actor {
         }
     }
 
+    /** Used to set flyOver to true when creating new departures since the Departure would not have been constructed and added to the HashMap of aircrafts */
+    public void setDepFlyOver() {
+        flyOver = true;
+    }
+
     /** Checks whether the waypoint is marked as a flyover waypoint for correct rendering */
     public boolean isFlyOver() {
         Aircraft selectedAircraft = TerminalControl.radarScreen.getSelectedAircraft();
