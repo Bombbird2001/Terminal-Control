@@ -11,7 +11,7 @@ public interface TextToSpeech {
 
     void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading);
 
-    void initDepContact(Aircraft aircraft, String wake, String depCallsign, String greeting, String outbound, String airport, String action, String sid, boolean sidSaid);
+    void initDepContact(Aircraft aircraft, String wake, String depCallsign, String greeting, String outbound, String airborne, String action, String sid, boolean sidSaid);
 
     void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type);
 

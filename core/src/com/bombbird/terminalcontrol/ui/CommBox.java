@@ -202,8 +202,9 @@ public class CommBox {
             if (sidSaid) {
                 sidString = ", " + aircraft.getSidStar().getName() + " departure";
             }
-            text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + action + sidString;
-            TerminalControl.tts.initDepContact(aircraft, wake, apchCallsign, greeting, aircraft.getAirport().getIcao(), outboundText, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
+            String airborne = MathUtils.randomBoolean() ? "" : "airborne ";
+            text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + airborne + action + sidString;
+            TerminalControl.tts.initDepContact(aircraft, wake, apchCallsign, greeting, outboundText, airborne, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
         }
 
         String finalText = text;
