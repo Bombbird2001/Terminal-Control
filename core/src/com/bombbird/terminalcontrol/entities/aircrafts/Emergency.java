@@ -198,22 +198,29 @@ public class Emergency {
             }
             if (aircraft.isTkOfLdg() && stayOnRwy && stayOnRwyTime > 0) {
                 //Aircraft has touched down and needs to stay on runway
-                stayOnRwyTime -= dt;
-                String rwy = aircraft.getIls().getName().substring(3);
-                if (!aircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
-                    aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
-                    aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(true);
-                    radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
-                    radarScreen.getCommBox().normalMsg("Emergency vehicles are proceeding onto runway " + rwy);
-                }
-
-                if (stayOnRwyTime < 0) {
-                    aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
-                    aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
-                    aircraft.getAirport().updateRunwayUsage();
-                    radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
-                    radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
+                if (aircraft.getIls() == null) {
                     stayOnRwy = false;
+                    stayOnRwyTime = -1;
+                } else {
+                    stayOnRwyTime -= dt;
+                    String rwy = aircraft.getIls().getName().substring(3);
+                    if (!aircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
+                        aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
+                        aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(true);
+                        radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
+                        radarScreen.getCommBox().normalMsg("Emergency vehicles are proceeding onto runway " + rwy);
+                    }
+
+                    if (stayOnRwyTime < 0) {
+                        if (aircraft.getAirport().getRunways().containsKey(rwy)) {
+                            aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
+                            aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
+                            radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
+                            radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
+                        }
+                        aircraft.getAirport().updateRunwayUsage();
+                        stayOnRwy = false;
+                    }
                 }
             }
         }
