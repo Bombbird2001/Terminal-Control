@@ -191,6 +191,7 @@ public class CommBox {
                 text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString;
                 TerminalControl.tts.initArrContact(aircraft, wake, apchCallsign, greeting, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
             } else {
+                action = (MathUtils.randomBoolean() ? "going around, " : "missed approach, ") + action; //Go around message
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
                 TerminalControl.tts.goAroundContact(aircraft, wake, apchCallsign, action, Integer.toString(aircraft.getClearedHeading()));
             }

@@ -648,9 +648,9 @@ public class Aircraft extends Actor {
         if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f;
         if (fixedVs) targetVertSpd = verticalSpeed;
         if (targetVertSpd > verticalSpeed + 100) {
-            verticalSpeed = verticalSpeed + 500 * Gdx.graphics.getDeltaTime();
+            verticalSpeed = verticalSpeed + 300 * Gdx.graphics.getDeltaTime();
         } else if (targetVertSpd < verticalSpeed - 100) {
-            verticalSpeed = verticalSpeed - 500 * Gdx.graphics.getDeltaTime();
+            verticalSpeed = verticalSpeed - 300 * Gdx.graphics.getDeltaTime();
         }
         float[] range = getEffectiveVertSpd();
         verticalSpeed = MathUtils.clamp(verticalSpeed, range[0], range[1]);
@@ -682,11 +682,17 @@ public class Aircraft extends Actor {
         //No default implementation
     }
 
+    /** Returns whether aircraft can be handed over to tower/centre, overriden in Arrival, Departure */
+    public boolean canHandover() {
+        //No default implementation
+        return false;
+    }
+
     private double findRequiredDistance(double deltaHeading) {
         float turnRate = ias > 250 ? 1.5f : 3f;
         double radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate);
         double halfTheta = (180 - deltaHeading) / 2f;
-        return 32.4 * radius / Math.tan(Math.toRadians(halfTheta)) + 5;
+        return 32.4 * radius / Math.tan(Math.toRadians(halfTheta)) + 10;
     }
 
     public int[] getWinds() {
@@ -951,6 +957,7 @@ public class Aircraft extends Actor {
             locCap = true;
             navState.replaceAllHdgModes();
             navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
+            ui.updateAckHandButton(this);
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
@@ -1066,10 +1073,10 @@ public class Aircraft extends Actor {
         //Update angular velocity towards target angular velocity
         if (targetAngularVelocity > angularVelocity + 0.1f) {
             //If need to turn right, start turning right
-            angularVelocity += 0.5f * Gdx.graphics.getDeltaTime();
+            angularVelocity += 0.3f * Gdx.graphics.getDeltaTime();
         } else if (targetAngularVelocity < angularVelocity - 0.1f) {
             //If need to turn left, start turning left
-            angularVelocity -= 0.5f * Gdx.graphics.getDeltaTime();
+            angularVelocity -= 0.3f * Gdx.graphics.getDeltaTime();
         } else {
             //If within +-0.1 of target, set equal to target
             angularVelocity = targetAngularVelocity;

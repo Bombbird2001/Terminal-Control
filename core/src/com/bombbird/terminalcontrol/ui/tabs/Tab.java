@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
@@ -43,7 +42,6 @@ public class Tab {
     public static int clearedSpd;
 
     public boolean tabChanged;
-    private TextButton resetTab;
 
     public boolean visible;
 
@@ -60,7 +58,6 @@ public class Tab {
             LOADED_STYLES = true;
         }
         loadSelect();
-        loadResetButton();
         infoQueue = new Queue<>();
     }
 
@@ -142,32 +139,6 @@ public class Tab {
         TerminalControl.radarScreen.uiStage.addActor(valueBox);
     }
 
-    private void loadResetButton() {
-        //Separate buttonstyle for reset tab
-        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
-        textButtonStyle2.font = Fonts.defaultFont20;
-        textButtonStyle2.fontColor = Color.BLACK;
-        textButtonStyle2.up = Ui.lightBoxBackground;
-        textButtonStyle2.down = TerminalControl.skin.getDrawable("Button_down");
-
-        //Undo this tab button
-        resetTab = new TextButton("Undo\nthis tab", textButtonStyle2);
-        resetTab.setSize(0.25f * getPaneWidth(), 370);
-        resetTab.setPosition(0.375f * getPaneWidth(), 3240 - 3070);
-        resetTab.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                try {
-                    resetTab();
-                } catch (Exception e) {
-                    ErrorHandler.sendGenericError(e, false);
-                }
-                event.handle();
-            }
-        });
-        TerminalControl.radarScreen.uiStage.addActor(resetTab);
-    }
-
     public void updateElements() {
         //Overriden method for updating each tab's elements
     }
@@ -178,11 +149,6 @@ public class Tab {
 
     public void updateElementColours() {
         //Overriden method for updating each tab's elements' colours
-        if (tabChanged) {
-            resetTab.getStyle().fontColor = Color.YELLOW;
-        } else {
-            resetTab.getStyle().fontColor = Color.WHITE;
-        }
         ui.updateResetColours();
     }
 
@@ -216,8 +182,6 @@ public class Tab {
         settingsBox.setX(leftMargin);
         valueBox.setSize(paneSize, boxHeight);
         valueBox.setX(leftMargin);
-        resetTab.setSize(paneWidth / 4, 370);
-        resetTab.setX(leftMargin + 0.275f * paneWidth);
     }
 
     public void setVisibility(boolean show) {
@@ -226,7 +190,6 @@ public class Tab {
         settingsBox.setVisible(show);
         valueBox.setVisible(show);
         notListening = false;
-        resetTab.setVisible(show);
     }
 
     public float getPaneWidth() {

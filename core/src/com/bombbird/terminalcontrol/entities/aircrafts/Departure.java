@@ -319,9 +319,15 @@ public class Departure extends Aircraft {
     @Override
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         super.updateAltitude(holdAlt, fixedVs);
+        if (canHandover()) ui.updateAckHandButton(this);
         if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
             contactOther();
         }
+    }
+
+    @Override
+    public boolean canHandover() {
+        return getControlState() == ControlState.DEPARTURE && getAltitude() >= radarScreen.maxAlt - 4000 && getNavState().getDispLatMode().first().contains("departure");
     }
 
     @Override

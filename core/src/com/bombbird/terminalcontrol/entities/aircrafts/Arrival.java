@@ -578,7 +578,7 @@ public class Arrival extends Aircraft {
             goAroundSet = false;
             super.updateAltitude(holdAlt, fixedVs);
         }
-        if (getControlState() != ControlState.ARRIVAL && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert) {
+        if (getControlState() != ControlState.ARRIVAL && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert && !isLocCap()) {
             setControlState(ControlState.ARRIVAL);
             radarScreen.getCommBox().initialContact(this);
             setActionRequired(true);
@@ -599,6 +599,11 @@ public class Arrival extends Aircraft {
             radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - 0.4f);
         }
         radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
+    }
+
+    @Override
+    public boolean canHandover() {
+        return getIls() != null && getControlState() == ControlState.ARRIVAL && isLocCap();
     }
 
     /** Called to check the distance behind the aircraft ahead of current aircraft, calls swap in runway array if it somehow overtakes it */
@@ -785,7 +790,7 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundSet = false;
-        if (isSelected() && getControlState() == ControlState.DEPARTURE) {
+        if (isSelected() && getControlState() == ControlState.ARRIVAL) {
             ui.updateState();
         }
         getDataTag().setMinimized(false);

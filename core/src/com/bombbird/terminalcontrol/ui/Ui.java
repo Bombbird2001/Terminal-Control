@@ -48,6 +48,7 @@ public class Ui {
     private TextButton spdButton;
 
     private TextButton cfmChange;
+    private TextButton handoverAck;
     private TextButton resetAll;
 
     private TextButton labelButton;
@@ -302,6 +303,7 @@ public class Ui {
             showChangesButtons(true);
             resetAll();
             updateElementColours();
+            updateAckHandButton(aircraft);
         } else {
             //Aircraft unselected
             selectedAircraft = null;
@@ -345,10 +347,34 @@ public class Ui {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 updateMode();
+                if ("Acknow-\nledge".equals(handoverAck.getText().toString())) {
+                    handoverAck.setVisible(false);
+                }
                 event.handle();
             }
         });
         radarScreen.uiStage.addActor(cfmChange);
+
+        //Handover/acknowledge button
+        handoverAck = new TextButton("Acknow-\nledge", new TextButton.TextButtonStyle(textButtonStyle));
+        handoverAck.setSize(0.25f * getPaneWidth(), 370);
+        handoverAck.setPosition(0.375f * getPaneWidth(), 3240 - 3070);
+        handoverAck.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                String txt = handoverAck.getText().toString();
+                if ("Acknow-\nledge".equals(txt)) {
+                    selectedAircraft.setActionRequired(false);
+                    handoverAck.setVisible(false);
+                } else if ("Handover".equals(txt)) {
+                    selectedAircraft.contactOther();
+                } else {
+                    Gdx.app.log("Ui error", "Unknown button text " + txt);
+                }
+                event.handle();
+            }
+        });
+        radarScreen.uiStage.addActor(handoverAck);
 
         //Undo all changes button
         resetAll = new TextButton("Undo all\nchanges", textButtonStyle);
@@ -642,6 +668,23 @@ public class Ui {
         if (DayNightManager.isNight()) text += "Night mode active";
         infoLabel.setText(text);
         infoLabel.setVisible(!text.isEmpty() && selectedAircraft == null);
+    }
+
+    public void updateAckHandButton(Aircraft aircraft) {
+        if (aircraft.equals(selectedAircraft)) {
+            handoverAck.setVisible(true);
+            if (aircraft.canHandover()) {
+                handoverAck.setText("Handover");
+            } else if (aircraft.isActionRequired()) {
+                handoverAck.setText("Acknow-\nledge");
+            } else {
+                handoverAck.setVisible(false);
+            }
+
+            if (selectedAircraft != null && selectedAircraft.isActionRequired()) {
+                handoverAck.getStyle().fontColor = Color.YELLOW;
+            }
+        }
     }
 
     public float getPaneWidth() {

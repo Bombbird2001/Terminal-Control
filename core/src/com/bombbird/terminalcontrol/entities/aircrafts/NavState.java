@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.entities.aircrafts;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
@@ -11,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NavState {
-    public static float timeDelay = 2f;
     public static final int REMOVE_ALL_SIDSTAR = 0; //Removes all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
     public static final int REMOVE_AFTERHDG_HOLD = 1; //Removes after waypoint fly heading, hold at
     public static final int REMOVE_SIDSTAR_ONLY = 2; //Removes only the SID, STAR mode
@@ -235,7 +235,7 @@ public class NavState {
 
     /** Adds the time delay to keep track of when to send instructions */
     public void updateState() {
-        timeQueue.add(timeDelay);
+        timeQueue.add(MathUtils.random(2.0f, 4.0f));
     }
 
     /** When called updates the aircraft's intentions (i.e. after reaction time has passed) */
