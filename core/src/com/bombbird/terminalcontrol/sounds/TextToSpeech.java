@@ -7,17 +7,19 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import java.util.HashMap;
 
 public interface TextToSpeech {
-    void initArrContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info);
+    void initArrContact(Aircraft aircraft, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info);
 
-    void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading);
+    void goAroundContact(Aircraft aircraft, String apchCallsign, String action, String heading);
 
-    void initDepContact(Aircraft aircraft, String wake, String depCallsign, String greeting, String outbound, String airborne, String action, String sid, boolean sidSaid);
+    void goAroundMsg(Aircraft aircraft, String goArdText, String reason);
 
-    void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type);
+    void initDepContact(Aircraft aircraft, String depCallsign, String greeting, String outbound, String airborne, String action, String sid, boolean sidSaid);
 
-    void contactOther(Aircraft aircraft, String wake, String frequency);
+    void holdEstablishMsg(Aircraft aircraft, String wpt, int type);
 
-    void lowFuel(Aircraft aircraft, char wakeCat, int status);
+    void contactOther(Aircraft aircraft, String frequency);
+
+    void lowFuel(Aircraft aircraft, int status);
 
     void sayEmergency(Aircraft aircraft, String emergency, String intent);
 

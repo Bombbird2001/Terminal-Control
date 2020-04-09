@@ -90,7 +90,7 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks the initial contact for arrivals */
     @Override
-    public void initArrContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
+    public void initArrContact(Aircraft aircraft, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
@@ -113,25 +113,34 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (info.length() >= 2) {
             newInfo = info.split("information ")[0] + "information " + Pronunciation.alphabetPronunciations.get(info.charAt(info.length() - 1));
         }
-        String text = apchCallsign + greeting + ", " + icao + " " + newFlightNo + " " + wake + " with you, " + newAction + starString + directString + newInfo;
+        String text = apchCallsign + greeting + ", " + icao + " " + newFlightNo + aircraft.getWakeString() + " with you, " + newAction + starString + directString + newInfo;
         sayText(text, aircraft.getVoice());
     }
 
     /** Speaks the contact from arrivals after going around */
     @Override
-    public void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading) {
+    public void goAroundContact(Aircraft aircraft, String apchCallsign, String action, String heading) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newAction = Pronunciation.convertToFlightLevel(action);
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
         String newHeading = StringUtils.join(heading.split(""), " ");
-        String text = apchCallsign + ", " + icao + newFlightNo + " " + wake + " with you, " + newAction + ", heading " + newHeading;
+        String text = apchCallsign + ", " + icao + newFlightNo + aircraft.getWakeString() + " with you, " + newAction + ", heading " + newHeading;
+        sayText(text, aircraft.getVoice());
+    }
+
+    @Override
+    public void goAroundMsg(Aircraft aircraft, String goArdText, String reason) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + ", " + goArdText + " due to " + reason;
         sayText(text, aircraft.getVoice());
     }
 
     /** Speaks the initial contact for departures */
     @Override
-    public void initDepContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String outbound, String airborne,  String action, String sid, boolean sidSaid) {
+    public void initDepContact(Aircraft aircraft, String apchCallsign, String greeting, String outbound, String airborne,  String action, String sid, boolean sidSaid) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         action = Pronunciation.convertToFlightLevel(action);
@@ -140,16 +149,16 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         if (sidSaid) {
             sidString = ", " + sid + " departure";
         }
-        String text = apchCallsign + greeting + ", " + icao + newFlightNo + " " + wake + " with you, " + outbound + airborne + action + sidString;
+        String text = apchCallsign + greeting + ", " + icao + newFlightNo + aircraft.getWakeString() + " with you, " + outbound + airborne + action + sidString;
         sayText(text, aircraft.getVoice());
     }
 
     @Override
-    public void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type) {
+    public void holdEstablishMsg(Aircraft aircraft, String wpt, int type) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
-        String text = icao + newFlightNo + " " + wake;
+        String text = icao + newFlightNo + aircraft.getWakeString();
         String newWpt;
         if (Pronunciation.waypointPronunciations.containsKey(wpt)) {
             newWpt = Pronunciation.waypointPronunciations.get(wpt);
@@ -169,38 +178,33 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
 
     /** Speaks handover of aircraft to other frequencies */
     @Override
-    public void contactOther(Aircraft aircraft, String wake, String frequency) {
+    public void contactOther(Aircraft aircraft, String frequency) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String newFreq = Pronunciation.convertNoToText(frequency);
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
-        String text = newFreq + ", good day, " + icao + newFlightNo + " " + wake;
+        String text = newFreq + ", good day, " + icao + newFlightNo + aircraft.getWakeString();
         sayText(text, aircraft.getVoice());
     }
 
     /** Speaks aircraft's low fuel call */
     @Override
-    public void lowFuel(Aircraft aircraft, char wakeCat, int status) {
+    public void lowFuel(Aircraft aircraft, int status) {
         if (TerminalControl.radarScreen.soundSel < 2) return;
         String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
         String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
-        String wake = "";
-        if (wakeCat == 'H') {
-            wake = " heavy";
-        } else if (wakeCat == 'J') {
-            wake = " super";
-        }
+        String wake = aircraft.getWakeString();
         String text = "";
         if (status == 0) {
-            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + " " + wake + " is low on fuel and requests priority landing.";
+            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + wake + " is low on fuel and requests priority landing.";
         } else if (status == 1) {
-            text = "Mayday, mayday, mayday, " + icao + newFlightNo + " " + wake + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.";
+            text = "Mayday, mayday, mayday, " + icao + newFlightNo + wake + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.";
         } else if (status == 2) {
-            text = icao + newFlightNo + " " + wake + ", we are diverting to the alternate airport.";
+            text = icao + newFlightNo + wake + ", we are diverting to the alternate airport.";
         } else if (status == 3) {
-            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + " " + wake + " is low on fuel and will divert in 10 minutes if no landing runway is available.";
+            text = "Pan-pan, pan-pan, pan-pan, " + icao + newFlightNo + wake + " is low on fuel and will divert in 10 minutes if no landing runway is available.";
         } else if (status == 4) {
-            text = "Mayday, mayday, mayday, " + icao + newFlightNo + " " + wake + " is declaring a fuel emergency and is diverting immediately.";
+            text = "Mayday, mayday, mayday, " + icao + newFlightNo + wake + " is declaring a fuel emergency and is diverting immediately.";
         }
         sayText(text, aircraft.getVoice());
     }

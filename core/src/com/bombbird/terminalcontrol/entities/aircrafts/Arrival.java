@@ -419,10 +419,10 @@ public class Arrival extends Aircraft {
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, different msg
                 radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and will divert in 10 minutes if no landing runway is available.");
-                TerminalControl.tts.lowFuel(this, getWakeCat(), 3);
+                TerminalControl.tts.lowFuel(this, 3);
             } else {
                 radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
-                TerminalControl.tts.lowFuel(this, getWakeCat(), 0);
+                TerminalControl.tts.lowFuel(this, 0);
             }
 
             requestPriority = true;
@@ -436,12 +436,12 @@ public class Arrival extends Aircraft {
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, divert directly
                 radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and is diverting immediately.");
-                TerminalControl.tts.lowFuel(this, getWakeCat(), 4);
+                TerminalControl.tts.lowFuel(this, 4);
                 divertToAltn();
             } else {
                 radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.");
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
-                TerminalControl.tts.lowFuel(this, getWakeCat(), 1);
+                TerminalControl.tts.lowFuel(this, 1);
             }
 
             declareEmergency = true;
@@ -452,7 +452,7 @@ public class Arrival extends Aircraft {
         if (fuel < 1500 && !divert && !isLocCap() && getControlState() == ControlState.ARRIVAL) {
             //Diverting to alternate
             radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
-            TerminalControl.tts.lowFuel(this, getWakeCat(), 2);
+            TerminalControl.tts.lowFuel(this, 2);
             divertToAltn();
 
             radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));

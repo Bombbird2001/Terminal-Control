@@ -87,52 +87,56 @@ public class CommBox {
 
     /** Adds a message for the input aircraft to contact in the input frequency given the callsign of the next controller */
     public void contactFreq(Aircraft aircraft, String callsign, String freq) {
-        String wake = "";
-        if (aircraft.getWakeCat() == 'H') {
-            wake = " heavy";
-        } else if (aircraft.getWakeCat() == 'J') {
-            wake = " super";
-        }
-
+        String wake = aircraft.getWakeString();
         String bai = ", ";
         bai += callsign.contains("Tower") ? atcByeTwr.random() : atcByeCtr.random();
         if (aircraft.getEmergency().isActive()) bai = ", have a safe landing";
-        String finalWake = wake;
         String finalBai = bai;
         Gdx.app.postRunnable(() -> {
-            Label label = new Label(aircraft.getCallsign() + finalWake + ", contact " + callsign + " on " + freq + finalBai + ".", getLabelStyle(Color.BLACK));
+            Label label = new Label(aircraft.getCallsign() + wake + ", contact " + callsign + " on " + freq + finalBai + ".", getLabelStyle(Color.BLACK));
             updateLabelQueue(label);
         });
 
         String bye = ", ";
         bye += pilotBye.random() + ", ";
         String finalBye = bye;
-        String finalWake1 = wake;
         Gdx.app.postRunnable(() -> {
-            Label label1 = new Label(freq + finalBye + aircraft.getCallsign() + finalWake1, getLabelStyle(aircraft.getColor()));
+            Label label1 = new Label(freq + finalBye + aircraft.getCallsign() + wake, getLabelStyle(aircraft.getColor()));
             updateLabelQueue(label1);
         });
-        //Remove lowkey annoying message from TTS
-        //TerminalControl.tts.contactOther(aircraft.getVoice(), freq, aircraft.getCallsign().substring(0, 3), aircraft.getCallsign().substring(3), wake);
     }
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
     public void goAround(Aircraft aircraft, String reason) {
         Gdx.app.postRunnable(() -> {
-            Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
-            updateLabelQueue(label);
+            if (aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED) {
+                Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
+                updateLabelQueue(label);
+            } else if (aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) {
+                int randomInt = MathUtils.random(0, 2);
+                String goArdText = "";
+                switch (randomInt) {
+                    case 0:
+                        goArdText = "going around";
+                        break;
+                    case 1:
+                        goArdText = "we're going around";
+                        break;
+                    case 2:
+                        goArdText = "performing a missed approach";
+                        break;
+                }
+                TerminalControl.tts.goAroundMsg(aircraft, goArdText, reason);
+                Label label = new Label(aircraft.getCallsign() + aircraft.getWakeString() + ", " + goArdText + " due to " + reason, getLabelStyle(Color.BLACK));
+                updateLabelQueue(label);
+            }
         });
     }
 
     /** Adds a message for an aircraft contacting the player for the first time */
     public void initialContact(Aircraft aircraft) {
         String apchCallsign = aircraft instanceof Arrival ? TerminalControl.radarScreen.callsign : TerminalControl.radarScreen.deptCallsign;
-        String wake = "";
-        if (aircraft.getWakeCat() == 'H') {
-            wake = " heavy";
-        } else if (aircraft.getWakeCat() == 'J') {
-            wake = " super";
-        }
+        String wake = aircraft.getWakeString();
 
         String altitude;
         if (aircraft.getAltitude() >= TerminalControl.radarScreen.transLvl * 100) {
@@ -189,11 +193,11 @@ public class CommBox {
         if (aircraft instanceof Arrival) {
             if (!aircraft.isGoAroundWindow() && aircraft.getDirect() != null) {
                 text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString;
-                TerminalControl.tts.initArrContact(aircraft, wake, apchCallsign, greeting, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
+                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.getSidStar().getPronunciation().toLowerCase(), starSaid, aircraft.getDirect().getName(), inboundSaid, infoString);
             } else {
                 action = (MathUtils.randomBoolean() ? "going around, " : "missed approach, ") + action; //Go around message
                 text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading();
-                TerminalControl.tts.goAroundContact(aircraft, wake, apchCallsign, action, Integer.toString(aircraft.getClearedHeading()));
+                TerminalControl.tts.goAroundContact(aircraft, apchCallsign, action, Integer.toString(aircraft.getClearedHeading()));
             }
         } else if (aircraft instanceof Departure) {
             String outboundText = "";
@@ -205,7 +209,7 @@ public class CommBox {
             }
             String airborne = MathUtils.randomBoolean() ? "" : "airborne ";
             text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + airborne + action + sidString;
-            TerminalControl.tts.initDepContact(aircraft, wake, apchCallsign, greeting, outboundText, airborne, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
+            TerminalControl.tts.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.getSidStar().getPronunciation().toLowerCase(), sidSaid);
         }
 
         String finalText = text;
@@ -219,13 +223,7 @@ public class CommBox {
 
     /** Adds a message for an aircraft established in hold over a waypoint */
     public void holdEstablishMsg(Aircraft aircraft, String wpt) {
-        String wake = "";
-        if (aircraft.getWakeCat() == 'H') {
-            wake = " heavy";
-        } else if (aircraft.getWakeCat() == 'J') {
-            wake = " super";
-        }
-
+        String wake = aircraft.getWakeString();
         String text = aircraft.getCallsign() + wake;
         int random = MathUtils.random(2);
         if (random == 0) {
@@ -236,7 +234,7 @@ public class CommBox {
             text += ", we're holding at " + wpt;
         }
 
-        TerminalControl.tts.holdEstablishMsg(aircraft, wake, wpt, random);
+        TerminalControl.tts.holdEstablishMsg(aircraft, wpt, random);
 
         String finalText = text;
         Gdx.app.postRunnable(() -> {
