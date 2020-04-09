@@ -89,6 +89,8 @@ public class Aircraft extends Actor {
     private boolean conflict;
     private boolean warning;
     private boolean terrainConflict;
+    private boolean prevConflict;
+    private boolean silenced;
     private Emergency emergency;
 
     //Aircraft position
@@ -198,6 +200,8 @@ public class Aircraft extends Actor {
         conflict = false;
         warning = false;
         terrainConflict = false;
+        prevConflict = false;
+        silenced = false;
         emergency = new Emergency(this, radarScreen.emerChance);
 
         radarScreen.wakeManager.addAircraft(callsign);
@@ -257,6 +261,8 @@ public class Aircraft extends Actor {
         conflict = aircraft.conflict;
         warning = aircraft.warning;
         terrainConflict = aircraft.terrainConflict;
+        prevConflict = aircraft.prevConflict;
+        silenced = aircraft.silenced;
         emergency = aircraft.emergency;
         radarAlt = aircraft.radarAlt;
         radarGs = aircraft.radarGs;
@@ -313,6 +319,7 @@ public class Aircraft extends Actor {
         } else {
             terrainConflict = save.getBoolean("terrainConflict");
         }
+        prevConflict = conflict;
         emergency = save.optJSONObject("emergency") == null ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
 
         x = (float) save.getDouble("x");
@@ -1921,5 +1928,21 @@ public class Aircraft extends Actor {
 
     public void setTrajectoryTerrainConflict(boolean trajectoryTerrainConflict) {
         this.trajectoryTerrainConflict = trajectoryTerrainConflict;
+    }
+
+    public boolean isSilenced() {
+        return silenced;
+    }
+
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
+    }
+
+    public boolean isPrevConflict() {
+        return prevConflict;
+    }
+
+    public void setPrevConflict(boolean prevConflict) {
+        this.prevConflict = prevConflict;
     }
 }

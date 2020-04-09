@@ -110,6 +110,7 @@ public class DataTag {
                     if (radarScreen.tutorialManager == null || !radarScreen.tutorialManager.isPauseForReading()) {
                         radarScreen.setSelectedAircraft(radarScreen.aircrafts.get(actor.getName()));
                         radarScreen.addToEasterEggQueue(aircraft);
+                        aircraft.setSilenced(true);
                     }
                     tapCount++;
                     if (tapCount >= 2) {
