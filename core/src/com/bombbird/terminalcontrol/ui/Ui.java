@@ -374,10 +374,12 @@ public class Ui {
             public void changed(ChangeEvent event, Actor actor) {
                 String txt = handoverAck.getText().toString();
                 if ("Acknow-\nledge".equals(txt)) {
-                    selectedAircraft.setActionRequired(false);
-                    handoverAck.setVisible(false);
+                    Gdx.app.postRunnable(() -> {
+                        selectedAircraft.setActionRequired(false);
+                        handoverAck.setVisible(false);
+                    });
                 } else if ("Handover".equals(txt)) {
-                    selectedAircraft.contactOther();
+                    Gdx.app.postRunnable(() -> selectedAircraft.contactOther());
                 } else {
                     Gdx.app.log("Ui error", "Unknown button text " + txt);
                 }

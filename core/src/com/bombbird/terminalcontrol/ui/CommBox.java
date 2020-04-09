@@ -107,12 +107,12 @@ public class CommBox {
     }
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
-    public void goAround(Aircraft aircraft, String reason) {
+    public void goAround(Aircraft aircraft, String reason, Aircraft.ControlState state) {
         Gdx.app.postRunnable(() -> {
-            if (aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED) {
+            if (state == Aircraft.ControlState.UNCONTROLLED) {
                 Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
                 updateLabelQueue(label);
-            } else if (aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) {
+            } else if (state == Aircraft.ControlState.ARRIVAL) {
                 int randomInt = MathUtils.random(0, 2);
                 String goArdText = "";
                 switch (randomInt) {

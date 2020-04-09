@@ -652,12 +652,12 @@ public class Arrival extends Aircraft {
         //Gonna split the returns into different segments just to make it easier to read
         if (willGoAround && getAltitude() < goAroundAlt && (getAirport().getWindshear().contains(getIls().getRwy().getName()) || getAirport().getWindshear().equals("ALL RWY"))) {
             //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
-            radarScreen.getCommBox().goAround(this, "windshear");
+            radarScreen.getCommBox().goAround(this, "windshear", getControlState());
             return true;
         }
         if (getWakeTolerance() > 25) {
             //If aircraft has reached wake limits
-            radarScreen.getCommBox().goAround(this, "wake turbulence");
+            radarScreen.getCommBox().goAround(this, "wake turbulence", getControlState());
             return true;
         }
         Aircraft firstAircraft = getIls().getRwy().getAircraftsOnAppr().size > 0 ? getIls().getRwy().getAircraftsOnAppr().get(0) : null;
@@ -665,46 +665,46 @@ public class Arrival extends Aircraft {
             //If distance from runway is less than 3nm
             if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign()) && firstAircraft.getEmergency().isActive() && firstAircraft.getEmergency().isStayOnRwy()) {
                 //If runway is closed due to emergency staying on runway
-                radarScreen.getCommBox().goAround(this, "runway closed");
+                radarScreen.getCommBox().goAround(this, "runway closed", getControlState());
                 return true;
             }
             if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && !isGsCap()) {
                 //If ILS GS has not been captured
-                radarScreen.getCommBox().goAround(this, "being too high");
+                radarScreen.getCommBox().goAround(this, "being too high", getControlState());
                 return true;
             } else if (getIas() - getApchSpd() > 10) {
                 //If airspeed is more than 10 knots higher than approach speed
-                radarScreen.getCommBox().goAround(this, "being too fast");
+                radarScreen.getCommBox().goAround(this, "being too fast", getControlState());
                 return true;
             } else if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && MathUtils.cosDeg(getIls().getRwy().getTrueHdg() - (float) getTrack()) < MathUtils.cosDeg(10)) {
                 //If aircraft is not fully stabilised on LOC course
-                radarScreen.getCommBox().goAround(this, "unstable approach");
+                radarScreen.getCommBox().goAround(this, "unstable approach", getControlState());
                 return true;
             } else {
                 int windDir = getAirport().getWinds()[0];
                 int windSpd = getAirport().getWinds()[1];
                 if (windSpd * MathUtils.cosDeg(windDir - getIls().getRwy().getHeading()) < -10) {
                     //If tailwind exceeds 10 knots
-                    radarScreen.getCommBox().goAround(this, "strong tailwind");
+                    radarScreen.getCommBox().goAround(this, "strong tailwind", getControlState());
                     return true;
                 }
             }
         }
         if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima() - getIls().getRwy().getElevation()) * 9) {
             //If altitude below minima and visibility is less than 9 times the minima (approx)
-            radarScreen.getCommBox().goAround(this, "runway not in sight");
+            radarScreen.getCommBox().goAround(this, "runway not in sight", getControlState());
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
             if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
-                radarScreen.getCommBox().goAround(this, "traffic on runway");
+                radarScreen.getCommBox().goAround(this, "traffic on runway", getControlState());
                 return true;
             } else {
                 //If departure has not cleared runway
                 Aircraft dep = getAirport().getTakeoffManager().getPrevAircraft().get(getIls().getRwy().getName());
                 if (dep != null && dep.getAltitude() - getIls().getRwy().getElevation() < 10) {
-                    radarScreen.getCommBox().goAround(this, "traffic on runway");
+                    radarScreen.getCommBox().goAround(this, "traffic on runway", getControlState());
                     return true;
                 }
             }
@@ -758,7 +758,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
     @Override
     public void updateGoAround() {
-        if (getAltitude() >= 1600 && getControlState() == ControlState.UNCONTROLLED) {
+        if (getAltitude() >= 1600 && isGoAround()) {
             setControlState(ControlState.ARRIVAL);
             setGoAround(false);
         }

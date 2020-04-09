@@ -10,32 +10,37 @@ import java.util.HashMap;
 public class TextToSpeechManager implements TextToSpeech {
 
     @Override
-    public void initArrContact(Aircraft aircraft, String wake, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
+    public void initArrContact(Aircraft aircraft, String apchCallsign, String greeting, String action, String star, boolean starSaid, String direct, boolean inboundSaid, String info) {
         //No default implementation
     }
 
     @Override
-    public void goAroundContact(Aircraft aircraft, String wake, String apchCallsign, String action, String heading) {
+    public void goAroundContact(Aircraft aircraft, String apchCallsign, String action, String heading) {
         //No default implementation
     }
 
     @Override
-    public void initDepContact(Aircraft aircraft, String wake, String depCallsign, String greeting, String outbound, String airport, String action, String sid, boolean sidSaid) {
+    public void goAroundMsg(Aircraft aircraft, String goArdText, String reason) {
         //No default implementation
     }
 
     @Override
-    public void holdEstablishMsg(Aircraft aircraft, String wake, String wpt, int type) {
+    public void initDepContact(Aircraft aircraft, String depCallsign, String greeting, String outbound, String airport, String action, String sid, boolean sidSaid) {
         //No default implementation
     }
 
     @Override
-    public void contactOther(Aircraft aircraft, String wake, String frequency) {
+    public void holdEstablishMsg(Aircraft aircraft, String wpt, int type) {
         //No default implementation
     }
 
     @Override
-    public void lowFuel(Aircraft aircraft, char wakeCat, int status) {
+    public void contactOther(Aircraft aircraft, String frequency) {
+        //No default implementation
+    }
+
+    @Override
+    public void lowFuel(Aircraft aircraft, int status) {
         //No default implementation
     }
 
