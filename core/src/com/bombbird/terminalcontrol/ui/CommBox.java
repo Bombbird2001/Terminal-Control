@@ -127,7 +127,7 @@ public class CommBox {
                         break;
                 }
                 TerminalControl.tts.goAroundMsg(aircraft, goArdText, reason);
-                Label label = new Label(aircraft.getCallsign() + aircraft.getWakeString() + ", " + goArdText + " due to " + reason, getLabelStyle(Color.BLACK));
+                Label label = new Label(aircraft.getCallsign() + aircraft.getWakeString() + ", " + goArdText + " due to " + reason, getLabelStyle(aircraft.getColor()));
                 updateLabelQueue(label);
             }
         });
