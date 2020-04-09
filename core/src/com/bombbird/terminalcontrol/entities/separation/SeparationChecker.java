@@ -107,11 +107,11 @@ public class SeparationChecker extends Actor {
         }
 
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if ((aircraft.isConflict() || aircraft.isTerrainConflict()) && !aircraft.isSilenced()) {
+            if ((aircraft.isConflict() || aircraft.isTerrainConflict() || aircraft.isWakeInfringe()) && !aircraft.isSilenced()) {
                 radarScreen.soundManager.playConflict();
                 break;
             }
-            aircraft.setPrevConflict(aircraft.isConflict());
+            aircraft.setPrevConflict(aircraft.isConflict() || aircraft.isTerrainConflict() || aircraft.isWakeInfringe());
         }
     }
 
@@ -211,7 +211,7 @@ public class SeparationChecker extends Actor {
                         if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 900 && dist < minima) {
                             if (!plane1.isConflict() || !plane2.isConflict()) {
                                 //TODO Change separation minima depending on visibility(?)
-                                //Aircrafts have infringed minima of 1000 feet and 3nm apart
+                                //Aircraft have infringed minima of 1000 feet and 3nm apart
                                 if (!plane1.isPrevConflict()) plane1.setSilenced(false);
                                 if (!plane2.isPrevConflict()) plane2.setSilenced(false);
                                 plane1.setConflict(true);
