@@ -304,6 +304,14 @@ public class Ui {
             resetAll();
             updateElementColours();
             updateAckHandButton(aircraft);
+            if (tab != 1) {
+                //Change default tab to altitude (1); for some reason changing tab = 1 above causes crash
+                tab = 1;
+                updateTabButtons();
+                updateTabVisibility(true);
+                updateElements();
+                updateElementColours();
+            }
         } else {
             //Aircraft unselected
             selectedAircraft = null;
@@ -356,7 +364,9 @@ public class Ui {
         radarScreen.uiStage.addActor(cfmChange);
 
         //Handover/acknowledge button
-        handoverAck = new TextButton("Acknow-\nledge", new TextButton.TextButtonStyle(textButtonStyle));
+        TextButton.TextButtonStyle ackStyle = new TextButton.TextButtonStyle(textButtonStyle);
+        ackStyle.fontColor = Color.YELLOW;
+        handoverAck = new TextButton("Acknow-\nledge", ackStyle);
         handoverAck.setSize(0.25f * getPaneWidth(), 370);
         handoverAck.setPosition(0.375f * getPaneWidth(), 3240 - 3070);
         handoverAck.addListener(new ChangeListener() {
@@ -679,10 +689,6 @@ public class Ui {
                 handoverAck.setText("Acknow-\nledge");
             } else {
                 handoverAck.setVisible(false);
-            }
-
-            if (selectedAircraft != null && selectedAircraft.isActionRequired()) {
-                handoverAck.getStyle().fontColor = Color.YELLOW;
             }
         }
     }
