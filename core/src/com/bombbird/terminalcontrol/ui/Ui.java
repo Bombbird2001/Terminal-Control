@@ -304,9 +304,9 @@ public class Ui {
             resetAll();
             updateElementColours();
             updateAckHandButton(aircraft);
-            if (tab != 1) {
-                //Change default tab to altitude (1); for some reason changing tab = 1 above causes crash
-                tab = 1;
+            if (tab != TerminalControl.defaultTabNo && TerminalControl.defaultTabNo >= 0 && TerminalControl.defaultTabNo <= 2) {
+                //Change default tab to user selected tab; for some reason changing tab = 1 or 2 above causes crash
+                tab = TerminalControl.defaultTabNo;
                 updateTabButtons();
                 updateTabVisibility(true);
                 updateElements();

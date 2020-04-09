@@ -653,6 +653,7 @@ public class GameSaver {
             settings.put("advTraj", TerminalControl.advTraj);
             settings.put("areaWarning", TerminalControl.areaWarning);
             settings.put("collisionWarning", TerminalControl.collisionWarning);
+            settings.put("defaultTabNo", TerminalControl.defaultTabNo);
             settings.put("emerChance", TerminalControl.emerChance.toString());
             settings.put("revision", TerminalControl.revision);
 

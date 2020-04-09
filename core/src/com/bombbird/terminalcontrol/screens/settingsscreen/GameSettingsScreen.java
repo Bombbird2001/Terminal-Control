@@ -65,8 +65,8 @@ public class GameSettingsScreen extends SettingsScreen {
             }
         });
 
-        backButton.setPosition(5760 / 2f - 2400, 3240 - 2600);
-        nextButton.setPosition(5760 / 2f + 1900, 3240 - 2600);
+        backButton.setPosition(5760 / 2f - 2400, 3240 - 2800);
+        nextButton.setPosition(5760 / 2f + 1900, 3240 - 2800);
     }
 
     @Override
@@ -195,23 +195,23 @@ public class GameSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void loadTabs(int xOffset, int yOffset) {
+    public void loadTabs() {
         SettingsTab tab1 = new SettingsTab(this, 2);
-        tab1.addActors(trajectoryLine, trajectoryLabel, xOffset, yOffset);
-        tab1.addActors(weather, weatherLabel, xOffset, yOffset);
-        tab1.addActors(sound, soundLabel, xOffset, yOffset);
-        tab1.addActors(emer, emerChanceLabel, xOffset, yOffset);
-        tab1.addActors(speed, speedLabel, xOffset, yOffset);
-        tab1.addActors(tfcMode, tfcLabel, xOffset, yOffset);
-        if (TerminalControl.full) tab1.addActors(sweep, sweepLabel, xOffset, yOffset);
-        if (TerminalControl.full) tab1.addActors(advTraj, advTrajLabel, xOffset, yOffset);
+        tab1.addActors(trajectoryLine, trajectoryLabel);
+        tab1.addActors(weather, weatherLabel);
+        tab1.addActors(sound, soundLabel);
+        tab1.addActors(emer, emerChanceLabel);
+        tab1.addActors(speed, speedLabel);
+        tab1.addActors(tfcMode, tfcLabel);
+        if (TerminalControl.full) tab1.addActors(sweep, sweepLabel);
+        if (TerminalControl.full) tab1.addActors(advTraj, advTrajLabel);
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
-        if (TerminalControl.full) tab2.addActors(area, areaLabel, xOffset, yOffset);
-        if (TerminalControl.full) tab2.addActors(collision, collisionLabel, xOffset, yOffset);
-        tab2.addActors(night, nightLabel, xOffset, yOffset);
-        tab2.addActors(nightStartHour, timeLabel, xOffset, yOffset, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
+        if (TerminalControl.full) tab2.addActors(area, areaLabel);
+        if (TerminalControl.full) tab2.addActors(collision, collisionLabel);
+        tab2.addActors(night, nightLabel);
+        tab2.addActors(nightStartHour, timeLabel, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
         settingsTabs.add(tab2);
     }
 

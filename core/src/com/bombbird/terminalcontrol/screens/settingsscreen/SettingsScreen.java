@@ -28,6 +28,9 @@ import java.util.Locale;
 public class SettingsScreen implements Screen {
     public final TerminalControl game;
 
+    public int xOffset;
+    public int yOffset;
+
     public Stage stage;
     public OrthographicCamera camera;
     public Viewport viewport;
@@ -95,16 +98,18 @@ public class SettingsScreen implements Screen {
     }
 
     public void loadUI(int xOffset, int yOffset) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+
         loadStyles();
 
-        //loadBoxes(xOffset, yOffset);
         loadBoxes();
 
         loadButton();
 
         loadLabel();
 
-        loadTabs(xOffset, yOffset);
+        loadTabs();
 
         updateTabs(true);
     }
@@ -321,7 +326,7 @@ public class SettingsScreen implements Screen {
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
-    public void loadTabs(int xOffset, int yOffset) {
+    public void loadTabs() {
         //No default implementation
     }
 

@@ -20,12 +20,12 @@ public class SettingsTab {
         count = 0;
     }
 
-    public void addActors(Actor box, Actor label, int xOffset, int yOffset, Actor... actorList) {
+    public void addActors(Actor box, Actor label, Actor... actorList) {
         if (count >= MAX_LENGTH * maxWidth) throw new IllegalStateException("Tab has too many items: " + count + " of " + MAX_LENGTH * maxWidth);
 
         //Add box
-        box.setX(5760 / 2f - 400 + xOffset + (2000 * (float)(count / MAX_LENGTH)));
-        box.setY(3240 * (0.8f - (count % MAX_LENGTH) * 0.15f) + yOffset);
+        box.setX(5760 / 2f - 400 + settingsScreen.xOffset + (2400 * (float)(count / MAX_LENGTH)));
+        box.setY(3240 * (0.8f - (count % MAX_LENGTH) * 0.15f) + settingsScreen.yOffset);
         actors.add(box);
 
         //Add label

@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.ui.tabs;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -447,9 +448,10 @@ public class LatTab extends Tab {
     @Override
     public void getChoices() {
         notListening = true;
+        String prevMode = latMode;
         latMode = settingsBox.getSelected();
 
-        if (latMode.contains("waypoint")) {
+        if ("After waypoint, fly heading".equals(latMode)) {
             valueBox.setItems(waypoints);
             afterWpt = valueBox.getSelected();
         } else if (latMode.contains("arrival") || latMode.contains("departure")) {
@@ -461,6 +463,13 @@ public class LatTab extends Tab {
         } else if (latMode.contains("heading")) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();
+            if (selectedAircraft != null) {
+                if ("After waypoint, fly heading".equals(prevMode) || !prevMode.contains("heading")) {
+                    //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
+                    clearedHdg = (int) Math.round(selectedAircraft.getHeading());
+                    clearedHdg = MathTools.modulateHeading(clearedHdg);
+                }
+            }
         }
         updateSidStarOptions();
         notListening = false;
