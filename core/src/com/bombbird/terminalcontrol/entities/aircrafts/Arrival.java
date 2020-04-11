@@ -758,7 +758,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds */
     @Override
     public void updateGoAround() {
-        if (getAltitude() >= 1600 && isGoAround()) {
+        if (getAltitude() > getAirport().getElevation() + 1300 && isGoAround()) {
             setControlState(ControlState.ARRIVAL);
             setGoAround(false);
         }
