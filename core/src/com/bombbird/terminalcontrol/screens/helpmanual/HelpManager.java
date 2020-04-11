@@ -90,8 +90,7 @@ public class HelpManager {
                 "Segregated runway operations are used, with 03L-21R used for arrivals, and 03R-21L used for departures.",
                 "In order to avoid restricted areas at the city, runway 21L SIDs have to make an early right turn to avoid it. Runway 03L STARs also need to navigate around the area before lining up for a relatively short final.",
                 "TCBS, Huvarna Airport", "Runways:", "01L-19R: 3700m", "01R-19L: 4000m", "Configurations: 01L and 01R or 19L or 19R",
-                "Segregated runway operations usually used, with 01R-19L used for arrivals, and 01L-19R used for departures.",
-                "Do take note that the minimum separation here is 5nm or 1000 feet rather than the standard 3nm or 1000 feet."});
+                "Segregated runway operations usually used, with 01R-19L used for arrivals, and 01L-19R used for departures."});
         CONTENT_LIST.put("TCMD", new String[] {"TCMD, Hadrise Airport", "Runways:", "14L-32R: 3500m", "14R-32L: 4100m", "18L-36R: 3500m", "18R-36L: 4350m", "Configurations: 36L, 36R, 32L and 32R or 14L, 14R, 18L or 18R",
                 "Simultaneous departures used for 36L and 36R or 14L and 14R. Simultaneous arrivals used for 18L and 18R or 32L or 32R",
                 "High terrain, restricted areas are present to the north-west of the airport, caution should be taken when vectoring aircraft in that sector. Runway 18L, 18R STARs do take them into account.",
