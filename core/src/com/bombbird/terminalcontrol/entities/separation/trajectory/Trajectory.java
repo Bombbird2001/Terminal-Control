@@ -69,6 +69,8 @@ public class Trajectory {
                         //Do additional turn checking
                         float newTrack = (float) MathTools.modulateHeading(MathTools.getRequiredTrack(prevPos.x, prevPos.y, aircraft.getDirect().getPosX(), aircraft.getDirect().getPosY()));
                         remainingAngle += (newTrack - prevTargetTrack); //Add the difference in target track to remaining angle
+                        if (newTrack < 16 && newTrack > 0 && prevTargetTrack <= 360 && prevTargetTrack > 344) remainingAngle += 360; //In case new track rotates right past 360 hdg
+                        if (newTrack <= 360 && newTrack > 344 && prevTargetTrack < 16 && newTrack > 0) remainingAngle -= 360; //In case new track rotates left past 360 hdg
                         prevTargetTrack = newTrack;
                     }
                 } else {

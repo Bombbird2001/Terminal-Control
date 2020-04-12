@@ -354,10 +354,10 @@ public class Ui {
         cfmChange.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                updateMode();
-                if ("Acknow-\nledge".equals(handoverAck.getText().toString())) {
+                if (cfmChange.getStyle().fontColor == Color.YELLOW && "Acknow-\nledge".equals(handoverAck.getText().toString())) {
                     handoverAck.setVisible(false);
                 }
+                updateMode();
                 event.handle();
             }
         });

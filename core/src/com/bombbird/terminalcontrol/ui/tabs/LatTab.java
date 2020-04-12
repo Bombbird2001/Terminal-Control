@@ -24,8 +24,8 @@ import java.util.HashMap;
 public class LatTab extends Tab {
     private Label hdgBox;
     private Button hdgBoxClick;
-    private TextButton hdg100add;
-    private TextButton hdg100minus;
+    private TextButton hdg90add;
+    private TextButton hdg90minus;
     private TextButton hdg10add;
     private TextButton hdg10minus;
     private TextButton hdg5add;
@@ -89,8 +89,8 @@ public class LatTab extends Tab {
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
-        hdgBox.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
-        hdgBox.setSize(0.8f * getPaneWidth(), 270);
+        hdgBox.setPosition(1.1f / 3 * getPaneWidth(), 3240 - 2600);
+        hdgBox.setSize(0.8f / 3 * getPaneWidth(), 900);
         hdgBox.setAlignment(Align.center);
         TerminalControl.radarScreen.uiStage.addActor(hdgBox);
 
@@ -99,8 +99,8 @@ public class LatTab extends Tab {
         buttonStyle.up = Ui.transBackgroundDrawable;
         buttonStyle.down = Ui.transBackgroundDrawable;
         hdgBoxClick = new Button(buttonStyle);
-        hdgBoxClick.setPosition(0.1f * getPaneWidth(), 3240 - 2270);
-        hdgBoxClick.setSize(0.8f * getPaneWidth(), 270);
+        hdgBoxClick.setPosition(1.1f / 3 * getPaneWidth(), 3240 - 2600);
+        hdgBoxClick.setSize(0.8f / 3 * getPaneWidth(), 900);
         hdgBoxClick.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -122,10 +122,10 @@ public class LatTab extends Tab {
         textButtonStyle1.font = Fonts.defaultFont20;
 
         //+90 button
-        hdg100add = newButton(90, textButtonStyle);
+        hdg90add = newButton(90, textButtonStyle);
 
         //-90 button
-        hdg100minus = newButton(-90, textButtonStyle);
+        hdg90minus = newButton(-90, textButtonStyle);
 
         //+10 button
         hdg10add = newButton(10, textButtonStyle1);
@@ -143,7 +143,7 @@ public class LatTab extends Tab {
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
         TextButton button = new TextButton(((value > 0) ? "+" : "") + value, buttonStyle);
         button.setSize((0.8f / 3f) * getPaneWidth(), 300);
-        button.setPosition((0.1f + 0.8f / 1.5f) * getPaneWidth(), (value > 0) ? (3240 - 2000) : (3240 - 2570));
+        button.setPosition((value > 0 ? 1.9f : 0.1f) / 3 * getPaneWidth(), 0);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -373,24 +373,30 @@ public class LatTab extends Tab {
         notListening = true;
         float paneSize = 0.8f * paneWidth;
         float leftMargin = 0.1f * paneWidth;
-        hdgBox.setSize(paneSize, 270);
-        hdgBox.setX(leftMargin);
-        hdgBoxClick.setSize(paneSize, 270);
-        hdgBoxClick.setX(leftMargin);
+        hdgBox.setSize(paneSize / 3, 900);
+        hdgBox.setX(leftMargin + paneSize / 3);
+        hdgBoxClick.setSize(paneSize / 3, 900);
+        hdgBoxClick.setX(leftMargin + paneSize / 3);
         ilsBox.setSize(paneSize, boxHeight);
         ilsBox.setX(leftMargin);
-        hdg100add.setSize(paneSize / 3, 300);
-        hdg100add.setX(leftMargin);
-        hdg100minus.setSize(paneSize / 3, 300);
-        hdg100minus.setX(leftMargin);
+        hdg90add.setSize(paneSize / 3, 300);
+        hdg90add.setX(leftMargin + paneSize / 1.5f);
+        hdg90add.setY(3240 - 2000);
+        hdg90minus.setSize(paneSize / 3, 300);
+        hdg90minus.setX(leftMargin);
+        hdg90minus.setY(3240 - 2000);
         hdg10add.setSize(paneSize / 3, 300);
-        hdg10add.setX(leftMargin + paneSize / 3);
+        hdg10add.setX(leftMargin + paneSize / 1.5f);
+        hdg10add.setY(3240 - 2300);
         hdg10minus.setSize(paneSize / 3, 300);
-        hdg10minus.setX(leftMargin + paneSize / 3);
+        hdg10minus.setX(leftMargin);
+        hdg10minus.setY(3240 - 2300);
         hdg5add.setSize(paneSize / 3, 300);
         hdg5add.setX(leftMargin + paneSize / 1.5f);
+        hdg5add.setY(3240 - 2600);
         hdg5minus.setSize(paneSize / 3, 300);
-        hdg5minus.setX(leftMargin + paneSize / 1.5f);
+        hdg5minus.setX(leftMargin);
+        hdg5minus.setY(3240 - 2600);
         super.updatePaneWidth(paneWidth);
         notListening = false;
     }
@@ -400,8 +406,8 @@ public class LatTab extends Tab {
         super.setVisibility(show);
         hdgBox.setVisible(show);
         hdgBoxClick.setVisible(show);
-        hdg100add.setVisible(show);
-        hdg100minus.setVisible(show);
+        hdg90add.setVisible(show);
+        hdg90minus.setVisible(show);
         hdg10add.setVisible(show);
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
@@ -475,8 +481,8 @@ public class LatTab extends Tab {
     private void showHdgBoxes(boolean show) {
         hdgBox.setVisible(show);
         hdgBoxClick.setVisible(show);
-        hdg100add.setVisible(show);
-        hdg100minus.setVisible(show);
+        hdg90add.setVisible(show);
+        hdg90minus.setVisible(show);
         hdg10add.setVisible(show);
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
