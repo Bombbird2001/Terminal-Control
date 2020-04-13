@@ -955,6 +955,7 @@ public class Aircraft extends Actor {
             wakeTolerance -= Gdx.graphics.getDeltaTime() * 2;
         } else {
             wakeInfringe = true;
+            if (!prevConflict) silenced = false;
             wakeTolerance += Gdx.graphics.getDeltaTime() * diffDist;
             UnlockManager.incrementWakeConflictTime(Gdx.graphics.getDeltaTime());
         }
