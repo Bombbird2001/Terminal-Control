@@ -30,6 +30,9 @@ public class Runway {
     private float y;
     private int elevation;
 
+    //Initial climb altitude for aircraft
+    private int initClimb;
+
     //Set dimensions
     private static float halfWidth = 2f;
     private float pxLength;
@@ -102,6 +105,7 @@ public class Runway {
                 case 5: label.setX(Float.parseFloat(s1)); break;
                 case 6: label.setY(Float.parseFloat(s1)); break;
                 case 7: elevation = Integer.parseInt(s1); break;
+                case 8: initClimb = Integer.parseInt(s1); break;
                 default: Gdx.app.log("Load error", "Unexpected additional parameter in data for runway " + name);
             }
             index++;
@@ -267,5 +271,9 @@ public class Runway {
 
     public void setEmergencyClosed(boolean emergencyClosed) {
         this.emergencyClosed = emergencyClosed;
+    }
+
+    public int getInitClimb() {
+        return initClimb;
     }
 }

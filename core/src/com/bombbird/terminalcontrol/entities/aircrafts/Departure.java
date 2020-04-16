@@ -139,27 +139,10 @@ public class Departure extends Aircraft {
 
         setClearedIas(getV2());
         super.updateSpd();
-        setClearedAltitude(sid.getInitClimb(getRunway().getName())[1]);
-        int clearedAltitude = sid.getInitClimb(getRunway().getName())[1];
-        if (clearedAltitude < 3000 + Math.round(getAirport().getElevation() / 1000f) * 1000) {
-            clearedAltitude = 3000 + Math.round(getAirport().getElevation() / 1000f) * 1000;
-        }
-        if (clearedAltitude % 1000 != 0) {
-            clearedAltitude += 1000 - getClearedAltitude() % 1000;
-        }
-        if ("TCMD".equals(getAirport().getIcao())) {
-            if ("14R".equals(getRunway().getName()) || "36L".equals(getRunway().getName())) {
-                clearedAltitude = 7000;
-            }
-        } else if ("TCTT".equals(getAirport().getIcao())) {
-            if ("34R".equals(getRunway().getName()) && getAirport().allowSimultDep()) {
-                clearedAltitude = 5000;
-            }
-        }
+        setClearedAltitude(getRunway().getInitClimb());
         updateAltRestrictions();
-        setClearedAltitude(clearedAltitude);
         getNavState().getClearedAlt().removeFirst();
-        getNavState().getClearedAlt().addFirst(clearedAltitude);
+        getNavState().getClearedAlt().addFirst(getClearedAltitude());
         if (sid.getInitClimb(getRunway().getName())[0] != -1) {
             setClearedHeading(sid.getInitClimb(getRunway().getName())[0]);
         } else {
