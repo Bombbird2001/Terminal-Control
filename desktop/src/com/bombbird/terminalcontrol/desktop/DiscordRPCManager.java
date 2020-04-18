@@ -17,7 +17,8 @@ public class DiscordRPCManager implements DiscordManager {
                 //In game
                 discordRichPresence.details = "In game: " + TerminalControl.radarScreen.mainName;
                 discordRichPresence.largeImageText = TerminalControl.radarScreen.mainName;
-                discordRichPresence.state = TerminalControl.radarScreen.getPlanesInControl() + " planes in control";
+                int planes = TerminalControl.radarScreen.getPlanesInControl();
+                discordRichPresence.state = planes + (planes == 1 ? " plane" : " planes") + " in control";
             }
 
             discordRichPresence.largeImageKey = "iconlite";
