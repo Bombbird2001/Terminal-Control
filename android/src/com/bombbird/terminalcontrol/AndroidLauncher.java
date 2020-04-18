@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.bombbird.terminalcontrol.utilities.DiscordManager;
 
 public class AndroidLauncher extends TextToSpeechManager {
     //private PlayGamesManager playGamesManager;
@@ -15,7 +16,7 @@ public class AndroidLauncher extends TextToSpeechManager {
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.numSamples = 0;
         TerminalControl.ishtml = false;
-        initialize(new TerminalControl(this, toastManager), config);
+        initialize(new TerminalControl(this, toastManager, new DiscordManager() {}), config);
 
         Intent ttsIntent = new Intent();
         ttsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);

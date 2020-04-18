@@ -103,10 +103,11 @@ public class RadarScreen extends GameScreen {
     private Timer timer;
     private Metar metar;
 
-    //Timer for updating aircraft radar returns, trails and save every given amount of time
+    //Timer for updating aircraft radar returns, trails, save and discord RPC every given amount of time
     private float radarTime;
     private float trailTime;
     private float saveTime;
+    private float rpcTime;
 
     //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
     private HashMap<String, Boolean> allAircraft;
@@ -140,7 +141,7 @@ public class RadarScreen extends GameScreen {
     //Easter egg thing yey
     private com.badlogic.gdx.utils.Queue<Character> lastTapped;
 
-    private JSONObject save;
+    private final JSONObject save;
     private int revision; //Revision for indicating if save parser needs to do anything special
     public static final int CURRENT_REVISION = 1;
 
@@ -165,7 +166,8 @@ public class RadarScreen extends GameScreen {
         //Set timer for radar delay, trails and autosave
         radarTime = radarSweepDelay;
         trailTime = 10f;
-        saveTime = 60f;
+        saveTime = TerminalControl.saveInterval;
+        rpcTime = 60f;
 
         trajectoryLine = TerminalControl.trajectorySel;
         radarSweepDelay = TerminalControl.radarSweep;
@@ -208,9 +210,10 @@ public class RadarScreen extends GameScreen {
         loadStageCamTimer();
 
         //Set timer for radar delay, trails and autosave
-        radarTime = (float) save.getDouble("radarTime");
-        trailTime = (float) save.getDouble("trailTime");
-        saveTime = 60f;
+        radarTime = (float) save.optDouble("radarTime", TerminalControl.radarSweep);
+        trailTime = (float) save.optDouble("trailTime", 10);
+        saveTime = (float) save.optDouble("saveInterval", TerminalControl.saveInterval);
+        rpcTime = 60f;
 
         trajectoryLine = save.getInt("trajectoryLine");
         radarSweepDelay = (float) save.optDouble("radarSweep", 2);
@@ -500,6 +503,12 @@ public class RadarScreen extends GameScreen {
             trailTime += 10f;
         }
 
+        rpcTime -= deltaTime;
+        if (rpcTime <= 0) {
+            TerminalControl.discordManager.updateRPC();
+            rpcTime += 60f;
+        }
+
         if (!tutorial) {
             if (TerminalControl.saveInterval > 0) {
                 //If autosave enabled
@@ -685,6 +694,7 @@ public class RadarScreen extends GameScreen {
         //Implements show method of screen, loads UI & save (if available) after show is called
         loadUI();
         GameLoader.loadSaveData(save);
+        TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();
     }
 
@@ -814,5 +824,14 @@ public class RadarScreen extends GameScreen {
 
     public void setRadarTime(float radarTime) {
         this.radarTime = radarTime;
+    }
+
+    public int getPlanesInControl() {
+        int count = 0;
+        for (Aircraft aircraft: aircrafts.values()) {
+            if (aircraft.isArrivalDeparture()) count++;
+        }
+
+        return count;
     }
 }

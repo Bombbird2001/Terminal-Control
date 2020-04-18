@@ -9,4 +9,5 @@ public class Values {
     public static String GET_METAR_PASSWORD;
     public static String SEND_ERROR_URL;
     public static String SEND_ERROR_PASSWORD;
+    public static String DISCORD_ID;
 }

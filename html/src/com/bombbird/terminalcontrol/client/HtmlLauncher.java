@@ -3,8 +3,8 @@ package com.bombbird.terminalcontrol.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.utilities.DiscordManager;
 import com.bombbird.terminalcontrol.utilities.ToastManager;
 
 public class HtmlLauncher extends GwtApplication {
@@ -49,21 +49,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new TerminalControl(new TextToSpeechManager(), new ToastManager() {
-                        @Override
-                        public void saveFail(GdxRuntimeException e) {
-                                //No default implementation
-                        }
-
-                        @Override
-                        public void readStorageFail() {
-                                //No default implementation
-                        }
-
-                        @Override
-                        public void jsonParseFail() {
-                                //No default implementation
-                        }
-                });
+                return new TerminalControl(new TextToSpeechManager(), new ToastManager() {}, new DiscordManager() {});
         }
 }

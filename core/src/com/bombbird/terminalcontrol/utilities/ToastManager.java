@@ -3,9 +3,15 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 public interface ToastManager {
-    void saveFail(GdxRuntimeException e);
+    default void saveFail(GdxRuntimeException e) {
+        //No default implementation
+    }
 
-    void readStorageFail();
+    default void readStorageFail() {
+        //No default implementation
+    }
 
-    void jsonParseFail();
+    default void jsonParseFail() {
+        //No default implementation
+    }
 }

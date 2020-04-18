@@ -65,6 +65,8 @@ public class MainMenuScreen implements Screen {
         TerminalControl.loadVersionInfo();
         TerminalControl.loadSettings();
         UnlockManager.loadStats();
+
+        TerminalControl.discordManager.updateRPC();
     }
 
     /** Loads the UI elements to be rendered on screen */

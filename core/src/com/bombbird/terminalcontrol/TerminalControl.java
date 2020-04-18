@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
+import com.bombbird.terminalcontrol.utilities.DiscordManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
@@ -24,6 +25,9 @@ public class TerminalControl extends Game {
 
     //Is html? (freetype not supported in html)
     public static boolean ishtml;
+
+    //Use discord? (initialisation successful?)
+    public static boolean useDiscord;
 
     //Version info
     public static boolean full;
@@ -46,6 +50,9 @@ public class TerminalControl extends Game {
     //Toast (for Android only)
     public static ToastManager toastManager;
 
+    //Discord RPC (for Desktop only)
+    public static DiscordManager discordManager;
+
     //Default settings
     public static int trajectorySel;
     public static RadarScreen.Weather weatherSel;
@@ -62,9 +69,10 @@ public class TerminalControl extends Game {
     public static int revision;
     public static final int LATEST_REVISION = 1;
 
-    public TerminalControl(TextToSpeech tts, ToastManager toastManager) {
+    public TerminalControl(TextToSpeech tts, ToastManager toastManager, DiscordManager discordManager) {
         TerminalControl.tts = tts;
         TerminalControl.toastManager = toastManager;
+        TerminalControl.discordManager = discordManager;
     }
 
     public static void loadSettings() {
