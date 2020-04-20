@@ -241,9 +241,8 @@ public class FileLoader {
     public static boolean checkIfSaveExists() {
         FileHandle handle = getExtDir("saves/saves.saves");
         if (handle != null && handle.exists()) {
-            Array<String> saveIds = new Array<>(handle.readString().split(","));
             //"" returned if saves.saves is empty
-            return !"".equals(saveIds.get(0));
+            return !"".equals(handle.readString());
         }
         return false;
     }

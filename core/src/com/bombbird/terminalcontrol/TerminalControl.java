@@ -51,6 +51,7 @@ public class TerminalControl extends Game {
     public static ToastManager toastManager;
 
     //Discord RPC (for Desktop only)
+    public static boolean loadedDiscord;
     public static DiscordManager discordManager;
 
     //Default settings
@@ -73,6 +74,9 @@ public class TerminalControl extends Game {
         TerminalControl.tts = tts;
         TerminalControl.toastManager = toastManager;
         TerminalControl.discordManager = discordManager;
+
+        loadedDiscord = false;
+        useDiscord = false;
     }
 
     public static void loadSettings() {
@@ -146,7 +150,7 @@ public class TerminalControl extends Game {
     }
 
     @Override
-    public void create () {
+    public void create() {
         WIDTH = Gdx.graphics.getWidth();
         HEIGHT = Gdx.graphics.getHeight();
         batch = new SpriteBatch();
@@ -163,12 +167,12 @@ public class TerminalControl extends Game {
     }
 
     @Override
-    public void render () {
+    public void render() {
         super.render();
     }
 
     @Override
-    public void dispose () {
+    public void dispose() {
         batch.dispose();
         Fonts.dispose();
         buttonAtlas.dispose();

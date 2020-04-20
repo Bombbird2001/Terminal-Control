@@ -107,8 +107,8 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile 'com.squareup.okhttp3:okhttp:4.1.1'
+        compile 'com.squareup.okhttp3:okhttp:4.5.0'
         compile 'org.json:json:20190722'
-        compile 'org.apache.commons:commons-lang3:3.9'
+        compile 'org.apache.commons:commons-lang3:3.10'
     }
 }

@@ -1,11 +1,30 @@
 package com.bombbird.terminalcontrol.desktop;
 
+import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.DiscordManager;
+import com.bombbird.terminalcontrol.utilities.Values;
 
 public class DiscordRPCManager implements DiscordManager {
+    @Override
+    public void initializeDiscord() {
+        boolean useDiscord = false;
+        try {
+            DiscordEventHandlers handlers = new DiscordEventHandlers();
+            DiscordRPC.INSTANCE.Discord_Initialize(TerminalControl.full ? Values.DISCORD_ID_FULL : Values.DISCORD_ID_LITE, handlers, true, null);
+            System.out.println("Initialized Discord rich presence.");
+            Runtime.getRuntime().addShutdownHook(new Thread(DiscordRPC.INSTANCE::Discord_Shutdown));
+            useDiscord = true;
+        } catch (Throwable t) {
+            System.out.println("Failed to initialize Discord rich presence.");
+        }
+
+        TerminalControl.useDiscord = useDiscord;
+        TerminalControl.loadedDiscord = true;
+    }
+
     @Override
     public void updateRPC() {
         if (TerminalControl.useDiscord) {
@@ -21,7 +40,7 @@ public class DiscordRPCManager implements DiscordManager {
                 discordRichPresence.state = planes + (planes == 1 ? " plane" : " planes") + " in control";
             }
 
-            discordRichPresence.largeImageKey = "iconlite";
+            discordRichPresence.largeImageKey = "icon";
             DiscordRPC.INSTANCE.Discord_UpdatePresence(discordRichPresence);
         }
     }

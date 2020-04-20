@@ -66,6 +66,7 @@ public class MainMenuScreen implements Screen {
         TerminalControl.loadSettings();
         UnlockManager.loadStats();
 
+        if (!TerminalControl.loadedDiscord) TerminalControl.discordManager.initializeDiscord();
         TerminalControl.discordManager.updateRPC();
     }
 
