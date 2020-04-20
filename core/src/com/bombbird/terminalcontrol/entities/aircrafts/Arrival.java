@@ -361,6 +361,10 @@ public class Arrival extends Aircraft {
             }
             finalSpdSet = true;
         }
+        if (getHoldWpt() != null && getDirect() != null && getHoldWpt().equals(getDirect()) && getClearedIas() > 250 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getHoldWpt().getPosX(), getHoldWpt().getPosY())) <= 8) {
+            setClearedIas(250);
+            super.updateSpd();
+        }
     }
 
     /** Overrides findNextTargetHdg method in Aircraft, for finding the next heading aircraft should fly in order to reach next waypoint */

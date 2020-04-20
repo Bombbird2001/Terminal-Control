@@ -160,9 +160,9 @@ public class Aircraft extends Actor {
         float loadFactor = MathUtils.random(-1 , 1) / 40f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
-        maxClimb = typClimb + 1000;
-        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor));
-        maxDes = typDes + 1000;
+        maxClimb = typClimb + 800;
+        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor) * 0.8);
+        maxDes = typDes + 800;
         apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor));
         if (airport.getLandingRunways().size() == 0) {
             //No landing runways available at departure airport, land at main airport instead
@@ -628,7 +628,7 @@ public class Aircraft extends Actor {
             }
         } else {
             max = 1.25f * (1 - verticalSpeed / maxClimb);
-            min = -2 * (1 + verticalSpeed / maxDes);
+            min = -1.25f * (1 + verticalSpeed / maxDes);
         }
         if (deltaIas > max) {
             deltaIas = max;
@@ -801,7 +801,7 @@ public class Aircraft extends Actor {
                 if (holdTargetPt == null) {
                     float[] point = route.getHoldProcedure().getOppPtAtWpt(holdWpt);
                     holdTargetPt = new float[][]{{holdWpt.getPosX(), holdWpt.getPosY()}, point};
-                    holdTargetPtSelected = new boolean[]{false, false};
+                    holdTargetPtSelected = new boolean[] {false, false};
                     navState.initHold();
                 }
                 if (!init) {
@@ -1133,6 +1133,8 @@ public class Aircraft extends Actor {
             int spdRestr = route.getHoldProcedure().getMaxSpdAtWpt(holdWpt);
             if (spdRestr > -1 && clearedIas > spdRestr) {
                 clearedIas = spdRestr;
+            } else if (spdRestr == -1 && clearedIas > 250) {
+                clearedIas = 250;
             }
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {

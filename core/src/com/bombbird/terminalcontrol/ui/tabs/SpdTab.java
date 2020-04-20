@@ -16,7 +16,7 @@ public class SpdTab extends Tab {
 
     public SpdTab(Ui ui) {
         super(ui);
-        spds = new Array<String>();
+        spds = new Array<>();
     }
 
     @Override
@@ -35,6 +35,7 @@ public class SpdTab extends Tab {
             //Set spd restrictions in box
             if ("Hold at".equals(latMode) && selectedAircraft.isHolding()) {
                 highestSpd = selectedAircraft.getRoute().getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
+                if (highestSpd == -1) highestSpd = 250;
             } else if (clearedWpt != null) {
                 highestSpd = selectedAircraft.getMaxWptSpd(clearedWpt);
             }
