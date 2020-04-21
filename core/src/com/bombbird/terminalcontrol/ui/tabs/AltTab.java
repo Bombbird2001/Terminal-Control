@@ -14,7 +14,7 @@ public class AltTab extends Tab {
 
     private boolean altModeChanged;
     private boolean altChanged;
-    private Array<String> alts;
+    private final Array<String> alts;
 
     public AltTab(Ui ui) {
         super(ui);
@@ -154,5 +154,9 @@ public class AltTab extends Tab {
     public void getChoices() {
         altMode = settingsBox.getSelected();
         clearedAlt = valueBox.getSelected().contains("FL") ? Integer.parseInt(valueBox.getSelected().substring(2)) * 100 : Integer.parseInt(valueBox.getSelected());
+    }
+
+    public boolean isAltChanged() {
+        return altChanged;
     }
 }

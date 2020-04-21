@@ -18,15 +18,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class LoadGameScreen extends SelectGameScreen {
-    private Timer timer;
+    private final Timer timer;
     private Label loadingLabel;
 
     class MultithreadLoad implements Runnable {
         @Override
         public void run() {
             JSONArray saves = FileLoader.loadSaves();
-            loadSavedGamesUI(saves);
-            stopAnimatingLabel();
+            Gdx.app.postRunnable(() -> {
+                loadSavedGamesUI(saves);
+                stopAnimatingLabel();
+            });
         }
     }
 

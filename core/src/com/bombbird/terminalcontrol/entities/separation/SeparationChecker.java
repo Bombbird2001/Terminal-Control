@@ -23,11 +23,11 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class SeparationChecker extends Actor {
-    private Array<Array<Aircraft>> flightLevels;
-    private Array<Label> labels;
-    private Array<float[]> lineStorage;
+    private final Array<Array<Aircraft>> flightLevels;
+    private final Array<Label> labels;
+    private final Array<float[]> lineStorage;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
     private int lastNumber;
     private float time;
     private float updateTimer;
@@ -261,8 +261,8 @@ public class SeparationChecker extends Actor {
     private int checkRestrSep() {
         int terrainActive = 0;
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) || (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
-                    (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
+            if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) ||
+                    (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
                     aircraft.isGoAroundWindow()) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                 continue;

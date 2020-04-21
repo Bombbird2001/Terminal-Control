@@ -14,8 +14,8 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class RequestFlasher {
-    private RadarScreen radarScreen;
-    private OrthographicCamera camera;
+    private final RadarScreen radarScreen;
+    private final OrthographicCamera camera;
 
     public RequestFlasher(RadarScreen radarScreen) {
         this.radarScreen = radarScreen;

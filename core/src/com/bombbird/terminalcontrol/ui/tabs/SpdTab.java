@@ -12,7 +12,7 @@ public class SpdTab extends Tab {
 
     private boolean spdModeChanged;
     private boolean spdChanged;
-    private Array<String> spds;
+    private final Array<String> spds;
 
     public SpdTab(Ui ui) {
         super(ui);
@@ -132,5 +132,9 @@ public class SpdTab extends Tab {
     public void getChoices() {
         spdMode = settingsBox.getSelected();
         clearedSpd = Integer.parseInt(valueBox.getSelected());
+    }
+
+    public boolean isSpdChanged() {
+        return spdChanged;
     }
 }

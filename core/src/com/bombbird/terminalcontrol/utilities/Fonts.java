@@ -34,10 +34,13 @@ public class Fonts {
             parameter.minFilter = Texture.TextureFilter.Nearest;
             parameter.magFilter = Texture.TextureFilter.MipMapLinearNearest;
             generator.scaleForPixelHeight(size);
-            return generator.generateFont(parameter);
+            BitmapFont font = generator.generateFont(parameter);
+            font.getData().markupEnabled = true;
+            return font;
         } else {
             BitmapFont bitmapFont = new BitmapFont();
             bitmapFont.getData().setScale(size / 160f * 3f);
+            bitmapFont.getData().markupEnabled = true;
             return bitmapFont;
         }
     }

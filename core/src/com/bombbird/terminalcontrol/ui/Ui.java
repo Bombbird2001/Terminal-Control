@@ -71,7 +71,7 @@ public class Ui {
 
     private int tab;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     public Ui() {
         if (hdgBoxBackground == null) {

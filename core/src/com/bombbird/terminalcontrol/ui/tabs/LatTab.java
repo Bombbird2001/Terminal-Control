@@ -32,7 +32,7 @@ public class LatTab extends Tab {
     private TextButton hdg5minus;
     private SelectBox<String> ilsBox;
 
-    private Array<String> waypoints;
+    private final Array<String> waypoints;
     private Array<String> ils;
 
     private boolean latModeChanged;
@@ -552,5 +552,9 @@ public class LatTab extends Tab {
 
     public boolean isHoldWptChanged() {
         return holdWptChanged;
+    }
+
+    public boolean isIlsChanged() {
+        return ilsChanged;
     }
 }
