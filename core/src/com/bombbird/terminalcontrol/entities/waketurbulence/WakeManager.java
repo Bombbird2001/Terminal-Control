@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class WakeManager {
-    private HashMap<String, Array<PositionPoint>> aircraftWakes;
+    private final HashMap<String, Array<PositionPoint>> aircraftWakes;
 
     public WakeManager() {
         aircraftWakes = new HashMap<>();
@@ -75,7 +75,7 @@ public class WakeManager {
                 } else {
                     dist += 0.5;
                 }
-                if (!MathTools.withinRange(aircraft.getAltitude() - wakePoints.get(i).altitude, -1200, 200)) continue; //If altitude difference between wake point and aircraft does not fulfill 0 to 1000feet, no conflict, continue
+                if (!MathTools.withinRange(aircraft.getAltitude() - wakePoints.get(i).altitude, -950, 50)) continue; //If altitude difference between wake point and aircraft does not fulfill 0 to less than 1000feet, no conflict, continue
                 float distBetPoint = MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), wakePoints.get(i).x, wakePoints.get(i).y));
                 if (distBetPoint > 0.4f) continue; //If distance between the current point and aircraft is more than 0.4nm, no conflict, continue
                 if (dist + distBetPoint < reqDist - 0.2) return reqDist - dist - distBetPoint; //If cumulative distance + point distance is less than required distance, conflict (0.2nm leeway)

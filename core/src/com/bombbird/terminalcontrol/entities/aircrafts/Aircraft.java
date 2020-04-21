@@ -38,7 +38,7 @@ public class Aircraft extends Actor {
     }
 
     //Android text-to-speech
-    private String voice;
+    private final String voice;
     private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
             "en-us-x-sfg#female_1-local", "en-gb-x-rjs-local", "en-gb-x-rjs#female_3-local", "en-gb-x-gbd-local",
             "en-gb-x-fis#male_2-local", "en-us-x-sfg#female_2-local", "en-gb-x-rjs#female_1-local",
@@ -64,7 +64,7 @@ public class Aircraft extends Actor {
     private Runway runway;
     private boolean onGround;
     private boolean tkOfLdg;
-    private Trajectory trajectory;
+    private final Trajectory trajectory;
     private boolean trajectoryConflict;
     private boolean trajectoryTerrainConflict;
 
@@ -91,7 +91,7 @@ public class Aircraft extends Actor {
     private boolean terrainConflict;
     private boolean prevConflict;
     private boolean silenced;
-    private Emergency emergency;
+    private final Emergency emergency;
 
     //Aircraft position
     private float x;
@@ -133,10 +133,10 @@ public class Aircraft extends Actor {
     private float ias;
     private float tas;
     private float gs;
-    private Vector2 deltaPosition;
+    private final Vector2 deltaPosition;
     private int clearedIas;
     private float deltaIas;
-    private int climbSpd;
+    private final int climbSpd;
 
     //Radar returns (for sweep delay)
     private float radarX;
