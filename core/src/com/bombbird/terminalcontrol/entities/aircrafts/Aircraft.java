@@ -157,13 +157,13 @@ public class Aircraft extends Actor {
         recat = AircraftType.getRecat(icaoType);
         wakeInfringe = false;
         wakeTolerance = 0;
-        float loadFactor = MathUtils.random(-1 , 1) / 40f;
+        float loadFactor = MathUtils.random(-1 , 1) / 5f;
         v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
         typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
         maxClimb = typClimb + 800;
-        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor) * 0.8);
+        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor) * 0.9);
         maxDes = typDes + 800;
-        apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor));
+        apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor / 8));
         if (airport.getLandingRunways().size() == 0) {
             //No landing runways available at departure airport, land at main airport instead
             this.airport = radarScreen.airports.get(radarScreen.mainName);
