@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,11 +33,11 @@ import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 public class MainMenuScreen implements Screen {
     //Init game (set in constructor)
     private final TerminalControl game;
-    private Stage stage;
+    private final Stage stage;
 
     //Create new camera
-    private OrthographicCamera camera;
-    private Viewport viewport;
+    private final OrthographicCamera camera;
+    private final Viewport viewport;
 
     //Background image
     private Image background;
@@ -222,6 +223,25 @@ public class MainMenuScreen implements Screen {
             }
         });
         stage.addActor(achievementButton);
+
+        //Changelog button
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = Fonts.defaultFont12;
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
+        TextButton changelogButton = new TextButton("Changelog", textButtonStyle);
+        changelogButton.setSize(350, BUTTON_HEIGHT_SMALL);
+        changelogButton.setPosition(2880 - changelogButton.getWidth(), 1620 * 0.6f);
+        changelogButton.getLabel().setAlignment(Align.center);
+        changelogButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new ChangelogScreen(game, background));
+                dispose();
+            }
+        });
+        stage.addActor(changelogButton);
 
         //Set quit button params if desktop
         if (Gdx.app.getType() == Application.ApplicationType.Android) return;

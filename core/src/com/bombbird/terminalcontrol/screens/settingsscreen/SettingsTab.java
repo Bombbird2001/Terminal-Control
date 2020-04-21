@@ -7,10 +7,10 @@ import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 
 public class SettingsTab {
     private static int MAX_LENGTH = 4;
-    private int maxWidth;
+    private final int maxWidth;
 
-    private SettingsScreen settingsScreen;
-    private Array<Actor> actors;
+    private final SettingsScreen settingsScreen;
+    private final Array<Actor> actors;
     private int count;
 
     public SettingsTab(SettingsScreen settingsScreen, int maxWidth) {

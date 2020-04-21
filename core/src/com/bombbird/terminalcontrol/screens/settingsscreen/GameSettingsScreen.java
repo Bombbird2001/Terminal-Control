@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.screens.RadarScreen;
 import java.util.Locale;
 
 public class GameSettingsScreen extends SettingsScreen {
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     private SelectBox<String> speed;
     private SelectBox<String> tfcMode;

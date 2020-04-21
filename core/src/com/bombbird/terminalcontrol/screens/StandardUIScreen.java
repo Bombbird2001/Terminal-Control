@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens.selectgamescreen;
+package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -7,32 +7,26 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class SelectGameScreen implements Screen {
-    //Init game (set in constructor)
+public class StandardUIScreen implements Screen {
     public final TerminalControl game;
-    public Stage stage;
-    private final Table scrollTable;
+    public final Stage stage;
 
-    //Create new camera
-    private final OrthographicCamera camera;
-    private final Viewport viewport;
+    public final OrthographicCamera camera;
+    public final Viewport viewport;
 
-    //Styles
-    private Label.LabelStyle labelStyle;
-    public TextButton.TextButtonStyle buttonStyle;
+    public final Image background;
 
-    //Background image (from MainMenuScreen)
-    public Image background;
-
-    public SelectGameScreen(final TerminalControl game, Image background) {
+    public StandardUIScreen(final TerminalControl game, Image background) {
         this.game = game;
 
         //Set camera params
@@ -46,37 +40,35 @@ public class SelectGameScreen implements Screen {
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
 
-        //Set table params (for scrollpane)
-        scrollTable = new Table();
-
         //Set background image to that shown on main menu screen
         this.background = background;
     }
 
-    /** Loads the full UI of this screen */
-    private void loadUI() {
-        //Reset stage
+    /** Loads screen UI, to be overridden in each screen */
+    public void loadUI() {
+        //Reset stage and add background
         stage.clear();
-
         stage.addActor(background);
-
-        loadLabel();
-        loadButtons();
-        loadScroll();
     }
 
-    /** Loads the appropriate labelStyle, and is overridden to load a label with the appropriate text */
-    public void loadLabel() {
-        //Set label style
-        labelStyle = new Label.LabelStyle();
+    /** Loads heading label */
+    public void loadLabel(String header) {
+        //Set label params
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
+        Label headerLabel = new Label(header, labelStyle);
+        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
+        headerLabel.setAlignment(Align.center);
+        stage.addActor(headerLabel);
     }
 
-    /** Loads the default button styles and back button */
+    /** Loads back button */
     public void loadButtons() {
         //Set button textures
-        buttonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont12;
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
@@ -91,15 +83,11 @@ public class SelectGameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu
                 game.setScreen(new MainMenuScreen(game, background));
+                dispose();
             }
         });
 
         stage.addActor(backButton);
-    }
-
-    /** Loads the contents of the scrollPane */
-    public void loadScroll() {
-        //No default implementation
     }
 
     /** Implements show method of screen */
@@ -126,8 +114,8 @@ public class SelectGameScreen implements Screen {
                 game.batch.end();
                 success = true;
             } catch (IndexOutOfBoundsException e) {
-                Gdx.app.log("SelectGameScreen", "stage.draw() render error");
-                game.batch.end();
+                Gdx.app.log(this.getClass().getName(), "stage.draw() render error");
+                stage.getBatch().end();
                 e.printStackTrace();
             }
         }
@@ -156,29 +144,13 @@ public class SelectGameScreen implements Screen {
     /** Implements hide method of screen */
     @Override
     public void hide() {
-        dispose();
+        //No default implementation
     }
 
-    /** Implements dispose method of screen, called to dispose assets once unneeded */
+    /** Implements dispose method of screen */
     @Override
     public void dispose() {
         stage.clear();
         stage.dispose();
-    }
-
-    public Label.LabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    public TextButton.TextButtonStyle getButtonStyle() {
-        return buttonStyle;
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Table getScrollTable() {
-        return scrollTable;
     }
 }

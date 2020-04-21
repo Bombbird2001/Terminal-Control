@@ -15,8 +15,8 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 public class DefaultSettingsScreen extends SettingsScreen {
-    private Image background;
-    private static float specialScale = 7.8f;
+    private final Image background;
+    private static final float specialScale = 7.8f;
 
     private boolean sendCrash;
     private CheckBox sendCrashBox;
