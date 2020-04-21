@@ -311,9 +311,9 @@ public class DataTag {
     public void updateLabel() {
         String vertSpd;
         if (aircraft.getRadarVs() < -150) {
-            vertSpd = " \\/ ";
+            vertSpd = " v ";
         } else if (aircraft.getRadarVs() > 150) {
-            vertSpd = " /\\ ";
+            vertSpd = " ^ ";
         } else {
             vertSpd = " = ";
         }

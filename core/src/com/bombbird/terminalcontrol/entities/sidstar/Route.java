@@ -186,6 +186,10 @@ public class Route {
             if (prevPt != null) {
                 radarScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
             }
+            if (waypoint != null) {
+                int[] restr = restrictions.get(index);
+                waypoint.setRestrDisplay(restr[2], restr[0], restr[1]);
+            }
             prevPt = waypoint;
             index++;
         }

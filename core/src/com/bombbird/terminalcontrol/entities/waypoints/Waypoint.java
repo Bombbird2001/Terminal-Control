@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -13,13 +14,15 @@ import java.util.HashMap;
 
 public class Waypoint extends Actor {
     private String name;
-    private int posX;
-    private int posY;
-    private Label label;
+    private final int posX;
+    private final int posY;
+    private boolean restrVisible;
+    private final Label restrLabel;
+    private final Label label;
     private boolean selected;
     private boolean flyOver;
 
-    private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
+    private final ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
 
     public static final HashMap<String, Boolean> flyOverPts = new HashMap<>();
 
@@ -33,14 +36,25 @@ public class Waypoint extends Actor {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont6;
         labelStyle.fontColor = Color.GRAY;
-        setLabel(new Label(name, labelStyle));
-        getLabel().setPosition(posX - getLabel().getWidth() / 2, posY + 16);
+        label = new Label(name, labelStyle);
+        label.setPosition(posX - label.getWidth() / 2, posY + 16);
+        label.setAlignment(Align.bottom);
+
+        //Set restriction label
+        Label.LabelStyle labelStyle1 = new Label.LabelStyle();
+        labelStyle1.font = Fonts.defaultFont6;
+        labelStyle1.fontColor = Color.WHITE;
+        restrLabel = new Label("This should not be visible", labelStyle1);
+        restrLabel.setPosition(posX - restrLabel.getWidth() / 2, posY + 48);
+        restrLabel.setAlignment(Align.bottom);
+        restrVisible = false;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
             label.draw(batch, 1);
+            if (restrVisible) restrLabel.draw(batch, 1);
         }
     }
 
@@ -81,6 +95,35 @@ public class Waypoint extends Actor {
         }
     }
 
+    /** Displays the input speed/altitude restrictions above waypoint name */
+    public void setRestrDisplay(int maxSpeed, int minAlt, int maxAlt) {
+        if (maxSpeed == -1 && minAlt == -1 && maxAlt == -1) {
+            restrVisible = false;
+            return;
+        }
+        String restrStr = "";
+        if (minAlt == maxAlt) {
+            restrStr = Integer.toString(minAlt / 100);
+        } else {
+            if (minAlt > -1) {
+                restrStr = "A" + minAlt / 100;
+            }
+            if (maxAlt > -1) {
+                if (restrStr.length() > 0) restrStr += " ";
+                restrStr += "B" + maxAlt / 100;
+            }
+        }
+        if (maxSpeed > -1) {
+            if (restrStr.length() > 0) {
+                restrStr = maxSpeed + "kts\n" + restrStr;
+            } else {
+                restrStr = maxSpeed + "kts";
+            }
+        }
+        restrLabel.setText(restrStr);
+        restrVisible = true;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -101,10 +144,6 @@ public class Waypoint extends Actor {
 
     public Label getLabel() {
         return label;
-    }
-
-    public void setLabel(Label label) {
-        this.label = label;
     }
 
     public boolean isSelected() {

@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.RadarScreen;
 
 public class WaypointManager {
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     public WaypointManager() {
         radarScreen = TerminalControl.radarScreen;

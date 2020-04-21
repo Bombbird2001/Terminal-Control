@@ -612,9 +612,10 @@ public class RadarScreen extends GameScreen {
             airport.renderZones();
         }
 
-        //Draw waypoints
+        //Draw waypoints, reset restriction display
         Array<Waypoint> flyOver = new Array<>();
         for (Waypoint waypoint: waypoints.values()) {
+            waypoint.setRestrDisplay(-1, -1, -1); //Reset all restrictions before drawing in renderShape
             if (waypoint.isFlyOver()) {
                 //Save flyovers for later
                 flyOver.add(waypoint);
