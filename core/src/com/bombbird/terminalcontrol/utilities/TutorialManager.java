@@ -12,12 +12,12 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 public class TutorialManager {
-    private Timer timer;
+    private final Timer timer;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
     private boolean pauseForReading;
 
     private boolean prompt1 = false;

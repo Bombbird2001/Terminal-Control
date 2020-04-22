@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.weather;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.HttpRequests;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;

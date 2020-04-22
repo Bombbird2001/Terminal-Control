@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;

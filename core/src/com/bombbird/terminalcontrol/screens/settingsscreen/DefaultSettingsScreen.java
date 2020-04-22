@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Align;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -39,19 +38,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
 
         this.background = background;
         this.background.scaleBy(specialScale);
-
-        trajectorySel = TerminalControl.trajectorySel;
-        radarSweep = TerminalControl.radarSweep;
-        weatherSel = TerminalControl.weatherSel;
-        soundSel = TerminalControl.soundSel;
-        sendCrash = TerminalControl.sendAnonCrash;
-        emerChance = TerminalControl.emerChance;
-        increaseZoom = TerminalControl.increaseZoom;
-        saveInterval = TerminalControl.saveInterval;
-        advTrajTime = TerminalControl.advTraj;
-        areaWarning = TerminalControl.areaWarning;
-        collisionWarning = TerminalControl.collisionWarning;
-        defaultTabNo = TerminalControl.defaultTabNo;
 
         loadUI(-1200, -200);
 
@@ -111,7 +97,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
         });
         stage.addActor(sendCrashBox);
 
-        zoom = new SelectBox<>(selectBoxStyle);
+        zoom = createStandardSelectBox();
         zoom.setItems("Off", "On");
         zoom.addListener(new ChangeListener() {
             @Override
@@ -119,11 +105,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 increaseZoom = "On".equals(zoom.getSelected());
             }
         });
-        zoom.setSize(1200, 300);
-        zoom.setAlignment(Align.center);
-        zoom.getList().setAlignment(Align.center);
 
-        autosave = new SelectBox<>(selectBoxStyle);
+        autosave = createStandardSelectBox();
         autosave.setItems("Never", "30 sec", "1 min", "2 mins", "5 mins");
         autosave.addListener(new ChangeListener() {
             @Override
@@ -140,11 +123,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 }
             }
         });
-        autosave.setSize(1200, 300);
-        autosave.setAlignment(Align.center);
-        autosave.getList().setAlignment(Align.center);
 
-        defaultTab = new SelectBox<>(selectBoxStyle);
+        defaultTab = createStandardSelectBox();
         defaultTab.setItems("Lateral", "Altitude", "Speed");
         defaultTab.addListener(new ChangeListener() {
             @Override
@@ -161,9 +141,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 }
             }
         });
-        defaultTab.setSize(1200, 300);
-        defaultTab.setAlignment(Align.center);
-        defaultTab.getList().setAlignment(Align.center);
     }
 
     @Override
@@ -199,6 +176,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
+        tab2.addActors(mva, mvaLabel);
+        tab2.addActors(ilsDash, ilsDashLabel);
         if (TerminalControl.full) {
             tab2.addActors(sweep, sweepLabel);
             tab2.addActors(advTraj, advTrajLabel);
@@ -207,13 +186,40 @@ public class DefaultSettingsScreen extends SettingsScreen {
         }
         tab2.addActors(zoom, zoomLabel);
         tab2.addActors(autosave, autosaveLabel);
-        tab2.addActors(defaultTab, defaultTabLabel);
+        if (!TerminalControl.full) {
+            tab2.addActors(dataTag, dataTagLabel);
+            tab2.addActors(defaultTab, defaultTabLabel);
+        }
         settingsTabs.add(tab2);
+
+        if (TerminalControl.full) {
+            SettingsTab tab3 = new SettingsTab(this, 3);
+            tab3.addActors(dataTag, dataTagLabel);
+            tab3.addActors(defaultTab, defaultTabLabel);
+            settingsTabs.add(tab3);
+        }
     }
 
     @Override
     public void setOptions() {
+        trajectorySel = TerminalControl.trajectorySel;
+        radarSweep = TerminalControl.radarSweep;
+        weatherSel = TerminalControl.weatherSel;
+        soundSel = TerminalControl.soundSel;
+        sendCrash = TerminalControl.sendAnonCrash;
+        emerChance = TerminalControl.emerChance;
+        increaseZoom = TerminalControl.increaseZoom;
+        saveInterval = TerminalControl.saveInterval;
+        advTrajTime = TerminalControl.advTraj;
+        areaWarning = TerminalControl.areaWarning;
+        collisionWarning = TerminalControl.collisionWarning;
+        showMva = TerminalControl.showMva;
+        showIlsDash = TerminalControl.showIlsDash;
+        compactData = TerminalControl.compactData;
+        defaultTabNo = TerminalControl.defaultTabNo;
+
         super.setOptions();
+
         sendCrashBox.setChecked(sendCrash);
         zoom.setSelected(increaseZoom ? "On" : "Off");
         if (saveInterval == -1) {
@@ -240,6 +246,9 @@ public class DefaultSettingsScreen extends SettingsScreen {
         TerminalControl.advTraj = advTrajTime;
         TerminalControl.areaWarning = areaWarning;
         TerminalControl.collisionWarning = collisionWarning;
+        TerminalControl.showMva = showMva;
+        TerminalControl.showIlsDash = showIlsDash;
+        TerminalControl.compactData = compactData;
         TerminalControl.defaultTabNo = defaultTabNo;
 
         GameSaver.saveSettings();

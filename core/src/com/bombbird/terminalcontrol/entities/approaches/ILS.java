@@ -11,7 +11,7 @@ import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 

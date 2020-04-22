@@ -10,7 +10,7 @@ import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class CollisionChecker {

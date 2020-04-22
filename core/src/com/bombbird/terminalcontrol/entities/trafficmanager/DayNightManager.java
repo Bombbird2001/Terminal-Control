@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.entities.trafficmanager;
 
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 import java.util.Calendar;
 import java.util.TimeZone;

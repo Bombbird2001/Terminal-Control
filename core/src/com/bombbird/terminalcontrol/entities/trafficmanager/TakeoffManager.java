@@ -10,7 +10,7 @@ import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;

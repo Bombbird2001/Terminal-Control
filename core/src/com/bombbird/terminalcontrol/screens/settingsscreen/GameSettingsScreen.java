@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.screens.GameScreen;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 import java.util.Locale;
 
@@ -73,7 +73,7 @@ public class GameSettingsScreen extends SettingsScreen {
     public void loadBoxes() {
         super.loadBoxes();
 
-        speed = new SelectBox<>(selectBoxStyle);
+        speed = createStandardSelectBox();
         speed.setItems("1x", "2x", "4x");
         speed.addListener(new ChangeListener() {
             @Override
@@ -81,11 +81,8 @@ public class GameSettingsScreen extends SettingsScreen {
                 speedSel = speed.getSelected().charAt(0) - 48;
             }
         });
-        speed.setSize(1200, 300);
-        speed.setAlignment(Align.center);
-        speed.getList().setAlignment(Align.center);
 
-        tfcMode = new SelectBox<>(selectBoxStyle);
+        tfcMode = createStandardSelectBox();
         tfcMode.setItems("Normal", "Arrivals only");
         tfcMode.addListener(new ChangeListener() {
             @Override
@@ -93,11 +90,8 @@ public class GameSettingsScreen extends SettingsScreen {
                 tfcSel = RadarScreen.TfcMode.valueOf(tfcMode.getSelected().toUpperCase(Locale.US).replaceAll(" ", "_"));
             }
         });
-        tfcMode.setSize(1200, 300);
-        tfcMode.setAlignment(Align.center);
-        tfcMode.getList().setAlignment(Align.center);
 
-        night = new SelectBox<>(selectBoxStyle);
+        night = createStandardSelectBox();
         night.setItems("On", "Off");
         night.addListener(new ChangeListener() {
             @Override
@@ -106,9 +100,6 @@ public class GameSettingsScreen extends SettingsScreen {
                 setVisible(true);
             }
         });
-        night.setSize(1200, 300);
-        night.setAlignment(Align.center);
-        night.getList().setAlignment(Align.center);
         night.setName("night2");
 
         nightStartHour = new SelectBox<>(selectBoxStyle);
@@ -203,11 +194,14 @@ public class GameSettingsScreen extends SettingsScreen {
         tab1.addActors(emer, emerChanceLabel);
         tab1.addActors(speed, speedLabel);
         tab1.addActors(tfcMode, tfcLabel);
-        if (TerminalControl.full) tab1.addActors(sweep, sweepLabel);
-        if (TerminalControl.full) tab1.addActors(advTraj, advTrajLabel);
+        tab1.addActors(mva, mvaLabel);
+        tab1.addActors(ilsDash, ilsDashLabel);
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
+        tab2.addActors(dataTag, dataTagLabel);
+        if (TerminalControl.full) tab2.addActors(sweep, sweepLabel);
+        if (TerminalControl.full) tab2.addActors(advTraj, advTrajLabel);
         if (TerminalControl.full) tab2.addActors(area, areaLabel);
         if (TerminalControl.full) tab2.addActors(collision, collisionLabel);
         tab2.addActors(night, nightLabel);
@@ -229,6 +223,9 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.advTraj = advTrajTime;
         radarScreen.areaWarning = areaWarning;
         radarScreen.collisionWarning = collisionWarning;
+        radarScreen.showMva = showMva;
+        radarScreen.showIlsDash = showIlsDash;
+        radarScreen.compactData = compactData;
 
         boolean changed;
         changed = radarScreen.allowNight != allowNight || radarScreen.nightStart != nightStart || radarScreen.nightEnd != nightEnd;
@@ -256,6 +253,9 @@ public class GameSettingsScreen extends SettingsScreen {
         advTrajTime = radarScreen.advTraj;
         areaWarning = radarScreen.areaWarning;
         collisionWarning = radarScreen.collisionWarning;
+        showMva = radarScreen.showMva;
+        showIlsDash = radarScreen.showIlsDash;
+        compactData = radarScreen.compactData;
 
         super.setOptions();
 

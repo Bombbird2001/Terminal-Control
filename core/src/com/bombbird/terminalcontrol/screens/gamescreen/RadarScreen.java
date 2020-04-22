@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens;
+package com.bombbird.terminalcontrol.screens.gamescreen;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -85,6 +85,9 @@ public class RadarScreen extends GameScreen {
     public int advTraj;
     public int areaWarning;
     public int collisionWarning;
+    public boolean showMva;
+    public boolean showIlsDash;
+    public boolean compactData;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -174,6 +177,9 @@ public class RadarScreen extends GameScreen {
         advTraj = TerminalControl.advTraj;
         areaWarning = TerminalControl.areaWarning;
         collisionWarning = TerminalControl.collisionWarning;
+        showMva = TerminalControl.showMva;
+        showIlsDash = TerminalControl.showIlsDash;
+        compactData = TerminalControl.compactData;
         liveWeather = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
         emerChance = TerminalControl.emerChance;
@@ -220,6 +226,9 @@ public class RadarScreen extends GameScreen {
         advTraj = save.optInt("advTraj", -1);
         areaWarning = save.optInt("areaWarning", -1);
         collisionWarning = save.optInt("collisionWarning", -1);
+        showMva = save.optBoolean("showMva", true);
+        showIlsDash = save.optBoolean("showIlsDash", false);
+        compactData = save.optBoolean("compactData", false);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             liveWeather = Weather.LIVE;

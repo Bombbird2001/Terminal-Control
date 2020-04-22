@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;

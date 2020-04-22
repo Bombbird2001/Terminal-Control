@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -23,7 +25,7 @@ public class PauseScreen {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    public PauseScreen(GameScreen gameScreen) {
+    public PauseScreen(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen gameScreen) {
         this.gameScreen = gameScreen;
 
         stage = new Stage(new FitViewport(5760, 3240));
@@ -55,7 +57,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Un-pause the game
-                gameScreen.setGameState(GameScreen.State.RUN);
+                gameScreen.setGameState(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen.State.RUN);
                 event.handle();
             }
         });
@@ -69,7 +71,7 @@ public class PauseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
                 gameScreen.getGameSettingsScreen().setOptions();
-                gameScreen.setGameState(GameScreen.State.SETTINGS);
+                gameScreen.setGameState(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen.State.SETTINGS);
             }
         });
         stage.addActor(settingsButton);

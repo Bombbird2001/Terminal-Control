@@ -17,13 +17,13 @@ public class Departure extends Aircraft {
     //Others
     private Sid sid;
     private int outboundHdg;
-    private int contactAlt;
-    private int handoveralt;
+    private final int contactAlt;
+    private final int handoveralt;
     private boolean v2set;
     private boolean accel;
     private boolean sidSet;
     private boolean contacted;
-    private int cruiseAlt;
+    private final int cruiseAlt;
     private boolean higherSpdSet;
     private boolean cruiseSpdSet;
 
@@ -227,12 +227,6 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getAltitude() > handoveralt && getControlState() == ControlState.UNCONTROLLED) {
-            //Aircraft has been handed over
-            setLowestAlt(cruiseAlt);
-            setHighestAlt(cruiseAlt);
-            return;
-        }
         if (getNavState().getDispLatMode().first().contains("departure")) {
             //Aircraft on SID
             int highestAlt = -1;

@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.math.RoundingMode;
@@ -43,6 +43,9 @@ public class SettingsScreen implements Screen {
     public SelectBox<String> advTraj;
     public SelectBox<String> area;
     public SelectBox<String> collision;
+    public SelectBox<String> mva;
+    public SelectBox<String> ilsDash;
+    public SelectBox<String> dataTag;
 
     public TextButton confirmButton;
     public TextButton cancelButton;
@@ -72,6 +75,15 @@ public class SettingsScreen implements Screen {
 
     public Label collisionLabel;
     public int collisionWarning;
+
+    public Label mvaLabel;
+    public boolean showMva;
+
+    public Label ilsDashLabel;
+    public boolean showIlsDash;
+
+    public Label dataTagLabel;
+    public boolean compactData;
 
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
@@ -138,7 +150,7 @@ public class SettingsScreen implements Screen {
 
     /** Loads selectBox for settings */
     public void loadBoxes() {
-        trajectoryLine = new SelectBox<>(selectBoxStyle);
+        trajectoryLine = createStandardSelectBox();
         trajectoryLine.setItems("60 sec", "90 sec", "120 sec", "150 sec");
         trajectoryLine.addListener(new ChangeListener() {
             @Override
@@ -146,11 +158,8 @@ public class SettingsScreen implements Screen {
                 trajectorySel = Integer.parseInt(trajectoryLine.getSelected().split(" ")[0]);
             }
         });
-        trajectoryLine.setSize(1200, 300);
-        trajectoryLine.setAlignment(Align.center);
-        trajectoryLine.getList().setAlignment(Align.center);
 
-        weather = new SelectBox<>(selectBoxStyle);
+        weather = createStandardSelectBox();
         weather.setItems("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
         weather.addListener(new ChangeListener() {
             @Override
@@ -158,11 +167,8 @@ public class SettingsScreen implements Screen {
                 weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
             }
         });
-        weather.setSize(1200, 300);
-        weather.setAlignment(Align.center);
-        weather.getList().setAlignment(Align.center);
 
-        sound = new SelectBox<>(selectBoxStyle);
+        sound = createStandardSelectBox();
         Array<String> options = new Array<>(2);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             options.add("Pilot voices + sound effects", "Sound effects only", "Off");
@@ -182,11 +188,8 @@ public class SettingsScreen implements Screen {
                 }
             }
         });
-        sound.setSize(1200, 300);
-        sound.setAlignment(Align.center);
-        sound.getList().setAlignment(Align.center);
 
-        emer = new SelectBox<>(selectBoxStyle);
+        emer = createStandardSelectBox();
         emer.setItems("Off", "Low", "Medium", "High");
         emer.addListener(new ChangeListener() {
             @Override
@@ -194,11 +197,8 @@ public class SettingsScreen implements Screen {
                 emerChance = Emergency.Chance.valueOf(emer.getSelected().toUpperCase(Locale.US));
             }
         });
-        emer.setSize(1200, 300);
-        emer.setAlignment(Align.center);
-        emer.getList().setAlignment(Align.center);
 
-        sweep = new SelectBox<>(selectBoxStyle);
+        sweep = createStandardSelectBox();
         sweep.setItems(UnlockManager.getSweepAvailable());
         sweep.addListener(new ChangeListener() {
             @Override
@@ -206,11 +206,8 @@ public class SettingsScreen implements Screen {
                 radarSweep = Float.parseFloat(sweep.getSelected().substring(0, sweep.getSelected().length() - 1));
             }
         });
-        sweep.setSize(1200, 300);
-        sweep.setAlignment(Align.center);
-        sweep.getList().setAlignment(Align.center);
 
-        advTraj = new SelectBox<>(selectBoxStyle);
+        advTraj = createStandardSelectBox();
         advTraj.setItems(UnlockManager.getTrajAvailable());
         advTraj.addListener(new ChangeListener() {
             @Override
@@ -222,11 +219,8 @@ public class SettingsScreen implements Screen {
                 }
             }
         });
-        advTraj.setSize(1200, 300);
-        advTraj.setAlignment(Align.center);
-        advTraj.getList().setAlignment(Align.center);
 
-        area = new SelectBox<>(selectBoxStyle);
+        area = createStandardSelectBox();
         area.setItems(UnlockManager.getAreaAvailable());
         area.addListener(new ChangeListener() {
             @Override
@@ -238,11 +232,8 @@ public class SettingsScreen implements Screen {
                 }
             }
         });
-        area.setSize(1200, 300);
-        area.setAlignment(Align.center);
-        area.getList().setAlignment(Align.center);
 
-        collision = new SelectBox<>(selectBoxStyle);
+        collision = createStandardSelectBox();
         collision.setItems(UnlockManager.getCollisionAvailable());
         collision.addListener(new ChangeListener() {
             @Override
@@ -254,9 +245,61 @@ public class SettingsScreen implements Screen {
                 }
             }
         });
-        collision.setSize(1200, 300);
-        collision.setAlignment(Align.center);
-        collision.getList().setAlignment(Align.center);
+
+        mva = createStandardSelectBox();
+        mva.setItems("Show", "Hide");
+        mva.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Show".equals(mva.getSelected())) {
+                    showMva = true;
+                } else if ("Hide".equals(mva.getSelected())) {
+                    showMva = false;
+                } else {
+                    Gdx.app.log("SettingsScreen", "Unknown MVA setting " + mva.getSelected());
+                }
+            }
+        });
+
+        ilsDash = createStandardSelectBox();
+        ilsDash.setItems("Simple", "Realistic");
+        ilsDash.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Simple".equals(ilsDash.getSelected())) {
+                    showIlsDash = false;
+                } else if ("Realistic".equals(ilsDash.getSelected())) {
+                    showIlsDash = true;
+                } else {
+                    Gdx.app.log("SettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
+                }
+            }
+        });
+
+        dataTag = createStandardSelectBox();
+        dataTag.setItems("Default", "Compact");
+        dataTag.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Default".equals(dataTag.getSelected())) {
+                    compactData = false;
+                } else if ("Compact".equals(dataTag.getSelected())) {
+                    compactData = true;
+                } else {
+                    Gdx.app.log("SettingsScreen", "Unknown data tag setting " + dataTag.getSelected());
+                }
+            }
+        });
+    }
+
+    /** Creates a default selectBox configuration with standard styles */
+    public SelectBox<String> createStandardSelectBox() {
+        SelectBox<String> box = new SelectBox<>(selectBoxStyle);
+        box.setSize(1200, 300);
+        box.setAlignment(Align.center);
+        box.getList().setAlignment(Align.center);
+
+        return box;
     }
 
     /** Loads buttons */
@@ -323,6 +366,12 @@ public class SettingsScreen implements Screen {
         areaLabel = new Label("Area\npenetration\nalert: ", labelStyle);
 
         collisionLabel = new Label("Collision alert: ", labelStyle);
+
+        mvaLabel = new Label("MVA altitude: ", labelStyle);
+
+        ilsDashLabel = new Label("ILS display: ", labelStyle);
+
+        dataTagLabel = new Label("Data tag style: ", labelStyle);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
@@ -359,21 +408,12 @@ public class SettingsScreen implements Screen {
         DecimalFormat df = new DecimalFormat("#.#");
         df.setRoundingMode(RoundingMode.CEILING);
         sweep.setSelected(df.format(radarSweep) + "s");
-        if (advTrajTime == -1) {
-            advTraj.setSelected("Off");
-        } else {
-            advTraj.setSelected(advTrajTime + " sec");
-        }
-        if (areaWarning == -1) {
-            area.setSelected("Off");
-        } else {
-            area.setSelected(areaWarning + " sec");
-        }
-        if (collisionWarning == -1) {
-            collision.setSelected("Off");
-        } else {
-            collision.setSelected(collisionWarning + " sec");
-        }
+        advTraj.setSelected(advTrajTime == -1 ? "Off" : advTrajTime + " sec");
+        area.setSelected(areaWarning == -1 ? "Off" : areaWarning + " sec");
+        collision.setSelected(collisionWarning == -1 ? "Off": collisionWarning + " sec");
+        mva.setSelected(showMva ? "Show" : "Hide");
+        ilsDash.setSelected(showIlsDash ? "Realistic" : "Simple");
+        dataTag.setSelected(compactData ? "Compact" : "Default");
     }
 
     /** Confirms and applies the changes set */
@@ -437,6 +477,7 @@ public class SettingsScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.clear();
+        stage.dispose();
     }
 }

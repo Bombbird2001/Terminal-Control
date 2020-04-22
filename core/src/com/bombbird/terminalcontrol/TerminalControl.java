@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.sounds.TextToSpeech;
 import com.bombbird.terminalcontrol.utilities.DiscordManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -66,6 +66,9 @@ public class TerminalControl extends Game {
     public static int advTraj;
     public static int areaWarning;
     public static int collisionWarning;
+    public static boolean showMva;
+    public static boolean showIlsDash;
+    public static boolean compactData;
     public static int defaultTabNo;
     public static int revision;
     public static final int LATEST_REVISION = 1;
@@ -97,6 +100,9 @@ public class TerminalControl extends Game {
             advTraj = -1;
             areaWarning = -1;
             collisionWarning = -1;
+            showMva = true;
+            showIlsDash = false;
+            compactData = false;
             defaultTabNo = 0;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
@@ -127,6 +133,9 @@ public class TerminalControl extends Game {
             areaWarning = settings.optInt("areaWarning", -1);
             defaultTabNo = settings.optInt("defaultTabNo", 0);
             collisionWarning = settings.optInt("collisionWarning", -1);
+            showMva = settings.optBoolean("showMva", true);
+            showIlsDash = settings.optBoolean("showIlsDash", false);
+            compactData = settings.optBoolean("compactData", false);
             revision = settings.optInt("revision", 0);
         }
         GameSaver.saveSettings();

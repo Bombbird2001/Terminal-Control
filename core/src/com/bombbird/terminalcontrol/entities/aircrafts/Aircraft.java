@@ -19,7 +19,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
@@ -70,17 +70,17 @@ public class Aircraft extends Actor {
 
     //Aircraft characteristics
     private String callsign;
-    private String icaoType;
-    private char wakeCat;
-    private char recat;
+    private final String icaoType;
+    private final char wakeCat;
+    private final char recat;
     private boolean wakeInfringe;
     private float wakeTolerance;
-    private int v2;
+    private final int v2;
     private int typClimb;
     private int maxClimb;
     private int typDes;
-    private int maxDes;
-    private int apchSpd;
+    private final int maxDes;
+    private final int apchSpd;
     private ControlState controlState;
     private NavState navState;
     private boolean goAround;
@@ -1327,24 +1327,12 @@ public class Aircraft extends Actor {
         return icaoType;
     }
 
-    public void setIcaoType(String icaoType) {
-        this.icaoType = icaoType;
-    }
-
     public char getWakeCat() {
         return wakeCat;
     }
 
-    public void setWakeCat(char wakeCat) {
-        this.wakeCat = wakeCat;
-    }
-
     public int getV2() {
         return v2;
-    }
-
-    public void setV2(int v2) {
-        this.v2 = v2;
     }
 
     public int getTypClimb() {
@@ -1367,16 +1355,8 @@ public class Aircraft extends Actor {
         return maxDes;
     }
 
-    public void setMaxDes(int maxDes) {
-        this.maxDes = maxDes;
-    }
-
     public int getApchSpd() {
         return apchSpd;
-    }
-
-    public void setApchSpd(int apchSpd) {
-        this.apchSpd = apchSpd;
     }
 
     public ControlState getControlState() {
@@ -1429,10 +1409,6 @@ public class Aircraft extends Actor {
 
     public double getAngularVelocity() {
         return angularVelocity;
-    }
-
-    public void setAngularVelocity(double angularVelocity) {
-        this.angularVelocity = angularVelocity;
     }
 
     public double getTrack() {
@@ -1582,10 +1558,6 @@ public class Aircraft extends Actor {
 
     public float getTas() {
         return tas;
-    }
-
-    public void setTas(float tas) {
-        this.tas = tas;
     }
 
     public float getGs() {
@@ -1825,10 +1797,6 @@ public class Aircraft extends Actor {
         return expediteTime;
     }
 
-    public void setExpediteTime(float expediteTime) {
-        this.expediteTime = expediteTime;
-    }
-
     public String getVoice() {
         return voice;
     }
@@ -1869,10 +1837,6 @@ public class Aircraft extends Actor {
         return holdingType;
     }
 
-    public void setHoldingType(int holdingType) {
-        this.holdingType = holdingType;
-    }
-
     public Emergency getEmergency() {
         return emergency;
     }
@@ -1885,24 +1849,12 @@ public class Aircraft extends Actor {
         return prevDistTravelled;
     }
 
-    public void setPrevDistTravelled(float prevDistTravelled) {
-        this.prevDistTravelled = prevDistTravelled;
-    }
-
     public char getRecat() {
         return recat;
     }
 
-    public void setRecat(char recat) {
-        this.recat = recat;
-    }
-
     public boolean isWakeInfringe() {
         return wakeInfringe;
-    }
-
-    public void setWakeInfringe(boolean wakeInfringe) {
-        this.wakeInfringe = wakeInfringe;
     }
 
     public float getWakeTolerance() {

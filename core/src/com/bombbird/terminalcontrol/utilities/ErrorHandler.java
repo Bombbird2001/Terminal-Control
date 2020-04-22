@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.utilities;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 

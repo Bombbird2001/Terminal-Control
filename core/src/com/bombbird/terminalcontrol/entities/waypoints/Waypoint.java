@@ -48,6 +48,8 @@ public class Waypoint extends Actor {
         restrLabel.setPosition(posX - restrLabel.getWidth() / 2, posY + 48);
         restrLabel.setAlignment(Align.bottom);
         restrVisible = false;
+
+        adjustPositions();
     }
 
     @Override
@@ -56,6 +58,13 @@ public class Waypoint extends Actor {
             label.draw(batch, 1);
             if (restrVisible) restrLabel.draw(batch, 1);
         }
+    }
+
+    /** Moves the restriction information labels for certain waypoints to reduce clutter */
+    private void adjustPositions() {
+        if ("LOBBI".equals(name) || "ABSON".equals(name)) restrLabel.moveBy(32, 0);
+        if ("SCODI".equals(name)) restrLabel.moveBy(20, 0);
+        if ("BOMDA".equals(name) || "BALAD".equals(name) || "ADMON".equals(name)) restrLabel.moveBy(0, -128);
     }
 
     public void renderShape() {

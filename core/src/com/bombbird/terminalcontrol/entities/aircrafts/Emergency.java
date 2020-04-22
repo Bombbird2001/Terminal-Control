@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.aircrafts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;

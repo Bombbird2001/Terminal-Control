@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 public class Obstacle extends Actor {
     private int minAlt;
@@ -25,6 +25,7 @@ public class Obstacle extends Actor {
     /** Draws the label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (!radarScreen.showMva) return;
         if (conflict || label.getText().toString().charAt(0) == '#') {
             label.getStyle().fontColor = Color.RED;
         } else if (!enforced) {

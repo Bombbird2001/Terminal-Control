@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.waypoints;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.screens.RadarScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 public class WaypointManager {
     private final RadarScreen radarScreen;

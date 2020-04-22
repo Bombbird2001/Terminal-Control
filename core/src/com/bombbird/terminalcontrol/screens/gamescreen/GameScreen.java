@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens;
+package com.bombbird.terminalcontrol.screens.gamescreen;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.RangeCircle;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.screens.PauseScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
@@ -72,7 +73,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public SoundManager soundManager = new SoundManager();
 
     //Create range circles
-    private RangeCircle[] rangeCircles;
+    private final RangeCircle[] rangeCircles;
 
     //Create obstacle resources
     public Array<Obstacle> obsArray;
@@ -87,10 +88,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public HashMap<String, Waypoint> waypoints;
 
     //Overlay screen when paused
-    private PauseScreen pauseScreen;
+    private final PauseScreen pauseScreen;
 
     //Overlay screen for game settings
-    private GameSettingsScreen gameSettingsScreen;
+    private final GameSettingsScreen gameSettingsScreen;
 
     //Game state
     public enum State {
