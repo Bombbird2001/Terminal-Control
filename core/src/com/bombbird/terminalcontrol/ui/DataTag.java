@@ -365,7 +365,7 @@ public class DataTag {
                 }
                 if (changed) labelText[5] = "[YELLOW]" + labelText[5] + "[WHITE]";
             } else {
-                if (aircraft.getNavState().getDispLatMode().first().contains("heading") && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().first())) {
+                if (aircraft.getNavState().getDispLatMode().last().contains("heading") && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last())) {
                     if (aircraft.isLocCap()) {
                         labelText[5] = "LOC";
                     } else {
@@ -383,6 +383,9 @@ public class DataTag {
                 boolean changed = false;
                 if (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) {
                     labelText[8] = LatTab.latMode.split(" ")[0];
+                    changed = latTab.isLatModeChanged();
+                } else if ("Hold at".equals(LatTab.latMode)) {
+                    labelText[8] = aircraft.getSidStar().getName();
                     changed = latTab.isLatModeChanged();
                 } else if (!"After waypoint, fly heading".equals(LatTab.latMode) && LatTab.latMode.contains("heading") && !"Not cleared approach".equals(LatTab.clearedILS)) {
                     labelText[8] = LatTab.clearedILS;

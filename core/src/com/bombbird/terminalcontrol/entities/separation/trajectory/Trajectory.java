@@ -10,9 +10,9 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools;
 public class Trajectory {
     public static final int INTERVAL = 5;
 
-    private Aircraft aircraft;
+    private final Aircraft aircraft;
     private float deltaHeading;
-    private Array<PositionPoint> positionPoints;
+    private final Array<PositionPoint> positionPoints;
 
     public Trajectory(Aircraft aircraft) {
         this.aircraft = aircraft;
@@ -98,7 +98,7 @@ public class Trajectory {
             int time = index * INTERVAL; //Time from now in seconds
             float targetAlt = aircraft.getTargetAltitude();
             if (aircraft.isGsCap()) targetAlt = -100;
-            if (aircraft.getAltitude() > aircraft.getTargetAltitude()) {
+            if (aircraft.getAltitude() > targetAlt) {
                 //Descending
                 positionPoint.altitude = (int) Math.max(aircraft.getAltitude() + aircraft.getEffectiveVertSpd()[0] * time / 60, targetAlt);
             } else {

@@ -60,6 +60,9 @@ public class GameSaver {
         jsonObject.put("advTraj", radarScreen.advTraj);
         jsonObject.put("areaWarning", radarScreen.areaWarning);
         jsonObject.put("collisionWarning", radarScreen.collisionWarning);
+        jsonObject.put("showMva", radarScreen.showMva);
+        jsonObject.put("showIlsDash", radarScreen.showIlsDash);
+        jsonObject.put("compactData", radarScreen.compactData);
         jsonObject.put("liveWeather", radarScreen.liveWeather);
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
@@ -280,6 +283,8 @@ public class GameSaver {
                 aircraftInfo.put("accel", ((Departure) aircraft).isAccel());
                 aircraftInfo.put("sidSet", ((Departure) aircraft).isSidSet());
                 aircraftInfo.put("contacted", ((Departure) aircraft).isContacted());
+                aircraftInfo.put("handedOver", ((Departure) aircraft).isHandedOver());
+                aircraftInfo.put("cruiseAltTime", ((Departure) aircraft).getCruiseAltTime());
                 aircraftInfo.put("cruiseAlt", ((Departure) aircraft).getCruiseAlt());
                 aircraftInfo.put("higherSpdSet", ((Departure) aircraft).isHigherSpdSet());
                 aircraftInfo.put("cruiseSpdSet", ((Departure) aircraft).isCruiseSpdSet());

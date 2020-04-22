@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.entities.aircrafts;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -23,6 +24,8 @@ public class Departure extends Aircraft {
     private boolean accel;
     private boolean sidSet;
     private boolean contacted;
+    private boolean handedOver;
+    private float cruiseAltTime;
     private final int cruiseAlt;
     private boolean higherSpdSet;
     private boolean cruiseSpdSet;
@@ -113,6 +116,8 @@ public class Departure extends Aircraft {
         accel = !save.isNull("accel") && save.getBoolean("accel");
         sidSet = save.getBoolean("sidSet");
         contacted = save.getBoolean("contacted");
+        handedOver = save.optBoolean("handedOver", !isArrivalDeparture() && getAltitude() > handoveralt);
+        cruiseAltTime = (float) save.optDouble("cruiseAltTime", 1);
         cruiseAlt = save.getInt("cruiseAlt");
         higherSpdSet = save.getBoolean("higherSpdSet");
         cruiseSpdSet = save.getBoolean("cruiseSpdSet");
@@ -191,6 +196,22 @@ public class Departure extends Aircraft {
         if (contacted && v2set && sidSet && accel) {
             setTkOfLdg(false);
         }
+    }
+
+    @Override
+    public double update() {
+        double info = super.update();
+
+        if (handedOver && cruiseAltTime > 0) {
+            cruiseAltTime -= Gdx.graphics.getDeltaTime();
+            if (cruiseAltTime <= 0) {
+                setClearedAltitude(cruiseAlt);
+                getNavState().replaceAllClearedAltMode();
+                getNavState().replaceAllClearedAlt();
+            }
+        }
+
+        return info;
     }
 
     /** Overrides method in Aircraft class to join the lines between each SID waypoint */
@@ -312,9 +333,7 @@ public class Departure extends Aircraft {
         setControlState(ControlState.UNCONTROLLED);
         setClearedIas(getClimbSpd());
         super.updateSpd();
-        setClearedAltitude(cruiseAlt);
-        getNavState().replaceAllClearedAltMode();
-        getNavState().replaceAllClearedAlt();
+        handedOver = true;
         setExpedite(false);
         if (getExpediteTime() <= 120) radarScreen.setScore(radarScreen.getScore() + 1);
         if (sid.getCentre() != null) {
@@ -371,5 +390,13 @@ public class Departure extends Aircraft {
 
     public void setOutboundHdg(int outboundHdg) {
         this.outboundHdg = outboundHdg;
+    }
+
+    public boolean isHandedOver() {
+        return handedOver;
+    }
+
+    public float getCruiseAltTime() {
+        return cruiseAltTime;
     }
 }

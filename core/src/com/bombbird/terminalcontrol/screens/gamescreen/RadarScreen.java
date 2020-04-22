@@ -218,7 +218,7 @@ public class RadarScreen extends GameScreen {
         //Set timer for radar delay, trails and autosave
         radarTime = (float) save.optDouble("radarTime", TerminalControl.radarSweep);
         trailTime = (float) save.optDouble("trailTime", 10);
-        saveTime = (float) save.optDouble("saveInterval", TerminalControl.saveInterval);
+        saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
 
         trajectoryLine = save.getInt("trajectoryLine");

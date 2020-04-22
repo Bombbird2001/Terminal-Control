@@ -62,9 +62,17 @@ public class Waypoint extends Actor {
 
     /** Moves the restriction information labels for certain waypoints to reduce clutter */
     private void adjustPositions() {
-        if ("LOBBI".equals(name) || "ABSON".equals(name)) restrLabel.moveBy(32, 0);
-        if ("SCODI".equals(name)) restrLabel.moveBy(20, 0);
-        if ("BOMDA".equals(name) || "BALAD".equals(name) || "ADMON".equals(name)) restrLabel.moveBy(0, -128);
+        WaypointShifter.loadData();
+        if ("ITRF14.1".equals(name)) {
+            label.moveBy(-80, -16);
+            restrLabel.moveBy(-80, -16);
+            return;
+        }
+        String icao = TerminalControl.radarScreen.mainName;
+        if (WaypointShifter.movementData.containsKey(icao) && WaypointShifter.movementData.get(icao).containsKey(name)) {
+            int[] shiftData = WaypointShifter.movementData.get(icao).get(name);
+            restrLabel.moveBy(shiftData[0], shiftData[1]);
+        }
     }
 
     public void renderShape() {

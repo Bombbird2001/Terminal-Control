@@ -178,24 +178,24 @@ public class DefaultSettingsScreen extends SettingsScreen {
         SettingsTab tab2 = new SettingsTab(this, 2);
         tab2.addActors(mva, mvaLabel);
         tab2.addActors(ilsDash, ilsDashLabel);
+        tab2.addActors(dataTag, dataTagLabel);
+        tab2.addActors(defaultTab, defaultTabLabel);
         if (TerminalControl.full) {
             tab2.addActors(sweep, sweepLabel);
             tab2.addActors(advTraj, advTrajLabel);
             tab2.addActors(area, areaLabel);
             tab2.addActors(collision, collisionLabel);
         }
-        tab2.addActors(zoom, zoomLabel);
-        tab2.addActors(autosave, autosaveLabel);
         if (!TerminalControl.full) {
-            tab2.addActors(dataTag, dataTagLabel);
-            tab2.addActors(defaultTab, defaultTabLabel);
+            tab2.addActors(zoom, zoomLabel);
+            tab2.addActors(autosave, autosaveLabel);
         }
         settingsTabs.add(tab2);
 
         if (TerminalControl.full) {
             SettingsTab tab3 = new SettingsTab(this, 3);
-            tab3.addActors(dataTag, dataTagLabel);
-            tab3.addActors(defaultTab, defaultTabLabel);
+            tab3.addActors(zoom, zoomLabel);
+            tab3.addActors(autosave, autosaveLabel);
             settingsTabs.add(tab3);
         }
     }

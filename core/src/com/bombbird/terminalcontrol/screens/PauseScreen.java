@@ -15,17 +15,17 @@ import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class PauseScreen {
-    private GameScreen gameScreen;
+    private final GameScreen gameScreen;
 
     private TextButton resumeButton;
     private TextButton settingsButton;
     private TextButton quitButton;
 
     private Stage stage;
-    private OrthographicCamera camera;
-    private Viewport viewport;
+    private final OrthographicCamera camera;
+    private final Viewport viewport;
 
-    public PauseScreen(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen gameScreen) {
+    public PauseScreen(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
 
         stage = new Stage(new FitViewport(5760, 3240));
@@ -38,9 +38,6 @@ public class PauseScreen {
         camera.position.set(2880, 1620, 0);
 
         loadButtons();
-
-        //System.out.println("Local: " + Gdx.files.getLocalStoragePath());
-        //System.out.println("External: " + Gdx.files.getExternalStoragePath());
     }
 
     /** Loads the buttons for screen */
@@ -57,7 +54,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Un-pause the game
-                gameScreen.setGameState(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen.State.RUN);
+                gameScreen.setGameState(GameScreen.State.RUN);
                 event.handle();
             }
         });
@@ -71,7 +68,7 @@ public class PauseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
                 gameScreen.getGameSettingsScreen().setOptions();
-                gameScreen.setGameState(com.bombbird.terminalcontrol.screens.gamescreen.GameScreen.State.SETTINGS);
+                gameScreen.setGameState(GameScreen.State.SETTINGS);
             }
         });
         stage.addActor(settingsButton);
