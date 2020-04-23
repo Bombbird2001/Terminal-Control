@@ -122,6 +122,7 @@ public class WakeManager {
     /** Renders the wake lines/arc when aircraft is on the ILS with aircraft behind it, call in shape renderer render method only */
     public void renderIlsWake() {
         for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
+            if (aircraft == null) continue;
             if (aircraft instanceof Departure) continue;
             if (!aircraft.isLocCap()) continue;
             if (aircraft.isOnGround()) continue;
@@ -129,7 +130,8 @@ public class WakeManager {
             int index = aircraft.getIls().getRwy().getAircraftsOnAppr().size - 1;
             while (true) {
                 if (index < 0) break;
-                if (aircraft.getIls().getRwy().getAircraftsOnAppr().get(index).getCallsign().equals(aircraft.getCallsign())) break;
+                Aircraft nextAircraft = aircraft.getIls().getRwy().getAircraftsOnAppr().get(index);
+                if (nextAircraft == null || nextAircraft.getCallsign().equals(aircraft.getCallsign())) break;
                 aircraft1 = aircraft.getIls().getRwy().getAircraftsOnAppr().get(index);
                 index--;
             }

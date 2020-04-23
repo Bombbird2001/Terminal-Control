@@ -434,7 +434,7 @@ public class DataTag {
                         labelText[5] = Integer.toString(LatTab.clearedHdg);
                         changed = latTab.isLatModeChanged() || latTab.isHdgChanged();
                     }
-                } else if ("Hold at".equals(LatTab.holdWpt)) {
+                } else if ("Hold at".equals(LatTab.latMode)) {
                     labelText[5] = LatTab.holdWpt;
                     changed = latTab.isLatModeChanged() || latTab.isHoldWptChanged();
                 } else if (LatTab.latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(LatTab.latMode)) {

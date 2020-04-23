@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 
 public class SettingsTab {
-    private static int MAX_LENGTH = 4;
+    private static final int MAX_LENGTH = 4;
     private final int maxWidth;
 
     private final SettingsScreen settingsScreen;
@@ -48,7 +48,7 @@ public class SettingsTab {
     }
 
     public void updateVisibility(boolean visible) {
-        if (!DayNightManager.isNightAvailable() && settingsScreen instanceof GameSettingsScreen && !TerminalControl.full) settingsScreen.nextButton.setVisible(false); //TODO Temporary workaround, remove once more settings added
+        //if (!DayNightManager.isNightAvailable() && settingsScreen instanceof GameSettingsScreen && !TerminalControl.full) settingsScreen.nextButton.setVisible(false); Temporary workaround, remove once more settings added
         for (Actor actor: actors) {
             if ("night2".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
                 actor.setVisible(visible && DayNightManager.isNightAvailable());

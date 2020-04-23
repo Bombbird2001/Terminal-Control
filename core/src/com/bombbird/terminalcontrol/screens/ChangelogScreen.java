@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.screens;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
@@ -71,6 +73,22 @@ public class ChangelogScreen extends StandardUIScreen {
 
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
+
+        //Version 1.4.2005.1
+        Array<String> content8 = new Array<>();
+        content8.add("-Mechanics: More realistic initial climb altitudes");
+        content8.add("-Mechanics: Reduced descent rates for increased realism");
+        content8.add("-Wake turbulence: Reduced altitude separation required");
+        content8.add("-UI: Data tag overhaul - choose between the default and compact data tag styles");
+        content8.add("-UI: Data tag will show changes to aircraft clearances");
+        content8.add("-UI: If present, SID/STAR restrictions are displayed beside the waypoint");
+        content8.add("-UI: You can now choose to hide the MVA sector altitudes to reduce clutter");
+        content8.add("-UI: Choose between default or realistic ILS display");
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            content8.add("-Discord: Added Discord Rich Presence integration");
+        }
+        content8.add("-And of course, various bug fixes");
+        changeLogContent.put("1.4.2005.1", content8);
 
         //Version 1.4.2004.2
         Array<String> content7 = new Array<>();
