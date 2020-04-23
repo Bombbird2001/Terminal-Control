@@ -172,17 +172,29 @@ public class RadarScreen extends GameScreen {
         saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
 
-        trajectoryLine = TerminalControl.trajectorySel;
-        radarSweepDelay = TerminalControl.radarSweep;
-        advTraj = TerminalControl.advTraj;
-        areaWarning = TerminalControl.areaWarning;
-        collisionWarning = TerminalControl.collisionWarning;
-        showMva = TerminalControl.showMva;
-        showIlsDash = TerminalControl.showIlsDash;
-        compactData = TerminalControl.compactData;
-        liveWeather = TerminalControl.weatherSel;
-        soundSel = TerminalControl.soundSel;
-        emerChance = TerminalControl.emerChance;
+        if (tutorial) {
+            trajectoryLine = 90;
+            radarSweepDelay = 2;
+            advTraj = -1;
+            areaWarning = -1;
+            collisionWarning = -1;
+            showMva = true;
+            showIlsDash = false;
+            compactData = false;
+            emerChance = Emergency.Chance.OFF;
+        } else {
+            trajectoryLine = TerminalControl.trajectorySel;
+            radarSweepDelay = TerminalControl.radarSweep;
+            advTraj = TerminalControl.advTraj;
+            areaWarning = TerminalControl.areaWarning;
+            collisionWarning = TerminalControl.collisionWarning;
+            showMva = TerminalControl.showMva;
+            showIlsDash = TerminalControl.showIlsDash;
+            compactData = TerminalControl.compactData;
+            liveWeather = TerminalControl.weatherSel;
+            soundSel = TerminalControl.soundSel;
+            emerChance = TerminalControl.emerChance;
+        }
         tfcMode = TfcMode.NORMAL;
         allowNight = true;
         nightStart = 2200;
