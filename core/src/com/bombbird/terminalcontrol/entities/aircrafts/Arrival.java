@@ -354,7 +354,7 @@ public class Arrival extends Aircraft {
             }
             ilsSpdSet = true;
         }
-        if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 6) {
+        if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 7) {
             if (getClearedIas() > getApchSpd()) {
                 setClearedIas(getApchSpd());
                 super.updateSpd();

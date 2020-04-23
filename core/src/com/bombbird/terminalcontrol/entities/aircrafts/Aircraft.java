@@ -627,8 +627,8 @@ public class Aircraft extends Actor {
                 min = -1.5f;
             }
         } else {
-            max = 1.25f * (1 - verticalSpeed / maxClimb);
-            min = -1.25f * (1 + verticalSpeed / maxDes);
+            max = 1.5f * (1 - verticalSpeed / maxClimb);
+            min = -1.5f * (1 + verticalSpeed / maxDes);
         }
         if (deltaIas > max) {
             deltaIas = max;
