@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class Metar {
     private JSONObject prevMetar;
     private JSONObject metarObject;
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
     private boolean quit;
 
     //Thread lock
@@ -162,7 +162,7 @@ public class Metar {
     public void updateRadarScreenState() {
         if (quit) return;
         if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) {
-            Gdx.app.postRunnable(() -> radarScreen.updateInformation());
+            Gdx.app.postRunnable(radarScreen::updateInformation);
         }
         if (radarScreen.loadingTime < 4.5) {
             long deltaTime = (long)((4.5 - radarScreen.loadingTime) * 1000);

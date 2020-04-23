@@ -80,6 +80,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu screen
+                TerminalControl.radarScreen.getMetar().setQuit(true);
                 if (!((RadarScreen) gameScreen).tutorial) GameSaver.saveGame(); //Save the game first
                 dispose();
                 TerminalControl.radarScreen = null;

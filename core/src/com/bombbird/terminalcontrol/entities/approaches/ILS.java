@@ -21,7 +21,7 @@ public class ILS extends Actor {
     private float x;
     private float y;
     private int heading;
-    private float gsOffset;
+    private float gsOffsetNm;
     private int minima;
     private int gsAlt;
     private String[] towerFreq;
@@ -35,8 +35,11 @@ public class ILS extends Actor {
     private static final float distance1 = MathTools.nmToPixel(10);
     private static final int angle1 = 6;
 
-    private static final float distance2 = MathTools.nmToPixel(25);
+    private static final float ilsDistNm = 25;
+    private static final float distance2 = MathTools.nmToPixel(ilsDistNm);
     private static final int angle2 = 3;
+
+    private static final float dashDistNm = 1;
 
     private final RadarScreen radarScreen;
 
@@ -65,7 +68,7 @@ public class ILS extends Actor {
                 case 2: heading = Integer.parseInt(s1); break;
                 case 3: x = Float.parseFloat(s1); break;
                 case 4: y = Float.parseFloat(s1); break;
-                case 5: gsOffset = Float.parseFloat(s1); break;
+                case 5: gsOffsetNm = Float.parseFloat(s1); break;
                 case 6: minima = Integer.parseInt(s1); break;
                 case 7: gsAlt = Integer.parseInt(s1); break;
                 case 8: towerFreq = s1.split(">"); break;
@@ -98,7 +101,35 @@ public class ILS extends Actor {
         if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed()) {
             radarScreen.shapeRenderer.setColor(Color.CYAN);
             if (selectedIls || rwyChange) radarScreen.shapeRenderer.setColor(Color.YELLOW);
-            radarScreen.shapeRenderer.line(x, y, x + distance2 * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + distance2 * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev)));
+            if (radarScreen.showIlsDash) {
+                float gsOffsetPx = -MathTools.nmToPixel(gsOffsetNm);
+                float trackerX = x + gsOffsetPx * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev));
+                float trackerY = y + gsOffsetPx * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev));
+                float deltaX = MathTools.nmToPixel(dashDistNm) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev));
+                float deltaY = MathTools.nmToPixel(dashDistNm) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev));
+                boolean drawing = true;
+                radarScreen.shapeRenderer.line(x, y, trackerX, trackerY);
+                for (int i = 0; i < ilsDistNm + gsOffsetNm; i += dashDistNm) {
+                    drawing = !drawing;
+                    if (drawing) {
+                        radarScreen.shapeRenderer.line(trackerX, trackerY, trackerX + deltaX, trackerY + deltaY);
+                    }
+                    trackerX += deltaX;
+                    trackerY += deltaY;
+                }
+
+                //Separation marks at 5, 10 miles
+                int halfWidth = 30;
+                double trackRad = Math.toRadians(heading - radarScreen.magHdgDev);
+                float xOffset = halfWidth * (float) Math.cos(trackRad);
+                float yOffset = halfWidth * (float) Math.sin(trackRad);
+                Vector2 centre5nm = getPointAtDist(5 - gsOffsetNm);
+                Vector2 centre10nm = getPointAtDist(10 - gsOffsetNm);
+                TerminalControl.radarScreen.shapeRenderer.line(centre5nm.x - xOffset, centre5nm.y + yOffset, centre5nm.x + xOffset, centre5nm.y - yOffset);
+                TerminalControl.radarScreen.shapeRenderer.line(centre10nm.x - xOffset, centre10nm.y + yOffset, centre10nm.x + xOffset, centre10nm.y - yOffset);
+            } else {
+                radarScreen.shapeRenderer.line(x, y, x + distance2 * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + distance2 * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev)));
+            }
             drawGsCircles();
         }
     }
@@ -183,7 +214,7 @@ public class ILS extends Actor {
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin */
     public float getGSAltAtDist(float dist) {
-        return MathTools.nmToFeet(dist + gsOffset) * (float) Math.tan(Math.toRadians(3)) + rwy.getElevation();
+        return MathTools.nmToFeet(dist + gsOffsetNm) * (float) Math.tan(Math.toRadians(3)) + rwy.getElevation();
     }
 
     /** Gets the glide slope altitude (in feet) of aircraft */
@@ -193,7 +224,7 @@ public class ILS extends Actor {
 
     /** Gets the distance (in nautical miles) from GS origin for a specified altitude */
     public float getDistAtGsAlt(float altitude) {
-        return MathTools.feetToNm((altitude - rwy.getElevation()) / (float) Math.tan(Math.toRadians(3))) - gsOffset;
+        return MathTools.feetToNm((altitude - rwy.getElevation()) / (float) Math.tan(Math.toRadians(3))) - gsOffsetNm;
     }
 
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
@@ -229,8 +260,8 @@ public class ILS extends Actor {
         return heading;
     }
 
-    public float getGsOffset() {
-        return gsOffset;
+    public float getGsOffsetNm() {
+        return gsOffsetNm;
     }
 
     public int getMinima() {
