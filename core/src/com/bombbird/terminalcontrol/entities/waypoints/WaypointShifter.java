@@ -16,13 +16,26 @@ public class WaypointShifter {
         putData("TCTT", 16, 0, "COCOA", "MELAC", "COALL");
         putData("TCTT", -64, -112, "GHOUL", "RALON");
         putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA");
+        putData("TCTT", -88, -64, "RAZOR");
+        putData("TCTT", -80, -80, "VALON", "LALLI");
         //TCHH
         putData("TCHH", 20, 0, "MUMMY", "CLIPP");
         //TCBB
-        //TCBD
+        putData("TCBB", -20, 0, "BANDE");
+        putData("TCBB", 20, 0, "CLIPS");
+        putData("TCBB", 96, -24, "PONCH");
+        putData("TCBB", 64, -112, "ERIGE", "GROND");
+        //TCBD - No adjustments needed
         //TCMD
-        //TCPG
+        putData("TCMD", 32, -128, "DPT");
+        putData("TCMD", -20, 0, "TENSI");
+        putData("TCMD", 88, -64, "ABSIT", "GLADI");
+        putData("TCMD", 20, 0, "VERDE");
+        putData("TCMD", -88, -64, "EMDOT", "PEGAS");
+        //TCPG - No adjustments needed
         //TCHX
+        putData("TCHX", -8, 0, "CS");
+        putData("TCHX", 8, 0, "WR");
     }
 
     private static void putData(String icao, int xShift, int yShift, String... wpts) {

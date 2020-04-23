@@ -390,6 +390,8 @@ public class Arrival extends Aircraft {
                     highestAlt = 4500;
                 }
                 if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt;
+                if (highestAlt < radarScreen.minAlt) highestAlt = radarScreen.minAlt;
+                if (lowestAlt > -1 && highestAlt < lowestAlt) highestAlt = lowestAlt;
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
             setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);

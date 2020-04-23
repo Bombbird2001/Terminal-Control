@@ -387,9 +387,13 @@ public class DataTag {
                 } else if ("Hold at".equals(LatTab.latMode)) {
                     labelText[8] = aircraft.getSidStar().getName();
                     changed = latTab.isLatModeChanged();
-                } else if (!"After waypoint, fly heading".equals(LatTab.latMode) && LatTab.latMode.contains("heading") && !"Not cleared approach".equals(LatTab.clearedILS)) {
-                    labelText[8] = LatTab.clearedILS;
-                    changed = latTab.isLatModeChanged() || latTab.isIlsChanged();
+                } else if (!"After waypoint, fly heading".equals(LatTab.latMode) && LatTab.latMode.contains("heading")) {
+                    if ("Not cleared approach".equals(LatTab.clearedILS)) {
+                        labelText[8] = aircraft.getSidStar().getName();
+                    } else {
+                        labelText[8] = LatTab.clearedILS;
+                        changed = latTab.isLatModeChanged() || latTab.isIlsChanged();
+                    }
                 } else {
                     labelText[8] = "";
                 }
@@ -412,9 +416,9 @@ public class DataTag {
                     updatedText = labelText[0] + "/" + aircraft.getRecat() + "\n" + labelText[2] + " " + labelText[6];
                 } else {
                     String clearedAltStr = labelText[10];
-                    if (aircraft.isGsCap() && !aircraft.getIls().getName().contains("IMG")) {
-                        clearedAltStr = "GS";
-                    } else if (aircraft.isLocCap() && (aircraft.getIls().isNpa() || aircraft.isGsCap() && aircraft.getIls().getName().contains("IMG"))) {
+                    if (aircraft.isGsCap()) {
+                        clearedAltStr = aircraft.getIls().getName().contains("IMG") ? "VIS" : "GS";
+                    } else if (aircraft.isLocCap() && (aircraft.getIls().isNpa())) {
                         clearedAltStr = "NPA";
                     }
                     updatedText = labelText[0] + "/" + aircraft.getRecat() + "\n" + clearedAltStr + " " + aircraft.getIcaoType();
@@ -434,7 +438,7 @@ public class DataTag {
                     labelText[5] = LatTab.holdWpt;
                     changed = latTab.isLatModeChanged() || latTab.isHoldWptChanged();
                 } else if (LatTab.latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(LatTab.latMode)) {
-                    if ("After waypoint, fly heading".equals(LatTab.latMode)) {
+                    if ("After waypoint, fly heading".equals(LatTab.latMode) && ((aircraft.getDirect() != null && LatTab.afterWpt.equals(aircraft.getDirect().getName())) || latTab.isAfterWptChanged() || latTab.isAfterWptHdgChanged())) {
                         labelText[5] = LatTab.afterWpt + LatTab.afterWptHdg;
                         changed = latTab.isLatModeChanged() || latTab.isAfterWptHdgChanged() || latTab.isAfterWptChanged();
                     } else {

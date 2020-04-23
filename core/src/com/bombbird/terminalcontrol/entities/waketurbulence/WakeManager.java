@@ -60,6 +60,7 @@ public class WakeManager {
             removeAircraft(aircraft.getCallsign());
             return -1;
         }
+        if (aircraft instanceof Departure && aircraft.getAltitude() <= aircraft.getAirport().getElevation() + 3000) return -1; //Temporarily ignore if departure is still below 3000 feet AGL
         if (aircraft.getEmergency().isActive()) return -1; //Ignore if aircraft is an active emergency
         for (String callsign: aircraftWakes.keySet()) {
             if (callsign.equals(aircraft.getCallsign())) continue; //Skip if is itself

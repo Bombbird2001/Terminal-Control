@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class ILS extends Actor {
-    private Airport airport;
+    private final Airport airport;
     private String name;
     private float x;
     private float y;
@@ -26,7 +26,7 @@ public class ILS extends Actor {
     private int gsAlt;
     private String[] towerFreq;
     private Runway rwy;
-    private MissedApproach missedApchProc;
+    private final MissedApproach missedApchProc;
     private boolean npa;
 
     private Array<Vector2> gsRings = new Array<>();
@@ -38,7 +38,7 @@ public class ILS extends Actor {
     private static final float distance2 = MathTools.nmToPixel(25);
     private static final int angle2 = 3;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     public ILS(Airport airport, String toParse) {
         radarScreen = TerminalControl.radarScreen;

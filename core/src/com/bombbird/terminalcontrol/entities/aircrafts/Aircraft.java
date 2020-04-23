@@ -642,7 +642,7 @@ public class Aircraft extends Actor {
     }
 
     public float[] getEffectiveVertSpd() {
-        if (gsCap) return new float[] {MathTools.nmToFeet(gs / 60) * (float) Math.tan(Math.toRadians(3)), typClimb};
+        if (gsCap) return new float[] {-MathTools.nmToFeet(gs / 60) * (float) Math.sin(Math.toRadians(3)), typClimb};
         float multiplier = 1;
         if (typClimb <= 2200) multiplier = 1.1f;
         if (altitude > 20000) multiplier -= 0.2f;

@@ -39,6 +39,7 @@ public class Departure extends Aircraft {
         accel = false;
         sidSet = false;
         contacted = false;
+        cruiseAltTime = MathUtils.random(8, 20);
         cruiseAlt = MathUtils.random(30, 39) * 1000;
         higherSpdSet = false;
         cruiseSpdSet = false;
