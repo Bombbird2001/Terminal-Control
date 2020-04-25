@@ -118,15 +118,23 @@ public class ILS extends Actor {
                     trackerY += deltaY;
                 }
 
-                //Separation marks at 5, 10 miles
+                //Separation marks at 5, 10, 15, 20 miles (except some airports)
                 int halfWidth = 30;
                 double trackRad = Math.toRadians(heading - radarScreen.magHdgDev);
                 float xOffset = halfWidth * (float) Math.cos(trackRad);
                 float yOffset = halfWidth * (float) Math.sin(trackRad);
-                Vector2 centre5nm = getPointAtDist(5 - gsOffsetNm);
-                Vector2 centre10nm = getPointAtDist(10 - gsOffsetNm);
-                TerminalControl.radarScreen.shapeRenderer.line(centre5nm.x - xOffset, centre5nm.y + yOffset, centre5nm.x + xOffset, centre5nm.y - yOffset);
-                TerminalControl.radarScreen.shapeRenderer.line(centre10nm.x - xOffset, centre10nm.y + yOffset, centre10nm.x + xOffset, centre10nm.y - yOffset);
+                int marksDist = (int)ilsDistNm;
+                if ("TCSS".equals(airport.getIcao()) && "ILS10".equals(name)) {
+                    marksDist = 11;
+                } else if ("TCBD".equals(airport.getIcao()) && "ILS03L".equals(name)) {
+                    marksDist = 6;
+                } else if ("TCBB".equals(airport.getIcao()) && name.contains("ILS24")) {
+                    marksDist = 11;
+                }
+                for (int i = 5; i < marksDist; i += 5) {
+                    Vector2 centre = getPointAtDist(i - gsOffsetNm);
+                    TerminalControl.radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset);
+                }
             } else {
                 radarScreen.shapeRenderer.line(x, y, x + distance2 * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.magHdgDev)), y + distance2 * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.magHdgDev)));
             }

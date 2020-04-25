@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
-import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint;
@@ -15,9 +14,9 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class AreaPenetrationChecker {
-    private RadarScreen radarScreen;
-    private Array<Aircraft> aircraftStorage;
-    private Array<PositionPoint> pointStorage;
+    private final RadarScreen radarScreen;
+    private final Array<Aircraft> aircraftStorage;
+    private final Array<PositionPoint> pointStorage;
 
     public AreaPenetrationChecker() {
         radarScreen = TerminalControl.radarScreen;
@@ -64,7 +63,6 @@ public class AreaPenetrationChecker {
                         }
 
                         if (aircraft.isOnGround() || aircraft.isGsCap() || (aircraft instanceof Arrival && aircraft.getIls() instanceof LDA && aircraft.isLocCap()) || (aircraft instanceof Arrival && aircraft.getIls() != null && aircraft.getIls().getName().contains("IMG")) ||
-                                (aircraft instanceof Departure && aircraft.getAltitude() <= 4200 + aircraft.getAirport().getElevation()) ||
                                 aircraft.isGoAroundWindow()) {
                             //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                             continue;

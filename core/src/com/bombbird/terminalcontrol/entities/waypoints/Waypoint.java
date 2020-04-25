@@ -35,7 +35,7 @@ public class Waypoint extends Actor {
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont6;
-        labelStyle.fontColor = Color.GRAY;
+        labelStyle.fontColor = Color.WHITE;
         label = new Label(name, labelStyle);
         label.setPosition(posX - label.getWidth() / 2, posY + 16);
         label.setAlignment(Align.bottom);
@@ -43,7 +43,7 @@ public class Waypoint extends Actor {
         //Set restriction label
         Label.LabelStyle labelStyle1 = new Label.LabelStyle();
         labelStyle1.font = Fonts.defaultFont6;
-        labelStyle1.fontColor = Color.WHITE;
+        labelStyle1.fontColor = Color.GRAY;
         restrLabel = new Label("This should not be visible", labelStyle1);
         restrLabel.setPosition(posX - restrLabel.getWidth() / 2, posY + 48);
         restrLabel.setAlignment(Align.bottom);
@@ -119,7 +119,7 @@ public class Waypoint extends Actor {
             return;
         }
         String restrStr = "";
-        if (minAlt == maxAlt) {
+        if (minAlt == maxAlt && minAlt > -1) {
             restrStr = Integer.toString(minAlt / 100);
         } else {
             if (minAlt > -1) {
