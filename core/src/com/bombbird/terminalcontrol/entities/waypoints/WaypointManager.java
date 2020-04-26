@@ -70,13 +70,15 @@ public class WaypointManager {
         }
     }
 
-    /** Updates the drawing status of restrictions of STAR waypoints */
-    public void updateStarRestriction(Route route, int endIndex) {
+    /** Updates the restrictions of STAR waypoints */
+    public void updateStarRestriction(Route route, int startIndex, int endIndex) {
         int[] lowestAlt = new int[endIndex];
+        int[] highestAlt = new int[endIndex];
+        int[] spd = new int[endIndex];
         int prevHighest = -1;
         int prevSpd = -1;
-
         int prevLowest = -1;
+
         for (int i = endIndex - 1; i >= 0; i--) {
             int thisLowest = route.getWptMinAlt(i);
             if (prevLowest == -1 || thisLowest > prevLowest) {
@@ -88,33 +90,43 @@ public class WaypointManager {
         }
 
         for (int i = 0; i < endIndex; i++) {
-            Waypoint waypoint = route.getWaypoint(i);
-
             //Determine if highestAlt needs to be displayed
-            int thisHighest = -1;
-            if (prevHighest == -1 || route.getWptMaxAlt(i) < prevHighest) {
-                thisHighest = route.getWptMaxAlt(i);
+            int thisHighest = route.getWptMaxAlt(i);
+            if (prevHighest == -1 || thisHighest < prevHighest) {
+                highestAlt[i] = thisHighest;
                 prevHighest = thisHighest;
+            } else {
+                highestAlt[i] = -1;
+            }
+
+            if (thisHighest == route.getWptMinAlt(i) && thisHighest > -1) {
+                //If is fixed altitude, set both highest and lowest to same alt
+                highestAlt[i] = thisHighest;
+                lowestAlt[i] = thisHighest;
             }
 
             //Determine if speed needs to be displayed
-            int thisSpd = -1;
+            int thisSpd = route.getWptMaxSpd(i);
             if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
-                thisSpd = route.getWptMaxSpd(i);
+                spd[i] = thisSpd;
                 prevSpd = thisSpd;
+            } else {
+                spd[i] = -1;
             }
-
-            waypoint.setRestrDisplay(thisSpd, lowestAlt[i], thisHighest);
         }
+
+        setRestrictions(route, startIndex, endIndex, lowestAlt, highestAlt, spd);
     }
 
-    /** Updates the drawing status of SID waypoints */
-    public void updateSidRestriction(Route route, int endIndex) {
+    /** Updates the restrictions of SID waypoints */
+    public void updateSidRestriction(Route route, int startIndex, int endIndex) {
+        int[] lowestAlt = new int[endIndex];
         int[] highestAlt = new int[endIndex];
-        int prevLowest = -1;
-        int prevSpd = -1;
-
+        int[] spd = new int[endIndex];
         int prevHighest = -1;
+        int prevSpd = -1;
+        int prevLowest = -1;
+
         for (int i = endIndex - 1; i >= 0; i--) {
             int thisHighest = route.getWptMaxAlt(i);
             if (prevHighest == -1 || thisHighest > prevHighest) {
@@ -126,23 +138,55 @@ public class WaypointManager {
         }
 
         for (int i = 0; i < endIndex; i++) {
-            Waypoint waypoint = route.getWaypoint(i);
-
             //Determine if lowestAlt needs to be displayed
-            int thisLowest = -1;
-            if (prevLowest == -1 || route.getWptMinAlt(i) > prevLowest) {
-                thisLowest = route.getWptMinAlt(i);
+            int thisLowest = route.getWptMinAlt(i);
+            if (prevLowest == -1 || thisLowest < prevLowest) {
+                lowestAlt[i] = thisLowest;
                 prevLowest = thisLowest;
+            } else {
+                lowestAlt[i] = -1;
+            }
+
+            if (thisLowest == route.getWptMaxAlt(i) && thisLowest > -1) {
+                //If is fixed altitude, set both highest and lowest to same alt
+                highestAlt[i] = thisLowest;
+                lowestAlt[i] = thisLowest;
             }
 
             //Determine if speed needs to be displayed
-            int thisSpd = -1;
-            if (prevSpd == -1 || route.getWptMaxSpd(i) > prevSpd) {
-                thisSpd = route.getWptMaxSpd(i);
+            int thisSpd = route.getWptMaxSpd(i);
+            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
+                spd[i] = thisSpd;
                 prevSpd = thisSpd;
+            } else {
+                spd[i] = -1;
             }
+        }
 
-            waypoint.setRestrDisplay(thisSpd, thisLowest, highestAlt[i]);
+        setRestrictions(route, startIndex, endIndex, lowestAlt, highestAlt, spd);
+    }
+
+    /** Sets the restrictions to the labels; restrictions will be visible */
+    private void setRestrictions(Route route, int startIndex, int endIndex, int[] lowestAlt, int[] highestAlt, int[] spd) {
+        for (int i = startIndex; i < endIndex; i++) {
+            Waypoint waypoint = route.getWaypoint(i);
+            if (lowestAlt[i] == highestAlt[i]) {
+                if (i == 0 || i == endIndex - 1) {
+                    //Show due to being first or last wpt
+                    waypoint.setRestrDisplay(spd[i], lowestAlt[i], highestAlt[i]);
+                } else if (lowestAlt[i] != lowestAlt[i - 1] || highestAlt[i] != highestAlt[i - 1]) {
+                    //Prev wpt is different
+                    waypoint.setRestrDisplay(spd[i], lowestAlt[i], highestAlt[i]);
+                } else if (highestAlt[i] != highestAlt[i + 1] || lowestAlt[i] != lowestAlt[i + 1]) {
+                    //Next wpt is different
+                    waypoint.setRestrDisplay(spd[i], lowestAlt[i], highestAlt[i]);
+                } else {
+                    //No need to show alt restrictions
+                    waypoint.setRestrDisplay(spd[i], -1, -1);
+                }
+            } else {
+                waypoint.setRestrDisplay(spd[i], lowestAlt[i], highestAlt[i]);
+            }
         }
     }
 }

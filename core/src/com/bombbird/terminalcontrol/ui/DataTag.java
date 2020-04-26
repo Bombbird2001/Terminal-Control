@@ -392,7 +392,11 @@ public class DataTag {
                     labelText[8] = aircraft.getSidStar().getName();
                 } else if (LatTab.latMode.contains("heading")) {
                     if ("Not cleared approach".equals(LatTab.clearedILS)) {
-                        labelText[8] = aircraft.getSidStar().getName();
+                        if (!aircraft.getEmergency().isEmergency() || !aircraft.getEmergency().isActive()) {
+                            labelText[8] = aircraft.getSidStar().getName();
+                        } else {
+                            labelText[8] = "";
+                        }
                     } else {
                         labelText[8] = LatTab.clearedILS;
                         changed = latTab.isLatModeChanged() || latTab.isIlsChanged();
@@ -402,7 +406,7 @@ public class DataTag {
                 }
                 if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]";
             } else {
-                if (aircraft.getNavState().getClearedIls().last() != null) {
+                if (aircraft.getNavState().getDispLatMode().last().contains("heading") && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && aircraft.getNavState().getClearedIls().last() != null) {
                     labelText[8] = aircraft.getNavState().getClearedIls().last().getName();
                 } else {
                     labelText[8] = "";

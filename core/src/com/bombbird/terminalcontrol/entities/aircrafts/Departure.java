@@ -220,14 +220,16 @@ public class Departure extends Aircraft {
     public void drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar();
-        radarScreen.waypointManager.updateSidRestriction(getRoute(), getRoute().getWaypoints().size);
+        getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, outboundHdg);
+        radarScreen.waypointManager.updateSidRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        radarScreen.waypointManager.updateSidRestriction(getRoute(), getRoute().getWaypoints().size);
+        getRoute().joinLines(getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size, -1);
+        radarScreen.waypointManager.updateSidRestriction(getRoute(), getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size);
     }
 
     /** Overrides method in Aircraft class to set to outbound heading */
