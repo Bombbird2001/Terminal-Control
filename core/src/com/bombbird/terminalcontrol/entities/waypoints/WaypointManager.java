@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.waypoints;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 public class WaypointManager {
@@ -66,6 +67,84 @@ public class WaypointManager {
             } else if ("After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && aircraft.getDirect() != null) {
                 aircraft.getDirect().setSelected(true);
             }
+        }
+    }
+
+    /** Updates the drawing status of restrictions of STAR waypoints */
+    public void updateStarRestriction(Route route, int startIndex, int endIndex) {
+        if (endIndex - 1 < startIndex) return;
+        int[] lowestAlt = new int[endIndex - startIndex];
+        int prevHighest = -1;
+        int prevSpd = -1;
+
+        int prevLowest = -1;
+        for (int i = endIndex - 1; i >= startIndex; i--) {
+            int thisLowest = route.getWptMinAlt(i);
+            if (prevLowest == -1 || thisLowest > prevLowest) {
+                lowestAlt[i - startIndex] = thisLowest;
+                prevLowest = thisLowest;
+            } else {
+                lowestAlt[i - startIndex] = -1;
+            }
+        }
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Waypoint waypoint = route.getWaypoint(i);
+
+            //Determine if highestAlt needs to be displayed
+            int thisHighest = -1;
+            if (prevHighest == -1 || route.getWptMaxAlt(i) < prevHighest) {
+                thisHighest = route.getWptMaxAlt(i);
+                prevHighest = thisHighest;
+            }
+
+            //Determine if speed needs to be displayed
+            int thisSpd = -1;
+            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
+                thisSpd = route.getWptMaxSpd(i);
+                prevSpd = thisSpd;
+            }
+
+            waypoint.setRestrDisplay(thisSpd, lowestAlt[i - startIndex], thisHighest);
+        }
+    }
+
+    /** Updates the drawing status of SID waypoints */
+    public void updateSidRestriction(Route route, int startIndex, int endIndex) {
+        if (endIndex - 1 < startIndex) return;
+        int[] highestAlt = new int[endIndex - startIndex];
+        int prevLowest = -1;
+        int prevSpd = -1;
+
+        int prevHighest = -1;
+        for (int i = endIndex - 1; i >= startIndex; i--) {
+            int thisHighest = route.getWptMaxAlt(i);
+            if (prevHighest == -1 || thisHighest > prevHighest) {
+                highestAlt[i - startIndex] = thisHighest;
+                prevHighest = thisHighest;
+            } else {
+                highestAlt[i - startIndex] = -1;
+            }
+        }
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Waypoint waypoint = route.getWaypoint(i);
+
+            //Determine if lowestAlt needs to be displayed
+            int thisLowest = -1;
+            if (prevLowest == -1 || route.getWptMaxAlt(i) > prevLowest) {
+                thisLowest = route.getWptMinAlt(i);
+                prevLowest = thisLowest;
+            }
+
+            //Determine if speed needs to be displayed
+            int thisSpd = -1;
+            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
+                thisSpd = route.getWptMaxSpd(i);
+                prevSpd = thisSpd;
+            }
+
+            waypoint.setRestrDisplay(thisSpd, thisLowest, highestAlt[i - startIndex]);
         }
     }
 }

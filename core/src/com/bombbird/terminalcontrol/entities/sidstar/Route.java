@@ -13,11 +13,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Route {
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
-    private Array<Waypoint> wpts;
-    private Array<int[]> restrictions;
-    private Array<Boolean> flyOver;
+    private final Array<Waypoint> wpts;
+    private final Array<int[]> restrictions;
+    private final Array<Boolean> flyOver;
     private HoldProcedure holdProcedure;
 
     private String name;
@@ -186,10 +186,6 @@ public class Route {
             if (prevPt != null) {
                 radarScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
             }
-            if (waypoint != null) {
-                int[] restr = restrictions.get(index);
-                waypoint.setRestrDisplay(restr[2], restr[0], restr[1]);
-            }
             prevPt = waypoint;
             index++;
         }
@@ -260,12 +256,24 @@ public class Route {
         return restrictions.get(findWptIndex(wptName))[0];
     }
 
+    public int getWptMinAlt(int index) {
+        return restrictions.get(index)[0];
+    }
+
     public int getWptMaxAlt(String wptName) {
         return restrictions.get(findWptIndex(wptName))[1];
     }
 
+    public int getWptMaxAlt(int index) {
+        return restrictions.get(index)[1];
+    }
+
     public int getWptMaxSpd(String wptName) {
         return restrictions.get(findWptIndex(wptName))[2];
+    }
+
+    public int getWptMaxSpd(int index) {
+        return restrictions.get(index)[2];
     }
 
     public boolean getWptFlyOver(String wptName) {

@@ -503,12 +503,14 @@ public class Aircraft extends Actor {
     public void drawSidStar() {
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
+        route.joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, -1);
     }
 
     /** Draws the sidStar for the UI */
     public void uiDrawSidStar() {
         shapeRenderer.setColor(Color.YELLOW);
         shapeRenderer.line(radarX, radarY, radarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), radarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
+        route.joinLines(getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size, -1);
     }
 
     /** Draws the cleared after waypoint + cleared outbound heading when selected */

@@ -116,7 +116,7 @@ public class RadarScreen extends GameScreen {
     private HashMap<String, Boolean> allAircraft;
 
     //Waypoint manager for managing waypoint selected status
-    private WaypointManager waypointManager;
+    public WaypointManager waypointManager;
 
     //Separation checker for checking separation between aircraft & terrain
     public SeparationChecker separationChecker;
