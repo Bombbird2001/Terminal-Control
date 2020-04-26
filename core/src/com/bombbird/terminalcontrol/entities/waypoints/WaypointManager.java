@@ -71,24 +71,23 @@ public class WaypointManager {
     }
 
     /** Updates the drawing status of restrictions of STAR waypoints */
-    public void updateStarRestriction(Route route, int startIndex, int endIndex) {
-        if (endIndex - 1 < startIndex) return;
-        int[] lowestAlt = new int[endIndex - startIndex];
+    public void updateStarRestriction(Route route, int endIndex) {
+        int[] lowestAlt = new int[endIndex];
         int prevHighest = -1;
         int prevSpd = -1;
 
         int prevLowest = -1;
-        for (int i = endIndex - 1; i >= startIndex; i--) {
+        for (int i = endIndex - 1; i >= 0; i--) {
             int thisLowest = route.getWptMinAlt(i);
             if (prevLowest == -1 || thisLowest > prevLowest) {
-                lowestAlt[i - startIndex] = thisLowest;
+                lowestAlt[i] = thisLowest;
                 prevLowest = thisLowest;
             } else {
-                lowestAlt[i - startIndex] = -1;
+                lowestAlt[i] = -1;
             }
         }
 
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = 0; i < endIndex; i++) {
             Waypoint waypoint = route.getWaypoint(i);
 
             //Determine if highestAlt needs to be displayed
@@ -105,46 +104,45 @@ public class WaypointManager {
                 prevSpd = thisSpd;
             }
 
-            waypoint.setRestrDisplay(thisSpd, lowestAlt[i - startIndex], thisHighest);
+            waypoint.setRestrDisplay(thisSpd, lowestAlt[i], thisHighest);
         }
     }
 
     /** Updates the drawing status of SID waypoints */
-    public void updateSidRestriction(Route route, int startIndex, int endIndex) {
-        if (endIndex - 1 < startIndex) return;
-        int[] highestAlt = new int[endIndex - startIndex];
+    public void updateSidRestriction(Route route, int endIndex) {
+        int[] highestAlt = new int[endIndex];
         int prevLowest = -1;
         int prevSpd = -1;
 
         int prevHighest = -1;
-        for (int i = endIndex - 1; i >= startIndex; i--) {
+        for (int i = endIndex - 1; i >= 0; i--) {
             int thisHighest = route.getWptMaxAlt(i);
             if (prevHighest == -1 || thisHighest > prevHighest) {
-                highestAlt[i - startIndex] = thisHighest;
+                highestAlt[i] = thisHighest;
                 prevHighest = thisHighest;
             } else {
-                highestAlt[i - startIndex] = -1;
+                highestAlt[i] = -1;
             }
         }
 
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = 0; i < endIndex; i++) {
             Waypoint waypoint = route.getWaypoint(i);
 
             //Determine if lowestAlt needs to be displayed
             int thisLowest = -1;
-            if (prevLowest == -1 || route.getWptMaxAlt(i) > prevLowest) {
+            if (prevLowest == -1 || route.getWptMinAlt(i) > prevLowest) {
                 thisLowest = route.getWptMinAlt(i);
                 prevLowest = thisLowest;
             }
 
             //Determine if speed needs to be displayed
             int thisSpd = -1;
-            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
+            if (prevSpd == -1 || route.getWptMaxSpd(i) > prevSpd) {
                 thisSpd = route.getWptMaxSpd(i);
                 prevSpd = thisSpd;
             }
 
-            waypoint.setRestrDisplay(thisSpd, thisLowest, highestAlt[i - startIndex]);
+            waypoint.setRestrDisplay(thisSpd, thisLowest, highestAlt[i]);
         }
     }
 }

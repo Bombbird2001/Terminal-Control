@@ -281,14 +281,14 @@ public class Arrival extends Aircraft {
     @Override
     public void drawSidStar() {
         super.drawSidStar();
-        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size);
+        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().getWaypoints().size);
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint */
     @Override
     public void uiDrawSidStar() {
         super.uiDrawSidStar();
-        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size);
+        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().getWaypoints().size);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there */
@@ -296,7 +296,7 @@ public class Arrival extends Aircraft {
     public void drawAftWpt() {
         super.drawAftWpt();
         getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1, getNavState().getClearedAftWptHdg().last());
-        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1);
+        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedAftWpt().last().getName()) + 1);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there */
@@ -304,7 +304,7 @@ public class Arrival extends Aircraft {
     public void uiDrawAftWpt() {
         super.uiDrawAftWpt();
         getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg);
-        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.afterWpt) + 1);
+        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(LatTab.afterWpt) + 1);
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till holdWpt */
@@ -314,7 +314,7 @@ public class Arrival extends Aircraft {
         radarScreen.shapeRenderer.setColor(Color.WHITE);
         if (getNavState().getClearedHold().size > 0 && getNavState().getClearedHold().last() != null && getNavState().getClearedDirect().size > 0 && getNavState().getClearedDirect().last() != null) {
             getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedHold().last().getName()) + 1, -1);
-            radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(getNavState().getClearedHold().last().getName()) + 1);
+            radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedHold().last().getName()) + 1);
         }
     }
 
@@ -324,7 +324,7 @@ public class Arrival extends Aircraft {
         super.uiDrawHoldPattern();
         radarScreen.shapeRenderer.setColor(Color.YELLOW);
         getRoute().joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.holdWpt) + 1, -1);
-        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.holdWpt) + 1);
+        radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(LatTab.holdWpt) + 1);
     }
 
     /** Overrides method in Aircraft class to set to current heading*/
