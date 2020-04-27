@@ -296,7 +296,7 @@ public class Airport {
     /** Draws runways */
     public void renderRunways() {
         if (landings - airborne > 12) {
-            if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircraft on the ground to take off, reduce the number of arrivals into the airport by reducing speed or putting them in holding patterns.");
+            if (!congested) TerminalControl.radarScreen.getCommBox().warningMsg(icao + " is experiencing congestion! To allow aircraft on the ground to take off, reduce the number of arrivals into the airport by reducing speed, putting them in holding patterns or by closing the sector.");
             congested = true;
         } else {
             congested = false;

@@ -74,6 +74,14 @@ public class ChangelogScreen extends StandardUIScreen {
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
 
+        //Version 1.4.2005.2
+        Array<String> content9 = new Array<>();
+        content9.add("-Mechanics: New close/open sector button to manage arrival flow to prevent over-congestion");
+        content9.add("-UI: Made SID/STAR restriction display more compact and realistic");
+        content9.add("-UI: New option to turn the trajectory line off in settings");
+        content9.add("-UI: Options for displaying of aircraft trail in settings");
+        changeLogContent.put("1.4.2005.2", content9);
+
         //Version 1.4.2005.1
         Array<String> content8 = new Array<>();
         content8.add("-Mechanics: More realistic initial climb altitudes");
