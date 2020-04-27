@@ -170,12 +170,13 @@ public class DefaultSettingsScreen extends SettingsScreen {
     public void loadTabs() {
         SettingsTab tab1 = new SettingsTab(this, 1);
         tab1.addActors(trajectoryLine, trajectoryLabel);
+        tab1.addActors(pastTrajectory, pastTrajLabel);
         tab1.addActors(weather, weatherLabel);
         tab1.addActors(sound, soundLabel);
-        tab1.addActors(emer, emerChanceLabel);
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
+        tab2.addActors(emer, emerChanceLabel);
         tab2.addActors(mva, mvaLabel);
         tab2.addActors(ilsDash, ilsDashLabel);
         tab2.addActors(dataTag, dataTagLabel);
@@ -184,16 +185,15 @@ public class DefaultSettingsScreen extends SettingsScreen {
             tab2.addActors(sweep, sweepLabel);
             tab2.addActors(advTraj, advTrajLabel);
             tab2.addActors(area, areaLabel);
-            tab2.addActors(collision, collisionLabel);
-        }
-        if (!TerminalControl.full) {
+        } else {
             tab2.addActors(zoom, zoomLabel);
             tab2.addActors(autosave, autosaveLabel);
         }
         settingsTabs.add(tab2);
 
         if (TerminalControl.full) {
-            SettingsTab tab3 = new SettingsTab(this, 3);
+            SettingsTab tab3 = new SettingsTab(this, 2);
+            tab3.addActors(collision, collisionLabel);
             tab3.addActors(zoom, zoomLabel);
             tab3.addActors(autosave, autosaveLabel);
             settingsTabs.add(tab3);
@@ -203,6 +203,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
     @Override
     public void setOptions() {
         trajectorySel = TerminalControl.trajectorySel;
+        pastTrajTime = TerminalControl.pastTrajTime;
         radarSweep = TerminalControl.radarSweep;
         weatherSel = TerminalControl.weatherSel;
         soundSel = TerminalControl.soundSel;
@@ -236,6 +237,7 @@ public class DefaultSettingsScreen extends SettingsScreen {
     @Override
     public void sendChanges() {
         TerminalControl.trajectorySel = trajectorySel;
+        TerminalControl.pastTrajTime = pastTrajTime;
         TerminalControl.weatherSel = weatherSel;
         TerminalControl.soundSel = soundSel;
         TerminalControl.sendAnonCrash = sendCrash;

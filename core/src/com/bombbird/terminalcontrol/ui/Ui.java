@@ -62,6 +62,9 @@ public class Ui {
     //TextButton that pauses the game
     private TextButton pauseButton;
 
+    //TextButton that allows player to open/close the sector
+    private TextButton sectorButton;
+
     //Array for METAR info on default pane
     private ScrollPane metarPane;
     private Array<Label> metarInfos;
@@ -174,6 +177,7 @@ public class Ui {
     }
 
     private void loadNormalPane() {
+        //Background click "catcher"
         Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
         SpriteDrawable drawable = new SpriteDrawable(new Sprite(paneTexture));
         buttonStyle.up = drawable;
@@ -190,31 +194,33 @@ public class Ui {
         });
         radarScreen.uiStage.addActor(paneImage);
 
+        //Score display
         Label.LabelStyle labelStyle2 = new Label.LabelStyle();
         labelStyle2.font = Fonts.defaultFont30;
         labelStyle2.fontColor = Color.WHITE;
-
         scoreLabel = new Label("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore() , labelStyle2);
         scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
         radarScreen.uiStage.addActor(scoreLabel);
 
+        //Info label
         Label.LabelStyle labelStyle3 = new Label.LabelStyle();
         labelStyle3.font = Fonts.defaultFont20;
         labelStyle3.fontColor = Color.WHITE;
-
         infoLabel = new Label("", labelStyle3);
         infoLabel.setPosition(paneImage.getWidth() * 0.6f, 2650);
+        infoLabel.setAlignment(Align.topLeft);
         radarScreen.uiStage.addActor(infoLabel);
         updateInfoLabel();
 
+        //Pause button
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.BLACK;
         textButtonStyle.font = Fonts.defaultFont30;
         textButtonStyle.up = lightestBoxBackground;
         textButtonStyle.down = lightestBoxBackground;
         pauseButton = new TextButton("||", textButtonStyle);
-        pauseButton.setPosition(paneImage.getWidth() * 0.75f, 2900);
-        pauseButton.setSize(0.2f * paneImage.getWidth(), 200);
+        pauseButton.setPosition(paneImage.getWidth() * 0.75f, 2800);
+        pauseButton.setSize(0.2f * paneImage.getWidth(), 300);
         pauseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -225,10 +231,10 @@ public class Ui {
         });
         if (!radarScreen.tutorial) radarScreen.uiStage.addActor(pauseButton);
 
+        //Metar display labels
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
-
         Table metarTable = new Table();
         metarTable.align(Align.left);
         metarInfos = new Array<>();
@@ -273,6 +279,27 @@ public class Ui {
         if (inputListener != null) metarPane.removeListener(inputListener);
 
         radarScreen.uiStage.addActor(metarPane);
+
+        //Sector button
+        TextButton.TextButtonStyle textButtonStyle1 = new TextButton.TextButtonStyle();
+        textButtonStyle1.fontColor = Color.BLACK;
+        textButtonStyle1.font = Fonts.defaultFont20;
+        textButtonStyle1.up = TerminalControl.skin.getDrawable("ListBackground");
+        textButtonStyle1.down = TerminalControl.skin.getDrawable("Button_down");
+        sectorButton = new TextButton(radarScreen.isSectorClosed() ? "Open sector" : "Close sector", textButtonStyle1);
+        sectorButton.setPosition(paneImage.getWidth() * 0.7f, 1500);
+        sectorButton.setSize(0.25f * paneImage.getWidth(), 200);
+        sectorButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Change sectorClosed state
+                radarScreen.setSectorClosed(!radarScreen.isSectorClosed());
+                sectorButton.setText(radarScreen.isSectorClosed() ? "Open sector" : "Close sector");
+                radarScreen.getCommBox().normalMsg("Sector has been " + (radarScreen.isSectorClosed() ? "closed" : "opened"));
+                updateInfoLabel();
+            }
+        });
+        if (!radarScreen.tutorial) radarScreen.uiStage.addActor(sectorButton);
     }
 
     public void setNormalPane(boolean show) {
@@ -283,6 +310,7 @@ public class Ui {
         scoreLabel.setVisible(show);
         infoLabel.setVisible(show && infoLabel.getText().length > 0);
         pauseButton.setVisible(show);
+        sectorButton.setVisible(show);
         if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
     }
 
@@ -632,6 +660,7 @@ public class Ui {
         labelButton.setX(0.1f * paneImage.getWidth());
         scoreLabel.setX(paneImage.getWidth() / 19.2f);
         infoLabel.setX(paneImage.getWidth() * 0.6f);
+        sectorButton.setX(0.7f * paneImage.getWidth());
         pauseButton.setX(0.75f * paneImage.getWidth());
         metarPane.setX(paneImage.getWidth() / 19.2f);
         metarPane.setWidth(paneImage.getWidth() * 5 / 6);
@@ -678,6 +707,8 @@ public class Ui {
         if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) text += "Arrivals only";
         if (!text.isEmpty() && DayNightManager.isNight()) text += "\n";
         if (DayNightManager.isNight()) text += "Night mode active";
+        if (!text.isEmpty() && radarScreen.isSectorClosed()) text += "\n";
+        if (radarScreen.isSectorClosed()) text += "Sector closed";
         infoLabel.setText(text);
         infoLabel.setVisible(!text.isEmpty() && selectedAircraft == null);
     }

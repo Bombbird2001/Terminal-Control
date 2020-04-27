@@ -36,6 +36,7 @@ public class SettingsScreen implements Screen {
     public Viewport viewport;
 
     public SelectBox<String> trajectoryLine;
+    public SelectBox<String> pastTrajectory;
     public SelectBox<String> weather;
     public SelectBox<String> sound;
     public SelectBox<String> emer;
@@ -54,6 +55,9 @@ public class SettingsScreen implements Screen {
 
     public Label trajectoryLabel;
     public int trajectorySel;
+
+    public Label pastTrajLabel;
+    public int pastTrajTime;
 
     public Label weatherLabel;
     public RadarScreen.Weather weatherSel;
@@ -151,11 +155,30 @@ public class SettingsScreen implements Screen {
     /** Loads selectBox for settings */
     public void loadBoxes() {
         trajectoryLine = createStandardSelectBox();
-        trajectoryLine.setItems("60 sec", "90 sec", "120 sec", "150 sec");
+        trajectoryLine.setItems("Off", "60 sec", "90 sec", "120 sec", "150 sec");
         trajectoryLine.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                trajectorySel = Integer.parseInt(trajectoryLine.getSelected().split(" ")[0]);
+                if ("Off".equals(trajectoryLine.getSelected())) {
+                    trajectorySel = 0;
+                } else {
+                    trajectorySel = Integer.parseInt(trajectoryLine.getSelected().split(" ")[0]);
+                }
+            }
+        });
+
+        pastTrajectory = createStandardSelectBox();
+        pastTrajectory.setItems("Off", "60 sec", "120 sec", "All");
+        pastTrajectory.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Off".equals(pastTrajectory.getSelected())) {
+                    pastTrajTime = 0;
+                } else if ("All".equals(pastTrajectory.getSelected())) {
+                    pastTrajTime = -1;
+                } else {
+                    pastTrajTime = Integer.parseInt(pastTrajectory.getSelected().split(" ")[0]);
+                }
             }
         });
 
@@ -351,7 +374,9 @@ public class SettingsScreen implements Screen {
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
 
-        trajectoryLabel = new Label("Trajectory line timing: ", labelStyle);
+        trajectoryLabel = new Label("Trajectory line: ", labelStyle);
+
+        pastTrajLabel = new Label("Aircraft trail: ", labelStyle);
 
         weatherLabel = new Label("Weather: ", labelStyle);
 
@@ -398,7 +423,14 @@ public class SettingsScreen implements Screen {
 
     /** Sets relevant options into select boxes */
     public void setOptions() {
-        trajectoryLine.setSelected(trajectorySel + " sec");
+        trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
+        if (pastTrajTime == -1) {
+            pastTrajectory.setSelected("All");
+        } else if (pastTrajTime == 0) {
+            pastTrajectory.setSelected("Off");
+        } else {
+            pastTrajectory.setSelected(pastTrajTime + " sec");
+        }
         weather.setSelected(weatherSel.toString().charAt(0) + weatherSel.toString().substring(1).toLowerCase() + " weather");
         int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
         if (soundIndex < 0) soundIndex = 0;

@@ -271,10 +271,12 @@ public class DataTag {
 
     /** Draws the trail dots for aircraft */
     public void drawTrailDots(Batch batch, float parentAlpha) {
+        if (radarScreen.pastTrajTime == 0) return;
         int index = 0;
         int size = trailDots.size;
+        int selectedRequired = radarScreen.pastTrajTime / 10;
         for (Image trail: trailDots) {
-            if (aircraft.isSelected() || (size - index <= 5 && aircraft.isArrivalDeparture())) {
+            if ((aircraft.isSelected() && (radarScreen.pastTrajTime == -1 || size - index <= selectedRequired)) || (size - index <= 6 && aircraft.isArrivalDeparture())) {
                 trail.draw(batch, parentAlpha);
             }
             index++;

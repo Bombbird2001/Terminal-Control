@@ -74,6 +74,7 @@ public class RadarScreen extends GameScreen {
     public String callsign;
     public String deptCallsign;
     public int trajectoryLine;
+    public int pastTrajTime;
     public Weather liveWeather;
     public int soundSel;
     public Emergency.Chance emerChance;
@@ -111,6 +112,9 @@ public class RadarScreen extends GameScreen {
     private float trailTime;
     private float saveTime;
     private float rpcTime;
+
+    //Whether sector is closed
+    private boolean sectorClosed;
 
     //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
     private HashMap<String, Boolean> allAircraft;
@@ -172,8 +176,11 @@ public class RadarScreen extends GameScreen {
         saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
 
+        sectorClosed = false;
+
         if (tutorial) {
             trajectoryLine = 90;
+            pastTrajTime = -1;
             radarSweepDelay = 2;
             advTraj = -1;
             areaWarning = -1;
@@ -184,6 +191,7 @@ public class RadarScreen extends GameScreen {
             emerChance = Emergency.Chance.OFF;
         } else {
             trajectoryLine = TerminalControl.trajectorySel;
+            pastTrajTime = TerminalControl.pastTrajTime;
             radarSweepDelay = TerminalControl.radarSweep;
             advTraj = TerminalControl.advTraj;
             areaWarning = TerminalControl.areaWarning;
@@ -233,7 +241,10 @@ public class RadarScreen extends GameScreen {
         saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
 
-        trajectoryLine = save.getInt("trajectoryLine");
+        sectorClosed = save.optBoolean("sectorClosed", false);
+
+        trajectoryLine = save.optInt("trajectoryLine", 90);
+        pastTrajTime = save.optInt("pastTrajTime", -1);
         radarSweepDelay = (float) save.optDouble("radarSweep", 2);
         advTraj = save.optInt("advTraj", -1);
         areaWarning = save.optInt("areaWarning", -1);
@@ -548,7 +559,13 @@ public class RadarScreen extends GameScreen {
             spawnTimer -= deltaTime;
             if (spawnTimer <= 0 && arrivals < planesToControl) {
                 //Minimum 50 sec interval between each new plane
-                newArrival();
+                if (sectorClosed) {
+                    //If sector is closed, set planes to control equal to current arrival number
+                    //so there won't be a wave of new arrivals once sector is reopened
+                    setPlanesToControl(arrivals);
+                } else {
+                    newArrival();
+                }
             }
         }
     }
@@ -855,5 +872,13 @@ public class RadarScreen extends GameScreen {
         }
 
         return count;
+    }
+
+    public boolean isSectorClosed() {
+        return sectorClosed;
+    }
+
+    public void setSectorClosed(boolean sectorClosed) {
+        this.sectorClosed = sectorClosed;
     }
 }

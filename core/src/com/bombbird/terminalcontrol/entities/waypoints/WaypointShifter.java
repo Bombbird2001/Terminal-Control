@@ -12,7 +12,7 @@ public class WaypointShifter {
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON");
         putData("TCTT", 20, 0, "SCODI");
-        putData("TCTT", 0, -128, "BOMDA", "BALAD", "ADMON");
+        putData("TCTT", 0, -96, "BOMDA", "BALAD", "ADMON");
         putData("TCTT", 16, 0, "COCOA", "MELAC", "COALL");
         putData("TCTT", -64, -64, "GHOUL", "RALON");
         putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA");

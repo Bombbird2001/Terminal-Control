@@ -1,8 +1,9 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 
 public class SettingsTab {
@@ -20,7 +21,7 @@ public class SettingsTab {
         count = 0;
     }
 
-    public void addActors(Actor box, Actor label, Actor... actorList) {
+    public void addActors(SelectBox<String> box, Label label, Actor... actorList) {
         if (count >= MAX_LENGTH * maxWidth) throw new IllegalStateException("Tab has too many items: " + count + " of " + MAX_LENGTH * maxWidth);
 
         //Add box

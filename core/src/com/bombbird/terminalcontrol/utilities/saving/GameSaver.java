@@ -55,7 +55,9 @@ public class GameSaver {
         jsonObject.put("information", radarScreen.getInformation());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
+        jsonObject.put("sectorClosed", radarScreen.isSectorClosed());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
+        jsonObject.put("pastTrajTime", radarScreen.pastTrajTime);
         jsonObject.put("radarSweep", (double) radarScreen.radarSweepDelay);
         jsonObject.put("advTraj", radarScreen.advTraj);
         jsonObject.put("areaWarning", radarScreen.areaWarning);
@@ -649,6 +651,7 @@ public class GameSaver {
         if (handle != null) {
             JSONObject settings = new JSONObject();
             settings.put("trajectory", TerminalControl.trajectorySel);
+            settings.put("pastTrajTime", TerminalControl.pastTrajTime);
             settings.put("weather", TerminalControl.weatherSel.toString());
             settings.put("sound", TerminalControl.soundSel);
             settings.put("sendCrash", TerminalControl.sendAnonCrash);

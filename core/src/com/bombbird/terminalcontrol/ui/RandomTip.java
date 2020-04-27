@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.ui;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 
 public class RandomTip {
@@ -26,7 +28,12 @@ public class RandomTip {
         tips.add("Tap on the METAR label of an airport (top left of screen) to change its runway configuration");
         tips.add("Wake turbulence can cause an aircraft to go around");
         tips.add("Check out the help manual for more detailed descriptions of airports, game mechanics");
-        tips.add("Like this game? Please rate it on the Google Play Store!");
+        tips.add("ILS display style can be changed in the game settings");
+        tips.add("Aircraft data tag display style can be changed in the game settings");
+        tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in the game settings");
+        tips.add("Airspace too congested? Use the close sector button to stop new arrivals from entering your airspace");
+
+        if (Gdx.app.getType() == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!");
     }
 
     /** Checks if the tips array has been loaded */

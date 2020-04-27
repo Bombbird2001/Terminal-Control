@@ -189,16 +189,17 @@ public class GameSettingsScreen extends SettingsScreen {
     public void loadTabs() {
         SettingsTab tab1 = new SettingsTab(this, 2);
         tab1.addActors(trajectoryLine, trajectoryLabel);
+        tab1.addActors(pastTrajectory, pastTrajLabel);
         tab1.addActors(weather, weatherLabel);
         tab1.addActors(sound, soundLabel);
         tab1.addActors(emer, emerChanceLabel);
         tab1.addActors(speed, speedLabel);
         tab1.addActors(tfcMode, tfcLabel);
         tab1.addActors(mva, mvaLabel);
-        tab1.addActors(ilsDash, ilsDashLabel);
         settingsTabs.add(tab1);
 
         SettingsTab tab2 = new SettingsTab(this, 2);
+        tab2.addActors(ilsDash, ilsDashLabel);
         tab2.addActors(dataTag, dataTagLabel);
         if (TerminalControl.full) tab2.addActors(sweep, sweepLabel);
         if (TerminalControl.full) tab2.addActors(advTraj, advTrajLabel);
@@ -213,6 +214,7 @@ public class GameSettingsScreen extends SettingsScreen {
     @Override
     public void sendChanges() {
         radarScreen.trajectoryLine = trajectorySel;
+        radarScreen.pastTrajTime = pastTrajTime;
         radarScreen.liveWeather = weatherSel;
         radarScreen.soundSel = soundSel;
         radarScreen.emerChance = emerChance;
@@ -244,6 +246,7 @@ public class GameSettingsScreen extends SettingsScreen {
     @Override
     public void setOptions() {
         trajectorySel = radarScreen.trajectoryLine;
+        pastTrajTime = radarScreen.pastTrajTime;
         weatherSel = radarScreen.liveWeather;
         soundSel = radarScreen.soundSel;
         emerChance = radarScreen.emerChance;

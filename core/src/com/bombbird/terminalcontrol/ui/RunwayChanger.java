@@ -18,15 +18,15 @@ import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class RunwayChanger {
-    private Image background;
-    private Label airportLabel;
-    private Label timeLabel;
-    private TextButton changeButton;
-    private ScrollPane scrollPane;
-    private Label newRunwaysLabel;
+    private final Image background;
+    private final Label airportLabel;
+    private final Label timeLabel;
+    private final TextButton changeButton;
+    private final ScrollPane scrollPane;
+    private final Label newRunwaysLabel;
     private boolean doubleCfm;
-    private Array<String> runways;
-    private Array<boolean[]> tkofLdg;
+    private final Array<String> runways;
+    private final Array<boolean[]> tkofLdg;
     private Airport airport;
 
     private static final boolean[] ALL_ACTIVE = {true, true, true};

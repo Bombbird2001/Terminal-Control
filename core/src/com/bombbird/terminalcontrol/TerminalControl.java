@@ -56,6 +56,7 @@ public class TerminalControl extends Game {
 
     //Default settings
     public static int trajectorySel;
+    public static int pastTrajTime;
     public static RadarScreen.Weather weatherSel;
     public static int soundSel;
     public static Emergency.Chance emerChance;
@@ -87,6 +88,7 @@ public class TerminalControl extends Game {
         if (settings == null) {
             //Default settings if save unavailable
             trajectorySel = 90;
+            pastTrajTime = -1;
             weatherSel = RadarScreen.Weather.LIVE;
             if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
                 soundSel = 1;
@@ -107,7 +109,8 @@ public class TerminalControl extends Game {
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
         } else {
-            trajectorySel = settings.getInt("trajectory");
+            trajectorySel = settings.optInt("trajectory", 90);
+            pastTrajTime = settings.optInt("pastTrajTime", -1);
             String weather = settings.optString("weather");
             if ("true".equals(weather)) {
                 //Old format
@@ -119,7 +122,7 @@ public class TerminalControl extends Game {
                 //New format
                 weatherSel = RadarScreen.Weather.valueOf(settings.getString("weather"));
             }
-            soundSel = settings.getInt("sound");
+            soundSel = settings.optInt("sound", 1);
             sendAnonCrash = settings.optBoolean("sendCrash", true);
             if (settings.isNull("emerChance")) {
                 emerChance = Emergency.Chance.MEDIUM;

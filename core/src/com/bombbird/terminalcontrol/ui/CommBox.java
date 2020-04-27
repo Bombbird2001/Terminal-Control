@@ -24,10 +24,10 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class CommBox {
-    private Queue<Label> labels;
-    private Label header;
-    private Table scrollTable;
-    private ScrollPane scrollPane;
+    private final Queue<Label> labels;
+    private final Label header;
+    private final Table scrollTable;
+    private final ScrollPane scrollPane;
 
     private static final Array<String> atcByeCtr = new Array<>();
     private static final Array<String> atcByeTwr = new Array<>();
