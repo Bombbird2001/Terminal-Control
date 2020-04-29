@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.RangeCircle;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.PauseScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
@@ -39,6 +40,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     private float loadedTime = 0;
     private Label loadingLabel;
     private Label tipLabel;
+
+    //Flag whether to quit the tutorial on next loop
+    private boolean tutorialQuit;
 
     //Set input processors
     public InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -92,6 +96,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Overlay screen for game settings
     private final GameSettingsScreen gameSettingsScreen;
+
+    public void setTutorialQuit(boolean tutorialQuit) {
+        this.tutorialQuit = tutorialQuit;
+    }
 
     //Game state
     public enum State {
@@ -250,6 +258,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         }
     }
 
+    /** Updates timer specifically for tutorial */
+    public void updateTutorial() {
+        //No default implementation
+    }
+
     /** Main update method, overriden in radarScreen */
     public void update() {
         //No default implementation
@@ -286,8 +299,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     if (!loading) {
                         stage.getViewport().apply();
                         for (int i = 0; i < speed; i++) {
-                            if (checkTutorialPaused()) break;
-                            update();
+                            updateTutorial(); //Tutorial timer is updated even if tutorial is paused
+                            if (!checkTutorialPaused()) update();
                         }
                         //Render shapes only if METAR has finished loading
                         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -372,6 +385,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                 default:
                     Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
             }
+
+            if (tutorialQuit) {
+                TerminalControl.radarScreen = null;
+                game.setScreen(new MainMenuScreen(game, null));
+            }
         } catch (Exception e) {
             ErrorHandler.sendGenericError(e, true);
         }
@@ -388,7 +406,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     /** Check if tutorial is in paused state */
     private boolean checkTutorialPaused() {
-        return (((RadarScreen)this).tutorialManager != null && ((RadarScreen)this).tutorialManager.isPauseForReading());
+        return (((RadarScreen)this).tutorialManager != null && ((RadarScreen)this).tutorialManager.isPausedForReading());
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
@@ -623,6 +641,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             soundManager.pause();
             DataTag.pauseTimers();
         } else if (s == State.SETTINGS) {
+            if (((RadarScreen)this).tutorial) {
+                gameSettingsScreen.stage.clear();
+                gameSettingsScreen.settingsTabs.clear();
+                gameSettingsScreen.loadUI(-1200, 0);
+            }
             Gdx.input.setInputProcessor(gameSettingsScreen.getStage());
             soundManager.pause();
             DataTag.pauseTimers();

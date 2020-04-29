@@ -20,11 +20,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        return void
     }
     packagingOptions {
         exclude 'META-INF/robovm/ios/robovm.xml'
+        return void
     }
     defaultConfig {
         applicationId "com.bombbird.terminalcontrol"
@@ -32,13 +34,10 @@ android {
         targetSdkVersion 29
         ext {
             versionCode project.versionCode
-            versionName project.version
+            versionName project.version.toString()
         }
     }
     buildTypes {
-        debug {
-            
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -59,6 +58,7 @@ android {
 
     lintOptions {
         abortOnError false
+        return void
     }
 }
 

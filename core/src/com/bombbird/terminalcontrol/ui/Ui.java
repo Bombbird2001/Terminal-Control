@@ -229,7 +229,7 @@ public class Ui {
                 event.handle();
             }
         });
-        if (!radarScreen.tutorial) radarScreen.uiStage.addActor(pauseButton);
+        radarScreen.uiStage.addActor(pauseButton);
 
         //Metar display labels
         Label.LabelStyle labelStyle = new Label.LabelStyle();

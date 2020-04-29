@@ -110,7 +110,7 @@ public class DataTag {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!dragging) {
-                    if (radarScreen.tutorialManager == null || !radarScreen.tutorialManager.isPauseForReading()) {
+                    if (radarScreen.tutorialManager == null || !radarScreen.tutorialManager.isPausedForReading()) {
                         radarScreen.setSelectedAircraft(radarScreen.aircrafts.get(actor.getName()));
                         radarScreen.addToEasterEggQueue(aircraft);
                         aircraft.setSilenced(true);

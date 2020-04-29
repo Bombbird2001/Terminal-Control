@@ -38,7 +38,7 @@ public class NewGameScreen extends SelectGameScreen {
     public void loadScroll() {
         //Load airports
         Array<String> airports = new Array<>();
-        airports.add("Tutorial\n(Progress not saved)", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport");
+        airports.add("Tutorial", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport");
         if (TerminalControl.full) {
             airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport");
             airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport");

@@ -45,7 +45,7 @@ import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
-import com.bombbird.terminalcontrol.utilities.TutorialManager;
+import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -189,6 +189,7 @@ public class RadarScreen extends GameScreen {
             showIlsDash = false;
             compactData = false;
             emerChance = Emergency.Chance.OFF;
+            liveWeather = Weather.STATIC;
         } else {
             trajectoryLine = TerminalControl.trajectorySel;
             pastTrajTime = TerminalControl.pastTrajTime;
@@ -585,6 +586,11 @@ public class RadarScreen extends GameScreen {
     }
 
     @Override
+    public void updateTutorial() {
+        if (tutorialManager != null) tutorialManager.update();
+    }
+
+    @Override
     public void update() {
         //Update timers
         updateTimers();
@@ -600,7 +606,13 @@ public class RadarScreen extends GameScreen {
             airport.update();
         }
 
+        //Update runway changer timer
         runwayChanger.update();
+
+        //Update tutorial stuff if is tutorial
+        if (tutorialManager != null) {
+            tutorialManager.update();
+        }
     }
 
     @Override
@@ -691,10 +703,6 @@ public class RadarScreen extends GameScreen {
             wakeManager.renderWake(selectedAircraft);
         }
         wakeManager.renderIlsWake();
-
-        if (tutorialManager != null) {
-            tutorialManager.update();
-        }
 
         shapeRenderer.end();
     }

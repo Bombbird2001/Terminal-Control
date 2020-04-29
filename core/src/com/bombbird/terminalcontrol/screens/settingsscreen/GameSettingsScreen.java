@@ -187,6 +187,15 @@ public class GameSettingsScreen extends SettingsScreen {
 
     @Override
     public void loadTabs() {
+        if (radarScreen.tutorial) {
+            setOptions();
+            //Only show speed tab in tutorial settings
+            SettingsTab tab1 = new SettingsTab(this, 2);
+            tab1.addActors(speed, speedLabel);
+            settingsTabs.add(tab1);
+            return;
+        }
+
         SettingsTab tab1 = new SettingsTab(this, 2);
         tab1.addActors(trajectoryLine, trajectoryLabel);
         tab1.addActors(pastTrajectory, pastTrajLabel);
@@ -259,6 +268,11 @@ public class GameSettingsScreen extends SettingsScreen {
         showMva = radarScreen.showMva;
         showIlsDash = radarScreen.showIlsDash;
         compactData = radarScreen.compactData;
+
+        if (radarScreen.tutorial) {
+            speed.setSelected(speedSel + "x");
+            return;
+        }
 
         super.setOptions();
 

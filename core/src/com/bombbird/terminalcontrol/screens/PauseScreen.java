@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -81,7 +80,7 @@ public class PauseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu screen
                 TerminalControl.radarScreen.getMetar().setQuit(true);
-                if (!((RadarScreen) gameScreen).tutorial) GameSaver.saveGame(); //Save the game first
+                if (!TerminalControl.radarScreen.tutorial) GameSaver.saveGame(); //Save the game first
                 dispose();
                 TerminalControl.radarScreen = null;
                 gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game, null));
