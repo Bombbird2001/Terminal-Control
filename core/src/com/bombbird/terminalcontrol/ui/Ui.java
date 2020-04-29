@@ -208,7 +208,8 @@ public class Ui {
         labelStyle3.fontColor = Color.WHITE;
         infoLabel = new Label("", labelStyle3);
         infoLabel.setPosition(paneImage.getWidth() * 0.6f, 2650);
-        infoLabel.setAlignment(Align.topLeft);
+        infoLabel.setWidth(paneImage.getWidth() * 0.35f);
+        infoLabel.setAlignment(Align.topRight);
         radarScreen.uiStage.addActor(infoLabel);
         updateInfoLabel();
 
@@ -365,6 +366,7 @@ public class Ui {
     private void showChangesButtons(boolean show) {
         //Show/hide elements for changes
         cfmChange.setVisible(show);
+        handoverAck.setVisible(show);
         resetAll.setVisible(show);
     }
 
@@ -660,6 +662,7 @@ public class Ui {
         labelButton.setX(0.1f * paneImage.getWidth());
         scoreLabel.setX(paneImage.getWidth() / 19.2f);
         infoLabel.setX(paneImage.getWidth() * 0.6f);
+        infoLabel.setWidth(paneImage.getWidth() * 0.35f);
         sectorButton.setX(0.7f * paneImage.getWidth());
         pauseButton.setX(0.75f * paneImage.getWidth());
         metarPane.setX(paneImage.getWidth() / 19.2f);

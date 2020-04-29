@@ -80,6 +80,7 @@ public class ChangelogScreen extends StandardUIScreen {
         content9.add("-UI: Made SID/STAR restriction display more compact and realistic");
         content9.add("-UI: New option to turn the trajectory line off in settings");
         content9.add("-UI: Options for displaying of aircraft trail in settings");
+        content9.add("-Tutorial: Added option to pause, speed up, quit tutorial");
         changeLogContent.put("1.4.2005.2", content9);
 
         //Version 1.4.2005.1
