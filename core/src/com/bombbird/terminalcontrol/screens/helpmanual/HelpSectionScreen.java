@@ -68,7 +68,6 @@ public class HelpSectionScreen extends StandardUIScreen {
                 } else {
                     game.setScreen(new HelpScreen(game, background));
                 }
-                dispose();
             }
         });
 

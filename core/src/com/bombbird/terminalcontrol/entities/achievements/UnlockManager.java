@@ -55,7 +55,7 @@ public class UnlockManager {
             addAchievement("godly", "Godly", "Land 5000 planes", 5000, Achievement.PLANES_LANDED);
             addAchievement("thatWasClose", "That was close", "Have two planes come within 200 feet and 0.5nm of each other", -1, Achievement.NONE);
             addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS" + (TerminalControl.full ? "/TCTT/TCAA/TCHH/TCMC" : "") + " with at least 40-knot winds", -1, Achievement.NONE);
-            addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2000 metres", -1, Achievement.NONE);
+            addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2500 metres", -1, Achievement.NONE);
             addAchievement("mayday", "Mayday", "Land your first emergency", 1, Achievement.EMERGENCIES_LANDED);
             addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED);
             addAchievement("masterOfConflicts", "Master of Conflicts", "Have a total of 500 separation incidents, excluding wake conflicts", 500, Achievement.CONFLICTS);

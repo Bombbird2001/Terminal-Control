@@ -65,7 +65,7 @@ public class GameSaver {
         jsonObject.put("showMva", radarScreen.showMva);
         jsonObject.put("showIlsDash", radarScreen.showIlsDash);
         jsonObject.put("compactData", radarScreen.compactData);
-        jsonObject.put("liveWeather", radarScreen.liveWeather);
+        jsonObject.put("liveWeather", radarScreen.weatherSel);
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
         jsonObject.put("tfcMode", radarScreen.tfcMode.toString());

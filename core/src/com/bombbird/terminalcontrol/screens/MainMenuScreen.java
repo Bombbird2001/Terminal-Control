@@ -2,22 +2,16 @@ package com.bombbird.terminalcontrol.screens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
@@ -31,15 +25,7 @@ import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 
-public class MainMenuScreen implements Screen {
-    //Init game (set in constructor)
-    private final TerminalControl game;
-    private final Stage stage;
-
-    //Create new camera
-    private final OrthographicCamera camera;
-    private final Viewport viewport;
-
+public class MainMenuScreen extends BasicScreen {
     //Background image
     private Image background;
 
@@ -50,19 +36,9 @@ public class MainMenuScreen implements Screen {
     public static final int BUTTON_HEIGHT_SMALL = 200;
 
     public MainMenuScreen(final TerminalControl game, Image background) {
-        this.game = game;
+        super(game, 2880, 1620);
+
         this.background = background;
-
-        //Set camera params
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false,2880, 1620);
-        viewport = new FitViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
-        viewport.apply();
-
-        //Set stage params
-        stage = new Stage(new FitViewport(2880, 1620));
-        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-        Gdx.input.setInputProcessor(stage);
 
         TerminalControl.loadVersionInfo();
         TerminalControl.loadSettings();
@@ -117,7 +93,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Start new game -> Choose airport screen
                 game.setScreen((TerminalControl.revisionNeedsUpdate() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new NewGameScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(newGameButton);
@@ -133,7 +108,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Load game -> Saved games screen
                 game.setScreen((TerminalControl.revisionNeedsUpdate() && FileLoader.checkIfSaveExists()) ? new NotifScreen(game, background) : new LoadGameScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(loadGameButton);
@@ -150,7 +124,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go to settings screen
                 game.setScreen(new DefaultSettingsScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(settingsButton);
@@ -167,7 +140,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go to settings screen
                 game.setScreen(new InfoScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(infoButton);
@@ -184,7 +156,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go to settings screen
                 game.setScreen(new HelpScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(helpButton);
@@ -202,7 +173,6 @@ public class MainMenuScreen implements Screen {
                 public void changed(ChangeEvent event, Actor actor) {
                     //Go to upgrade screen
                     game.setScreen(new UpgradeScreen(game, background));
-                    dispose();
                 }
             });
             stage.addActor(upgradeButton);
@@ -220,7 +190,6 @@ public class MainMenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go to upgrade screen
                 game.setScreen(new AchievementScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(achievementButton);
@@ -239,7 +208,6 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.setScreen(new ChangelogScreen(game, background));
-                dispose();
             }
         });
         stage.addActor(changelogButton);
@@ -263,7 +231,7 @@ public class MainMenuScreen implements Screen {
         stage.addActor(quitButton);
     }
 
-    /** Implements show method of screen */
+    /** Overrides show method of BasicScreen */
     @Override
     public void show() {
         if (Fonts.defaultFont6 == null) {
@@ -271,53 +239,5 @@ public class MainMenuScreen implements Screen {
             Fonts.generateAllFonts();
         }
         loadUI();
-    }
-
-    /** Main rendering method for rendering to spriteBatch */
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
-
-        camera.update();
-
-        game.batch.setProjectionMatrix(camera.combined);
-        stage.act(delta);
-        game.batch.begin();
-        stage.draw();
-        game.batch.end();
-    }
-
-    /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        stage.getViewport().update(width, height, true);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-    }
-
-    /** Implements pause method of screen */
-    @Override
-    public void pause() {
-        //No default implementation
-    }
-
-    /** Implements resume method of screen */
-    @Override
-    public void resume() {
-        //No default implementation
-    }
-
-    /** Implements hide method of screen */
-    @Override
-    public void hide() {
-        //No default implementation
-    }
-
-    /** Implements dispose method of screen, disposes resources after they're no longer needed */
-    @Override
-    public void dispose() {
-        stage.clear();
-        stage.dispose();
     }
 }

@@ -76,7 +76,6 @@ public class NotifScreen extends StandardUIScreen {
                 //Go back to main menu
                 TerminalControl.updateRevision();
                 game.setScreen(new MainMenuScreen(game, background));
-                dispose();
             }
         });
         backButton.setVisible(false);

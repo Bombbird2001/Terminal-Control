@@ -28,6 +28,7 @@ public class RunwayChanger {
     private final Array<String> runways;
     private final Array<boolean[]> tkofLdg;
     private Airport airport;
+    private boolean visible;
 
     private static final boolean[] ALL_ACTIVE = {true, true, true};
     private static final boolean[] ALL_INACTIVE = {false, false, false};
@@ -130,6 +131,8 @@ public class RunwayChanger {
         tkofLdg = new Array<>();
 
         hideAll();
+
+        visible = false;
     }
 
     public void update() {
@@ -144,12 +147,14 @@ public class RunwayChanger {
     }
 
     public void setMainVisible(boolean visible) {
+        this.visible = visible;
         background.setVisible(visible);
         airportLabel.setVisible(visible);
         changeButton.setVisible(visible);
     }
 
     public void hideAll() {
+        visible = false;
         background.setVisible(false);
         timeLabel.setVisible(false);
         airportLabel.setVisible(false);
@@ -657,5 +662,9 @@ public class RunwayChanger {
                 tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
             }
         }
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 }

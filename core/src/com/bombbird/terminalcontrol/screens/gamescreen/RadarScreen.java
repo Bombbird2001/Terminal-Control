@@ -75,7 +75,7 @@ public class RadarScreen extends GameScreen {
     public String deptCallsign;
     public int trajectoryLine;
     public int pastTrajTime;
-    public Weather liveWeather;
+    public Weather weatherSel;
     public int soundSel;
     public Emergency.Chance emerChance;
     public TfcMode tfcMode;
@@ -189,7 +189,7 @@ public class RadarScreen extends GameScreen {
             showIlsDash = false;
             compactData = false;
             emerChance = Emergency.Chance.OFF;
-            liveWeather = Weather.STATIC;
+            weatherSel = Weather.STATIC;
         } else {
             trajectoryLine = TerminalControl.trajectorySel;
             pastTrajTime = TerminalControl.pastTrajTime;
@@ -200,7 +200,7 @@ public class RadarScreen extends GameScreen {
             showMva = TerminalControl.showMva;
             showIlsDash = TerminalControl.showIlsDash;
             compactData = TerminalControl.compactData;
-            liveWeather = TerminalControl.weatherSel;
+            weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
         }
@@ -255,11 +255,11 @@ public class RadarScreen extends GameScreen {
         compactData = save.optBoolean("compactData", false);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
-            liveWeather = Weather.LIVE;
+            weatherSel = Weather.LIVE;
         } else if ("false".equals(weather)) {
-            liveWeather = Weather.RANDOM;
+            weatherSel = Weather.RANDOM;
         } else {
-            liveWeather = RadarScreen.Weather.valueOf(save.getString("liveWeather"));
+            weatherSel = RadarScreen.Weather.valueOf(save.getString("liveWeather"));
         }
         soundSel = save.isNull("sounds") ? 2 : save.getInt("sounds");
         if (save.isNull("emerChance")) {
@@ -403,6 +403,11 @@ public class RadarScreen extends GameScreen {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                Gdx.app.postRunnable(() -> {
+                    if (!runwayChanger.isVisible()) return;
+                    runwayChanger.hideAll();
+                    commBox.setVisible(true);
+                });
                 metar.updateMetar(tutorial);
             }
         }, calendar.getTime(), 900000);
@@ -558,12 +563,15 @@ public class RadarScreen extends GameScreen {
             }
 
             spawnTimer -= deltaTime;
+            //System.out.println(planesToControl + " " + sectorClosed + " " + arrivals);
             if (spawnTimer <= 0 && arrivals < planesToControl) {
                 //Minimum 50 sec interval between each new plane
                 if (sectorClosed) {
                     //If sector is closed, set planes to control equal to current arrival number
-                    //so there won't be a wave of new arrivals once sector is reopened
+                    //so there won't be a sudden wave of new arrivals once sector is reopened
                     setPlanesToControl(arrivals);
+                    spawnTimer = 90f - 10 * (planesToControl - arrivals);
+                    spawnTimer = MathUtils.clamp(spawnTimer, 50, 80);
                 } else {
                     newArrival();
                 }

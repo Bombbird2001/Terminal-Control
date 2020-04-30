@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.entities.weather;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 
@@ -36,8 +37,9 @@ public class WindshearChance {
         return MathUtils.randomBoolean(prob);
     }
 
-    public static String getRandomWsForAllRwy(Airport airport, int speed) {
+    public static String getRandomWsForAllRwy(String icao, int speed) {
         String ws;
+        Airport airport = TerminalControl.radarScreen.airports.get(icao);
         StringBuilder stringBuilder = new StringBuilder();
         for (Runway runway: airport.getRunways().values()) {
             if (!runway.isLanding()) continue;

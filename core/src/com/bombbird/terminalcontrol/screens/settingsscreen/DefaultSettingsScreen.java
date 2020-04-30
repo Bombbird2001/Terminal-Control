@@ -59,7 +59,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 //Back to main menu
                 background.scaleBy(-specialScale);
                 game.setScreen(new MainMenuScreen(game, background));
-                dispose();
             }
         });
 
@@ -69,7 +68,6 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 sendChanges();
                 background.scaleBy(-specialScale);
                 game.setScreen(new MainMenuScreen(game, background));
-                dispose();
             }
         });
 

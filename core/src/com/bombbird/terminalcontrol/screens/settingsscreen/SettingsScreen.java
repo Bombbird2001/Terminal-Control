@@ -2,22 +2,18 @@ package com.bombbird.terminalcontrol.screens.settingsscreen;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
+import com.bombbird.terminalcontrol.screens.BasicScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -25,15 +21,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
-public class SettingsScreen implements Screen {
-    public final TerminalControl game;
-
+public class SettingsScreen extends BasicScreen {
     public int xOffset;
     public int yOffset;
-
-    public Stage stage;
-    public OrthographicCamera camera;
-    public Viewport viewport;
 
     public SelectBox<String> trajectoryLine;
     public SelectBox<String> pastTrajectory;
@@ -96,18 +86,7 @@ public class SettingsScreen implements Screen {
     public int tab;
 
     public SettingsScreen(final TerminalControl game) {
-        this.game = game;
-
-        //Set camera params
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false,5760, 3240);
-        viewport = new FitViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
-        viewport.apply();
-
-        //Set stage params
-        stage = new Stage(new FitViewport(5760, 3240));
-        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-        Gdx.input.setInputProcessor(stage);
+        super(game, 5760, 3240);
 
         settingsTabs = new Array<>();
         tab = 0;
@@ -183,11 +162,16 @@ public class SettingsScreen implements Screen {
         });
 
         weather = createStandardSelectBox();
-        weather.setItems("Live weather", "Random weather", "Static weather"); //TODO Add custom weather in future
+        weather.setItems("Live weather", "Random weather", "Static weather");
         weather.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
+                if ("Set custom weather...".equals(weather.getSelected())) {
+                    //Go to weather change screen
+                    TerminalControl.radarScreen.setGameState(GameScreen.State.WEATHER);
+                } else {
+                    weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
+                }
             }
         });
 
@@ -453,6 +437,7 @@ public class SettingsScreen implements Screen {
         //No default implementation
     }
 
+    /** Overrides show method of BasicScreen */
     @Override
     public void show() {
         if (Fonts.defaultFont6 == null) {
@@ -461,55 +446,9 @@ public class SettingsScreen implements Screen {
         }
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
-
-        camera.update();
-
-        game.batch.setProjectionMatrix(camera.combined);
-        stage.act(delta);
-        game.batch.begin();
-        boolean success = false;
-        while (!success) {
-            try {
-                stage.draw();
-                game.batch.end();
-                success = true;
-            } catch (IndexOutOfBoundsException e) {
-                Gdx.app.log("SettingsScreen", "stage.draw() render error");
-                stage.getBatch().end();
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        stage.getViewport().update(width, height, true);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-    }
-
-    @Override
-    public void pause() {
-        //No default implementation
-    }
-
-    @Override
-    public void resume() {
-        //No default implementation
-    }
-
-    @Override
-    public void hide() {
-        //No default implementation
-    }
-
+    /** Overrides dispose method of BasicScreen */
     @Override
     public void dispose() {
-        stage.clear();
-        stage.dispose();
+        super.dispose();
     }
 }

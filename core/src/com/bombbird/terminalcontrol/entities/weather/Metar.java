@@ -9,6 +9,9 @@ import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Metar {
     private JSONObject prevMetar;
     private JSONObject metarObject;
@@ -28,8 +31,9 @@ public class Metar {
         metarObject = save;
     }
 
+    /** Initialise the getting of live weather/changing of random weather */
     public void updateMetar(final boolean tutorial) {
-        if (radarScreen.liveWeather == RadarScreen.Weather.LIVE && !tutorial) {
+        if (radarScreen.weatherSel == RadarScreen.Weather.LIVE && !tutorial) {
             HttpRequests.getMetar(this, true);
         } else {
             Runnable threadRunner = () -> {
@@ -43,6 +47,7 @@ public class Metar {
         }
     }
 
+    /** Sets the weather specific to tutorial */
     private void updateTutorialMetar() {
         metarObject = new JSONObject();
 
@@ -67,6 +72,7 @@ public class Metar {
         updateRadarScreenState();
     }
 
+    /** Updates all in game airports with new weather data */
     private void updateAirports() {
         for (Airport airport: radarScreen.airports.values()) {
             if (prevMetar == null) {
@@ -81,7 +87,7 @@ public class Metar {
         }
     }
 
-    /** Create new weather based on current (i.e. small changes only) */
+    /** Create new weather based on current (i.e. no big changes) */
     public JSONObject randomBasedOnCurrent() {
         JSONObject airports = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
@@ -96,7 +102,7 @@ public class Metar {
             int windSpd = (2 * currentSpd + WindspeedChance.getRandomWindspeed(airport, windDir)) / 3;
             jsonObject.put("windSpeed", windSpd);
 
-            String ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
+            String ws = WindshearChance.getRandomWsForAllRwy(airport, windSpd);
             jsonObject.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
             int gust = -1;
@@ -114,7 +120,8 @@ public class Metar {
         return airports;
     }
 
-    public JSONObject generateRandomWeather() {
+    /** Generates random weather without any previous weather to "rely" upon */
+    private JSONObject generateRandomWeather() {
         JSONObject jsonObject = new JSONObject();
         for (String airport: radarScreen.airports.keySet()) {
             //For each airport, create random weather and parse to JSON object
@@ -127,7 +134,7 @@ public class Metar {
             windDir = WindDirChance.getRandomWindDir(airport);
             windSpd = WindspeedChance.getRandomWindspeed(airport, windDir);
 
-            ws = WindshearChance.getRandomWsForAllRwy(radarScreen.airports.get(airport), windSpd);
+            ws = WindshearChance.getRandomWsForAllRwy(airport, windSpd);
 
             if (windSpd >= 15 && MathUtils.random(2) == 2) {
                 //Gusts
@@ -150,15 +157,17 @@ public class Metar {
         return jsonObject;
     }
 
+    /** Generates and applies a randomised weather */
     public void randomWeather() {
         if (metarObject == null) {
             metarObject = generateRandomWeather();
-        } else if (radarScreen.liveWeather == RadarScreen.Weather.RANDOM) {
+        } else if (radarScreen.weatherSel == RadarScreen.Weather.RANDOM) {
             metarObject = randomBasedOnCurrent();
         }
         updateRadarScreenState();
     }
 
+    /** Called after changing the metarObject, to update the in game weather and UI */
     public void updateRadarScreenState() {
         if (quit) return;
         if (prevMetar == null || !metarObject.toString().equals(prevMetar.toString())) {
@@ -179,6 +188,19 @@ public class Metar {
         Gdx.app.postRunnable(() -> radarScreen.ui.updateMetar());
         radarScreen.loadingPercent = "100%";
         radarScreen.loading = false;
+    }
+
+    /** Updates the METAR object and in game weather given custom weather data for airports */
+    public void updateCustomWeather(HashMap<String, int[]> arptData) {
+        for (Map.Entry<String, int[]> entry: arptData.entrySet()) {
+            String realIcao = RenameManager.reverseNameAirportICAO(entry.getKey());
+            metarObject.getJSONObject(realIcao).put("windDirection", entry.getValue()[0]);
+            metarObject.getJSONObject(realIcao).put("windSpeed", entry.getValue()[1]);
+            String randomWs = WindshearChance.getRandomWsForAllRwy(entry.getKey(), entry.getValue()[1]);
+            metarObject.getJSONObject(realIcao).put("windshear", "".equals(randomWs) ? JSONObject.NULL : randomWs);
+            metarObject.getJSONObject(realIcao).put("visibility", VisibilityChance.getRandomVis());
+        }
+        updateRadarScreenState();
     }
 
     public JSONObject getMetarObject() {

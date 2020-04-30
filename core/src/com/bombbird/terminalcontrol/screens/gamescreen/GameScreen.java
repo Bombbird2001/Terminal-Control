@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.PauseScreen;
+import com.bombbird.terminalcontrol.screens.WeatherScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
@@ -97,6 +98,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Overlay screen for game settings
     private final GameSettingsScreen gameSettingsScreen;
 
+    //Overlay screen for setting custom weather
+    private final WeatherScreen weatherScreen;
+
     public void setTutorialQuit(boolean tutorialQuit) {
         this.tutorialQuit = tutorialQuit;
     }
@@ -105,7 +109,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public enum State {
         PAUSE,
         RUN,
-        SETTINGS
+        SETTINGS,
+        WEATHER
     }
     public static State state = State.RUN;
 
@@ -122,6 +127,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         pauseScreen = new PauseScreen(this);
         gameSettingsScreen = new GameSettingsScreen(game, (RadarScreen) this);
+        weatherScreen = new WeatherScreen(game);
 
         loadLabels();
 
@@ -310,7 +316,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                     //Draw to the spritebatch
                     game.batch.begin();
-                    boolean liveWeather = ((RadarScreen) this).liveWeather == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
+                    boolean liveWeather = ((RadarScreen) this).weatherSel == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
                     String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                     if (loading) {
                         //Write loading text if loading
@@ -375,11 +381,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     game.batch.end();
                     break;
                 case SETTINGS:
-                    game.batch.setProjectionMatrix(gameSettingsScreen.getCamera().combined);
-                    gameSettingsScreen.getStage().act();
+                    game.batch.setProjectionMatrix(gameSettingsScreen.camera.combined);
+                    gameSettingsScreen.stage.act();
                     game.batch.begin();
-                    gameSettingsScreen.getStage().getViewport().apply();
-                    gameSettingsScreen.getStage().draw();
+                    gameSettingsScreen.stage.getViewport().apply();
+                    gameSettingsScreen.stage.draw();
+                    game.batch.end();
+                    break;
+                case WEATHER:
+                    game.batch.setProjectionMatrix(weatherScreen.camera.combined);
+                    weatherScreen.stage.act();
+                    game.batch.begin();
+                    weatherScreen.stage.getViewport().apply();
+                    weatherScreen.stage.draw();
                     game.batch.end();
                     break;
                 default:
@@ -431,9 +445,13 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         pauseScreen.getStage().getViewport().update(width, height, true);
         pauseScreen.getCamera().position.set(pauseScreen.getCamera().viewportWidth / 2f, pauseScreen.getCamera().viewportHeight / 2f, 0);
 
-        gameSettingsScreen.getViewport().update(width, height, true);
-        gameSettingsScreen.getStage().getViewport().update(width, height, true);
-        gameSettingsScreen.getCamera().position.set(gameSettingsScreen.getCamera().viewportWidth / 2f, gameSettingsScreen.getCamera().viewportHeight / 2f, 0);
+        gameSettingsScreen.viewport.update(width, height, true);
+        gameSettingsScreen.stage.getViewport().update(width, height, true);
+        gameSettingsScreen.camera.position.set(gameSettingsScreen.camera.viewportWidth / 2f, gameSettingsScreen.camera.viewportHeight / 2f, 0);
+
+        weatherScreen.viewport.update(width, height, true);
+        weatherScreen.stage.getViewport().update(width, height, true);
+        weatherScreen.camera.position.set(weatherScreen.camera.viewportWidth / 2f, weatherScreen.camera.viewportHeight / 2f, 0);
 
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
@@ -630,8 +648,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Sets the current game state to the input state */
     public void setGameState(State s) {
         GameScreen.state = s;
-        pauseScreen.setVisible(s == State.PAUSE);
-        gameSettingsScreen.setVisible(s == State.SETTINGS);
+
         if (s == State.RUN) {
             Gdx.input.setInputProcessor(inputMultiplexer);
             soundManager.resume();
@@ -646,9 +663,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                 gameSettingsScreen.settingsTabs.clear();
                 gameSettingsScreen.loadUI(-1200, 0);
             }
-            Gdx.input.setInputProcessor(gameSettingsScreen.getStage());
-            soundManager.pause();
-            DataTag.pauseTimers();
+            Gdx.input.setInputProcessor(gameSettingsScreen.stage);
+        } else if (s == State.WEATHER) {
+            Gdx.input.setInputProcessor(weatherScreen.stage);
+            weatherScreen.loadUI();
         }
     }
 

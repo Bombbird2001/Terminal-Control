@@ -30,19 +30,19 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class Airport {
-    private JSONObject save;
+    private final JSONObject save;
 
-    private HashMap<String, Runway> runways;
-    private HashMap<String, Runway> landingRunways;
-    private HashMap<String, Runway> takeoffRunways;
+    private final HashMap<String, Runway> runways;
+    private final HashMap<String, Runway> landingRunways;
+    private final HashMap<String, Runway> takeoffRunways;
     private HashMap<String, com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints> holdingPoints;
     private HashMap<String, MissedApproach> missedApproaches;
     private HashMap<String, ILS> approaches;
-    private String icao;
+    private final String icao;
     private JSONObject metar;
     private HashMap<String, Star> stars;
     private HashMap<String, Sid> sids;
-    private int elevation;
+    private final int elevation;
     private String ws;
     private TakeoffManager takeoffManager;
     private RunwayManager runwayManager;
@@ -50,9 +50,9 @@ public class Airport {
     private int airborne;
     private boolean congested;
 
-    private int aircraftRatio;
-    private HashMap<Integer, String> airlines;
-    private HashMap<String, String> aircrafts;
+    private final int aircraftRatio;
+    private final HashMap<Integer, String> airlines;
+    private final HashMap<String, String> aircrafts;
 
     private Array<ApproachZone> approachZones;
     private Array<DepartureZone> departureZones;
@@ -349,7 +349,7 @@ public class Airport {
         metar = newMetar.getJSONObject(RenameManager.reverseNameAirportICAO(icao));
         if ("TCHX".equals(icao)) {
             //Use random windshear for TCHX since TCHH windshear doesn't apply
-            String ws = WindshearChance.getRandomWsForAllRwy(this, metar.getInt("windSpeed"));
+            String ws = WindshearChance.getRandomWsForAllRwy(icao, metar.getInt("windSpeed"));
             metar.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
         }
         System.out.println("METAR of " + icao + ": " + metar.toString());

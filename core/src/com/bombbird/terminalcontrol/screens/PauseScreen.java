@@ -16,10 +16,6 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 public class PauseScreen {
     private final GameScreen gameScreen;
 
-    private TextButton resumeButton;
-    private TextButton settingsButton;
-    private TextButton quitButton;
-
     private Stage stage;
     private final OrthographicCamera camera;
     private final Viewport viewport;
@@ -46,7 +42,7 @@ public class PauseScreen {
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
-        resumeButton = new TextButton("Resume", textButtonStyle);
+        TextButton resumeButton = new TextButton("Resume", textButtonStyle);
         resumeButton.setSize(1200, 300);
         resumeButton.setPosition((5760 - 1200) / 2f, 3240 - 1200);
         resumeButton.addListener(new ChangeListener() {
@@ -59,7 +55,7 @@ public class PauseScreen {
         });
         stage.addActor(resumeButton);
 
-        settingsButton = new TextButton("Settings", textButtonStyle);
+        TextButton settingsButton = new TextButton("Settings", textButtonStyle);
         settingsButton.setSize(1200, 300);
         settingsButton.setPosition((5760 - 1200) / 2f, 3240 - 1600);
         settingsButton.addListener(new ChangeListener() {
@@ -72,7 +68,7 @@ public class PauseScreen {
         });
         stage.addActor(settingsButton);
 
-        quitButton = new TextButton("Quit", textButtonStyle);
+        TextButton quitButton = new TextButton("Quit", textButtonStyle);
         quitButton.setSize(1200, 300);
         quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000);
         quitButton.addListener(new ChangeListener() {
@@ -82,18 +78,12 @@ public class PauseScreen {
                 TerminalControl.radarScreen.getMetar().setQuit(true);
                 if (!TerminalControl.radarScreen.tutorial) GameSaver.saveGame(); //Save the game first
                 dispose();
+                TerminalControl.radarScreen.getGameSettingsScreen().dispose();
                 TerminalControl.radarScreen = null;
                 gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game, null));
             }
         });
         stage.addActor(quitButton);
-    }
-
-    /** Sets whether each element is visible or not */
-    public void setVisible(boolean visible) {
-        resumeButton.setVisible(visible);
-        settingsButton.setVisible(visible);
-        quitButton.setVisible(visible);
     }
 
     /** Disposes of unneeded resources */

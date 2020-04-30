@@ -754,7 +754,7 @@ public class Arrival extends Aircraft {
             UnlockManager.incrementLanded();
             String[] typhoonList = new String[] {"TCTP", "TCSS", "TCTT", "TCAA", "TCHH", "TCMC"};
             if (ArrayUtils.contains(typhoonList, getAirport().getIcao()) && getAirport().getWinds()[1] >= 40) UnlockManager.completeAchievement("typhoon");
-            if ("TCWS".equals(getAirport().getIcao()) && getAirport().getVisibility() <= 2000) UnlockManager.completeAchievement("haze");
+            if ("TCWS".equals(getAirport().getIcao()) && getAirport().getVisibility() <= 2500) UnlockManager.completeAchievement("haze");
         }
     }
 

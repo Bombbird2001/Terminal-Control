@@ -18,7 +18,7 @@ public class MaxTraffic {
         maxTraffic.put("TCHX", 10f);
 
         nightMaxTraffic.put("TCTT", 6f);
-        nightMaxTraffic.put("TCBB", 4f);
+        nightMaxTraffic.put("TCBB", 8f);
         nightMaxTraffic.put("TCHH", 14f);
         nightMaxTraffic.put("TCMD", 14f);
     }

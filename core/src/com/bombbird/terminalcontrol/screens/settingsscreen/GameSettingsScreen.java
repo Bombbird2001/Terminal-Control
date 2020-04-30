@@ -1,13 +1,10 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
@@ -72,6 +69,10 @@ public class GameSettingsScreen extends SettingsScreen {
     @Override
     public void loadBoxes() {
         super.loadBoxes();
+
+        Array<String> weatherArray = weather.getItems();
+        weatherArray.add("Set custom weather...");
+        weather.setItems(weatherArray);
 
         speed = createStandardSelectBox();
         speed.setItems("1x", "2x", "4x");
@@ -224,7 +225,7 @@ public class GameSettingsScreen extends SettingsScreen {
     public void sendChanges() {
         radarScreen.trajectoryLine = trajectorySel;
         radarScreen.pastTrajTime = pastTrajTime;
-        radarScreen.liveWeather = weatherSel;
+        radarScreen.weatherSel = weatherSel;
         radarScreen.soundSel = soundSel;
         radarScreen.emerChance = emerChance;
         radarScreen.speed = speedSel;
@@ -251,12 +252,12 @@ public class GameSettingsScreen extends SettingsScreen {
         radarScreen.ui.updateInfoLabel();
     }
 
-    /** Gets radarscreen settings before setting options */
+    /** Gets radarScreen settings before setting options */
     @Override
     public void setOptions() {
         trajectorySel = radarScreen.trajectoryLine;
         pastTrajTime = radarScreen.pastTrajTime;
-        weatherSel = radarScreen.liveWeather;
+        weatherSel = radarScreen.weatherSel;
         soundSel = radarScreen.soundSel;
         emerChance = radarScreen.emerChance;
         speedSel = radarScreen.speed;
@@ -302,18 +303,6 @@ public class GameSettingsScreen extends SettingsScreen {
 
         confirmButton.setVisible(show);
         cancelButton.setVisible(show);
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public OrthographicCamera getCamera() {
-        return camera;
-    }
-
-    public Viewport getViewport() {
-        return viewport;
     }
 
     public boolean isAllowNight() {

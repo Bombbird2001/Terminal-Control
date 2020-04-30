@@ -226,6 +226,10 @@ public class Ui {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Set game state to paused
+                if (radarScreen.getRunwayChanger().isVisible()) {
+                    radarScreen.getRunwayChanger().hideAll();
+                    radarScreen.getCommBox().setVisible(true);
+                }
                 radarScreen.setGameState(GameScreen.State.PAUSE);
                 event.handle();
             }
