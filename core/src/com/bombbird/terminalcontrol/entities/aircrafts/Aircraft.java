@@ -796,7 +796,7 @@ public class Aircraft extends Actor {
                 holdWpt = navState.getClearedHold().first();
             }
             if (holdWpt != null) {
-                if (navState != null && navState.getDispLatMode().first() == NavState.HOLD_AT) {
+                if (navState != null && navState.getDispLatMode().first() != NavState.HOLD_AT) {
                     resetHoldParameters();
                     return updateTargetHeading();
                 }

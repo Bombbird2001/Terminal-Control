@@ -347,7 +347,7 @@ public class DataTag {
         if (radarScreen.compactData) {
             if (aircraft.isSelected() && aircraft.isArrivalDeparture()) {
                 boolean changed = false;
-                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT, NavState.HOLD_AT))) {
+                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT))) {
                     labelText[5] = LatTab.clearedWpt;
                     changed = latTab.isLatModeChanged() || latTab.isWptChanged();
                 } else if ("Hold at".equals(LatTab.latMode)) {
