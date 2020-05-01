@@ -293,7 +293,7 @@ public class Ui {
         textButtonStyle1.down = TerminalControl.skin.getDrawable("Button_down");
         sectorButton = new TextButton(radarScreen.isSectorClosed() ? "Open sector" : "Close sector", textButtonStyle1);
         sectorButton.setPosition(paneImage.getWidth() * 0.7f, 1500);
-        sectorButton.setSize(0.25f * paneImage.getWidth(), 300);
+        sectorButton.setSize(525, 300);
         sectorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
