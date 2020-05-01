@@ -19,6 +19,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.AltTab;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
@@ -346,7 +347,7 @@ public class DataTag {
         if (radarScreen.compactData) {
             if (aircraft.isSelected() && aircraft.isArrivalDeparture()) {
                 boolean changed = false;
-                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().getDispLatMode().last().contains("heading")) || "Hold at".equals(aircraft.getNavState().getDispLatMode().last())) {
+                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT, NavState.HOLD_AT))) {
                     labelText[5] = LatTab.clearedWpt;
                     changed = latTab.isLatModeChanged() || latTab.isWptChanged();
                 } else if ("Hold at".equals(LatTab.latMode)) {
@@ -371,15 +372,15 @@ public class DataTag {
                 }
                 if (changed) labelText[5] = "[YELLOW]" + labelText[5] + "[WHITE]";
             } else {
-                if (aircraft.getNavState().getDispLatMode().last().contains("heading") && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last())) {
+                if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
                     if (aircraft.isLocCap()) {
                         labelText[5] = "LOC";
                     } else {
                         labelText[5] = Integer.toString(aircraft.getNavState().getClearedHdg().last());
                     }
-                } else if ("Hold at".equals(aircraft.getNavState().getDispLatMode().last())) {
+                } else if (aircraft.getNavState().getDispLatMode().last() == NavState.HOLD_AT) {
                     labelText[5] = aircraft.getHoldWpt().getName();
-                } else if (aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && "After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last())) {
+                } else if (aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                     labelText[5] = aircraft.getNavState().getClearedDirect().last().getName() + "=>" + aircraft.getNavState().getClearedAftWptHdg().last();
                 } else {
                     labelText[5] = "";
@@ -389,7 +390,7 @@ public class DataTag {
                 boolean changed = false;
                 if (LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) {
                     labelText[8] = LatTab.latMode.split(" ")[0];
-                    changed = latTab.isLatModeChanged() && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && !"Hold at".equals(aircraft.getNavState().getDispLatMode().last());
+                    changed = latTab.isLatModeChanged() && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT;
                 } else if ("After waypoint, fly heading".equals(LatTab.latMode) || "Hold at".equals(LatTab.latMode)) {
                     labelText[8] = aircraft.getSidStar().getName();
                 } else if (LatTab.latMode.contains("heading")) {
@@ -408,7 +409,7 @@ public class DataTag {
                 }
                 if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]";
             } else {
-                if (aircraft.getNavState().getDispLatMode().last().contains("heading") && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && aircraft.getNavState().getClearedIls().last() != null) {
+                if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && aircraft.getNavState().getClearedIls().last() != null) {
                     labelText[8] = aircraft.getNavState().getClearedIls().last().getName();
                 } else {
                     labelText[8] = "";
@@ -464,25 +465,25 @@ public class DataTag {
                     labelText[8] = "";
                     if (!aircraft.getEmergency().isEmergency() || !aircraft.getEmergency().isActive()) {
                         labelText[8] = aircraft.getSidStar().getName();
-                        changed = latTab.isLatModeChanged() && LatTab.latMode.contains(aircraft.getSidStar().getName()) && !"After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && !"Hold at".equals(aircraft.getNavState().getDispLatMode().last());
+                        changed = latTab.isLatModeChanged() && LatTab.latMode.contains(aircraft.getSidStar().getName()) && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT;
                     }
                 }
                 if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]";
             } else {
-                if (aircraft.getNavState().getDispLatMode().first().contains("heading") && !aircraft.getNavState().getDispLatMode().first().equals("After waypoint, fly heading")) {
+                if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().first(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT)) {
                     if (aircraft.isLocCap()) {
                         labelText[5] = "LOC";
                     } else {
                         labelText[5] = Integer.toString(aircraft.getNavState().getClearedHdg().last());
                     }
-                } else if ("Hold at".equals(aircraft.getNavState().getDispLatMode().last())) {
+                } else if (aircraft.getNavState().getDispLatMode().last() == NavState.HOLD_AT) {
                     if (aircraft.isHolding() || (aircraft.getDirect() != null && aircraft.getHoldWpt() != null && aircraft.getDirect().equals(aircraft.getHoldWpt()))) {
                         labelText[5] = aircraft.getHoldWpt().getName();
                     } else if (aircraft.getDirect() != null) {
                         labelText[5] = aircraft.getDirect().getName();
                     }
-                } else if (aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName()) || aircraft.getNavState().getDispLatMode().last().equals("After waypoint, fly heading")) {
-                    if (aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last().equals("After waypoint, fly heading")) {
+                } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING)) {
+                    if (aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName() + "=>" + aircraft.getNavState().getClearedAftWptHdg().last();
                     } else {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName();

@@ -21,6 +21,7 @@ import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
+import com.bombbird.terminalcontrol.utilities.Revision;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -77,7 +78,7 @@ public class GameSaver {
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
         jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
-        jsonObject.put("revision", RadarScreen.CURRENT_REVISION);
+        jsonObject.put("revision", Revision.CURRENT_REVISION);
 
         JSONArray jsonArray = new JSONArray();
         for (String aircraft: radarScreen.getAllAircraft().keySet()) {
@@ -361,13 +362,13 @@ public class GameSaver {
         navState.put("timeQueue", timeQueue);
 
         //Add display lat mode queue
-        navState.put("dispLatMode", getStringArray(aircraft.getNavState().getDispLatMode()));
+        navState.put("dispLatMode", getIntArray(aircraft.getNavState().getDispLatMode()));
 
         //Add display alt mode queue
-        navState.put("dispAltMode", getStringArray(aircraft.getNavState().getDispAltMode()));
+        navState.put("dispAltMode", getIntArray(aircraft.getNavState().getDispAltMode()));
 
         //Add display spd mode queue
-        navState.put("dispSpdMode", getStringArray(aircraft.getNavState().getDispSpdMode()));
+        navState.put("dispSpdMode", getIntArray(aircraft.getNavState().getDispSpdMode()));
 
         //Add cleared heading
         navState.put("clearedHdg", getIntArray(aircraft.getNavState().getClearedHdg()));
@@ -430,15 +431,6 @@ public class GameSaver {
         emer.put("emergencyStartAlt", aircraft.getEmergency().getEmergencyStartAlt());
 
         return emer;
-    }
-
-    /** Returns a JSONArray given an input queue of strings */
-    private static JSONArray getStringArray(Queue<String> queue) {
-        JSONArray array = new JSONArray();
-        for (String string: queue) {
-            array.put(string);
-        }
-        return array;
     }
 
     /** Returns a JSONArray given an input queue of integers */

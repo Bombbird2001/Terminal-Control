@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class Trajectory {
@@ -57,7 +58,7 @@ public class Trajectory {
             }
             float remainingAngle = deltaHeading;
             Vector2 prevPos = new Vector2();
-            boolean sidStarMode = aircraft.getNavState() != null && (aircraft.getNavState().getDispLatMode().first().contains("arrival") || aircraft.getNavState().getDispLatMode().first().contains("departure") || "After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().first()) || "Hold at".equals(aircraft.getNavState().getDispLatMode().first()) && !aircraft.isHolding());
+            boolean sidStarMode = aircraft.getNavState() != null && (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (aircraft.getNavState().getDispLatMode().first() == NavState.HOLD_AT && !aircraft.isHolding()));
             float prevTargetTrack = targetTrack;
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 if (remainingAngle / turnRate > INTERVAL) {

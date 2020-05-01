@@ -251,7 +251,7 @@ public class Departure extends Aircraft {
 
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getDispLatMode().first().contains("departure")) {
+        if (getNavState().getDispLatMode().first() == NavState.SID_STAR) {
             //Aircraft on SID
             int highestAlt = -1;
             int lowestAlt = -1;
@@ -297,7 +297,7 @@ public class Departure extends Aircraft {
                 super.updateSpd();
             }
             int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
-            higherSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= 250 || waypointSpd == -1;
+            higherSpdSet = getNavState().getDispSpdMode().last() == NavState.NO_RESTR || waypointSpd >= 250 || waypointSpd == -1;
         }
         if (!cruiseSpdSet && getAltitude() > 10000) {
             if (getClearedIas() < getClimbSpd()) {
@@ -313,7 +313,7 @@ public class Departure extends Aircraft {
                 super.updateSpd();
             }
             int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
-            cruiseSpdSet = getNavState().getDispSpdMode().last().contains("No") || waypointSpd >= getClimbSpd() || waypointSpd == -1;
+            cruiseSpdSet = getNavState().getDispSpdMode().last() == NavState.NO_RESTR || waypointSpd >= getClimbSpd() || waypointSpd == -1;
         }
     }
 
@@ -321,14 +321,14 @@ public class Departure extends Aircraft {
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         super.updateAltitude(holdAlt, fixedVs);
         if (canHandover()) ui.updateAckHandButton(this);
-        if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first().contains("departure")) {
+        if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first() == NavState.SID_STAR) {
             contactOther();
         }
     }
 
     @Override
     public boolean canHandover() {
-        return getControlState() == ControlState.DEPARTURE && getAltitude() >= radarScreen.maxAlt - 4000 && getNavState().getDispLatMode().first().contains("departure");
+        return getControlState() == ControlState.DEPARTURE && getAltitude() >= radarScreen.maxAlt - 4000 && getNavState().getDispLatMode().first() == NavState.SID_STAR;
     }
 
     @Override

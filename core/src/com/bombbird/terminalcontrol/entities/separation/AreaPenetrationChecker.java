@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint;
@@ -51,8 +52,7 @@ public class AreaPenetrationChecker {
                             continue;
                         }
 
-                        String latMode = aircraft.getNavState().getDispLatMode().first();
-                        if (latMode.contains("arrival") || latMode.contains("departure") && !obstacle.isEnforced()) {
+                        if (aircraft.getNavState().getDispLatMode().first() == NavState.SID_STAR && !obstacle.isEnforced()) {
                             //If latMode is STAR/SID and obstacle is not a restricted area, ignore
                             continue;
                         }

@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.waypoints;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
@@ -33,8 +34,8 @@ public class WaypointManager {
         //Only one aircraft can be selected at a time
         Aircraft aircraft = radarScreen.getSelectedAircraft();
         if (aircraft != null) {
-            String latMode = aircraft.getNavState().getDispLatMode().last();
-            if (latMode.contains(aircraft.getSidStar().getName()) || "After waypoint, fly heading".equals(latMode) || ("Hold at".equals(latMode) && !aircraft.isHolding())) {
+            int latMode = aircraft.getNavState().getDispLatMode().last();
+            if (aircraft.getNavState().containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (latMode == NavState.HOLD_AT && !aircraft.isHolding())) {
                 //Cleared is sidstar mode
                 Array<Waypoint> remaining = aircraft.getRemainingWaypoints();
                 for (int i = 0; i < remaining.size; i++) {
@@ -62,9 +63,9 @@ public class WaypointManager {
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isHolding() && aircraft.getHoldWpt() != null) {
                 aircraft.getHoldWpt().setSelected(true);
-            } else if (("Hold at".equals(aircraft.getNavState().getDispLatMode().last()) || aircraft.getNavState().getDispLatMode().last().contains(aircraft.getSidStar().getName())) && aircraft.getNavState().getClearedDirect().last() != null) {
+            } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.HOLD_AT, NavState.SID_STAR) && aircraft.getNavState().getClearedDirect().last() != null) {
                 aircraft.getNavState().getClearedDirect().last().setSelected(true);
-            } else if ("After waypoint, fly heading".equals(aircraft.getNavState().getDispLatMode().last()) && aircraft.getDirect() != null) {
+            } else if (aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getDirect() != null) {
                 aircraft.getDirect().setSelected(true);
             }
         }

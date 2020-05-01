@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.ui.Ui;
 
 public class AltTab extends Tab {
@@ -104,7 +105,7 @@ public class AltTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        altModeChanged = !altMode.equals(selectedAircraft.getNavState().getDispAltMode().last());
+        altModeChanged = !altMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE));
         altChanged = clearedAlt != selectedAircraft.getNavState().getClearedAlt().last();
     }
 
@@ -144,7 +145,7 @@ public class AltTab extends Tab {
 
     @Override
     public void getACState() {
-        altMode = selectedAircraft.getNavState().getDispAltMode().last();
+        altMode = selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE);
         altModeChanged = false;
         clearedAlt = selectedAircraft.getNavState().getClearedAlt().last();
         altChanged = false;

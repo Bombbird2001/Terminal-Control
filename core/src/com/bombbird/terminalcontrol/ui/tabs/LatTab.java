@@ -190,7 +190,7 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         notListening = true;
         if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getRoute().getWaypoints().size) {
-            if ("Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last())) {
+            if (selectedAircraft.getNavState().getDispLatMode().last() == NavState.HOLD_AT) {
                 selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, false); //Don't remove hold at if aircraft is gonna hold
             } else {
                 selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_ALL_SIDSTAR, false);
@@ -282,7 +282,7 @@ public class LatTab extends Tab {
     @Override
     public void compareWithAC() {
         if (selectedAircraft == null) return;
-        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getDispLatMode().last());
+        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL));
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
         if (clearedWpt != null && lastDirect != null) {
@@ -418,7 +418,7 @@ public class LatTab extends Tab {
     /** Gets the current lateral nav state of aircraft of the latest transmission, sets variable to them */
     @Override
     public void getACState() {
-        latMode = selectedAircraft.getNavState().getDispLatMode().last();
+        latMode = selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL);
         latModeChanged = false;
         clearedHdg = selectedAircraft.getNavState().getClearedHdg().last();
         hdgChanged = false;
@@ -510,7 +510,7 @@ public class LatTab extends Tab {
             spdMode = "No speed restrictions";
         }
 
-        if (selectedAircraft instanceof Arrival && !"Hold at".equals(selectedAircraft.getNavState().getDispLatMode().last()) && selectedAircraft.getNavState().getClearedDirect().last() != null) {
+        if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             boolean found = false;
             HashMap<String, HoldingPoints> waypoints = selectedAircraft.getRoute().getHoldProcedure().getHoldingPoints();
             for (String holdingPoint: waypoints.keySet()) {

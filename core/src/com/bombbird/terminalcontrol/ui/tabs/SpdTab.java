@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.ui.Ui;
 
 public class SpdTab extends Tab {
@@ -82,7 +83,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getDispSpdMode().last());
+        spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED));
         spdChanged = clearedSpd != selectedAircraft.getNavState().getClearedSpd().last();
     }
 
@@ -122,7 +123,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void getACState() {
-        spdMode = selectedAircraft.getNavState().getDispSpdMode().last();
+        spdMode = selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED);
         spdModeChanged = false;
         clearedSpd = selectedAircraft.getNavState().getClearedSpd().last();
         spdChanged = false;

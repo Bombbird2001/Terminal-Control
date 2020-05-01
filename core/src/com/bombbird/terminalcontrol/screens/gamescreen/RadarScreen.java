@@ -41,6 +41,7 @@ import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
+import com.bombbird.terminalcontrol.utilities.Revision;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
@@ -149,8 +150,7 @@ public class RadarScreen extends GameScreen {
     private com.badlogic.gdx.utils.Queue<Character> lastTapped;
 
     private final JSONObject save;
-    private int revision; //Revision for indicating if save parser needs to do anything special
-    public static final int CURRENT_REVISION = 1;
+    private final int revision; //Revision for indicating if save parser needs to do anything special
 
     public RadarScreen(final TerminalControl game, String name, int airac, int saveID, boolean tutorial) {
         //Creates new game
@@ -158,6 +158,7 @@ public class RadarScreen extends GameScreen {
         save = null;
         mainName = name;
         this.airac = airac;
+        revision = Revision.CURRENT_REVISION;
         saveId = saveID;
         this.tutorial = tutorial;
 
@@ -897,4 +898,9 @@ public class RadarScreen extends GameScreen {
     public void setSectorClosed(boolean sectorClosed) {
         this.sectorClosed = sectorClosed;
     }
+
+    public int getRevision() {
+        return revision;
+    }
+
 }

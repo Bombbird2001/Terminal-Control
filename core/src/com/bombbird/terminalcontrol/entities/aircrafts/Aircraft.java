@@ -474,13 +474,13 @@ public class Aircraft extends Actor {
     private void drawLatLines() {
         if (selected) {
             //Draws cleared status
-            if (navState.getDispLatMode().last().contains("arrival") || navState.getDispLatMode().last().contains("departure") && direct != null) {
+            if (navState.getDispLatMode().last() == NavState.SID_STAR && direct != null) {
                 drawSidStar();
-            } else if (navState.getDispLatMode().last().equals("After waypoint, fly heading") && direct != null) {
+            } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && direct != null) {
                 drawAftWpt();
-            } else if (navState.getDispLatMode().last().contains("heading") && (!locCap || navState.getClearedIls().last() == null)) {
+            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && (!locCap || navState.getClearedIls().last() == null)) {
                 drawHdgLine();
-            } else if (navState.getDispLatMode().last().equals("Hold at")) {
+            } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
                 drawHoldPattern();
             }
 
@@ -669,9 +669,9 @@ public class Aircraft extends Actor {
         if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
             altitude = targetAltitude;
             verticalSpeed = 0;
-            if ("Expedite climb/descent to".equals(navState.getDispAltMode().first())) {
+            if (navState.getDispAltMode().first() == NavState.EXPEDITE) {
                 navState.getDispAltMode().removeFirst();
-                navState.getDispAltMode().addFirst("Climb/descend to");
+                navState.getDispAltMode().addFirst(NavState.NO_RESTR);
                 navState.getClearedExpedite().removeFirst();
                 navState.getClearedExpedite().addFirst(false);
                 expedite = false;
@@ -725,8 +725,8 @@ public class Aircraft extends Actor {
             windSpd = 0;
         }
 
-        boolean sidstar = navState != null && (navState.getDispLatMode().first().contains(getSidStar().getName()) || navState.getDispLatMode().first().equals("After waypoint, fly heading") || navState.getDispLatMode().first().equals("Hold at"));
-        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first().contains("heading");
+        boolean sidstar = navState != null && (navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT));
+        boolean vector = navState != null && !sidstar && navState.containsCode(navState.getDispLatMode().first(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT);
 
         if (this instanceof Departure) {
             //Check if aircraft has climbed past initial climb
@@ -796,7 +796,7 @@ public class Aircraft extends Actor {
                 holdWpt = navState.getClearedHold().first();
             }
             if (holdWpt != null) {
-                if (navState != null && !navState.getDispLatMode().first().equals("Hold at")) {
+                if (navState != null && navState.getDispLatMode().first() == NavState.HOLD_AT) {
                     resetHoldParameters();
                     return updateTargetHeading();
                 }
@@ -851,9 +851,9 @@ public class Aircraft extends Actor {
                 }
             } else {
                 resetHoldParameters();
-                if (navState != null && "Hold at".equals(navState.getDispLatMode().first()) && holdWpt == null) {
+                if (navState != null && navState.getDispLatMode().first() == NavState.HOLD_AT && holdWpt == null) {
                     navState.getDispLatMode().removeFirst();
-                    navState.getDispLatMode().addFirst("Fly heading");
+                    navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
                     navState.getClearedHdg().removeFirst();
                     navState.getClearedHdg().addFirst((int) heading);
                 }
@@ -914,7 +914,7 @@ public class Aircraft extends Actor {
     }
 
     public double findNextTargetHdg() {
-        if ((navState.getDispLatMode().first().equals("After waypoint, fly heading") && direct.equals(afterWaypoint)) || navState.getDispLatMode().first().equals("Hold at") && direct.equals(holdWpt)) {
+        if ((navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING && direct.equals(afterWaypoint)) || (navState.getDispLatMode().first() == NavState.HOLD_AT && direct.equals(holdWpt))) {
             return targetHeading;
         }
         Waypoint nextWpt = route.getWaypoint(getSidStarIndex() + 1);
@@ -973,7 +973,7 @@ public class Aircraft extends Actor {
             if (this instanceof Arrival) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
                 radarScreen.getCommBox().warningMsg(callsign + " has left the airspace!");
-            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last().contains("departure") && navState.getClearedAlt().last() == radarScreen.maxAlt) {
+            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedAlt().last() == radarScreen.maxAlt) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
                 contactOther();
             }
@@ -984,17 +984,17 @@ public class Aircraft extends Actor {
     /** Finds the deltaHeading with the appropriate force direction under different circumstances */
     private double findDeltaHeading(double targetHeading) {
         int forceDirection = 0;
-        if (navState.getDispLatMode().first().equals("Turn left heading")) {
+        if (navState.getDispLatMode().first() == NavState.TURN_LEFT) {
             forceDirection = 1;
-        } else if (navState.getDispLatMode().first().equals("Turn right heading")) {
+        } else if (navState.getDispLatMode().first() == NavState.TURN_RIGHT) {
             forceDirection = 2;
-        } else if (navState.getDispLatMode().first().equals("Hold at") && holding && !init) {
+        } else if (navState.getDispLatMode().first() == NavState.HOLD_AT && holding && !init) {
             if (holdingType == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
                 forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
             } else if (holdingType == 2 || holdingType == 3) {
                 forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
             }
-        } else if (this instanceof Departure && navState.getDispLatMode().first().contains("departure")) {
+        } else if (this instanceof Departure && navState.getDispLatMode().first() == NavState.SID_STAR) {
             //Force directions for certain departure procedures
             if (getSidStar().getName().contains("ANNKO1") && runway.getName().contains("06") && direct != null && "ANNKO".equals(direct.getName()) && heading > 90 && heading < 320) {
                 //RJBB ANNKO1(6L) and ANNKO1(6R) departures
@@ -1072,7 +1072,7 @@ public class Aircraft extends Actor {
         }
         if (Math.abs(deltaHeading) <= 10) {
             targetAngularVelocity = deltaHeading / 3;
-            if (navState.getDispLatMode().first().contains("Turn")) {
+            if (navState.containsCode(navState.getDispLatMode().first(), NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
                 navState.replaceAllHdgModes();
                 if (selected && isArrivalDeparture()) {
                     updateUISelections();
@@ -1115,22 +1115,22 @@ public class Aircraft extends Actor {
     private void updateDirect() {
         Waypoint prevDirect = direct;
         sidStarIndex++;
-        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first().equals("After waypoint, fly heading")) {
+        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             clearedHeading = afterWptHdg;
             navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, true);
-            if (navState.getDispAltMode().first().contains("STAR")) {
+            if (navState.getDispAltMode().first() == NavState.SID_STAR) {
                 navState.getDispAltMode().removeFirst();
-                navState.getDispAltMode().addFirst("Climb/descend to");
+                navState.getDispAltMode().addFirst(NavState.NO_RESTR);
             }
-            if (navState.getDispSpdMode().first().contains("STAR")) {
+            if (navState.getDispSpdMode().first() == NavState.SID_STAR_RESTR) {
                 navState.getDispSpdMode().removeFirst();
-                navState.getDispSpdMode().addFirst("No speed restrictions");
+                navState.getDispSpdMode().addFirst(NavState.NO_RESTR);
             }
             navState.getClearedHdg().removeFirst();
             navState.getClearedHdg().addFirst(afterWptHdg);
             updateVectorMode();
             direct = null;
-        } else if (direct.equals(holdWpt) && navState.getDispLatMode().first().equals("Hold at")) {
+        } else if (direct.equals(holdWpt) && navState.getDispLatMode().first() == NavState.HOLD_AT) {
             holding = true;
             int spdRestr = route.getHoldProcedure().getMaxSpdAtWpt(holdWpt);
             if (spdRestr > -1 && clearedIas > spdRestr) {
@@ -1147,7 +1147,7 @@ public class Aircraft extends Actor {
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {
                 navState.getDispLatMode().removeFirst();
-                navState.getDispLatMode().addFirst("Fly heading");
+                navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
                 navState.replaceAllClearedAltMode();
                 setAfterLastWpt();
             }
@@ -1174,12 +1174,12 @@ public class Aircraft extends Actor {
     public void updateVectorMode() {
         //Switch aircraft latmode to vector mode
         navState.getDispLatMode().removeFirst();
-        navState.getDispLatMode().addFirst("Fly heading");
+        navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
     }
 
     /** Removes the SID/STAR options from aircraft UI after there are no waypoints left*/
     public void removeSidStarMode() {
-        if ("Hold at".equals(getNavState().getDispLatMode().last())) {
+        if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
             navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, true); //Don't remove hold at if aircraft is gonna hold
         } else {
             navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
@@ -1209,7 +1209,7 @@ public class Aircraft extends Actor {
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
     public void updateUISelections() {
-        ui.latTab.getSettingsBox().setSelected(navState.getDispLatMode().last());
+        ui.latTab.getSettingsBox().setSelected(navState.getLastDispModeString(NavState.LATERAL));
         LatTab.clearedHdg = clearedHeading;
         if (direct != null && ui.latTab.getSettingsBox().getSelected().contains(getSidStar().getName())) {
             ui.latTab.getValueBox().setSelected(direct.getName());
@@ -1236,11 +1236,11 @@ public class Aircraft extends Actor {
 
     public Array<Waypoint> getRemainingWaypoints() {
         if (navState.getClearedDirect().last() == null) return new Array<>();
-        if (navState.getDispLatMode().last().contains(getSidStar().getName())) {
+        if (navState.getDispLatMode().last() == NavState.SID_STAR) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.getWaypoints().size - 1);
-        } else if ("After waypoint, fly heading".equals(navState.getDispLatMode().last())) {
+        } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedAftWpt().last().getName()));
-        } else if ("Hold at".equals(navState.getDispLatMode().last())) {
+        } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedHold().last().getName()));
         }
         return new Array<>();
@@ -1261,7 +1261,7 @@ public class Aircraft extends Actor {
 
     /** Checks if aircraft is being manually vectored */
     public boolean isVectored() {
-        return navState.getDispLatMode().last().contains("Turn") || navState.getDispLatMode().last().equals("Fly heading");
+        return navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT);
     }
 
     /** Checks if aircraft has a sort of emergency (fuel or active emergency) */
@@ -1458,7 +1458,7 @@ public class Aircraft extends Actor {
     /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself */
     public void updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
-        if (navState.getDispAltMode().first().contains("/")) {
+        if (navState.containsCode(navState.getDispAltMode().first(), NavState.NO_RESTR, NavState.EXPEDITE)) {
             //No alt restrictions
             targetAltitude = clearedAltitude;
         } else {
@@ -1484,7 +1484,7 @@ public class Aircraft extends Actor {
     /** Updates the cleared IAS under certain circumstances */
     private void updateClearedSpd() {
         int highestSpd = -1;
-        if (!"No speed restrictions".equals(navState.getDispSpdMode().last()) && direct != null) {
+        if (navState.getDispSpdMode().last() == NavState.SID_STAR_RESTR && direct != null) {
             highestSpd = route.getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {
@@ -1688,7 +1688,7 @@ public class Aircraft extends Actor {
     }
 
     public Waypoint getHoldWpt() {
-        if (holdWpt == null && "Hold at".equals(navState.getDispLatMode().last())) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().last().getName());
+        if (holdWpt == null && navState.getDispLatMode().last() == NavState.HOLD_AT) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().last().getName());
         return holdWpt;
     }
 

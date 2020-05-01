@@ -381,7 +381,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateAltRestrictions method in Aircraft, for setting aircraft altitude restrictions when descending via the STAR */
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().getDispLatMode().first().contains("arrival") || getNavState().getDispLatMode().first().contains("waypoint") || ("Hold at".equals(getNavState().getDispLatMode().first()) && !isHolding())) {
+        if (getNavState().containsCode(getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (getNavState().getDispLatMode().first() == NavState.HOLD_AT && !isHolding())) {
             //Aircraft on STAR
             int highestAlt = -1;
             int lowestAlt = -1;
@@ -399,7 +399,7 @@ public class Arrival extends Aircraft {
             }
             setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
             setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
-        } else if ("Hold at".equals(getNavState().getDispLatMode().first()) && isHolding() && getHoldWpt() != null) {
+        } else if (getNavState().getDispLatMode().first() == NavState.HOLD_AT && isHolding() && getHoldWpt() != null) {
             int[] altRestr = getRoute().getHoldProcedure().getAltRestAtWpt(getHoldWpt());
             int highestAlt = altRestr[1];
             int lowestAlt = altRestr[0];
@@ -472,11 +472,11 @@ public class Arrival extends Aircraft {
     /** Instructs the aircraft to divert to an alternate airport */
     private void divertToAltn() {
         getNavState().getDispLatMode().clear();
-        getNavState().getDispLatMode().addFirst("Fly heading");
+        getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
         getNavState().getDispAltMode().clear();
-        getNavState().getDispAltMode().addFirst("Climb/descend to");
+        getNavState().getDispAltMode().addFirst(NavState.NO_RESTR);
         getNavState().getDispSpdMode().clear();
-        getNavState().getDispSpdMode().addFirst("No speed restrictions");
+        getNavState().getDispSpdMode().addFirst(NavState.NO_RESTR);
 
         getNavState().getClearedHdg().clear();
         getNavState().getClearedHdg().addFirst(radarScreen.divertHdg);

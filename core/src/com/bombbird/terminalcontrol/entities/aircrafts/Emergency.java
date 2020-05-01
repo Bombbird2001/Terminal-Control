@@ -9,7 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 
 public class Emergency {
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     public enum Type {
         MEDICAL,
@@ -39,15 +39,15 @@ public class Emergency {
     private boolean readyForDump; //Preparation complete
     private float fuelDumpLag; //Time between preparation complete and fuel dump
     private boolean dumpingFuel; //Dumping fuel
-    private boolean fuelDumpRequired; //Whether a fuel dump is required
+    private final boolean fuelDumpRequired; //Whether a fuel dump is required
     private float fuelDumpTime; //Fuel dump time required before approach
     private boolean remainingTimeSaid; //Whether aircraft has notified approach of remaining time
-    private int sayRemainingTime; //Time to notify approach of remaining time
+    private final int sayRemainingTime; //Time to notify approach of remaining time
     private boolean readyForApproach; //Ready for approach
     private boolean stayOnRwy; //Needs to stay on runway, close it after landing
     private float stayOnRwyTime; //Time for staying on runway
 
-    private int emergencyStartAlt; //Altitude where emergency occurs
+    private final int emergencyStartAlt; //Altitude where emergency occurs
 
     public Emergency(Aircraft aircraft, Chance emerChance) {
         radarScreen = TerminalControl.radarScreen;
@@ -233,11 +233,11 @@ public class Emergency {
         aircraft.getNavState().updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, true);
 
         aircraft.getNavState().getDispLatMode().clear();
-        aircraft.getNavState().getDispLatMode().addFirst("Fly heading");
+        aircraft.getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
         aircraft.getNavState().getDispAltMode().clear();
-        aircraft.getNavState().getDispAltMode().addFirst(type == Type.PRESSURE_LOSS ? "Expedite climb/descent to" : "Climb/descend to");
+        aircraft.getNavState().getDispAltMode().addFirst(type == Type.PRESSURE_LOSS ? NavState.EXPEDITE : NavState.NO_RESTR);
         aircraft.getNavState().getDispSpdMode().clear();
-        aircraft.getNavState().getDispSpdMode().addFirst("No speed restrictions");
+        aircraft.getNavState().getDispSpdMode().addFirst(NavState.NO_RESTR);
 
         aircraft.getNavState().getClearedHdg().clear();
         aircraft.getNavState().getClearedHdg().addFirst((int) aircraft.getHeading());
@@ -271,13 +271,21 @@ public class Emergency {
 
     /** Returns a random boolean for whether aircraft stays on runway after landing given the type of emergency */
     private boolean randomStayOnRwy() {
-        if (type == Type.BIRD_STRIKE) return MathUtils.randomBoolean(0.7f);
-        if (type == Type.ENGINE_FAIL) return MathUtils.randomBoolean(0.7f);
-        if (type == Type.HYDRAULIC_FAIL) return true;
-        if (type == Type.MEDICAL) return false;
-        if (type == Type.PRESSURE_LOSS) return MathUtils.randomBoolean(0.3f);
-        if (type == Type.FUEL_LEAK) return true;
-        return false;
+        switch (type) {
+            case BIRD_STRIKE:
+            case ENGINE_FAIL:
+                return MathUtils.randomBoolean(0.7f);
+            case HYDRAULIC_FAIL:
+            case FUEL_LEAK:
+                return true;
+            case MEDICAL:
+                return false;
+            case PRESSURE_LOSS:
+                return MathUtils.randomBoolean(0.3f);
+            default:
+                Gdx.app.log("Emergency", "Unknown emergency type " + type);
+                return false;
+        }
     }
 
     /** Returns a random altitude when emergency occurs depending on emergency type */
@@ -411,32 +419,16 @@ public class Emergency {
         return fuelDumpRequired;
     }
 
-    public void setFuelDumpRequired(boolean fuelDumpRequired) {
-        this.fuelDumpRequired = fuelDumpRequired;
-    }
-
     public boolean isStayOnRwy() {
         return stayOnRwy;
-    }
-
-    public void setStayOnRwy(boolean stayOnRwy) {
-        this.stayOnRwy = stayOnRwy;
     }
 
     public float getTimeRequired() {
         return timeRequired;
     }
 
-    public void setTimeRequired(int timeRequired) {
-        this.timeRequired = timeRequired;
-    }
-
     public float getFuelDumpTime() {
         return fuelDumpTime;
-    }
-
-    public void setFuelDumpTime(int fuelDumpTime) {
-        this.fuelDumpTime = fuelDumpTime;
     }
 
     public int getEmergencyStartAlt() {
@@ -467,15 +459,7 @@ public class Emergency {
         return stayOnRwyTime;
     }
 
-    public void setStayOnRwyTime(float stayOnRwyTime) {
-        this.stayOnRwyTime = stayOnRwyTime;
-    }
-
     public boolean isChecklistsSaid() {
         return checklistsSaid;
-    }
-
-    public void setChecklistsSaid(boolean checklistsSaid) {
-        this.checklistsSaid = checklistsSaid;
     }
 }
