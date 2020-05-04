@@ -82,7 +82,7 @@ public class Route {
         Array<String> inbound = star.getRandomInbound();
         for (int i = 0; i < inbound.size; i++) {
             if ("HDG".equals(inbound.get(i).split(" ")[0])) {
-                aircraft.setHeading(Integer.parseInt(inbound.get(i).split(" ")[1]));
+                if (aircraft.getRoute() == null) aircraft.setHeading(Integer.parseInt(inbound.get(i).split(" ")[1]));
             } else {
                 String[] data = inbound.get(i).split(" ");
                 wpts.add(radarScreen.waypoints.get(data[1]));

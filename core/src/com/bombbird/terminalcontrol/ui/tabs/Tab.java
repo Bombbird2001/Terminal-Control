@@ -34,6 +34,7 @@ public class Tab {
     public static String afterWpt;
     public static String holdWpt;
     public static String clearedILS;
+    public static String newStar;
 
     public static String altMode;
     public static int clearedAlt;

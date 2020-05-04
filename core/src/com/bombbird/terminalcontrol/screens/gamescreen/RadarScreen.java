@@ -427,7 +427,7 @@ public class RadarScreen extends GameScreen {
     /** Creates a new arrival for random airport */
     private void newArrival() {
         Airport airport = RandomGenerator.randomAirport();
-        if (!RandomSTAR.starAvailable(airport.getIcao())) {
+        if (!RandomSTAR.starAvailable(airport)) {
             spawnTimer = 10f; //Wait for another 10 seconds if no spawn points available
             return;
         }

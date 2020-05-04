@@ -356,7 +356,7 @@ public class GameSaver {
 
         //Add transmit timings
         JSONArray timeQueue = new JSONArray();
-        for (float time: aircraft.getNavState().getTimeQueue()) {
+        for (float time: aircraft.getNavState().getTimeQueueArray()) {
             timeQueue.put((double) time);
         }
         navState.put("timeQueue", timeQueue);
@@ -391,6 +391,9 @@ public class GameSaver {
             clearedIls.put(ils == null ? JSONObject.NULL : ils.getName());
         }
         navState.put("clearedIls", clearedIls);
+
+        //Add cleared new STAR
+        navState.put("clearedNewStar", getStringArray(aircraft.getNavState().getClearedNewStar()));
 
         //Add cleared altitude
         navState.put("clearedAlt", getIntArray(aircraft.getNavState().getClearedAlt()));
@@ -431,6 +434,15 @@ public class GameSaver {
         emer.put("emergencyStartAlt", aircraft.getEmergency().getEmergencyStartAlt());
 
         return emer;
+    }
+
+    /** Returns a JSONArray given an input queue of strings */
+    private static JSONArray getStringArray(Queue<String> queue) {
+        JSONArray array = new JSONArray();
+        for (String string: queue) {
+            array.put(string);
+        }
+        return array;
     }
 
     /** Returns a JSONArray given an input queue of integers */

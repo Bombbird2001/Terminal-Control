@@ -917,7 +917,7 @@ public class Aircraft extends Actor {
         if ((navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING && direct.equals(afterWaypoint)) || (navState.getDispLatMode().first() == NavState.HOLD_AT && direct.equals(holdWpt))) {
             return targetHeading;
         }
-        Waypoint nextWpt = route.getWaypoint(getSidStarIndex() + 1);
+        Waypoint nextWpt = route.getWaypoint(sidStarIndex + 1);
         if (nextWpt == null) {
             if (this instanceof Departure) return ((Departure) this).getOutboundHdg();
             return targetHeading;

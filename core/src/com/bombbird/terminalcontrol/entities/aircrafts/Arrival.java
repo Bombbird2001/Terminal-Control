@@ -56,7 +56,7 @@ public class Arrival extends Aircraft {
         contactAlt = MathUtils.random(2000) + 22000;
 
         //Gets a STAR for active runways
-        star = RandomSTAR.randomSTAR(getAirport(), arrival.getLandingRunways());
+        star = RandomSTAR.randomSTAR(arrival);
 
         if ("EVA226".equals(callsign) && radarScreen.tutorial) {
             star = arrival.getStars().get("NTN1A");
@@ -64,7 +64,7 @@ public class Arrival extends Aircraft {
             setTypDes(2900);
             contactAlt = 22000;
         }
-        RandomSTAR.starUsed(getAirport().getIcao(), star.getName());
+        RandomSTAR.starUsed(arrival.getIcao(), star.getName());
 
         setRoute(new Route(this, star));
 

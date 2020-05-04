@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints;
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.ui.Ui;
@@ -42,6 +43,7 @@ public class LatTab extends Tab {
     private boolean afterWptHdgChanged;
     private boolean holdWptChanged;
     private boolean ilsChanged;
+    private boolean starChanged;
 
     public LatTab(Ui ui) {
         super(ui);
@@ -261,6 +263,16 @@ public class LatTab extends Tab {
             valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);
             ilsBox.setVisible(false);
+        } else if ("Change STAR".equals(latMode) && selectedAircraft instanceof Arrival) {
+            if (visible) {
+                valueBox.setVisible(true);
+            }
+            if (newStar == null) {
+                valueBox.setSelectedIndex(0);
+            } else {
+                valueBox.setSelected(newStar);
+            }
+            ilsBox.setVisible(false);
         } else {
             //Otherwise hide it
             valueBox.setVisible(false);
@@ -297,6 +309,8 @@ public class LatTab extends Tab {
         if (holdWpt != null && lastHoldWpt != null) {
             holdWptChanged = !holdWpt.equals(lastHoldWpt.getName());
         }
+        String lastNewStar = selectedAircraft.getNavState().getClearedNewStar().last();
+        starChanged = ((lastNewStar == null && newStar != null) || (lastNewStar != null && !lastNewStar.equals(newStar))) && !newStar.equals(selectedAircraft.getSidStar().getName() + " arrival");
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
             if (clearedILS == null) {
@@ -325,6 +339,8 @@ public class LatTab extends Tab {
             valueBox.getStyle().fontColor = wptChanged ? Color.YELLOW : Color.WHITE;
         } else if ("Hold at".equals(latMode)) {
             valueBox.getStyle().fontColor = holdWptChanged ? Color.YELLOW : Color.WHITE;
+        } else if ("Change STAR".equals(latMode)) {
+            valueBox.getStyle().fontColor = starChanged ? Color.YELLOW : Color.WHITE;
         }
 
         //Lat mode ILS box colour
@@ -359,7 +375,7 @@ public class LatTab extends Tab {
     public void updateMode() {
         if (selectedAircraft == null) return;
         if (selectedAircraft.getNavState() == null) return;
-        selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS);
+        selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS, newStar);
     }
 
     @Override
@@ -448,6 +464,10 @@ public class LatTab extends Tab {
         } else {
             clearedILS = "Not cleared approach";
         }
+        starChanged = false;
+        if (selectedAircraft instanceof Arrival) {
+            newStar = selectedAircraft.getNavState().getClearedNewStar().last();
+        }
     }
 
     @Override
@@ -473,6 +493,12 @@ public class LatTab extends Tab {
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
                 clearedHdg = MathTools.modulateHeading(clearedHdg);
             }
+        } else if ("Change STAR".equals(latMode) && selectedAircraft instanceof Arrival) {
+            Array<String> starsAvailable = RandomSTAR.getAllPossibleSTARnames(selectedAircraft.getAirport());
+            starsAvailable.removeValue(selectedAircraft.getSidStar().getName() + " arrival", false);
+            starsAvailable.insert(0, selectedAircraft.getSidStar().getName() + " arrival");
+            valueBox.setItems(starsAvailable);
+            newStar = valueBox.getSelected();
         }
         updateSidStarOptions();
         notListening = false;
@@ -556,5 +582,9 @@ public class LatTab extends Tab {
 
     public boolean isIlsChanged() {
         return ilsChanged;
+    }
+
+    public boolean isStarChanged() {
+        return starChanged;
     }
 }

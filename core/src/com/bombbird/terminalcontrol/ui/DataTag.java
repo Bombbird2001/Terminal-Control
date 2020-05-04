@@ -404,6 +404,9 @@ public class DataTag {
                         labelText[8] = LatTab.clearedILS;
                         changed = latTab.isLatModeChanged() || latTab.isIlsChanged();
                     }
+                } else if ("Change STAR".equals(LatTab.latMode)) {
+                    labelText[8] = LatTab.newStar.split(" ")[0];
+                    changed = latTab.isStarChanged();
                 } else {
                     labelText[8] = "";
                 }
@@ -461,6 +464,9 @@ public class DataTag {
                 if (!"Not cleared approach".equals(LatTab.clearedILS)) {
                     labelText[8] = LatTab.clearedILS;
                     changed = latTab.isIlsChanged() || latTab.isLatModeChanged();
+                } else if ("Change STAR".equals(LatTab.latMode)) {
+                    labelText[8] = LatTab.newStar.split(" ")[0];
+                    changed = latTab.isStarChanged();
                 } else {
                     labelText[8] = "";
                     if (!aircraft.getEmergency().isEmergency() || !aircraft.getEmergency().isActive()) {

@@ -1,9 +1,7 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
@@ -14,7 +12,7 @@ import java.util.HashMap;
 
 public class RandomSTAR {
     private static final HashMap<String, HashMap<String, Boolean>> noise = new HashMap<>();
-    private static HashMap<String, HashMap<String, Float>> time = new HashMap<>();
+    private static final HashMap<String, HashMap<String, Float>> time = new HashMap<>();
 
     /** Loads STAR noise info for the airport */
     public static void loadStarNoise(String icao) {
@@ -50,7 +48,8 @@ public class RandomSTAR {
     }
 
     /** Gets a random STAR for the airport and runway */
-    public static Star randomSTAR(Airport airport, HashMap<String, Runway> rwys) {
+    public static Star randomSTAR(Airport airport) {
+        HashMap<String, Runway> rwys = airport.getLandingRunways();
         Array<Star> possibleStars = new Array<>();
         for (Star star: airport.getStars().values()) {
             boolean found = false;
@@ -71,8 +70,25 @@ public class RandomSTAR {
             Gdx.app.log("Random STAR", "No STARs found to match criteria for " + airport.getIcao() + " " + runways.toString());
             throw new IllegalArgumentException("No STARs found to match criteria for " + airport.getIcao() + " " + runways.toString());
         } else {
-            return possibleStars.get(MathUtils.random(0, possibleStars.size - 1));
+            return possibleStars.random();
         }
+    }
+
+    /** Gets a list of all possible STARs that can be used with the current runway configuration */
+    public static Array<String> getAllPossibleSTARnames(Airport airport) {
+        Array<String> array = new Array<>();
+        for (Star star: airport.getStars().values()) {
+            boolean found = false;
+            for (int i = 0; i < star.getRunways().size; i++) {
+                if (airport.getLandingRunways().containsKey(star.getRunways().get(i))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found && checkNoise(airport, star.getName())) array.add(star.getName() + " arrival");
+        }
+
+        return array;
     }
 
     /** Check whether a STAR is allowed to be used for the airport at the current time */
@@ -81,9 +97,10 @@ public class RandomSTAR {
         return DayNightManager.checkNoiseAllowed(noise.get(airport.getIcao()).get(star));
     }
 
-    public static boolean starAvailable(String icao) {
-        for (float time: time.get(icao).values()) {
-            if (time < 0) return true;
+    /** Used to check if any STAR is available at airport, called before spawning new arrival */
+    public static boolean starAvailable(Airport airport) {
+        for (Star star: airport.getStars().values()) {
+            if (time.get(airport.getIcao()).get(star.getName()) < 0 && checkNoise(airport, star.getName())) return true;
         }
         return false;
     }
