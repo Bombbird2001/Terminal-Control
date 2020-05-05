@@ -204,7 +204,6 @@ public class WeatherScreen extends BasicScreen {
         confirmButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO update the weather in metar
                 HashMap<String, int[]> newData = new HashMap<>();
                 for (Map.Entry<String, Array<SelectBox<Integer>>> entry: boxMap.entrySet()) {
                     int windHdg = entry.getValue().get(0).getSelected() * 100 + entry.getValue().get(1).getSelected() * 10 + entry.getValue().get(2).getSelected();
