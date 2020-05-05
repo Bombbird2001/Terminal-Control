@@ -837,6 +837,10 @@ public class Arrival extends Aircraft {
         return star;
     }
 
+    public void setStar(Star star) {
+        this.star = star;
+    }
+
     public Queue<float[]> getNonPrecAlts() {
         return nonPrecAlts;
     }

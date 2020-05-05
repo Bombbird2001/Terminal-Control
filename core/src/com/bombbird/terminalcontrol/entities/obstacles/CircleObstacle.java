@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class CircleObstacle extends Obstacle {
@@ -57,7 +56,7 @@ public class CircleObstacle extends Obstacle {
     @Override
     public void renderShape() {
         shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin("TCWS".equals(radarScreen.mainName) && getMinAlt() == 30000 ? ShapeRenderer.ShapeType.Filled : ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
         shapeRenderer.end();

@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
+import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Revision;
@@ -365,13 +366,18 @@ public class NavState {
         }
 
         if (aircraft instanceof Arrival && clearedNewStar.first() != null) {
-            aircraft.setRoute(new Route(aircraft, aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0])));
+            Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
+            ((Arrival) aircraft).setStar(newStar);
+            aircraft.setRoute(new Route(aircraft, newStar));
             aircraft.setDirect(null);
             aircraft.setAfterWaypoint(null);
             aircraft.setAfterWptHdg(aircraft.getClearedHeading());
             aircraft.setSidStarIndex(0);
             clearedNewStar.removeFirst();
             clearedNewStar.addFirst(null);
+            updateLatModes(ADD_ALL_SIDSTAR, false);
+            updateLatModes(REMOVE_AFTERHDG_HOLD, true);
+            radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " has been changed to " + newStar.getName() + ". You may clear the aircraft to a waypoint on the new STAR.");
         }
     }
 
@@ -380,8 +386,8 @@ public class NavState {
         if (dispLatMode.size < 2 || clearedDirect.size < 2 || clearedAftWptHdg.size < 2 || clearedHdg.size < 2) return;
         int currentDispLatMode = dispLatMode.first();
         int clearedDispLatMode = dispLatMode.get(1);
-        String currentDirect = clearedDirect.first() == null ? null : clearedDirect.first().getName();
-        String newDirect = clearedDirect.get(1) == null ? null : clearedDirect.get(1).getName();
+        Waypoint currentDirect = clearedDirect.first();
+        Waypoint newDirect = clearedDirect.get(1);
         if (containsCode(currentDispLatMode, FLY_HEADING, TURN_LEFT, TURN_RIGHT) && containsCode(clearedDispLatMode, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
             //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
             dispLatMode.removeFirst();
@@ -396,13 +402,13 @@ public class NavState {
             clearedHdg.addFirst(initHdg);
 
             replaceAllClearedAltMode();
-        } else if (currentDispLatMode == SID_STAR && aircraft.getRoute().findWptIndex(newDirect) < aircraft.getRoute().findWptIndex(currentDirect)) {
+        } else if (newDirect != null && currentDirect != null && currentDispLatMode == SID_STAR && aircraft.getRoute().findWptIndex(newDirect.getName()) < aircraft.getRoute().findWptIndex(currentDirect.getName())) {
             //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
             clearedDirect.removeFirst();
             clearedDirect.removeFirst();
-            clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
-            clearedDirect.addFirst(radarScreen.waypoints.get(currentDirect));
-        } else if (aircraft.getDirect() == null && currentDispLatMode == FLY_HEADING && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
+            clearedDirect.addFirst(currentDirect);
+            clearedDirect.addFirst(currentDirect);
+        } else if (newDirect != null && !aircraft.getRoute().getRemainingWaypoints(aircraft.getSidStarIndex(), aircraft.getRoute().getWaypoints().size - 1).contains(newDirect, false) && currentDispLatMode == FLY_HEADING && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             //Set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg(aircraft.getClearedHeading());
@@ -545,7 +551,7 @@ public class NavState {
             this.clearedHdg.addLast(clearedHdg);
             if (aircraft instanceof Arrival) {
                 clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
-                updateLatModes(REMOVE_HOLD_ONLY, false);
+                updateLatModes(REMOVE_AFTERHDG_HOLD, false);
             }
         }
         dispLatMode.addLast(getCodeFromString(trueLatMode));

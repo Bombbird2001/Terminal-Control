@@ -294,7 +294,7 @@ public class LatTab extends Tab {
     @Override
     public void compareWithAC() {
         if (selectedAircraft == null) return;
-        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL));
+        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL)) && !"Change STAR".equals(latMode);
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
         if (clearedWpt != null && lastDirect != null) {
@@ -364,6 +364,8 @@ public class LatTab extends Tab {
                 tabChanged = hdgChanged || ilsChanged;
             } else if ("Hold at".equals(latMode)) {
                 tabChanged = holdWptChanged;
+            } else if ("Change STAR".equals(latMode)) {
+                tabChanged = starChanged;
             }
         }
         super.updateElementColours();

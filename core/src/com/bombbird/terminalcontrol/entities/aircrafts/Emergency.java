@@ -230,7 +230,7 @@ public class Emergency {
     private void cancelSidStar() {
         aircraft.getNavState().updateLatModes(NavState.REMOVE_ALL_SIDSTAR, false);
         aircraft.getNavState().updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
-        aircraft.getNavState().updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, true);
+        aircraft.getNavState().updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, true); //UpdateUI only after all 3 modes are changed
 
         aircraft.getNavState().getDispLatMode().clear();
         aircraft.getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);

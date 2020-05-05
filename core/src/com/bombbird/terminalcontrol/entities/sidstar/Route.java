@@ -234,16 +234,10 @@ public class Route {
 
     /** Returns an array of waypoints from start to end index inclusive */
     public Array<Waypoint> getRemainingWaypoints(int start, int end) {
-        //Returns array of waypoints starting from index
-        Array<Waypoint> newRange = new Array<>(wpts);
-        if (end >= start) {
-            if (start > 0) {
-                newRange.removeRange(0, start - 1);
-            }
-            int newEnd = end - start;
-            if (newEnd < newRange.size - 1) {
-                newRange.removeRange(newEnd + 1, newRange.size - 1);
-            }
+        //Returns array of waypoints from index start to end
+        Array<Waypoint> newRange = new Array<>();
+        for (int i = start; i <= end; i++) {
+            newRange.add(wpts.get(i));
         }
         return newRange;
     }
