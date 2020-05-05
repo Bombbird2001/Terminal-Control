@@ -474,9 +474,9 @@ public class Aircraft extends Actor {
     private void drawLatLines() {
         if (selected) {
             //Draws cleared status
-            if (navState.getDispLatMode().last() == NavState.SID_STAR && direct != null) {
+            if (navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedDirect().last() != null) {
                 drawSidStar();
-            } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && direct != null) {
+            } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && navState.getClearedDirect().last() != null && navState.getClearedAftWpt().last() != null) {
                 drawAftWpt();
             } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && (!locCap || navState.getClearedIls().last() == null)) {
                 drawHdgLine();
@@ -1117,8 +1117,10 @@ public class Aircraft extends Actor {
         sidStarIndex++;
         if (direct.equals(afterWaypoint) && navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             clearedHeading = afterWptHdg;
-            navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, true);
-            if (navState.getDispAltMode().first() == NavState.SID_STAR) {
+            navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false);
+            navState.updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
+            navState.updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, false);
+            if (navState.getDispAltMode().first() == NavState.SID_STAR_RESTR) {
                 navState.getDispAltMode().removeFirst();
                 navState.getDispAltMode().addFirst(NavState.NO_RESTR);
             }
