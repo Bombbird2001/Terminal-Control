@@ -90,7 +90,8 @@ public class NavState {
             //Arrival
             latModes = new Array<>(6);
             latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Fly heading");
-            latModes.add("Turn left heading", "Turn right heading", "Hold at", "Change STAR");
+            latModes.add("Turn left heading", "Turn right heading", "Hold at");
+            if (!radarScreen.tutorial) latModes.add("Change STAR");
 
             altModes.add("Descend via STAR");
 
@@ -632,7 +633,8 @@ public class NavState {
         switch (mode) {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
-                latModes.add("Fly heading", "Turn left heading", "Turn right heading", "Change STAR");
+                latModes.add("Fly heading", "Turn left heading", "Turn right heading");
+                if (!radarScreen.tutorial) latModes.add("Change STAR");
                 break;
             case REMOVE_AFTERHDG_HOLD:
                 latModes.removeValue("After waypoint, fly heading", false);
@@ -657,7 +659,8 @@ public class NavState {
                 latModes.clear();
                 if (aircraft instanceof Arrival) {
                     latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Fly heading");
-                    latModes.add("Turn left heading", "Turn right heading", "Hold at", "Change STAR");
+                    latModes.add("Turn left heading", "Turn right heading", "Hold at");
+                    if (!radarScreen.tutorial) latModes.add("Change STAR");
                 } else if (aircraft instanceof Departure) {
                     latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
                 }
