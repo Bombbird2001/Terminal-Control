@@ -538,6 +538,12 @@ public class LatTab extends Tab {
             spdMode = "No speed restrictions";
         }
 
+        //Check if changing the waypoint leads to change in max speed restrictions
+        if ("STAR speed restrictions".equals(spdMode) && wptChanged) {
+            int maxSpd = selectedAircraft.getRoute().getWptMaxSpd(clearedWpt);
+            if (maxSpd > -1 && SpdTab.clearedSpd > maxSpd) SpdTab.clearedSpd = maxSpd;
+        }
+
         if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT && selectedAircraft.getNavState().getClearedDirect().last() != null) {
             boolean found = false;
             HashMap<String, HoldingPoints> waypoints = selectedAircraft.getRoute().getHoldProcedure().getHoldingPoints();
