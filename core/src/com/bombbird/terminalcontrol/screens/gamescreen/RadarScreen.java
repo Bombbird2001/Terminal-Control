@@ -564,7 +564,6 @@ public class RadarScreen extends GameScreen {
             }
 
             spawnTimer -= deltaTime;
-            //System.out.println(planesToControl + " " + sectorClosed + " " + arrivals);
             if (spawnTimer <= 0 && arrivals < planesToControl) {
                 //Minimum 50 sec interval between each new plane
                 if (sectorClosed) {
