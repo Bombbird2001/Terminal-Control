@@ -403,8 +403,8 @@ public class NavState {
             clearedHdg.addFirst(initHdg);
 
             replaceAllClearedAltMode();
-        } else if (newDirect != null && currentDirect != null && currentDispLatMode == SID_STAR && aircraft.getRoute().findWptIndex(newDirect.getName()) < aircraft.getRoute().findWptIndex(currentDirect.getName())) {
-            //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct
+        } else if (newDirect != null && currentDirect != null && currentDispLatMode == SID_STAR && clearedNewStar.get(1) == null && aircraft.getRoute().findWptIndex(newDirect.getName()) < aircraft.getRoute().findWptIndex(currentDirect.getName())) {
+            //Case 2: Aircraft direct changes during delay: Replace cleared direct if it is before new direct (if changing STARs, do not replace)
             clearedDirect.removeFirst();
             clearedDirect.removeFirst();
             clearedDirect.addFirst(currentDirect);
@@ -547,6 +547,9 @@ public class NavState {
                 trueLatMode = "Fly heading";
                 this.clearedHdg.addLast((int) aircraft.getHeading());
             }
+            clearedDirect.addLast(null);
+            clearedAftWpt.addLast(null);
+            clearedHold.addLast(null);
             updateLatModes(REMOVE_ALL_SIDSTAR, false);
         } else {
             this.clearedHdg.addLast(clearedHdg);

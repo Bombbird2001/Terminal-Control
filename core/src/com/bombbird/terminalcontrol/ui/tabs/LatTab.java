@@ -377,6 +377,14 @@ public class LatTab extends Tab {
     public void updateMode() {
         if (selectedAircraft == null) return;
         if (selectedAircraft.getNavState() == null) return;
+        //Check if changing the waypoint leads to change in max speed restrictions
+        if ("STAR speed restrictions".equals(spdMode) && wptChanged) {
+            int maxSpd = selectedAircraft.getRoute().getWptMaxSpd(clearedWpt);
+            if (maxSpd > -1 && SpdTab.clearedSpd > maxSpd) {
+                SpdTab.clearedSpd = maxSpd;
+                ui.spdTab.updateElements();
+            }
+        }
         selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS, newStar);
     }
 
@@ -536,12 +544,6 @@ public class LatTab extends Tab {
         } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
             ui.spdTab.settingsBox.setSelected("No speed restrictions");
             spdMode = "No speed restrictions";
-        }
-
-        //Check if changing the waypoint leads to change in max speed restrictions
-        if ("STAR speed restrictions".equals(spdMode) && wptChanged) {
-            int maxSpd = selectedAircraft.getRoute().getWptMaxSpd(clearedWpt);
-            if (maxSpd > -1 && SpdTab.clearedSpd > maxSpd) SpdTab.clearedSpd = maxSpd;
         }
 
         if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT && selectedAircraft.getNavState().getClearedDirect().last() != null) {
