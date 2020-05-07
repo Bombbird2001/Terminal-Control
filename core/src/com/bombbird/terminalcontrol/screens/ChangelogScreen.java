@@ -53,8 +53,14 @@ public class ChangelogScreen extends StandardUIScreen {
         labelStyle1.fontColor = Color.BLACK;
         labelStyle1.font = Fonts.defaultFont16;
 
+        boolean thisVersion = true;
         for (Map.Entry<String, Array<String>> entry: changeLogContent.entrySet()) {
-            Label versionLabel = new Label("Version " + entry.getKey(), labelStyle1);
+            String version = entry.getKey();
+            if (thisVersion) {
+                version += " (current version)";
+                thisVersion = false;
+            }
+            Label versionLabel = new Label("Version " + version, labelStyle1);
             scrollTable.add(versionLabel).width(MainMenuScreen.BUTTON_WIDTH * 2f - 20).pad(15, 10, 15, 0);
             scrollTable.row();
 
