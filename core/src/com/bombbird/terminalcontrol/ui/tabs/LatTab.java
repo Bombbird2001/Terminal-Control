@@ -228,7 +228,10 @@ public class LatTab extends Tab {
                 valueBox.setVisible(true);
             }
             waypoints.clear();
-            for (Waypoint waypoint: selectedAircraft.getRoute().getRemainingWaypoints(selectedAircraft.getSidStarIndex(), selectedAircraft.getRoute().getWaypoints().size - 1)) {
+            int startIndex = selectedAircraft.getSidStarIndex();
+            Waypoint latestDirect = selectedAircraft.getNavState().getClearedDirect().last();
+            if (latestDirect != null && selectedAircraft.getRoute().getWaypoints().contains(latestDirect, false)) startIndex = selectedAircraft.getRoute().findWptIndex(latestDirect.getName());
+            for (Waypoint waypoint: selectedAircraft.getRoute().getRemainingWaypoints(startIndex, selectedAircraft.getRoute().getWaypoints().size - 1)) {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
