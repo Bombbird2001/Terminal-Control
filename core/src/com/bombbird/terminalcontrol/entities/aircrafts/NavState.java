@@ -744,7 +744,7 @@ public class NavState {
             return SID_STAR_RESTR;
         } else if ("Climb/descend to".equals(string) || "No speed restrictions".equals(string)) {
             return NO_RESTR;
-        } else if ("Expedite climb/descend to".equals(string)) {
+        } else if ("Expedite climb/descent to".equals(string)) {
             return EXPEDITE;
         } else {
             //No such code
