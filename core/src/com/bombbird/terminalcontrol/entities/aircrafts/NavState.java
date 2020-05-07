@@ -782,7 +782,7 @@ public class NavState {
             case NO_RESTR:
                 return "Climb/descend to";
             case EXPEDITE:
-                return "Expedite climb/descend to";
+                return "Expedite climb/descent to";
             default:
                 Gdx.app.log("NavState", "Unknown altitude code " + code);
                 return "Climb/descend to";
