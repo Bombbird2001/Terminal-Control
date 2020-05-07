@@ -21,6 +21,7 @@ import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.entities.zones.ZoneLoader;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
 import org.apache.commons.lang3.ArrayUtils;
@@ -281,7 +282,7 @@ public class Airport {
 
     /** Update loop */
     public void update() {
-        if (!TerminalControl.radarScreen.tutorial) {
+        if (!TerminalControl.radarScreen.tutorial && TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
             takeoffManager.update();
         }
 

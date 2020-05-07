@@ -420,7 +420,6 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new departure at the given airport */
     public void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
-        if (tfcMode == TfcMode.ARRIVALS_ONLY) return;
         aircrafts.put(callsign, new Departure(callsign, icaoType, airport, runway));
     }
 

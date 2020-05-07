@@ -482,7 +482,7 @@ public class TakeoffManager {
 
     /** Checks whether airport has available runways for takeoff, updates hashMap and timer if available */
     private void updateRunway(Runway runway) {
-        if (runway != null) {
+        if (runway != null && radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
             String callsign = nextAircraft.get(runway.getName())[0];
             radarScreen.newDeparture(callsign, nextAircraft.get(runway.getName())[1], airport, runway);
             prevAircraft.put(runway.getName(), radarScreen.aircrafts.get(callsign));
