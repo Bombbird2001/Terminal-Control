@@ -28,6 +28,27 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
 public class Ui {
+    //UI string constants
+    //Lateral
+    public static final String AFTER_WPT_FLY_HDG = "After waypoint, fly heading";
+    public static final String FLY_HEADING = "Fly heading";
+    public static final String LEFT_HEADING = "Turn left heading";
+    public static final String RIGHT_HEADING = "Turn right heading";
+    public static final String HOLD_AT = "Hold at";
+    public static final String CHANGE_STAR = "Change STAR";
+    public static final String NOT_CLEARED_APCH = "Not cleared approach";
+
+    //Altitude
+    public static final String CLIMB_VIA_SID = "Climb via SID";
+    public static final String DESCEND_VIA_STAR = "Descend via STAR";
+    public static final String CLIMB_DESCEND_TO = "Climb/descend to";
+    public static final String EXPEDITE_TO = "Expedite climb/descent to";
+
+    //Speed
+    public static final String SID_SPD_RESTRICTIONS = "SID speed restrictions";
+    public static final String STAR_SPD_RESTRICTIONS = "STAR speed restrictions";
+    public static final String NO_SPD_RESTRICTIONS = "No speed restrictions";
+
     private static Texture transBackground;
     private static Texture hdgBoxBackground;
     private static Texture paneTexture;

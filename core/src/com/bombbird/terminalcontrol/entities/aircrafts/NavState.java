@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
+import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.Revision;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -89,29 +90,29 @@ public class NavState {
         if (aircraft instanceof Arrival) {
             //Arrival
             latModes = new Array<>(6);
-            latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Fly heading");
-            latModes.add("Turn left heading", "Turn right heading", "Hold at");
-            if (!radarScreen.tutorial) latModes.add("Change STAR");
+            latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
+            latModes.add(Ui.LEFT_HEADING, Ui.RIGHT_HEADING, Ui.HOLD_AT);
+            if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
 
-            altModes.add("Descend via STAR");
+            altModes.add(Ui.DESCEND_VIA_STAR);
 
-            spdModes.add("STAR speed restrictions");
+            spdModes.add(Ui.STAR_SPD_RESTRICTIONS);
         } else if (aircraft instanceof Departure) {
             //Departure
             latModes = new Array<>(4);
-            latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
+            latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
 
-            altModes.add("Climb via SID");
+            altModes.add(Ui.CLIMB_VIA_SID);
 
-            spdModes.add("SID speed restrictions");
+            spdModes.add(Ui.SID_SPD_RESTRICTIONS);
         } else {
             //Nani
             Gdx.app.log("Navstate type error", "Unknown navstate type specified!");
             latModes = new Array<>(1);
         }
-        altModes.add("Climb/descend to", "Expedite climb/descent to");
+        altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
 
-        spdModes.add("No speed restrictions");
+        spdModes.add(Ui.NO_SPD_RESTRICTIONS);
 
         dispLatMode = new Queue<>();
         dispLatMode.addLast(SID_STAR);
@@ -189,8 +190,8 @@ public class NavState {
             for (int i = 0; i < array.length(); i++) {
                 latModes.add(array.getString(i));
             }
-            if (aircraft instanceof Arrival && !latModes.contains("Change STAR", false)) {
-                latModes.add("Change STAR");
+            if (aircraft instanceof Arrival && !latModes.contains(Ui.CHANGE_STAR, false)) {
+                latModes.add(Ui.CHANGE_STAR);
             }
         }
 
@@ -539,18 +540,18 @@ public class NavState {
                 clearedHold.removeLast();
                 clearedHold.addLast(null);
             }
-        } else if ("After waypoint, fly heading".equals(latMode)) {
+        } else if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
             clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
-        } else if ("Hold at".equals(latMode)) {
+        } else if (Ui.HOLD_AT.equals(latMode)) {
             clearedHold.addLast(radarScreen.waypoints.get(holdWpt));
             updateLatModes(REMOVE_AFTERHDG_ONLY, false);
-        } else if ("Change STAR".equals(latMode)) {
+        } else if (Ui.CHANGE_STAR.equals(latMode)) {
             clearedNewStar.addLast(newStar);
             if (containsCode(dispLatMode.last(), FLY_HEADING, TURN_RIGHT, TURN_LEFT)) {
                 trueLatMode = getLatStringFromCode(dispLatMode.last());
             } else {
-                trueLatMode = "Fly heading";
+                trueLatMode = Ui.FLY_HEADING;
                 this.clearedHdg.addLast((int) aircraft.getHeading());
             }
             clearedDirect.addLast(null);
@@ -642,12 +643,12 @@ public class NavState {
         switch (mode) {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
-                latModes.add("Fly heading", "Turn left heading", "Turn right heading");
-                if (!radarScreen.tutorial) latModes.add("Change STAR");
+                latModes.add(Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
+                if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
                 break;
             case REMOVE_AFTERHDG_HOLD:
-                latModes.removeValue("After waypoint, fly heading", false);
-                latModes.removeValue("Hold at", false);
+                latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);
+                latModes.removeValue(Ui.HOLD_AT, false);
                 break;
             case REMOVE_SIDSTAR_ONLY:
                 latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
@@ -656,22 +657,22 @@ public class NavState {
             case REMOVE_SIDSTAR_AFTERHDG:
                 latModes.removeValue(aircraft.getSidStar().getName() + " arrival", false);
                 latModes.removeValue(aircraft.getSidStar().getName() + " departure", false);
-                latModes.removeValue("After waypoint, fly heading", false);
+                latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);
                 break;
             case REMOVE_HOLD_ONLY:
-                latModes.removeValue("Hold at", false);
+                latModes.removeValue(Ui.HOLD_AT, false);
                 break;
             case REMOVE_AFTERHDG_ONLY:
-                latModes.removeValue("After waypoint, fly heading", false);
+                latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);
                 break;
             case ADD_ALL_SIDSTAR:
                 latModes.clear();
                 if (aircraft instanceof Arrival) {
-                    latModes.add(aircraft.getSidStar().getName() + " arrival", "After waypoint, fly heading", "Fly heading");
-                    latModes.add("Turn left heading", "Turn right heading", "Hold at");
-                    if (!radarScreen.tutorial) latModes.add("Change STAR");
+                    latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
+                    latModes.add(Ui.LEFT_HEADING, Ui.RIGHT_HEADING, Ui.HOLD_AT);
+                    if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
                 } else if (aircraft instanceof Departure) {
-                    latModes.add(aircraft.getSidStar().getName() + " departure", "Fly heading", "Turn left heading", "Turn right heading");
+                    latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
                 }
                 break;
             default:
@@ -685,17 +686,17 @@ public class NavState {
         //Will not throw exception even if element not in array
         switch (mode) {
             case REMOVE_SIDSTAR_RESTR:
-                altModes.removeValue("Climb via SID", false);
-                altModes.removeValue("Descend via STAR", false);
+                altModes.removeValue(Ui.CLIMB_VIA_SID, false);
+                altModes.removeValue(Ui.DESCEND_VIA_STAR, false);
                 break;
             case ADD_SIDSTAR_RESTR:
                 altModes.clear();
                 if (aircraft instanceof Arrival) {
-                    altModes.add("Descend via STAR");
+                    altModes.add(Ui.DESCEND_VIA_STAR);
                 } else if (aircraft instanceof Departure) {
-                    altModes.add("Climb via SID");
+                    altModes.add(Ui.CLIMB_VIA_SID);
                 }
-                altModes.add("Climb/descend to", "Expedite climb/descent to");
+                altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
                 break;
             default:
                 Gdx.app.log("NavState", "Invalid altModes update mode: " + mode);
@@ -708,17 +709,17 @@ public class NavState {
         //Will not throw exception even if element not in array
         switch (mode) {
             case REMOVE_SIDSTAR_RESTR:
-                spdModes.removeValue("SID speed restrictions", false);
-                spdModes.removeValue("STAR speed restrictions", false);
+                spdModes.removeValue(Ui.SID_SPD_RESTRICTIONS, false);
+                spdModes.removeValue(Ui.STAR_SPD_RESTRICTIONS, false);
                 break;
             case ADD_SIDSTAR_RESTR:
                 spdModes.clear();
                 if (aircraft instanceof Arrival) {
-                    spdModes.add("STAR speed restrictions");
+                    spdModes.add(Ui.STAR_SPD_RESTRICTIONS);
                 } else if (aircraft instanceof Departure) {
-                    spdModes.add("SID speed restrictions");
+                    spdModes.add(Ui.SID_SPD_RESTRICTIONS);
                 }
-                spdModes.add("No speed restrictions");
+                spdModes.add(Ui.NO_SPD_RESTRICTIONS);
                 break;
             default:
                 Gdx.app.log("NavState", "Invalid spdModes update mode: " + mode);
@@ -730,21 +731,21 @@ public class NavState {
     public int getCodeFromString(String string) {
         if (string.contains("arrival") || string.contains("departure")) {
             return SID_STAR;
-        } else if ("After waypoint, fly heading".equals(string)) {
+        } else if (Ui.AFTER_WPT_FLY_HDG.equals(string)) {
             return AFTER_WAYPOINT_FLY_HEADING;
-        } else if ("Fly heading".equals(string)) {
+        } else if (Ui.FLY_HEADING.equals(string)) {
             return FLY_HEADING;
-        } else if ("Turn left heading".equals(string)) {
+        } else if (Ui.LEFT_HEADING.equals(string)) {
             return TURN_LEFT;
-        } else if ("Turn right heading".equals(string)) {
+        } else if (Ui.RIGHT_HEADING.equals(string)) {
             return TURN_RIGHT;
-        } else if ("Hold at".equals(string)) {
+        } else if (Ui.HOLD_AT.equals(string)) {
             return HOLD_AT;
-        } else if (string.contains("Climb via") || string.contains("Descend via") || "SID speed restrictions".equals(string) || "STAR speed restrictions".equals(string)) {
+        } else if (Ui.CLIMB_VIA_SID.equals(string) || Ui.DESCEND_VIA_STAR.equals(string) || Ui.SID_SPD_RESTRICTIONS.equals(string) || Ui.STAR_SPD_RESTRICTIONS.equals(string)) {
             return SID_STAR_RESTR;
-        } else if ("Climb/descend to".equals(string) || "No speed restrictions".equals(string)) {
+        } else if (Ui.CLIMB_DESCEND_TO.equals(string) || Ui.NO_SPD_RESTRICTIONS.equals(string)) {
             return NO_RESTR;
-        } else if ("Expedite climb/descent to".equals(string)) {
+        } else if (Ui.EXPEDITE_TO.equals(string)) {
             return EXPEDITE;
         } else {
             //No such code
@@ -759,18 +760,18 @@ public class NavState {
             case SID_STAR:
                 return aircraft.getSidStar().getName() + " " + (aircraft instanceof Arrival ? "arrival" : "departure");
             case AFTER_WAYPOINT_FLY_HEADING:
-                return "After waypoint, fly heading";
+                return Ui.AFTER_WPT_FLY_HDG;
             case FLY_HEADING:
-                return "Fly heading";
+                return Ui.FLY_HEADING;
             case TURN_LEFT:
-                return "Turn left heading";
+                return Ui.LEFT_HEADING;
             case TURN_RIGHT:
-                return "Turn right heading";
+                return Ui.RIGHT_HEADING;
             case HOLD_AT:
-                return "Hold at";
+                return Ui.HOLD_AT;
             default:
                 Gdx.app.log("NavState", "Unknown lateral code " + code);
-                return "Fly heading";
+                return Ui.FLY_HEADING;
         }
     }
 
@@ -778,14 +779,14 @@ public class NavState {
     public String getAltStringFromCode(int code) {
         switch (code) {
             case SID_STAR_RESTR:
-                return aircraft instanceof Arrival ? "Descend via STAR" : "Climb via SID";
+                return aircraft instanceof Arrival ? Ui.DESCEND_VIA_STAR : Ui.CLIMB_VIA_SID;
             case NO_RESTR:
-                return "Climb/descend to";
+                return Ui.CLIMB_DESCEND_TO;
             case EXPEDITE:
-                return "Expedite climb/descent to";
+                return Ui.EXPEDITE_TO;
             default:
                 Gdx.app.log("NavState", "Unknown altitude code " + code);
-                return "Climb/descend to";
+                return Ui.CLIMB_DESCEND_TO;
         }
     }
 
@@ -793,12 +794,12 @@ public class NavState {
     public String getSpdStringFromCode(int code) {
         switch (code) {
             case SID_STAR_RESTR:
-                return (aircraft instanceof Arrival ? "STAR" : "SID") + " speed restrictions";
+                return aircraft instanceof Arrival ? Ui.STAR_SPD_RESTRICTIONS : Ui.SID_SPD_RESTRICTIONS;
             case NO_RESTR:
-                return "No speed restrictions";
+                return Ui.NO_SPD_RESTRICTIONS;
             default:
                 Gdx.app.log("NavState", "Unknown speed code " + code);
-                return "No speed restrictions";
+                return Ui.NO_SPD_RESTRICTIONS;
         }
     }
 

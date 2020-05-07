@@ -159,7 +159,7 @@ public class LatTab extends Tab {
 
     private void updateClearedHdg(int deltaHdg) {
         int hdgChange = deltaHdg;
-        if ("After waypoint, fly heading".equals(latMode)) {
+        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
             int remainder = afterWptHdg % 5;
             if (remainder != 0) {
                 if (hdgChange < 0) {
@@ -202,27 +202,27 @@ public class LatTab extends Tab {
         settingsBox.setSelected(latMode);
 
         ils.clear();
-        ils.add("Not cleared approach");
+        ils.add(Ui.NOT_CLEARED_APCH);
         for (ILS approach: selectedAircraft.getAirport().getApproaches().values()) {
             String rwy = approach.getName().substring(3);
             if (selectedAircraft.getAirport().getLandingRunways().containsKey(rwy) && !selectedAircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
                 ils.add(approach.getName());
             }
         }
-        if (clearedILS == null) clearedILS = "Not cleared approach";
+        if (clearedILS == null) clearedILS = Ui.NOT_CLEARED_APCH;
         if (!ils.contains(clearedILS, false)) {
             ils.clear();
-            ils.add("Not cleared approach");
+            ils.add(Ui.NOT_CLEARED_APCH);
             if (selectedAircraft.getAirport().getRunways().get(clearedILS.substring(3)) != null) {
                 ils.add(clearedILS);
             } else {
-                clearedILS = "Not cleared approach";
+                clearedILS = Ui.NOT_CLEARED_APCH;
             }
         }
         ilsBox.setItems(ils);
         ilsBox.setSelected(clearedILS);
 
-        if (latMode.contains("waypoint") || latMode.contains("arrival") || latMode.contains("departure")) {
+        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode) || latMode.contains("arrival") || latMode.contains("departure")) {
             //Make waypoint box visible
             if (visible) {
                 valueBox.setVisible(true);
@@ -235,7 +235,7 @@ public class LatTab extends Tab {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
-            if (latMode.contains("waypoint")) {
+            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
                 valueBox.setSelected(afterWpt);
             } else {
                 if (!waypoints.contains(clearedWpt, false)) {
@@ -244,7 +244,7 @@ public class LatTab extends Tab {
                 valueBox.setSelected(clearedWpt);
             }
             ilsBox.setVisible(false);
-        } else if ("Hold at".equals(latMode) && selectedAircraft instanceof Arrival) {
+        } else if (Ui.HOLD_AT.equals(latMode) && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
             }
@@ -266,7 +266,7 @@ public class LatTab extends Tab {
             valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);
             ilsBox.setVisible(false);
-        } else if ("Change STAR".equals(latMode) && selectedAircraft instanceof Arrival) {
+        } else if (Ui.CHANGE_STAR.equals(latMode) && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
             }
@@ -285,10 +285,10 @@ public class LatTab extends Tab {
         }
 
         //Show heading box if heading mode, otherwise hide it
-        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null || "Not cleared approach".equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && "Not cleared approach".equals(clearedILS)));
-        if (latMode.equals("After waypoint, fly heading")) {
+        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
+        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
             hdgBox.setText(Integer.toString(afterWptHdg));
-        } else if (latMode.contains("heading")) {
+        } else if (Ui.FLY_HEADING.equals(latMode) || Ui.LEFT_HEADING.equals(latMode) || Ui.RIGHT_HEADING.equals(latMode)) {
             hdgBox.setText(Integer.toString(clearedHdg));
         }
         notListening = false;
@@ -297,7 +297,7 @@ public class LatTab extends Tab {
     @Override
     public void compareWithAC() {
         if (selectedAircraft == null) return;
-        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL)) && !"Change STAR".equals(latMode);
+        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL)) && !Ui.CHANGE_STAR.equals(latMode);
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
         if (clearedWpt != null && lastDirect != null) {
@@ -317,12 +317,12 @@ public class LatTab extends Tab {
         ilsChanged = false;
         if (selectedAircraft instanceof Arrival) {
             if (clearedILS == null) {
-                clearedILS = "Not cleared approach";
+                clearedILS = Ui.NOT_CLEARED_APCH;
             }
             ILS lastILS = selectedAircraft.getNavState().getClearedIls().last();
             if (lastILS == null) {
                 //Not cleared approach yet
-                ilsChanged = !"Not cleared approach".equals(clearedILS);
+                ilsChanged = !Ui.NOT_CLEARED_APCH.equals(clearedILS);
             } else {
                 ilsChanged = !clearedILS.equals(lastILS.getName());
             }
@@ -336,13 +336,13 @@ public class LatTab extends Tab {
         settingsBox.getStyle().fontColor = latModeChanged ? Color.YELLOW : Color.WHITE;
 
         //Lat mode waypoint box colour
-        if ("After waypoint, fly heading".equals(latMode)) {
+        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
             valueBox.getStyle().fontColor = afterWptChanged ? Color.YELLOW : Color.WHITE;
         } else if (latMode.contains("arrival") || latMode.contains("departure")) {
             valueBox.getStyle().fontColor = wptChanged ? Color.YELLOW : Color.WHITE;
-        } else if ("Hold at".equals(latMode)) {
+        } else if (Ui.HOLD_AT.equals(latMode)) {
             valueBox.getStyle().fontColor = holdWptChanged ? Color.YELLOW : Color.WHITE;
-        } else if ("Change STAR".equals(latMode)) {
+        } else if (Ui.CHANGE_STAR.equals(latMode)) {
             valueBox.getStyle().fontColor = starChanged ? Color.YELLOW : Color.WHITE;
         }
 
@@ -350,24 +350,24 @@ public class LatTab extends Tab {
         ilsBox.getStyle().fontColor = ilsChanged ? Color.YELLOW : Color.WHITE;
 
         //Lat mode hdg box colour
-        if ("After waypoint, fly heading".equals(latMode)) {
+        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
             hdgBox.getStyle().fontColor = afterWptHdgChanged ? Color.YELLOW : Color.WHITE;
-        } else if (latMode.contains("heading")) {
+        } else if (Ui.FLY_HEADING.equals(latMode) || Ui.LEFT_HEADING.equals(latMode) || Ui.RIGHT_HEADING.equals(latMode)) {
             hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
         }
 
         if (latModeChanged) {
             tabChanged = true;
         } else {
-            if ("After waypoint, fly heading".equals(latMode)) {
+            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
                 tabChanged = afterWptChanged || afterWptHdgChanged;
             } else if (latMode.contains("arrival") || latMode.contains("departure")) {
                 tabChanged = wptChanged;
             } else if (latMode.contains("heading")) {
                 tabChanged = hdgChanged || ilsChanged;
-            } else if ("Hold at".equals(latMode)) {
+            } else if (Ui.HOLD_AT.equals(latMode)) {
                 tabChanged = holdWptChanged;
-            } else if ("Change STAR".equals(latMode)) {
+            } else if (Ui.CHANGE_STAR.equals(latMode)) {
                 tabChanged = starChanged;
             }
         }
