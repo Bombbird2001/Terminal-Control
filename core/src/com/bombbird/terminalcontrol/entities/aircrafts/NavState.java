@@ -367,18 +367,24 @@ public class NavState {
         }
 
         if (aircraft instanceof Arrival && clearedNewStar.first() != null) {
-            Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
-            ((Arrival) aircraft).setStar(newStar);
-            aircraft.setRoute(new Route(aircraft, newStar));
-            aircraft.setDirect(null);
-            aircraft.setAfterWaypoint(null);
-            aircraft.setAfterWptHdg(aircraft.getClearedHeading());
-            aircraft.setSidStarIndex(0);
-            clearedNewStar.removeFirst();
-            clearedNewStar.addFirst(null);
-            updateLatModes(ADD_ALL_SIDSTAR, false);
-            updateLatModes(REMOVE_AFTERHDG_HOLD, true);
-            radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " has been changed to " + newStar.getName() + ". You may clear the aircraft to a waypoint on the new STAR.");
+            if (!aircraft.isLocCap()) {
+                Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
+                ((Arrival) aircraft).setStar(newStar);
+                aircraft.setRoute(new Route(aircraft, newStar));
+                aircraft.setDirect(null);
+                aircraft.setAfterWaypoint(null);
+                aircraft.setAfterWptHdg(aircraft.getClearedHeading());
+                aircraft.setSidStarIndex(0);
+                clearedNewStar.removeFirst();
+                clearedNewStar.addFirst(null);
+                updateLatModes(ADD_ALL_SIDSTAR, false);
+                updateLatModes(REMOVE_AFTERHDG_HOLD, true);
+                radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " has been changed to " + newStar.getName() + ". You may clear the aircraft to a waypoint on the new STAR.");
+            } else {
+                clearedNewStar.removeFirst();
+                clearedNewStar.addFirst(null);
+                radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " cannot be changed now.");
+            }
         }
     }
 
