@@ -227,7 +227,7 @@ public class TutorialManager {
 
             if (prompt4 && aircraft.getAirport().getApproaches().get("05L").equals(aircraft.getNavState().getClearedIls().first())) {
                 prompt4 = false;
-                tutorialMsg("Great job, the aircraft will now automatically capture the localizer and glide slope. Now we just need to wait for the aircraft to be established on the ILS before handing the aircraft over to the tower.");
+                tutorialMsg("Great job, the aircraft will now automatically capture the localizer and glide slope. Once the plane is close to landing it will contact the tower, but you can also hand it over to the tower once it is established on the localizer by pressing the \"Handover\" button.");
                 prompt5 = true;
                 locGroup.setActive(true);
             }

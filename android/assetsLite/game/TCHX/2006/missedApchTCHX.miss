@@ -1,10 +1,14 @@
 {
     "ILS31": {
         "altitude": "5000",
-        "speed": "200"
+        "speed": "220"
     },
     "IGS13": {
         "altitude": "5000",
         "speed": "180"
-    }
+    },
+	"IMG13": {
+		"altitude": "5000",
+		"speed": "180"
+	}
 }
