@@ -6,12 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.BasicScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class SettingsTemplateScreen extends BasicScreen {
+    //Background image
+    public Image background;
+    public static final float specialScale = 7.8f;
+
     public int xOffset;
     public int yOffset;
 
@@ -29,13 +35,22 @@ public class SettingsTemplateScreen extends BasicScreen {
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
 
-    public SettingsTemplateScreen(TerminalControl game) {
+    //Default game settings or in game settings
+    public RadarScreen radarScreen;
+
+    public SettingsTemplateScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, 5760, 3240);
+
+        this.radarScreen = radarScreen;
+
+        this.background = background;
+        if (this.background != null) {
+            this.background.scaleBy(specialScale);
+            stage.addActor(this.background);
+        }
 
         settingsTabs = new Array<>();
         tab = 0;
-
-        setOptions();
     }
 
     public void loadUI(int xOffset, int yOffset) {
@@ -97,6 +112,7 @@ public class SettingsTemplateScreen extends BasicScreen {
 
         backButton = new TextButton("<", textButtonStyle);
         backButton.setSize(400, 400);
+        backButton.setPosition(5760 / 2f - 2500, 3240 - 2800);
         backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -109,6 +125,7 @@ public class SettingsTemplateScreen extends BasicScreen {
 
         nextButton = new TextButton(">", textButtonStyle);
         nextButton.setSize(400, 400);
+        nextButton.setPosition(5760 / 2f + 2000, 3240 - 2800);
         nextButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -118,6 +135,38 @@ public class SettingsTemplateScreen extends BasicScreen {
             }
         });
         stage.addActor(nextButton);
+
+        setButtonListeners();
+    }
+
+    /** Sets the default listeners for the cancel, confirm buttons, overridden in global settings to go to different screen */
+    public void setButtonListeners() {
+        cancelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (radarScreen != null) {
+                    //TODO set state
+                } else {
+                    background.scaleBy(-specialScale);
+                    game.setScreen(new CategorySelectScreen(game, background, null));
+                }
+            }
+        });
+
+        confirmButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                sendChanges();
+                if (radarScreen != null) {
+                    //TODO set state
+                } else {
+                    background.scaleBy(-specialScale);
+                    game.setScreen(new CategorySelectScreen(game, background, null));
+                }
+            }
+        });
+
+
     }
 
     /** Changes the tab displayed */
@@ -125,7 +174,7 @@ public class SettingsTemplateScreen extends BasicScreen {
         backButton.setVisible(tab > 0);
         nextButton.setVisible(tab < settingsTabs.size - 1);
         if (tab > settingsTabs.size - 1 || tab < 0) {
-            Gdx.app.log("SettingsScreen", "Invalid tab set: " + tab + ", size is " + settingsTabs.size);
+            Gdx.app.log("SettingsTemplateScreen", "Invalid tab set: " + tab + ", size is " + settingsTabs.size);
             return;
         }
         for (int i = 0; i < settingsTabs.size; i++) {
@@ -137,6 +186,21 @@ public class SettingsTemplateScreen extends BasicScreen {
         }
     }
 
+    /** Creates a default selectBox configuration with standard styles */
+    public SelectBox<String> createStandardSelectBox() {
+        SelectBox<String> box = new SelectBox<>(selectBoxStyle);
+        box.setSize(1200, 300);
+        box.setAlignment(Align.center);
+        box.getList().setAlignment(Align.center);
+
+        return box;
+    }
+
+    /** Updates the relevant settings */
+    public void sendChanges() {
+        //No default implementation
+    }
+
     /** Loads selectBox for settings, overridden in respective classes */
     public void loadBoxes() {
         //No default implementation
@@ -144,7 +208,9 @@ public class SettingsTemplateScreen extends BasicScreen {
 
     /** Loads the selectBox labels, overridden in respective classes */
     public void loadLabel() {
-        //No default implementation
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = Fonts.defaultFont20;
+        labelStyle.fontColor = Color.WHITE;
     }
 
     /** Loads the various actors into respective tabs, overridden in respective classes */
@@ -155,10 +221,5 @@ public class SettingsTemplateScreen extends BasicScreen {
     /** Sets the current options into selectBoxes */
     public void setOptions() {
         //No default implementation
-    }
-
-    @Override
-    public void show() {
-        loadUI(-1200, 0);
     }
 }

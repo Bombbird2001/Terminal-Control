@@ -16,68 +16,15 @@ import com.bombbird.terminalcontrol.screens.BasicScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
-public class SettingsScreen extends BasicScreen {
+public class SettingsScreen extends SettingsTemplateScreen {
     public int xOffset;
     public int yOffset;
-
-    public SelectBox<String> trajectoryLine;
-    public SelectBox<String> pastTrajectory;
-    public SelectBox<String> weather;
-    public SelectBox<String> sound;
-    public SelectBox<String> emer;
-    public SelectBox<String> sweep;
-    public SelectBox<String> advTraj;
-    public SelectBox<String> area;
-    public SelectBox<String> collision;
-    public SelectBox<String> mva;
-    public SelectBox<String> ilsDash;
-    public SelectBox<String> dataTag;
-
-    public TextButton confirmButton;
-    public TextButton cancelButton;
-    public TextButton backButton;
-    public TextButton nextButton;
-
-    public Label trajectoryLabel;
-    public int trajectorySel;
-
-    public Label pastTrajLabel;
-    public int pastTrajTime;
-
-    public Label weatherLabel;
-    public RadarScreen.Weather weatherSel;
-
-    public Label soundLabel;
-    public int soundSel;
-
-    public Label emerChanceLabel;
-    public Emergency.Chance emerChance;
-
-    public Label sweepLabel;
-    public float radarSweep;
-
-    public Label advTrajLabel;
-    public int advTrajTime;
-
-    public Label areaLabel;
-    public int areaWarning;
-
-    public Label collisionLabel;
-    public int collisionWarning;
-
-    public Label mvaLabel;
-    public boolean showMva;
-
-    public Label ilsDashLabel;
-    public boolean showIlsDash;
-
-    public Label dataTagLabel;
-    public boolean compactData;
 
     public SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
@@ -86,217 +33,12 @@ public class SettingsScreen extends BasicScreen {
     public int tab;
 
     public SettingsScreen(final TerminalControl game) {
-        super(game, 5760, 3240);
-
-        settingsTabs = new Array<>();
-        tab = 0;
-    }
-
-    public void loadUI(int xOffset, int yOffset) {
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-
-        loadStyles();
-
-        loadBoxes();
-
-        loadButton();
-
-        loadLabel();
-
-        loadTabs();
-
-        updateTabs(true);
-    }
-
-    /** Loads the styles for the selectBox */
-    public void loadStyles() {
-        ScrollPane.ScrollPaneStyle paneStyle = new ScrollPane.ScrollPaneStyle();
-        paneStyle.background = TerminalControl.skin.getDrawable("ListBackground");
-
-        List.ListStyle listStyle = new List.ListStyle();
-        listStyle.font = Fonts.defaultFont20;
-        listStyle.fontColorSelected = Color.WHITE;
-        listStyle.fontColorUnselected = Color.BLACK;
-        Drawable button_down = TerminalControl.skin.getDrawable("Button_down");
-        button_down.setTopHeight(75);
-        button_down.setBottomHeight(75);
-        listStyle.selection = button_down;
-
-        selectBoxStyle = new SelectBox.SelectBoxStyle();
-        selectBoxStyle.font = Fonts.defaultFont20;
-        selectBoxStyle.fontColor = Color.WHITE;
-        selectBoxStyle.listStyle = listStyle;
-        selectBoxStyle.scrollStyle = paneStyle;
-        selectBoxStyle.background = TerminalControl.skin.getDrawable("Button_up");
+        super(game, null, null);
     }
 
     /** Loads selectBox for settings */
     public void loadBoxes() {
-        trajectoryLine = createStandardSelectBox();
-        trajectoryLine.setItems("Off", "60 sec", "90 sec", "120 sec", "150 sec");
-        trajectoryLine.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Off".equals(trajectoryLine.getSelected())) {
-                    trajectorySel = 0;
-                } else {
-                    trajectorySel = Integer.parseInt(trajectoryLine.getSelected().split(" ")[0]);
-                }
-            }
-        });
 
-        pastTrajectory = createStandardSelectBox();
-        pastTrajectory.setItems("Off", "60 sec", "120 sec", "All");
-        pastTrajectory.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Off".equals(pastTrajectory.getSelected())) {
-                    pastTrajTime = 0;
-                } else if ("All".equals(pastTrajectory.getSelected())) {
-                    pastTrajTime = -1;
-                } else {
-                    pastTrajTime = Integer.parseInt(pastTrajectory.getSelected().split(" ")[0]);
-                }
-            }
-        });
-
-        weather = createStandardSelectBox();
-        weather.setItems("Live weather", "Random weather", "Static weather");
-        weather.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Set custom weather...".equals(weather.getSelected())) {
-                    //Go to weather change screen
-                    TerminalControl.radarScreen.setGameState(GameScreen.State.WEATHER);
-                } else {
-                    weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
-                }
-            }
-        });
-
-        sound = createStandardSelectBox();
-        Array<String> options = new Array<>(2);
-        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            options.add("Pilot voices + sound effects", "Sound effects only", "Off");
-        } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            options.add("Sound effects", "Off");
-        }
-        sound.setItems(options);
-        sound.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Pilot voices + sound effects".equals(sound.getSelected())) {
-                    soundSel = 2;
-                } else if ("Sound effects".equals(sound.getSelected()) || "Sound effects only".equals(sound.getSelected())) {
-                    soundSel = 1;
-                } else if ("Off".equals(sound.getSelected())) {
-                    soundSel = 0;
-                }
-            }
-        });
-
-        emer = createStandardSelectBox();
-        emer.setItems("Off", "Low", "Medium", "High");
-        emer.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                emerChance = Emergency.Chance.valueOf(emer.getSelected().toUpperCase(Locale.US));
-            }
-        });
-
-        sweep = createStandardSelectBox();
-        sweep.setItems(UnlockManager.getSweepAvailable());
-        sweep.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                radarSweep = Float.parseFloat(sweep.getSelected().substring(0, sweep.getSelected().length() - 1));
-            }
-        });
-
-        advTraj = createStandardSelectBox();
-        advTraj.setItems(UnlockManager.getTrajAvailable());
-        advTraj.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Off".equals(advTraj.getSelected())) {
-                    advTrajTime = -1;
-                } else {
-                    advTrajTime = Integer.parseInt(advTraj.getSelected().split(" ")[0]);
-                }
-            }
-        });
-
-        area = createStandardSelectBox();
-        area.setItems(UnlockManager.getAreaAvailable());
-        area.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Off".equals(area.getSelected())) {
-                    areaWarning = -1;
-                } else {
-                    areaWarning = Integer.parseInt(area.getSelected().split(" ")[0]);
-                }
-            }
-        });
-
-        collision = createStandardSelectBox();
-        collision.setItems(UnlockManager.getCollisionAvailable());
-        collision.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Off".equals(collision.getSelected())) {
-                    collisionWarning = -1;
-                } else {
-                    collisionWarning = Integer.parseInt(collision.getSelected().split(" ")[0]);
-                }
-            }
-        });
-
-        mva = createStandardSelectBox();
-        mva.setItems("Show", "Hide");
-        mva.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Show".equals(mva.getSelected())) {
-                    showMva = true;
-                } else if ("Hide".equals(mva.getSelected())) {
-                    showMva = false;
-                } else {
-                    Gdx.app.log("SettingsScreen", "Unknown MVA setting " + mva.getSelected());
-                }
-            }
-        });
-
-        ilsDash = createStandardSelectBox();
-        ilsDash.setItems("Simple", "Realistic");
-        ilsDash.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Simple".equals(ilsDash.getSelected())) {
-                    showIlsDash = false;
-                } else if ("Realistic".equals(ilsDash.getSelected())) {
-                    showIlsDash = true;
-                } else {
-                    Gdx.app.log("SettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
-                }
-            }
-        });
-
-        dataTag = createStandardSelectBox();
-        dataTag.setItems("Default", "Compact");
-        dataTag.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if ("Default".equals(dataTag.getSelected())) {
-                    compactData = false;
-                } else if ("Compact".equals(dataTag.getSelected())) {
-                    compactData = true;
-                } else {
-                    Gdx.app.log("SettingsScreen", "Unknown data tag setting " + dataTag.getSelected());
-                }
-            }
-        });
     }
 
     /** Creates a default selectBox configuration with standard styles */
@@ -354,33 +96,6 @@ public class SettingsScreen extends BasicScreen {
 
     /** Loads labels */
     public void loadLabel() {
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont20;
-        labelStyle.fontColor = Color.WHITE;
-
-        trajectoryLabel = new Label("Trajectory line: ", labelStyle);
-
-        pastTrajLabel = new Label("Aircraft trail: ", labelStyle);
-
-        weatherLabel = new Label("Weather: ", labelStyle);
-
-        soundLabel = new Label("Sounds: ", labelStyle);
-
-        emerChanceLabel = new Label("Emergencies: ", labelStyle);
-
-        sweepLabel = new Label("Radar sweep: ", labelStyle);
-
-        advTrajLabel = new Label("Advanced\ntrajectory: ", labelStyle);
-
-        areaLabel = new Label("Area\npenetration\nalert: ", labelStyle);
-
-        collisionLabel = new Label("Collision alert: ", labelStyle);
-
-        mvaLabel = new Label("MVA altitude: ", labelStyle);
-
-        ilsDashLabel = new Label("ILS display: ", labelStyle);
-
-        dataTagLabel = new Label("Data tag style: ", labelStyle);
     }
 
     /** Loads the various actors into respective tabs, overriden in respective classes */
@@ -388,53 +103,14 @@ public class SettingsScreen extends BasicScreen {
         //No default implementation
     }
 
-    /** Changes the tab displayed */
-    public void updateTabs(boolean screenActive) {
-        backButton.setVisible(tab > 0);
-        nextButton.setVisible(tab < settingsTabs.size - 1);
-        if (tab > settingsTabs.size - 1 || tab < 0) {
-            Gdx.app.log("SettingsScreen", "Invalid tab set: " + tab + ", size is " + settingsTabs.size);
-            return;
-        }
-        for (int i = 0; i < settingsTabs.size; i++) {
-            if (i == tab) {
-                settingsTabs.get(i).updateVisibility(screenActive);
-            } else {
-                settingsTabs.get(i).updateVisibility(false);
-            }
-        }
-    }
-
     /** Sets relevant options into select boxes */
     public void setOptions() {
-        trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
-        if (pastTrajTime == -1) {
-            pastTrajectory.setSelected("All");
-        } else if (pastTrajTime == 0) {
-            pastTrajectory.setSelected("Off");
-        } else {
-            pastTrajectory.setSelected(pastTrajTime + " sec");
-        }
-        weather.setSelected(weatherSel.toString().charAt(0) + weatherSel.toString().substring(1).toLowerCase() + " weather");
-        int soundIndex = (Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1) - soundSel;
-        if (soundIndex < 0) soundIndex = 0;
-        sound.setSelectedIndex(soundIndex);
-        String tmp = emerChance.toString().toLowerCase(Locale.US);
-        emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
-        DecimalFormat df = new DecimalFormat("#.#");
-        df.setRoundingMode(RoundingMode.CEILING);
-        sweep.setSelected(df.format(radarSweep) + "s");
-        advTraj.setSelected(advTrajTime == -1 ? "Off" : advTrajTime + " sec");
-        area.setSelected(areaWarning == -1 ? "Off" : areaWarning + " sec");
-        collision.setSelected(collisionWarning == -1 ? "Off": collisionWarning + " sec");
-        mva.setSelected(showMva ? "Show" : "Hide");
-        ilsDash.setSelected(showIlsDash ? "Realistic" : "Simple");
-        dataTag.setSelected(compactData ? "Compact" : "Default");
+
     }
 
     /** Confirms and applies the changes set */
     public void sendChanges() {
-        //No default implementation
+        GameSaver.saveSettings();
     }
 
     /** Overrides show method of BasicScreen */
