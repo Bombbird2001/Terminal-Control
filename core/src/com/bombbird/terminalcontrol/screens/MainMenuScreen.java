@@ -138,7 +138,7 @@ public class MainMenuScreen extends BasicScreen {
         infoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //Go to settings screen
+                //Go to info screen
                 game.setScreen(new InfoScreen(game, background));
             }
         });
@@ -154,7 +154,7 @@ public class MainMenuScreen extends BasicScreen {
         helpButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //Go to settings screen
+                //Go to help screen
                 game.setScreen(new HelpScreen(game, background));
             }
         });
