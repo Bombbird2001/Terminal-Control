@@ -130,7 +130,7 @@ public class WaypointManager {
 
         for (int i = endIndex - 1; i >= 0; i--) {
             int thisHighest = route.getWptMaxAlt(i);
-            if (prevHighest == -1 || thisHighest > prevHighest) {
+            if (prevHighest == -1 || thisHighest < prevHighest) {
                 highestAlt[i] = thisHighest;
                 prevHighest = thisHighest;
             } else {
@@ -141,7 +141,7 @@ public class WaypointManager {
         for (int i = 0; i < endIndex; i++) {
             //Determine if lowestAlt needs to be displayed
             int thisLowest = route.getWptMinAlt(i);
-            if (prevLowest == -1 || thisLowest < prevLowest) {
+            if (prevLowest == -1 || thisLowest > prevLowest) {
                 lowestAlt[i] = thisLowest;
                 prevLowest = thisLowest;
             } else {
