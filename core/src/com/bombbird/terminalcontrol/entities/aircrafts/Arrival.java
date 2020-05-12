@@ -741,7 +741,6 @@ public class Arrival extends Aircraft {
         if (getGs() <= 35 && (!getEmergency().isActive() || !getEmergency().isStayOnRwy())) {
             int score = 1;
             if (radarScreen.getArrivals() >= 12) score = 2; //2 points if you're controlling at least 12 planes at a time
-            if (getIls() != null && !getSidStar().getRunways().contains(getIls().getRwy().getName(), false)) score += 2; //2 additional points if landing runway is not intended for SID (i.e. runway change occurred)
             if ((getAirport().isCongested() && radarScreen.tfcMode != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
             if (getEmergency().isEmergency()) {
                 score = 5; //5 points for landing an emergency!
