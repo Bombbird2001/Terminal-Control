@@ -98,10 +98,10 @@ public class HelpManager {
                 "During night operations, only 2 runways are used. 14L or 36L is used for departure, 18L or 32R is used for arrivals."});
         CONTENT_LIST.put("TCPG", new String[] {"TCPG, Shartes o' Dickens Airport", "Runways:", "08L-26R: 4215m", "08R-26L: 2700m", "09L-27R: 2700m", "09R-27L: 4200m", "Configurations: 08L, 08R, 09L and 09R or 26L, 26R, 27L and 27R",
                 "Simultaneous departures used for 08L and 09R or 26R and 27L. Simultaneous arrivals used for 08R and 09L or 26L and 27R",
-                "TCPG STARs end early on, and planes will need to be vectored manually to the ILS. When vectoring south-east or south-west arrivals, depending on the runway configuration, you will also need to be aware of the restricted area over the city, as well as TCPO traffic.",
+                "TCPG STARs end some distance from the runway, and planes will need to be vectored manually to the ILS. When vectoring south-east or south-west arrivals, depending on the runway configuration, you will also need to be aware of the restricted area over the city, as well as TCPO traffic.",
                 "TCPO, Roly Airport", "Runways:", "06-24: 3650m", "07-25: 3320m", "02-20: 2400m", "Configurations: 06 and 07 or 24 and 25",
                 "Segregated runway operations are used, with 06 or 25 used for arrivals, and 07 or 24 used for departures. Runway 02-20 is almost always unused for IFR flights.",
-                "TCPO only uses STARs from the south-east or south-west to prevent conflict with TCPG traffic. These STARs also end early like those in TCPG. Take note of possible conflict between TCPO departures and TCPG arrivals from south-east or south-west."});
+                "TCPO only uses STARs from the south-east to prevent conflict with TCPG traffic. These STARs also end early like those in TCPG. Take note of possible conflict between TCPO departures and TCPG arrivals from south-east or south-west."});
         CONTENT_LIST.put("TCHX", new String[] {"TCHX, Tai Kek International Airport", "Runways:", "13-31: 3390m", "Configurations: 13 or 31",
                 "Runway is used for both arrivals, departures. When runway 13 is in use, aircraft will use the IGS13 approach, which is an ILS approach offset about 47\u00B0 from runway 13. Planes will need to make a last minute right turn before landing on runway 13.",
                 "High terrain exists around airport, caution should be used when vectoring aircraft."});

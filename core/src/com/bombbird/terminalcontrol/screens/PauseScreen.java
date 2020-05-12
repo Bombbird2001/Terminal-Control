@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.CategorySelectScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.categories.OtherSettingsScreen;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -49,7 +50,11 @@ public class PauseScreen extends BasicScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
-                game.setScreen(new CategorySelectScreen(game, null, (RadarScreen) gameScreen));
+                if (((RadarScreen) gameScreen).tutorial) {
+                    game.setScreen(new OtherSettingsScreen(game, (RadarScreen) gameScreen, null));
+                } else {
+                    game.setScreen(new CategorySelectScreen(game, null, (RadarScreen) gameScreen));
+                }
             }
         });
         stage.addActor(settingsButton);
