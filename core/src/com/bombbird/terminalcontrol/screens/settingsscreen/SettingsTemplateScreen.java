@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.BasicScreen;
+import com.bombbird.terminalcontrol.screens.PauseScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -32,7 +33,7 @@ public class SettingsTemplateScreen extends BasicScreen {
     public int tab;
 
     //Styles
-    public SelectBox.SelectBoxStyle selectBoxStyle;
+    public static SelectBox.SelectBoxStyle selectBoxStyle;
     public Label.LabelStyle labelStyle;
 
     //Default game settings or in game settings
@@ -145,7 +146,7 @@ public class SettingsTemplateScreen extends BasicScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (radarScreen != null) {
-                    //TODO set state
+                    game.setScreen(new CategorySelectScreen(game, null, radarScreen));
                 } else {
                     background.scaleBy(-specialScale);
                     game.setScreen(new CategorySelectScreen(game, background, null));
@@ -158,7 +159,7 @@ public class SettingsTemplateScreen extends BasicScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 sendChanges();
                 if (radarScreen != null) {
-                    //TODO set state
+                    game.setScreen(new CategorySelectScreen(game, null, radarScreen));
                 } else {
                     background.scaleBy(-specialScale);
                     game.setScreen(new CategorySelectScreen(game, background, null));

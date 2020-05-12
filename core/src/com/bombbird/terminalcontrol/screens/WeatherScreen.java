@@ -10,8 +10,9 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.categories.OtherSettingsScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 import java.util.HashMap;
@@ -149,7 +150,7 @@ public class WeatherScreen extends BasicScreen {
 
     /** Generates a standard small selectBox */
     private SelectBox<Integer> generateSmallBoxes() {
-        SelectBox<Integer> box = new SelectBox<>(TerminalControl.radarScreen.getGameSettingsScreen().selectBoxStyle);
+        SelectBox<Integer> box = new SelectBox<>(SettingsTemplateScreen.selectBoxStyle);
         box.setSize(300, 300);
         box.setAlignment(Align.center);
         box.getList().setAlignment(Align.center);
@@ -192,8 +193,7 @@ public class WeatherScreen extends BasicScreen {
         cancelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                TerminalControl.radarScreen.setGameState(GameScreen.State.SETTINGS);
-                TerminalControl.radarScreen.getGameSettingsScreen().setOptions();
+                game.setScreen(new OtherSettingsScreen(game, TerminalControl.radarScreen, null));
             }
         });
         stage.addActor(cancelButton);
@@ -213,8 +213,7 @@ public class WeatherScreen extends BasicScreen {
 
                 TerminalControl.radarScreen.weatherSel = RadarScreen.Weather.STATIC;
                 TerminalControl.radarScreen.getMetar().updateCustomWeather(newData);
-                TerminalControl.radarScreen.setGameState(GameScreen.State.SETTINGS);
-                TerminalControl.radarScreen.getGameSettingsScreen().setOptions();
+                game.setScreen(new OtherSettingsScreen(game, TerminalControl.radarScreen, null));
             }
         });
         stage.addActor(confirmButton);

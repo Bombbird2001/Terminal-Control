@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
-import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
+import com.bombbird.terminalcontrol.screens.WeatherScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
@@ -59,7 +59,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if ("Set custom weather...".equals(weather.getSelected())) {
                     //Go to weather change screen
-                    TerminalControl.radarScreen.setGameState(GameScreen.State.WEATHER);
+                    game.setScreen(new WeatherScreen(game));
                 } else {
                     weatherSel = RadarScreen.Weather.valueOf(weather.getSelected().split(" ")[0].toUpperCase());
                 }
@@ -149,12 +149,13 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void setOptions() {
         if (radarScreen != null) {
+            speedSel = radarScreen.speed;
             speed.setSelected(speedSel + "x");
-            if (radarScreen.tutorial) return;
             weatherSel = radarScreen.weatherSel;
             soundSel = radarScreen.soundSel;
             speedSel = radarScreen.speed;
             radarSweep = radarScreen.radarSweepDelay;
+            if (radarScreen.tutorial) return;
         } else {
             radarSweep = TerminalControl.radarSweep;
             weatherSel = TerminalControl.weatherSel;
@@ -179,6 +180,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
             radarScreen.speed = speedSel;
             radarScreen.radarSweepDelay = radarSweep;
             if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
+            radarScreen.ui.updateInfoLabel();
         } else {
             TerminalControl.weatherSel = weatherSel;
             TerminalControl.soundSel = soundSel;

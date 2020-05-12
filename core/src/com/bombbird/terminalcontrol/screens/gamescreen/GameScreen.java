@@ -17,8 +17,6 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.PauseScreen;
-import com.bombbird.terminalcontrol.screens.WeatherScreen;
-import com.bombbird.terminalcontrol.screens.settingsscreen.GameSettingsScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.RandomTip;
 import com.bombbird.terminalcontrol.ui.RequestFlasher;
@@ -35,6 +33,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     //Init game (set in constructor)
     public final TerminalControl game;
+    public boolean uiLoaded = false;
     public boolean loading;
     public float loadingTime = 0;
     public String loadingPercent;
@@ -92,27 +91,11 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public HashMap<String, Waypoint> waypoints;
 
-    //Overlay screen when paused
-    private final PauseScreen pauseScreen;
-
-    //Overlay screen for game settings
-    private final GameSettingsScreen gameSettingsScreen;
-
-    //Overlay screen for setting custom weather
-    private final WeatherScreen weatherScreen;
-
     public void setTutorialQuit(boolean tutorialQuit) {
         this.tutorialQuit = tutorialQuit;
     }
 
-    //Game state
-    public enum State {
-        PAUSE,
-        RUN,
-        SETTINGS,
-        WEATHER
-    }
-    public static State state = State.RUN;
+    public boolean running;
 
     public int speed = 1;
 
@@ -125,13 +108,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loading = false;
         loadingPercent = "0%";
 
-        pauseScreen = new PauseScreen(this);
-        gameSettingsScreen = new GameSettingsScreen(game, (RadarScreen) this);
-        weatherScreen = new WeatherScreen(game);
-
         loadLabels();
 
-        setGameState(State.RUN);
+        running = true;
     }
 
     /** Load radar screen range circles */
@@ -282,122 +261,94 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             Gdx.gl.glClearColor(0, 0, 0, 0);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
-            switch (state) {
-                case RUN:
-                    //Test for input, update camera
-                    if (!loading) {
-                        handleInput(delta);
-                    }
-                    camera.update();
+            if (running) {
+                //Test for input, update camera
+                if (!loading) {
+                    handleInput(delta);
+                }
+                camera.update();
 
-                    //Set rendering for stage camera
-                    game.batch.setProjectionMatrix(camera.combined);
-                    shapeRenderer.setProjectionMatrix(camera.combined);
+                //Set rendering for stage camera
+                game.batch.setProjectionMatrix(camera.combined);
+                shapeRenderer.setProjectionMatrix(camera.combined);
 
-                    //Update stage
+                //Update stage
+                for (int i = 0; i < speed; i++) {
+                    if (checkTutorialPaused()) break;
+                    stage.act(delta);
+                    labelStage.act(delta);
+                }
+
+                //Render each of the range circles, obstacles using shaperenderer, update loop
+                if (!loading) {
+                    stage.getViewport().apply();
                     for (int i = 0; i < speed; i++) {
-                        if (checkTutorialPaused()) break;
-                        stage.act(delta);
-                        labelStage.act(delta);
+                        updateTutorial(); //Tutorial timer is updated even if tutorial is paused
+                        if (!checkTutorialPaused()) update();
                     }
+                    //Render shapes only if METAR has finished loading
+                    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    renderShape();
+                    shapeRenderer.end();
+                }
 
-                    //Render each of the range circles, obstacles using shaperenderer, update loop
-                    if (!loading) {
-                        stage.getViewport().apply();
-                        for (int i = 0; i < speed; i++) {
-                            updateTutorial(); //Tutorial timer is updated even if tutorial is paused
-                            if (!checkTutorialPaused()) update();
-                        }
-                        //Render shapes only if METAR has finished loading
-                        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-                        renderShape();
-                        shapeRenderer.end();
+                //Draw to the spritebatch
+                game.batch.begin();
+                boolean liveWeather = ((RadarScreen) this).weatherSel == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
+                String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
+                if (loading) {
+                    //Write loading text if loading
+                    loadingTime += delta;
+                    loadedTime += delta;
+                    if (loadedTime > 1.5) {
+                        loadedTime = 0;
+                        loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
+                    } else if (loadedTime > 1) {
+                        loadingText = liveWeather ? "Loading live weather... " : "Loading... ";
+                    } else if (loadedTime > 0.5) {
+                        loadingText = liveWeather ? "Loading live weather..  " : "Loading..  ";
                     }
-
-                    //Draw to the spritebatch
-                    game.batch.begin();
-                    boolean liveWeather = ((RadarScreen) this).weatherSel == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
-                    String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
-                    if (loading) {
-                        //Write loading text if loading
-                        loadingTime += delta;
-                        loadedTime += delta;
-                        if (loadedTime > 1.5) {
-                            loadedTime = 0;
-                            loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
-                        } else if (loadedTime > 1) {
-                            loadingText = liveWeather ? "Loading live weather... " : "Loading... ";
-                        } else if (loadedTime > 0.5) {
-                            loadingText = liveWeather ? "Loading live weather..  " : "Loading..  ";
-                        }
-                        loadingText += loadingPercent;
-                        loadingLabel.setText(loadingText);
-                        loadingLabel.setPosition(1920 - loadingLabel.getPrefWidth() / 2, 1550);
-                        loadingLabel.draw(game.batch, 1);
-                        if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
-                        if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
-                        tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
-                        tipLabel.draw(game.batch, 1);
-                    } else if (checkAircraftsLoaded()) {
-                        stage.draw();
-                        game.batch.end();
-                        game.batch.setProjectionMatrix(labelStage.getCamera().combined);
-                        game.batch.begin();
-                        labelStage.getViewport().apply();
-                        labelStage.draw();
-
-                        //Special shape rendering here so it won't be blocked by labels
-                        requestFlasher.update();
-                    }
+                    loadingText += loadingPercent;
+                    loadingLabel.setText(loadingText);
+                    loadingLabel.setPosition(1920 - loadingLabel.getPrefWidth() / 2, 1550);
+                    loadingLabel.draw(game.batch, 1);
+                    if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
+                    if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
+                    tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
+                    tipLabel.draw(game.batch, 1);
+                } else if (checkAircraftsLoaded()) {
+                    stage.draw();
                     game.batch.end();
+                    game.batch.setProjectionMatrix(labelStage.getCamera().combined);
+                    game.batch.begin();
+                    labelStage.getViewport().apply();
+                    labelStage.draw();
 
-                    //Draw the UI overlay
-                    uiCam.update();
-                    if (!loading) {
-                        game.batch.setProjectionMatrix(uiCam.combined);
-                        uiStage.act();
-                        game.batch.begin();
-                        uiStage.getViewport().apply();
-                        boolean success = false;
-                        while (!success) {
-                            try {
-                                uiStage.draw();
-                                game.batch.end();
-                                success = true;
-                            } catch (IllegalArgumentException e) {
-                                Gdx.app.log("GameScreen", "uiStage.draw() render error");
-                                uiStage.getBatch().end();
-                                e.printStackTrace();
-                            }
+                    //Special shape rendering here so it won't be blocked by labels
+                    requestFlasher.update();
+                }
+                game.batch.end();
+
+                //Draw the UI overlay
+                uiCam.update();
+                if (!loading) {
+                    game.batch.setProjectionMatrix(uiCam.combined);
+                    uiStage.act();
+                    game.batch.begin();
+                    uiStage.getViewport().apply();
+                    boolean success = false;
+                    while (!success) {
+                        try {
+                            uiStage.draw();
+                            game.batch.end();
+                            success = true;
+                        } catch (IllegalArgumentException e) {
+                            Gdx.app.log("GameScreen", "uiStage.draw() render error");
+                            uiStage.getBatch().end();
+                            e.printStackTrace();
                         }
                     }
-                    break;
-                case PAUSE:
-                    game.batch.setProjectionMatrix(pauseScreen.getCamera().combined);
-                    pauseScreen.getStage().act();
-                    game.batch.begin();
-                    pauseScreen.getStage().getViewport().apply();
-                    pauseScreen.getStage().draw();
-                    game.batch.end();
-                    break;
-                case SETTINGS:
-                    game.batch.setProjectionMatrix(gameSettingsScreen.camera.combined);
-                    gameSettingsScreen.stage.act();
-                    game.batch.begin();
-                    gameSettingsScreen.stage.getViewport().apply();
-                    gameSettingsScreen.stage.draw();
-                    game.batch.end();
-                    break;
-                case WEATHER:
-                    game.batch.setProjectionMatrix(weatherScreen.camera.combined);
-                    weatherScreen.stage.act();
-                    game.batch.begin();
-                    weatherScreen.stage.getViewport().apply();
-                    weatherScreen.stage.draw();
-                    game.batch.end();
-                    break;
-                default:
-                    Gdx.app.log("Game state error", "Invalid game state " + state + " set!");
+                }
             }
 
             if (tutorialQuit) {
@@ -441,18 +392,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         uiStage.getViewport().update(width, height, true);
         uiCam.position.set(uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f, 0);
 
-        pauseScreen.getViewport().update(width, height, true);
-        pauseScreen.getStage().getViewport().update(width, height, true);
-        pauseScreen.getCamera().position.set(pauseScreen.getCamera().viewportWidth / 2f, pauseScreen.getCamera().viewportHeight / 2f, 0);
-
-        gameSettingsScreen.viewport.update(width, height, true);
-        gameSettingsScreen.stage.getViewport().update(width, height, true);
-        gameSettingsScreen.camera.position.set(gameSettingsScreen.camera.viewportWidth / 2f, gameSettingsScreen.camera.viewportHeight / 2f, 0);
-
-        weatherScreen.viewport.update(width, height, true);
-        weatherScreen.stage.getViewport().update(width, height, true);
-        weatherScreen.camera.position.set(weatherScreen.camera.viewportWidth / 2f, weatherScreen.camera.viewportHeight / 2f, 0);
-
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             boolean resizeAgain = false;
             int newWidth = width;
@@ -474,21 +413,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     /** Implements pause method of screen */
     @Override
     public void pause() {
-        setGameState(State.PAUSE);
-        soundManager.pause();
+        setGameRunning(false);
     }
 
     /** Implements resume method of screen */
     @Override
     public void resume() {
-        setGameState(State.RUN);
-        soundManager.resume();
+        setGameRunning(true);
     }
 
     /** Implements hide method of screen */
     @Override
     public void hide() {
-        dispose();
+        //Not disposing unless game is quit specifically
     }
 
     /** Implements dispose method of screen, disposes resources after they're no longer needed */
@@ -645,32 +582,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         return true;
     }
 
-    /** Sets the current game state to the input state */
-    public void setGameState(State s) {
-        GameScreen.state = s;
+    /** Sets whether game is running */
+    public void setGameRunning(boolean running) {
+        this.running = running;
 
-        if (s == State.RUN) {
+        if (this.running) {
+            if (game.getScreen() != this) game.setScreen(this);
             Gdx.input.setInputProcessor(inputMultiplexer);
             soundManager.resume();
             DataTag.startTimers();
-        } else if (s == State.PAUSE) {
-            Gdx.input.setInputProcessor(pauseScreen.getStage());
+        } else {
             soundManager.pause();
             DataTag.pauseTimers();
-        } else if (s == State.SETTINGS) {
-            if (((RadarScreen)this).tutorial) {
-                gameSettingsScreen.stage.clear();
-                gameSettingsScreen.settingsTabs.clear();
-                gameSettingsScreen.loadUI(-1200, 0);
-            }
-            Gdx.input.setInputProcessor(gameSettingsScreen.stage);
-        } else if (s == State.WEATHER) {
-            Gdx.input.setInputProcessor(weatherScreen.stage);
-            weatherScreen.loadUI();
+            game.setScreen(new PauseScreen(game, this));
         }
-    }
-
-    public GameSettingsScreen getGameSettingsScreen() {
-        return gameSettingsScreen;
     }
 }

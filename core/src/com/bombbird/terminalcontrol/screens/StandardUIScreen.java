@@ -24,7 +24,7 @@ public class StandardUIScreen extends BasicScreen {
     public void loadUI() {
         //Reset stage and add background
         stage.clear();
-        stage.addActor(background);
+        if (background != null) stage.addActor(background);
     }
 
     /** Loads heading label */

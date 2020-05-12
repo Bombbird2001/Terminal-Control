@@ -1,35 +1,22 @@
 package com.bombbird.terminalcontrol.screens;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.CategorySelectScreen;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
-public class PauseScreen {
+public class PauseScreen extends BasicScreen {
     private final GameScreen gameScreen;
 
-    private Stage stage;
-    private final OrthographicCamera camera;
-    private final Viewport viewport;
-
-    public PauseScreen(GameScreen gameScreen) {
+    public PauseScreen(TerminalControl game, GameScreen gameScreen) {
+        super(game, 5760, 3240);
         this.gameScreen = gameScreen;
 
-        stage = new Stage(new FitViewport(5760, 3240));
-        stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
-
-        camera = (OrthographicCamera) stage.getViewport().getCamera();
-        camera.setToOrtho(false, 5760, 3240);
-        viewport = new FitViewport(TerminalControl.WIDTH, TerminalControl.HEIGHT, camera);
-        viewport.apply();
         camera.position.set(2880, 1620, 0);
 
         loadButtons();
@@ -49,7 +36,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Un-pause the game
-                gameScreen.setGameState(GameScreen.State.RUN);
+                gameScreen.setGameRunning(true);
                 event.handle();
             }
         });
@@ -62,8 +49,7 @@ public class PauseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
-                gameScreen.getGameSettingsScreen().setOptions();
-                gameScreen.setGameState(GameScreen.State.SETTINGS);
+                game.setScreen(new CategorySelectScreen(game, null, (RadarScreen) gameScreen));
             }
         });
         stage.addActor(settingsButton);
@@ -77,32 +63,11 @@ public class PauseScreen {
                 //Go back to main menu screen
                 TerminalControl.radarScreen.getMetar().setQuit(true);
                 if (!TerminalControl.radarScreen.tutorial) GameSaver.saveGame(); //Save the game first
-                dispose();
-                TerminalControl.radarScreen.getGameSettingsScreen().dispose();
                 TerminalControl.radarScreen = null;
                 gameScreen.game.setScreen(new MainMenuScreen(gameScreen.game, null));
+                gameScreen.dispose();
             }
         });
         stage.addActor(quitButton);
-    }
-
-    /** Disposes of unneeded resources */
-    private void dispose() {
-        stage.clear();
-        stage.dispose();
-
-        stage = null;
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public Viewport getViewport() {
-        return viewport;
     }
 }

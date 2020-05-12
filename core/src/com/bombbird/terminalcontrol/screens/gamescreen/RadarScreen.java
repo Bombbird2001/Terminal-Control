@@ -733,21 +733,22 @@ public class RadarScreen extends GameScreen {
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
             //On android, change to pause screen if not paused, un-pause if paused
-            setGameState(GameScreen.state == State.PAUSE ? State.RUN : State.PAUSE);
+            setGameRunning(!running);
         }
         super.render(delta);
     }
 
     @Override
     public void show() {
-        //Regenerates textures if disposed
-        Ui.generatePaneTextures();
-        DataTag.setLoadedIcons(false);
-        Tab.setLoadedStyles(false);
-
-        //Implements show method of screen, loads UI & save (if available) after show is called
-        loadUI();
-        GameLoader.loadSaveData(save);
+        //Implements show method of screen, loads UI & save (if available) after show is called if it hasn't been done
+        if (!uiLoaded) {
+            Ui.generatePaneTextures();
+            DataTag.setLoadedIcons(false);
+            Tab.setLoadedStyles(false);
+            loadUI();
+            GameLoader.loadSaveData(save);
+            uiLoaded = true;
+        }
         TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();
     }

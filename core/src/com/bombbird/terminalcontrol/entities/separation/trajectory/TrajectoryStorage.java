@@ -7,8 +7,8 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 
 public class TrajectoryStorage {
-    private Array<Array<Array<PositionPoint>>> points;
-    private RadarScreen radarScreen;
+    private final Array<Array<Array<PositionPoint>>> points;
+    private final RadarScreen radarScreen;
     private float timer;
 
     public TrajectoryStorage() {
