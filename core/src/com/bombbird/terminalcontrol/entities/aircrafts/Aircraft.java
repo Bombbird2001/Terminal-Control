@@ -1168,7 +1168,7 @@ public class Aircraft extends Actor {
         navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
     }
 
-    /** Removes the SID/STAR options from aircraft UI after there are no waypoints left*/
+    /** Removes the SID/STAR options from aircraft UI after there are no waypoints left */
     public void removeSidStarMode() {
         if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
             navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, true); //Don't remove hold at if aircraft is gonna hold

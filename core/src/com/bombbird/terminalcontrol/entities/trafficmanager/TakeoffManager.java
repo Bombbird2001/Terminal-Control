@@ -18,13 +18,13 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class TakeoffManager {
-    private Airport airport;
+    private final Airport airport;
 
-    private HashMap<String, String[]> nextAircraft;
-    private HashMap<String, Aircraft> prevAircraft;
-    private HashMap<String, Float> timers;
+    private final HashMap<String, String[]> nextAircraft;
+    private final HashMap<String, Aircraft> prevAircraft;
+    private final HashMap<String, Float> timers;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     public TakeoffManager(Airport airport) {
         radarScreen = TerminalControl.radarScreen;
@@ -190,13 +190,13 @@ public class TakeoffManager {
         for (Runway runway1: airport.getTakeoffRunways().values()) {
             float distance = runway1.getAircraftsOnAppr().size > 0 ? MathTools.pixelToNm(MathTools.distanceBetween(runway1.getAircraftsOnAppr().first().getX(), runway1.getAircraftsOnAppr().first().getY(), runway1.getX(), runway1.getY())) : 25;
             if (!runway1.isEmergencyClosed() && checkPreceding(runway1.getName()) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.getOppRwy().getName()) && (distance > dist || distance > 24.9)) {
-                if (airport.allowSimultDep() && timers.get("05") >= 50 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
-                    //Additional check for runway 05 departure - 50 seconds apart
+                if (airport.allowSimultDep() && timers.get("05") >= 60 && "34R".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkOppLanding(airport.getRunways().get("05"))) {
+                    //Additional check for runway 05 departure - 60 seconds apart
                     //Don't use 34R if departure volume is low
                     runway = runway1;
                     dist = distance;
-                } else if ((!airport.allowSimultDep() || timers.get("34R") >= 50) && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
-                    //Additional check for runway 34R departure - 50 seconds apart
+                } else if ((!airport.allowSimultDep() || timers.get("34R") >= 60) && "05".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("04")) && checkPreceding("16L") && checkPreceding("16R")) {
+                    //Additional check for runway 34R departure - 60 seconds apart
                     //Additional check if aircraft landing on 34R has touched down; is no longer in conflict with 05
                     boolean tkof = false;
                     Runway r34r = airport.getRunways().get("34R");
