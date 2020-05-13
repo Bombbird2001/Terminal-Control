@@ -66,6 +66,8 @@ public class GameSaver {
         jsonObject.put("showMva", radarScreen.showMva);
         jsonObject.put("showIlsDash", radarScreen.showIlsDash);
         jsonObject.put("compactData", radarScreen.compactData);
+        jsonObject.put("showUncontrolled", radarScreen.showUncontrolled);
+        jsonObject.put("alwaysShowBordersBackground", radarScreen.alwaysShowBordersBackground);
         jsonObject.put("liveWeather", radarScreen.weatherSel);
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
@@ -668,6 +670,8 @@ public class GameSaver {
             settings.put("showMva", TerminalControl.showMva);
             settings.put("showIlsDash", TerminalControl.showIlsDash);
             settings.put("compactData", TerminalControl.compactData);
+            settings.put("showUncontrolled", TerminalControl.showUncontrolled);
+            settings.put("alwaysShowBordersBackground", TerminalControl.alwaysShowBordersBackground);
             settings.put("defaultTabNo", TerminalControl.defaultTabNo);
             settings.put("emerChance", TerminalControl.emerChance.toString());
             settings.put("revision", TerminalControl.revision);

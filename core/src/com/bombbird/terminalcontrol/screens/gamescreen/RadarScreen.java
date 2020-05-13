@@ -91,6 +91,7 @@ public class RadarScreen extends GameScreen {
     public boolean showIlsDash;
     public boolean compactData;
     public boolean showUncontrolled;
+    public boolean alwaysShowBordersBackground;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -191,6 +192,7 @@ public class RadarScreen extends GameScreen {
             showIlsDash = false;
             compactData = false;
             showUncontrolled = false;
+            alwaysShowBordersBackground = true;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -204,6 +206,7 @@ public class RadarScreen extends GameScreen {
             showIlsDash = TerminalControl.showIlsDash;
             compactData = TerminalControl.compactData;
             showUncontrolled = TerminalControl.showUncontrolled;
+            alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -258,6 +261,7 @@ public class RadarScreen extends GameScreen {
         showIlsDash = save.optBoolean("showIlsDash", false);
         compactData = save.optBoolean("compactData", false);
         showUncontrolled = save.optBoolean("showUncontrolled", false);
+        alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -785,9 +789,11 @@ public class RadarScreen extends GameScreen {
         runwayChanger.hideAll();
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
+            selectedAircraft.getDataTag().updateBorderBackgroundVisibility(false);
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
+            aircraft.getDataTag().updateBorderBackgroundVisibility(true);
         }
 
         if (aircraft != null && aircraft.isArrivalDeparture()) {

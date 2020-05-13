@@ -25,6 +25,7 @@ import com.bombbird.terminalcontrol.ui.tabs.AltTab;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.ui.tabs.SpdTab;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class DataTag {
     //Rendering parameters
@@ -34,11 +35,11 @@ public class DataTag {
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_DEPT = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_UNCTRL = new ImageButton.ImageButtonStyle();
     private static final ImageButton.ImageButtonStyle BUTTON_STYLE_ENROUTE = new ImageButton.ImageButtonStyle();
-    private static NinePatch LABEL_PATCH_GREEN;
-    private static NinePatch LABEL_PATCH_BLUE;
-    private static NinePatch LABEL_PATCH_ORANGE;
-    private static NinePatch LABEL_PATCH_RED;
-    private static NinePatch LABEL_PATCH_MAGENTA;
+    public static NinePatchDrawable DRAWABLE_GREEN;
+    public static NinePatchDrawable DRAWABLE_BLUE;
+    public static NinePatchDrawable DRAWABLE_ORANGE;
+    public static NinePatchDrawable DRAWABLE_RED;
+    public static NinePatchDrawable DRAWABLE_MAGENTA;
     private static boolean LOADED_ICONS = false;
 
     private final Aircraft aircraft;
@@ -88,14 +89,7 @@ public class DataTag {
         labelButton = new Button(SKIN.getDrawable("labelBackgroundSmall"), SKIN.getDrawable("labelBackgroundSmall"));
         labelButton.setSize(label.getWidth() + 10, label.getHeight());
 
-
-        NinePatchDrawable ninePatchDrawable;
-        if (aircraft instanceof Arrival) {
-            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
-        } else {
-            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
-        }
-        Button.ButtonStyle clickSpotStyle = new Button.ButtonStyle(ninePatchDrawable, ninePatchDrawable, ninePatchDrawable);
+        Button.ButtonStyle clickSpotStyle = new Button.ButtonStyle(null, null, null);
         clickSpot = new Button(clickSpotStyle);
         clickSpot.setSize(labelButton.getWidth(), labelButton.getHeight());
         clickSpot.setName(aircraft.getCallsign());
@@ -134,6 +128,8 @@ public class DataTag {
             }
         });
 
+        updateBorderBackgroundVisibility(false);
+
         Stage labelStage = TerminalControl.radarScreen.labelStage;
         labelStage.addActor(labelButton);
         labelStage.addActor(label);
@@ -159,11 +155,17 @@ public class DataTag {
             BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute");
             BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute");
 
-            LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
-            LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
-            LABEL_PATCH_ORANGE = new NinePatch(SKIN.getRegion("labelBorderOrange"), 3, 3, 3, 3);
-            LABEL_PATCH_RED = new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
-            LABEL_PATCH_MAGENTA = new NinePatch(SKIN.getRegion("labelBorderMagenta"), 3, 3, 3, 3);
+            NinePatch LABEL_PATCH_GREEN = new NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3);
+            NinePatch LABEL_PATCH_BLUE = new NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3);
+            NinePatch LABEL_PATCH_ORANGE = new NinePatch(SKIN.getRegion("labelBorderOrange"), 3, 3, 3, 3);
+            NinePatch LABEL_PATCH_RED = new NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3);
+            NinePatch LABEL_PATCH_MAGENTA = new NinePatch(SKIN.getRegion("labelBorderMagenta"), 3, 3, 3, 3);
+
+            DRAWABLE_GREEN = new NinePatchDrawable(LABEL_PATCH_GREEN);
+            DRAWABLE_BLUE = new NinePatchDrawable(LABEL_PATCH_BLUE);
+            DRAWABLE_ORANGE = new NinePatchDrawable(LABEL_PATCH_ORANGE);
+            DRAWABLE_RED = new NinePatchDrawable(LABEL_PATCH_RED);
+            DRAWABLE_MAGENTA = new NinePatchDrawable(LABEL_PATCH_MAGENTA);
 
             LOADED_ICONS = true;
         }
@@ -171,7 +173,18 @@ public class DataTag {
 
     /** Renders the line joining label and aircraft icon */
     public void renderShape() {
-        radarScreen.shapeRenderer.line(label.getX() + label.getWidth() / 2, label.getY() + label.getHeight() / 2, aircraft.getRadarX(), aircraft.getRadarY());
+        //Don't need to draw if aircraft blip is inside box
+        int offset = 5;
+        if (MathTools.withinRange(aircraft.getRadarX(), label.getX() - offset, label.getX() + label.getWidth() + offset) && MathTools.withinRange(aircraft.getRadarY(), label.getY(), label.getY() + label.getHeight())) return;
+        float startX = label.getX() + label.getWidth() / 2;
+        float startY = label.getY() + label.getHeight() / 2;
+        if (!labelButton.isVisible()) {
+            float degree = MathTools.getRequiredTrack(startX, startY, aircraft.getRadarX(), aircraft.getRadarY());
+            float[] results = MathTools.pointsAtBorder(new float[] {label.getX() - offset, label.getX() + label.getWidth() + offset}, new float[] {label.getY(), label.getY() + label.getHeight()}, startX, startY, degree);
+            startX = results[0];
+            startY = results[1];
+        }
+        radarScreen.shapeRenderer.line(startX, startY, aircraft.getRadarX(), aircraft.getRadarY());
     }
 
     /** Updates the position, draws of the icon */
@@ -196,6 +209,50 @@ public class DataTag {
         }
     }
 
+    /** Sets the ninepatchdrawable into all aspects of the clickspot style */
+    private void setAllNinepatch(NinePatchDrawable ninePatchDrawable) {
+        clickSpot.getStyle().up = ninePatchDrawable;
+        clickSpot.getStyle().down = ninePatchDrawable;
+        clickSpot.getStyle().checked = ninePatchDrawable;
+    }
+
+    /** Updates whether the default green/blue border should be visible */
+    public void updateBorderBackgroundVisibility(boolean visible) {
+        if (aircraft.hasEmergency()) {
+            setEmergency();
+            return;
+        }
+        if (radarScreen.alwaysShowBordersBackground) {
+            labelButton.setVisible(true);
+            if (!flashing) {
+                NinePatchDrawable ninePatchDrawable = null;
+                if (aircraft instanceof Departure) {
+                    ninePatchDrawable = DRAWABLE_GREEN;
+                } else if (aircraft instanceof Arrival) {
+                    ninePatchDrawable = DRAWABLE_BLUE;
+                }
+                setAllNinepatch(ninePatchDrawable);
+            }
+            return;
+        }
+        if (visible) {
+            if (clickSpot.getStyle().up == null) {
+                NinePatchDrawable ninePatchDrawable = null;
+                if (aircraft instanceof Departure) {
+                    ninePatchDrawable = DRAWABLE_GREEN;
+                } else if (aircraft instanceof Arrival) {
+                    ninePatchDrawable = DRAWABLE_BLUE;
+                }
+                setAllNinepatch(ninePatchDrawable);
+            }
+        } else {
+            if (clickSpot.getStyle().up == DRAWABLE_BLUE || clickSpot.getStyle().up == DRAWABLE_GREEN) {
+                setAllNinepatch(null);
+            }
+        }
+        labelButton.setVisible(visible);
+    }
+
     /** Called to start flashing an aircraft's label borders during initial contact or when a conflict is predicted */
     public void startFlash() {
         if (flashing) return;
@@ -209,10 +266,7 @@ public class DataTag {
     /** Called by start flashing method and itself to keep flashing the label */
     private void continuousFlashing() {
         if (aircraft.isTrajectoryConflict() || aircraft.isTrajectoryTerrainConflict()) {
-            NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_MAGENTA);
-            clickSpot.getStyle().up = ninePatchDrawable;
-            clickSpot.getStyle().down = ninePatchDrawable;
-            clickSpot.getStyle().checked = ninePatchDrawable;
+            setAllNinepatch(DRAWABLE_MAGENTA);
             flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
@@ -226,10 +280,7 @@ public class DataTag {
                 }
             }, 2);
         } else if (aircraft.isActionRequired()) {
-            NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_ORANGE);
-            clickSpot.getStyle().up = ninePatchDrawable;
-            clickSpot.getStyle().down = ninePatchDrawable;
-            clickSpot.getStyle().checked = ninePatchDrawable;
+            setAllNinepatch(DRAWABLE_ORANGE);
             flashTimer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
@@ -253,21 +304,20 @@ public class DataTag {
             setEmergency();
             return;
         }
-        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_GREEN);
-        if (aircraft instanceof Arrival) {
-            ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_BLUE);
+        NinePatchDrawable ninePatchDrawable = null;
+        if (radarScreen.alwaysShowBordersBackground || aircraft.isSelected()) {
+            if (aircraft instanceof Departure) {
+                ninePatchDrawable = DRAWABLE_GREEN;
+            } else if (aircraft instanceof Arrival) {
+                ninePatchDrawable = DRAWABLE_BLUE;
+            }
         }
-        clickSpot.getStyle().up = ninePatchDrawable;
-        clickSpot.getStyle().down = ninePatchDrawable;
-        clickSpot.getStyle().checked = ninePatchDrawable;
+        setAllNinepatch(ninePatchDrawable);
     }
 
     /** Called to change aircraft label to red for emergencies */
     public void setEmergency() {
-        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(LABEL_PATCH_RED);
-        clickSpot.getStyle().up = ninePatchDrawable;
-        clickSpot.getStyle().down = ninePatchDrawable;
-        clickSpot.getStyle().checked = ninePatchDrawable;
+        setAllNinepatch(DRAWABLE_RED);
     }
 
     /** Draws the trail dots for aircraft */
@@ -581,5 +631,12 @@ public class DataTag {
     public static void startTimers() {
         tapTimer.start();
         flashTimer.start();
+    }
+
+    /** Resets the border, background for all data tags */
+    public static void setBorderBackground() {
+        for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
+            aircraft.getDataTag().updateBorderBackgroundVisibility(false);
+        }
     }
 }

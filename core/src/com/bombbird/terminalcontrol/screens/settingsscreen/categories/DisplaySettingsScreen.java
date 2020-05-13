@@ -83,7 +83,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Hide".equals(mva.getSelected())) {
                     showMva = false;
                 } else {
-                    Gdx.app.log("DisplaySettingsScreen", "Unknown MVA setting " + mva.getSelected());
+                    Gdx.app.log(getClass().getName(), "Unknown MVA setting " + mva.getSelected());
                 }
             }
         });
@@ -98,7 +98,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Realistic".equals(ilsDash.getSelected())) {
                     showIlsDash = true;
                 } else {
-                    Gdx.app.log("DisplaySettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
+                    Gdx.app.log(getClass().getName(), "Unknown ILS dash setting " + ilsDash.getSelected());
                 }
             }
         });
@@ -113,7 +113,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("When selected".equals(showUncontrolledTrail.getSelected())) {
                     showUncontrolled = false;
                 } else {
-                    Gdx.app.log("DisplaySettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
+                    Gdx.app.log(getClass().getName(), "Unknown uncontrolled trail setting " + ilsDash.getSelected());
                 }
             }
         });

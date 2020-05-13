@@ -14,9 +14,13 @@ import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> dataTag;
+    public SelectBox<String> bordersBackground;
 
     public Label dataTagLabel;
     public boolean compactData;
+
+    public Label bordersBackgroundLabel;
+    public boolean alwaysShowBordersBackground;
 
     public DataTagSettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
@@ -39,7 +43,22 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
                 } else if ("Compact".equals(dataTag.getSelected())) {
                     compactData = true;
                 } else {
-                    Gdx.app.log("SettingsScreen", "Unknown data tag setting " + dataTag.getSelected());
+                    Gdx.app.log(getClass().getName(), "Unknown data tag setting " + dataTag.getSelected());
+                }
+            }
+        });
+
+        bordersBackground = createStandardSelectBox();
+        bordersBackground.setItems("Always", "When selected");
+        bordersBackground.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Always".equals(bordersBackground.getSelected())) {
+                    alwaysShowBordersBackground = true;
+                } else if ("When selected".equals(bordersBackground.getSelected())) {
+                    alwaysShowBordersBackground = false;
+                } else {
+                    Gdx.app.log(getClass().getName(), "Unknown show borders setting " + dataTag.getSelected());
                 }
             }
         });
@@ -50,6 +69,7 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public void loadLabel() {
         super.loadLabel();
         dataTagLabel = new Label("Data tag style: ", labelStyle);
+        bordersBackgroundLabel = new Label("Show data tag border\nand background: ", labelStyle);
     }
 
     /** Loads actors for display settings into tabs */
@@ -57,6 +77,7 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public void loadTabs() {
         SettingsTab tab1 = new SettingsTab(this, 2);
         tab1.addActors(dataTag, dataTagLabel);
+        tab1.addActors(bordersBackground, bordersBackgroundLabel);
 
         settingsTabs.add(tab1);
     }
@@ -66,11 +87,14 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public void setOptions() {
         if (radarScreen == null) {
             compactData = TerminalControl.compactData;
+            alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
         } else {
             compactData = radarScreen.compactData;
+            alwaysShowBordersBackground = radarScreen.alwaysShowBordersBackground;
         }
 
         dataTag.setSelected(compactData ? "Compact" : "Default");
+        bordersBackground.setSelected(alwaysShowBordersBackground ? "Always" : "When selected");
     }
 
     /** Confirms and applies the changes set */
@@ -78,8 +102,10 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public void sendChanges() {
         if (radarScreen != null) {
             radarScreen.compactData = compactData;
+            radarScreen.alwaysShowBordersBackground = alwaysShowBordersBackground;
         } else {
             TerminalControl.compactData = compactData;
+            TerminalControl.alwaysShowBordersBackground = alwaysShowBordersBackground;
 
             GameSaver.saveSettings();
         }

@@ -800,8 +800,10 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundSet = false;
-        if (isSelected() && getControlState() == ControlState.ARRIVAL) {
-            ui.updateState();
+        if (getControlState() == ControlState.ARRIVAL) {
+            setActionRequired(true);
+            getDataTag().startFlash();
+            if (isSelected()) ui.updateState();
         }
         getDataTag().setMinimized(false);
     }

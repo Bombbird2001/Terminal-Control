@@ -71,6 +71,7 @@ public class TerminalControl extends Game {
     public static boolean showIlsDash;
     public static boolean compactData;
     public static boolean showUncontrolled;
+    public static boolean alwaysShowBordersBackground;
     public static int defaultTabNo;
     public static int revision;
     public static final int LATEST_REVISION = 1;
@@ -107,6 +108,7 @@ public class TerminalControl extends Game {
             showIlsDash = false;
             compactData = false;
             showUncontrolled = false;
+            alwaysShowBordersBackground = true;
             defaultTabNo = 0;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
@@ -142,6 +144,7 @@ public class TerminalControl extends Game {
             showIlsDash = settings.optBoolean("showIlsDash", false);
             compactData = settings.optBoolean("compactData", false);
             showUncontrolled = settings.optBoolean("showUncontrolled", false);
+            alwaysShowBordersBackground = settings.optBoolean("alwaysShowBordersBackground", true);
             revision = settings.optInt("revision", 0);
         }
         GameSaver.saveSettings();

@@ -116,7 +116,7 @@ public class GlobalSettingsScreen extends SettingsTemplateScreen {
                 } else if ("Speed".equals(selected)) {
                     defaultTabNo = 2;
                 } else {
-                    Gdx.app.log("DefaultSettings", "Unknown default tab " + selected + " selected");
+                    Gdx.app.log(getClass().getName(), "Unknown default tab " + selected + " selected");
                 }
             }
         });

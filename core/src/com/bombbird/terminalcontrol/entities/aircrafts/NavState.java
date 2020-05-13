@@ -674,7 +674,7 @@ public class NavState {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
                 latModes.add(Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
-                if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
+                if (!radarScreen.tutorial && aircraft instanceof Arrival) latModes.add(Ui.CHANGE_STAR);
                 break;
             case REMOVE_AFTERHDG_HOLD:
                 latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);

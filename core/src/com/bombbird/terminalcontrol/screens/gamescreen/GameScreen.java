@@ -595,6 +595,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
             camera.position.y = prevCamY;
             soundManager.resume();
             DataTag.startTimers();
+            DataTag.setBorderBackground();
         } else {
             soundManager.pause();
             DataTag.pauseTimers();
