@@ -90,6 +90,7 @@ public class RadarScreen extends GameScreen {
     public boolean showMva;
     public boolean showIlsDash;
     public boolean compactData;
+    public boolean showUncontrolled;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -189,6 +190,7 @@ public class RadarScreen extends GameScreen {
             showMva = true;
             showIlsDash = false;
             compactData = false;
+            showUncontrolled = false;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -201,6 +203,7 @@ public class RadarScreen extends GameScreen {
             showMva = TerminalControl.showMva;
             showIlsDash = TerminalControl.showIlsDash;
             compactData = TerminalControl.compactData;
+            showUncontrolled = TerminalControl.showUncontrolled;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -254,6 +257,7 @@ public class RadarScreen extends GameScreen {
         showMva = save.optBoolean("showMva", true);
         showIlsDash = save.optBoolean("showIlsDash", false);
         compactData = save.optBoolean("compactData", false);
+        showUncontrolled = save.optBoolean("showUncontrolled", false);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;

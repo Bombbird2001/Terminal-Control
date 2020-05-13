@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> dataTag;
@@ -79,6 +80,8 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
             radarScreen.compactData = compactData;
         } else {
             TerminalControl.compactData = compactData;
+
+            GameSaver.saveSettings();
         }
     }
 }

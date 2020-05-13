@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 public class AlertsSettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> advTraj;
@@ -125,6 +126,8 @@ public class AlertsSettingsScreen extends SettingsTemplateScreen {
             TerminalControl.advTraj = advTrajTime;
             TerminalControl.areaWarning = areaWarning;
             TerminalControl.collisionWarning = collisionWarning;
+
+            GameSaver.saveSettings();
         }
     }
 }

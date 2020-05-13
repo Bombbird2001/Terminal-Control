@@ -277,7 +277,7 @@ public class DataTag {
         int size = trailDots.size;
         int selectedRequired = radarScreen.pastTrajTime / 10;
         for (Image trail: trailDots) {
-            if ((aircraft.isSelected() && (radarScreen.pastTrajTime == -1 || size - index <= selectedRequired)) || (size - index <= 6 && aircraft.isArrivalDeparture())) {
+            if ((aircraft.isSelected() && (radarScreen.pastTrajTime == -1 || size - index <= selectedRequired)) || (size - index <= 6 && (aircraft.isArrivalDeparture() || radarScreen.showUncontrolled))) {
                 trail.draw(batch, parentAlpha);
             }
             index++;

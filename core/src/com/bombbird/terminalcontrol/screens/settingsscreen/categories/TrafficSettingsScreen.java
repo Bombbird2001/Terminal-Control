@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 import java.util.Locale;
 
@@ -221,6 +222,8 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
     public void sendChanges() {
         if (radarScreen == null) {
             TerminalControl.emerChance = emerChance;
+
+            GameSaver.saveSettings();
         } else {
             radarScreen.emerChance = emerChance;
             radarScreen.tfcMode = tfcSel;

@@ -10,12 +10,14 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 public class DisplaySettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> trajectoryLine;
     public SelectBox<String> pastTrajectory;
     public SelectBox<String> mva;
     public SelectBox<String> ilsDash;
+    public SelectBox<String> showUncontrolledTrail;
 
     public Label trajectoryLabel;
     public int trajectorySel;
@@ -28,6 +30,9 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
 
     public Label ilsDashLabel;
     public boolean showIlsDash;
+
+    public Label showUncontrolledLabel;
+    public boolean showUncontrolled;
 
     public DisplaySettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
@@ -78,7 +83,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Hide".equals(mva.getSelected())) {
                     showMva = false;
                 } else {
-                    Gdx.app.log("SettingsScreen", "Unknown MVA setting " + mva.getSelected());
+                    Gdx.app.log("DisplaySettingsScreen", "Unknown MVA setting " + mva.getSelected());
                 }
             }
         });
@@ -93,7 +98,22 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Realistic".equals(ilsDash.getSelected())) {
                     showIlsDash = true;
                 } else {
-                    Gdx.app.log("SettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
+                    Gdx.app.log("DisplaySettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
+                }
+            }
+        });
+
+        showUncontrolledTrail = createStandardSelectBox();
+        showUncontrolledTrail.setItems("When selected", "Always");
+        showUncontrolledTrail.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Always".equals(showUncontrolledTrail.getSelected())) {
+                    showUncontrolled = true;
+                } else if ("When selected".equals(showUncontrolledTrail.getSelected())) {
+                    showUncontrolled = false;
+                } else {
+                    Gdx.app.log("DisplaySettingsScreen", "Unknown ILS dash setting " + ilsDash.getSelected());
                 }
             }
         });
@@ -108,6 +128,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         pastTrajLabel = new Label("Aircraft trail: ", labelStyle);
         mvaLabel = new Label("MVA altitude: ", labelStyle);
         ilsDashLabel = new Label("ILS display: ", labelStyle);
+        showUncontrolledLabel = new Label("Show uncontrolled:\naircraft trail", labelStyle);
     }
 
     /** Loads actors for display settings into tabs */
@@ -118,6 +139,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         tab1.addActors(pastTrajectory, pastTrajLabel);
         tab1.addActors(mva, mvaLabel);
         tab1.addActors(ilsDash, ilsDashLabel);
+        tab1.addActors(showUncontrolledTrail, showUncontrolledLabel);
 
         settingsTabs.add(tab1);
     }
@@ -131,12 +153,14 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             pastTrajTime = TerminalControl.pastTrajTime;
             showMva = TerminalControl.showMva;
             showIlsDash = TerminalControl.showIlsDash;
+            showUncontrolled = TerminalControl.showUncontrolled;
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine;
             pastTrajTime = radarScreen.pastTrajTime;
             showMva = radarScreen.showMva;
             showIlsDash = radarScreen.showIlsDash;
+            showUncontrolled = radarScreen.showUncontrolled;
         }
 
         trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
@@ -150,6 +174,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
 
         mva.setSelected(showMva ? "Show" : "Hide");
         ilsDash.setSelected(showIlsDash ? "Realistic" : "Simple");
+        showUncontrolledTrail.setSelected(showUncontrolled ? "Always" : "When selected");
     }
 
     /** Confirms and applies the changes set */
@@ -160,11 +185,15 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             radarScreen.pastTrajTime = pastTrajTime;
             radarScreen.showMva = showMva;
             radarScreen.showIlsDash = showIlsDash;
+            radarScreen.showUncontrolled = showUncontrolled;
         } else {
             TerminalControl.trajectorySel = trajectorySel;
             TerminalControl.pastTrajTime = pastTrajTime;
             TerminalControl.showMva = showMva;
             TerminalControl.showIlsDash = showIlsDash;
+            TerminalControl.showUncontrolled = showUncontrolled;
+
+            GameSaver.saveSettings();
         }
     }
 }
