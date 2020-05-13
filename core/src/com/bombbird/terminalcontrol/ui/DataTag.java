@@ -216,8 +216,23 @@ public class DataTag {
         clickSpot.getStyle().checked = ninePatchDrawable;
     }
 
+    /** Sets this data tag as the last to draw - will always be shown above other data tags */
+    private void setAsDrawLast() {
+        Gdx.app.postRunnable(() -> {
+            labelButton.remove();
+            label.remove();
+            clickSpot.remove();
+            radarScreen.labelStage.addActor(labelButton);
+            radarScreen.labelStage.addActor(label);
+            radarScreen.labelStage.addActor(clickSpot);
+        });
+    }
+
     /** Updates whether the default green/blue border should be visible */
     public void updateBorderBackgroundVisibility(boolean visible) {
+        if (visible) {
+            setAsDrawLast();
+        }
         if (aircraft.hasEmergency()) {
             setEmergency();
             return;
