@@ -1120,17 +1120,7 @@ public class Aircraft extends Actor {
             navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false);
             navState.updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
             navState.updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, false);
-            if (navState.getDispAltMode().first() == NavState.SID_STAR_RESTR) {
-                navState.getDispAltMode().removeFirst();
-                navState.getDispAltMode().addFirst(NavState.NO_RESTR);
-            }
-            if (navState.getDispSpdMode().first() == NavState.SID_STAR_RESTR) {
-                navState.getDispSpdMode().removeFirst();
-                navState.getDispSpdMode().addFirst(NavState.NO_RESTR);
-            }
-            navState.getClearedHdg().removeFirst();
-            navState.getClearedHdg().addFirst(afterWptHdg);
-            updateVectorMode();
+            navState.replaceAllAfterWptModesWithHdg(afterWptHdg);
             direct = null;
         } else if (direct.equals(holdWpt) && navState.getDispLatMode().first() == NavState.HOLD_AT) {
             holding = true;
@@ -1154,8 +1144,7 @@ public class Aircraft extends Actor {
                 setAfterLastWpt();
             }
         }
-        navState.getClearedDirect().removeFirst();
-        navState.getClearedDirect().addFirst(direct);
+        navState.replaceAllOutdatedDirects(direct);
         updateAltRestrictions();
         updateTargetAltitude();
         updateClearedSpd();
@@ -1212,6 +1201,8 @@ public class Aircraft extends Actor {
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
     public void updateUISelections() {
         ui.latTab.getSettingsBox().setSelected(navState.getLastDispModeString(NavState.LATERAL));
+        ui.altTab.getSettingsBox().setSelected(navState.getAltStringFromCode(navState.getDispAltMode().last()));
+        ui.spdTab.getSettingsBox().setSelected(navState.getSpdStringFromCode(navState.getDispSpdMode().last()));
         LatTab.clearedHdg = clearedHeading;
         if (direct != null && ui.latTab.getSettingsBox().getSelected().contains(getSidStar().getName()) && route.findWptIndex(direct.getName()) > route.findWptIndex(ui.latTab.getValueBox().getSelected())) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point
