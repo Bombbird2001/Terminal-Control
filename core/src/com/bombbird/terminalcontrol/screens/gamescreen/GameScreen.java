@@ -587,8 +587,12 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         this.running = running;
 
         if (this.running) {
+            float prevCamX = camera.position.x;
+            float prevCamY = camera.position.y;
             if (game.getScreen() != this) game.setScreen(this);
             Gdx.input.setInputProcessor(inputMultiplexer);
+            camera.position.x = prevCamX;
+            camera.position.y = prevCamY;
             soundManager.resume();
             DataTag.startTimers();
         } else {
