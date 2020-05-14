@@ -36,4 +36,14 @@ public class AircraftType {
         if (!aircraftTypes.containsKey(type)) return 150;
         return aircraftTypes.get(type)[4];
     }
+
+    public static int getMaxCruiseSpd(String type) {
+        if (!aircraftTypes.containsKey(type)) return -1;
+        return aircraftTypes.get(type)[6];
+    }
+
+    public static int getMaxCruiseAlt(String type) {
+        if (!aircraftTypes.containsKey(type)) return 43000;
+        return aircraftTypes.get(type)[7];
+    }
 }

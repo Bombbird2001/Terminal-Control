@@ -9,7 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.HashMap;
 
 public class RandomGenerator {
-    private static String[] excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n");
+    private static final String[] excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n");
 
     /** Generates a random plane (with callsign, aircraft type) */
     public static String[] randomPlane(Airport airport) {

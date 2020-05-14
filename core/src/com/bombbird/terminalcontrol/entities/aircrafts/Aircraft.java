@@ -193,7 +193,7 @@ public class Aircraft extends Actor {
         gsCap = false;
         locCap = false;
         holdingType = 0;
-        climbSpd = MathUtils.random(270, 280);
+        climbSpd = AircraftType.getMaxCruiseSpd(icaoType) == -1 ? MathUtils.random(270, 280) : AircraftType.getMaxCruiseSpd(icaoType);
         goAround = false;
         goAroundWindow = false;
         goAroundTime = 0;
