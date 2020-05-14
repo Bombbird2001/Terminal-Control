@@ -117,6 +117,7 @@ public class Arrival extends Aircraft {
                 }
             }
         }
+        if (initAlt > AircraftType.getMaxCruiseAlt(icaoType)) initAlt = AircraftType.getMaxCruiseAlt(icaoType);
         if (radarScreen.tutorial && "EVA226".equals(callsign)) {
             initAlt = 23400;
         }
