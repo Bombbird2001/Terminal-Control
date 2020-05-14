@@ -33,7 +33,7 @@ public class HelpScreen extends SelectGameScreen {
     @Override
     public void loadScroll() {
         //Load help sections
-        String[] sections = {"Airports", "Aircraft instructions", "ILS, LDA", "Separation", "MVAs, restricted areas", "NTZ", "Wake turbulence", "Advanced trajectory", "Conflict prediction alerts"};
+        String[] sections = {"Airports", "Aircraft instructions", "Scoring", "ILS, LDA", "Separation", "MVAs, restricted areas", "NTZ", "Wake turbulence", "Advanced trajectory", "Conflict prediction alerts"};
         for (String section: sections) {
             TextButton button = new TextButton(section, getButtonStyle());
             button.setName(section);

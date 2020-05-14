@@ -24,6 +24,13 @@ public class HelpManager {
                 "Climb/descend to - Aircraft will fly directly to the selected altitude with no restrictions",
         "Speed tab: Controls the speed aspect of the aircraft.", "SID/STAR speed restrictions - Aircraft will follow the speed restrictions of the SID/STAR. Only allowed speeds are shown in the box. Not available in heading mode.",
                 "No speed restrictions - Aircraft can ignore SID/STAR speed restrictions, all allowed speeds are shown in the box."});
+        CONTENT_LIST.put("Scoring", new String[] {"Scoring is quite straightforward in this game: you get 1 point for every arrival that lands (vacated the runway), and 1 point for every departure handed over to the area control centre.",
+                "However, there are a few exceptions as follows:\n-If there are 12 or more arrivals within your control at the same time, you get 2 points instead of 1 for each arrival landed\n" +
+                        "-If the airport is congested (runway labels are orange instead of white), you get no points for landing the arrival\n-If the arrival or departure was instructed to expedite for more than 2 minutes total, you get no points. This is to prevent an overuse of the expedite command for more realism.\n" +
+                        "-If the aircraft is an emergency, you get 5 points!",
+                "You also receive score penalties for certain mistakes:\n-Separation infringement: 5% initial penalty, and 1 point penalty for every 3 seconds the infringement continues.\n" +
+                        "-Wake separation infringement: 1 point penalty for every 3 seconds the infringement continues.\n-An arrival inbound for the airport leaving your airspace: 5% penalty\n" +
+                        "-Fuel emergency, diversion: 10% penalty when an arrival declares a fuel emergency (in which player has about 10 minutes to land it), and an additional 10% penalty if the arrival diverts to alternate airport"});
         CONTENT_LIST.put("ILS, LDA", new String[] {"In this game, planes must capture the ILS/LDA before landing. To capture the ILS, the following must be ensured:",
                 "- The aircraft has been instructed to intercept the ILS in the pane's lateral tab. The aircraft must be flying in heading mode to do so.",
                 "- The aircraft's altitude must be equal to or lower than the glide slope altitude at the intercept point. You can refer to the circles on the ILS line for the altitude. " +
