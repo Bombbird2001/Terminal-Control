@@ -912,4 +912,7 @@ public class RadarScreen extends GameScreen {
         return revision;
     }
 
+    public void setArrivals(int arrivals) {
+        this.arrivals = arrivals;
+    }
 }

@@ -108,29 +108,27 @@ public class CommBox {
 
     /** Adds a message if the input aircraft goes around, with the reason for the go around */
     public void goAround(Aircraft aircraft, String reason, Aircraft.ControlState state) {
-        Gdx.app.postRunnable(() -> {
-            if (state == Aircraft.ControlState.UNCONTROLLED) {
-                Label label = new Label(aircraft.getCallsign() + " performed a go around due to " + reason, getLabelStyle(Color.BLACK));
-                updateLabelQueue(label);
-            } else if (state == Aircraft.ControlState.ARRIVAL) {
-                int randomInt = MathUtils.random(0, 2);
-                String goArdText = "";
-                switch (randomInt) {
-                    case 0:
-                        goArdText = "going around";
-                        break;
-                    case 1:
-                        goArdText = "we're going around";
-                        break;
-                    case 2:
-                        goArdText = "performing a missed approach";
-                        break;
-                }
-                TerminalControl.tts.goAroundMsg(aircraft, goArdText, reason);
-                Label label = new Label(aircraft.getCallsign() + aircraft.getWakeString() + ", " + goArdText + " due to " + reason, getLabelStyle(aircraft.getColor()));
-                updateLabelQueue(label);
+        String msg = "";
+        if (state == Aircraft.ControlState.UNCONTROLLED) {
+            msg = aircraft.getCallsign() + " performed a go around due to " + reason;
+        } else if (state == Aircraft.ControlState.ARRIVAL) {
+            int randomInt = MathUtils.random(0, 2);
+            String goArdText = "";
+            switch (randomInt) {
+                case 0:
+                    goArdText = "going around";
+                    break;
+                case 1:
+                    goArdText = "we're going around";
+                    break;
+                case 2:
+                    goArdText = "performing a missed approach";
+                    break;
             }
-        });
+            TerminalControl.tts.goAroundMsg(aircraft, goArdText, reason);
+            msg = aircraft.getCallsign() + aircraft.getWakeString() + ", " + goArdText + " due to " + reason;
+        }
+        alertMsg(msg);
     }
 
     /** Adds a message for an aircraft contacting the player for the first time */
@@ -273,6 +271,8 @@ public class CommBox {
                 }
             }
         });
+
+        TerminalControl.radarScreen.soundManager.playAlert();
     }
 
     /** Adds a message in red for warnings */

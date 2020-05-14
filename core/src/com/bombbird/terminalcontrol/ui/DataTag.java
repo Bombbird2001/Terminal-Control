@@ -234,6 +234,7 @@ public class DataTag {
             setAsDrawLast();
         }
         if (aircraft.hasEmergency()) {
+            labelButton.setVisible(visible);
             setEmergency();
             return;
         }

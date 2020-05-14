@@ -48,6 +48,7 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
         loadUI(-1200, 0);
 
         setOptions();
+        updateTabs(true);
     }
 
     /** Loads selectBox for display settings */

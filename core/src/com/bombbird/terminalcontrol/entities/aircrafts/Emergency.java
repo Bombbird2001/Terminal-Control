@@ -152,6 +152,7 @@ public class Emergency {
                     aircraft.setSelected(false);
                 }
                 aircraft = arrival;
+                radarScreen.setArrivals(radarScreen.getArrivals() + 1);
                 return;
             }
 
