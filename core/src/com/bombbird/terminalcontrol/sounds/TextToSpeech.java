@@ -1,7 +1,6 @@
 package com.bombbird.terminalcontrol.sounds;
 
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 
