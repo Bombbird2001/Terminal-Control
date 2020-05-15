@@ -219,6 +219,7 @@ public class Route {
         int currentIndex = nextWptIndex;
         float dist = 0;
         while (currentIndex < getWaypoints().size - 1) {
+            if (!getWaypoint(currentIndex + 1).isInsideRadar()) break;
             dist += distBetween(currentIndex, currentIndex + 1);
             currentIndex++;
         }

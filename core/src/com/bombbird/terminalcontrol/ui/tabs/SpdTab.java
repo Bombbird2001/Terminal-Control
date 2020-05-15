@@ -42,7 +42,13 @@ public class SpdTab extends Tab {
             }
         }
         if (highestSpd == -1) {
-            highestSpd = selectedAircraft.getAltitude() >= 10000 ? selectedAircraft.getClimbSpd() : 250;
+            if (selectedAircraft.getAltitude() >= 10000) {
+                highestSpd = selectedAircraft.getClimbSpd();
+            } else if (Ui.NO_SPD_RESTRICTIONS.equals(spdMode) && selectedAircraft.getRequest() == Departure.HIGH_SPEED_REQUEST && selectedAircraft.isRequested()) {
+                highestSpd = selectedAircraft.getClimbSpd();
+            } else {
+                highestSpd = 250;
+            }
         }
         if (selectedAircraft instanceof Departure) {
             lowestSpd = 200;

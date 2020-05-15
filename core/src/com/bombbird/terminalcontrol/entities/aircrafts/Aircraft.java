@@ -37,6 +37,11 @@ public class Aircraft extends Actor {
         ENROUTE
     }
 
+    //Request types
+    public static final int NO_REQUEST = -1;
+    public static final int HIGH_SPEED_REQUEST = 0;
+    public static final int SHORTCUT_REQUEST = 1;
+
     //Android text-to-speech
     private final String voice;
     private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
@@ -92,6 +97,11 @@ public class Aircraft extends Actor {
     private boolean prevConflict;
     private boolean silenced;
     private final Emergency emergency;
+
+    //Additional requests
+    private int request = NO_REQUEST;
+    private boolean requested = false;
+    private int requestAlt = -1;
 
     //Aircraft position
     private float x;
@@ -285,6 +295,10 @@ public class Aircraft extends Actor {
         trajectory = new Trajectory(this);
         trajectoryConflict = false;
         trajectoryTerrainConflict = false;
+
+        request = NO_REQUEST;
+        requested = false;
+        requestAlt = -1;
     }
 
     public Aircraft(JSONObject save) {
@@ -321,6 +335,10 @@ public class Aircraft extends Actor {
         }
         prevConflict = conflict;
         emergency = save.optJSONObject("emergency") == null ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
+
+        request = save.optInt("request", NO_REQUEST);
+        requested = save.optBoolean("requested", false);
+        requestAlt = save.optInt("requestAlt", -1);
 
         x = (float) save.getDouble("x");
         y = (float) save.getDouble("y");
@@ -1228,6 +1246,13 @@ public class Aircraft extends Actor {
         radarVs = verticalSpeed;
     }
 
+    /** Calculates remaining distance on SID/STAR from current aircraft position, excluding outbound */
+    public float distToGo() {
+        float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
+        dist += getRoute().distBetRemainPts(getSidStarIndex());
+        return dist;
+    }
+
     public Array<Waypoint> getRemainingWaypoints() {
         if (navState.getClearedDirect().last() == null) return new Array<>();
         if (navState.getDispLatMode().last() == NavState.SID_STAR) {
@@ -1482,7 +1507,7 @@ public class Aircraft extends Actor {
             highestSpd = route.getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {
-            if (altitude > 10000) {
+            if (altitude > 10000 || request == HIGH_SPEED_REQUEST) {
                 highestSpd = climbSpd;
             } else {
                 highestSpd = 250;
@@ -1895,5 +1920,29 @@ public class Aircraft extends Actor {
 
     public void setPrevConflict(boolean prevConflict) {
         this.prevConflict = prevConflict;
+    }
+
+    public int getRequest() {
+        return request;
+    }
+
+    public void setRequest(int request) {
+        this.request = request;
+    }
+
+    public boolean isRequested() {
+        return requested;
+    }
+
+    public void setRequested(boolean requested) {
+        this.requested = requested;
+    }
+
+    public int getRequestAlt() {
+        return requestAlt;
+    }
+
+    public void setRequestAlt(int requestAlt) {
+        this.requestAlt = requestAlt;
     }
 }

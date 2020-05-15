@@ -31,6 +31,10 @@ public class Departure extends Aircraft {
     private boolean higherSpdSet;
     private boolean cruiseSpdSet;
 
+    //Higher climb request
+    private float altitudeMaintainTime = 0;
+    private boolean askedForHigher = false;
+
     public Departure(String callsign, String icaoType, Airport departure, Runway runway) {
         super(callsign, icaoType, departure);
         setOnGround(true);
@@ -45,6 +49,18 @@ public class Departure extends Aircraft {
         cruiseAlt = maxAlt >= 30000 ? MathUtils.random(30, maxAlt / 1000) * 1000 : MathUtils.random(TerminalControl.radarScreen.maxAlt / 1000, maxAlt / 1000) * 1000;
         higherSpdSet = false;
         cruiseSpdSet = false;
+
+        //Additional requests
+        if (MathUtils.randomBoolean(0.1f)) {
+            //10% chance to request shortcut/high speed climb
+            if (MathUtils.randomBoolean() && getClimbSpd() > 250) {
+                setRequest(HIGH_SPEED_REQUEST);
+                setRequestAlt(MathUtils.random(getAirport().getElevation() + 4000, 9000));
+            } else {
+                setRequest(SHORTCUT_REQUEST);
+                setRequestAlt(MathUtils.random(getAirport().getElevation() + 5000, TerminalControl.radarScreen.maxAlt - 5000));
+            }
+        }
 
         //Sets requested runway for takeoff
         setRunway(runway);
@@ -124,6 +140,8 @@ public class Departure extends Aircraft {
         cruiseAlt = save.getInt("cruiseAlt");
         higherSpdSet = save.getBoolean("higherSpdSet");
         cruiseSpdSet = save.getBoolean("cruiseSpdSet");
+        altitudeMaintainTime = (float) save.optDouble("altitudeMaintainTime", 0);
+        askedForHigher = save.optBoolean("askedForHigher", false);
 
         loadLabel();
         setColor(new Color(0x11ff00ff));
@@ -214,7 +232,29 @@ public class Departure extends Aircraft {
             }
         }
 
+        if (checkHigherClimb()) {
+            altitudeMaintainTime += Gdx.graphics.getDeltaTime();
+            if (!askedForHigher && altitudeMaintainTime > 180) {
+                //Higher climb needed, request higher if have maintained cleared altitude for > 3 min
+                setActionRequired(true);
+                getDataTag().startFlash();
+                ui.updateAckHandButton(this);
+                radarScreen.getCommBox().requestHigherClimb(this);
+                askedForHigher = true;
+            }
+        } else {
+            //Otherwise reset the timer to 0, boolean to false in case another request is needed
+            askedForHigher = false;
+            altitudeMaintainTime = 0;
+        }
+
         return info;
+    }
+
+    /** Checks whether the aircraft should request for higher climb */
+    private boolean checkHigherClimb() {
+        //If altitude is within 100 feet below cleared altitude, cleared altitude is below maxAlt and departure is still in control by player
+        return isArrivalDeparture() && getClearedAltitude() >= getAltitude() - 1 && getClearedAltitude() - getAltitude() < 100 && getClearedAltitude() < radarScreen.maxAlt;
     }
 
     /** Overrides method in Aircraft class to join the lines between each SID waypoint */
@@ -326,6 +366,14 @@ public class Departure extends Aircraft {
         if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first() == NavState.SID_STAR) {
             contactOther();
         }
+        if (isArrivalDeparture() && getRequest() != NO_REQUEST && !isRequested() && getAltitude() >= getRequestAlt()) {
+            //Ask for request when above trigger altitude
+            setActionRequired(true);
+            getDataTag().startFlash();
+            ui.updateAckHandButton(this);
+            radarScreen.getCommBox().sayRequest(this);
+            setRequested(true);
+        }
     }
 
     @Override
@@ -403,5 +451,13 @@ public class Departure extends Aircraft {
 
     public float getCruiseAltTime() {
         return cruiseAltTime;
+    }
+
+    public boolean isAskedForHigher() {
+        return askedForHigher;
+    }
+
+    public float getAltitudeMaintainTime() {
+        return altitudeMaintainTime;
     }
 }

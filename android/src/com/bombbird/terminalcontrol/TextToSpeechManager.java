@@ -264,6 +264,15 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
         sayText(text, aircraft.getVoice());
     }
 
+    @Override
+    public void sayRequest(Aircraft aircraft, String request) {
+        if (TerminalControl.radarScreen.soundSel < 2) return;
+        String icao = Pronunciation.callsigns.get(getIcaoCode(aircraft.getCallsign()));
+        String newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.getCallsign()));
+        String text = icao + newFlightNo + aircraft.getWakeString() + request;
+        sayText(text, aircraft.getVoice());
+    }
+
     /** Stops all current and subsequent speeches */
     public void cancel() {
         if (tts == null) return;

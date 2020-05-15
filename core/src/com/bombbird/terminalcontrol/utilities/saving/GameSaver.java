@@ -159,6 +159,10 @@ public class GameSaver {
             aircraftInfo.put("terrainConflict", aircraft.isTerrainConflict()); //Aircraft in conflict with terrain
             aircraftInfo.put("emergency", getEmergency(aircraft)); //Emergency status
 
+            aircraftInfo.put("request", aircraft.getRequest()); //Type of request aircraft has
+            aircraftInfo.put("requested", aircraft.isRequested()); //Whether aircraft has requested it
+            aircraftInfo.put("requestAlt", aircraft.getRequestAlt()); //Altitude at which request triggers
+
             aircraftInfo.put("x", (double) aircraft.getX()); //x coordinate
             aircraftInfo.put("y", (double) aircraft.getY()); //y coordinate
             aircraftInfo.put("prevDistTravelled", (double) aircraft.getPrevDistTravelled()); //Distance travelled previously (for wake points)
@@ -294,6 +298,8 @@ public class GameSaver {
                 aircraftInfo.put("cruiseAlt", ((Departure) aircraft).getCruiseAlt());
                 aircraftInfo.put("higherSpdSet", ((Departure) aircraft).isHigherSpdSet());
                 aircraftInfo.put("cruiseSpdSet", ((Departure) aircraft).isCruiseSpdSet());
+                aircraftInfo.put("askedForHigher", ((Departure) aircraft).isAskedForHigher());
+                aircraftInfo.put("altitudeMaintainTime", (double) ((Departure) aircraft).getAltitudeMaintainTime());
             } else {
                 type = "Type error";
                 Gdx.app.log("Save error", "Invalid aircraft instance type");

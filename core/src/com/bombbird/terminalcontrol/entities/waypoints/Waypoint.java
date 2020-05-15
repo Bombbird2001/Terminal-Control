@@ -54,7 +54,7 @@ public class Waypoint extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
+        if (selected && isInsideRadar()) {
             label.draw(batch, 1);
             if (restrVisible) restrLabel.draw(batch, 1);
         }
@@ -76,7 +76,7 @@ public class Waypoint extends Actor {
     }
 
     public void renderShape() {
-        if (selected && posX <= 4500 && posX >= 1260 && posY <= 3240 && posY >= 0) {
+        if (selected && isInsideRadar()) {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
         }
@@ -139,6 +139,11 @@ public class Waypoint extends Actor {
         }
         restrLabel.setText(restrStr);
         restrVisible = true;
+    }
+
+    /** Returns whether the waypoint is inside the radar screen coordinates */
+    public boolean isInsideRadar() {
+        return posX >= 1260 && posX <= 4500 && posY >= 0 && posY <= 3240;
     }
 
     @Override

@@ -219,6 +219,64 @@ public class CommBox {
         TerminalControl.radarScreen.soundManager.playInitialContact();
     }
 
+    /** Says a request for an aircraft */
+    public void sayRequest(Departure aircraft) {
+        String wake = aircraft.getWakeString();
+        String text = aircraft.getCallsign() + wake;
+        String requestText = "";
+        int random = MathUtils.random(1);
+        switch (aircraft.getRequest()) {
+            case Departure.HIGH_SPEED_REQUEST:
+                if (random == 0) {
+                    requestText = ", requesting high speed climb";
+                } else if (random == 1) {
+                    requestText = ", we request high speed climb";
+                }
+                break;
+            case Departure.SHORTCUT_REQUEST:
+                if (random == 0) {
+                    requestText = ", we would like a shortcut";
+                } else if (random == 1) {
+                    requestText = ", request shortcut";
+                }
+                break;
+            default:
+                Gdx.app.log("CommBox", "Unknown request code " + aircraft.getRequest());
+        }
+
+        TerminalControl.tts.sayRequest(aircraft, requestText);
+
+        String finalText = text + requestText;
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(finalText, getLabelStyle(aircraft.getColor()));
+            updateLabelQueue(label);
+        });
+
+        TerminalControl.radarScreen.soundManager.playInitialContact();
+    }
+
+    /** Requests higher climb for a departure */
+    public void requestHigherClimb(Departure departure) {
+        String wake = departure.getWakeString();
+        String text = departure.getCallsign() + wake;
+        String requestText = "";
+        if (MathUtils.randomBoolean()) {
+            requestText = ", requesting further climb";
+        } else {
+            requestText = ", we would like to climb higher";
+        }
+
+        TerminalControl.tts.sayRequest(departure, requestText);
+
+        String finalText = text + requestText;
+        Gdx.app.postRunnable(() -> {
+            Label label = new Label(finalText, getLabelStyle(departure.getColor()));
+            updateLabelQueue(label);
+        });
+
+        TerminalControl.radarScreen.soundManager.playInitialContact();
+    }
+
     /** Adds a message for an aircraft established in hold over a waypoint */
     public void holdEstablishMsg(Aircraft aircraft, String wpt) {
         String wake = aircraft.getWakeString();

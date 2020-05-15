@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.sounds;
 
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 
@@ -32,6 +33,8 @@ public interface TextToSpeech {
     void sayRemainingDumpTime(Aircraft aircraft, int min);
 
     void sayReadyForApproach(Aircraft aircraft, boolean stayOnRwy);
+
+    void sayRequest(Aircraft aircraft, String request);
 
     void cancel();
 

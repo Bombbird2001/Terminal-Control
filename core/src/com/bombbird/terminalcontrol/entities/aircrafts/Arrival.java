@@ -258,13 +258,6 @@ public class Arrival extends Aircraft {
         if (getEmergency().isActive()) getDataTag().setEmergency();
     }
 
-    /** Calculates remaining distance on STAR from current aircraft position */
-    private float distToGo() {
-        float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
-        dist += getRoute().distBetRemainPts(getSidStarIndex());
-        return dist;
-    }
-
     /** Calculates remaining distance on STAR from current start aircraft position to a certain point on it */
     private float distFromStartToPoint(Waypoint waypoint) {
         float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));

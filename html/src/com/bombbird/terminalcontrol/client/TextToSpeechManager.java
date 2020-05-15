@@ -75,6 +75,11 @@ public class TextToSpeechManager implements TextToSpeech {
     }
 
     @Override
+    public void sayRequest(Aircraft aircraft, String request) {
+        //No default implementation
+    }
+
+    @Override
     public void cancel() {
         //No default implementation
     }
