@@ -193,6 +193,7 @@ public class RadarScreen extends GameScreen {
             compactData = false;
             showUncontrolled = false;
             alwaysShowBordersBackground = true;
+            rangeCircleDist = 0;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -207,6 +208,7 @@ public class RadarScreen extends GameScreen {
             compactData = TerminalControl.compactData;
             showUncontrolled = TerminalControl.showUncontrolled;
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
+            rangeCircleDist = TerminalControl.rangeCircleDist;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -262,6 +264,7 @@ public class RadarScreen extends GameScreen {
         compactData = save.optBoolean("compactData", false);
         showUncontrolled = save.optBoolean("showUncontrolled", false);
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true);
+        rangeCircleDist = save.optInt("rangeCircleDist", 0);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -658,7 +661,8 @@ public class RadarScreen extends GameScreen {
             obstacle.renderShape();
         }
 
-        super.renderShape();
+        //Draw the range circles if present
+        renderRangeCircles();
 
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);

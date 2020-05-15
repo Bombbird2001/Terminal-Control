@@ -68,6 +68,7 @@ public class GameSaver {
         jsonObject.put("compactData", radarScreen.compactData);
         jsonObject.put("showUncontrolled", radarScreen.showUncontrolled);
         jsonObject.put("alwaysShowBordersBackground", radarScreen.alwaysShowBordersBackground);
+        jsonObject.put("rangeCircleDist", radarScreen.rangeCircleDist);
         jsonObject.put("liveWeather", radarScreen.weatherSel);
         jsonObject.put("sounds", radarScreen.soundSel);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
@@ -672,6 +673,7 @@ public class GameSaver {
             settings.put("compactData", TerminalControl.compactData);
             settings.put("showUncontrolled", TerminalControl.showUncontrolled);
             settings.put("alwaysShowBordersBackground", TerminalControl.alwaysShowBordersBackground);
+            settings.put("rangeCircleDist", TerminalControl.rangeCircleDist);
             settings.put("defaultTabNo", TerminalControl.defaultTabNo);
             settings.put("emerChance", TerminalControl.emerChance.toString());
             settings.put("revision", TerminalControl.revision);

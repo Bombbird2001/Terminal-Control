@@ -77,7 +77,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     public SoundManager soundManager = new SoundManager();
 
     //Create range circles
-    private final RangeCircle[] rangeCircles;
+    private final Array<RangeCircle> rangeCircles;
+    public int rangeCircleDist = 0;
 
     //Create obstacle resources
     public Array<Obstacle> obsArray;
@@ -103,7 +104,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         this.game = game;
 
         //Initiate range circles
-        rangeCircles = new RangeCircle[2];
+        rangeCircles = new Array<>();
 
         loading = false;
         loadingPercent = "0%";
@@ -111,15 +112,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loadLabels();
 
         running = true;
-    }
-
-    /** Load radar screen range circles */
-    public void loadRange() {
-        rangeCircles[0] = new RangeCircle(10, -255);
-        rangeCircles[1] = new RangeCircle(35, -1062);
-        for (RangeCircle circle: rangeCircles) {
-            stage.addActor(circle);
-        }
     }
 
     /** Load loading, tips labels */
@@ -236,9 +228,29 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //No default implementation
     }
 
-    /** Renders shapes for aircraft trajectory line, obstacle and restricted areas; overridden in radarScreen class */
+    /** Renders shapes for aircraft trajectory line, obstacle and restricted areas, APW, STCAS and others; overridden in radarScreen class */
     public void renderShape() {
-        for (RangeCircle rangeCircle : rangeCircles) {
+        //No default implementation
+    }
+
+    /** Load radar screen range circles */
+    public void loadRange() {
+        for (RangeCircle circle: rangeCircles) {
+            //Clear any existing circles
+            circle.remove();
+        }
+        rangeCircles.clear();
+        if (rangeCircleDist == 0) return;
+        for (int i = rangeCircleDist; i < 50; i += rangeCircleDist) {
+            RangeCircle circle = new RangeCircle(i);
+            rangeCircles.add(circle);
+            stage.addActor(circle);
+        }
+    }
+
+    /** Renders the range circles */
+    public void renderRangeCircles() {
+        for (RangeCircle rangeCircle: rangeCircles) {
             rangeCircle.renderShape();
         }
     }

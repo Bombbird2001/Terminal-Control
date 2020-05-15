@@ -18,6 +18,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> mva;
     public SelectBox<String> ilsDash;
     public SelectBox<String> showUncontrolledTrail;
+    public SelectBox<String> rangeCircle;
 
     public Label trajectoryLabel;
     public int trajectorySel;
@@ -33,6 +34,9 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
 
     public Label showUncontrolledLabel;
     public boolean showUncontrolled;
+
+    public Label rangeCircleLabel;
+    public int rangeCircleDist;
 
     public DisplaySettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
@@ -117,6 +121,19 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 }
             }
         });
+
+        rangeCircle = createStandardSelectBox();
+        rangeCircle.setItems("Off", "5nm", "10nm", "15nm", "20nm");
+        rangeCircle.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Off".equals(rangeCircle.getSelected())) {
+                    rangeCircleDist = 0;
+                } else {
+                    rangeCircleDist = Integer.parseInt(rangeCircle.getSelected().replace("nm", ""));
+                }
+            }
+        });
     }
 
     /** Loads labels for display settings */
@@ -129,6 +146,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         mvaLabel = new Label("MVA altitude: ", labelStyle);
         ilsDashLabel = new Label("ILS display: ", labelStyle);
         showUncontrolledLabel = new Label("Show uncontrolled:\naircraft trail", labelStyle);
+        rangeCircleLabel = new Label("Range rings:", labelStyle);
     }
 
     /** Loads actors for display settings into tabs */
@@ -140,6 +158,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         tab1.addActors(mva, mvaLabel);
         tab1.addActors(ilsDash, ilsDashLabel);
         tab1.addActors(showUncontrolledTrail, showUncontrolledLabel);
+        tab1.addActors(rangeCircle, rangeCircleLabel);
 
         settingsTabs.add(tab1);
     }
@@ -154,6 +173,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showMva = TerminalControl.showMva;
             showIlsDash = TerminalControl.showIlsDash;
             showUncontrolled = TerminalControl.showUncontrolled;
+            rangeCircleDist = TerminalControl.rangeCircleDist;
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine;
@@ -161,6 +181,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showMva = radarScreen.showMva;
             showIlsDash = radarScreen.showIlsDash;
             showUncontrolled = radarScreen.showUncontrolled;
+            rangeCircleDist = radarScreen.rangeCircleDist;
         }
 
         trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
@@ -175,6 +196,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         mva.setSelected(showMva ? "Show" : "Hide");
         ilsDash.setSelected(showIlsDash ? "Realistic" : "Simple");
         showUncontrolledTrail.setSelected(showUncontrolled ? "Always" : "When selected");
+        rangeCircle.setSelected(rangeCircleDist == 0 ? "Off" : rangeCircleDist + "nm");
     }
 
     /** Confirms and applies the changes set */
@@ -186,12 +208,16 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             radarScreen.showMva = showMva;
             radarScreen.showIlsDash = showIlsDash;
             radarScreen.showUncontrolled = showUncontrolled;
+            radarScreen.rangeCircleDist = rangeCircleDist;
+
+            radarScreen.loadRange(); //Reload the range circles in case of any changes
         } else {
             TerminalControl.trajectorySel = trajectorySel;
             TerminalControl.pastTrajTime = pastTrajTime;
             TerminalControl.showMva = showMva;
             TerminalControl.showIlsDash = showIlsDash;
             TerminalControl.showUncontrolled = showUncontrolled;
+            TerminalControl.rangeCircleDist = rangeCircleDist;
 
             GameSaver.saveSettings();
         }
