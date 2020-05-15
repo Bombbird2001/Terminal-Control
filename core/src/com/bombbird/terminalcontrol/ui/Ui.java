@@ -18,7 +18,6 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
-import com.bombbird.terminalcontrol.screens.gamescreen.GameScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.AltTab;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
@@ -251,7 +250,7 @@ public class Ui {
                     radarScreen.getRunwayChanger().hideAll();
                     radarScreen.getCommBox().setVisible(true);
                 }
-                radarScreen.setGameState(GameScreen.State.PAUSE);
+                radarScreen.setGameRunning(false);
                 event.handle();
             }
         });

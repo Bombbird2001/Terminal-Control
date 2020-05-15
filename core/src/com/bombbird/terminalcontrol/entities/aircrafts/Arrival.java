@@ -117,6 +117,7 @@ public class Arrival extends Aircraft {
                 }
             }
         }
+        if (initAlt > AircraftType.getMaxCruiseAlt(icaoType)) initAlt = AircraftType.getMaxCruiseAlt(icaoType);
         if (radarScreen.tutorial && "EVA226".equals(callsign)) {
             initAlt = 23400;
         }
@@ -741,7 +742,6 @@ public class Arrival extends Aircraft {
         if (getGs() <= 35 && (!getEmergency().isActive() || !getEmergency().isStayOnRwy())) {
             int score = 1;
             if (radarScreen.getArrivals() >= 12) score = 2; //2 points if you're controlling at least 12 planes at a time
-            if (getIls() != null && !getSidStar().getRunways().contains(getIls().getRwy().getName(), false)) score += 2; //2 additional points if landing runway is not intended for SID (i.e. runway change occurred)
             if ((getAirport().isCongested() && radarScreen.tfcMode != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
             if (getEmergency().isEmergency()) {
                 score = 5; //5 points for landing an emergency!
@@ -755,6 +755,7 @@ public class Arrival extends Aircraft {
             String[] typhoonList = new String[] {"TCTP", "TCSS", "TCTT", "TCAA", "TCHH", "TCMC"};
             if (ArrayUtils.contains(typhoonList, getAirport().getIcao()) && getAirport().getWinds()[1] >= 40) UnlockManager.completeAchievement("typhoon");
             if ("TCWS".equals(getAirport().getIcao()) && getAirport().getVisibility() <= 2500) UnlockManager.completeAchievement("haze");
+            setTkOfLdg(false);
         }
     }
 
@@ -800,8 +801,10 @@ public class Arrival extends Aircraft {
         finalSpdSet = false;
         willGoAround = false;
         goAroundSet = false;
-        if (isSelected() && getControlState() == ControlState.ARRIVAL) {
-            ui.updateState();
+        if (getControlState() == ControlState.ARRIVAL) {
+            setActionRequired(true);
+            getDataTag().startFlash();
+            if (isSelected()) ui.updateState();
         }
         getDataTag().setMinimized(false);
     }

@@ -57,7 +57,7 @@ public class NavState {
     private final Array<Float> timeQueueArray;
 
     //Modes used for display
-    private Queue<Integer> dispLatMode;
+    private final Queue<Integer> dispLatMode;
     private final Queue<Integer> dispAltMode;
     private final Queue<Integer> dispSpdMode;
 
@@ -439,6 +439,40 @@ public class NavState {
         }
     }
 
+    /** Replaces all after waypoint, fly heading modes with fly heading, replaces cleared heading to input heading */
+    public void replaceAllAfterWptModesWithHdg(int hdg) {
+        int latSize = dispLatMode.size;
+        for (int i = 0; i < latSize; i++) {
+            int latMode = dispLatMode.removeFirst();
+            int altMode = dispAltMode.removeFirst();
+            int spdMode = dispSpdMode.removeFirst();
+            if (latMode == AFTER_WAYPOINT_FLY_HEADING) {
+                latMode = FLY_HEADING;
+                altMode = NO_RESTR;
+                spdMode = NO_RESTR;
+            }
+            dispLatMode.addLast(latMode);
+            dispAltMode.addLast(altMode);
+            dispSpdMode.addLast(spdMode);
+        }
+
+        int size = clearedHdg.size;
+        clearedHdg.clear();
+        for (int i = 0; i < size; i++) {
+            clearedHdg.addLast(hdg);
+        }
+    }
+
+    /** Replaces all directs that is earlier than the current aircraft direct waypoint (or if null) */
+    public void replaceAllOutdatedDirects(Waypoint latestDirect) {
+        int size = clearedDirect.size;
+        for (int i = 0; i < size; i++) {
+            Waypoint wpt = clearedDirect.removeFirst();
+            if (latestDirect == null || aircraft.getRoute().findWptIndex(wpt.getName()) < aircraft.getRoute().findWptIndex(latestDirect.getName())) wpt = latestDirect;
+            clearedDirect.addLast(wpt);
+        }
+    }
+
     /** Gets the current cleared aircraft heading and sets all subsequently cleared headings to that value, sets lat mode to fly heading */
     private void replaceAllClearedHdg(int hdg) {
         int latSize = dispLatMode.size;
@@ -455,15 +489,11 @@ public class NavState {
 
     /** Replaces all turn left/right heading with fly heading, called after aircraft has finished a turn instructed in a specific direction */
     public void replaceAllHdgModes() {
-        Queue<Integer> newLatMode = new Queue<>();
-
         int size = dispLatMode.size;
         for (int i = 0; i < size; i++) {
             int code = dispLatMode.removeFirst();
-            newLatMode.addLast(containsCode(code, TURN_RIGHT, TURN_LEFT) ? FLY_HEADING : code);
+            dispLatMode.addLast(containsCode(code, TURN_RIGHT, TURN_LEFT) ? FLY_HEADING : code);
         }
-
-        dispLatMode = newLatMode;
     }
 
     /** Sets all alt mode to climb/descend (no expedite) */
@@ -644,7 +674,7 @@ public class NavState {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
                 latModes.add(Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
-                if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
+                if (!radarScreen.tutorial && aircraft instanceof Arrival) latModes.add(Ui.CHANGE_STAR);
                 break;
             case REMOVE_AFTERHDG_HOLD:
                 latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);

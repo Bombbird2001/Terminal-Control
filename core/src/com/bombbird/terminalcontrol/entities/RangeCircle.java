@@ -7,24 +7,27 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
-public class RangeCircle extends Actor{
-    private int range;
-    private Label labelUp;
-    private Label labelDown;
+public class RangeCircle extends Actor {
+    private final int range;
+    private final Label labelUp;
+    private final Label labelDown;
 
-    private ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
+    private final ShapeRenderer shapeRenderer = TerminalControl.radarScreen.shapeRenderer;
+    private static final Color DARK_GREEN = new Color(0x005720ff);
 
-    public RangeCircle(int range, int yOffset) {
+    public RangeCircle(int range) {
         this.range = range;
-        int xOffset = -60;
+        int yOffset = (int) MathTools.nmToPixel(range);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = Fonts.defaultFont10;
-        labelStyle.fontColor = Color.GRAY;
-        labelUp = new Label(range+ "nm", labelStyle);
-        labelUp.setPosition(5760 / 2f + xOffset, 3240 / 2f - yOffset + 5);
-        labelDown = new Label(range+ "nm", labelStyle);
-        labelDown.setPosition(5760 / 2f + xOffset, 3140 / 2f + yOffset);
+        labelStyle.font = Fonts.defaultFont6;
+        labelStyle.fontColor = DARK_GREEN;
+        labelUp = new Label(range + "nm", labelStyle);
+        int xOffset = (int) (labelUp.getWidth() / 2);
+        labelUp.setPosition(5760 / 2f - xOffset, 3240 / 2f + yOffset);
+        labelDown = new Label(range + "nm", labelStyle);
+        labelDown.setPosition(5760 / 2f - xOffset, 3240 / 2f - yOffset - 30);
     }
 
     @Override
@@ -34,7 +37,7 @@ public class RangeCircle extends Actor{
     }
 
     public void renderShape() {
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(DARK_GREEN);
         shapeRenderer.circle(2880, 1620, range / 10f * 324, 60);
     }
 }

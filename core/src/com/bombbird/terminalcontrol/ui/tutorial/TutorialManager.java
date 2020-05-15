@@ -102,18 +102,19 @@ public class TutorialManager {
         group2.addMessage(15, "The aircraft will continue climbing, and will eventually contact the area control centre for further climb.");
         group2.addMessage(20, "Seems like we have a new arrival inbound. Let's wait for it to contact us.");
         group2.addTask(20, "spawnArrival");
-        group2.addMessage(25, "You can drag an aircraft's label around! Let's take a look at EVA226's simplified label, displayed when an aircraft is not under your control. The game will now pause.");
+        group2.addMessage(25, "You can drag an aircraft's data tag around! Let's take a look at EVA226's simplified data tag, displayed when an aircraft is not under your control. The game will now pause.");
         group2.addTask(25, "pauseTutorial");
         group2.addMessage(35, "The 1st line is the aircraft's callsign and its recat wake category. The 2nd line has 2 numbers: firstly the aircraft's altitude, while the second is its heading. For example, 232 23 means the aircraft is at about 23200 feet, flying a heading of 23.");
         group2.addMessage(55, "The 3rd line has only 1 number: the aircraft's ground speed. 450 would mean the aircraft is travelling at a ground speed of 450 knots (450 nautical miles/hour).");
-        group2.addMessage(70, "Let's go back to CAL641 and look at the full label. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J, then its recat wake category.");
+        group2.addMessage(70, "Let's go back to CAL641 and look at the full data tag. Similarly, the 1st line contains the callsign, but behind it the aircraft type is displayed, followed by the wake turbulence category represented by a single letter, M, H or J, then its recat wake category.");
         group2.addMessage(80, "The 2nd line contains altitude information. The 1st number is the altitude, followed by a ^, v or = representing whether the aircraft is climbing, descending or level respectively.");
         group2.addMessage(100, "Continuing with the 2nd line, the 2nd number is the aircraft's \"target\" altitude which is the altitude the aircraft will fly taking into consideration altitude restrictions from SIDs or STARs. The 3rd number is the altitude that you have cleared it to.");
         group2.addMessage(120, "Now the 3rd line displays lateral information. The 1st number is the aircraft's heading. The 2nd number/text displays the aircraft's cleared heading OR its cleared waypoint. The 3rd text displays the aircraft's SID, STAR or cleared ILS.");
         group2.addMessage(140, "Finally, the 4th line. The 1st number is the aircraft's ground speed, the 2nd is its cleared airspeed, and the 3rd text is its departure or arrival airport.");
         group2.addMessage(160, "You can double tap the label of a controlled aircraft to change between the full and simplified labels.");
-        group2.addMessage(165, "The game will now continue.");
-        group2.addTask(165, "continueTutorial");
+        group2.addMessage(165, "You can change the data tag to a more compact style in the game settings when you are more familiar with it.");
+        group2.addMessage(170, "The game will now continue.");
+        group2.addTask(170, "continueTutorial");
 
         //Group 3
         group3 = new TutorialGroup(this);

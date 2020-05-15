@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSID;
@@ -40,7 +41,8 @@ public class Departure extends Aircraft {
         sidSet = false;
         contacted = false;
         cruiseAltTime = MathUtils.random(8, 20);
-        cruiseAlt = MathUtils.random(30, 39) * 1000;
+        int maxAlt = AircraftType.getMaxCruiseAlt(getIcaoType());
+        cruiseAlt = maxAlt >= 30000 ? MathUtils.random(30, maxAlt / 1000) * 1000 : MathUtils.random(TerminalControl.radarScreen.maxAlt / 1000, maxAlt / 1000) * 1000;
         higherSpdSet = false;
         cruiseSpdSet = false;
 

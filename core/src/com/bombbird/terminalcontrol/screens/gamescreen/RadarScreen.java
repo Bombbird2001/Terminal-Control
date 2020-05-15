@@ -90,6 +90,8 @@ public class RadarScreen extends GameScreen {
     public boolean showMva;
     public boolean showIlsDash;
     public boolean compactData;
+    public boolean showUncontrolled;
+    public boolean alwaysShowBordersBackground;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -189,6 +191,9 @@ public class RadarScreen extends GameScreen {
             showMva = true;
             showIlsDash = false;
             compactData = false;
+            showUncontrolled = false;
+            alwaysShowBordersBackground = true;
+            rangeCircleDist = 0;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -201,6 +206,9 @@ public class RadarScreen extends GameScreen {
             showMva = TerminalControl.showMva;
             showIlsDash = TerminalControl.showIlsDash;
             compactData = TerminalControl.compactData;
+            showUncontrolled = TerminalControl.showUncontrolled;
+            alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
+            rangeCircleDist = TerminalControl.rangeCircleDist;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -254,6 +262,9 @@ public class RadarScreen extends GameScreen {
         showMva = save.optBoolean("showMva", true);
         showIlsDash = save.optBoolean("showIlsDash", false);
         compactData = save.optBoolean("compactData", false);
+        showUncontrolled = save.optBoolean("showUncontrolled", false);
+        alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true);
+        rangeCircleDist = save.optInt("rangeCircleDist", 0);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -650,7 +661,8 @@ public class RadarScreen extends GameScreen {
             obstacle.renderShape();
         }
 
-        super.renderShape();
+        //Draw the range circles if present
+        renderRangeCircles();
 
         //Additional adjustments for certain airports
         shapeRenderer.setColor(Color.BLACK);
@@ -733,21 +745,22 @@ public class RadarScreen extends GameScreen {
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
             //On android, change to pause screen if not paused, un-pause if paused
-            setGameState(GameScreen.state == State.PAUSE ? State.RUN : State.PAUSE);
+            setGameRunning(!running);
         }
         super.render(delta);
     }
 
     @Override
     public void show() {
-        //Regenerates textures if disposed
-        Ui.generatePaneTextures();
-        DataTag.setLoadedIcons(false);
-        Tab.setLoadedStyles(false);
-
-        //Implements show method of screen, loads UI & save (if available) after show is called
-        loadUI();
-        GameLoader.loadSaveData(save);
+        //Implements show method of screen, loads UI & save (if available) after show is called if it hasn't been done
+        if (!uiLoaded) {
+            Ui.generatePaneTextures();
+            DataTag.setLoadedIcons(false);
+            Tab.setLoadedStyles(false);
+            loadUI();
+            GameLoader.loadSaveData(save);
+            uiLoaded = true;
+        }
         TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();
     }
@@ -780,9 +793,11 @@ public class RadarScreen extends GameScreen {
         runwayChanger.hideAll();
         if (selectedAircraft != null) {
             selectedAircraft.setSelected(false);
+            selectedAircraft.getDataTag().updateBorderBackgroundVisibility(false);
         }
         if (aircraft != null) {
             aircraft.setSelected(true);
+            aircraft.getDataTag().updateBorderBackgroundVisibility(true);
         }
 
         if (aircraft != null && aircraft.isArrivalDeparture()) {
@@ -901,4 +916,7 @@ public class RadarScreen extends GameScreen {
         return revision;
     }
 
+    public void setArrivals(int arrivals) {
+        this.arrivals = arrivals;
+    }
 }

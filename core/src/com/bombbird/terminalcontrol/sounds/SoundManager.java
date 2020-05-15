@@ -6,20 +6,23 @@ import com.badlogic.gdx.utils.Timer;
 import com.bombbird.terminalcontrol.TerminalControl;
 
 public class SoundManager {
-    private Sound conflict;
-    private Sound runwayChange;
-    private Sound initialContact;
+    private final Sound conflict;
+    private final Sound runwayChange;
+    private final Sound initialContact;
+    private final Sound alert;
 
     private boolean conflictPlaying;
     private boolean runwayChangePlaying;
     private boolean initialContactPlaying;
+    private boolean alertPlaying;
 
-    private Timer timer;
+    private final Timer timer;
 
     public SoundManager() {
         conflict = Gdx.audio.newSound(Gdx.files.internal("game/audio/conflict.wav"));
         runwayChange = Gdx.audio.newSound(Gdx.files.internal("game/audio/rwy_change.wav"));
         initialContact = Gdx.audio.newSound(Gdx.files.internal("game/audio/initial_contact.wav"));
+        alert = Gdx.audio.newSound(Gdx.files.internal("game/audio/alert.wav"));
         timer = new Timer();
     }
 
@@ -55,14 +58,39 @@ public class SoundManager {
     public void playInitialContact() {
         //Play only if not playing AND sound selected is sound effects only
         if (!initialContactPlaying && TerminalControl.radarScreen.soundSel == 1) {
-            initialContact.play(0.8f);
-            initialContactPlaying = true;
+            if (alertPlaying) {
+                //If alert playing, wait till alert has finished then play this again
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        playInitialContact();
+                    }
+                }, 0.45f);
+            } else {
+                initialContact.play(0.8f);
+                initialContactPlaying = true;
+                timer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        initialContactPlaying = false;
+                    }
+                }, 0.23f);
+            }
+        }
+    }
+
+    /** Plays alert sound effect if not playing */
+    public void playAlert() {
+        //Play only if not playing AND sound selected is sound effects only
+        if (!alertPlaying && TerminalControl.radarScreen.soundSel == 1) {
+            alert.play(0.8f);
+            alertPlaying = true;
             timer.scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
-                    initialContactPlaying = false;
+                    alertPlaying = false;
                 }
-            }, 0.23f);
+            }, 0.45f);
         }
     }
 
@@ -71,6 +99,7 @@ public class SoundManager {
         conflict.pause();
         runwayChange.pause();
         initialContact.pause();
+        alert.pause();
         timer.stop();
     }
 
@@ -79,6 +108,7 @@ public class SoundManager {
         conflict.resume();
         runwayChange.resume();
         initialContact.resume();
+        alert.resume();
         timer.start();
     }
 
@@ -90,5 +120,7 @@ public class SoundManager {
         runwayChange.dispose();
         initialContact.stop();
         initialContact.dispose();
+        alert.stop();
+        alert.dispose();
     }
 }

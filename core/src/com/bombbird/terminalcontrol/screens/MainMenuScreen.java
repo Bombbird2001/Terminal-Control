@@ -18,7 +18,7 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen;
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen;
-import com.bombbird.terminalcontrol.screens.settingsscreen.DefaultSettingsScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.MenuSettingsScreen;
 import com.bombbird.terminalcontrol.screens.upgradescreen.AchievementScreen;
 import com.bombbird.terminalcontrol.screens.upgradescreen.UpgradeScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
@@ -123,7 +123,7 @@ public class MainMenuScreen extends BasicScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Go to settings screen
-                game.setScreen(new DefaultSettingsScreen(game, background));
+                game.setScreen(new MenuSettingsScreen(game, background));
             }
         });
         stage.addActor(settingsButton);

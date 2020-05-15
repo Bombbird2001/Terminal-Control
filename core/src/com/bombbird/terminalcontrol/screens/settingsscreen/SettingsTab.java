@@ -5,17 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
+import com.bombbird.terminalcontrol.screens.settingsscreen.categories.TrafficSettingsScreen;
 
 public class SettingsTab {
     private static final int MAX_LENGTH = 4;
     private final int maxWidth;
 
-    private final SettingsScreen settingsScreen;
+    private final SettingsTemplateScreen settingsTemplateScreen;
     private final Array<Actor> actors;
     private int count;
 
-    public SettingsTab(SettingsScreen settingsScreen, int maxWidth) {
-        this.settingsScreen = settingsScreen;
+    public SettingsTab(SettingsTemplateScreen settingsTemplateScreen, int maxWidth) {
+        this.settingsTemplateScreen = settingsTemplateScreen;
         actors = new Array<>();
         this.maxWidth = maxWidth;
         count = 0;
@@ -25,8 +26,8 @@ public class SettingsTab {
         if (count >= MAX_LENGTH * maxWidth) throw new IllegalStateException("Tab has too many items: " + count + " of " + MAX_LENGTH * maxWidth);
 
         //Add box
-        box.setX(5760 / 2f - 400 + settingsScreen.xOffset + (2400 * (float)(count / MAX_LENGTH)));
-        box.setY(3240 * (0.8f - (count % MAX_LENGTH) * 0.15f) + settingsScreen.yOffset);
+        box.setX(5760 / 2f - 400 + settingsTemplateScreen.xOffset + (2400 * (float)(count / MAX_LENGTH)));
+        box.setY(3240 * (0.8f - (count % MAX_LENGTH) * 0.15f) + settingsTemplateScreen.yOffset);
         actors.add(box);
 
         //Add label
@@ -43,7 +44,7 @@ public class SettingsTab {
 
         //Add all actors to stage
         for (Actor actor: actors) {
-            settingsScreen.stage.addActor(actor);
+            settingsTemplateScreen.stage.addActor(actor);
         }
         count++;
     }
@@ -51,10 +52,10 @@ public class SettingsTab {
     public void updateVisibility(boolean visible) {
         //if (!DayNightManager.isNightAvailable() && settingsScreen instanceof GameSettingsScreen && !TerminalControl.full) settingsScreen.nextButton.setVisible(false); Temporary workaround, remove once more settings added
         for (Actor actor: actors) {
-            if ("night2".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
+            if ("night2".equals(actor.getName()) && settingsTemplateScreen instanceof TrafficSettingsScreen) {
                 actor.setVisible(visible && DayNightManager.isNightAvailable());
-            } else if ("night".equals(actor.getName()) && settingsScreen instanceof GameSettingsScreen) {
-                actor.setVisible(visible && DayNightManager.isNightAvailable() && ((GameSettingsScreen) settingsScreen).isAllowNight());
+            } else if ("night".equals(actor.getName()) && settingsTemplateScreen instanceof TrafficSettingsScreen) {
+                actor.setVisible(visible && DayNightManager.isNightAvailable() && ((TrafficSettingsScreen) settingsTemplateScreen).isAllowNight());
             } else {
                 actor.setVisible(visible);
             }

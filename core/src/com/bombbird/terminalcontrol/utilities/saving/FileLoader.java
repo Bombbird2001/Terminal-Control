@@ -131,11 +131,11 @@ public class FileLoader {
             //For each aircraft
             int index = 0;
             String icao = "";
-            int[] perfData = new int[6];
+            int[] perfData = new int[8];
             for (String s1: s.split(",")) {
                 if (index == 0) {
                     icao = s1; //Icao code of aircraft
-                } else if (index >= 2 && index <= 5) {
+                } else if (index >= 2 && index <= 5 || index >= 7 && index <= 8) {
                     perfData[index - 1] = Integer.parseInt(s1);
                 } else if (index == 1 || index == 6) {
                     //Wake turb cat, recat
@@ -148,6 +148,7 @@ public class FileLoader {
                 }
                 index++;
             }
+            if (index <= perfData.length) Gdx.app.log("Load error", "Possible missing aircraft parameter for " + icao);
             aircrafts.put(icao, perfData);
         }
         return aircrafts;

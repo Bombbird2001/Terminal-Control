@@ -9,14 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
-public class DefaultSettingsScreen extends SettingsScreen {
-    private final Image background;
-    private static final float specialScale = 7.8f;
-
+public class GlobalSettingsScreen extends SettingsTemplateScreen {
     private boolean sendCrash;
     private CheckBox sendCrashBox;
     private Label sendLabel;
@@ -33,11 +29,8 @@ public class DefaultSettingsScreen extends SettingsScreen {
     private Label defaultTabLabel;
     private int defaultTabNo;
 
-    public DefaultSettingsScreen(final TerminalControl game, Image background) {
-        super(game);
-
-        this.background = background;
-        this.background.scaleBy(specialScale);
+    public GlobalSettingsScreen(TerminalControl game, Image background) {
+        super(game, null, background);
 
         loadUI(-1200, -200);
 
@@ -45,20 +38,12 @@ public class DefaultSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void loadUI(int xOffset, int yOffset) {
-        stage.addActor(background);
-        super.loadUI(xOffset, yOffset);
-    }
-
-    @Override
-    public void loadButton() {
-        super.loadButton();
+    public void setButtonListeners() {
         cancelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //Back to main menu
                 background.scaleBy(-specialScale);
-                game.setScreen(new MainMenuScreen(game, background));
+                game.setScreen(new MenuSettingsScreen(game, background));
             }
         });
 
@@ -67,18 +52,14 @@ public class DefaultSettingsScreen extends SettingsScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 sendChanges();
                 background.scaleBy(-specialScale);
-                game.setScreen(new MainMenuScreen(game, background));
+                game.setScreen(new MenuSettingsScreen(game, background));
             }
         });
-
-        backButton.setPosition(5760 / 2f - 2500, 3240 - 2800);
-        nextButton.setPosition(5760 / 2f + 2000, 3240 - 2800);
     }
 
+    /** Loads selectBox for display settings */
     @Override
     public void loadBoxes() {
-        super.loadBoxes();
-
         CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
         checkBoxStyle.checkboxOn = TerminalControl.skin.getDrawable("Checked");
         checkBoxStyle.checkboxOff = TerminalControl.skin.getDrawable("Unchecked");
@@ -135,16 +116,16 @@ public class DefaultSettingsScreen extends SettingsScreen {
                 } else if ("Speed".equals(selected)) {
                     defaultTabNo = 2;
                 } else {
-                    Gdx.app.log("DefaultSettings", "Unknown default tab " + selected + " selected");
+                    Gdx.app.log(getClass().getName(), "Unknown default tab " + selected + " selected");
                 }
             }
         });
     }
 
+    /** Loads labels for display settings */
     @Override
     public void loadLabel() {
         super.loadLabel();
-
         Label.LabelStyle labelStyle2 = new Label.LabelStyle();
         labelStyle2.font = Fonts.defaultFont20;
         labelStyle2.fontColor = Color.WHITE;
@@ -164,60 +145,24 @@ public class DefaultSettingsScreen extends SettingsScreen {
         defaultTabLabel = new Label("Default UI tab: ", labelStyle);
     }
 
+    /** Loads actors for display settings into tabs */
     @Override
     public void loadTabs() {
         SettingsTab tab1 = new SettingsTab(this, 1);
-        tab1.addActors(trajectoryLine, trajectoryLabel);
-        tab1.addActors(pastTrajectory, pastTrajLabel);
-        tab1.addActors(weather, weatherLabel);
-        tab1.addActors(sound, soundLabel);
+        tab1.addActors(zoom, zoomLabel);
+        tab1.addActors(autosave, autosaveLabel);
+        tab1.addActors(defaultTab, defaultTabLabel);
+
         settingsTabs.add(tab1);
-
-        SettingsTab tab2 = new SettingsTab(this, 2);
-        tab2.addActors(emer, emerChanceLabel);
-        tab2.addActors(mva, mvaLabel);
-        tab2.addActors(ilsDash, ilsDashLabel);
-        tab2.addActors(dataTag, dataTagLabel);
-        tab2.addActors(defaultTab, defaultTabLabel);
-        if (TerminalControl.full) {
-            tab2.addActors(sweep, sweepLabel);
-            tab2.addActors(advTraj, advTrajLabel);
-            tab2.addActors(area, areaLabel);
-        } else {
-            tab2.addActors(zoom, zoomLabel);
-            tab2.addActors(autosave, autosaveLabel);
-        }
-        settingsTabs.add(tab2);
-
-        if (TerminalControl.full) {
-            SettingsTab tab3 = new SettingsTab(this, 2);
-            tab3.addActors(collision, collisionLabel);
-            tab3.addActors(zoom, zoomLabel);
-            tab3.addActors(autosave, autosaveLabel);
-            settingsTabs.add(tab3);
-        }
     }
 
+    /** Sets relevant options into select boxes */
     @Override
     public void setOptions() {
-        trajectorySel = TerminalControl.trajectorySel;
-        pastTrajTime = TerminalControl.pastTrajTime;
-        radarSweep = TerminalControl.radarSweep;
-        weatherSel = TerminalControl.weatherSel;
-        soundSel = TerminalControl.soundSel;
         sendCrash = TerminalControl.sendAnonCrash;
-        emerChance = TerminalControl.emerChance;
         increaseZoom = TerminalControl.increaseZoom;
         saveInterval = TerminalControl.saveInterval;
-        advTrajTime = TerminalControl.advTraj;
-        areaWarning = TerminalControl.areaWarning;
-        collisionWarning = TerminalControl.collisionWarning;
-        showMva = TerminalControl.showMva;
-        showIlsDash = TerminalControl.showIlsDash;
-        compactData = TerminalControl.compactData;
         defaultTabNo = TerminalControl.defaultTabNo;
-
-        super.setOptions();
 
         sendCrashBox.setChecked(sendCrash);
         zoom.setSelected(increaseZoom ? "On" : "Off");
@@ -232,23 +177,12 @@ public class DefaultSettingsScreen extends SettingsScreen {
         defaultTab.setSelectedIndex(defaultTabNo);
     }
 
+    /** Confirms and applies the changes set */
     @Override
     public void sendChanges() {
-        TerminalControl.trajectorySel = trajectorySel;
-        TerminalControl.pastTrajTime = pastTrajTime;
-        TerminalControl.weatherSel = weatherSel;
-        TerminalControl.soundSel = soundSel;
         TerminalControl.sendAnonCrash = sendCrash;
         TerminalControl.increaseZoom = increaseZoom;
-        TerminalControl.emerChance = emerChance;
         TerminalControl.saveInterval = saveInterval;
-        TerminalControl.radarSweep = radarSweep;
-        TerminalControl.advTraj = advTrajTime;
-        TerminalControl.areaWarning = areaWarning;
-        TerminalControl.collisionWarning = collisionWarning;
-        TerminalControl.showMva = showMva;
-        TerminalControl.showIlsDash = showIlsDash;
-        TerminalControl.compactData = compactData;
         TerminalControl.defaultTabNo = defaultTabNo;
 
         GameSaver.saveSettings();

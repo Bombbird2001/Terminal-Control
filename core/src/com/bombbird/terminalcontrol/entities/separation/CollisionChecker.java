@@ -14,9 +14,9 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
 public class CollisionChecker {
-    private RadarScreen radarScreen;
-    private Array<Aircraft[]> aircraftStorage;
-    private Array<PositionPoint[]> pointStorage;
+    private final RadarScreen radarScreen;
+    private final Array<Aircraft[]> aircraftStorage;
+    private final Array<PositionPoint[]> pointStorage;
 
     public CollisionChecker() {
         radarScreen = TerminalControl.radarScreen;
@@ -112,8 +112,8 @@ public class CollisionChecker {
                         float minima = radarScreen.separationMinima;
 
                         if (aircraft1.getIls() != null && aircraft2.getIls() != null && aircraft1.getIls().isInsideILS(aircraft1.getX(), aircraft1.getY()) && aircraft2.getIls().isInsideILS(aircraft2.getX(), aircraft2.getY())) {
-                            //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm
-                            minima = 2;
+                            //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm (using 1.85 so effective is 2.05)
+                            minima = 1.85f;
                         }
 
                         if (Math.abs(point1.altitude - point2.altitude) < 990 && dist < minima + 0.2f) {
