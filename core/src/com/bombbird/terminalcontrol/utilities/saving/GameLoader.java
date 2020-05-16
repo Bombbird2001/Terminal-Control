@@ -12,7 +12,7 @@ import com.bombbird.terminalcontrol.utilities.RenameManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class GameLoader {
     /** Loads save information from the save JSONObject */
@@ -37,9 +37,9 @@ public class GameLoader {
         }
 
         JSONArray jsonArray = save.getJSONArray("allAircraft");
-        HashMap<String, Boolean> allAircrafts = new HashMap<>();
+        HashSet<String> allAircrafts = new HashSet<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            allAircrafts.put(jsonArray.getString(i), true);
+            allAircrafts.add(jsonArray.getString(i));
         }
         TerminalControl.radarScreen.setAllAircraft(allAircrafts);
 

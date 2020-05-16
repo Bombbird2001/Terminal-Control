@@ -84,7 +84,7 @@ public class GameSaver {
         jsonObject.put("revision", Revision.CURRENT_REVISION);
 
         JSONArray jsonArray = new JSONArray();
-        for (String aircraft: radarScreen.getAllAircraft().keySet()) {
+        for (String aircraft: radarScreen.getAllAircraft()) {
             jsonArray.put(aircraft);
         }
         jsonObject.put("allAircraft", jsonArray);

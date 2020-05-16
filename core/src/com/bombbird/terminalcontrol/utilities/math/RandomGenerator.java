@@ -24,9 +24,9 @@ public class RandomGenerator {
             number = MathUtils.random(1, 999);
             String[] aircrafts = airport.getAircrafts().get(airline).split(">");
             aircraft = aircrafts[MathUtils.random(aircrafts.length - 1)];
-        } while (ArrayUtils.contains(excluded, airline + number) || TerminalControl.radarScreen.getAllAircraft().get(airline + number) != null);
+        } while (ArrayUtils.contains(excluded, airline + number) || TerminalControl.radarScreen.getAllAircraft().contains(airline + number));
 
-        TerminalControl.radarScreen.getAllAircraft().put(airline + number, true);
+        TerminalControl.radarScreen.getAllAircraft().add(airline + number);
 
         return new String[] {airline + number, aircraft};
     }

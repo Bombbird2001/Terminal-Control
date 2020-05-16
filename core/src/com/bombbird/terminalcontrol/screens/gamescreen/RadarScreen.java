@@ -120,7 +120,7 @@ public class RadarScreen extends GameScreen {
     private boolean sectorClosed;
 
     //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
-    private HashMap<String, Boolean> allAircraft;
+    private HashSet<String> allAircraft;
 
     //Waypoint manager for managing waypoint selected status
     public WaypointManager waypointManager;
@@ -489,7 +489,7 @@ public class RadarScreen extends GameScreen {
         collisionChecker = new CollisionChecker();
 
         //Load aircraft callsign hashMap
-        allAircraft = new HashMap<>();
+        allAircraft = new HashSet<>();
 
         //Load waypoint manager
         waypointManager = new WaypointManager();
@@ -869,11 +869,11 @@ public class RadarScreen extends GameScreen {
         this.commBox = commBox;
     }
 
-    public HashMap<String, Boolean> getAllAircraft() {
+    public HashSet<String> getAllAircraft() {
         return allAircraft;
     }
 
-    public void setAllAircraft(HashMap<String, Boolean> allAircraft) {
+    public void setAllAircraft(HashSet<String> allAircraft) {
         this.allAircraft = allAircraft;
     }
 
