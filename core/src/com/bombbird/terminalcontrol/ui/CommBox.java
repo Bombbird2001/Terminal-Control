@@ -235,7 +235,7 @@ public class CommBox {
                 break;
             case Departure.SHORTCUT_REQUEST:
                 if (random == 0) {
-                    requestText = ", we would like a shortcut";
+                    requestText = ", can we have a shortcut?";
                 } else if (random == 1) {
                     requestText = ", request shortcut";
                 }
@@ -259,7 +259,7 @@ public class CommBox {
     public void requestHigherClimb(Departure departure) {
         String wake = departure.getWakeString();
         String text = departure.getCallsign() + wake;
-        String requestText = "";
+        String requestText;
         if (MathUtils.randomBoolean()) {
             requestText = ", requesting further climb";
         } else {
