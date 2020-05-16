@@ -87,6 +87,7 @@ public class SeparationChecker extends Actor {
             int tmpActive = active;
             while (tmpActive > lastNumber) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
+                radarScreen.setSeparationIncidents(radarScreen.getSeparationIncidents() + 1);
                 UnlockManager.incrementConflicts();
                 tmpActive--;
             }

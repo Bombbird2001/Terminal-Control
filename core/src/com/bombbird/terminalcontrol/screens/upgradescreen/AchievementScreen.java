@@ -15,7 +15,6 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 import java.util.Map;
 
 public class AchievementScreen extends UpgradeScreen {
-
     public AchievementScreen(TerminalControl game, Image background) {
         super(game, background);
     }

@@ -102,6 +102,9 @@ public class RadarScreen extends GameScreen {
     private int highScore; //High score of player
 
     private int arrivals;
+    private int separationIncidents;
+    private float wakeInfringeTime;
+
     private float spawnTimer;
 
     private char information;
@@ -168,6 +171,8 @@ public class RadarScreen extends GameScreen {
         score = 0;
         highScore = 0;
         arrivals = 0;
+        separationIncidents = 0;
+        wakeInfringeTime = 0;
         spawnTimer = 0;
         information = (char) MathUtils.random(65, 90);
 
@@ -240,6 +245,8 @@ public class RadarScreen extends GameScreen {
         score = save.getInt("score");
         highScore = save.getInt("highScore");
         arrivals = save.getInt("arrivals");
+        separationIncidents = save.optInt("separationIncidents", 0);
+        wakeInfringeTime = (float) save.optDouble("wakeInfringeTime", 0);
         spawnTimer = (float) save.getDouble("spawnTimer");
         information = save.isNull("information") ? (char) MathUtils.random(65, 90) : (char) save.getInt("information");
 
@@ -741,6 +748,17 @@ public class RadarScreen extends GameScreen {
         }
     }
 
+    /** Estimates the duration played (if save has no play time data) */
+    private float estimatePlayTime() {
+        int landed = 0;
+        for (Airport airport: airports.values()) {
+            landed += airport.getLandings();
+        }
+
+        //Assume 90 seconds between landings lol
+        return landed * 90;
+    }
+
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
@@ -760,6 +778,7 @@ public class RadarScreen extends GameScreen {
             loadUI();
             GameLoader.loadSaveData(save);
             uiLoaded = true;
+            setPlayTime((float) save.optDouble("playTime", estimatePlayTime()));
         }
         TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();
@@ -845,6 +864,17 @@ public class RadarScreen extends GameScreen {
         return arrivals;
     }
 
+    public int getDepartures() {
+        int count = 0;
+        for (Aircraft aircraft: aircrafts.values()) {
+            if (aircraft instanceof Departure && aircraft.isArrivalDeparture()) {
+                //If aircraft is a departure, and is in your control
+                count++;
+            }
+        }
+        return count;
+    }
+
     public float getRadarTime() {
         return radarTime;
     }
@@ -918,5 +948,21 @@ public class RadarScreen extends GameScreen {
 
     public void setArrivals(int arrivals) {
         this.arrivals = arrivals;
+    }
+
+    public int getSeparationIncidents() {
+        return separationIncidents;
+    }
+
+    public void setSeparationIncidents(int separationIncidents) {
+        this.separationIncidents = separationIncidents;
+    }
+
+    public float getWakeInfringeTime() {
+        return wakeInfringeTime;
+    }
+
+    public void setWakeInfringeTime(float wakeInfringeTime) {
+        this.wakeInfringeTime = wakeInfringeTime;
     }
 }

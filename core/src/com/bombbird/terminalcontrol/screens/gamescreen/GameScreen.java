@@ -44,6 +44,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Flag whether to quit the tutorial on next loop
     private boolean tutorialQuit;
 
+    //Play time timer
+    private float playTime;
+
     //Set input processors
     public InputMultiplexer inputMultiplexer = new InputMultiplexer();
     public GestureDetector gd = new GestureDetector(40, 0.2f,1.1f, 0.15f, this);
@@ -92,10 +95,6 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     //Create waypoints
     public HashMap<String, Waypoint> waypoints;
 
-    public void setTutorialQuit(boolean tutorialQuit) {
-        this.tutorialQuit = tutorialQuit;
-    }
-
     public boolean running;
 
     public int speed = 1;
@@ -112,6 +111,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         loadLabels();
 
         running = true;
+
+        playTime = 0;
     }
 
     /** Load loading, tips labels */
@@ -298,6 +299,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                         updateTutorial(); //Tutorial timer is updated even if tutorial is paused
                         if (!checkTutorialPaused()) update();
                     }
+                    //Update playtime counter
+                    playTime += delta;
                     //Render shapes only if METAR has finished loading
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                     renderShape();
@@ -611,7 +614,19 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         } else {
             soundManager.pause();
             DataTag.pauseTimers();
-            game.setScreen(new PauseScreen(game, this));
+            game.setScreen(new PauseScreen(game, (RadarScreen) this));
         }
+    }
+
+    public void setTutorialQuit(boolean tutorialQuit) {
+        this.tutorialQuit = tutorialQuit;
+    }
+
+    public float getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(float playTime) {
+        this.playTime = playTime;
     }
 }

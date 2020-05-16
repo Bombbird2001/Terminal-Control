@@ -1,11 +1,14 @@
 package com.bombbird.terminalcontrol.screens.upgradescreen;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.screens.MainMenuScreen;
+import com.bombbird.terminalcontrol.screens.PauseScreen;
 import com.bombbird.terminalcontrol.screens.StandardUIScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
@@ -27,6 +30,34 @@ public class UpgradeScreen extends StandardUIScreen {
         loadLabel();
         loadScroll();
         loadUnlocks();
+    }
+
+    /** Loads back button */
+    public void loadButtons() {
+        //Set button textures
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = Fonts.defaultFont12;
+        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up");
+        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
+
+        //Set back button params
+        TextButton backButton = new TextButton("<= Back", buttonStyle);
+        backButton.setWidth(MainMenuScreen.BUTTON_WIDTH);
+        backButton.setHeight(MainMenuScreen.BUTTON_HEIGHT);
+        backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f);
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Go back to main menu
+                if (TerminalControl.radarScreen == null) {
+                    game.setScreen(new MainMenuScreen(game, background));
+                } else {
+                    game.setScreen(new PauseScreen(game, TerminalControl.radarScreen));
+                }
+            }
+        });
+
+        stage.addActor(backButton);
     }
 
     /** Loads the appropriate title for label */

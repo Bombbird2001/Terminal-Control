@@ -218,4 +218,10 @@ public class WeatherScreen extends BasicScreen {
         });
         stage.addActor(confirmButton);
     }
+
+    /** Overrides show method of basic screen */
+    @Override
+    public void show() {
+        loadUI();
+    }
 }

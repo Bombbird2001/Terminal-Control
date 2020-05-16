@@ -7,8 +7,7 @@ public class WaypointShifter {
 
     public static void loadData() {
         if (movementData.size() > 0) return;
-        //TCTP
-        putData("TCTP", -64, -8, "AMPOR");
+        //TCTP - No adjustments needed
         //TCWS - No adjustments needed
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON");

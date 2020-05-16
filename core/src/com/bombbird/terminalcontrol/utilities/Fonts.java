@@ -14,6 +14,7 @@ public class Fonts {
     public static BitmapFont defaultFont12 = generateFont(defaultFont, 48);
     public static BitmapFont defaultFont16 = generateFont(defaultFont, 64);
     public static BitmapFont defaultFont20 = generateFont(defaultFont, 80);
+    public static BitmapFont defaultFont24 = generateFont(defaultFont, 96);
     public static BitmapFont defaultFont30 = generateFont(defaultFont, 120);
 
     public static void generateAllFonts() {
@@ -24,6 +25,7 @@ public class Fonts {
         defaultFont12 = generateFont(defaultFont, 48);
         defaultFont16 = generateFont(defaultFont, 64);
         defaultFont20 = generateFont(defaultFont, 80);
+        defaultFont24 = generateFont(defaultFont, 96);
         defaultFont30 = generateFont(defaultFont, 120);
     }
 
@@ -56,6 +58,7 @@ public class Fonts {
             defaultFont12.dispose();
             defaultFont16.dispose();
             defaultFont20.dispose();
+            defaultFont24.dispose();
             defaultFont30.dispose();
         }
 
@@ -66,6 +69,7 @@ public class Fonts {
         defaultFont12 = null;
         defaultFont16 = null;
         defaultFont20 = null;
+        defaultFont24 = null;
         defaultFont30 = null;
     }
 }
