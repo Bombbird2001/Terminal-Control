@@ -133,9 +133,12 @@ public class PauseScreen extends BasicScreen {
         labelStyle.fontColor = Color.WHITE;
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(radarScreen.getArrivals()).append(" arrivals in control\n");
-        stringBuilder.append(radarScreen.getDepartures()).append(" departures in control\n");
-        stringBuilder.append(radarScreen.getSeparationIncidents()).append(" total separation incidents\n");
+        String arrStr = radarScreen.getArrivals() == 1 ? " arrival" : " arrivals";
+        stringBuilder.append(radarScreen.getArrivals()).append(arrStr).append(" in control\n");
+        String depStr = radarScreen.getDepartures() == 1 ? " departure" : " departures";
+        stringBuilder.append(radarScreen.getDepartures()).append(depStr).append(" in control\n");
+        String sepStr = radarScreen.getSeparationIncidents() == 1 ? "incident" : "incidents";
+        stringBuilder.append(radarScreen.getSeparationIncidents()).append(" total separation ").append(sepStr).append("\n");
         stringBuilder.append((int) radarScreen.getWakeInfringeTime()).append("s of wake separation infringement\n");
         int totalSecs = (int) radarScreen.getPlayTime();
         int hrs = totalSecs / 3600;
