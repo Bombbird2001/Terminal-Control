@@ -368,6 +368,7 @@ public class Departure extends Aircraft {
         }
         if (isArrivalDeparture() && getRequest() != NO_REQUEST && !isRequested() && getAltitude() >= getRequestAlt()) {
             //Ask for request when above trigger altitude
+            if (getRequest() == SHORTCUT_REQUEST && getRemainingWaypoints().size <= 1) return; //Doesn't make sense for shortcut if less than 2 waypoints remaining
             setActionRequired(true);
             getDataTag().startFlash();
             ui.updateAckHandButton(this);

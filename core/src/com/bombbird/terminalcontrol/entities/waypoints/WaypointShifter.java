@@ -25,7 +25,8 @@ public class WaypointShifter {
         putData("TCBB", 20, 0, "CLIPS", "BAYNO");
         putData("TCBB", 96, -24, "PONCH");
         putData("TCBB", 64, -112, "ERIGE", "GROND");
-        //TCBD - No adjustments needed
+        //TCBD
+        putData("TCBD", 0, -96, "LANNI");
         //TCMD
         putData("TCMD", 32, -128, "DPT");
         putData("TCMD", -20, 0, "TENSI");

@@ -92,6 +92,7 @@ public class RadarScreen extends GameScreen {
     public boolean compactData;
     public boolean showUncontrolled;
     public boolean alwaysShowBordersBackground;
+    public int lineSpacingValue;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -199,6 +200,7 @@ public class RadarScreen extends GameScreen {
             showUncontrolled = false;
             alwaysShowBordersBackground = true;
             rangeCircleDist = 0;
+            lineSpacingValue = 1;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -214,6 +216,7 @@ public class RadarScreen extends GameScreen {
             showUncontrolled = TerminalControl.showUncontrolled;
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
             rangeCircleDist = TerminalControl.rangeCircleDist;
+            lineSpacingValue = TerminalControl.lineSpacingValue;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -272,6 +275,7 @@ public class RadarScreen extends GameScreen {
         showUncontrolled = save.optBoolean("showUncontrolled", false);
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true);
         rangeCircleDist = save.optInt("rangeCircleDist", 0);
+        lineSpacingValue = save.optInt("lineSpacingValue", 1);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -778,7 +782,7 @@ public class RadarScreen extends GameScreen {
             loadUI();
             GameLoader.loadSaveData(save);
             uiLoaded = true;
-            setPlayTime((float) save.optDouble("playTime", estimatePlayTime()));
+            setPlayTime(save == null ? 0 : (float) save.optDouble("playTime", estimatePlayTime()));
         }
         TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();

@@ -35,7 +35,7 @@ public class Waypoint extends Actor {
         //Set the label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont6;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.fontColor = Color.GRAY;
         label = new Label(name, labelStyle);
         label.setPosition(posX - label.getWidth() / 2, posY + 16);
         label.setAlignment(Align.bottom);
@@ -43,7 +43,7 @@ public class Waypoint extends Actor {
         //Set restriction label
         Label.LabelStyle labelStyle1 = new Label.LabelStyle();
         labelStyle1.font = Fonts.defaultFont6;
-        labelStyle1.fontColor = Color.GRAY;
+        labelStyle1.fontColor = Color.BLUE;
         restrLabel = new Label("This should not be visible", labelStyle1);
         restrLabel.setPosition(posX - restrLabel.getWidth() / 2, posY + 48);
         restrLabel.setAlignment(Align.bottom);
@@ -77,7 +77,7 @@ public class Waypoint extends Actor {
 
     public void renderShape() {
         if (selected && isInsideRadar()) {
-            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.setColor(Color.GRAY);
             shapeRenderer.circle(getPosX(), getPosY(), 12, 10);
         }
     }

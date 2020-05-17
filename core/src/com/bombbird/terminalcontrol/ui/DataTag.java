@@ -82,6 +82,11 @@ public class DataTag {
         labelText[9] = aircraft.getAirport().getIcao();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont6;
+        if (radarScreen.lineSpacingValue == 0) {
+            labelStyle.font = Fonts.compressedFont6;
+        } else if (radarScreen.lineSpacingValue == 2) {
+            labelStyle.font = Fonts.expandedFont6;
+        }
         labelStyle.fontColor = Color.WHITE;
         label = new Label("Loading...", labelStyle);
         label.setPosition(aircraft.getX() - label.getWidth() / 2, aircraft.getY() + 25);
@@ -377,6 +382,11 @@ public class DataTag {
         } else if (label.getY() + label.getHeight() > 3240) {
             label.setY(3240 - label.getHeight());
         }
+    }
+
+    /** Updates the font type (compressed/default/expanded) */
+    public void updateLabelStyle(Label.LabelStyle labelStyle) {
+        label.setStyle(labelStyle);
     }
 
     /** Updates the label on the radar given aircraft's radar data and other data */

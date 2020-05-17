@@ -208,9 +208,10 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             radarScreen.showMva = showMva;
             radarScreen.showIlsDash = showIlsDash;
             radarScreen.showUncontrolled = showUncontrolled;
+            boolean rangeDistChanged = radarScreen.rangeCircleDist != rangeCircleDist;
             radarScreen.rangeCircleDist = rangeCircleDist;
 
-            radarScreen.loadRange(); //Reload the range circles in case of any changes
+            if (rangeDistChanged) radarScreen.loadRange(); //Reload the range circles in case of any changes
         } else {
             TerminalControl.trajectorySel = trajectorySel;
             TerminalControl.pastTrajTime = pastTrajTime;

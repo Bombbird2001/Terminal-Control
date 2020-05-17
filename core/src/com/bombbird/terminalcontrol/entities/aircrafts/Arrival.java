@@ -615,6 +615,10 @@ public class Arrival extends Aircraft {
         int approachPosition = getIls().getRwy().getAircraftsOnAppr().indexOf(this, false);
         if (approachPosition > 0) {
             Aircraft aircraftInFront = getIls().getRwy().getAircraftsOnAppr().get(approachPosition - 1);
+            if (aircraftInFront == null) {
+                getIls().getRwy().getAircraftsOnAppr().removeIndex(approachPosition - 1);
+                return;
+            }
             float targetX = getIls().getX();
             float targetY = getIls().getY();
             if (getIls() instanceof LDA) {
