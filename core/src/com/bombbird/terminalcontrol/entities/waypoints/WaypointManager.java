@@ -136,6 +136,15 @@ public class WaypointManager {
             } else {
                 highestAlt[i] = -1;
             }
+
+            //Determine if speed needs to be displayed
+            int thisSpd = route.getWptMaxSpd(i);
+            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
+                spd[i] = thisSpd;
+                prevSpd = thisSpd;
+            } else {
+                spd[i] = -1;
+            }
         }
 
         for (int i = 0; i < endIndex; i++) {
@@ -152,15 +161,6 @@ public class WaypointManager {
                 //If is fixed altitude, set both highest and lowest to same alt
                 highestAlt[i] = thisLowest;
                 lowestAlt[i] = thisLowest;
-            }
-
-            //Determine if speed needs to be displayed
-            int thisSpd = route.getWptMaxSpd(i);
-            if (prevSpd == -1 || route.getWptMaxSpd(i) < prevSpd) {
-                spd[i] = thisSpd;
-                prevSpd = thisSpd;
-            } else {
-                spd[i] = -1;
             }
         }
 

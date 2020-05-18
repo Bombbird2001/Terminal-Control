@@ -334,15 +334,19 @@ public class Departure extends Aircraft {
     @Override
     public void updateSpd() {
         if (!higherSpdSet && getAltitude() >= 5000 && getAltitude() > getAirport().getElevation() + 4000) {
-            if (getClearedIas() < 250) {
+            int waypointSpd = getDirect() == null || getNavState().getDispSpdMode().first() == NavState.NO_RESTR ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
+            if (getClearedIas() < 250 && (waypointSpd == -1 || waypointSpd >= 250)) {
                 setClearedIas(250);
                 super.updateSpd();
+            } else if (getClearedIas() < waypointSpd) {
+                setClearedIas(waypointSpd);
+                super.updateSpd();
             }
-            int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
-            higherSpdSet = getNavState().getDispSpdMode().last() == NavState.NO_RESTR || waypointSpd >= 250 || waypointSpd == -1;
+            higherSpdSet = waypointSpd >= 250 || waypointSpd == -1;
         }
-        if (!cruiseSpdSet && getAltitude() > 10000) {
-            if (getClearedIas() < getClimbSpd()) {
+        if (!cruiseSpdSet && getAltitude() >= 9999) {
+            int waypointSpd = getDirect() == null || getNavState().getDispSpdMode().first() == NavState.NO_RESTR ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
+            if (getClearedIas() < getClimbSpd() && waypointSpd == -1) {
                 if (isSelected()) {
                     Tab.notListening = true;
                     Array<String> array = ui.spdTab.valueBox.getList().getItems();
@@ -353,9 +357,11 @@ public class Departure extends Aircraft {
                 }
                 setClearedIas(getClimbSpd());
                 super.updateSpd();
+            } else if (getClearedIas() < waypointSpd) {
+                setClearedIas(waypointSpd);
+                super.updateSpd();
             }
-            int waypointSpd = getDirect() == null ? -1 : getRoute().getWptMaxSpd(getDirect().getName());
-            cruiseSpdSet = getNavState().getDispSpdMode().last() == NavState.NO_RESTR || waypointSpd >= getClimbSpd() || waypointSpd == -1;
+            cruiseSpdSet = waypointSpd == -1;
         }
     }
 
@@ -385,7 +391,7 @@ public class Departure extends Aircraft {
     @Override
     public void contactOther() {
         setControlState(ControlState.UNCONTROLLED);
-        setClearedIas(getClimbSpd());
+        if (getDirect() == null || getRoute().getWptMaxSpd(getDirect().getName()) == -1) setClearedIas(getClimbSpd());
         super.updateSpd();
         handedOver = true;
         setExpedite(false);
