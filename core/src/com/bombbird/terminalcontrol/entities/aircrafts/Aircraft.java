@@ -1222,7 +1222,7 @@ public class Aircraft extends Actor {
         ui.latTab.getSettingsBox().setSelected(navState.getLastDispModeString(NavState.LATERAL));
         ui.altTab.getSettingsBox().setSelected(navState.getAltStringFromCode(navState.getDispAltMode().last()));
         ui.spdTab.getSettingsBox().setSelected(navState.getSpdStringFromCode(navState.getDispSpdMode().last()));
-        if (!Ui.FLY_HEADING.equals(LatTab.latMode) && !Ui.LEFT_HEADING.equals(LatTab.latMode) && !Ui.RIGHT_HEADING.equals(LatTab.latMode)) LatTab.clearedHdg = clearedHeading;
+        LatTab.clearedHdg = navState.getClearedHdg().last();
         if (direct != null && ui.latTab.getSettingsBox().getSelected().contains(getSidStar().getName()) && route.findWptIndex(direct.getName()) > route.findWptIndex(ui.latTab.getValueBox().getSelected())) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point
             ui.latTab.getValueBox().setSelected(direct.getName());

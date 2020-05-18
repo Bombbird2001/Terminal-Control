@@ -51,8 +51,8 @@ public class Departure extends Aircraft {
         cruiseSpdSet = false;
 
         //Additional requests
-        if (MathUtils.randomBoolean(0.1f)) {
-            //10% chance to request shortcut/high speed climb
+        if (MathUtils.randomBoolean(0.1f) && !radarScreen.tutorial) {
+            //10% chance to request shortcut/high speed climb, except in tutorial
             if (MathUtils.randomBoolean() && getClimbSpd() > 250) {
                 setRequest(HIGH_SPEED_REQUEST);
                 setRequestAlt(MathUtils.random(getAirport().getElevation() + 4000, 9000));

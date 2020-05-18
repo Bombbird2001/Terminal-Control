@@ -28,8 +28,8 @@ public class RandomTip {
         tips.add("Tap on the METAR label of an airport (top left of screen) to change its runway configuration");
         tips.add("Wake turbulence can cause an aircraft to go around");
         tips.add("Check out the help manual for more detailed descriptions of airports, game mechanics");
-        tips.add("ILS display style can be changed in the game settings");
-        tips.add("Aircraft data tag display style can be changed in the game settings");
+        tips.add("ILS display style can be changed in the game settings, under the display section");
+        tips.add("Aircraft data tag display style can be changed in the game settings, under the data tag section");
         tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in the game settings");
         tips.add("Airspace too congested? Use the close sector button to stop new arrivals from entering your airspace");
 

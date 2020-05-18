@@ -327,6 +327,22 @@ public class LatTab extends Tab {
                 ilsChanged = !clearedILS.equals(lastILS.getName());
             }
         }
+
+        if (latModeChanged) {
+            tabChanged = true;
+        } else {
+            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+                tabChanged = afterWptChanged || afterWptHdgChanged;
+            } else if (latMode.contains("arrival") || latMode.contains("departure")) {
+                tabChanged = wptChanged;
+            } else if (latMode.contains("heading")) {
+                tabChanged = hdgChanged || ilsChanged;
+            } else if (Ui.HOLD_AT.equals(latMode)) {
+                tabChanged = holdWptChanged;
+            } else if (Ui.CHANGE_STAR.equals(latMode)) {
+                tabChanged = starChanged;
+            }
+        }
     }
 
     @Override
@@ -356,21 +372,6 @@ public class LatTab extends Tab {
             hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
         }
 
-        if (latModeChanged) {
-            tabChanged = true;
-        } else {
-            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
-                tabChanged = afterWptChanged || afterWptHdgChanged;
-            } else if (latMode.contains("arrival") || latMode.contains("departure")) {
-                tabChanged = wptChanged;
-            } else if (latMode.contains("heading")) {
-                tabChanged = hdgChanged || ilsChanged;
-            } else if (Ui.HOLD_AT.equals(latMode)) {
-                tabChanged = holdWptChanged;
-            } else if (Ui.CHANGE_STAR.equals(latMode)) {
-                tabChanged = starChanged;
-            }
-        }
         super.updateElementColours();
 
         notListening = false;
@@ -501,7 +502,7 @@ public class LatTab extends Tab {
         } else if (latMode.contains("heading")) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();
-            if (selectedAircraft != null && ("After waypoint, fly heading".equals(prevMode) || !prevMode.contains("heading"))) {
+            if (selectedAircraft != null && (!"After waypoint, fly heading".equals(prevMode) && !prevMode.contains("heading"))) {
                 //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
                 clearedHdg = MathTools.modulateHeading(clearedHdg);

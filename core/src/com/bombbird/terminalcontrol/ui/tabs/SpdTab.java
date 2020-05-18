@@ -91,6 +91,8 @@ public class SpdTab extends Tab {
     public void compareWithAC() {
         spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED));
         spdChanged = clearedSpd != selectedAircraft.getNavState().getClearedSpd().last();
+
+        tabChanged = spdModeChanged || spdChanged;
     }
 
     @Override
@@ -110,7 +112,6 @@ public class SpdTab extends Tab {
             valueBox.getStyle().fontColor = Color.WHITE;
         }
 
-        tabChanged = spdModeChanged || spdChanged;
         super.updateElementColours();
         notListening = false;
     }

@@ -79,6 +79,21 @@ public class ChangelogScreen extends StandardUIScreen {
 
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
+        //Version 1.4.2006.1
+        Array<String> content10 = new Array<>();
+        content10.add("-Mechanics: More realistic cruise altitude, speeds for certain aircraft types");
+        content10.add("-Mechanics: Departures may now request for shortcuts, high speed climb, or reminder to be cleared to a higher altitude");
+        if (TerminalControl.full) content10.add("-TCPG: Added STAR transitions for TCPG, TCPO");
+        content10.add("-Stats: Individual game stats are shown on the pause screen - most stats will start from 0");
+        content10.add("-Settings: A refreshed settings page, with options grouped into different sections for easier navigation");
+        content10.add("-Display: New option whether to show the trail of an uncontrolled aircraft always, or only when selected");
+        content10.add("-Display: New option to set the intervals between range rings, or to turn range rings off");
+        content10.add("-Data tag: New option whether to show the data tag border, background always, or only when selected");
+        content10.add("-Data tag: New option to set spacing between data tag rows");
+        content10.add("-Sounds: New sound for alerts (yellow messages) and go-arounds");
+        content10.add("-Tutorial: Important points, key words are now highlighted in different colours for easier following");
+        content10.add("-Many bug fixes, including restrictions incorrectly being dispayed for SIDs");
+        changeLogContent.put("1.4.2006.1", content10);
 
         //Version 1.4.2005.2
         Array<String> content9 = new Array<>();

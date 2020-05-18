@@ -107,6 +107,8 @@ public class AltTab extends Tab {
     public void compareWithAC() {
         altModeChanged = !altMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE));
         altChanged = clearedAlt != selectedAircraft.getNavState().getClearedAlt().last();
+
+        tabChanged = altModeChanged || altChanged;
     }
 
     @Override
@@ -126,7 +128,6 @@ public class AltTab extends Tab {
             valueBox.getStyle().fontColor = Color.WHITE;
         }
 
-        tabChanged = altModeChanged || altChanged;
         super.updateElementColours();
         notListening = false;
     }
