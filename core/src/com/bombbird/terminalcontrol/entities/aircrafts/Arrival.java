@@ -355,6 +355,10 @@ public class Arrival extends Aircraft {
         if (!finalSpdSet && isLocCap() && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getRwy().getX(), getIls().getRwy().getY())) <= 7) {
             if (getClearedIas() > getApchSpd()) {
                 setClearedIas(getApchSpd());
+                getNavState().replaceAllClearedSpdToLower();
+                if (isArrivalDeparture() && isSelected()) {
+                    ui.spdTab.valueBox.setSelected(Integer.toString(getApchSpd()));
+                }
                 super.updateSpd();
             }
             finalSpdSet = true;

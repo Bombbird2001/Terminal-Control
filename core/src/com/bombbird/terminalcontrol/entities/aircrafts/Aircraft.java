@@ -1517,7 +1517,10 @@ public class Aircraft extends Actor {
         if (clearedIas > highestSpd) {
             clearedIas = highestSpd;
             navState.replaceAllClearedSpdToLower();
-            if (selected && isArrivalDeparture()) updateUISelections();
+            if (selected && isArrivalDeparture()) {
+                updateUISelections();
+                ui.updateState();
+            }
         }
     }
 

@@ -502,7 +502,7 @@ public class LatTab extends Tab {
         } else if (latMode.contains("heading")) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();
-            if (selectedAircraft != null && (!"After waypoint, fly heading".equals(prevMode) && !prevMode.contains("heading"))) {
+            if (selectedAircraft != null && ("After waypoint, fly heading".equals(prevMode) || !prevMode.contains("heading"))) {
                 //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
                 clearedHdg = MathTools.modulateHeading(clearedHdg);
