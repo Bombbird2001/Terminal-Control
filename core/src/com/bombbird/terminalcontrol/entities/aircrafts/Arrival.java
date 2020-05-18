@@ -743,6 +743,7 @@ public class Arrival extends Aircraft {
             if (getEmergency().isEmergency()) {
                 score = 5; //5 points for landing an emergency!
                 UnlockManager.incrementEmergency();
+                radarScreen.setEmergenciesLanded(radarScreen.getEmergenciesLanded() + 1);
             }
             radarScreen.setScore(radarScreen.getScore() + score);
             getAirport().setLandings(getAirport().getLandings() + 1);

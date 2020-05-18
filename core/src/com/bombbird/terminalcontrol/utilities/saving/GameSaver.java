@@ -54,6 +54,7 @@ public class GameSaver {
         jsonObject.put("arrivals", radarScreen.getArrivals());
         jsonObject.put("separationIncidents", radarScreen.getSeparationIncidents());
         jsonObject.put("wakeInfringeTime", (double) radarScreen.getWakeInfringeTime());
+        jsonObject.put("emergenciesLanded", radarScreen.getEmergenciesLanded());
         jsonObject.put("playTime", (double) radarScreen.getPlayTime());
         jsonObject.put("spawnTimer", (double) radarScreen.getSpawnTimer());
         jsonObject.put("information", radarScreen.getInformation());

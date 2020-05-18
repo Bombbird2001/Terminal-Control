@@ -140,6 +140,7 @@ public class PauseScreen extends BasicScreen {
         String sepStr = radarScreen.getSeparationIncidents() == 1 ? "incident" : "incidents";
         stringBuilder.append(radarScreen.getSeparationIncidents()).append(" total separation ").append(sepStr).append("\n");
         stringBuilder.append((int) radarScreen.getWakeInfringeTime()).append("s of wake separation infringement\n");
+        stringBuilder.append(radarScreen.getEmergenciesLanded()).append(" emergency aircraft landed\n");
         int totalSecs = (int) radarScreen.getPlayTime();
         int hrs = totalSecs / 3600;
         int mins = (totalSecs % 3600) / 60;

@@ -102,9 +102,11 @@ public class RadarScreen extends GameScreen {
     private int score; //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
     private int highScore; //High score of player
 
+    //Fun stats
     private int arrivals;
     private int separationIncidents;
     private float wakeInfringeTime;
+    private int emergenciesLanded;
 
     private float spawnTimer;
 
@@ -174,6 +176,7 @@ public class RadarScreen extends GameScreen {
         arrivals = 0;
         separationIncidents = 0;
         wakeInfringeTime = 0;
+        emergenciesLanded = 0;
         spawnTimer = 0;
         information = (char) MathUtils.random(65, 90);
 
@@ -250,6 +253,7 @@ public class RadarScreen extends GameScreen {
         arrivals = save.getInt("arrivals");
         separationIncidents = save.optInt("separationIncidents", 0);
         wakeInfringeTime = (float) save.optDouble("wakeInfringeTime", 0);
+        emergenciesLanded = save.optInt("emergenciesLanded", 0);
         spawnTimer = (float) save.getDouble("spawnTimer");
         information = save.isNull("information") ? (char) MathUtils.random(65, 90) : (char) save.getInt("information");
 
@@ -968,5 +972,13 @@ public class RadarScreen extends GameScreen {
 
     public void setWakeInfringeTime(float wakeInfringeTime) {
         this.wakeInfringeTime = wakeInfringeTime;
+    }
+
+    public int getEmergenciesLanded() {
+        return emergenciesLanded;
+    }
+
+    public void setEmergenciesLanded(int emergenciesLanded) {
+        this.emergenciesLanded = emergenciesLanded;
     }
 }
