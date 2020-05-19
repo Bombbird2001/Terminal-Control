@@ -32,6 +32,7 @@ public class RandomTip {
         tips.add("Aircraft data tag display style can be changed in the game settings, under the data tag section");
         tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in the game settings");
         tips.add("Airspace too congested? Use the close sector button to stop new arrivals from entering your airspace");
+        tips.add("Colour scheme can be changed in the game settings, under the display section");
 
         if (Gdx.app.getType() == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!");
     }

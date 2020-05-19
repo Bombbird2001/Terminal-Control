@@ -140,13 +140,13 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         });
 
         colour = createStandardSelectBox();
-        colour.setItems("More colourful", "More standardized");
+        colour.setItems("More colourful", "More standardised");
         colour.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if ("More colourful".equals(colour.getSelected())) {
                     colourStyle = 0;
-                } else if ("More standardized".equals(colour.getSelected())) {
+                } else if ("More standardised".equals(colour.getSelected())) {
                     colourStyle = 1;
                 } else {
                     Gdx.app.log(getClass().getName(), "Unknown colour style setting " + colour.getSelected());

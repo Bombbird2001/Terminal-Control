@@ -86,6 +86,7 @@ public class ChangelogScreen extends StandardUIScreen {
         if (TerminalControl.full) content10.add("-TCPG: Added STAR transitions for TCPG, TCPO");
         content10.add("-Stats: Individual game stats are shown on the pause screen - most stats will start from 0");
         content10.add("-Settings: A refreshed settings page, with options grouped into different sections for easier navigation");
+        content10.add("-Display: New option to set different colour styles for the radar screen - colourful or standardised");
         content10.add("-Display: New option whether to show the trail of an uncontrolled aircraft always, or only when selected");
         content10.add("-Display: New option to set the intervals between range rings, or to turn range rings off");
         content10.add("-Data tag: New option whether to show the data tag border, background always, or only when selected");
