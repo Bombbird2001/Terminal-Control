@@ -93,6 +93,7 @@ public class RadarScreen extends GameScreen {
     public boolean showUncontrolled;
     public boolean alwaysShowBordersBackground;
     public int lineSpacingValue;
+    public int colourStyle;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -204,6 +205,7 @@ public class RadarScreen extends GameScreen {
             alwaysShowBordersBackground = true;
             rangeCircleDist = 0;
             lineSpacingValue = 1;
+            colourStyle = 0;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -220,6 +222,7 @@ public class RadarScreen extends GameScreen {
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
             rangeCircleDist = TerminalControl.rangeCircleDist;
             lineSpacingValue = TerminalControl.lineSpacingValue;
+            colourStyle = TerminalControl.colourStyle;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -280,6 +283,7 @@ public class RadarScreen extends GameScreen {
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true);
         rangeCircleDist = save.optInt("rangeCircleDist", 0);
         lineSpacingValue = save.optInt("lineSpacingValue", 1);
+        colourStyle = save.optInt("colourStyle", 0);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -765,6 +769,60 @@ public class RadarScreen extends GameScreen {
 
         //Assume 90 seconds between landings lol
         return landed * 90;
+    }
+
+    /** Updates the colour scheme of the radar screen */
+    public void updateColourStyle() {
+        //Waypoint restriction label colour
+        for (Waypoint waypoint: waypoints.values()) {
+            waypoint.updateRestrLabelColour(getWptRestrColour());
+        }
+
+        //Runway label colour
+        for (Airport airport: airports.values()) {
+            for (Runway runway: airport.getRunways().values()) {
+                runway.setLabelColor(getDefaultColour());
+            }
+        }
+    }
+
+    /** Gets the route/runway drawing colour depending on colour scheme */
+    public Color getDefaultColour() {
+        switch (colourStyle) {
+            case 0:
+                return Color.WHITE;
+            case 1:
+                return Color.GRAY;
+            default:
+                Gdx.app.log("RadarScreen", "Unknown colour style " + colourStyle);
+                return Color.WHITE;
+        }
+    }
+
+    /** Gets the ILS drawing colour depending on colour scheme */
+    public Color getILSColour() {
+        switch (colourStyle) {
+            case 0:
+                return Color.CYAN;
+            case 1:
+                return Color.GRAY;
+            default:
+                Gdx.app.log("RadarScreen", "Unknown colour style " + colourStyle);
+                return Color.CYAN;
+        }
+    }
+
+    /** Gets the waypoint restriction colour depending on colour scheme */
+    public Color getWptRestrColour() {
+        switch (colourStyle) {
+            case 0:
+                return Color.BLUE;
+            case 1:
+                return Color.GRAY;
+            default:
+                Gdx.app.log("RadarScreen", "Unknown colour style " + colourStyle);
+                return Color.BLUE;
+        }
     }
 
     @Override

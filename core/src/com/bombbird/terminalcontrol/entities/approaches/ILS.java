@@ -99,7 +99,7 @@ public class ILS extends Actor {
         boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED && this.equals(aircraft.getIls())));
         boolean rwyChange = radarScreen.getRunwayChanger().containsLandingRunway(airport.getIcao(), rwy.getName());
         if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed()) {
-            radarScreen.shapeRenderer.setColor(Color.CYAN);
+            radarScreen.shapeRenderer.setColor(radarScreen.getILSColour());
             if (selectedIls || rwyChange) radarScreen.shapeRenderer.setColor(Color.YELLOW);
             if (radarScreen.showIlsDash) {
                 float gsOffsetPx = -MathTools.nmToPixel(gsOffsetNm);
@@ -123,7 +123,7 @@ public class ILS extends Actor {
                 double trackRad = Math.toRadians(heading - radarScreen.magHdgDev);
                 float xOffset = halfWidth * (float) Math.cos(trackRad);
                 float yOffset = halfWidth * (float) Math.sin(trackRad);
-                int marksDist = (int)ilsDistNm;
+                int marksDist = (int) ilsDistNm;
                 if ("TCSS".equals(airport.getIcao()) && "ILS10".equals(name)) {
                     marksDist = 11;
                 } else if ("TCBD".equals(airport.getIcao()) && "ILS03L".equals(name)) {
@@ -145,7 +145,7 @@ public class ILS extends Actor {
     public void drawGsCircles() {
         int i = 0;
         for (Vector2 vector2: gsRings) {
-            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !npa ? Color.GREEN : Color.CYAN);
+            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !npa ? Color.GREEN : radarScreen.getILSColour());
             radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
             i++;
         }

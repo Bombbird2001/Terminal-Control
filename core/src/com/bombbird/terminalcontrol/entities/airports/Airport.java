@@ -304,7 +304,7 @@ public class Airport {
         }
 
         for (Runway runway: runways.values()) {
-            runway.setLabelColor(congested ? Color.ORANGE : Color.WHITE);
+            runway.setLabelColor(congested ? Color.ORANGE : TerminalControl.radarScreen.getDefaultColour());
             runway.renderShape();
         }
     }

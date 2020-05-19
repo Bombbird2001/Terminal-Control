@@ -34,7 +34,7 @@ public class Runway {
     private int initClimb;
 
     //Set dimensions
-    private static float halfWidth = 2f;
+    private static final float halfWidth = 2f;
     private float pxLength;
 
     //Set heading of runway
@@ -45,11 +45,11 @@ public class Runway {
     private Label label;
 
     //Position offsets not dependent on zoom
-    private float xOffsetL;
-    private float yOffsetL;
+    private final float xOffsetL;
+    private final float yOffsetL;
 
     //Set polygon to render later
-    private Polygon polygon;
+    private final Polygon polygon;
 
     //Set the ILS
     private ILS ils;
@@ -63,8 +63,8 @@ public class Runway {
     //Whether emergency aircraft is staying on it
     private boolean emergencyClosed;
 
-    private RadarScreen radarScreen;
-    private ShapeRenderer shapeRenderer;
+    private final RadarScreen radarScreen;
+    private final ShapeRenderer shapeRenderer;
 
     public Runway(String toParse) {
         radarScreen = TerminalControl.radarScreen;
@@ -87,7 +87,7 @@ public class Runway {
     private void parseInfo(String toParse) {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont8;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.fontColor = radarScreen.getDefaultColour();
 
         String[] rwyInfo = toParse.split(",");
         int index = 0;
@@ -130,7 +130,7 @@ public class Runway {
         polygon.setVertices(new float[] {x - xOffsetW, y - yOffsetW, x - xOffsetW + xOffsetL, y - yOffsetW + yOffsetL, x + xOffsetL + xOffsetW, y + yOffsetL + yOffsetW, x + xOffsetW, y + yOffsetW});
 
         if (landing || takeoff) {
-            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.setColor(radarScreen.getDefaultColour());
         } else if (!oppRwy.takeoff && !oppRwy.landing) {
             shapeRenderer.setColor(Color.DARK_GRAY);
         }
@@ -221,10 +221,6 @@ public class Runway {
         return trueHdg;
     }
 
-    public void setTrueHdg(float trueHdg) {
-        this.trueHdg = trueHdg;
-    }
-
     public boolean isWindshear() {
         return windshear;
     }
@@ -259,10 +255,6 @@ public class Runway {
 
     public Label getLabel() {
         return label;
-    }
-
-    public float getPxLength() {
-        return pxLength;
     }
 
     public boolean isEmergencyClosed() {

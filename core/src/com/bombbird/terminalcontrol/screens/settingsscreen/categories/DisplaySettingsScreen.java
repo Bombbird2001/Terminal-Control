@@ -19,6 +19,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> ilsDash;
     public SelectBox<String> showUncontrolledTrail;
     public SelectBox<String> rangeCircle;
+    public SelectBox<String> colour;
 
     public Label trajectoryLabel;
     public int trajectorySel;
@@ -37,6 +38,9 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
 
     public Label rangeCircleLabel;
     public int rangeCircleDist;
+
+    public Label colourLabel;
+    public int colourStyle;
 
     public DisplaySettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
@@ -134,6 +138,21 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 }
             }
         });
+
+        colour = createStandardSelectBox();
+        colour.setItems("More colourful", "More standardized");
+        colour.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("More colourful".equals(colour.getSelected())) {
+                    colourStyle = 0;
+                } else if ("More standardized".equals(colour.getSelected())) {
+                    colourStyle = 1;
+                } else {
+                    Gdx.app.log(getClass().getName(), "Unknown colour style setting " + colour.getSelected());
+                }
+            }
+        });
     }
 
     /** Loads labels for display settings */
@@ -147,6 +166,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         ilsDashLabel = new Label("ILS display: ", labelStyle);
         showUncontrolledLabel = new Label("Show uncontrolled:\naircraft trail", labelStyle);
         rangeCircleLabel = new Label("Range rings:", labelStyle);
+        colourLabel = new Label("Colour style:", labelStyle);
     }
 
     /** Loads actors for display settings into tabs */
@@ -159,6 +179,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         tab1.addActors(ilsDash, ilsDashLabel);
         tab1.addActors(showUncontrolledTrail, showUncontrolledLabel);
         tab1.addActors(rangeCircle, rangeCircleLabel);
+        tab1.addActors(colour, colourLabel);
 
         settingsTabs.add(tab1);
     }
@@ -174,6 +195,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showIlsDash = TerminalControl.showIlsDash;
             showUncontrolled = TerminalControl.showUncontrolled;
             rangeCircleDist = TerminalControl.rangeCircleDist;
+            colourStyle = TerminalControl.colourStyle;
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine;
@@ -182,6 +204,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showIlsDash = radarScreen.showIlsDash;
             showUncontrolled = radarScreen.showUncontrolled;
             rangeCircleDist = radarScreen.rangeCircleDist;
+            colourStyle = radarScreen.colourStyle;
         }
 
         trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
@@ -197,6 +220,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         ilsDash.setSelected(showIlsDash ? "Realistic" : "Simple");
         showUncontrolledTrail.setSelected(showUncontrolled ? "Always" : "When selected");
         rangeCircle.setSelected(rangeCircleDist == 0 ? "Off" : rangeCircleDist + "nm");
+        colour.setSelectedIndex(colourStyle);
     }
 
     /** Confirms and applies the changes set */
@@ -210,8 +234,11 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             radarScreen.showUncontrolled = showUncontrolled;
             boolean rangeDistChanged = radarScreen.rangeCircleDist != rangeCircleDist;
             radarScreen.rangeCircleDist = rangeCircleDist;
+            boolean colourChanged = radarScreen.colourStyle != colourStyle;
+            radarScreen.colourStyle = colourStyle;
 
             if (rangeDistChanged) radarScreen.loadRange(); //Reload the range circles in case of any changes
+            if (colourChanged) radarScreen.updateColourStyle(); //Update the label colours
         } else {
             TerminalControl.trajectorySel = trajectorySel;
             TerminalControl.pastTrajTime = pastTrajTime;
@@ -219,6 +246,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             TerminalControl.showIlsDash = showIlsDash;
             TerminalControl.showUncontrolled = showUncontrolled;
             TerminalControl.rangeCircleDist = rangeCircleDist;
+            TerminalControl.colourStyle = colourStyle;
 
             GameSaver.saveSettings();
         }

@@ -43,7 +43,7 @@ public class Waypoint extends Actor {
         //Set restriction label
         Label.LabelStyle labelStyle1 = new Label.LabelStyle();
         labelStyle1.font = Fonts.defaultFont6;
-        labelStyle1.fontColor = Color.BLUE;
+        labelStyle1.fontColor = TerminalControl.radarScreen.getWptRestrColour();
         restrLabel = new Label("This should not be visible", labelStyle1);
         restrLabel.setPosition(posX - restrLabel.getWidth() / 2, posY + 48);
         restrLabel.setAlignment(Align.bottom);
@@ -139,6 +139,11 @@ public class Waypoint extends Actor {
         }
         restrLabel.setText(restrStr);
         restrVisible = true;
+    }
+
+    /** Updates the restriction label labelStyle */
+    public void updateRestrLabelColour(Color color) {
+        restrLabel.getStyle().fontColor = color;
     }
 
     /** Returns whether the waypoint is inside the radar screen coordinates */

@@ -519,7 +519,7 @@ public class Aircraft extends Actor {
 
     /** Draws the cleared sidStar when selected */
     public void drawSidStar() {
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(radarScreen.getDefaultColour());
         shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
         route.joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, -1);
     }
@@ -533,7 +533,7 @@ public class Aircraft extends Actor {
 
     /** Draws the cleared after waypoint + cleared outbound heading when selected */
     public void drawAftWpt() {
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(radarScreen.getDefaultColour());
         shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
     }
 
@@ -545,7 +545,7 @@ public class Aircraft extends Actor {
 
     /** Draws the cleared heading when selected */
     private void drawHdgLine() {
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(radarScreen.getDefaultColour());
         float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, navState.getClearedHdg().last() - radarScreen.magHdgDev);
         shapeRenderer.line(radarX, radarY, point[0], point[1]);
     }
@@ -559,7 +559,7 @@ public class Aircraft extends Actor {
 
     /** Draws the cleared holding pattern when selected */
     public void drawHoldPattern() {
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(radarScreen.getDefaultColour());
         if (!holding && direct != null) shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
         route.getHoldProcedure().renderShape(navState.getClearedHold().last());
     }

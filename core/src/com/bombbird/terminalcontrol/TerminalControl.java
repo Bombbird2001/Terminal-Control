@@ -74,6 +74,7 @@ public class TerminalControl extends Game {
     public static boolean alwaysShowBordersBackground;
     public static int rangeCircleDist;
     public static int lineSpacingValue;
+    public static int colourStyle;
     public static int defaultTabNo;
     public static int revision;
     public static final int LATEST_REVISION = 1;
@@ -113,6 +114,7 @@ public class TerminalControl extends Game {
             alwaysShowBordersBackground = true;
             rangeCircleDist = 0;
             lineSpacingValue = 1;
+            colourStyle = 0;
             defaultTabNo = 0;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
@@ -151,6 +153,7 @@ public class TerminalControl extends Game {
             alwaysShowBordersBackground = settings.optBoolean("alwaysShowBordersBackground", true);
             rangeCircleDist = settings.optInt("rangeCircleDist", 0);
             lineSpacingValue = settings.optInt("lineSpacingValue", 1);
+            colourStyle = settings.optInt("colourStyle", 0);
             revision = settings.optInt("revision", 0);
         }
         GameSaver.saveSettings();
