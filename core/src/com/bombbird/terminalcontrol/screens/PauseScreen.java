@@ -114,7 +114,7 @@ public class PauseScreen extends BasicScreen {
         imageButtonStyle4.imageDown.setMinWidth(BUTTON_WIDTH_SMALL);
         imageButtonStyle4.imageDown.setMinHeight(BUTTON_HEIGHT_SMALL);
         ImageButton achievementButton = new ImageButton(imageButtonStyle4);
-        achievementButton.setPosition(5760 - BUTTON_WIDTH_SMALL, 1790 - 50 - BUTTON_HEIGHT_SMALL);
+        achievementButton.setPosition(5760 - BUTTON_WIDTH_SMALL, TerminalControl.full ? 1790 - 50 - BUTTON_HEIGHT_SMALL : 1790 - BUTTON_HEIGHT_SMALL / 2.0f);
         achievementButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL);
         achievementButton.addListener(new ChangeListener() {
             @Override
