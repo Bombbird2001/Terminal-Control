@@ -45,7 +45,8 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
     public DisplaySettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
 
-        loadUI(-1200, 0);
+        infoString = "Set the game display settings below.";
+        loadUI(-1200, -200);
 
         setOptions();
     }

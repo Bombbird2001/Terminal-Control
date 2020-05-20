@@ -32,7 +32,8 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     public DataTagSettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
 
-        loadUI(-1200, 0);
+        infoString = "Set the data tag display options below.";;
+        loadUI(-1200, -200);
 
         setOptions();
     }

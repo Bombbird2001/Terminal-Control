@@ -93,7 +93,7 @@ public class ChangelogScreen extends StandardUIScreen {
         content10.add("-Data tag: New option to set spacing between data tag rows");
         content10.add("-Sounds: New sound for alerts (yellow messages) and go-arounds");
         content10.add("-Tutorial: Important points, key words are now highlighted in different colours for easier following");
-        content10.add("-Many bug fixes, including restrictions incorrectly being displayed for SIDs");
+        content10.add("-Many bug fixes, including restrictions being incorrectly displayed for SIDs");
         changeLogContent.put("1.4.2006.1", content10);
 
         //Version 1.4.2005.2

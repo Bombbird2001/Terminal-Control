@@ -39,6 +39,9 @@ public class SettingsTemplateScreen extends BasicScreen {
     //Default game settings or in game settings
     public RadarScreen radarScreen;
 
+    //Info string label
+    public String infoString;
+
     public SettingsTemplateScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, 5760, 3240);
 
@@ -220,6 +223,11 @@ public class SettingsTemplateScreen extends BasicScreen {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont20;
         labelStyle.fontColor = Color.WHITE;
+
+        if (radarScreen == null && !(this instanceof GlobalSettingsScreen)) infoString += " These are default settings, you can still change them for individual games.";
+        Label infoLabel = new Label(infoString, labelStyle);
+        infoLabel.setPosition(5760 / 2f - infoLabel.getWidth() / 2f, 3240 - 300);
+        stage.addActor(infoLabel);
     }
 
     /** Loads the various actors into respective tabs, overridden in respective classes */

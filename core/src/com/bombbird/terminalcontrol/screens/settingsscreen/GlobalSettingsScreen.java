@@ -32,6 +32,7 @@ public class GlobalSettingsScreen extends SettingsTemplateScreen {
     public GlobalSettingsScreen(TerminalControl game, Image background) {
         super(game, null, background);
 
+        infoString = "Set the global game settings below.";
         loadUI(-1200, -200);
 
         setOptions();
@@ -126,15 +127,8 @@ public class GlobalSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void loadLabel() {
         super.loadLabel();
-        Label.LabelStyle labelStyle2 = new Label.LabelStyle();
-        labelStyle2.font = Fonts.defaultFont20;
-        labelStyle2.fontColor = Color.WHITE;
 
-        Label infoLabel = new Label("Set the default game settings below. You can still change some of these settings for individual games.", labelStyle2);
-        infoLabel.setPosition(5760 / 2f - infoLabel.getWidth() / 2f, 3240 - 300);
-        stage.addActor(infoLabel);
-
-        sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle2);
+        sendLabel = new Label("Sending anonymous crash reports will allow\nus to improve your game experience.\nNo personal or device information will be\nsent.", labelStyle);
         sendLabel.setPosition(sendCrashBox.getX(), sendCrashBox.getY() - 475);
         stage.addActor(sendLabel);
 

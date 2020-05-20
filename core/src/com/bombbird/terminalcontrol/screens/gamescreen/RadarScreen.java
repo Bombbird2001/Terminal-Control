@@ -773,11 +773,6 @@ public class RadarScreen extends GameScreen {
 
     /** Updates the colour scheme of the radar screen */
     public void updateColourStyle() {
-        //Waypoint restriction label colour
-        for (Waypoint waypoint: waypoints.values()) {
-            waypoint.updateRestrLabelColour(getWptRestrColour());
-        }
-
         //Runway label colour
         for (Airport airport: airports.values()) {
             for (Runway runway: airport.getRunways().values()) {
@@ -809,19 +804,6 @@ public class RadarScreen extends GameScreen {
             default:
                 Gdx.app.log("RadarScreen", "Unknown colour style " + colourStyle);
                 return Color.CYAN;
-        }
-    }
-
-    /** Gets the waypoint restriction colour depending on colour scheme */
-    public Color getWptRestrColour() {
-        switch (colourStyle) {
-            case 0:
-                return Color.BLUE;
-            case 1:
-                return Color.GRAY;
-            default:
-                Gdx.app.log("RadarScreen", "Unknown colour style " + colourStyle);
-                return Color.BLUE;
         }
     }
 

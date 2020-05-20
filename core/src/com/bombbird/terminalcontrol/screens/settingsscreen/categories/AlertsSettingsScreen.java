@@ -29,7 +29,8 @@ public class AlertsSettingsScreen extends SettingsTemplateScreen {
     public AlertsSettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
 
-        loadUI(-1200, 0);
+        infoString = "Set the options for advanced alerts below.";
+        loadUI(-1200, -200);
 
         setOptions();
     }

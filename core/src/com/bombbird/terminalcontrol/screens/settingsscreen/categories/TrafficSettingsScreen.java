@@ -45,7 +45,8 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
     public TrafficSettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
 
-        loadUI(-1200, 0);
+        infoString = "Set the traffic settings below.";
+        loadUI(-1200, -200);
 
         setOptions();
         updateTabs(true);
