@@ -110,7 +110,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
         loadLabels();
 
-        running = true;
+        running = false;
 
         playTime = 0;
     }

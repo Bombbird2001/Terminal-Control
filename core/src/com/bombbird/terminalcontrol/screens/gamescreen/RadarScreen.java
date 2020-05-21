@@ -830,6 +830,7 @@ public class RadarScreen extends GameScreen {
         }
         TerminalControl.discordManager.updateRPC();
         updateWaypointDisplay();
+        setGameRunning(true);
     }
 
     @Override
