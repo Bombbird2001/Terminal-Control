@@ -607,7 +607,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    /** Overriden method that updates the target speed of the aircraft depending on situation */
+    /** Overridden method that updates the target speed of the aircraft depending on situation */
     public void updateSpd() {
         navState.getClearedSpd().removeFirst();
         navState.getClearedSpd().addFirst(clearedIas);
@@ -617,12 +617,12 @@ public class Aircraft extends Actor {
         }
     }
 
-    /** Overriden method for arrival/departure */
+    /** Overridden method for arrival/departure */
     public void updateTkofLdg() {
         //No default implementation
     }
 
-    /** Overriden method for arrivals during go around */
+    /** Overridden method for arrivals during go around */
     public void updateGoAround() {
         //No default implementation
     }
@@ -704,12 +704,12 @@ public class Aircraft extends Actor {
         prevAlt = altitude;
     }
 
-    /** Gets aircraft to contact other frequencies, overriden in Arrival, Departure */
+    /** Gets aircraft to contact other frequencies, overridden in Arrival, Departure */
     public void contactOther() {
         //No default implementation
     }
 
-    /** Returns whether aircraft can be handed over to tower/centre, overriden in Arrival, Departure */
+    /** Returns whether aircraft can be handed over to tower/centre, overridden in Arrival, Departure */
     public boolean canHandover() {
         //No default implementation
         return false;
@@ -1175,7 +1175,7 @@ public class Aircraft extends Actor {
         }
     }
 
-    /** Overriden method that sets aircraft heading after the last waypoint is reached */
+    /** Overridden method that sets aircraft heading after the last waypoint is reached */
     public void setAfterLastWpt() {
         //No default implementation
     }
@@ -1534,12 +1534,29 @@ public class Aircraft extends Actor {
         radarScreen.wakeManager.removeAircraft(callsign);
     }
 
-    /** Overriden method that sets the altitude restrictions of the aircraft */
+    /** Overridden method that sets the altitude restrictions of the aircraft */
     public void updateAltRestrictions() {
         //No default implementation
     }
 
-    /** Overriden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
+    /** Checks whether the aircraft altitude is lower than the minimum altitude on current leg of SID/STAR, returns true if so; aircraft alt mode must be climb via SID/descend via STAR */
+    public boolean isBelowSidStarMinAlt() {
+        if (navState.containsCode(navState.getDispLatMode().last(), NavState.SID_STAR) && navState.containsCode(navState.getDispAltMode().last(), NavState.SID_STAR_RESTR)) {
+            //Aircraft is following SID/STAR, alt mode is SID/STAR restriction
+            if (this instanceof Arrival) {
+                return altitude < route.getWptMinAlt(sidStarIndex) - 1;
+            } else if (this instanceof Departure) {
+                return sidStarIndex >= 1 && altitude < route.getWptMinAlt(sidStarIndex - 1) - 1;
+            } else {
+                //Unknown type???
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /** Overridden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
     public void resetApchSpdSet() {
         //No default implementation
     }

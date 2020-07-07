@@ -81,7 +81,7 @@ public class ILS extends Actor {
         }
     }
 
-    /** Calculates positions of the GS rings; overriden for LDAs */
+    /** Calculates positions of the GS rings; overridden for LDAs */
     public void calculateGsRings() {
         minAlt = -1;
         for (int i = 2; i <= gsAlt / 1000; i++) {

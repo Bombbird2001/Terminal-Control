@@ -49,7 +49,7 @@ public class SidStar {
         }
     }
 
-    /** Overriden method in SID, STAR to parse relevant information */
+    /** Overridden method in SID, STAR to parse relevant information */
     public void parseInfo(JSONObject jo) {
         runways = new Array<>();
         waypoints = new Array<>();

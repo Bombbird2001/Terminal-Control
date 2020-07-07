@@ -296,10 +296,8 @@ public class Departure extends Aircraft {
         if (getNavState().getDispLatMode().first() == NavState.SID_STAR) {
             //Aircraft on SID
             int highestAlt = -1;
-            int lowestAlt = -1;
             if (getDirect() != null) {
                 highestAlt = getRoute().getWptMaxAlt(getDirect().getName());
-                lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
             }
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
@@ -308,24 +306,19 @@ public class Departure extends Aircraft {
             } else {
                 setHighestAlt(cruiseAlt);
             }
-            if (lowestAlt > -1 && sidSet && getAltitude() < lowestAlt) {
-                //If there is a waypoint with minimum altitude
-                setLowestAlt(lowestAlt);
+            int nextFL;
+            if (((int) getAltitude()) % 1000 == 0) {
+                nextFL = (int) getAltitude();
             } else {
-                int nextFL;
-                if (((int) getAltitude()) % 1000 == 0) {
-                    nextFL = (int) getAltitude();
+                nextFL = (int) getAltitude() + 1000 - ((int) getAltitude()) % 1000;
+            }
+            if (getLowestAlt() < nextFL) {
+                //If lowest alt value is less than the next flight level after current altitude that divisible by 10 (e.g. if at 5500 ft, next is 6000ft)
+                if (!sidSet) {
+                    //If still climbing on init climb
+                    setLowestAlt(sid.getInitClimb(getRunway().getName())[1]);
                 } else {
-                    nextFL = (int) getAltitude() + 1000 - ((int) getAltitude()) % 1000;
-                }
-                if (getLowestAlt() < nextFL) {
-                    //If lowest alt value is less than the next flight level after current altitude that divisible by 10 (e.g. if at 5500 ft, next is 6000ft)
-                    if (!sidSet) {
-                        //If still climbing on init climb
-                        setLowestAlt(sid.getInitClimb(getRunway().getName())[1]);
-                    } else {
-                        setLowestAlt(nextFL);
-                    }
+                    setLowestAlt(nextFL);
                 }
             }
         }

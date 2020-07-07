@@ -235,9 +235,9 @@ public class CommBox {
                 break;
             case Departure.SHORTCUT_REQUEST:
                 if (random == 0) {
-                    requestText = ", can we have a shortcut?";
+                    requestText = ", requesting direct";
                 } else if (random == 1) {
-                    requestText = ", request shortcut";
+                    requestText = ", request direct";
                 }
                 break;
             default:

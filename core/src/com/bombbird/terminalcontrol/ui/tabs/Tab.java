@@ -141,24 +141,24 @@ public class Tab {
     }
 
     public void updateElements() {
-        //Overriden method for updating each tab's elements
+        //Overridden method for updating each tab's elements
     }
 
     public void compareWithAC() {
-        //Overriden method for comparing each tab's states with AC
+        //Overridden method for comparing each tab's states with AC
     }
 
     public void updateElementColours() {
-        //Overriden method for updating each tab's elements' colours
+        //Overridden method for updating each tab's elements' colours
         ui.updateResetColours();
     }
 
     public void updateMode() {
-        //Overriden method for updating aircraft mode
+        //Overridden method for updating aircraft mode
     }
 
     public void resetTab() {
-        //Overriden method for updating aircraft mode
+        //Overridden method for updating aircraft mode
         notListening = true;
         getACState();
         updateElements();
@@ -168,15 +168,15 @@ public class Tab {
     }
 
     public void getACState() {
-        //Overriden method for getting current AC status
+        //Overridden method for getting current AC status
     }
 
     public void getChoices() {
-        //Overriden method for getting choices from selectboxes
+        //Overridden method for getting choices from selectboxes
     }
 
     public void updatePaneWidth(float paneWidth) {
-        //Overriden method for updating width of each element
+        //Overridden method for updating width of each element
         float paneSize = 0.8f * paneWidth;
         float leftMargin = 0.1f * paneWidth;
         settingsBox.setSize(paneSize, boxHeight);

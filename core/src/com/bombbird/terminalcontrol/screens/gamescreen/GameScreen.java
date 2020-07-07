@@ -261,7 +261,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
         //No default implementation
     }
 
-    /** Main update method, overriden in radarScreen */
+    /** Main update method, overridden in radarScreen */
     public void update() {
         //No default implementation
     }
