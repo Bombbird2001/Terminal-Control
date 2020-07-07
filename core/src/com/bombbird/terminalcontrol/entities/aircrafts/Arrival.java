@@ -95,7 +95,10 @@ public class Arrival extends Aircraft {
 
         fuel = (45 + 10 + 10) * 60 + distToGo() / 250 * 3600 + 900 + MathUtils.random(-600, 600);
 
-        float initAlt = 3000 + (distToGo() - 15) / 300 * 60 * getTypDes() * 0.8f;
+        int referenceTypDes = 2800;
+        float initAlt = getAirport().getElevation() + 3000 + (distToGo() - 15) / 300 * 60 * referenceTypDes * 0.8f; //Calculate an initial reference altitude
+        int differenceInTypDes = MathUtils.clamp(getTypDes() - referenceTypDes, -800, 800); //Calculate the different between reference and actual descent rate
+        initAlt += differenceInTypDes * 5 + MathUtils.random(-1000, 1000); //Add the difference in rate * 5 and a random altitude difference of +-1000 feet
         if ("BULLA-T".equals(star.getName()) || "KOPUS-T".equals(star.getName())) {
             initAlt = 9000;
         } else {
@@ -105,8 +108,8 @@ public class Arrival extends Aircraft {
             }
             if (initAlt > 28000) {
                 initAlt = 28000;
-            } else if (initAlt < 6000) {
-                initAlt = 6000;
+            } else if (initAlt < getAirport().getElevation() + 6000) {
+                initAlt = MathUtils.round(getAirport().getElevation() / 1000f) * 1000 + 6000;
             }
             if (minAltWpt != null && initAlt < getRoute().getWptMinAlt(minAltWpt.getName())) {
                 initAlt = getRoute().getWptMinAlt(minAltWpt.getName());
