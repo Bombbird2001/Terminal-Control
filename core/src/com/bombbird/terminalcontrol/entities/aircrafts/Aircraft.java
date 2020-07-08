@@ -757,7 +757,7 @@ public class Aircraft extends Actor {
 
         if (vector && !locCap) {
             targetHeading = clearedHeading;
-        } else if (sidstar && !holding) {
+        } else if (sidstar && !holding && direct != null) {
             if (ils != null) {
                 setIls(null);
                 navState.voidAllIls();
@@ -768,7 +768,7 @@ public class Aircraft extends Actor {
             //Distance determined by angle that needs to be turned
             double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
             double requiredDistance;
-            if (direct != null && holdWpt != null && direct.getName().equals(holdWpt.getName())) {
+            if (holdWpt != null && direct.getName().equals(holdWpt.getName())) {
                 holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
                 if (holdingType == 1) {
                     int requiredHdg = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
@@ -778,7 +778,7 @@ public class Aircraft extends Actor {
                 } else {
                     requiredDistance = 4;
                 }
-            } else if (direct != null && route.getWptFlyOver(direct.getName())) {
+            } else if (route.getWptFlyOver(direct.getName())) {
                 requiredDistance = 4;
             } else {
                 requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));

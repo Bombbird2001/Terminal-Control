@@ -7,7 +7,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import java.util.HashMap;
 
 public class HoldProcedure {
-    private HashMap<String, HoldingPoints> holdingPoints;
+    private final HashMap<String, HoldingPoints> holdingPoints;
 
     public HoldProcedure() {
         holdingPoints = new HashMap<>();

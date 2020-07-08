@@ -70,6 +70,7 @@ public class HttpRequests {
                     if (response.code() == 503 && retry) {
                         System.out.println("503 received: trying again");
                         response.close();
+                        if (metar.isQuit()) return;
                         TerminalControl.radarScreen.loadingPercent = "10%";
                         getMetar(metar, false);
                     } else {
@@ -80,9 +81,11 @@ public class HttpRequests {
                 } else {
                     String responseText = "";
                     if (response.body() != null) responseText = response.body().string();
+                    response.close();
                     if ("Update".equals(responseText)) {
                         //Server requested for METAR update
                         System.out.println("Update requested");
+                        if (metar.isQuit()) return;
                         TerminalControl.radarScreen.loadingPercent = "20%";
                         getApiKey(metar, 0);
                     } else {
@@ -90,7 +93,6 @@ public class HttpRequests {
                         metar.setMetarObject(new JSONObject(responseText));
                         metar.updateRadarScreenState();
                     }
-                    response.close();
                 }
             }
         });
@@ -128,8 +130,8 @@ public class HttpRequests {
                 } else {
                     String apiKey = null;
                     if (response.body() != null) apiKey = response.body().string();
+                    response.close();
                     if (apiKey == null) {
-                        response.close();
                         if (count <= 2) {
                             getApiKey(metar, count + 1);
                         } else {
@@ -137,10 +139,10 @@ public class HttpRequests {
                         }
                         return;
                     }
+                    if (metar.isQuit()) return;
                     receiveMetar(metar, apiKey, true);
                     TerminalControl.radarScreen.loadingPercent = "40%";
                 }
-                response.close();
             }
         });
     }
@@ -187,11 +189,12 @@ public class HttpRequests {
                 } else {
                     String responseText = "";
                     if (response.body() != null) responseText = response.body().string();
+                    response.close();
                     JSONObject jo = new JSONObject(responseText);
                     sendMetar(metar, jo);
+                    if (metar.isQuit()) return;
                     TerminalControl.radarScreen.loadingPercent = "60%";
                 }
-                response.close();
             }
         });
     }
@@ -222,6 +225,7 @@ public class HttpRequests {
                     if (response.body() != null) System.out.println(response.body().string());
                 }
                 response.close();
+                if (metar.isQuit()) return;
                 getMetar(metar, true);
                 TerminalControl.radarScreen.loadingPercent = "80%";
             }

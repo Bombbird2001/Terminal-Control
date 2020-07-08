@@ -371,6 +371,10 @@ public class NavState {
             if (!aircraft.isLocCap()) {
                 Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
                 ((Arrival) aircraft).setStar(newStar);
+                if (!dispLatMode.isEmpty() && !containsCode(dispLatMode.first(), FLY_HEADING, TURN_LEFT, TURN_RIGHT)) {
+                    dispLatMode.removeFirst();
+                    dispLatMode.addFirst(FLY_HEADING);
+                }
                 aircraft.setRoute(new Route(aircraft, newStar));
                 aircraft.setDirect(null);
                 aircraft.setAfterWaypoint(null);
@@ -560,7 +564,7 @@ public class NavState {
 
     /** Adds new lateral instructions to queue */
     public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS, String newStar) {
-        String trueLatMode = latMode;
+        String latModeName = latMode;
         if (latMode.contains(aircraft.getSidStar().getName())) {
             clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
             if (latMode.contains("arrival")) {
@@ -579,9 +583,9 @@ public class NavState {
         } else if (Ui.CHANGE_STAR.equals(latMode)) {
             clearedNewStar.addLast(newStar);
             if (containsCode(dispLatMode.last(), FLY_HEADING, TURN_RIGHT, TURN_LEFT)) {
-                trueLatMode = getLatStringFromCode(dispLatMode.last());
+                latModeName = getLatStringFromCode(dispLatMode.last());
             } else {
-                trueLatMode = Ui.FLY_HEADING;
+                latModeName = Ui.FLY_HEADING;
                 this.clearedHdg.addLast((int) aircraft.getHeading());
             }
             clearedDirect.addLast(null);
@@ -595,7 +599,7 @@ public class NavState {
                 updateLatModes(REMOVE_AFTERHDG_HOLD, false);
             }
         }
-        dispLatMode.addLast(getCodeFromString(trueLatMode));
+        dispLatMode.addLast(getCodeFromString(latModeName));
         goAround.addLast(aircraft.isGoAround());
         length++;
         fillUpInt(this.clearedHdg);

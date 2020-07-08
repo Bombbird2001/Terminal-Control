@@ -261,7 +261,12 @@ public class LatTab extends Tab {
                 }
             }
             if (!waypoints.contains(holdWpt, false)) {
-                holdWpt = waypoints.first();
+                if (waypoints.isEmpty()) {
+                    selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_HOLD_ONLY, true);
+                    holdWpt = null;
+                } else {
+                    holdWpt = waypoints.first();
+                }
             }
             valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);

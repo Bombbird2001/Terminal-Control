@@ -24,6 +24,7 @@ public class AltTab extends Tab {
 
     @Override
     public void updateElements() {
+        if (selectedAircraft == null) return;
         notListening = true;
         settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
         settingsBox.setSelected(altMode);
@@ -134,6 +135,8 @@ public class AltTab extends Tab {
 
     @Override
     public void updateMode() {
+        if (selectedAircraft == null) return;
+        if (selectedAircraft.getNavState() == null) return;
         selectedAircraft.getNavState().sendAlt(altMode, clearedAlt);
     }
 

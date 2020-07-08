@@ -118,6 +118,8 @@ public class SpdTab extends Tab {
 
     @Override
     public void updateMode() {
+        if (selectedAircraft == null) return;
+        if (selectedAircraft.getNavState() == null) return;
         selectedAircraft.getNavState().sendSpd(spdMode, clearedSpd);
     }
 

@@ -207,6 +207,10 @@ public class Metar {
         return metarObject;
     }
 
+    public boolean isQuit() {
+        return quit;
+    }
+
     public void setQuit(boolean quit) {
         this.quit = quit;
     }
