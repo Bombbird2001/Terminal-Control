@@ -1544,9 +1544,9 @@ public class Aircraft extends Actor {
         if (navState.containsCode(navState.getDispLatMode().last(), NavState.SID_STAR) && navState.containsCode(navState.getDispAltMode().last(), NavState.SID_STAR_RESTR)) {
             //Aircraft is following SID/STAR, alt mode is SID/STAR restriction
             if (this instanceof Arrival) {
-                return altitude < route.getWptMinAlt(sidStarIndex) - 1;
+                return altitude < route.getWptMinAlt(sidStarIndex) - 100;
             } else if (this instanceof Departure) {
-                return sidStarIndex >= 1 && altitude < route.getWptMinAlt(sidStarIndex - 1) - 1;
+                return sidStarIndex >= 1 && altitude < route.getWptMinAlt(sidStarIndex - 1) - 100;
             } else {
                 //Unknown type???
                 return false;
