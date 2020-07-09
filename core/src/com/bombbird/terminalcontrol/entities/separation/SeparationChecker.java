@@ -294,6 +294,7 @@ public class SeparationChecker extends Actor {
                         conflict = !excl && (aircraft.isVectored() || aircraft.isBelowSidStarMinAlt());
                         obstacle.setConflict(conflict);
                     }
+                    if (conflict) break;
                 }
             }
 

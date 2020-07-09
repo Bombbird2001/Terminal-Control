@@ -29,7 +29,7 @@ public class WaypointShifter {
         putData("TCBD", 0, -96, "LANNI");
         putData("TCBD", 32, 0, "DIVER");
         //TCMD
-        putData("TCMD", 32, -128, "DPT");
+        putData("TCMD", 16, -96, "DPT");
         putData("TCMD", -20, 0, "TENSI");
         putData("TCMD", 88, -64, "ABSIT", "GLADI");
         putData("TCMD", 20, 0, "VERDE");
