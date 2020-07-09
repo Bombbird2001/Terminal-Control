@@ -239,10 +239,11 @@ public class DataTag {
             setAsDrawLast();
         }
         if (aircraft.hasEmergency()) {
-            labelButton.setVisible(visible);
+            labelButton.setVisible(visible || radarScreen.alwaysShowBordersBackground);
             setEmergency();
             return;
         }
+        //If always show background
         if (radarScreen.alwaysShowBordersBackground) {
             labelButton.setVisible(true);
             if (!flashing) {
@@ -256,6 +257,7 @@ public class DataTag {
             }
             return;
         }
+        //Show background only when selected
         if (visible) {
             if (clickSpot.getStyle().up == null) {
                 NinePatchDrawable ninePatchDrawable = null;

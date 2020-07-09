@@ -1027,8 +1027,8 @@ public class Aircraft extends Actor {
             } else if ("APSU5".equals(getSidStar().getName()) && direct != null && "SHINY".equals(direct.getName()) && heading > 180 && heading <= 360) {
                 //RJOO APSU5 departure
                 forceDirection = 1;
-            } else if ("IRNAC3".equals(getSidStar().getName()) && direct != null && "BOKUN".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO IRNAC3 departure
+            } else if ("IRNAC4".equals(getSidStar().getName()) && direct != null && "BOKUN".equals(direct.getName()) && heading > 180 && heading <= 360) {
+                //RJOO IRNAC4 departure
                 forceDirection = 1;
             } else if ((getSidStar().getName().contains("LNG2D") || "HSL2D".equals(getSidStar().getName()) || "IMPAG2D".equals(getSidStar().getName())) && direct != null && "CMU".equals(direct.getName()) && heading > 90 && heading <= 360) {
                 //VMMC LNG2D, HSL2D and IMPAG2D departures
