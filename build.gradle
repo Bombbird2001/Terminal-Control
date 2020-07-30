@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.5'
     }
 }
@@ -107,8 +107,8 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile 'com.squareup.okhttp3:okhttp:4.6.0'
-        compile 'org.json:json:20190722'
-        compile 'org.apache.commons:commons-lang3:3.10'
+        compile 'com.squareup.okhttp3:okhttp:4.8.0'
+        compile 'org.json:json:20200518'
+        compile 'org.apache.commons:commons-lang3:3.11'
     }
 }
