@@ -18,12 +18,12 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '1.4.2008.1'
+    version = '1.4.2010.1'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.9' //Don't use 1.9.10 due to maximised bug
         roboVMVersion = '2.3.5'
-        versionCode = 58
+        versionCode = 59
     }
 
     repositories {
@@ -107,7 +107,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile 'com.squareup.okhttp3:okhttp:4.8.0'
+        compile 'com.squareup.okhttp3:okhttp:4.8.1'
         compile 'org.json:json:20200518'
         compile 'org.apache.commons:commons-lang3:3.11'
     }
