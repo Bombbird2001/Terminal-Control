@@ -69,7 +69,7 @@ task buildLite(type: Jar) {
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
+    from files(project.assetsDir)
  
     manifest {
         attributes 'Main-Class': project.mainClassName
@@ -83,7 +83,7 @@ task buildFull(type: Jar) {
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
+    from files(project.assetsDir)
 
     manifest {
         attributes 'Main-Class': project.mainClassName
@@ -155,17 +155,17 @@ task compressFolder() {
         exec {
             println "Compressing Mac folder"
             workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Program Files\\7-Zip\\7z.exe', 'a', 'Mac-' + version + '.zip', '\"Terminal Control Lite.app\"'
+            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Mac-' + version + '.zip', '\"Terminal Control Lite.app\"'
         }
         exec {
             println "Compressing Windows-32 folder"
             workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Program Files\\7-Zip\\7z.exe', 'a', 'Windows-32-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_32'
+            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Windows-32-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_32'
         }
         exec {
             println "Compressing Windows-64 folder"
             workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Program Files\\7-Zip\\7z.exe', 'a', 'Windows-64-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_64'
+            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Windows-64-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_64'
         }
     }
 }
