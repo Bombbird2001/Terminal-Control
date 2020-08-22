@@ -67,24 +67,24 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 # Determine the Java command to use to start the JVM.
-if [ -n "$OPENJDK_HOME" ] ; then
-    if [ -x "$OPENJDK_HOME/jre/sh/java" ] ; then
+if [ -n "$OPENJDK8_HOME" ] ; then
+    if [ -x "$OPENJDK8_HOME/jre/sh/java" ] ; then
         # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$OPENJDK_HOME/jre/sh/java"
+        JAVACMD="$OPENJDK8_HOME/jre/sh/java"
     else
-        JAVACMD="$OPENJDK_HOME/bin/java"
+        JAVACMD="$OPENJDK8_HOME/bin/java"
     fi
     if [ ! -x "$JAVACMD" ] ; then
-        die "ERROR: OPENJDK_HOME is set to an invalid directory: $OPENJDK_HOME
+        die "ERROR: OPENJDK8_HOME is set to an invalid directory: $OPENJDK8_HOME
 
-Please set the OPENJDK_HOME variable in your environment to match the
+Please set the OPENJDK8_HOME variable in your environment to match the
 location of your Java installation."
     fi
 else
     JAVACMD="java"
-    which java >/dev/null 2>&1 || die "ERROR: OPENJDK_HOME is not set and no 'java' command could be found in your PATH.
+    which java >/dev/null 2>&1 || die "ERROR: OPENJDK8_HOME is not set and no 'java' command could be found in your PATH.
 
-Please set the OPENJDK_HOME variable in your environment to match the
+Please set the OPENJDK8_HOME variable in your environment to match the
 location of your Java installation."
 fi
 

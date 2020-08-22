@@ -17,30 +17,30 @@ set APP_HOME=%DIRNAME%
 set DEFAULT_JVM_OPTS="-Xmx64m"
 
 @rem Find java.exe
-if defined OPENJDK_HOME goto findJavaFromJavaHome
+if defined OPENJDK8_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
 %JAVA_EXE% -version >NUL 2>&1
 if "%ERRORLEVEL%" == "0" goto init
 
 echo.
-echo ERROR: OPENJDK_HOME is not set and no 'java' command could be found in your PATH.
+echo ERROR: OPENJDK8_HOME is not set and no 'java' command could be found in your PATH.
 echo.
-echo Please set the OPENJDK_HOME variable in your environment to match the
+echo Please set the OPENJDK8_HOME variable in your environment to match the
 echo location of your Java installation.
 
 goto fail
 
 :findJavaFromJavaHome
-set OPENJDK_HOME=%OPENJDK_HOME:"=%
-set JAVA_EXE=%OPENJDK_HOME%/bin/java.exe
+set OPENJDK8_HOME=%OPENJDK8_HOME:"=%
+set JAVA_EXE=%OPENJDK8_HOME%/bin/java.exe
 
 if exist "%JAVA_EXE%" goto init
 
 echo.
-echo ERROR: OPENJDK_HOME is set to an invalid directory: %OPENJDK_HOME%
+echo ERROR: OPENJDK8_HOME is set to an invalid directory: %OPENJDK8_HOME%
 echo.
-echo Please set the OPENJDK_HOME variable in your environment to match the
+echo Please set the OPENJDK8_HOME variable in your environment to match the
 echo location of your Java installation.
 
 goto fail
