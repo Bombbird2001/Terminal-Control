@@ -56,7 +56,7 @@ public class SeparationChecker extends Actor {
         }
     }
 
-    /** Called to add a new separation label to the array, for when there are less labels than the number of separation incidents between aircrafts */
+    /** Called to add a new separation label to the array, for when there are less labels than the number of separation incidents between aircraft */
     private Label newSeparationLabel() {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.fontColor = Color.RED;
@@ -222,7 +222,7 @@ public class SeparationChecker extends Actor {
                                 if (Math.abs(plane1.getAltitude() - plane2.getAltitude()) < 200 && dist < 0.5f) UnlockManager.completeAchievement("thatWasClose");
                             }
                         } else if (!plane1.isWarning() || !plane2.isWarning()) {
-                            //Aircrafts within 1000 feet, 5nm of each other
+                            //Aircraft within 1000 feet, 5nm of each other
                             plane1.setWarning(true);
                             plane2.setWarning(true);
                             lineStorage.add(new float[] {plane1.getRadarX(), plane1.getRadarY(), plane2.getRadarX(), plane2.getRadarY(), 0});

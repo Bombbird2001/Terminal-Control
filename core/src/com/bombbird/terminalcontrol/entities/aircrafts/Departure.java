@@ -11,8 +11,10 @@ import com.bombbird.terminalcontrol.entities.sidstar.RandomSID;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
+import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONObject;
 
 public class Departure extends Aircraft {
@@ -20,7 +22,7 @@ public class Departure extends Aircraft {
     private Sid sid;
     private int outboundHdg;
     private final int contactAlt;
-    private final int handoveralt;
+    private final int handoverAlt;
     private boolean v2set;
     private boolean accel;
     private boolean sidSet;
@@ -39,7 +41,7 @@ public class Departure extends Aircraft {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = getAirport().getElevation() + 2000 + MathUtils.random(-500, 200);
-        handoveralt = radarScreen.maxAlt + MathUtils.random(-800, -200);
+        handoverAlt = radarScreen.maxAlt + MathUtils.random(-800, -200);
         v2set = false;
         accel = false;
         sidSet = false;
@@ -130,12 +132,12 @@ public class Departure extends Aircraft {
         }
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");
-        handoveralt = save.getInt("handOverAlt");
+        handoverAlt = save.getInt("handOverAlt");
         v2set = save.getBoolean("v2set");
         accel = !save.isNull("accel") && save.getBoolean("accel");
         sidSet = save.getBoolean("sidSet");
         contacted = save.getBoolean("contacted");
-        handedOver = save.optBoolean("handedOver", !isArrivalDeparture() && getAltitude() > handoveralt);
+        handedOver = save.optBoolean("handedOver", !isArrivalDeparture() && getAltitude() > handoverAlt);
         cruiseAltTime = (float) save.optDouble("cruiseAltTime", 1);
         cruiseAlt = save.getInt("cruiseAlt");
         higherSpdSet = save.getBoolean("higherSpdSet");
@@ -187,6 +189,23 @@ public class Departure extends Aircraft {
             setOnGround(false);
             setTargetHeading(getClearedHeading());
             v2set = true;
+            //Ensure the aircraft clears at least the first waypoint restriction to prevent nuisance alerts
+            if (getRoute().getWaypoint(0) != null && getRoute().getWptMinAlt(0) != -1) {
+                //Perform only if first waypoint has a minimum altitude
+                Waypoint wpt = getRoute().getWaypoint(0);
+                float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), wpt.getPosX(), wpt.getPosY())); //Distance in nm
+                if (dist < 10) {
+                    //Applicable only if initial waypoint is less than 10nm from liftoff
+                    float estTime = dist / 220 * 60; //Assume average 220 knots speed
+                    float minClimb = (getRoute().getWptMinAlt(0) + 200) / estTime;
+                    if (minClimb > getTypClimb()) {
+                        //Set the new climb speed only if minimum required is more than the actual aircraft climb speed
+                        setTypClimb((int) minClimb);
+                        setMaxClimb(getTypClimb() + 800);
+                    }
+                }
+
+            }
         }
         if (getAltitude() >= contactAlt && !contacted) {
             setControlState(ControlState.DEPARTURE);
@@ -362,7 +381,7 @@ public class Departure extends Aircraft {
     public void updateAltitude(boolean holdAlt, boolean fixedVs) {
         super.updateAltitude(holdAlt, fixedVs);
         if (canHandover()) ui.updateAckHandButton(this);
-        if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoveralt && getNavState().getDispLatMode().first() == NavState.SID_STAR) {
+        if (getControlState() == ControlState.DEPARTURE && getAltitude() >= handoverAlt && getNavState().getDispLatMode().first() == NavState.SID_STAR) {
             contactOther();
         }
         if (isArrivalDeparture() && getRequest() != NO_REQUEST && !isRequested() && getAltitude() >= getRequestAlt()) {
@@ -413,8 +432,8 @@ public class Departure extends Aircraft {
         return contactAlt;
     }
 
-    public int getHandoveralt() {
-        return handoveralt;
+    public int getHandoverAlt() {
+        return handoverAlt;
     }
 
     public boolean isV2set() {
