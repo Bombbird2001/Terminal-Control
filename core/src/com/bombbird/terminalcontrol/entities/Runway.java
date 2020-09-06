@@ -35,6 +35,7 @@ public class Runway {
 
     //Set dimensions
     private static final float halfWidth = 2f;
+    private int feetLength;
     private float pxLength;
 
     //Set heading of runway
@@ -98,7 +99,9 @@ public class Runway {
                         break;
                 case 1: x = Float.parseFloat(s1); break;
                 case 2: y = Float.parseFloat(s1); break;
-                case 3: pxLength = MathTools.feetToPixel(Integer.parseInt(s1)); break;
+                case 3: feetLength = Integer.parseInt(s1);
+                        pxLength = MathTools.feetToPixel(feetLength);
+                        break;
                 case 4: heading = Integer.parseInt(s1);
                         trueHdg = heading - radarScreen.magHdgDev;
                         break;
@@ -267,5 +270,9 @@ public class Runway {
 
     public int getInitClimb() {
         return initClimb;
+    }
+
+    public int getFeetLength() {
+        return feetLength;
     }
 }

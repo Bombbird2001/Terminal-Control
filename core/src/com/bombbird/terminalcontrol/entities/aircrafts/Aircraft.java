@@ -80,7 +80,7 @@ public class Aircraft extends Actor {
     private final char recat;
     private boolean wakeInfringe;
     private float wakeTolerance;
-    private final int v2;
+    private int v2;
     private int typClimb;
     private int maxClimb;
     private int typDes;
@@ -629,13 +629,13 @@ public class Aircraft extends Actor {
 
     /** Updates the aircraft speed */
     private void updateIas() {
-        float targetdeltaIas = (clearedIas - ias) / 5;
-        if (targetdeltaIas > deltaIas + 0.05) {
+        float targetDeltaIas = (clearedIas - ias) / 5;
+        if (targetDeltaIas > deltaIas + 0.05) {
             deltaIas += 0.2f * Gdx.graphics.getDeltaTime();
-        } else if (targetdeltaIas < deltaIas - 0.05) {
+        } else if (targetDeltaIas < deltaIas - 0.05) {
             deltaIas -= 0.2f * Gdx.graphics.getDeltaTime();
         } else {
-            deltaIas = targetdeltaIas;
+            deltaIas = targetDeltaIas;
         }
         float max;
         float min;
@@ -1965,5 +1965,9 @@ public class Aircraft extends Actor {
 
     public void setRequestAlt(int requestAlt) {
         this.requestAlt = requestAlt;
+    }
+
+    public void setV2(int v2) {
+        this.v2 = v2;
     }
 }

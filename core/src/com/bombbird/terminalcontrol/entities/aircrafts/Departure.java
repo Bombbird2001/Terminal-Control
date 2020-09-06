@@ -87,10 +87,12 @@ public class Departure extends Aircraft {
         setAltitude(getRunway().getElevation());
 
         //Set initial position on runway
+        int feetDist = runway.getFeetLength();
         if ("TCTT".equals(getAirport().getIcao()) && "16R".equals(runway.getName())) {
             //Special case for TCTT runway 16R intersection takeoff
             setX(2864.2f);
             setY(1627.0f);
+            feetDist = 8559;
         } else if ("TCHX".equals(getAirport().getIcao()) && "13".equals(runway.getName())) {
             //TCHX departure adjustment since runway data does not include threshold
             setX(2862.0f);
@@ -99,6 +101,14 @@ public class Departure extends Aircraft {
             setX(getRunway().getPosition()[0]);
             setY(getRunway().getPosition()[1]);
         }
+
+        //Calculate max v2 speed to not overshoot, set to this value if smaller than original V2
+        float u = 10 / 3600f; //In nm/s
+        float a = 3 / 3600f; //In nm/s^2
+        float s = MathTools.feetToNm(feetDist); //In nm
+        int maxV2 = (int) (Math.sqrt(Math.pow(u, 2) + 2 * a * s) * 3600); //In nm/h (knots)
+        maxV2 = (maxV2 / 5) * 5; //Round down to nearest 5 knots
+        if (getV2() > maxV2) setV2(maxV2);
 
         loadLabel();
         setNavState(new NavState(this));
