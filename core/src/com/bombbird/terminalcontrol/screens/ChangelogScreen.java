@@ -79,6 +79,13 @@ public class ChangelogScreen extends StandardUIScreen {
 
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
+
+        //Version 1.4.2010.1
+        Array<String> content12 = new Array<>();
+        content12.add("-Updated list of airlines, aircraft types at airports");
+        content12.add("-Minor bug fixes");
+        changeLogContent.put("1.4.2010.1", content12);
+
         //Version 1.4.2008.1
         Array<String> content11 = new Array<>();
         content11.add("-Mechanics: Departures will no longer automatically climb to the minimum SID altitude if below - instead the MVA check will be activated for the sector");
