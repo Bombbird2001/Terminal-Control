@@ -571,8 +571,10 @@ public class DataTag {
                 } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING)) {
                     if (aircraft.getNavState().getClearedDirect().last() != null && aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName() + "=>" + aircraft.getNavState().getClearedAftWptHdg().last();
-                    } else {
+                    } else if (aircraft.getNavState().getClearedDirect().last() != null) {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName();
+                    } else {
+                        labelText[5] = "";
                     }
                 }
                 if (aircraft.getNavState().getClearedIls().last() != null) {

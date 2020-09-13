@@ -25,7 +25,7 @@ public class BasicScreen implements Screen {
         viewport.apply();
 
         //Set stage params
-        stage = new Stage(new FitViewport(width, height));
+        stage = new Stage(new FitViewport(width, height), game.batch);
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         Gdx.input.setInputProcessor(stage);
     }
@@ -46,19 +46,7 @@ public class BasicScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         stage.act(delta);
-        game.batch.begin();
-        boolean success = false;
-        while (!success) {
-            try {
-                stage.draw();
-                game.batch.end();
-                success = true;
-            } catch (IndexOutOfBoundsException e) {
-                Gdx.app.log(this.getClass().getName(), "stage.draw() render error");
-                stage.getBatch().end();
-                e.printStackTrace();
-            }
-        }
+        stage.draw();
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */

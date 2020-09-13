@@ -308,7 +308,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                 }
 
                 //Draw to the spritebatch
-                game.batch.begin();
+                game.batch.setProjectionMatrix(labelStage.getCamera().combined);
                 boolean liveWeather = ((RadarScreen) this).weatherSel == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
                 String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                 if (loading) {
@@ -326,43 +326,30 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
                     loadingText += loadingPercent;
                     loadingLabel.setText(loadingText);
                     loadingLabel.setPosition(1920 - loadingLabel.getPrefWidth() / 2, 1550);
+
+                    game.batch.begin();
                     loadingLabel.draw(game.batch, 1);
                     if (!RandomTip.tipsLoaded()) RandomTip.loadTips();
                     if ("".equals(tipLabel.getText().toString())) tipLabel.setText(RandomTip.randomTip());
                     tipLabel.setPosition(1920 - tipLabel.getPrefWidth() / 2, 960);
                     tipLabel.draw(game.batch, 1);
-                } else if (checkAircraftsLoaded()) {
-                    stage.draw();
                     game.batch.end();
-                    game.batch.setProjectionMatrix(labelStage.getCamera().combined);
-                    game.batch.begin();
+                } else if (checkAircraftLoaded()) {
+                    stage.draw();
                     labelStage.getViewport().apply();
                     labelStage.draw();
 
                     //Special shape rendering here so it won't be blocked by labels
                     requestFlasher.update();
                 }
-                game.batch.end();
 
                 //Draw the UI overlay
                 uiCam.update();
                 if (!loading) {
                     game.batch.setProjectionMatrix(uiCam.combined);
                     uiStage.act();
-                    game.batch.begin();
                     uiStage.getViewport().apply();
-                    boolean success = false;
-                    while (!success) {
-                        try {
-                            uiStage.draw();
-                            game.batch.end();
-                            success = true;
-                        } catch (IllegalArgumentException e) {
-                            Gdx.app.log("GameScreen", "uiStage.draw() render error");
-                            uiStage.getBatch().end();
-                            e.printStackTrace();
-                        }
-                    }
+                    uiStage.draw();
                 }
             }
 
@@ -376,7 +363,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
     }
 
     /** Try to fix crash on some devices where navstate is null after loading */
-    private boolean checkAircraftsLoaded() {
+    private boolean checkAircraftLoaded() {
         for (Aircraft aircraft: aircrafts.values()) {
             if (aircraft.getNavState() == null) return false;
         }

@@ -104,7 +104,13 @@ public class Route {
             }
         }
 
-        if (runway == null) throw new RuntimeException("Runway selected is null");
+        if (runway == null) {
+            if (!star.getRunways().isEmpty()) {
+                runway = star.getRunways().first();
+            } else {
+                throw new RuntimeException("Runway selected is null");
+            }
+        }
 
         wpts.addAll(star.getRwyWpts(runway));
         restrictions.addAll(star.getRwyRestrictions(runway));

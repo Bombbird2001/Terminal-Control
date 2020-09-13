@@ -346,7 +346,7 @@ public class RadarScreen extends GameScreen {
 
     private void loadStageCamTimer() {
         //Set stage params
-        stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
+        stage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240), game.batch);
         stage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
 
         //Set camera params
@@ -359,7 +359,7 @@ public class RadarScreen extends GameScreen {
             camera.position.set(2286, 1620, 0);
         }
 
-        labelStage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240));
+        labelStage = new Stage(new ScalingViewport(Scaling.fillY, 5760, 3240), game.batch);
         labelStage.getViewport().setCamera(camera);
         labelStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
 
@@ -378,7 +378,7 @@ public class RadarScreen extends GameScreen {
 
     private void loadPanel() {
         //Set 2nd stage, camera for UI
-        uiStage = new Stage(new ExtendViewport(1920, 3240));
+        uiStage = new Stage(new ExtendViewport(1920, 3240), game.batch);
         uiStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         ui = new Ui();
 
