@@ -158,7 +158,7 @@ public class RadarScreen extends GameScreen {
     private Aircraft selectedAircraft;
 
     //Simultaneous landing achievement storage
-    private LinkedHashMap<String, Float> simultaneousLanding;
+    private final LinkedHashMap<String, Float> simultaneousLanding;
 
     //Easter egg thing yey
     private com.badlogic.gdx.utils.Queue<Character> lastTapped;
