@@ -798,6 +798,7 @@ public class RadarScreen extends GameScreen {
                 if (ArrayUtils.contains(rwys, "34L") && ArrayUtils.contains(rwys, "34R") || ArrayUtils.contains(rwys, "16R") && ArrayUtils.contains(rwys, "16L")) return true;
             }
         }
+        simultaneousLanding.put(arrival.getCallsign(), 0f);
         return false;
     }
 
