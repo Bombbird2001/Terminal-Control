@@ -4,19 +4,20 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
+import com.bombbird.terminalcontrol.entities.zones.sidstarzone.SidStarZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SidStar {
-    private Airport airport;
+    private final Airport airport;
     private String name;
     private Array<String> runways;
     private Array<Waypoint> waypoints;
     private Array<int[]> restrictions;
     private Array<Boolean> flyOver;
 
-    private RadarScreen radarScreen;
+    private final RadarScreen radarScreen;
 
     private String pronunciation;
 

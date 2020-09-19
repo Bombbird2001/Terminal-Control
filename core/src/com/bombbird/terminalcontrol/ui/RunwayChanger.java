@@ -88,6 +88,7 @@ public class RunwayChanger {
                     doubleCfm = false;
                     hideAll();
                     TerminalControl.radarScreen.getCommBox().setVisible(true);
+                    TerminalControl.radarScreen.ui.updateMetar();
                 }
             }
         });

@@ -522,6 +522,7 @@ public class Aircraft extends Actor {
         shapeRenderer.setColor(radarScreen.getDefaultColour());
         shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
         route.joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, -1);
+        route.drawPolygons();
     }
 
     /** Draws the sidStar for the UI */

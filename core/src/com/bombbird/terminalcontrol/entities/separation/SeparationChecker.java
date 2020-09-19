@@ -290,8 +290,8 @@ public class SeparationChecker extends Actor {
                         //Enforced, conflict
                         conflict = true;
                     } else {
-                        //Not enforced, conflict only if not excluded, is vectored or is below the STAR minimum altitude
-                        conflict = !excl && (aircraft.isVectored() || aircraft.isBelowSidStarMinAlt());
+                        //Not enforced, conflict only if not excluded, is vectored, is below the STAR minimum altitude or is not within the SID/STAR zone
+                        conflict = !excl && (aircraft.isVectored() || aircraft.isBelowSidStarMinAlt() || !aircraft.getRoute().inSidStarZone(aircraft));
                         obstacle.setConflict(conflict);
                     }
                     if (conflict) break;

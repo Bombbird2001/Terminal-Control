@@ -1,16 +1,21 @@
 package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
+import com.bombbird.terminalcontrol.entities.zones.sidstarzone.SidStarZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class Route {
     private final RadarScreen radarScreen;
@@ -19,6 +24,9 @@ public class Route {
     private final Array<int[]> restrictions;
     private final Array<Boolean> flyOver;
     private HoldProcedure holdProcedure;
+
+    private int heading;
+    private final SidStarZone sidStarZone;
 
     private String name;
 
@@ -29,6 +37,10 @@ public class Route {
         wpts = new Array<>();
         restrictions = new Array<>();
         flyOver = new Array<>();
+
+        heading = -1;
+
+        sidStarZone = new SidStarZone(this);
     }
 
     /** Create a new Route based on STAR, for compatibility with older versions */
@@ -49,6 +61,8 @@ public class Route {
         holdProcedure = new HoldProcedure(star);
 
         name = star.getName();
+
+        sidStarZone.calculatePolygons(0);
     }
 
     /** Create a new Route based on SID, for compatibility with older versions */
@@ -74,6 +88,8 @@ public class Route {
         holdProcedure = new HoldProcedure();
 
         name = sid.getName();
+
+        sidStarZone.calculatePolygons(wpts.size - 1);
     }
 
     /** Create new Route based on newly assigned STAR */
@@ -82,7 +98,10 @@ public class Route {
         Array<String> inbound = star.getRandomInbound();
         for (int i = 0; i < inbound.size; i++) {
             if ("HDG".equals(inbound.get(i).split(" ")[0])) {
-                if (aircraft.getRoute() == null) aircraft.setHeading(Integer.parseInt(inbound.get(i).split(" ")[1]));
+                if (aircraft.getRoute() == null) {
+                    aircraft.setHeading(Integer.parseInt(inbound.get(i).split(" ")[1]));
+                    heading = (int) aircraft.getHeading() + 180;
+                }
             } else {
                 String[] data = inbound.get(i).split(" ");
                 wpts.add(radarScreen.waypoints.get(data[1]));
@@ -119,6 +138,8 @@ public class Route {
         holdProcedure = new HoldProcedure(star);
 
         name = star.getName();
+
+        sidStarZone.calculatePolygons(0);
     }
 
     /** Create new Route based on newly assigned SID */
@@ -141,12 +162,16 @@ public class Route {
             } else {
                 //Outbound heading
                 ((Departure) aircraft).setOutboundHdg(Integer.parseInt(data[MathUtils.random(1, data.length - 1)]));
+                heading = ((Departure) aircraft).getOutboundHdg();
             }
         }
 
         holdProcedure = new HoldProcedure();
 
         name = sid.getName();
+
+        sidStarZone.calculatePolygons(wpts.size - 1);
+        sidStarZone.calculateDepRwyPolygons(aircraft.getAirport().getRunways().get(runway));
     }
 
     /** Create new Route based on saved route, called only by other constructors */
@@ -165,14 +190,19 @@ public class Route {
 
         holdProcedure = new HoldProcedure();
 
-        name = jo.isNull("name") ? "null" : jo.getString("name");
+        heading = jo.optInt("heading", -1);
+
+        name = jo.optString("name", "null");
     }
 
     /** Create new Route based on saved route and SID name */
-    public Route(JSONObject jo, Sid sid) {
+    public Route(JSONObject jo, Sid sid, Runway runway) {
         this(jo);
 
         if ("null".equals(name) && sid != null) name = sid.getName();
+
+        sidStarZone.calculatePolygons(wpts.size - 1);
+        sidStarZone.calculateDepRwyPolygons(runway);
     }
 
     /** Create new Route based on saved route and STAR name */
@@ -181,6 +211,8 @@ public class Route {
         holdProcedure = new HoldProcedure(star);
 
         name = star.getName();
+
+        sidStarZone.calculatePolygons(0);
     }
 
     /** Draws the lines between aircraft, waypoints with shapeRenderer */
@@ -207,6 +239,18 @@ public class Route {
             float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
             radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1]);
         }
+    }
+
+    /** Draws the sidstarzone boundaries */
+    public void drawPolygons() {
+        for (Polygon polygon: sidStarZone.getPolygons()) {
+            radarScreen.shapeRenderer.polygon(polygon.getTransformedVertices());
+        }
+    }
+
+    /** Checks whether supplied aircraft is within the sidstarzone of the route */
+    public boolean inSidStarZone(Aircraft aircraft) {
+        return sidStarZone.contains(aircraft);
     }
 
     public Array<Waypoint> getWaypoints() {
@@ -301,5 +345,9 @@ public class Route {
 
     public String getName() {
         return name;
+    }
+
+    public int getHeading() {
+        return heading;
     }
 }

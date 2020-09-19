@@ -186,7 +186,9 @@ public class Metar {
         sb.append(windDirStr);
         int windSpd = object.optInt("windSpeed", 1);
         sb.append(windSpd < 10 ? "0" + windSpd : windSpd).append("KT ");
-        sb.append(object.optInt("visibility", 9999)).append(" ");
+        int visibility = object.optInt("visibility", 10000);
+        if (visibility >= 10000) visibility = 9999;
+        sb.append(visibility).append(" ");
         int temp = MathUtils.random(20, 35);
         sb.append(temp).append("/").append(temp - MathUtils.random(2, 8)).append(" ");
         sb.append("Q").append(MathUtils.random(1005, 1018)).append(" ");

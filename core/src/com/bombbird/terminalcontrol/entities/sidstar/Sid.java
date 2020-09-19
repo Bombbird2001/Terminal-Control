@@ -25,28 +25,28 @@ public class Sid extends SidStar {
     public Sid(Airport airport, JSONArray wpts, JSONArray restrictions, JSONArray fo, String name) {
         super(airport, wpts, restrictions, fo, name);
 
-        initClimb = new HashMap<String, int[]>();
-        initWpts = new HashMap<String, Array<Waypoint>>();
-        initRestrictions = new HashMap<String, Array<int[]>>();
-        initFlyOver = new HashMap<String, Array<Boolean>>();
+        initClimb = new HashMap<>();
+        initWpts = new HashMap<>();
+        initRestrictions = new HashMap<>();
+        initFlyOver = new HashMap<>();
     }
 
     @Override
     public void parseInfo(JSONObject jo) {
         super.parseInfo(jo);
 
-        initClimb = new HashMap<String, int[]>();
-        initWpts = new HashMap<String, Array<Waypoint>>();
-        initRestrictions = new HashMap<String, Array<int[]>>();
-        initFlyOver = new HashMap<String, Array<Boolean>>();
-        transition = new Array<Array<String>>();
+        initClimb = new HashMap<>();
+        initWpts = new HashMap<>();
+        initRestrictions = new HashMap<>();
+        initFlyOver = new HashMap<>();
+        transition = new Array<>();
 
         JSONObject rwys = jo.getJSONObject("rwys");
         for (String rwy: rwys.keySet()) {
             getRunways().add(rwy);
-            Array<Waypoint> wpts = new Array<Waypoint>();
-            Array<int[]> restrictions = new Array<int[]>();
-            Array<Boolean> flyOver = new Array<Boolean>();
+            Array<Waypoint> wpts = new Array<>();
+            Array<int[]> restrictions = new Array<>();
+            Array<Boolean> flyOver = new Array<>();
 
             JSONObject rwyObject = rwys.getJSONObject(rwy);
             String[] initClimbData = rwyObject.getString("climb").split(" ");
@@ -69,7 +69,7 @@ public class Sid extends SidStar {
         JSONArray transitions = jo.getJSONArray("transitions");
         for (int i = 0; i < transitions.length(); i++) {
             JSONArray trans = transitions.getJSONArray(i);
-            Array<String> transData = new Array<String>();
+            Array<String> transData = new Array<>();
             for (int j = 0; j < trans.length(); j++) {
                 transData.add(trans.getString(j));
             }

@@ -138,7 +138,7 @@ public class Departure extends Aircraft {
             if (sid == null) {
                 sid = new Sid(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.isNull("name") ? "null" : route.getString("name"));
             }
-            setRoute(new Route(route, sid));
+            setRoute(new Route(route, sid, getRunway()));
         }
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");

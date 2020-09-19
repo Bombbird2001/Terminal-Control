@@ -577,11 +577,9 @@ public class Arrival extends Aircraft {
                 setTkOfLdg(true);
                 setOnGround(true);
                 setHeading(getIls().getRwy().getHeading());
-                if (!UnlockManager.unlocks.contains("parallelLanding")) {
-                    if(radarScreen.addAndCheckSimultLanding(this)) {
-                        //Parallel landing achieved!
-                        UnlockManager.completeAchievement("parallelLanding");
-                    }
+                if (!UnlockManager.unlocks.contains("parallelLanding") && radarScreen.addAndCheckSimultLanding(this)) {
+                    //Parallel landing achieved!
+                    UnlockManager.completeAchievement("parallelLanding");
                 }
             }
             if (isLocCap() && checkGoAround()) {

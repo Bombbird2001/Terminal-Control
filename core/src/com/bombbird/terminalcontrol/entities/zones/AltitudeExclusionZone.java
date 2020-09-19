@@ -14,9 +14,9 @@ import java.util.HashMap;
 
 public class AltitudeExclusionZone {
     private boolean active;
-    private Array<String> runways;
+    private final Array<String> runways;
 
-    private Polygon polygon;
+    private final Polygon polygon;
 
     //All dimensions in nautical miles
     public AltitudeExclusionZone(String[] rwys, float xMid, float yMid, int apchHdg, float length, float width) {
