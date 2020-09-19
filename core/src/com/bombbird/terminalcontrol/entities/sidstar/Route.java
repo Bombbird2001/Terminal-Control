@@ -15,8 +15,6 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-
 public class Route {
     private final RadarScreen radarScreen;
 

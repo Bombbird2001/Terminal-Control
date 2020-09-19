@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.zones.sidstarzone.SidStarZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import org.json.JSONArray;
 import org.json.JSONObject;
