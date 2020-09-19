@@ -23,6 +23,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> weather;
     public SelectBox<String> sound;
     public SelectBox<String> sweep;
+    public SelectBox<String> metar;
 
     public Label weatherLabel;
     public RadarScreen.Weather weatherSel;
@@ -32,6 +33,9 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
 
     public Label sweepLabel;
     public float radarSweep;
+
+    public Label metarLabel;
+    public boolean realisticMetar;
 
     //In game only
     private SelectBox<String> speed;
@@ -98,6 +102,15 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
             }
         });
 
+        metar = createStandardSelectBox();
+        metar.setItems("Simple", "Realistic");
+        metar.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                realisticMetar = "Realistic".equals(metar.getSelected());
+            }
+        });
+
         if (radarScreen != null) {
             speed = createStandardSelectBox();
             speed.setItems("1x", "2x", "4x");
@@ -117,6 +130,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
         weatherLabel = new Label("Weather: ", labelStyle);
         soundLabel = new Label("Sounds: ", labelStyle);
         sweepLabel = new Label("Radar sweep: ", labelStyle);
+        metarLabel = new Label("Metar display:", labelStyle);
 
         if (radarScreen != null) {
             speedLabel = new Label("Speed: ", labelStyle);
@@ -139,6 +153,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
         tab1.addActors(weather, weatherLabel);
         tab1.addActors(sound, soundLabel);
         tab1.addActors(sweep, sweepLabel);
+        tab1.addActors(metar, metarLabel);
 
         if (radarScreen != null) {
             tab1.addActors(speed, speedLabel);
@@ -155,13 +170,14 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
             speed.setSelected(speedSel + "x");
             weatherSel = radarScreen.weatherSel;
             soundSel = radarScreen.soundSel;
-            speedSel = radarScreen.speed;
             radarSweep = radarScreen.radarSweepDelay;
+            realisticMetar = radarScreen.realisticMetar;
             if (radarScreen.tutorial) return;
         } else {
             radarSweep = TerminalControl.radarSweep;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
+            realisticMetar = TerminalControl.realisticMetar;
         }
 
         weather.setSelected(weatherSel.toString().charAt(0) + weatherSel.toString().substring(1).toLowerCase() + " weather");
@@ -171,6 +187,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
         DecimalFormat df = new DecimalFormat("#.#");
         df.setRoundingMode(RoundingMode.CEILING);
         sweep.setSelected(df.format(radarSweep) + "s");
+        metar.setSelected(realisticMetar ? "Realistic" : "Simple");
     }
 
     /** Confirms and applies the changes set */
@@ -181,12 +198,17 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
             radarScreen.soundSel = soundSel;
             radarScreen.speed = speedSel;
             radarScreen.radarSweepDelay = radarSweep;
+            radarScreen.realisticMetar = realisticMetar;
             if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
-            radarScreen.ui.updateInfoLabel();
+            Gdx.app.postRunnable(() -> {
+                radarScreen.ui.updateInfoLabel();
+                radarScreen.ui.updateMetar();
+            });
         } else {
             TerminalControl.weatherSel = weatherSel;
             TerminalControl.soundSel = soundSel;
             TerminalControl.radarSweep = radarSweep;
+            TerminalControl.realisticMetar = realisticMetar;
 
             GameSaver.saveSettings();
         }

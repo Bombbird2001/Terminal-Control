@@ -13,12 +13,12 @@ import java.util.HashMap;
 
 public class ApproachZone {
     private boolean active;
-    private String rwy1;
-    private String rwy2;
+    private final String rwy1;
+    private final String rwy2;
 
-    private Polygon noz1;
-    private Polygon noz2;
-    private Polygon ntz;
+    private final Polygon noz1;
+    private final Polygon noz2;
+    private final Polygon ntz;
 
     //All dimensions in nautical miles
     public ApproachZone(String rwy1, String rwy2, float xMid, float yMid, int apchHdg, float nozWidth, float nozLength, float ntzWidth) {

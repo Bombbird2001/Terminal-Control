@@ -75,6 +75,7 @@ public class TerminalControl extends Game {
     public static int rangeCircleDist;
     public static int lineSpacingValue;
     public static int colourStyle;
+    public static boolean realisticMetar;
     public static int defaultTabNo;
     public static int revision;
     public static final int LATEST_REVISION = 1;
@@ -115,6 +116,7 @@ public class TerminalControl extends Game {
             rangeCircleDist = 0;
             lineSpacingValue = 1;
             colourStyle = 0;
+            realisticMetar = false;
             defaultTabNo = 0;
             emerChance = Emergency.Chance.MEDIUM;
             revision = 0;
@@ -154,6 +156,7 @@ public class TerminalControl extends Game {
             rangeCircleDist = settings.optInt("rangeCircleDist", 0);
             lineSpacingValue = settings.optInt("lineSpacingValue", 1);
             colourStyle = settings.optInt("colourStyle", 0);
+            realisticMetar = settings.optBoolean("realisticMetar", false);
             revision = settings.optInt("revision", 0);
         }
         GameSaver.saveSettings();

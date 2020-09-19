@@ -114,6 +114,8 @@ public class Metar {
 
             jsonObject.put("rain", JSONObject.NULL);
 
+            jsonObject.put("metar", generateRawMetar(jsonObject));
+
             airports.put(RenameManager.reverseNameAirportICAO(airport), jsonObject);
         }
 
@@ -152,6 +154,8 @@ public class Metar {
 
             object.put("windshear", "".equals(ws) ? JSONObject.NULL : ws);
 
+            object.put("metar", generateRawMetar(object));
+
             jsonObject.put(RenameManager.reverseNameAirportICAO(airport), object);
         }
         return jsonObject;
@@ -165,6 +169,30 @@ public class Metar {
             metarObject = randomBasedOnCurrent();
         }
         updateRadarScreenState();
+    }
+
+    /** Generates a basic raw metar for randomised weather */
+    private String generateRawMetar(JSONObject object) {
+        StringBuilder sb = new StringBuilder();
+        int windDir = object.optInt("windDirection", 0);
+        String windDirStr;
+        if (windDir == 0) {
+            windDirStr = "VRB";
+        } else if (windDir < 100) {
+            windDirStr = "0" + windDir;
+        } else {
+            windDirStr = String.valueOf(windDir);
+        }
+        sb.append(windDirStr);
+        int windSpd = object.optInt("windSpeed", 1);
+        sb.append(windSpd < 10 ? "0" + windSpd : windSpd).append("KT ");
+        sb.append(object.optInt("visibility", 9999)).append(" ");
+        int temp = MathUtils.random(20, 35);
+        sb.append(temp).append("/").append(temp - MathUtils.random(2, 8)).append(" ");
+        sb.append("Q").append(MathUtils.random(1005, 1018)).append(" ");
+        sb.append(object.isNull("windshear") ? "NOSIG" : "WS " + object.getString("windshear"));
+
+        return sb.toString();
     }
 
     /** Called after changing the metarObject, to update the in game weather and UI */

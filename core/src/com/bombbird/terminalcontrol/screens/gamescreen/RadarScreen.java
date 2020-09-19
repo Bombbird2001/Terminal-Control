@@ -47,6 +47,7 @@ import com.bombbird.terminalcontrol.utilities.saving.GameLoader;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator;
 import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -94,6 +95,7 @@ public class RadarScreen extends GameScreen {
     public boolean alwaysShowBordersBackground;
     public int lineSpacingValue;
     public int colourStyle;
+    public boolean realisticMetar;
 
     //Whether the game is a tutorial
     public boolean tutorial = false;
@@ -155,6 +157,9 @@ public class RadarScreen extends GameScreen {
     //The selected aircraft
     private Aircraft selectedAircraft;
 
+    //Simultaneous landing achievement storage
+    private LinkedHashMap<String, Float> simultaneousLanding;
+
     //Easter egg thing yey
     private com.badlogic.gdx.utils.Queue<Character> lastTapped;
 
@@ -191,6 +196,8 @@ public class RadarScreen extends GameScreen {
 
         sectorClosed = false;
 
+        simultaneousLanding = new LinkedHashMap<>();
+
         if (tutorial) {
             trajectoryLine = 90;
             pastTrajTime = -1;
@@ -206,6 +213,7 @@ public class RadarScreen extends GameScreen {
             rangeCircleDist = 0;
             lineSpacingValue = 1;
             colourStyle = 0;
+            realisticMetar = false;
             emerChance = Emergency.Chance.OFF;
             weatherSel = Weather.STATIC;
         } else {
@@ -223,6 +231,7 @@ public class RadarScreen extends GameScreen {
             rangeCircleDist = TerminalControl.rangeCircleDist;
             lineSpacingValue = TerminalControl.lineSpacingValue;
             colourStyle = TerminalControl.colourStyle;
+            realisticMetar = TerminalControl.realisticMetar;
             weatherSel = TerminalControl.weatherSel;
             soundSel = TerminalControl.soundSel;
             emerChance = TerminalControl.emerChance;
@@ -284,6 +293,7 @@ public class RadarScreen extends GameScreen {
         rangeCircleDist = save.optInt("rangeCircleDist", 0);
         lineSpacingValue = save.optInt("lineSpacingValue", 1);
         colourStyle = save.optInt("colourStyle", 0);
+        realisticMetar = save.optBoolean("realisticMetar", false);
         String weather = save.optString("liveWeather");
         if ("true".equals(weather)) {
             weatherSel = Weather.LIVE;
@@ -310,6 +320,8 @@ public class RadarScreen extends GameScreen {
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
 
         loadEasterEggQueue();
+
+        simultaneousLanding = new LinkedHashMap<>();
     }
 
     private void loadEasterEggQueue() {
@@ -606,6 +618,16 @@ public class RadarScreen extends GameScreen {
                 }
             }
         }
+
+        if (!UnlockManager.unlocks.contains("parallelLanding")) {
+            //Update simultaneous landing linkedhashmap
+            Iterator<Map.Entry<String, Float>> iterator = simultaneousLanding.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Float> entry = iterator.next();
+                entry.setValue(entry.getValue() + deltaTime);
+                if (entry.getValue() > 5) iterator.remove();
+            }
+        }
     }
 
     /** Sets the radar return of aircraft to current aircraft information */
@@ -758,6 +780,25 @@ public class RadarScreen extends GameScreen {
             UnlockManager.unlockEgg("HX");
             commBox.alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
         }
+    }
+
+    public boolean addAndCheckSimultLanding(Arrival arrival) {
+        for (String callsign: simultaneousLanding.keySet()) {
+            Aircraft aircraft = aircrafts.get(callsign);
+            if (!arrival.getAirport().equals(aircraft.getAirport())) continue;
+            String airportIcao = arrival.getAirport().getIcao();
+            if (arrival.getIls() == null) return false;
+            String rwy1 = arrival.getIls().getRwy().getName();
+            if (aircraft.getIls() == null) continue;
+            String rwy2 = aircraft.getIls().getRwy().getName();
+            String[] rwys = {rwy1, rwy2};
+            if ("TCWS".equals(airportIcao)) {
+                if (ArrayUtils.contains(rwys, "02L") && ArrayUtils.contains(rwys, "02C") || ArrayUtils.contains(rwys, "20R") && ArrayUtils.contains(rwys, "20C")) return true;
+            } else if ("TCTT".equals(airportIcao) || "TCAA".equals(airportIcao)) {
+                if (ArrayUtils.contains(rwys, "34L") && ArrayUtils.contains(rwys, "34R") || ArrayUtils.contains(rwys, "16R") && ArrayUtils.contains(rwys, "16L")) return true;
+            }
+        }
+        return false;
     }
 
     /** Estimates the duration played (if save has no play time data) */

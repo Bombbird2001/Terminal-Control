@@ -131,45 +131,57 @@ public class Ui {
     public void updateMetar() {
         for (int i = 0; i < metarInfos.size; i++) {
             Label label = metarInfos.get(i);
-            //Get airport: ICAO code is first 4 letters of label's text
-            String text = "";
-            for (int j = 0; j < 3; j++) {
-                String original = label.getText().toString();
-                try {
-                    text = label.getText().toString().substring(0, 4);
-                    break;
-                } catch (StringIndexOutOfBoundsException e) {
-                    ErrorHandler.sendRepeatableError(original, e, j + 1);
+            //Get airport: ICAO code is 1st 4 letters on label's text
+            Airport airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
+            String[] metarText;
+            if (radarScreen.realisticMetar) {
+                //Realistic metar format
+                metarText = new String[3];
+                metarText[0] = airport.getIcao() + " - " + radarScreen.getInformation();
+                StringBuilder dep = new StringBuilder();
+                for (String runway: airport.getTakeoffRunways().keySet()) {
+                    if (dep.length() > 0) dep.append(", ");
+                    dep.append(runway);
                 }
-            }
-            if (text.length() == 0) continue;
-            Airport airport = radarScreen.airports.get(text);
-            String[] metarText = new String[5];
-            metarText[0] = airport.getIcao();
-            //Wind: Speed + direction
-            if (airport.getWinds()[1] == 0) {
-                metarText[1] = "Winds: Calm";
+                StringBuilder arr = new StringBuilder();
+                for (String runway: airport.getLandingRunways().keySet()) {
+                    if (arr.length() > 0) arr.append(", ");
+                    arr.append(runway);
+                }
+                metarText[1] = "DEP - " + dep.toString() + "     ARR - " + arr.toString();
+                metarText[2] = airport.getMetar().optString("metar", "");
             } else {
-                if (airport.getWinds()[0] != 0) {
-                    metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
+                //Simple metar format
+                metarText = new String[5];
+                metarText[0] = airport.getIcao();
+                //Wind: Speed + direction
+                if (airport.getWinds()[1] == 0) {
+                    metarText[1] = "Winds: Calm";
                 } else {
-                    metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
+                    if (airport.getWinds()[0] != 0) {
+                        metarText[1] = "Winds: " + airport.getWinds()[0] + "@" + airport.getWinds()[1] + "kts";
+                    } else {
+                        metarText[1] = "Winds: VRB@" + airport.getWinds()[1] + "kts";
+                    }
                 }
+                //Gusts
+                if (airport.getGusts() != -1) {
+                    metarText[2] = "Gusting to: " + airport.getGusts() + "kts";
+                } else {
+                    metarText[2] = "Gusting to: None";
+                }
+                //Visbility
+                metarText[3] = "Visibility: " + airport.getVisibility() + " metres";
+                //Windshear
+                metarText[4] = "Windshear: " + airport.getWindshear();
             }
-            //Gusts
-            if (airport.getGusts() != -1) {
-                metarText[2] = "Gusting to: " + airport.getGusts() + "kts";
-            } else {
-                metarText[2] = "Gusting to: None";
-            }
-            //Visbility
-            metarText[3] = "Visibility: " + airport.getVisibility() + " metres";
-            //Windshear
-            metarText[4] = "Windshear: " + airport.getWindshear();
             boolean success = false;
             while (!success) {
                 try {
                     label.setText(StringUtils.join(metarText, "\n"));
+                    label.setWrap(true);
+                    metarPane.layout();
+                    metarPane.layout();
                     success = true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                     e.printStackTrace();
@@ -255,6 +267,7 @@ public class Ui {
             }
         });
         radarScreen.uiStage.addActor(pauseButton);
+        //radarScreen.uiStage.setDebugAll(true);
 
         //Metar display labels
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -264,15 +277,8 @@ public class Ui {
         metarTable.align(Align.left);
         metarInfos = new Array<>();
         for (final Airport airport: radarScreen.airports.values()) {
-            String[] metarText = new String[5];
-            metarText[0] = airport.getIcao();
-            metarText[1] = "Winds: Loading";
-            metarText[2] = "Gusting to: Loading";
-            metarText[3] = "Visibility: Loading";
-            metarText[4] = "Windshear: Loading\n";
-            Label metarInfo = new Label(StringUtils.join(metarText, "\n"), labelStyle);
-            metarInfo.setSize(paneImage.getWidth() / 2.74f, 300);
-            //radarScreen.uiStage.addActor(metarInfo);
+            Label metarInfo = new Label(airport.getIcao(), labelStyle);
+            metarInfo.setWidth(paneImage.getWidth() * 0.6f);
             metarInfos.add(metarInfo);
             metarInfo.addListener(new ClickListener() {
                 @Override
@@ -284,7 +290,7 @@ public class Ui {
                     TerminalControl.radarScreen.getCommBox().setVisible(false);
                 }
             });
-            metarTable.add(metarInfo);
+            metarTable.add(metarInfo).width(paneImage.getWidth() * 0.6f).padBottom(70);
             metarTable.row();
         }
 
@@ -292,7 +298,7 @@ public class Ui {
         metarPane.setupFadeScrollBars(1, 1.5f);
         metarPane.setX(paneImage.getWidth() / 19.2f);
         metarPane.setY(1550);
-        metarPane.setWidth(paneImage.getWidth() / 2.74f);
+        metarPane.setWidth(paneImage.getWidth() * 0.6f);
         metarPane.setHeight(1200);
 
         InputListener inputListener = null;

@@ -783,6 +783,10 @@ public class Aircraft extends Actor {
             } else {
                 requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));
             }
+            if (this instanceof Departure && distance <= requiredDistance + 15 && controlState == ControlState.DEPARTURE && route.getWaypoint(sidStarIndex + 1) == null) {
+                //If departure hasn't contacted centre before reaching last waypoint, contact centre immediately
+                this.contactOther();
+            }
             if (distance <= requiredDistance) {
                 updateDirect();
             }

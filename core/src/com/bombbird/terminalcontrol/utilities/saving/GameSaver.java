@@ -77,6 +77,7 @@ public class GameSaver {
         jsonObject.put("colourStyle", radarScreen.colourStyle);
         jsonObject.put("liveWeather", radarScreen.weatherSel);
         jsonObject.put("sounds", radarScreen.soundSel);
+        jsonObject.put("realisticMetar", radarScreen.realisticMetar);
         jsonObject.put("emerChance", radarScreen.emerChance.toString());
         jsonObject.put("tfcMode", radarScreen.tfcMode.toString());
         jsonObject.put("allowNight", radarScreen.allowNight);
@@ -688,6 +689,7 @@ public class GameSaver {
             settings.put("rangeCircleDist", TerminalControl.rangeCircleDist);
             settings.put("lineSpacingValue", TerminalControl.lineSpacingValue);
             settings.put("colourStyle", TerminalControl.colourStyle);
+            settings.put("realisticMetar", TerminalControl.realisticMetar);
             settings.put("defaultTabNo", TerminalControl.defaultTabNo);
             settings.put("emerChance", TerminalControl.emerChance.toString());
             settings.put("revision", TerminalControl.revision);
