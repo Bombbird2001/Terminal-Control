@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
@@ -389,17 +390,22 @@ public class Arrival extends Aircraft {
             if (getDirect() != null) {
                 highestAlt = Math.max(getRoute().getWptMaxAlt(getDirect().getName()), ((int) getAltitude()) / 1000 * 1000);
                 lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
-                if ("TCOO".equals(getAirport().getIcao()) && getAltitude() >= 3499 && highestAlt == 3000) {
-                    highestAlt = 3500;
-                } else if ("TCHH".equals(getAirport().getIcao()) && getSidStar().getRunways().contains("25R", false) && getAltitude() >= 4499 && highestAlt == 4000) {
-                    highestAlt = 4500;
-                }
-                if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt;
-                if (highestAlt < radarScreen.minAlt) highestAlt = radarScreen.minAlt;
-                if (lowestAlt > -1 && highestAlt < lowestAlt) highestAlt = lowestAlt;
             }
-            setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
-            setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
+            if (highestAlt == -1) highestAlt = radarScreen.maxAlt;
+            if (lowestAlt == -1) lowestAlt = radarScreen.minAlt;
+            if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt;
+            if (highestAlt < radarScreen.minAlt) highestAlt = radarScreen.minAlt;
+            if (highestAlt < lowestAlt) highestAlt = lowestAlt;
+            Array<Integer> tmpArray = ui.altTab.createAltArray(lowestAlt, highestAlt);
+            if ("TCOO".equals(getAirport().getIcao())) {
+                ui.altTab.checkAndAddIntermediate(tmpArray, getAltitude(), 3500);
+            } else if ("TCHH".equals(getAirport().getIcao()) && getSidStar().getRunways().contains("25R", false)) {
+                ui.altTab.checkAndAddIntermediate(tmpArray, getAltitude(), 4300);
+                ui.altTab.checkAndAddIntermediate(tmpArray, getAltitude(), 4500);
+            }
+            tmpArray.sort();
+            setHighestAlt(tmpArray.get(tmpArray.size - 1));
+            setLowestAlt(tmpArray.first());
         } else if (getNavState().getDispLatMode().first() == NavState.HOLD_AT && isHolding() && getHoldWpt() != null) {
             int[] altRestr = getRoute().getHoldProcedure().getAltRestAtWpt(getHoldWpt());
             int highestAlt = altRestr[1];

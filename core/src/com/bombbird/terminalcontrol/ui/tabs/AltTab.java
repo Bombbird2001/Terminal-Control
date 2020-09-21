@@ -34,12 +34,14 @@ public class AltTab extends Tab {
         alts.clear();
         int lowestAlt;
         int highestAlt = -1;
+        Array<Integer> allAlts;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
             highestAlt = TerminalControl.radarScreen.maxAlt;
             if (Ui.CLIMB_VIA_SID.equals(altMode) && selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt) > highestAlt) {
                 highestAlt = selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt);
             }
+            allAlts = createAltArray(lowestAlt, highestAlt);
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
             if (Ui.HOLD_AT.equals(latMode)) {
@@ -59,12 +61,6 @@ public class AltTab extends Tab {
             if (highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
                 highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
             }
-            String icao = selectedAircraft.getAirport().getIcao();
-            if ("TCOO".equals(icao) && selectedAircraft.getAltitude() >= 3499 && highestAlt == 3000) {
-                highestAlt = 3500;
-            } else if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && selectedAircraft.getAltitude() >= 4499 && highestAlt == 4000) {
-                highestAlt = 4500;
-            }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
             }
@@ -72,36 +68,48 @@ public class AltTab extends Tab {
             if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() != null && selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap())) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
+            allAlts = createAltArray(lowestAlt, highestAlt);
+            String icao = selectedAircraft.getAirport().getIcao();
+            if ("TCOO".equals(icao)) {
+                checkAndAddIntermediate(allAlts, selectedAircraft.getAltitude(),3500);
+            } else if (("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) {
+                checkAndAddIntermediate(allAlts, selectedAircraft.getAltitude(),4300);
+                checkAndAddIntermediate(allAlts, selectedAircraft.getAltitude(),4500);
+            }
+            allAlts.sort();
         } else {
             lowestAlt = 0;
             highestAlt = 10000;
+            allAlts = createAltArray(lowestAlt, highestAlt);
             Gdx.app.log("Invalid aircraft type", "Aircraft not instance of departure or arrival");
         }
-        clearedAlt = MathUtils.clamp(clearedAlt, lowestAlt, highestAlt);
+        clearedAlt = MathUtils.clamp(clearedAlt, allAlts.first(), allAlts.get(allAlts.size - 1));
         //Adds the possible altitudes between range to array
-        String icao = selectedAircraft.getAirport().getIcao();
-        if (lowestAlt % 1000 != 0) {
-            alts.add(Integer.toString(lowestAlt));
-            int altTracker = lowestAlt + (1000 - lowestAlt % 1000);
-            while (altTracker <= highestAlt) {
-                String toAdd = altTracker / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + altTracker / 100 : Integer.toString(altTracker);
-                alts.add(toAdd);
-                if ("TCOO".equals(icao) && altTracker == 3000) alts.add("3500");
-                if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && altTracker == 4000) alts.add("4500");
-                altTracker += 1000;
-            }
-        } else {
-            while (lowestAlt <= highestAlt) {
-                String toAdd = lowestAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + lowestAlt / 100 : Integer.toString(lowestAlt);
-                alts.add(toAdd);
-                if ("TCOO".equals(icao) && lowestAlt == 3000) alts.add("3500");
-                if ((("TCHH".equals(icao) && selectedAircraft.getSidStar().getRunways().contains("25R", false)) || "TCHX".equals(icao)) && lowestAlt == 4000) alts.add("4500");
-                lowestAlt += 1000;
-            }
+        for (int alt: allAlts) {
+            alts.add(alt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + alt / 100 : String.valueOf(alt));
         }
         valueBox.setItems(alts);
         valueBox.setSelected(clearedAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + clearedAlt / 100 : Integer.toString(clearedAlt));
         notListening = false;
+    }
+
+    public Array<Integer> createAltArray(int lowestAlt, int highestAlt) {
+        Array<Integer> newAltArray = new Array<>();
+        int start = lowestAlt;
+        if (lowestAlt % 1000 != 0) {
+            newAltArray.add(lowestAlt);
+            start = ((lowestAlt / 1000) + 1) * 1000;
+        }
+        for (int i = start; i < highestAlt; i += 1000) {
+            newAltArray.add(i);
+        }
+        newAltArray.add(highestAlt);
+        return newAltArray;
+    }
+
+    public void checkAndAddIntermediate(Array<Integer> allAlts, float currentAlt, int altToAdd) {
+        if (currentAlt < altToAdd - 20) return; //Current aircraft altitude must be at lowest 20 feet lower than altitude to add
+        allAlts.add(altToAdd);
     }
 
     @Override
