@@ -224,11 +224,13 @@ public class Metar {
     public void updateCustomWeather(HashMap<String, int[]> arptData) {
         for (Map.Entry<String, int[]> entry: arptData.entrySet()) {
             String realIcao = RenameManager.reverseNameAirportICAO(entry.getKey());
-            metarObject.getJSONObject(realIcao).put("windDirection", entry.getValue()[0]);
-            metarObject.getJSONObject(realIcao).put("windSpeed", entry.getValue()[1]);
+            JSONObject object = metarObject.getJSONObject(realIcao);
+            object.put("windDirection", entry.getValue()[0]);
+            object.put("windSpeed", entry.getValue()[1]);
             String randomWs = WindshearChance.getRandomWsForAllRwy(entry.getKey(), entry.getValue()[1]);
-            metarObject.getJSONObject(realIcao).put("windshear", "".equals(randomWs) ? JSONObject.NULL : randomWs);
-            metarObject.getJSONObject(realIcao).put("visibility", VisibilityChance.getRandomVis());
+            object.put("windshear", "".equals(randomWs) ? JSONObject.NULL : randomWs);
+            object.put("visibility", VisibilityChance.getRandomVis());
+            object.put("metar", generateRawMetar(object));
         }
         updateRadarScreenState();
     }
