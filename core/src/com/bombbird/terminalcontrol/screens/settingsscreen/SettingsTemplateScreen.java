@@ -42,6 +42,9 @@ public class SettingsTemplateScreen extends BasicScreen {
     //Info string label
     public String infoString;
 
+    //Class name of screen
+    public String className;
+
     public SettingsTemplateScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, 5760, 3240);
 
@@ -55,6 +58,8 @@ public class SettingsTemplateScreen extends BasicScreen {
 
         settingsTabs = new Array<>();
         tab = 0;
+
+        className = getClass().getSimpleName();
     }
 
     public void loadUI(int xOffset, int yOffset) {

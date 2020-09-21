@@ -20,6 +20,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
     public SelectBox<String> showUncontrolledTrail;
     public SelectBox<String> rangeCircle;
     public SelectBox<String> colour;
+    public SelectBox<String> metar;
 
     public Label trajectoryLabel;
     public int trajectorySel;
@@ -41,6 +42,9 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
 
     public Label colourLabel;
     public int colourStyle;
+
+    public Label metarLabel;
+    public boolean realisticMetar;
 
     public DisplaySettingsScreen(TerminalControl game, RadarScreen radarScreen, Image background) {
         super(game, radarScreen, background);
@@ -92,7 +96,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Hide".equals(mva.getSelected())) {
                     showMva = false;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown MVA setting " + mva.getSelected());
+                    Gdx.app.log(className, "Unknown MVA setting " + mva.getSelected());
                 }
             }
         });
@@ -107,7 +111,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("Realistic".equals(ilsDash.getSelected())) {
                     showIlsDash = true;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown ILS dash setting " + ilsDash.getSelected());
+                    Gdx.app.log(className, "Unknown ILS dash setting " + ilsDash.getSelected());
                 }
             }
         });
@@ -122,7 +126,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("When selected".equals(showUncontrolledTrail.getSelected())) {
                     showUncontrolled = false;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown uncontrolled trail setting " + ilsDash.getSelected());
+                    Gdx.app.log(className, "Unknown uncontrolled trail setting " + ilsDash.getSelected());
                 }
             }
         });
@@ -150,8 +154,17 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
                 } else if ("More standardised".equals(colour.getSelected())) {
                     colourStyle = 1;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown colour style setting " + colour.getSelected());
+                    Gdx.app.log(className, "Unknown colour style setting " + colour.getSelected());
                 }
+            }
+        });
+
+        metar = createStandardSelectBox();
+        metar.setItems("Simple", "Realistic");
+        metar.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                realisticMetar = "Realistic".equals(metar.getSelected());
             }
         });
     }
@@ -168,6 +181,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         showUncontrolledLabel = new Label("Show uncontrolled:\naircraft trail", labelStyle);
         rangeCircleLabel = new Label("Range rings:", labelStyle);
         colourLabel = new Label("Colour style:", labelStyle);
+        metarLabel = new Label("Metar display:", labelStyle);
     }
 
     /** Loads actors for display settings into tabs */
@@ -181,6 +195,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         tab1.addActors(showUncontrolledTrail, showUncontrolledLabel);
         tab1.addActors(rangeCircle, rangeCircleLabel);
         tab1.addActors(colour, colourLabel);
+        tab1.addActors(metar, metarLabel);
 
         settingsTabs.add(tab1);
     }
@@ -197,6 +212,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showUncontrolled = TerminalControl.showUncontrolled;
             rangeCircleDist = TerminalControl.rangeCircleDist;
             colourStyle = TerminalControl.colourStyle;
+            realisticMetar = TerminalControl.realisticMetar;
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine;
@@ -206,6 +222,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             showUncontrolled = radarScreen.showUncontrolled;
             rangeCircleDist = radarScreen.rangeCircleDist;
             colourStyle = radarScreen.colourStyle;
+            realisticMetar = radarScreen.realisticMetar;
         }
 
         trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
@@ -222,6 +239,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
         showUncontrolledTrail.setSelected(showUncontrolled ? "Always" : "When selected");
         rangeCircle.setSelected(rangeCircleDist == 0 ? "Off" : rangeCircleDist + "nm");
         colour.setSelectedIndex(colourStyle);
+        metar.setSelected(realisticMetar ? "Realistic" : "Simple");
     }
 
     /** Confirms and applies the changes set */
@@ -237,9 +255,14 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             radarScreen.rangeCircleDist = rangeCircleDist;
             boolean colourChanged = radarScreen.colourStyle != colourStyle;
             radarScreen.colourStyle = colourStyle;
+            boolean metarChanged = radarScreen.realisticMetar != realisticMetar;
+            radarScreen.realisticMetar = realisticMetar;
 
-            if (rangeDistChanged) radarScreen.loadRange(); //Reload the range circles in case of any changes
-            if (colourChanged) radarScreen.updateColourStyle(); //Update the label colours
+            Gdx.app.postRunnable(() -> {
+                if (rangeDistChanged) radarScreen.loadRange(); //Reload the range circles in case of any changes
+                if (colourChanged) radarScreen.updateColourStyle(); //Update the label colours
+                if (metarChanged) radarScreen.ui.updateMetar(); //Update metar display
+            });
         } else {
             TerminalControl.trajectorySel = trajectorySel;
             TerminalControl.pastTrajTime = pastTrajTime;
@@ -248,6 +271,7 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             TerminalControl.showUncontrolled = showUncontrolled;
             TerminalControl.rangeCircleDist = rangeCircleDist;
             TerminalControl.colourStyle = colourStyle;
+            TerminalControl.realisticMetar = realisticMetar;
 
             GameSaver.saveSettings();
         }

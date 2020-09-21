@@ -51,7 +51,7 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
                 } else if ("Compact".equals(dataTag.getSelected())) {
                     compactData = true;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown data tag setting " + dataTag.getSelected());
+                    Gdx.app.log(className, "Unknown data tag setting " + dataTag.getSelected());
                 }
             }
         });
@@ -66,7 +66,7 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
                 } else if ("When selected".equals(bordersBackground.getSelected())) {
                     alwaysShowBordersBackground = false;
                 } else {
-                    Gdx.app.log(getClass().getName(), "Unknown show borders setting " + dataTag.getSelected());
+                    Gdx.app.log(className, "Unknown show borders setting " + dataTag.getSelected());
                 }
             }
         });
