@@ -141,7 +141,7 @@ public class Route {
     }
 
     /** Create new Route based on newly assigned SID */
-    public Route(Aircraft aircraft, Sid sid, String runway) {
+    public Route(Aircraft aircraft, Sid sid, String runway, int climbRate) {
         this();
         wpts.addAll(sid.getInitWpts(runway));
         restrictions.addAll(sid.getInitRestrictions(runway));
@@ -169,7 +169,7 @@ public class Route {
         name = sid.getName();
 
         sidStarZone.calculatePolygons(wpts.size - 1);
-        sidStarZone.calculateDepRwyPolygons(aircraft.getAirport().getRunways().get(runway));
+        sidStarZone.calculateDepRwyPolygons(aircraft.getAirport().getRunways().get(runway), sid, climbRate);
     }
 
     /** Create new Route based on saved route, called only by other constructors */
@@ -194,13 +194,13 @@ public class Route {
     }
 
     /** Create new Route based on saved route and SID name */
-    public Route(JSONObject jo, Sid sid, Runway runway) {
+    public Route(JSONObject jo, Sid sid, Runway runway, int climbRate) {
         this(jo);
 
         if ("null".equals(name) && sid != null) name = sid.getName();
 
         sidStarZone.calculatePolygons(wpts.size - 1);
-        sidStarZone.calculateDepRwyPolygons(runway);
+        sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate);
     }
 
     /** Create new Route based on saved route and STAR name */

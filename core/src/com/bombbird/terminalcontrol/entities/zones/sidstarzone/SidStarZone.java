@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.sidstar.Route;
+import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
@@ -53,14 +54,31 @@ public class SidStarZone {
     }
 
     /** Calculates the runway polygons for departures */
-    public void calculateDepRwyPolygons(Runway runway) {
+    public void calculateDepRwyPolygons(Runway runway, Sid sid, int climbRate) {
         polygons.add(calculatePolygon(runway.getX(), runway.getY(), 90 - runway.getTrueHdg(), MathTools.feetToPixel(runway.getFeetLength())));
         float oppX = runway.getOppRwy().getX();
         float oppY = runway.getOppRwy().getY();
         float wptX = route.getWaypoint(0).getPosX();
         float wptY = route.getWaypoint(0).getPosY();
-        Vector2 vector2 = new Vector2(wptX - oppX, wptY - oppY);
-        polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len()));
+        int initialClimbAlt = sid != null ? sid.getInitClimb(runway.getName())[1] : -1;
+        int initialClimbHdg = sid != null ? sid.getInitClimb(runway.getName())[0] : -1;
+        if (initialClimbHdg == -1) initialClimbHdg = runway.getHeading();
+        if (initialClimbAlt != -1 && initialClimbAlt - runway.getElevation() > 800) {
+            //Give some distance for aircraft to climb, in px
+            float climbDist = MathTools.nmToPixel((initialClimbAlt - runway.getElevation()) / 60f / climbRate * 220); //Assume 220 knots climb speed on average
+            float track = 90 - (initialClimbHdg - TerminalControl.radarScreen.magHdgDev);
+            polygons.add(calculatePolygon(oppX, oppY, track, climbDist));
+            Vector2 intermediateVector = new Vector2(climbDist, 0);
+            intermediateVector.rotate(track);
+            intermediateVector.add(oppX, oppY);
+            Vector2 wptVector = new Vector2(wptX, wptY);
+            Vector2 intermediateToWpt = wptVector.sub(intermediateVector);
+            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angle(), intermediateToWpt.len()));
+        } else {
+            //Go directly to first waypoint
+            Vector2 vector2 = new Vector2(wptX - oppX, wptY - oppY);
+            polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len()));
+        }
     }
 
     /** Checks whether supplied aircraft is within any polygon */

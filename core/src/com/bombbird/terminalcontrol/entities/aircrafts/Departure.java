@@ -75,7 +75,7 @@ public class Departure extends Aircraft {
             getEmergency().setEmergency(false);
         }
 
-        setRoute(new Route(this, sid, runway.getName()));
+        setRoute(new Route(this, sid, runway.getName(), getTypClimb()));
 
         setDirect(getRoute().getWaypoint(0));
 
@@ -138,7 +138,7 @@ public class Departure extends Aircraft {
             if (sid == null) {
                 sid = new Sid(getAirport(), route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.isNull("name") ? "null" : route.getString("name"));
             }
-            setRoute(new Route(route, sid, getRunway()));
+            setRoute(new Route(route, sid, getRunway(), getTypClimb()));
         }
         outboundHdg = save.getInt("outboundHdg");
         contactAlt = save.getInt("contactAlt");
