@@ -41,15 +41,12 @@ public class CommBox {
         labels = new Queue<>();
 
         header = new Label("Communication box", getLabelStyle(Color.WHITE));
-        header.setPosition(0.3f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.42f);
+        header.setPosition(0.5f * TerminalControl.radarScreen.ui.getPaneWidth() - header.getWidth() / 2, 3240 * 0.42f);
         TerminalControl.radarScreen.uiStage.addActor(header);
 
         scrollTable = new Table();
         scrollPane = new ScrollPane(scrollTable);
 
-        scrollPane.setX(0.1f * TerminalControl.radarScreen.ui.getPaneWidth());
-        scrollPane.setY(3240 * 0.05f);
-        scrollPane.setSize(0.8f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.35f);
         scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
 
         InputListener inputListener = null;
@@ -59,8 +56,7 @@ public class CommBox {
             }
         }
         if (inputListener != null) scrollPane.removeListener(inputListener);
-
-        TerminalControl.radarScreen.uiStage.addActor(scrollPane);
+        TerminalControl.radarScreen.ui.addActor(scrollPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f);
     }
 
     public CommBox(JSONArray save) {
@@ -393,10 +389,8 @@ public class CommBox {
         return labelStyle;
     }
 
-    public void updateBoxWidth(float paneWidth) {
-        scrollPane.setX(0.1f * paneWidth);
-        scrollPane.setWidth(0.8f * paneWidth);
-        header.setX(0.3f * TerminalControl.radarScreen.ui.getPaneWidth());
+    public void updateHeaderWidth(float paneWidth) {
+        header.setX(0.5f * paneWidth - header.getWidth() / 2);
     }
 
     public void setVisible(boolean show) {

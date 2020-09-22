@@ -63,8 +63,6 @@ public class LatTab extends Tab {
 
         ils = new Array<>();
         ilsBox = new SelectBox<>(boxStyle);
-        ilsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
-        ilsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         ilsBox.setAlignment(Align.center);
         ilsBox.getList().setAlignment(Align.center);
         ilsBox.setItems(ils);
@@ -81,7 +79,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(ilsBox);
+        ui.addActor(ilsBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
     }
 
     private void loadHdgElements() {
@@ -91,25 +89,21 @@ public class LatTab extends Tab {
         labelStyle.fontColor = Color.WHITE;
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
-        hdgBox.setPosition(1.1f / 3 * getPaneWidth(), 3240 - 2600);
-        hdgBox.setSize(0.8f / 3 * getPaneWidth(), 900);
         hdgBox.setAlignment(Align.center);
-        TerminalControl.radarScreen.uiStage.addActor(hdgBox);
+        ui.addActor(hdgBox, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
 
         //Button for click spot below heading label, fixes annoying "click-through" bug
         Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
         buttonStyle.up = Ui.transBackgroundDrawable;
         buttonStyle.down = Ui.transBackgroundDrawable;
         hdgBoxClick = new Button(buttonStyle);
-        hdgBoxClick.setPosition(1.1f / 3 * getPaneWidth(), 3240 - 2600);
-        hdgBoxClick.setSize(0.8f / 3 * getPaneWidth(), 900);
         hdgBoxClick.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 event.handle();
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(hdgBoxClick);
+        ui.addActor(hdgBoxClick, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.WHITE;
@@ -144,8 +138,6 @@ public class LatTab extends Tab {
 
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
         TextButton button = new TextButton(((value > 0) ? "+" : "") + value, buttonStyle);
-        button.setSize((0.8f / 3f) * getPaneWidth(), 300);
-        button.setPosition((value > 0 ? 1.9f : 0.1f) / 3 * getPaneWidth(), 0);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -153,6 +145,15 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
+        int offset = 1700;
+        if (value == -90 || value == 90) {
+            offset = 2000;
+        } else if (value == -10 || value == 10) {
+            offset = 2300;
+        } else if (value == -5 || value == 5) {
+            offset = 2600;
+        }
+        ui.addActor(button, (value > 0 ? 1.9f : 0.3f) / 3, 0.8f / 3, 3240 - offset, 300);
         TerminalControl.radarScreen.uiStage.addActor(button);
         return button;
     }
@@ -401,39 +402,6 @@ public class LatTab extends Tab {
     public void resetTab() {
         super.resetTab();
         updateSidStarOptions();
-    }
-
-    @Override
-    public void updatePaneWidth(float paneWidth) {
-        notListening = true;
-        float paneSize = 0.8f * paneWidth;
-        float leftMargin = 0.1f * paneWidth;
-        hdgBox.setSize(paneSize / 3, 900);
-        hdgBox.setX(leftMargin + paneSize / 3);
-        hdgBoxClick.setSize(paneSize / 3, 900);
-        hdgBoxClick.setX(leftMargin + paneSize / 3);
-        ilsBox.setSize(paneSize, boxHeight);
-        ilsBox.setX(leftMargin);
-        hdg90add.setSize(paneSize / 3, 300);
-        hdg90add.setX(leftMargin + paneSize / 1.5f);
-        hdg90add.setY(3240 - 2000);
-        hdg90minus.setSize(paneSize / 3, 300);
-        hdg90minus.setX(leftMargin);
-        hdg90minus.setY(3240 - 2000);
-        hdg10add.setSize(paneSize / 3, 300);
-        hdg10add.setX(leftMargin + paneSize / 1.5f);
-        hdg10add.setY(3240 - 2300);
-        hdg10minus.setSize(paneSize / 3, 300);
-        hdg10minus.setX(leftMargin);
-        hdg10minus.setY(3240 - 2300);
-        hdg5add.setSize(paneSize / 3, 300);
-        hdg5add.setX(leftMargin + paneSize / 1.5f);
-        hdg5add.setY(3240 - 2600);
-        hdg5minus.setSize(paneSize / 3, 300);
-        hdg5minus.setX(leftMargin);
-        hdg5minus.setY(3240 - 2600);
-        super.updatePaneWidth(paneWidth);
-        notListening = false;
     }
 
     @Override

@@ -124,13 +124,6 @@ public class SpdTab extends Tab {
     }
 
     @Override
-    public void updatePaneWidth(float paneWidth) {
-        notListening = true;
-        super.updatePaneWidth(paneWidth);
-        notListening = false;
-    }
-
-    @Override
     public void getACState() {
         spdMode = selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED);
         spdModeChanged = false;

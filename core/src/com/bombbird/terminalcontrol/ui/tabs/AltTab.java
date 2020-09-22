@@ -149,13 +149,6 @@ public class AltTab extends Tab {
     }
 
     @Override
-    public void updatePaneWidth(float paneWidth) {
-        notListening = true;
-        super.updatePaneWidth(paneWidth);
-        notListening = false;
-    }
-
-    @Override
     public void getACState() {
         altMode = selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE);
         altModeChanged = false;

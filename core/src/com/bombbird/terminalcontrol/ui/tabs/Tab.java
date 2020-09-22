@@ -86,8 +86,6 @@ public class Tab {
 
         //Settings box for modes
         settingsBox = new SelectBox<>(boxStyle);
-        settingsBox.setPosition(0.1f * getPaneWidth(), 3240 - 1020);
-        settingsBox.setSize(0.8f * getPaneWidth(), boxHeight);
         settingsBox.setAlignment(Align.center);
         settingsBox.getList().setAlignment(Align.center);
         settingsBox.addListener(new ChangeListener() {
@@ -106,7 +104,7 @@ public class Tab {
                 event.handle();
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(settingsBox);
+        ui.addActor(settingsBox, 0.1f, 0.8f, 3240 - 1020, boxHeight);
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = Fonts.defaultFont20;
@@ -117,8 +115,6 @@ public class Tab {
 
         //Valuebox for waypoint/altitude/speed selections
         valueBox = new SelectBox<>(boxStyle2);
-        valueBox.setPosition(0.1f * getPaneWidth(), 3240 - 1620);
-        valueBox.setSize(0.8f * getPaneWidth(), boxHeight);
         valueBox.setAlignment(Align.center);
         valueBox.getList().setAlignment(Align.center);
         valueBox.addListener(new ChangeListener() {
@@ -137,7 +133,7 @@ public class Tab {
                 event.handle();
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(valueBox);
+        ui.addActor(valueBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
     }
 
     public void updateElements() {
@@ -173,16 +169,6 @@ public class Tab {
 
     public void getChoices() {
         //Overridden method for getting choices from selectboxes
-    }
-
-    public void updatePaneWidth(float paneWidth) {
-        //Overridden method for updating width of each element
-        float paneSize = 0.8f * paneWidth;
-        float leftMargin = 0.1f * paneWidth;
-        settingsBox.setSize(paneSize, boxHeight);
-        settingsBox.setX(leftMargin);
-        valueBox.setSize(paneSize, boxHeight);
-        valueBox.setX(leftMargin);
     }
 
     public void setVisibility(boolean show) {

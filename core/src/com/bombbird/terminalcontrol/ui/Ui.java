@@ -22,7 +22,6 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.AltTab;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
 import com.bombbird.terminalcontrol.ui.tabs.SpdTab;
-import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,6 +57,10 @@ public class Ui {
     public static SpriteDrawable transBackgroundDrawable;
     public static SpriteDrawable lightBoxBackground;
     public static SpriteDrawable lightestBoxBackground;
+
+    public Array<Actor> actorArray;
+    public Array<Float> actorXArray;
+    public Array<Float> actorWidthArray;
 
     public LatTab latTab;
     public AltTab altTab;
@@ -102,6 +105,10 @@ public class Ui {
         }
 
         radarScreen  = TerminalControl.radarScreen;
+
+        actorArray = new Array<>();
+        actorXArray = new Array<>();
+        actorWidthArray = new Array<>();
 
         tab = 0;
         loadNormalPane();
@@ -195,8 +202,6 @@ public class Ui {
         buttonStyle.font = Fonts.defaultFont30;
         buttonStyle.fontColor = Color.BLACK;
         labelButton = new TextButton("No aircraft selected", buttonStyle);
-        labelButton.setSize(0.8f * getPaneWidth(), 270);
-        labelButton.setPosition(0.1f * getPaneWidth(), 3240 - 695);
         labelButton.align(Align.center);
         labelButton.addListener(new ChangeListener() {
             @Override
@@ -205,7 +210,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(labelButton);
+        addActor(labelButton, 0.1f, 0.8f, 3240 - 695, 270);
     }
 
     private void loadNormalPane() {
@@ -231,18 +236,15 @@ public class Ui {
         labelStyle2.font = Fonts.defaultFont30;
         labelStyle2.fontColor = Color.WHITE;
         scoreLabel = new Label("Score: " + radarScreen.getScore() + "\nHigh score: " + radarScreen.getHighScore() , labelStyle2);
-        scoreLabel.setPosition(paneImage.getWidth() / 19.2f, 2875);
-        radarScreen.uiStage.addActor(scoreLabel);
+        addActor(scoreLabel, 1 / 19.2f, -1, 2875, scoreLabel.getHeight());
 
         //Info label
         Label.LabelStyle labelStyle3 = new Label.LabelStyle();
         labelStyle3.font = Fonts.defaultFont20;
         labelStyle3.fontColor = Color.WHITE;
         infoLabel = new Label("", labelStyle3);
-        infoLabel.setPosition(paneImage.getWidth() * 0.6f, 2650);
-        infoLabel.setWidth(paneImage.getWidth() * 0.35f);
         infoLabel.setAlignment(Align.topRight);
-        radarScreen.uiStage.addActor(infoLabel);
+        addActor(infoLabel, 0.6f, 0.35f, 2650, infoLabel.getHeight());
         updateInfoLabel();
 
         //Pause button
@@ -252,8 +254,6 @@ public class Ui {
         textButtonStyle.up = lightestBoxBackground;
         textButtonStyle.down = lightestBoxBackground;
         pauseButton = new TextButton("||", textButtonStyle);
-        pauseButton.setPosition(paneImage.getWidth() * 0.75f, 2800);
-        pauseButton.setSize(0.2f * paneImage.getWidth(), 300);
         pauseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -266,7 +266,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(pauseButton);
+        addActor(pauseButton, 0.75f, 0.2f, 2800, 300);
         //radarScreen.uiStage.setDebugAll(true);
 
         //Metar display labels
@@ -296,11 +296,6 @@ public class Ui {
 
         metarPane = new ScrollPane(metarTable);
         metarPane.setupFadeScrollBars(1, 1.5f);
-        metarPane.setX(paneImage.getWidth() / 19.2f);
-        metarPane.setY(1550);
-        metarPane.setWidth(paneImage.getWidth() * 0.6f);
-        metarPane.setHeight(1200);
-
         InputListener inputListener = null;
         for (EventListener eventListener: metarPane.getListeners()) {
             if (eventListener instanceof InputListener) {
@@ -308,8 +303,7 @@ public class Ui {
             }
         }
         if (inputListener != null) metarPane.removeListener(inputListener);
-
-        radarScreen.uiStage.addActor(metarPane);
+        addActor(metarPane, 1 / 19.2f, 0.6f, 1550, 1200);
 
         //Sector button
         TextButton.TextButtonStyle textButtonStyle1 = new TextButton.TextButtonStyle();
@@ -318,8 +312,6 @@ public class Ui {
         textButtonStyle1.up = TerminalControl.skin.getDrawable("ListBackground");
         textButtonStyle1.down = TerminalControl.skin.getDrawable("Button_down");
         sectorButton = new TextButton(radarScreen.isSectorClosed() ? "Open sector" : "Close sector", textButtonStyle1);
-        sectorButton.setPosition(paneImage.getWidth() * 0.7f, 1500);
-        sectorButton.setSize(525, 300);
         sectorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -330,7 +322,9 @@ public class Ui {
                 updateInfoLabel();
             }
         });
-        if (!radarScreen.tutorial) radarScreen.uiStage.addActor(sectorButton);
+        if (!radarScreen.tutorial) {
+            addActor(sectorButton, 0.7f, 0.25f, 1500, 300);
+        }
     }
 
     public void setNormalPane(boolean show) {
@@ -409,8 +403,6 @@ public class Ui {
 
         //Transmit button
         cfmChange = new TextButton("Transmit", textButtonStyle);
-        cfmChange.setSize(0.25f * getPaneWidth(), 370);
-        cfmChange.setPosition(0.1f * getPaneWidth(), 3240 - 3070);
         cfmChange.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -421,14 +413,12 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(cfmChange);
+        addActor(cfmChange, 0.1f, 0.25f, 3240 - 3070, 370);
 
         //Handover/acknowledge button
         TextButton.TextButtonStyle ackStyle = new TextButton.TextButtonStyle(textButtonStyle);
         ackStyle.fontColor = Color.YELLOW;
         handoverAck = new TextButton("Acknow-\nledge", ackStyle);
-        handoverAck.setSize(0.25f * getPaneWidth(), 370);
-        handoverAck.setPosition(0.375f * getPaneWidth(), 3240 - 3070);
         handoverAck.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -450,12 +440,10 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(handoverAck);
+        addActor(handoverAck, 0.375f, 0.25f, 3240 - 3070, 370);
 
         //Undo all changes button
         resetAll = new TextButton("Undo all\nchanges", textButtonStyle);
-        resetAll.setSize(0.25f * getPaneWidth(), 370);
-        resetAll.setPosition(0.65f * getPaneWidth(), 3240 - 3070);
         resetAll.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -463,7 +451,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(resetAll);
+        addActor(resetAll, 0.65f, 0.25f, 3240 - 3070, 370);
     }
 
     private void loadTabButtons() {
@@ -475,8 +463,6 @@ public class Ui {
         textButtonStyle.down = lightBoxBackground;
 
         latButton = new TextButton("Lateral", textButtonStyle);
-        latButton.setSize(0.25f * getPaneWidth(), 300);
-        latButton.setPosition(0.1f * getPaneWidth(), 3240 - 400);
         latButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -492,7 +478,7 @@ public class Ui {
             }
         });
         setTabColours(latButton, true);
-        radarScreen.uiStage.addActor(latButton);
+        addActor(latButton, 0.1f, 0.25f, 3240 - 400, 300);
 
         //Alt mode
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
@@ -502,8 +488,6 @@ public class Ui {
         textButtonStyle2.down = lightBoxBackground;
 
         altButton = new TextButton("Altitude", textButtonStyle2);
-        altButton.setSize(0.25f * getPaneWidth(), 300);
-        altButton.setPosition(0.375f * getPaneWidth(), 3240 - 400);
         altButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -518,7 +502,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(altButton);
+        addActor(altButton, 0.375f, 0.25f, 3240 - 400, 300);
 
         //Spd mode
         TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
@@ -528,8 +512,6 @@ public class Ui {
         textButtonStyle3.down = lightBoxBackground;
 
         spdButton = new TextButton("Speed", textButtonStyle3);
-        spdButton.setSize(0.25f * getPaneWidth(), 300);
-        spdButton.setPosition(0.65f * getPaneWidth(), 3240 - 400);
         spdButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -544,7 +526,7 @@ public class Ui {
                 event.handle();
             }
         });
-        radarScreen.uiStage.addActor(spdButton);
+        addActor(spdButton, 0.65f, 0.25f, 3240 - 400, 300);
     }
 
     private void updateTabButtons() {
@@ -677,32 +659,22 @@ public class Ui {
         }
     }
 
+    public void addActor(Actor actor, float xRatio, float widthRatio, float y, float height) {
+        actor.setPosition(xRatio * getPaneWidth(), y);
+        actor.setSize(widthRatio * getPaneWidth(), height);
+        radarScreen.uiStage.addActor(actor);
+        actorArray.add(actor);
+        actorXArray.add(xRatio);
+        actorWidthArray.add(widthRatio);
+    }
+
     public void updatePaneWidth() {
         paneImage.setSize(1080 * (float) TerminalControl.WIDTH / TerminalControl.HEIGHT, 3240);
-        cfmChange.setSize(paneImage.getWidth() / 4, 370);
-        cfmChange.setX(0.1f * paneImage.getWidth());
-        resetAll.setSize(paneImage.getWidth() / 4, 370);
-        resetAll.setX(0.1f * paneImage.getWidth() + 0.55f * paneImage.getWidth());
-        latTab.updatePaneWidth(paneImage.getWidth());
-        altTab.updatePaneWidth(paneImage.getWidth());
-        spdTab.updatePaneWidth(paneImage.getWidth());
-        latButton.setSize(paneImage.getWidth() / 4, 300);
-        latButton.setX(0.1f * paneImage.getWidth());
-        altButton.setSize(paneImage.getWidth() / 4, 300);
-        altButton.setX(0.375f * paneImage.getWidth());
-        spdButton.setSize(paneImage.getWidth() / 4, 300);
-        spdButton.setX(0.65f * paneImage.getWidth());
-        labelButton.setSize(0.8f * paneImage.getWidth(), 270);
-        labelButton.setX(0.1f * paneImage.getWidth());
-        scoreLabel.setX(paneImage.getWidth() / 19.2f);
-        infoLabel.setX(paneImage.getWidth() * 0.6f);
-        infoLabel.setWidth(paneImage.getWidth() * 0.35f);
-        sectorButton.setX(0.7f * paneImage.getWidth());
-        pauseButton.setX(0.75f * paneImage.getWidth());
-        metarPane.setX(paneImage.getWidth() / 19.2f);
-        metarPane.setWidth(paneImage.getWidth() * 5 / 6);
-        radarScreen.getCommBox().updateBoxWidth(paneImage.getWidth());
-        radarScreen.getRunwayChanger().updateBoxWidth(paneImage.getWidth());
+        for (int i = 0; i < actorArray.size; i++) {
+            actorArray.get(i).setX(actorXArray.get(i) * paneImage.getWidth());
+            if (actorWidthArray.get(i) > 0) actorArray.get(i).setWidth(actorWidthArray.get(i) * paneImage.getWidth());
+        }
+        radarScreen.getCommBox().updateHeaderWidth(paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {

@@ -37,9 +37,6 @@ public class RunwayChanger {
 
     public RunwayChanger() {
         background = new Image(TerminalControl.skin.getDrawable("ListBackground"));
-        background.setX(0.1f * TerminalControl.radarScreen.ui.getPaneWidth());
-        background.setY(3240 * 0.05f);
-        background.setSize(0.8f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.35f);
         background.addListener(new ClickListener() {
 
             @Override
@@ -48,15 +45,14 @@ public class RunwayChanger {
                 event.handle(); //Prevents hiding of runway changer when background is tapped
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(background);
+        TerminalControl.radarScreen.ui.addActor(background, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.fontColor = Color.WHITE;
         labelStyle.font = Fonts.defaultFont20;
 
         airportLabel = new Label("", labelStyle);
-        airportLabel.setPosition(0.45f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.35f);
-        TerminalControl.radarScreen.uiStage.addActor(airportLabel);
+        TerminalControl.radarScreen.ui.addActor(airportLabel, 0.45f, -1, 3240 * 0.35f, airportLabel.getHeight());
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = Fonts.defaultFont20;
@@ -65,9 +61,6 @@ public class RunwayChanger {
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
         changeButton = new TextButton("Change runway configuration", textButtonStyle);
         changeButton.align(Align.center);
-        changeButton.setSize(0.7f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.08f);
-        changeButton.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
-        changeButton.setY(3240 * 0.22f);
         doubleCfm = false;
         changeButton.addListener(new ChangeListener() {
             @Override
@@ -92,7 +85,7 @@ public class RunwayChanger {
                 }
             }
         });
-        TerminalControl.radarScreen.uiStage.addActor(changeButton);
+        TerminalControl.radarScreen.ui.addActor(changeButton, 0.15f, 0.7f, 3240 * 0.22f, 3240 * 0.08f);
 
         Label.LabelStyle labelStyle1 = new Label.LabelStyle();
         labelStyle1.fontColor = Color.BLACK;
@@ -122,10 +115,7 @@ public class RunwayChanger {
         TerminalControl.radarScreen.uiStage.addActor(scrollPane);
 
         timeLabel = new Label("Time left: ", labelStyle1);
-        timeLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
-        timeLabel.setY(3240 * 0.3f);
-        timeLabel.setWidth(0.7f * TerminalControl.radarScreen.ui.getPaneWidth());
-        TerminalControl.radarScreen.uiStage.addActor(timeLabel);
+        TerminalControl.radarScreen.ui.addActor(timeLabel, 0.15f, 0.7f, 3240 * 0.3f, timeLabel.getHeight());
         timeLabel.setVisible(false);
 
         runways = new Array<>();
@@ -164,18 +154,6 @@ public class RunwayChanger {
         runways.clear();
         tkofLdg.clear();
         doubleCfm = false;
-    }
-
-    public void updateBoxWidth(float paneWidth) {
-        background.setX(0.1f * paneWidth);
-        background.setWidth(0.8f * paneWidth);
-
-        timeLabel.setX(0.15f * paneWidth);
-
-        airportLabel.setX(0.45f * paneWidth);
-
-        changeButton.setX(0.15f * paneWidth);
-        changeButton.setWidth(0.7f * paneWidth);
     }
 
     public void setAirport(String icao) {
