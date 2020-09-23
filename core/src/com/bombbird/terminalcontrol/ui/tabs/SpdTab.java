@@ -20,21 +20,30 @@ public class SpdTab extends Tab {
         spds = new Array<>();
     }
 
+    public void loadModes() {
+        modeButtons.addButton(NavState.SID_STAR_RESTR, "SID/STAR restrictions");
+        modeButtons.addButton(NavState.NO_RESTR, "Unrestricted");
+    }
+
+    public void updateModeButtons() {
+        modeButtons.changeButtonText(NavState.SID_STAR_RESTR, selectedAircraft instanceof Arrival ? "STAR restrictions" : "SID restrictions");
+        modeButtons.setButtonColour(false);
+    }
+
     @Override
     public void updateElements() {
         if (selectedAircraft == null) return;
         notListening = true;
-        settingsBox.setItems(selectedAircraft.getNavState().getSpdModes());
-        settingsBox.setSelected(spdMode);
+        modeButtons.updateButtonActivity(selectedAircraft.getNavState().getSpdModes());
         if (visible) {
             valueBox.setVisible(true);
         }
         spds.clear();
         int lowestSpd;
         int highestSpd = -1;
-        if (Ui.SID_SPD_RESTRICTIONS.equals(spdMode) || Ui.STAR_SPD_RESTRICTIONS.equals(spdMode)) {
+        if (spdMode == NavState.SID_STAR_RESTR) {
             //Set spd restrictions in box
-            if (Ui.HOLD_AT.equals(latMode) && selectedAircraft.isHolding()) {
+            if (latMode == NavState.HOLD_AT && selectedAircraft.isHolding()) {
                 highestSpd = selectedAircraft.getRoute().getHoldProcedure().getMaxSpdAtWpt(selectedAircraft.getHoldWpt());
                 if (highestSpd == -1) highestSpd = 250;
             } else if (clearedWpt != null) {
@@ -44,7 +53,7 @@ public class SpdTab extends Tab {
         if (highestSpd == -1) {
             if (selectedAircraft.getAltitude() >= 9999) {
                 highestSpd = selectedAircraft.getClimbSpd();
-            } else if (Ui.NO_SPD_RESTRICTIONS.equals(spdMode) && selectedAircraft.getRequest() == Departure.HIGH_SPEED_REQUEST && selectedAircraft.isRequested()) {
+            } else if (spdMode == NavState.NO_RESTR && selectedAircraft.getRequest() == Departure.HIGH_SPEED_REQUEST && selectedAircraft.isRequested()) {
                 highestSpd = selectedAircraft.getClimbSpd();
             } else {
                 highestSpd = 250;
@@ -89,7 +98,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        spdModeChanged = !spdMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED));
+        spdModeChanged = spdMode != selectedAircraft.getNavState().getDispSpdMode().last();
         spdChanged = clearedSpd != selectedAircraft.getNavState().getClearedSpd().last();
 
         tabChanged = spdModeChanged || spdChanged;
@@ -98,12 +107,7 @@ public class SpdTab extends Tab {
     @Override
     public void updateElementColours() {
         notListening = true;
-        //Spd mode selectbox colour
-        if (spdModeChanged) {
-            settingsBox.getStyle().fontColor = Color.YELLOW;
-        } else {
-            settingsBox.getStyle().fontColor = Color.WHITE;
-        }
+        modeButtons.setButtonColour(spdModeChanged);
 
         //Spd box colour
         if (spdChanged) {
@@ -125,7 +129,8 @@ public class SpdTab extends Tab {
 
     @Override
     public void getACState() {
-        spdMode = selectedAircraft.getNavState().getLastDispModeString(NavState.SPEED);
+        spdMode = selectedAircraft.getNavState().getDispSpdMode().last();
+        modeButtons.setMode(spdMode);
         spdModeChanged = false;
         clearedSpd = selectedAircraft.getNavState().getClearedSpd().last();
         spdChanged = false;
@@ -133,7 +138,7 @@ public class SpdTab extends Tab {
 
     @Override
     public void getChoices() {
-        spdMode = settingsBox.getSelected();
+        spdMode = modeButtons.getMode();
         clearedSpd = Integer.parseInt(valueBox.getSelected());
     }
 

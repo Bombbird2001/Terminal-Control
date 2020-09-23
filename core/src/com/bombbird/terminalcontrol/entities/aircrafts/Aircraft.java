@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.DataTag;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
+import com.bombbird.terminalcontrol.ui.tabs.SpdTab;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
@@ -504,13 +505,13 @@ public class Aircraft extends Actor {
 
             //Draws selected status (from UI)
             if (isArrivalDeparture()) {
-                if ((LatTab.latMode.contains("arrival") || LatTab.latMode.contains("departure")) && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
+                if (LatTab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
-                } else if ("After waypoint, fly heading".equals(LatTab.latMode) && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode.contains("heading") && (this instanceof Departure || "Not cleared approach".equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if ((LatTab.latMode == NavState.FLY_HEADING || LatTab.latMode == NavState.TURN_LEFT || LatTab.latMode == NavState.TURN_RIGHT) && (this instanceof Departure || "Not cleared approach".equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
-                } else if ("Hold at".equals(LatTab.latMode) && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
+                } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
                 }
             }
@@ -1224,11 +1225,11 @@ public class Aircraft extends Actor {
 
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
     public void updateUISelections() {
-        ui.latTab.getSettingsBox().setSelected(navState.getLastDispModeString(NavState.LATERAL));
-        ui.altTab.getSettingsBox().setSelected(navState.getAltStringFromCode(navState.getDispAltMode().last()));
-        ui.spdTab.getSettingsBox().setSelected(navState.getSpdStringFromCode(navState.getDispSpdMode().last()));
+        ui.latTab.modeButtons.setMode(navState.getDispLatMode().last());
+        ui.altTab.modeButtons.setMode(navState.getDispAltMode().last());
+        ui.latTab.modeButtons.setMode(navState.getDispSpdMode().last());
         LatTab.clearedHdg = navState.getClearedHdg().last();
-        if (direct != null && ui.latTab.getSettingsBox().getSelected().contains(getSidStar().getName()) && route.findWptIndex(direct.getName()) > route.findWptIndex(ui.latTab.getValueBox().getSelected())) {
+        if (direct != null && ui.latTab.modeButtons.getMode() == NavState.SID_STAR && route.findWptIndex(direct.getName()) > route.findWptIndex(ui.latTab.getValueBox().getSelected())) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point
             ui.latTab.getValueBox().setSelected(direct.getName());
         }
@@ -1238,6 +1239,11 @@ public class Aircraft extends Actor {
         }
 
         ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
+        SpdTab.clearedSpd = clearedIas;
+
+        ui.updateElements();
+        ui.compareWithAC();
+        ui.updateElementColours();
     }
 
     /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep */
@@ -1273,11 +1279,11 @@ public class Aircraft extends Actor {
 
     public Array<Waypoint> getUiRemainingWaypoints() {
         if (selected && isArrivalDeparture()) {
-            if (Tab.latMode.contains(getSidStar().getName())) {
+            if (Tab.latMode == NavState.SID_STAR) {
                 return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.getWaypoints().size - 1);
-            } else if ("After waypoint, fly heading".equals(Tab.latMode)) {
+            } else if (Tab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                 return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt));
-            } else if ("Hold at".equals(Tab.latMode)) {
+            } else if (Tab.latMode == NavState.HOLD_AT) {
                 return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt));
             }
         }

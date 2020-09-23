@@ -22,12 +22,21 @@ public class AltTab extends Tab {
         alts = new Array<>();
     }
 
+    public void loadModes() {
+        modeButtons.addButton(NavState.SID_STAR_RESTR, "Climb via SID/Descend via STAR");
+        modeButtons.addButton(NavState.NO_RESTR, "Unrestricted");
+    }
+
+    public void updateModeButtons() {
+        modeButtons.changeButtonText(NavState.SID_STAR_RESTR, selectedAircraft instanceof Arrival ? "Descend via STAR" : "Climb via SID");
+        modeButtons.setButtonColour(false);
+    }
+
     @Override
     public void updateElements() {
         if (selectedAircraft == null) return;
         notListening = true;
-        settingsBox.setItems(selectedAircraft.getNavState().getAltModes());
-        settingsBox.setSelected(altMode);
+        modeButtons.updateButtonActivity(selectedAircraft.getNavState().getAltModes());
         if (visible) {
             valueBox.setVisible(true);
         }
@@ -38,17 +47,17 @@ public class AltTab extends Tab {
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
             highestAlt = TerminalControl.radarScreen.maxAlt;
-            if (Ui.CLIMB_VIA_SID.equals(altMode) && selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt) > highestAlt) {
+            if (altMode == NavState.SID_STAR_RESTR && selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt) > highestAlt) {
                 highestAlt = selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt);
             }
             allAlts = createAltArray(lowestAlt, highestAlt);
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
-            if (Ui.HOLD_AT.equals(latMode)) {
+            if (latMode == NavState.HOLD_AT) {
                 int[] restr = selectedAircraft.getRoute().getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
-            } else if (Ui.DESCEND_VIA_STAR.equals(altMode) && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
+            } else if (altMode == NavState.SID_STAR_RESTR && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
                 //Set alt restrictions in box
                 highestAlt = (int) selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
@@ -114,7 +123,7 @@ public class AltTab extends Tab {
 
     @Override
     public void compareWithAC() {
-        altModeChanged = !altMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE));
+        altModeChanged = altMode != selectedAircraft.getNavState().getDispAltMode().last();
         altChanged = clearedAlt != selectedAircraft.getNavState().getClearedAlt().last();
 
         tabChanged = altModeChanged || altChanged;
@@ -123,12 +132,7 @@ public class AltTab extends Tab {
     @Override
     public void updateElementColours() {
         notListening = true;
-        //Alt mode selectbox colour
-        if (altModeChanged) {
-            settingsBox.getStyle().fontColor = Color.YELLOW;
-        } else {
-            settingsBox.getStyle().fontColor = Color.WHITE;
-        }
+        modeButtons.setButtonColour(altModeChanged);
 
         //Alt box colour
         if (altChanged) {
@@ -150,7 +154,8 @@ public class AltTab extends Tab {
 
     @Override
     public void getACState() {
-        altMode = selectedAircraft.getNavState().getLastDispModeString(NavState.ALTITUDE);
+        altMode = selectedAircraft.getNavState().getDispAltMode().last();
+        modeButtons.setMode(altMode);
         altModeChanged = false;
         clearedAlt = selectedAircraft.getNavState().getClearedAlt().last();
         altChanged = false;
@@ -158,7 +163,7 @@ public class AltTab extends Tab {
 
     @Override
     public void getChoices() {
-        altMode = settingsBox.getSelected();
+        altMode = modeButtons.getMode();
         clearedAlt = valueBox.getSelected().contains("FL") ? Integer.parseInt(valueBox.getSelected().substring(2)) * 100 : Integer.parseInt(valueBox.getSelected());
     }
 

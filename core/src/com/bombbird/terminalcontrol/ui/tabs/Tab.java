@@ -18,7 +18,6 @@ import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class Tab {
-    public SelectBox<String> settingsBox;
     public SelectBox<String> valueBox;
     public Aircraft selectedAircraft;
     public static boolean notListening;
@@ -29,7 +28,7 @@ public class Tab {
     public static List.ListStyle listStyle;
     public static ScrollPane.ScrollPaneStyle paneStyle;
 
-    public static String latMode;
+    public static int latMode;
     public static int clearedHdg;
     public static String clearedWpt;
     public static int afterWptHdg;
@@ -38,10 +37,10 @@ public class Tab {
     public static String clearedILS;
     public static String newStar;
 
-    public static String altMode;
+    public static int altMode;
     public static int clearedAlt;
 
-    public static String spdMode;
+    public static int spdMode;
     public static int clearedSpd;
 
     public boolean tabChanged;
@@ -49,6 +48,8 @@ public class Tab {
     public boolean visible;
 
     public Queue<Object[]> infoQueue;
+
+    public final ModeButtons modeButtons;
 
     private static boolean LOADED_STYLES = false;
 
@@ -59,6 +60,7 @@ public class Tab {
     public Tab(Ui Ui) {
         radarScreen  = TerminalControl.radarScreen;
 
+        modeButtons = new ModeButtons(this);
         hideArray = new Array<>();
 
         ui = Ui;
@@ -86,6 +88,19 @@ public class Tab {
         listStyle.selection = button_down;
     }
 
+    public void choiceMade() {
+        if (!notListening && selectedAircraft != null) {
+            try {
+                getChoices();
+                updateElements();
+                compareWithAC();
+                updateElementColours();
+            } catch (Exception e) {
+                ErrorHandler.sendGenericError(e, false);
+            }
+        }
+    }
+
     private void loadSelect() {
         SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
         boxStyle.font = Fonts.defaultFont20;
@@ -93,28 +108,6 @@ public class Tab {
         boxStyle.listStyle = listStyle;
         boxStyle.scrollStyle = paneStyle;
         boxStyle.background = Ui.lightBoxBackground;
-
-        //Settings box for modes
-        settingsBox = new SelectBox<>(boxStyle);
-        settingsBox.setAlignment(Align.center);
-        settingsBox.getList().setAlignment(Align.center);
-        settingsBox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening && selectedAircraft != null) {
-                    try {
-                        getChoices();
-                        updateElements();
-                        compareWithAC();
-                        updateElementColours();
-                    } catch (Exception e) {
-                        ErrorHandler.sendGenericError(e, false);
-                    }
-                }
-                event.handle();
-            }
-        });
-        addActor(settingsBox, 0.1f, 0.8f, 3240 - 1020, boxHeight);
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = Fonts.defaultFont20;
@@ -143,7 +136,7 @@ public class Tab {
                 event.handle();
             }
         });
-        addActor(valueBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
+        addActor(valueBox, 0.1f, 0.8f, 3240 - 1920, boxHeight);
     }
 
     public void addActor(Actor actor, float xRatio, float widthRatio, float y, float height) {
@@ -202,10 +195,6 @@ public class Tab {
 
     public float getPaneWidth() {
         return ui.getPaneWidth();
-    }
-
-    public SelectBox<String> getSettingsBox() {
-        return settingsBox;
     }
 
     public SelectBox<String> getValueBox() {

@@ -37,16 +37,12 @@ public class NavState {
     public static final int TURN_LEFT = 23;
     public static final int TURN_RIGHT = 24;
     public static final int HOLD_AT = 25;
+    public static final int CHANGE_STAR = 26;
 
     //Altitude/Speed
     public static final int SID_STAR_RESTR = 30;
     public static final int NO_RESTR = 31;
     public static final int EXPEDITE = 32;
-
-    //Tab ID
-    public static final int LATERAL = 40;
-    public static final int ALTITUDE = 41;
-    public static final int SPEED = 42;
 
     private Aircraft aircraft;
 
@@ -563,29 +559,29 @@ public class NavState {
     }
 
     /** Adds new lateral instructions to queue */
-    public void sendLat(String latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS, String newStar) {
-        String latModeName = latMode;
-        if (latMode.contains(aircraft.getSidStar().getName())) {
+    public void sendLat(int latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS, String newStar) {
+        int latModeName = latMode;
+        if (latMode == SID_STAR) {
             clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
-            if (latMode.contains("arrival")) {
+            if (latModes.first().contains("arrival")) {
                 updateLatModes(ADD_ALL_SIDSTAR, false);
             }
             if (clearedHold.last() != null) {
                 clearedHold.removeLast();
                 clearedHold.addLast(null);
             }
-        } else if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+        } else if (latMode == AFTER_WAYPOINT_FLY_HEADING) {
             clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
-        } else if (Ui.HOLD_AT.equals(latMode)) {
+        } else if (latMode == HOLD_AT) {
             clearedHold.addLast(radarScreen.waypoints.get(holdWpt));
             updateLatModes(REMOVE_AFTERHDG_ONLY, false);
-        } else if (Ui.CHANGE_STAR.equals(latMode)) {
+        } else if (latMode == CHANGE_STAR) {
             clearedNewStar.addLast(newStar);
             if (containsCode(dispLatMode.last(), FLY_HEADING, TURN_RIGHT, TURN_LEFT)) {
-                latModeName = getLatStringFromCode(dispLatMode.last());
+                latModeName = dispLatMode.last();
             } else {
-                latModeName = Ui.FLY_HEADING;
+                latModeName = FLY_HEADING;
                 this.clearedHdg.addLast((int) aircraft.getHeading());
             }
             clearedDirect.addLast(null);
@@ -599,7 +595,7 @@ public class NavState {
                 updateLatModes(REMOVE_AFTERHDG_HOLD, false);
             }
         }
-        dispLatMode.addLast(getCodeFromString(latModeName));
+        dispLatMode.addLast(latModeName);
         goAround.addLast(aircraft.isGoAround());
         length++;
         fillUpInt(this.clearedHdg);
@@ -612,21 +608,21 @@ public class NavState {
     }
 
     /** Adds new altitude instructions to queue, called after sendLat */
-    public void sendAlt(String altMode, int clearedAlt) {
+    public void sendAlt(int altMode, int clearedAlt) {
         this.clearedAlt.addLast(clearedAlt);
-        dispAltMode.addLast(getCodeFromString(altMode));
-        clearedExpedite.addLast(getCodeFromString(altMode) == EXPEDITE);
+        dispAltMode.addLast(altMode);
+        clearedExpedite.addLast(altMode == EXPEDITE);
         fillUpBool(clearedExpedite);
     }
 
     /** Adds new speed instructions to queue, called after sendAlt */
-    public void sendSpd(String spdMode, int clearedSpd) {
+    public void sendSpd(int spdMode, int clearedSpd) {
         if (aircraft instanceof Departure && !((Departure) aircraft).isAccel() && clearedSpd == aircraft.getV2()) {
             this.clearedSpd.addLast(220);
         } else {
             this.clearedSpd.addLast(clearedSpd);
         }
-        dispSpdMode.addLast(getCodeFromString(spdMode));
+        dispSpdMode.addLast(spdMode);
     }
 
     /** Fills up input queue to ideal length, with its last element */
@@ -762,7 +758,7 @@ public class NavState {
     }
 
     /** Gets the appropriate navState code from string */
-    public int getCodeFromString(String string) {
+    public static int getCodeFromString(String string) {
         if (string.contains("arrival") || string.contains("departure")) {
             return SID_STAR;
         } else if (Ui.AFTER_WPT_FLY_HDG.equals(string)) {
@@ -781,73 +777,12 @@ public class NavState {
             return NO_RESTR;
         } else if (Ui.EXPEDITE_TO.equals(string)) {
             return EXPEDITE;
+        } else if (Ui.CHANGE_STAR.equals(string)) {
+            return CHANGE_STAR;
         } else {
             //No such code
             Gdx.app.log("Navstate", "Unknown navState string " + string);
             return UNKNOWN_STATE;
-        }
-    }
-
-    /** Gets the appropriate lateral display string from input code, aircraft */
-    public String getLatStringFromCode(int code) {
-        switch (code) {
-            case SID_STAR:
-                return aircraft.getSidStar().getName() + " " + (aircraft instanceof Arrival ? "arrival" : "departure");
-            case AFTER_WAYPOINT_FLY_HEADING:
-                return Ui.AFTER_WPT_FLY_HDG;
-            case FLY_HEADING:
-                return Ui.FLY_HEADING;
-            case TURN_LEFT:
-                return Ui.LEFT_HEADING;
-            case TURN_RIGHT:
-                return Ui.RIGHT_HEADING;
-            case HOLD_AT:
-                return Ui.HOLD_AT;
-            default:
-                Gdx.app.log("NavState", "Unknown lateral code " + code);
-                return Ui.FLY_HEADING;
-        }
-    }
-
-    /** Gets the appropriate altitude display string from input code, aircraft */
-    public String getAltStringFromCode(int code) {
-        switch (code) {
-            case SID_STAR_RESTR:
-                return aircraft instanceof Arrival ? Ui.DESCEND_VIA_STAR : Ui.CLIMB_VIA_SID;
-            case NO_RESTR:
-                return Ui.CLIMB_DESCEND_TO;
-            case EXPEDITE:
-                return Ui.EXPEDITE_TO;
-            default:
-                Gdx.app.log("NavState", "Unknown altitude code " + code);
-                return Ui.CLIMB_DESCEND_TO;
-        }
-    }
-
-    /** Gets the appropriate speed display string from input code, aircraft */
-    public String getSpdStringFromCode(int code) {
-        switch (code) {
-            case SID_STAR_RESTR:
-                return aircraft instanceof Arrival ? Ui.STAR_SPD_RESTRICTIONS : Ui.SID_SPD_RESTRICTIONS;
-            case NO_RESTR:
-                return Ui.NO_SPD_RESTRICTIONS;
-            default:
-                Gdx.app.log("NavState", "Unknown speed code " + code);
-                return Ui.NO_SPD_RESTRICTIONS;
-        }
-    }
-
-    public String getLastDispModeString(int tabID) {
-        switch (tabID) {
-            case LATERAL:
-                return getLatStringFromCode(dispLatMode.last());
-            case ALTITUDE:
-                return getAltStringFromCode(dispAltMode.last());
-            case SPEED:
-                return getSpdStringFromCode(dispSpdMode.last());
-            default:
-                Gdx.app.log("NavState", "Unknown tabID " + tabID);
-                return "";
         }
     }
 

@@ -133,8 +133,11 @@ public class Ui {
     /** Loads the 3 tabs */
     public void loadTabs() {
         latTab = new LatTab(this);
+        latTab.loadModes();
         altTab = new AltTab(this);
+        altTab.loadModes();
         spdTab = new SpdTab(this);
+        spdTab.loadModes();
         setSelectedPane(null);
     }
 
@@ -361,6 +364,9 @@ public class Ui {
             resetAll();
             updateElementColours();
             updateAckHandButton(aircraft);
+            latTab.updateModeButtons();
+            altTab.updateModeButtons();
+            spdTab.updateModeButtons();
             if (tab != TerminalControl.defaultTabNo && TerminalControl.defaultTabNo >= 0 && TerminalControl.defaultTabNo <= 2) {
                 //Change default tab to user selected tab; for some reason changing tab = 1 or 2 above causes crash
                 tab = TerminalControl.defaultTabNo;
@@ -639,13 +645,13 @@ public class Ui {
         }
     }
 
-    private void compareWithAC() {
+    public void compareWithAC() {
         latTab.compareWithAC();
         altTab.compareWithAC();
         spdTab.compareWithAC();
     }
 
-    private void updateElementColours() {
+    public void updateElementColours() {
         if (tab == 0) {
             latTab.updateElementColours();
         } else if (tab == 1) {

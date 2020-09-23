@@ -52,6 +52,19 @@ public class LatTab extends Tab {
         waypoints = new Array<>();
     }
 
+    public void loadModes() {
+        modeButtons.addButton(NavState.SID_STAR, "SID/STAR");
+        modeButtons.addButton(NavState.AFTER_WAYPOINT_FLY_HEADING, "After wpt, hdg");
+        modeButtons.addButton(NavState.FLY_HEADING, "Vectors");
+        modeButtons.addButton(NavState.HOLD_AT, "Hold");
+        modeButtons.addButton(NavState.CHANGE_STAR, "Change STAR");
+    }
+
+    public void updateModeButtons() {
+        modeButtons.changeButtonText(NavState.SID_STAR, selectedAircraft.getSidStar().getName() + (selectedAircraft instanceof Arrival ? " STAR" : " SID"));
+        modeButtons.setButtonColour(false);
+    }
+
     private void loadILSBox() {
         //Selectbox for selecting ILS
         SelectBox.SelectBoxStyle boxStyle = new SelectBox.SelectBoxStyle();
@@ -160,7 +173,7 @@ public class LatTab extends Tab {
 
     private void updateClearedHdg(int deltaHdg) {
         int hdgChange = deltaHdg;
-        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             int remainder = afterWptHdg % 5;
             if (remainder != 0) {
                 if (hdgChange < 0) {
@@ -192,6 +205,7 @@ public class LatTab extends Tab {
     public void updateElements() {
         if (selectedAircraft == null) return;
         notListening = true;
+        modeButtons.updateButtonActivity(selectedAircraft.getNavState().getLatModes());
         if (selectedAircraft.getSidStarIndex() >= selectedAircraft.getRoute().getWaypoints().size) {
             if (selectedAircraft.getNavState().getDispLatMode().last() == NavState.HOLD_AT) {
                 selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, false); //Don't remove hold at if aircraft is gonna hold
@@ -199,8 +213,6 @@ public class LatTab extends Tab {
                 selectedAircraft.getNavState().updateLatModes(NavState.REMOVE_ALL_SIDSTAR, false);
             }
         }
-        settingsBox.setItems(selectedAircraft.getNavState().getLatModes());
-        settingsBox.setSelected(latMode);
 
         ils.clear();
         ils.add(Ui.NOT_CLEARED_APCH);
@@ -223,7 +235,7 @@ public class LatTab extends Tab {
         ilsBox.setItems(ils);
         ilsBox.setSelected(clearedILS);
 
-        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode) || latMode.contains("arrival") || latMode.contains("departure")) {
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || latMode == NavState.SID_STAR) {
             //Make waypoint box visible
             if (visible) {
                 valueBox.setVisible(true);
@@ -236,7 +248,7 @@ public class LatTab extends Tab {
                 waypoints.add(waypoint.getName());
             }
             valueBox.setItems(waypoints);
-            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+            if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                 valueBox.setSelected(afterWpt);
             } else {
                 if (!waypoints.contains(clearedWpt, false)) {
@@ -245,7 +257,7 @@ public class LatTab extends Tab {
                 valueBox.setSelected(clearedWpt);
             }
             ilsBox.setVisible(false);
-        } else if (Ui.HOLD_AT.equals(latMode) && selectedAircraft instanceof Arrival) {
+        } else if (latMode == NavState.HOLD_AT && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
             }
@@ -272,7 +284,7 @@ public class LatTab extends Tab {
             valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);
             ilsBox.setVisible(false);
-        } else if (Ui.CHANGE_STAR.equals(latMode) && selectedAircraft instanceof Arrival) {
+        } else if (latMode == NavState.CHANGE_STAR && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
             }
@@ -291,10 +303,10 @@ public class LatTab extends Tab {
         }
 
         //Show heading box if heading mode, otherwise hide it
-        showHdgBoxes(latMode.contains("heading") && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
-        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+        showHdgBoxes((latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             hdgBox.setText(Integer.toString(afterWptHdg));
-        } else if (Ui.FLY_HEADING.equals(latMode) || Ui.LEFT_HEADING.equals(latMode) || Ui.RIGHT_HEADING.equals(latMode)) {
+        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
             hdgBox.setText(Integer.toString(clearedHdg));
         }
         notListening = false;
@@ -303,7 +315,7 @@ public class LatTab extends Tab {
     @Override
     public void compareWithAC() {
         if (selectedAircraft == null) return;
-        latModeChanged = !latMode.equals(selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL)) && !Ui.CHANGE_STAR.equals(latMode);
+        latModeChanged = latMode != selectedAircraft.getNavState().getDispLatMode().last() && latMode != NavState.CHANGE_STAR;
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
         if (clearedWpt != null && lastDirect != null) {
@@ -337,15 +349,15 @@ public class LatTab extends Tab {
         if (latModeChanged) {
             tabChanged = true;
         } else {
-            if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+            if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
                 tabChanged = afterWptChanged || afterWptHdgChanged;
-            } else if (latMode.contains("arrival") || latMode.contains("departure")) {
+            } else if (latMode == NavState.SID_STAR) {
                 tabChanged = wptChanged;
-            } else if (latMode.contains("heading")) {
+            } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
                 tabChanged = hdgChanged || ilsChanged;
-            } else if (Ui.HOLD_AT.equals(latMode)) {
+            } else if (latMode == NavState.HOLD_AT) {
                 tabChanged = holdWptChanged;
-            } else if (Ui.CHANGE_STAR.equals(latMode)) {
+            } else if (latMode == NavState.CHANGE_STAR) {
                 tabChanged = starChanged;
             }
         }
@@ -355,16 +367,16 @@ public class LatTab extends Tab {
     public void updateElementColours() {
         notListening = true;
         //Lat mode selectbox colour
-        settingsBox.getStyle().fontColor = latModeChanged ? Color.YELLOW : Color.WHITE;
+        modeButtons.setButtonColour(latModeChanged);
 
         //Lat mode waypoint box colour
-        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             valueBox.getStyle().fontColor = afterWptChanged ? Color.YELLOW : Color.WHITE;
-        } else if (latMode.contains("arrival") || latMode.contains("departure")) {
+        } else if (latMode == NavState.SID_STAR) {
             valueBox.getStyle().fontColor = wptChanged ? Color.YELLOW : Color.WHITE;
-        } else if (Ui.HOLD_AT.equals(latMode)) {
+        } else if (latMode == NavState.HOLD_AT) {
             valueBox.getStyle().fontColor = holdWptChanged ? Color.YELLOW : Color.WHITE;
-        } else if (Ui.CHANGE_STAR.equals(latMode)) {
+        } else if (latMode == NavState.CHANGE_STAR) {
             valueBox.getStyle().fontColor = starChanged ? Color.YELLOW : Color.WHITE;
         }
 
@@ -372,9 +384,9 @@ public class LatTab extends Tab {
         ilsBox.getStyle().fontColor = ilsChanged ? Color.YELLOW : Color.WHITE;
 
         //Lat mode hdg box colour
-        if (Ui.AFTER_WPT_FLY_HDG.equals(latMode)) {
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             hdgBox.getStyle().fontColor = afterWptHdgChanged ? Color.YELLOW : Color.WHITE;
-        } else if (Ui.FLY_HEADING.equals(latMode) || Ui.LEFT_HEADING.equals(latMode) || Ui.RIGHT_HEADING.equals(latMode)) {
+        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
             hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
         }
 
@@ -388,7 +400,7 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         if (selectedAircraft.getNavState() == null) return;
         //Check if changing the waypoint leads to change in max speed restrictions
-        if ("STAR speed restrictions".equals(spdMode) && wptChanged) {
+        if (spdMode == NavState.SID_STAR_RESTR && wptChanged) {
             int maxSpd = selectedAircraft.getRoute().getWptMaxSpd(clearedWpt);
             if (maxSpd > -1 && SpdTab.clearedSpd > maxSpd) {
                 SpdTab.clearedSpd = maxSpd;
@@ -407,7 +419,8 @@ public class LatTab extends Tab {
     /** Gets the current lateral nav state of aircraft of the latest transmission, sets variable to them */
     @Override
     public void getACState() {
-        latMode = selectedAircraft.getNavState().getLastDispModeString(NavState.LATERAL);
+        latMode = selectedAircraft.getNavState().getDispLatMode().last();
+        modeButtons.setMode(latMode);
         latModeChanged = false;
         clearedHdg = selectedAircraft.getNavState().getClearedHdg().last();
         hdgChanged = false;
@@ -446,27 +459,27 @@ public class LatTab extends Tab {
     @Override
     public void getChoices() {
         notListening = true;
-        String prevMode = latMode;
-        latMode = settingsBox.getSelected();
+        int prevMode = latMode;
+        latMode = modeButtons.getMode();
 
-        if ("After waypoint, fly heading".equals(latMode)) {
+        if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             valueBox.setItems(waypoints);
             afterWpt = valueBox.getSelected();
-        } else if (latMode.contains("arrival") || latMode.contains("departure")) {
+        } else if (latMode == NavState.SID_STAR) {
             valueBox.setItems(waypoints);
             clearedWpt = valueBox.getSelected();
-        } else if ("Hold at".equals(latMode)) {
+        } else if (latMode == NavState.HOLD_AT) {
             valueBox.setItems(waypoints);
             holdWpt = valueBox.getSelected();
-        } else if (latMode.contains("heading")) {
+        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
             ilsBox.setItems(ils);
             clearedILS = ilsBox.getSelected();
-            if (selectedAircraft != null && ("After waypoint, fly heading".equals(prevMode) || !prevMode.contains("heading"))) {
+            if (selectedAircraft != null && !(prevMode == NavState.FLY_HEADING || prevMode == NavState.TURN_LEFT || prevMode == NavState.TURN_RIGHT)) {
                 //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
                 clearedHdg = MathTools.modulateHeading(clearedHdg);
             }
-        } else if ("Change STAR".equals(latMode) && selectedAircraft instanceof Arrival) {
+        } else if (latMode == NavState.CHANGE_STAR && selectedAircraft instanceof Arrival) {
             Array<String> starsAvailable = RandomSTAR.getAllPossibleSTARnames(selectedAircraft.getAirport());
             starsAvailable.removeValue(selectedAircraft.getSidStar().getName() + " arrival", false);
             starsAvailable.insert(0, selectedAircraft.getSidStar().getName() + " arrival");
@@ -491,22 +504,22 @@ public class LatTab extends Tab {
     private void updateSidStarOptions() {
         if (selectedAircraft == null) return;
         notListening = true;
-        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
+        if (latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
             selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
-        } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
+        } else if (latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
             selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
-        } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
-            ui.altTab.settingsBox.setSelected("Climb/descend to");
-            altMode = "Climb/descend to";
+        } else if (latMode != NavState.HOLD_AT && latMode != NavState.SID_STAR && latMode != NavState.AFTER_WAYPOINT_FLY_HEADING && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
+            ui.altTab.modeButtons.setMode(NavState.NO_RESTR);
+            altMode = NavState.NO_RESTR;
         }
 
-        if (latMode.contains("arrival") && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
+        if (latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
             selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
-        } else if (latMode.contains("departure") && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
+        } else if (latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
             selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
-        } else if (!"Hold at".equals(latMode) && !latMode.contains("arrival") && !latMode.contains("departure") && !latMode.contains("waypoint") && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
-            ui.spdTab.settingsBox.setSelected("No speed restrictions");
-            spdMode = "No speed restrictions";
+        } else if (latMode != NavState.HOLD_AT && latMode != NavState.SID_STAR && latMode != NavState.AFTER_WAYPOINT_FLY_HEADING && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
+            ui.spdTab.modeButtons.setMode(NavState.NO_RESTR);
+            spdMode = NavState.NO_RESTR;
         }
 
         if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT && selectedAircraft.getNavState().getClearedDirect().last() != null) {
