@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.Ui;
 import com.bombbird.terminalcontrol.utilities.ErrorHandler;
 import com.bombbird.terminalcontrol.utilities.Fonts;
@@ -50,7 +52,15 @@ public class Tab {
 
     private static boolean LOADED_STYLES = false;
 
+    private final Array<Actor> hideArray;
+
+    private final RadarScreen radarScreen;
+
     public Tab(Ui Ui) {
+        radarScreen  = TerminalControl.radarScreen;
+
+        hideArray = new Array<>();
+
         ui = Ui;
         notListening = false;
         visible = false;
@@ -104,7 +114,7 @@ public class Tab {
                 event.handle();
             }
         });
-        ui.addActor(settingsBox, 0.1f, 0.8f, 3240 - 1020, boxHeight);
+        addActor(settingsBox, 0.1f, 0.8f, 3240 - 1020, boxHeight);
 
         SelectBox.SelectBoxStyle boxStyle2 = new SelectBox.SelectBoxStyle();
         boxStyle2.font = Fonts.defaultFont20;
@@ -133,7 +143,17 @@ public class Tab {
                 event.handle();
             }
         });
-        ui.addActor(valueBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
+        addActor(valueBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
+    }
+
+    public void addActor(Actor actor, float xRatio, float widthRatio, float y, float height) {
+        actor.setPosition(xRatio * getPaneWidth(), y);
+        actor.setSize(widthRatio * getPaneWidth(), height);
+        radarScreen.uiStage.addActor(actor);
+        hideArray.add(actor);
+        radarScreen.ui.actorArray.add(actor);
+        radarScreen.ui.actorXArray.add(xRatio);
+        radarScreen.ui.actorWidthArray.add(widthRatio);
     }
 
     public void updateElements() {
@@ -174,8 +194,9 @@ public class Tab {
     public void setVisibility(boolean show) {
         notListening = true;
         visible = show;
-        settingsBox.setVisible(show);
-        valueBox.setVisible(show);
+        for (Actor actor: hideArray) {
+            actor.setVisible(show);
+        }
         notListening = false;
     }
 

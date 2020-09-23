@@ -79,7 +79,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        ui.addActor(ilsBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
+        addActor(ilsBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
     }
 
     private void loadHdgElements() {
@@ -90,7 +90,7 @@ public class LatTab extends Tab {
         labelStyle.background = Ui.hdgBoxBackgroundDrawable;
         hdgBox = new Label("360", labelStyle);
         hdgBox.setAlignment(Align.center);
-        ui.addActor(hdgBox, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
+        addActor(hdgBox, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
 
         //Button for click spot below heading label, fixes annoying "click-through" bug
         Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
@@ -103,7 +103,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        ui.addActor(hdgBoxClick, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
+        addActor(hdgBoxClick, 1.1f / 3, 0.8f / 3, 3240 - 2600, 900);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.fontColor = Color.WHITE;
@@ -153,7 +153,7 @@ public class LatTab extends Tab {
         } else if (value == -5 || value == 5) {
             offset = 2600;
         }
-        ui.addActor(button, (value > 0 ? 1.9f : 0.3f) / 3, 0.8f / 3, 3240 - offset, 300);
+        addActor(button, (value > 0 ? 1.9f : 0.3f) / 3, 0.8f / 3, 3240 - offset, 300);
         TerminalControl.radarScreen.uiStage.addActor(button);
         return button;
     }
@@ -402,20 +402,6 @@ public class LatTab extends Tab {
     public void resetTab() {
         super.resetTab();
         updateSidStarOptions();
-    }
-
-    @Override
-    public void setVisibility(boolean show) {
-        super.setVisibility(show);
-        hdgBox.setVisible(show);
-        hdgBoxClick.setVisible(show);
-        hdg90add.setVisible(show);
-        hdg90minus.setVisible(show);
-        hdg10add.setVisible(show);
-        hdg10minus.setVisible(show);
-        hdg5add.setVisible(show);
-        hdg5minus.setVisible(show);
-        ilsBox.setVisible(show);
     }
 
     /** Gets the current lateral nav state of aircraft of the latest transmission, sets variable to them */

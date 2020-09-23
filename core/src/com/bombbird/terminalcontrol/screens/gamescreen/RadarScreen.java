@@ -393,6 +393,7 @@ public class RadarScreen extends GameScreen {
         uiStage = new Stage(new ExtendViewport(1920, 3240), game.batch);
         uiStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true);
         ui = new Ui();
+        ui.loadTabs();
 
         uiCam = (OrthographicCamera) uiStage.getViewport().getCamera();
         uiCam.setToOrtho(false, 1920, 3240);

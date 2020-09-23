@@ -113,11 +113,7 @@ public class Ui {
         tab = 0;
         loadNormalPane();
         loadAircraftLabel();
-        latTab = new LatTab(this);
-        altTab = new AltTab(this);
-        spdTab = new SpdTab(this);
         loadButtons();
-        setSelectedPane(null);
     }
 
     /** Loads the textures for the UI pane */
@@ -132,6 +128,14 @@ public class Ui {
         transBackgroundDrawable = new SpriteDrawable(new Sprite(transBackground));
         lightBoxBackground = new SpriteDrawable(new Sprite(lightBackground));
         lightestBoxBackground = new SpriteDrawable(new Sprite(lightestBackground));
+    }
+
+    /** Loads the 3 tabs */
+    public void loadTabs() {
+        latTab = new LatTab(this);
+        altTab = new AltTab(this);
+        spdTab = new SpdTab(this);
+        setSelectedPane(null);
     }
 
     /** Updates the UI label after weather is updated */
