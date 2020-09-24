@@ -539,6 +539,8 @@ public class LatTab extends Tab {
         }
 
         ui.updateElements();
+        ui.compareWithAC();
+        ui.updateElementColours();
         notListening = false;
     }
 
