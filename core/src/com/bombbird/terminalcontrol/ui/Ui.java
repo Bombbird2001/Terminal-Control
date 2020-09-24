@@ -95,7 +95,7 @@ public class Ui {
     //Instructions panel info
     private Aircraft selectedAircraft;
 
-    private int tab;
+    public int tab;
 
     private final RadarScreen radarScreen;
 

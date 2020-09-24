@@ -299,7 +299,7 @@ public class LatTab extends Tab {
             valueBox.setVisible(false);
 
             //And set ILS box visible
-            ilsBox.setVisible(selectedAircraft instanceof Arrival && (!selectedAircraft.getEmergency().isActive() || !selectedAircraft.getEmergency().isEmergency() || selectedAircraft.getEmergency().isReadyForApproach()));
+            ilsBox.setVisible(ui.tab == 0 && selectedAircraft instanceof Arrival && (!selectedAircraft.getEmergency().isActive() || !selectedAircraft.getEmergency().isEmergency() || selectedAircraft.getEmergency().isReadyForApproach()));
         }
 
         //Show heading box if heading mode, otherwise hide it
