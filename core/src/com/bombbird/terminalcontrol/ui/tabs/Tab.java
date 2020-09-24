@@ -136,7 +136,7 @@ public class Tab {
                 event.handle();
             }
         });
-        addActor(valueBox, 0.1f, 0.8f, 3240 - 1920, boxHeight);
+        addActor(valueBox, 0.1f, 0.8f, 3240 - 1670, boxHeight);
     }
 
     public void addActor(Actor actor, float xRatio, float widthRatio, float y, float height) {

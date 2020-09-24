@@ -509,7 +509,7 @@ public class Aircraft extends Actor {
                     uiDrawSidStar();
                 } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if ((LatTab.latMode == NavState.FLY_HEADING || LatTab.latMode == NavState.TURN_LEFT || LatTab.latMode == NavState.TURN_RIGHT) && (this instanceof Departure || "Not cleared approach".equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if ((LatTab.latMode == NavState.FLY_HEADING || LatTab.latMode == NavState.TURN_LEFT || LatTab.latMode == NavState.TURN_RIGHT) && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
                 } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();

@@ -472,7 +472,7 @@ public class DataTag {
                 } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || LatTab.latMode == NavState.HOLD_AT) {
                     labelText[8] = aircraft.getSidStar().getName();
                 } else if (LatTab.latMode == NavState.FLY_HEADING || LatTab.latMode == NavState.TURN_LEFT || LatTab.latMode == NavState.TURN_RIGHT) {
-                    if ("Not cleared approach".equals(LatTab.clearedILS)) {
+                    if (Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS)) {
                         if (aircraft.getEmergency().isEmergency() && aircraft.getEmergency().isActive() && !aircraft.getNavState().getLatModes().get(0).contains("arrival")) {
                             labelText[8] = "";
                         } else {
@@ -540,7 +540,7 @@ public class DataTag {
                 }
                 if (changed) labelText[5] = "[YELLOW]" + labelText[5] + "[WHITE]";
                 changed = false;
-                if (!"Not cleared approach".equals(LatTab.clearedILS)) {
+                if (!Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS)) {
                     labelText[8] = LatTab.clearedILS;
                     changed = latTab.isIlsChanged() || latTab.isLatModeChanged();
                 } else if (LatTab.latMode == NavState.CHANGE_STAR) {

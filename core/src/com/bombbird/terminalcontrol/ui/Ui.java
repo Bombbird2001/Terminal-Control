@@ -34,7 +34,7 @@ public class Ui {
     public static final String RIGHT_HEADING = "Turn right heading";
     public static final String HOLD_AT = "Hold at";
     public static final String CHANGE_STAR = "Change STAR";
-    public static final String NOT_CLEARED_APCH = "Not cleared approach";
+    public static final String NOT_CLEARED_APCH = "Approach";
 
     //Altitude
     public static final String CLIMB_VIA_SID = "Climb via SID";

@@ -92,7 +92,7 @@ public class LatTab extends Tab {
                 event.handle();
             }
         });
-        addActor(ilsBox, 0.1f, 0.8f, 3240 - 1620, boxHeight);
+        addActor(ilsBox, 0.65f, 0.25f, 3240 - 1325, 300);
     }
 
     private void loadHdgElements() {
@@ -448,7 +448,7 @@ public class LatTab extends Tab {
         if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getClearedIls().last() != null) {
                 clearedILS = selectedAircraft.getNavState().getClearedIls().last().getName();
         } else {
-            clearedILS = "Not cleared approach";
+            clearedILS = Ui.NOT_CLEARED_APCH;
         }
         starChanged = false;
         if (selectedAircraft instanceof Arrival) {
