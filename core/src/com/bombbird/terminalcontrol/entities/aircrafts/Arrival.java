@@ -325,7 +325,7 @@ public class Arrival extends Aircraft {
         radarScreen.waypointManager.updateStarRestriction(getRoute(), getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().findWptIndex(LatTab.holdWpt) + 1);
     }
 
-    /** Overrides method in Aircraft class to set to current heading*/
+    /** Overrides method in Aircraft class to set to current heading */
     @Override
     public void setAfterLastWpt() {
         setClearedHeading((int) getHeading());
@@ -518,7 +518,22 @@ public class Arrival extends Aircraft {
             if (!getIls().isNpa()) {
                 if (!isGsCap()) {
                     super.updateAltitude(getAltitude() < getIls().getGSAlt(this) && getIls().getName().contains("IMG"), false);
-                    if (isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
+                    if (canCaptureILS() && isLocCap() && Math.abs(getAltitude() - getIls().getGSAlt(this)) <= 50 && getAltitude() <= getIls().getGsAlt() + 50) {
+                        if (getNavState().getDispLatMode().first() == NavState.SID_STAR) {
+                            //Change to vector mode upon GS capture
+                            Waypoint prevDirect = getDirect();
+                            setDirect(null);
+                            getNavState().getDispLatMode().removeFirst();
+                            getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
+                            getNavState().replaceAllClearedAltMode();
+                            getNavState().replaceAllClearedSpdMode();
+                            setAfterLastWpt();
+                            getNavState().replaceAllOutdatedDirects(null);
+                            updateAltRestrictions();
+                            updateTargetAltitude();
+                            updateClearedSpd();
+                            prevDirect.updateFlyOverStatus();
+                        }
                         setGsCap(true);
                         setMissedAlt();
                     }
@@ -624,7 +639,7 @@ public class Arrival extends Aircraft {
 
     @Override
     public boolean canHandover() {
-        return getIls() != null && getControlState() == ControlState.ARRIVAL && isLocCap();
+        return getControlState() == ControlState.ARRIVAL && isLocCap() && canCaptureILS();
     }
 
     /** Called to check the distance behind the aircraft ahead of current aircraft, calls swap in runway array if it somehow overtakes it */

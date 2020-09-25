@@ -356,7 +356,13 @@ public class NavState {
         aircraft.setAfterWptHdg(clearedAftWptHdg.first());
         aircraft.setHoldWpt(clearedHold.first());
         aircraft.setIls(clearedIls.first());
-        aircraft.setClearedAltitude(clearedAlt.first());
+        if (clearedIls.first() != null && dispLatMode.first() == NavState.SID_STAR) {
+            int lowestAlt = aircraft.getRoute().getWptMinAlt(aircraft.getRoute().getWaypoints().size - 1);
+            if (lowestAlt == -1) lowestAlt = radarScreen.minAlt;
+            aircraft.setClearedAltitude(lowestAlt);
+        } else {
+            aircraft.setClearedAltitude(clearedAlt.first());
+        }
         aircraft.setExpedite(clearedExpedite.first());
 
         if (aircraft instanceof Arrival || (aircraft instanceof Departure && ((Departure) aircraft).isSidSet())) {
@@ -508,6 +514,15 @@ public class NavState {
         clearedExpedite.clear();
         for (int i = 0; i < expSize; i++) {
             clearedExpedite.addLast(false);
+        }
+    }
+
+    /** Sets all spd mode to unrestricted */
+    public void replaceAllClearedSpdMode() {
+        int spdSize = dispSpdMode.size;
+        dispSpdMode.clear();
+        for (int i = 0; i < spdSize; i++) {
+            dispSpdMode.addLast(NO_RESTR);
         }
     }
 

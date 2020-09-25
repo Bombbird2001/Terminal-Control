@@ -717,6 +717,11 @@ public class Aircraft extends Actor {
         return false;
     }
 
+    /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc */
+    public boolean canCaptureILS() {
+        return getIls() != null && getNavState().getDispLatMode().first() == NavState.FLY_HEADING || (getNavState().getDispLatMode().first() == NavState.SID_STAR && getIls().isInsideILS(getDirect().getPosX(), getDirect().getPosY()));
+    }
+
     private double findRequiredDistance(double deltaHeading) {
         float turnRate = ias > 250 ? 1.5f : 3f;
         double radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate);
@@ -988,11 +993,12 @@ public class Aircraft extends Actor {
         }
         if (wakeTolerance < 0) wakeTolerance = 0;
 
-        if (!locCap && ils != null && ils.isInsideILS(x, y)) {
+        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && ils.isInsideILS(x, y)) {
             locCap = true;
             navState.replaceAllHdgModes();
-            navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
             ui.updateAckHandButton(this);
+        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
+            locCap = false;
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
@@ -1166,6 +1172,7 @@ public class Aircraft extends Actor {
                 navState.getDispLatMode().removeFirst();
                 navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
                 navState.replaceAllClearedAltMode();
+                navState.replaceAllClearedSpdMode();
                 setAfterLastWpt();
             }
         }
@@ -1513,13 +1520,13 @@ public class Aircraft extends Actor {
     }
 
     /** Updates the cleared IAS under certain circumstances */
-    private void updateClearedSpd() {
+    public void updateClearedSpd() {
         int highestSpd = -1;
         if (navState.getDispSpdMode().last() == NavState.SID_STAR_RESTR && direct != null) {
             highestSpd = route.getWptMaxSpd(direct.getName());
         }
         if (highestSpd == -1) {
-            if (altitude >= 9999 || request == HIGH_SPEED_REQUEST) {
+            if (altitude >= 9950 || request == HIGH_SPEED_REQUEST) {
                 highestSpd = climbSpd;
             } else {
                 highestSpd = 250;

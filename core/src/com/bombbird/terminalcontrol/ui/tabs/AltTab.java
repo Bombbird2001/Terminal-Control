@@ -53,7 +53,11 @@ public class AltTab extends Tab {
             allAlts = createAltArray(lowestAlt, highestAlt);
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
-            if (latMode == NavState.HOLD_AT) {
+            if (latMode == NavState.SID_STAR && !clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
+                lowestAlt = selectedAircraft.getRoute().getWptMinAlt(selectedAircraft.getRoute().getWaypoints().size - 1);
+                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.minAlt;
+                highestAlt = lowestAlt;
+            } else if (latMode == NavState.HOLD_AT) {
                 int[] restr = selectedAircraft.getRoute().getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
