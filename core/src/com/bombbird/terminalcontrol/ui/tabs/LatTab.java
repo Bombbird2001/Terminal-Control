@@ -82,16 +82,12 @@ public class LatTab extends Tab {
         ilsBox.setAlignment(Align.center);
         ilsBox.getList().setAlignment(Align.center);
         ilsBox.setItems(ils);
+        //And set ILS box visible
         ilsBox.setVisible(false);
         ilsBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening && selectedAircraft != null) {
-                    getChoices();
-                    updateElements();
-                    compareWithAC();
-                    updateElementColours();
-                }
+                choiceMade();
                 event.handle();
             }
         });
@@ -272,6 +268,8 @@ public class LatTab extends Tab {
                 clearedILS = Ui.NOT_CLEARED_APCH;
             }
         }
+
+        ilsBox.setVisible(ui.tab == 0 && selectedAircraft instanceof Arrival && (!selectedAircraft.getEmergency().isActive() || !selectedAircraft.getEmergency().isEmergency() || selectedAircraft.getEmergency().isReadyForApproach()));
         ilsBox.setItems(ils);
         ilsBox.setSelected(clearedILS);
 
@@ -296,7 +294,6 @@ public class LatTab extends Tab {
                 }
                 valueBox.setSelected(clearedWpt);
             }
-            ilsBox.setVisible(false);
         } else if (latMode == NavState.HOLD_AT && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
@@ -323,7 +320,6 @@ public class LatTab extends Tab {
             }
             valueBox.setItems(waypoints);
             valueBox.setSelected(holdWpt);
-            ilsBox.setVisible(false);
         } else if (latMode == NavState.CHANGE_STAR && selectedAircraft instanceof Arrival) {
             if (visible) {
                 valueBox.setVisible(true);
@@ -333,13 +329,9 @@ public class LatTab extends Tab {
             } else {
                 valueBox.setSelected(newStar);
             }
-            ilsBox.setVisible(false);
         } else {
             //Otherwise hide it
             valueBox.setVisible(false);
-
-            //And set ILS box visible
-            ilsBox.setVisible(ui.tab == 0 && selectedAircraft instanceof Arrival && (!selectedAircraft.getEmergency().isActive() || !selectedAircraft.getEmergency().isEmergency() || selectedAircraft.getEmergency().isReadyForApproach()));
         }
 
         //Show heading box if heading mode, otherwise hide it
@@ -537,8 +529,6 @@ public class LatTab extends Tab {
             valueBox.setItems(waypoints);
             holdWpt = valueBox.getSelected();
         } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
-            ilsBox.setItems(ils);
-            clearedILS = ilsBox.getSelected();
             if (selectedAircraft != null && !(prevMode == NavState.FLY_HEADING || prevMode == NavState.TURN_LEFT || prevMode == NavState.TURN_RIGHT)) {
                 //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
@@ -551,6 +541,8 @@ public class LatTab extends Tab {
             valueBox.setItems(starsAvailable);
             newStar = valueBox.getSelected();
         }
+        ilsBox.setItems(ils);
+        clearedILS = ilsBox.getSelected();
         updateSidStarOptions();
         notListening = false;
     }

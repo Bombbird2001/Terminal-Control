@@ -590,10 +590,10 @@ public class NavState {
             updateLatModes(REMOVE_ALL_SIDSTAR, false);
         } else {
             this.clearedHdg.addLast(clearedHdg);
-            if (aircraft instanceof Arrival) {
-                clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
-                updateLatModes(REMOVE_AFTERHDG_HOLD, false);
-            }
+        }
+        if (aircraft instanceof Arrival) {
+            clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
+            updateLatModes(REMOVE_AFTERHDG_HOLD, false);
         }
         dispLatMode.addLast(latModeName);
         goAround.addLast(aircraft.isGoAround());
