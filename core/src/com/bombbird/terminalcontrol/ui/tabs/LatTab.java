@@ -32,6 +32,8 @@ public class LatTab extends Tab {
     private TextButton hdg5add;
     private TextButton hdg5minus;
     private SelectBox<String> ilsBox;
+    private TextButton leftButton;
+    private TextButton rightButton;
 
     private final Array<String> waypoints;
     private Array<String> ils;
@@ -39,6 +41,7 @@ public class LatTab extends Tab {
     private boolean latModeChanged;
     private boolean wptChanged;
     private boolean hdgChanged;
+    private boolean directionChanged;
     private boolean afterWptChanged;
     private boolean afterWptHdgChanged;
     private boolean holdWptChanged;
@@ -147,6 +150,43 @@ public class LatTab extends Tab {
 
         //-5 button
         hdg5minus = newButton(-5, textButtonStyle);
+
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        textButtonStyle2.fontColor = Color.WHITE;
+        textButtonStyle2.down = TerminalControl.skin.getDrawable("Button_down");
+        textButtonStyle2.up = Ui.lightestBoxBackground;
+        textButtonStyle2.checked = TerminalControl.skin.getDrawable("Button_down");
+        textButtonStyle2.font = Fonts.defaultFont20;
+
+        //Left button
+        leftButton = new TextButton("Left", textButtonStyle2);
+        leftButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (leftButton.isChecked()) {
+                    rightButton.setChecked(false);
+                    latMode = NavState.TURN_LEFT;
+                } else {
+                    latMode = NavState.FLY_HEADING;
+                }
+            }
+        });
+        addActor(leftButton, 0.1f, 0.4f, 3240 - 1700, 300);
+
+        //Right button
+        rightButton = new TextButton("Right", new TextButton.TextButtonStyle(textButtonStyle2));
+        rightButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (rightButton.isChecked()) {
+                    leftButton.setChecked(false);
+                    latMode = NavState.TURN_RIGHT;
+                } else {
+                    latMode = NavState.FLY_HEADING;
+                }
+            }
+        });
+        addActor(rightButton, 0.5f, 0.4f, 3240 - 1700, 300);
     }
 
     private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
@@ -317,6 +357,7 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         latModeChanged = latMode != selectedAircraft.getNavState().getDispLatMode().last() && latMode != NavState.CHANGE_STAR;
         hdgChanged = clearedHdg != selectedAircraft.getNavState().getClearedHdg().last();
+
         Waypoint lastDirect = selectedAircraft.getNavState().getClearedDirect().last();
         if (clearedWpt != null && lastDirect != null) {
             wptChanged = !clearedWpt.equals(lastDirect.getName());
@@ -346,7 +387,7 @@ public class LatTab extends Tab {
             }
         }
 
-        if (latModeChanged) {
+        if (latModeChanged || ilsChanged) {
             tabChanged = true;
         } else {
             if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
@@ -354,7 +395,7 @@ public class LatTab extends Tab {
             } else if (latMode == NavState.SID_STAR) {
                 tabChanged = wptChanged;
             } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
-                tabChanged = hdgChanged || ilsChanged;
+                tabChanged = hdgChanged;
             } else if (latMode == NavState.HOLD_AT) {
                 tabChanged = holdWptChanged;
             } else if (latMode == NavState.CHANGE_STAR) {
@@ -388,6 +429,22 @@ public class LatTab extends Tab {
             hdgBox.getStyle().fontColor = afterWptHdgChanged ? Color.YELLOW : Color.WHITE;
         } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
             hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
+            leftButton.getStyle().fontColor = Color.WHITE;
+            rightButton.getStyle().fontColor = Color.WHITE;
+            if (directionChanged) {
+                int prevMode = selectedAircraft.getNavState().getDispLatMode().last();
+                if (latMode == NavState.FLY_HEADING) {
+                    if (prevMode == NavState.TURN_LEFT) {
+                        leftButton.getStyle().fontColor = Color.YELLOW;
+                    } else if (prevMode == NavState.TURN_RIGHT) {
+                        rightButton.getStyle().fontColor = Color.YELLOW;
+                    }
+                } else if (latMode == NavState.TURN_LEFT) {
+                    leftButton.getStyle().fontColor = Color.YELLOW;
+                } else if (latMode == NavState.TURN_RIGHT) {
+                    rightButton.getStyle().fontColor = Color.YELLOW;
+                }
+            }
         }
 
         super.updateElementColours();
@@ -424,6 +481,14 @@ public class LatTab extends Tab {
         latModeChanged = false;
         clearedHdg = selectedAircraft.getNavState().getClearedHdg().last();
         hdgChanged = false;
+        directionChanged = false;
+        if (selectedAircraft.getNavState().containsCode(selectedAircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
+            //If previous mode is vectors mode
+            directionChanged = selectedAircraft.getNavState().getDispLatMode().last() != latMode;
+        } else {
+            //If previous mode is not vectors mode
+            directionChanged = latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT;
+        }
         if (selectedAircraft.getNavState().getClearedDirect().last() != null) {
             clearedWpt = selectedAircraft.getNavState().getClearedDirect().last().getName();
         } else {
@@ -499,6 +564,8 @@ public class LatTab extends Tab {
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
         hdg5minus.setVisible(show);
+        leftButton.setVisible(show);
+        rightButton.setVisible(show);
     }
 
     private void updateSidStarOptions() {
