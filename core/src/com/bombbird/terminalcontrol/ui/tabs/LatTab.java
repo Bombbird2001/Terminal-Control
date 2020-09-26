@@ -565,21 +565,37 @@ public class LatTab extends Tab {
         if (selectedAircraft == null) return;
         notListening = true;
         if (selectedAircraft instanceof Arrival && latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getAltModes().contains("Descend via STAR", false)) {
-            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
+            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false);
         } else if (selectedAircraft instanceof Departure && latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getAltModes().contains("Climb via SID", false)) {
-            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR, false);
+            selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false);
         } else if (latMode != NavState.HOLD_AT && latMode != NavState.SID_STAR && latMode != NavState.AFTER_WAYPOINT_FLY_HEADING && (selectedAircraft.getNavState().getAltModes().removeValue("Descend via STAR", false) || selectedAircraft.getNavState().getAltModes().removeValue("Climb via SID", false))) {
             ui.altTab.modeButtons.setMode(NavState.NO_RESTR);
             altMode = NavState.NO_RESTR;
         }
 
         if (selectedAircraft instanceof Arrival && latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getSpdModes().contains("STAR speed restrictions", false)) {
-            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
+            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false);
         } else if (selectedAircraft instanceof Departure && latMode == NavState.SID_STAR && !selectedAircraft.getNavState().getSpdModes().contains("SID speed restrictions", false)) {
-            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR, false);
+            selectedAircraft.getNavState().updateSpdModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false);
         } else if (latMode != NavState.HOLD_AT && latMode != NavState.SID_STAR && latMode != NavState.AFTER_WAYPOINT_FLY_HEADING && (selectedAircraft.getNavState().getSpdModes().removeValue("STAR speed restrictions", false) || selectedAircraft.getNavState().getSpdModes().removeValue("SID speed restrictions", false))) {
             ui.spdTab.modeButtons.setMode(NavState.NO_RESTR);
             spdMode = NavState.NO_RESTR;
+        }
+
+        if (selectedAircraft instanceof Arrival) {
+            if (latMode == NavState.SID_STAR && !clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
+                altMode = NavState.SID_STAR_RESTR;
+                selectedAircraft.getNavState().updateAltModes(NavState.REMOVE_UNRESTR, false);
+                int lowestAlt = selectedAircraft.getRoute().getWptMinAlt(selectedAircraft.getRoute().getWaypoints().size - 1);
+                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.minAlt;
+                clearedAlt = lowestAlt;
+            } else if (clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
+                if (selectedAircraft.getNavState().containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT)) {
+                    selectedAircraft.getNavState().updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false);
+                } else {
+                    selectedAircraft.getNavState().updateAltModes(NavState.ADD_UNRESTR_ONLY, false);
+                }
+            }
         }
 
         if (selectedAircraft instanceof Arrival && selectedAircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT && selectedAircraft.getNavState().getClearedDirect().last() != null) {

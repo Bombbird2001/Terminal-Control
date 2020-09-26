@@ -533,6 +533,10 @@ public class Arrival extends Aircraft {
                             updateTargetAltitude();
                             updateClearedSpd();
                             prevDirect.updateFlyOverStatus();
+                            if (isSelected() && isArrivalDeparture()) {
+                                updateUISelections();
+                                ui.updateState();
+                            }
                         }
                         setGsCap(true);
                         setMissedAlt();

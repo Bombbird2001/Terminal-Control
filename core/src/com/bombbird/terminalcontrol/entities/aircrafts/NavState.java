@@ -26,7 +26,10 @@ public class NavState {
     public static final int ADD_ALL_SIDSTAR = 6; //Adds all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
 
     public static final int REMOVE_SIDSTAR_RESTR = 10; //Removes SID/STAR alt/speed restrictions
-    public static final int ADD_SIDSTAR_RESTR = 11; //Adds SID/STAR alt/speed restrictions
+    public static final int ADD_SIDSTAR_RESTR_UNRESTR = 11; //Adds all modes
+    public static final int REMOVE_UNRESTR = 12; //Removes unrestricted mode
+    public static final int ADD_UNRESTR_ONLY = 13; //Adds unrestricted mode only
+    public static final int ADD_SIDSTAR_RESTR_ONLY = 14; //Adds SID/STAR restrictions only
 
     //NavState codes
     public static final int UNKNOWN_STATE = -1;
@@ -360,6 +363,7 @@ public class NavState {
             int lowestAlt = aircraft.getRoute().getWptMinAlt(aircraft.getRoute().getWaypoints().size - 1);
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt;
             aircraft.setClearedAltitude(lowestAlt);
+            replaceAllClearedAlt();
         } else {
             aircraft.setClearedAltitude(clearedAlt.first());
         }
@@ -565,16 +569,8 @@ public class NavState {
         }
     }
 
-    /** Called after aircraft enters holding mode */
-    public void initHold() {
-        updateAltModes(REMOVE_SIDSTAR_RESTR, false);
-        updateSpdModes(REMOVE_SIDSTAR_RESTR, false);
-        replaceAllClearedAltMode();
-        replaceAllClearedSpdToLower();
-    }
-
     /** Adds new lateral instructions to queue */
-    public void sendLat(int latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedILS, String newStar) {
+    public void sendLat(int latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedApch, String newStar) {
         int latModeName = latMode;
         if (latMode == SID_STAR) {
             clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
@@ -607,8 +603,14 @@ public class NavState {
             this.clearedHdg.addLast(clearedHdg);
         }
         if (aircraft instanceof Arrival) {
-            clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedILS.substring(3)));
-            updateLatModes(REMOVE_AFTERHDG_HOLD, false);
+            clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedApch.substring(3)));
+            if (latMode == SID_STAR) {
+                if (clearedIls.last() != null) {
+                    updateLatModes(REMOVE_AFTERHDG_HOLD, false);
+                } else {
+                    updateLatModes(ADD_ALL_SIDSTAR, false);
+                }
+            }
         }
         dispLatMode.addLast(latModeName);
         goAround.addLast(aircraft.isGoAround());
@@ -734,7 +736,7 @@ public class NavState {
                 altModes.removeValue(Ui.CLIMB_VIA_SID, false);
                 altModes.removeValue(Ui.DESCEND_VIA_STAR, false);
                 break;
-            case ADD_SIDSTAR_RESTR:
+            case ADD_SIDSTAR_RESTR_UNRESTR:
                 altModes.clear();
                 if (aircraft instanceof Arrival) {
                     altModes.add(Ui.DESCEND_VIA_STAR);
@@ -742,6 +744,21 @@ public class NavState {
                     altModes.add(Ui.CLIMB_VIA_SID);
                 }
                 altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
+                break;
+            case REMOVE_UNRESTR:
+                altModes.removeValue(Ui.CLIMB_DESCEND_TO, false);
+                break;
+            case ADD_UNRESTR_ONLY:
+                altModes.clear();
+                altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
+                break;
+            case ADD_SIDSTAR_RESTR_ONLY:
+                altModes.clear();
+                if (aircraft instanceof Arrival) {
+                    altModes.add(Ui.DESCEND_VIA_STAR);
+                } else if (aircraft instanceof Departure) {
+                    altModes.add(Ui.CLIMB_VIA_SID);
+                }
                 break;
             default:
                 Gdx.app.log("NavState", "Invalid altModes update mode: " + mode);
@@ -757,7 +774,7 @@ public class NavState {
                 spdModes.removeValue(Ui.SID_SPD_RESTRICTIONS, false);
                 spdModes.removeValue(Ui.STAR_SPD_RESTRICTIONS, false);
                 break;
-            case ADD_SIDSTAR_RESTR:
+            case ADD_SIDSTAR_RESTR_UNRESTR:
                 spdModes.clear();
                 if (aircraft instanceof Arrival) {
                     spdModes.add(Ui.STAR_SPD_RESTRICTIONS);
@@ -765,6 +782,21 @@ public class NavState {
                     spdModes.add(Ui.SID_SPD_RESTRICTIONS);
                 }
                 spdModes.add(Ui.NO_SPD_RESTRICTIONS);
+                break;
+            case REMOVE_UNRESTR:
+                spdModes.removeValue(Ui.NO_SPD_RESTRICTIONS, false);
+                break;
+            case ADD_UNRESTR_ONLY:
+                spdModes.clear();
+                spdModes.add(Ui.NO_SPD_RESTRICTIONS);
+                break;
+            case ADD_SIDSTAR_RESTR_ONLY:
+                spdModes.clear();
+                if (aircraft instanceof Arrival) {
+                    spdModes.add(Ui.STAR_SPD_RESTRICTIONS);
+                } else if (aircraft instanceof Departure) {
+                    spdModes.add(Ui.SID_SPD_RESTRICTIONS);
+                }
                 break;
             default:
                 Gdx.app.log("NavState", "Invalid spdModes update mode: " + mode);

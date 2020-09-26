@@ -51,7 +51,7 @@ public class SpdTab extends Tab {
             }
         }
         if (highestSpd == -1) {
-            if (selectedAircraft.getAltitude() >= 9999) {
+            if (selectedAircraft.getAltitude() >= 9900) {
                 highestSpd = selectedAircraft.getClimbSpd();
             } else if (spdMode == NavState.NO_RESTR && selectedAircraft.getRequest() == Departure.HIGH_SPEED_REQUEST && selectedAircraft.isRequested()) {
                 highestSpd = selectedAircraft.getClimbSpd();

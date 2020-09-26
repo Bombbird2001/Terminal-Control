@@ -53,7 +53,9 @@ public class AltTab extends Tab {
             allAlts = createAltArray(lowestAlt, highestAlt);
         } else if (selectedAircraft instanceof Arrival) {
             lowestAlt = TerminalControl.radarScreen.minAlt;
+            boolean apchMode = false;
             if (latMode == NavState.SID_STAR && !clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
+                apchMode = true;
                 lowestAlt = selectedAircraft.getRoute().getWptMinAlt(selectedAircraft.getRoute().getWaypoints().size - 1);
                 if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.minAlt;
                 highestAlt = lowestAlt;
@@ -71,7 +73,7 @@ public class AltTab extends Tab {
             if (highestAlt == -1) {
                 highestAlt = TerminalControl.radarScreen.maxAlt;
             }
-            if (highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
+            if (!apchMode && highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
                 highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
             }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
