@@ -110,6 +110,10 @@ public class AltTab extends Tab {
 
     public Array<Integer> createAltArray(int lowestAlt, int highestAlt) {
         Array<Integer> newAltArray = new Array<>();
+        if (lowestAlt == highestAlt) {
+            newAltArray.add(lowestAlt);
+            return newAltArray;
+        }
         int start = lowestAlt;
         if (lowestAlt % 1000 != 0) {
             newAltArray.add(lowestAlt);
