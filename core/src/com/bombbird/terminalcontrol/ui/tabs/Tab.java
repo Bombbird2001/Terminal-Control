@@ -36,9 +36,11 @@ public class Tab {
     public static String holdWpt;
     public static String clearedILS;
     public static String newStar;
+    public static int turnDir;
 
     public static int altMode;
     public static int clearedAlt;
+    public static boolean clearedExpedite;
 
     public static int spdMode;
     public static int clearedSpd;
@@ -123,16 +125,7 @@ public class Tab {
         valueBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!notListening && selectedAircraft != null) {
-                    try {
-                        getChoices();
-                        updateElements();
-                        compareWithAC();
-                        updateElementColours();
-                    } catch (Exception e) {
-                        ErrorHandler.sendGenericError(e, false);
-                    }
-                }
+                choiceMade();
                 event.handle();
             }
         });

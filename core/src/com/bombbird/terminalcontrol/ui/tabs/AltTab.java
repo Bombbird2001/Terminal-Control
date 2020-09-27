@@ -3,6 +3,9 @@ package com.bombbird.terminalcontrol.ui.tabs;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
@@ -10,21 +13,47 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
 import com.bombbird.terminalcontrol.ui.Ui;
+import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class AltTab extends Tab {
 
     private boolean altModeChanged;
     private boolean altChanged;
+    private boolean expediteChanged;
     private final Array<String> alts;
+
+    private TextButton expediteButton;
 
     public AltTab(Ui ui) {
         super(ui);
         alts = new Array<>();
+
+        loadExpediteButton();
     }
 
     public void loadModes() {
         modeButtons.addButton(NavState.SID_STAR_RESTR, "Climb via SID/Descend via STAR");
         modeButtons.addButton(NavState.NO_RESTR, "Unrestricted");
+    }
+
+    private void loadExpediteButton() {
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = Fonts.defaultFont20;
+        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.up = Ui.lightBoxBackground;
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
+        textButtonStyle.checked = TerminalControl.skin.getDrawable("Button_down");
+
+        expediteButton = new TextButton("Expedite", textButtonStyle);
+        expediteButton.setProgrammaticChangeEvents(false);
+        expediteButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                choiceMade();
+                event.handle();
+            }
+        });
+        addActor(expediteButton, 0.1f, 0.25f, 3240 - 1325, 300);
     }
 
     public void updateModeButtons() {
@@ -80,7 +109,7 @@ public class AltTab extends Tab {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
             }
             if (highestAlt < lowestAlt) highestAlt = lowestAlt;
-            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() != null && selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap())) {
+            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() != null && selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap()) && selectedAircraft.getNavState().getDispLatMode().first() == NavState.FLY_HEADING) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
             allAlts = createAltArray(lowestAlt, highestAlt);
@@ -105,6 +134,7 @@ public class AltTab extends Tab {
         }
         valueBox.setItems(alts);
         valueBox.setSelected(clearedAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + clearedAlt / 100 : Integer.toString(clearedAlt));
+        expediteButton.setChecked(clearedExpedite);
         notListening = false;
     }
 
@@ -135,8 +165,9 @@ public class AltTab extends Tab {
     public void compareWithAC() {
         altModeChanged = altMode != selectedAircraft.getNavState().getDispAltMode().last();
         altChanged = clearedAlt != selectedAircraft.getNavState().getClearedAlt().last();
+        expediteChanged = clearedExpedite != selectedAircraft.getNavState().getClearedExpedite().last();
 
-        tabChanged = altModeChanged || altChanged;
+        tabChanged = altModeChanged || altChanged || expediteChanged;
     }
 
     @Override
@@ -145,10 +176,13 @@ public class AltTab extends Tab {
         modeButtons.setButtonColour(altModeChanged);
 
         //Alt box colour
-        if (altChanged) {
-            valueBox.getStyle().fontColor = Color.YELLOW;
+        valueBox.getStyle().fontColor = altChanged ? Color.YELLOW : Color.WHITE;
+
+        //Expedite button colour
+        if (expediteChanged) {
+            expediteButton.getStyle().fontColor = Color.YELLOW;
         } else {
-            valueBox.getStyle().fontColor = Color.WHITE;
+            expediteButton.getStyle().fontColor = expediteButton.isChecked() ? Color.WHITE : Color.BLACK;
         }
 
         super.updateElementColours();
@@ -159,7 +193,7 @@ public class AltTab extends Tab {
     public void updateMode() {
         if (selectedAircraft == null) return;
         if (selectedAircraft.getNavState() == null) return;
-        selectedAircraft.getNavState().sendAlt(altMode, clearedAlt);
+        selectedAircraft.getNavState().sendAlt(altMode, clearedAlt, clearedExpedite);
     }
 
     @Override
@@ -169,15 +203,22 @@ public class AltTab extends Tab {
         altModeChanged = false;
         clearedAlt = selectedAircraft.getNavState().getClearedAlt().last();
         altChanged = false;
+        clearedExpedite = selectedAircraft.getNavState().getClearedExpedite().last();
+        expediteChanged = false;
     }
 
     @Override
     public void getChoices() {
         altMode = modeButtons.getMode();
         clearedAlt = valueBox.getSelected().contains("FL") ? Integer.parseInt(valueBox.getSelected().substring(2)) * 100 : Integer.parseInt(valueBox.getSelected());
+        clearedExpedite = expediteButton.isChecked();
     }
 
     public boolean isAltChanged() {
         return altChanged;
+    }
+
+    public boolean isExpediteChanged() {
+        return expediteChanged;
     }
 }

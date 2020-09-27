@@ -412,6 +412,9 @@ public class GameSaver {
         //Add cleared new STAR
         navState.put("clearedNewStar", getStringArray(aircraft.getNavState().getClearedNewStar()));
 
+        //Add cleared turn direction
+        navState.put("clearedTurnDir", getIntArray(aircraft.getNavState().getClearedTurnDir()));
+
         //Add cleared altitude
         navState.put("clearedAlt", getIntArray(aircraft.getNavState().getClearedAlt()));
 

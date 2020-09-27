@@ -131,22 +131,22 @@ public class LatTab extends Tab {
         textButtonStyle1.font = Fonts.defaultFont20;
 
         //+90 button
-        hdg90add = newButton(90, textButtonStyle);
+        hdg90add = newHdgButton(90, textButtonStyle);
 
         //-90 button
-        hdg90minus = newButton(-90, textButtonStyle);
+        hdg90minus = newHdgButton(-90, textButtonStyle);
 
         //+10 button
-        hdg10add = newButton(10, textButtonStyle1);
+        hdg10add = newHdgButton(10, textButtonStyle1);
 
         //-10 button
-        hdg10minus = newButton(-10, textButtonStyle1);
+        hdg10minus = newHdgButton(-10, textButtonStyle1);
 
         //+5 button
-        hdg5add = newButton(5, textButtonStyle);
+        hdg5add = newHdgButton(5, textButtonStyle);
 
         //-5 button
-        hdg5minus = newButton(-5, textButtonStyle);
+        hdg5minus = newHdgButton(-5, textButtonStyle);
 
         TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
         textButtonStyle2.fontColor = Color.WHITE;
@@ -157,36 +157,36 @@ public class LatTab extends Tab {
 
         //Left button
         leftButton = new TextButton("Left", textButtonStyle2);
+        leftButton.setProgrammaticChangeEvents(false);
         leftButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (leftButton.isChecked()) {
                     rightButton.setChecked(false);
-                    latMode = NavState.TURN_LEFT;
-                } else {
-                    latMode = NavState.FLY_HEADING;
                 }
+                choiceMade();
+                event.handle();
             }
         });
         addActor(leftButton, 0.1f, 0.4f, 3240 - 1700, 300);
 
         //Right button
         rightButton = new TextButton("Right", new TextButton.TextButtonStyle(textButtonStyle2));
+        rightButton.setProgrammaticChangeEvents(false);
         rightButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (rightButton.isChecked()) {
                     leftButton.setChecked(false);
-                    latMode = NavState.TURN_RIGHT;
-                } else {
-                    latMode = NavState.FLY_HEADING;
                 }
+                choiceMade();
+                event.handle();
             }
         });
         addActor(rightButton, 0.5f, 0.4f, 3240 - 1700, 300);
     }
 
-    private TextButton newButton(final int value, TextButton.TextButtonStyle buttonStyle) {
+    private TextButton newHdgButton(final int value, TextButton.TextButtonStyle buttonStyle) {
         TextButton button = new TextButton(((value > 0) ? "+" : "") + value, buttonStyle);
         button.addListener(new ChangeListener() {
             @Override
@@ -336,10 +336,10 @@ public class LatTab extends Tab {
         }
 
         //Show heading box if heading mode, otherwise hide it
-        showHdgBoxes((latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
+        showHdgBoxes((latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || latMode == NavState.FLY_HEADING) && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
         if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             hdgBox.setText(Integer.toString(afterWptHdg));
-        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
+        } else if (latMode == NavState.FLY_HEADING) {
             hdgBox.setText(Integer.toString(clearedHdg));
         }
         notListening = false;
@@ -379,6 +379,14 @@ public class LatTab extends Tab {
                 ilsChanged = !clearedILS.equals(lastILS.getName());
             }
         }
+        directionChanged = false;
+        if (selectedAircraft.isVectored()) {
+            //If previous mode is vectors mode
+            directionChanged = selectedAircraft.getNavState().getClearedTurnDir().last() != turnDir;
+        } else {
+            //If previous mode is not vectors mode
+            directionChanged = turnDir == NavState.TURN_LEFT || turnDir == NavState.TURN_RIGHT;
+        }
 
         if (latModeChanged || ilsChanged) {
             tabChanged = true;
@@ -387,8 +395,8 @@ public class LatTab extends Tab {
                 tabChanged = afterWptChanged || afterWptHdgChanged;
             } else if (latMode == NavState.SID_STAR) {
                 tabChanged = wptChanged;
-            } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
-                tabChanged = hdgChanged;
+            } else if (latMode == NavState.FLY_HEADING) {
+                tabChanged = hdgChanged || directionChanged;
             } else if (latMode == NavState.HOLD_AT) {
                 tabChanged = holdWptChanged;
             } else if (latMode == NavState.CHANGE_STAR) {
@@ -417,24 +425,28 @@ public class LatTab extends Tab {
         //Lat mode ILS box colour
         ilsBox.getStyle().fontColor = ilsChanged ? Color.YELLOW : Color.WHITE;
 
+        //Set the box colour for left/right buttons regardless of latmode
+        leftButton.setChecked(turnDir == NavState.TURN_LEFT);
+        rightButton.setChecked(turnDir == NavState.TURN_RIGHT);
+
         //Lat mode hdg box colour
         if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             hdgBox.getStyle().fontColor = afterWptHdgChanged ? Color.YELLOW : Color.WHITE;
-        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
+        } else if (latMode == NavState.FLY_HEADING) {
             hdgBox.getStyle().fontColor = hdgChanged ? Color.YELLOW : Color.WHITE;
             leftButton.getStyle().fontColor = Color.WHITE;
             rightButton.getStyle().fontColor = Color.WHITE;
             if (directionChanged) {
-                int prevMode = selectedAircraft.getNavState().getDispLatMode().last();
-                if (latMode == NavState.FLY_HEADING) {
-                    if (prevMode == NavState.TURN_LEFT) {
+                int prevDir = selectedAircraft.getNavState().getClearedTurnDir().last();
+                if (turnDir == NavState.NO_DIRECTION) {
+                    if (prevDir == NavState.TURN_LEFT) {
                         leftButton.getStyle().fontColor = Color.YELLOW;
-                    } else if (prevMode == NavState.TURN_RIGHT) {
+                    } else if (prevDir == NavState.TURN_RIGHT) {
                         rightButton.getStyle().fontColor = Color.YELLOW;
                     }
-                } else if (latMode == NavState.TURN_LEFT) {
+                } else if (turnDir == NavState.TURN_LEFT) {
                     leftButton.getStyle().fontColor = Color.YELLOW;
-                } else if (latMode == NavState.TURN_RIGHT) {
+                } else if (turnDir == NavState.TURN_RIGHT) {
                     rightButton.getStyle().fontColor = Color.YELLOW;
                 }
             }
@@ -457,7 +469,7 @@ public class LatTab extends Tab {
                 ui.spdTab.updateElements();
             }
         }
-        selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS, newStar);
+        selectedAircraft.getNavState().sendLat(latMode, clearedWpt, afterWpt, holdWpt, afterWptHdg, clearedHdg, clearedILS, newStar, turnDir);
     }
 
     @Override
@@ -474,14 +486,8 @@ public class LatTab extends Tab {
         latModeChanged = false;
         clearedHdg = selectedAircraft.getNavState().getClearedHdg().last();
         hdgChanged = false;
+        turnDir = selectedAircraft.getNavState().getClearedTurnDir().last();
         directionChanged = false;
-        if (selectedAircraft.getNavState().containsCode(selectedAircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
-            //If previous mode is vectors mode
-            directionChanged = selectedAircraft.getNavState().getDispLatMode().last() != latMode;
-        } else {
-            //If previous mode is not vectors mode
-            directionChanged = latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT;
-        }
         if (selectedAircraft.getNavState().getClearedDirect().last() != null) {
             clearedWpt = selectedAircraft.getNavState().getClearedDirect().last().getName();
         } else {
@@ -519,6 +525,15 @@ public class LatTab extends Tab {
         notListening = true;
         int prevMode = latMode;
         latMode = modeButtons.getMode();
+        if (latMode == NavState.FLY_HEADING) {
+            if (leftButton.isChecked()) {
+                turnDir = NavState.TURN_LEFT;
+            } else if (rightButton.isChecked()) {
+                turnDir = NavState.TURN_RIGHT;
+            } else {
+                turnDir = NavState.NO_DIRECTION;
+            }
+        }
 
         if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             valueBox.setItems(waypoints);
@@ -529,8 +544,8 @@ public class LatTab extends Tab {
         } else if (latMode == NavState.HOLD_AT) {
             valueBox.setItems(waypoints);
             holdWpt = valueBox.getSelected();
-        } else if (latMode == NavState.FLY_HEADING || latMode == NavState.TURN_LEFT || latMode == NavState.TURN_RIGHT) {
-            if (selectedAircraft != null && !(prevMode == NavState.FLY_HEADING || prevMode == NavState.TURN_LEFT || prevMode == NavState.TURN_RIGHT)) {
+        } else if (latMode == NavState.FLY_HEADING) {
+            if (selectedAircraft != null && prevMode != NavState.FLY_HEADING) {
                 //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
                 clearedHdg = (int) Math.round(selectedAircraft.getHeading());
                 clearedHdg = MathTools.modulateHeading(clearedHdg);
@@ -650,5 +665,9 @@ public class LatTab extends Tab {
 
     public boolean isStarChanged() {
         return starChanged;
+    }
+
+    public boolean isDirectionChanged() {
+        return directionChanged;
     }
 }

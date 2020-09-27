@@ -549,7 +549,7 @@ public class Arrival extends Aircraft {
                     nonPrecAlts = null;
                 }
             } else {
-                if (isLocCap() && getClearedAltitude() != getIls().getMissedApchProc().getClimbAlt()) {
+                if (isLocCap() && getClearedAltitude() != getIls().getMissedApchProc().getClimbAlt() && getNavState().getDispLatMode().first() == NavState.FLY_HEADING) {
                     setMissedAlt();
                 }
                 if (nonPrecAlts == null) {
@@ -562,7 +562,7 @@ public class Arrival extends Aircraft {
                 if (isLocCap()) {
                     if (nonPrecAlts != null && nonPrecAlts.size > 0) {
                         //Set target altitude to current restricted altitude
-                        setTargetAltitude((int) nonPrecAlts.first()[0]);
+                        if (getNavState().getDispLatMode().first() == NavState.FLY_HEADING) setTargetAltitude((int) nonPrecAlts.first()[0]);
                         while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
                             nonPrecAlts.removeFirst();
                         }

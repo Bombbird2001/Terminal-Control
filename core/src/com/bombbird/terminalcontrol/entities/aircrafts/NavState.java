@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NavState {
+    //Update available mode codes
     public static final int REMOVE_ALL_SIDSTAR = 0; //Removes all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
     public static final int REMOVE_AFTERHDG_HOLD = 1; //Removes after waypoint fly heading, hold at
     public static final int REMOVE_SIDSTAR_ONLY = 2; //Removes only the SID, STAR mode
@@ -33,18 +34,23 @@ public class NavState {
 
     //NavState codes
     public static final int UNKNOWN_STATE = -1;
-    //Lateral
+    //Lateral modes
     public static final int SID_STAR = 20;
     public static final int AFTER_WAYPOINT_FLY_HEADING = 21;
     public static final int FLY_HEADING = 22;
-    public static final int TURN_LEFT = 23;
-    public static final int TURN_RIGHT = 24;
+    public static final int NO_DIRECTION = 27;
     public static final int HOLD_AT = 25;
     public static final int CHANGE_STAR = 26;
 
-    //Altitude/Speed
+    //Turn directions - separate from lateral mode
+    public static final int TURN_LEFT = 23;
+    public static final int TURN_RIGHT = 24;
+
+    //Altitude/Speed modes
     public static final int SID_STAR_RESTR = 30;
     public static final int NO_RESTR = 31;
+
+    //Expedite - separate from altitude mode
     public static final int EXPEDITE = 32;
 
     private Aircraft aircraft;
@@ -67,6 +73,7 @@ public class NavState {
     private final Queue<Waypoint> clearedHold;
     private final Queue<ILS> clearedIls;
     private final Queue<String> clearedNewStar;
+    private final Queue<Integer> clearedTurnDir;
 
     private final Queue<Integer> clearedAlt;
     private final Queue<Boolean> clearedExpedite;
@@ -90,7 +97,7 @@ public class NavState {
             //Arrival
             latModes = new Array<>(6);
             latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
-            latModes.add(Ui.LEFT_HEADING, Ui.RIGHT_HEADING, Ui.HOLD_AT);
+            latModes.add(Ui.HOLD_AT);
             if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
 
             altModes.add(Ui.DESCEND_VIA_STAR);
@@ -99,7 +106,7 @@ public class NavState {
         } else if (aircraft instanceof Departure) {
             //Departure
             latModes = new Array<>(4);
-            latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
+            latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING);
 
             altModes.add(Ui.CLIMB_VIA_SID);
 
@@ -109,7 +116,7 @@ public class NavState {
             Gdx.app.log("Navstate type error", "Unknown navstate type specified!");
             latModes = new Array<>(1);
         }
-        altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
+        altModes.add(Ui.CLIMB_DESCEND_TO);
 
         spdModes.add(Ui.NO_SPD_RESTRICTIONS);
 
@@ -136,6 +143,8 @@ public class NavState {
         clearedIls.addLast(null);
         clearedNewStar = new Queue<>();
         clearedNewStar.addLast(null);
+        clearedTurnDir = new Queue<>();
+        clearedTurnDir.addLast(NO_DIRECTION);
 
         clearedAlt = new Queue<>();
         clearedAlt.addLast(aircraft.getClearedAltitude());
@@ -174,6 +183,7 @@ public class NavState {
         clearedHold = new Queue<>();
         clearedIls = new Queue<>();
         clearedNewStar = new Queue<>();
+        clearedTurnDir = new Queue<>();
 
         clearedAlt = new Queue<>();
         clearedExpedite = new Queue<>();
@@ -197,7 +207,10 @@ public class NavState {
         {
             JSONArray array = save.getJSONArray("altModes");
             for (int i = 0; i < array.length(); i++) {
-                altModes.add(array.getString(i));
+                String mode = array.getString(i);
+                if (Ui.EXPEDITE_TO.equals(mode)) {
+                    altModes.add(Ui.CLIMB_DESCEND_TO);
+                } else altModes.add(array.getString(i));
             }
         }
 
@@ -215,6 +228,8 @@ public class NavState {
             }
         }
 
+
+
         if (radarScreen.getRevision() < Revision.NAVSTATE_REVISION) {
             //Old navstate format, parse to fit
             addToQueueIntParseFromString(save.getJSONArray("dispLatMode"), dispLatMode);
@@ -226,6 +241,7 @@ public class NavState {
             addToQueueInt(save.getJSONArray("dispAltMode"), dispAltMode);
             addToQueueInt(save.getJSONArray("dispSpdMode"), dispSpdMode);
         }
+        replaceAllTurnHdgModes(); //Replace any old turn left/right modes to fly heading mode
         addToQueueInt(save.getJSONArray("clearedHdg"), clearedHdg);
         addToQueueWpt(save.getJSONArray("clearedDirect"), clearedDirect);
         addToQueueWpt(save.getJSONArray("clearedAftWpt"), clearedAftWpt);
@@ -244,6 +260,13 @@ public class NavState {
             fillUpString(clearedNewStar);
         } else {
             addToQueueString(save.getJSONArray("clearedNewStar"), clearedNewStar);
+        }
+
+        if (save.isNull("clearedTurnDir")) {
+            clearedTurnDir.addLast(NO_DIRECTION);
+            fillUpInt(clearedTurnDir);
+        } else {
+            addToQueueInt(save.getJSONArray("clearedTurnDir"), clearedTurnDir);
         }
 
         addToQueueInt(save.getJSONArray("clearedAlt"), clearedAlt);
@@ -269,7 +292,11 @@ public class NavState {
     /** Adds all elements in int array to int queue */
     private void addToQueueInt(JSONArray array, Queue<Integer> queue) {
         for (int i = 0; i < array.length(); i++) {
-            queue.addLast(array.isNull(i) ? null : array.getInt(i));
+            queue.addLast(array.isNull(i) ? -1 : array.getInt(i));
+            if (queue.last() != -1 && queue.last() == EXPEDITE) {
+                queue.removeLast();
+                queue.addLast(NO_RESTR);
+            }
         }
     }
 
@@ -313,6 +340,7 @@ public class NavState {
             clearedHold.removeIndex(1);
             clearedIls.removeIndex(1);
             clearedNewStar.removeIndex(1);
+            clearedTurnDir.removeIndex(1);
 
             clearedAlt.removeIndex(1);
             clearedExpedite.removeIndex(1);
@@ -334,6 +362,7 @@ public class NavState {
             if (clearedHold.size > 1) clearedHold.removeFirst();
             if (clearedIls.size > 1) clearedIls.removeFirst();
             if (clearedNewStar.size > 1) clearedNewStar.removeFirst();
+            if (clearedTurnDir.size > 1) clearedTurnDir.removeFirst();
 
             if (clearedAlt.size > 1) clearedAlt.removeFirst();
             if (clearedExpedite.size > 1) clearedExpedite.removeFirst();
@@ -377,7 +406,7 @@ public class NavState {
             if (!aircraft.isLocCap()) {
                 Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
                 ((Arrival) aircraft).setStar(newStar);
-                if (!dispLatMode.isEmpty() && !containsCode(dispLatMode.first(), FLY_HEADING, TURN_LEFT, TURN_RIGHT)) {
+                if (!dispLatMode.isEmpty() && !containsCode(dispLatMode.first(), FLY_HEADING)) {
                     dispLatMode.removeFirst();
                     dispLatMode.addFirst(FLY_HEADING);
                 }
@@ -406,7 +435,7 @@ public class NavState {
         int clearedDispLatMode = dispLatMode.get(1);
         Waypoint currentDirect = clearedDirect.first();
         Waypoint newDirect = clearedDirect.get(1);
-        if (containsCode(currentDispLatMode, FLY_HEADING, TURN_LEFT, TURN_RIGHT) && containsCode(clearedDispLatMode, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
+        if (containsCode(currentDispLatMode, FLY_HEADING) && containsCode(clearedDispLatMode, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
             //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
             dispLatMode.removeFirst();
             dispLatMode.removeFirst();
@@ -497,12 +526,21 @@ public class NavState {
         }
     }
 
-    /** Replaces all turn left/right heading with fly heading, called after aircraft has finished a turn instructed in a specific direction */
-    public void replaceAllHdgModes() {
+    /** Replaces all turn left/right heading modes (old) with fly heading, used to migrate old mode (before turn/left removed) to new mode */
+    private void replaceAllTurnHdgModes() {
         int size = dispLatMode.size;
         for (int i = 0; i < size; i++) {
             int code = dispLatMode.removeFirst();
             dispLatMode.addLast(containsCode(code, TURN_RIGHT, TURN_LEFT) ? FLY_HEADING : code);
+        }
+    }
+
+    /** Replaces all turn directions with no direction, called after aircraft has finished a turn instructed in a specific direction */
+    public void replaceAllTurnDirections() {
+        int size = clearedTurnDir.size;
+        clearedTurnDir.clear();
+        for (int i = 0; i < size; i++) {
+            clearedTurnDir.addLast(NO_DIRECTION);
         }
     }
 
@@ -570,7 +608,7 @@ public class NavState {
     }
 
     /** Adds new lateral instructions to queue */
-    public void sendLat(int latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedApch, String newStar) {
+    public void sendLat(int latMode, String clearedWpt, String afterWpt, String holdWpt, int afterWptHdg, int clearedHdg, String clearedApch, String newStar, int turnDir) {
         int latModeName = latMode;
         if (latMode == SID_STAR) {
             clearedDirect.addLast(radarScreen.waypoints.get(clearedWpt));
@@ -589,7 +627,7 @@ public class NavState {
             updateLatModes(REMOVE_AFTERHDG_ONLY, false);
         } else if (latMode == CHANGE_STAR) {
             clearedNewStar.addLast(newStar);
-            if (containsCode(dispLatMode.last(), FLY_HEADING, TURN_RIGHT, TURN_LEFT)) {
+            if (dispLatMode.last() == FLY_HEADING) {
                 latModeName = dispLatMode.last();
             } else {
                 latModeName = FLY_HEADING;
@@ -601,6 +639,7 @@ public class NavState {
             updateLatModes(REMOVE_ALL_SIDSTAR, false);
         } else {
             this.clearedHdg.addLast(clearedHdg);
+            clearedTurnDir.addLast(turnDir);
         }
         if (aircraft instanceof Arrival) {
             clearedIls.addLast(aircraft.getAirport().getApproaches().get(clearedApch.substring(3)));
@@ -622,13 +661,14 @@ public class NavState {
         fillUpWpt(clearedHold);
         fillUpILS(clearedIls);
         fillUpString(clearedNewStar);
+        fillUpInt(clearedTurnDir);
     }
 
     /** Adds new altitude instructions to queue, called after sendLat */
-    public void sendAlt(int altMode, int clearedAlt) {
+    public void sendAlt(int altMode, int clearedAlt, boolean expedite) {
         this.clearedAlt.addLast(clearedAlt);
         dispAltMode.addLast(altMode);
-        clearedExpedite.addLast(altMode == EXPEDITE);
+        clearedExpedite.addLast(expedite);
         fillUpBool(clearedExpedite);
     }
 
@@ -690,7 +730,7 @@ public class NavState {
         switch (mode) {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
-                latModes.add(Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
+                latModes.add(Ui.FLY_HEADING);
                 if (!radarScreen.tutorial && aircraft instanceof Arrival) latModes.add(Ui.CHANGE_STAR);
                 break;
             case REMOVE_AFTERHDG_HOLD:
@@ -716,10 +756,10 @@ public class NavState {
                 latModes.clear();
                 if (aircraft instanceof Arrival) {
                     latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
-                    latModes.add(Ui.LEFT_HEADING, Ui.RIGHT_HEADING, Ui.HOLD_AT);
+                    latModes.add(Ui.HOLD_AT);
                     if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
                 } else if (aircraft instanceof Departure) {
-                    latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING, Ui.LEFT_HEADING, Ui.RIGHT_HEADING);
+                    latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING);
                 }
                 break;
             default:
@@ -743,14 +783,14 @@ public class NavState {
                 } else if (aircraft instanceof Departure) {
                     altModes.add(Ui.CLIMB_VIA_SID);
                 }
-                altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
+                altModes.add(Ui.CLIMB_DESCEND_TO);
                 break;
             case REMOVE_UNRESTR:
                 altModes.removeValue(Ui.CLIMB_DESCEND_TO, false);
                 break;
             case ADD_UNRESTR_ONLY:
                 altModes.clear();
-                altModes.add(Ui.CLIMB_DESCEND_TO, Ui.EXPEDITE_TO);
+                altModes.add(Ui.CLIMB_DESCEND_TO);
                 break;
             case ADD_SIDSTAR_RESTR_ONLY:
                 altModes.clear();
@@ -813,9 +853,9 @@ public class NavState {
         } else if (Ui.FLY_HEADING.equals(string)) {
             return FLY_HEADING;
         } else if (Ui.LEFT_HEADING.equals(string)) {
-            return TURN_LEFT;
+            return FLY_HEADING; //No longer used, defaults to fly heading
         } else if (Ui.RIGHT_HEADING.equals(string)) {
-            return TURN_RIGHT;
+            return FLY_HEADING; //No longer used, defaults to fly heading
         } else if (Ui.HOLD_AT.equals(string)) {
             return HOLD_AT;
         } else if (Ui.CLIMB_VIA_SID.equals(string) || Ui.DESCEND_VIA_STAR.equals(string) || Ui.SID_SPD_RESTRICTIONS.equals(string) || Ui.STAR_SPD_RESTRICTIONS.equals(string)) {
@@ -823,7 +863,7 @@ public class NavState {
         } else if (Ui.CLIMB_DESCEND_TO.equals(string) || Ui.NO_SPD_RESTRICTIONS.equals(string)) {
             return NO_RESTR;
         } else if (Ui.EXPEDITE_TO.equals(string)) {
-            return EXPEDITE;
+            return NO_RESTR; //No longer used, defaults to no restriction
         } else if (Ui.CHANGE_STAR.equals(string)) {
             return CHANGE_STAR;
         } else {
@@ -924,5 +964,9 @@ public class NavState {
 
     public Queue<String> getClearedNewStar() {
         return clearedNewStar;
+    }
+
+    public Queue<Integer> getClearedTurnDir() {
+        return clearedTurnDir;
     }
 }

@@ -497,7 +497,7 @@ public class Aircraft extends Actor {
                 drawSidStar();
             } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && navState.getClearedDirect().last() != null && navState.getClearedAftWpt().last() != null) {
                 drawAftWpt();
-            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && (!locCap || navState.getClearedIls().last() == null)) {
+            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING) && (!locCap || navState.getClearedIls().last() == null)) {
                 drawHdgLine();
             } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
                 drawHoldPattern();
@@ -509,7 +509,7 @@ public class Aircraft extends Actor {
                     uiDrawSidStar();
                 } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if ((LatTab.latMode == NavState.FLY_HEADING || LatTab.latMode == NavState.TURN_LEFT || LatTab.latMode == NavState.TURN_RIGHT) && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode == NavState.FLY_HEADING && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
                 } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
@@ -689,9 +689,7 @@ public class Aircraft extends Actor {
         if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
             altitude = targetAltitude;
             verticalSpeed = 0;
-            if (navState.getDispAltMode().first() == NavState.EXPEDITE) {
-                navState.getDispAltMode().removeFirst();
-                navState.getDispAltMode().addFirst(NavState.NO_RESTR);
+            if (navState.getClearedExpedite().first()) {
                 navState.getClearedExpedite().removeFirst();
                 navState.getClearedExpedite().addFirst(false);
                 expedite = false;
@@ -751,7 +749,7 @@ public class Aircraft extends Actor {
         }
 
         boolean sidstar = navState != null && (navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT));
-        boolean vector = navState != null && !sidstar && navState.containsCode(navState.getDispLatMode().first(), NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT);
+        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first() == NavState.FLY_HEADING;
 
         if (this instanceof Departure) {
             //Check if aircraft has climbed past initial climb
@@ -991,11 +989,11 @@ public class Aircraft extends Actor {
         }
         if (wakeTolerance < 0) wakeTolerance = 0;
 
-        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT) && ils.isInsideILS(x, y)) {
+        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING) && ils.isInsideILS(x, y)) {
             locCap = true;
-            navState.replaceAllHdgModes();
+            navState.replaceAllTurnDirections();
             ui.updateAckHandButton(this);
-        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING, NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
+        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING)) {
             locCap = false;
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
@@ -1013,9 +1011,9 @@ public class Aircraft extends Actor {
     /** Finds the deltaHeading with the appropriate force direction under different circumstances */
     private double findDeltaHeading(double targetHeading) {
         int forceDirection = 0;
-        if (navState.getDispLatMode().first() == NavState.TURN_LEFT) {
+        if (navState.getClearedTurnDir().first() == NavState.TURN_LEFT) {
             forceDirection = 1;
-        } else if (navState.getDispLatMode().first() == NavState.TURN_RIGHT) {
+        } else if (navState.getClearedTurnDir().first() == NavState.TURN_RIGHT) {
             forceDirection = 2;
         } else if (navState.getDispLatMode().first() == NavState.HOLD_AT && holding && !init) {
             if (holdingType == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
@@ -1101,8 +1099,8 @@ public class Aircraft extends Actor {
         }
         if (Math.abs(deltaHeading) <= 10) {
             targetAngularVelocity = deltaHeading / 3;
-            if (navState.containsCode(navState.getDispLatMode().first(), NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
-                navState.replaceAllHdgModes();
+            if (navState.containsCode(navState.getClearedTurnDir().first(), NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
+                navState.replaceAllTurnDirections();
                 if (selected && isArrivalDeparture()) {
                     updateUISelections();
                     ui.updateState();
@@ -1297,7 +1295,7 @@ public class Aircraft extends Actor {
 
     /** Checks if aircraft is being manually vectored */
     public boolean isVectored() {
-        return navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING, NavState.TURN_RIGHT, NavState.TURN_LEFT);
+        return navState.getDispLatMode().last() == NavState.FLY_HEADING;
     }
 
     /** Checks if aircraft has a sort of emergency (fuel or active emergency) */
