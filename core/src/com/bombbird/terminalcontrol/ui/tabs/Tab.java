@@ -59,13 +59,13 @@ public class Tab {
 
     private final RadarScreen radarScreen;
 
-    public Tab(Ui Ui) {
+    public Tab(Ui ui) {
         radarScreen  = TerminalControl.radarScreen;
 
         modeButtons = new ModeButtons(this);
         hideArray = new Array<>();
 
-        ui = Ui;
+        Tab.ui = ui;
         notListening = false;
         visible = false;
         if (!LOADED_STYLES) {

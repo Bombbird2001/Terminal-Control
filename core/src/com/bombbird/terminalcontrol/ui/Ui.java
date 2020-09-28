@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
@@ -75,6 +77,7 @@ public class Ui {
     private TextButton resetAll;
 
     private TextButton labelButton;
+    private TextButton moreInfoButton;
 
     //Label that displays score & high score
     private Label scoreLabel;
@@ -207,7 +210,7 @@ public class Ui {
     private void loadAircraftLabel() {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = Fonts.defaultFont30;
-        buttonStyle.fontColor = Color.BLACK;
+        buttonStyle.fontColor = Color.WHITE;
         labelButton = new TextButton("No aircraft selected", buttonStyle);
         labelButton.align(Align.center);
         labelButton.addListener(new ChangeListener() {
@@ -217,7 +220,24 @@ public class Ui {
                 event.handle();
             }
         });
-        addActor(labelButton, 0.1f, 0.8f, 3240 - 695, 270);
+        addActor(labelButton, 0.1f, 0.6f, 3240 - 695, 270);
+
+        TextButton.TextButtonStyle buttonStyle1 = new TextButton.TextButtonStyle();
+        buttonStyle1.font = Fonts.defaultFont24;
+        buttonStyle1.fontColor = Color.BLACK;
+        buttonStyle1.up = Ui.lightestBoxBackground;
+        buttonStyle1.down = Ui.lightestBoxBackground;
+        moreInfoButton = new TextButton("i", buttonStyle1);
+        moreInfoButton.align(Align.center);
+        moreInfoButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                boolean selected = "i".contentEquals(moreInfoButton.getText());
+                toggleAircraftLabel(selected);
+                moreInfoButton.setText(selected ? "<=" : "i");
+            }
+        });
+        addActor(moreInfoButton, 0.7f, 0.2f, 3240 - 645, 170);
     }
 
     private void loadNormalPane() {
@@ -709,10 +729,19 @@ public class Ui {
             altTab.setVisibility(false);
             spdTab.setVisibility(false);
         }
-        if (selectedAircraft != null) {
-            labelButton.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
-        }
+        toggleAircraftLabel(false);
         labelButton.setVisible(show);
+        moreInfoButton.setVisible(show);
+    }
+
+    public void toggleAircraftLabel(boolean moreInfo) {
+        if (selectedAircraft == null) {
+            labelButton.setText("");
+            return;
+        }
+        if (moreInfo) {
+            labelButton.setText(selectedAircraft instanceof Arrival ? "App spd " + selectedAircraft.getApchSpd() + "kts" : "Crz alt FL" + ((Departure) selectedAircraft).getCruiseAlt() / 100);
+        } else labelButton.setText(selectedAircraft.getCallsign() + "    " + selectedAircraft.getIcaoType());
     }
 
     public void updateScoreLabels() {
