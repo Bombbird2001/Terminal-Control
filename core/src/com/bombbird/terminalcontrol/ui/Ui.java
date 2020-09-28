@@ -235,6 +235,7 @@ public class Ui {
                 boolean selected = "i".contentEquals(moreInfoButton.getText());
                 toggleAircraftLabel(selected);
                 moreInfoButton.setText(selected ? "<=" : "i");
+                event.handle();
             }
         });
         addActor(moreInfoButton, 0.7f, 0.2f, 3240 - 645, 170);
