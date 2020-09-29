@@ -409,6 +409,7 @@ public class Ui {
             spdTab.setVisibility(false);
             showChangesButtons(false);
         }
+        moreInfoButton.setText("i");
     }
 
     private void showTabBoxes(boolean show) {

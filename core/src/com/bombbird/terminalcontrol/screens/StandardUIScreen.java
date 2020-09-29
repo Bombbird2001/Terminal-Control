@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -12,6 +14,8 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 
 public class StandardUIScreen extends BasicScreen {
     public final Image background;
+
+    private TextButton backButton;
 
     public StandardUIScreen(final TerminalControl game, Image background) {
         super(game, 2880, 1620);
@@ -50,7 +54,7 @@ public class StandardUIScreen extends BasicScreen {
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Set back button params
-        TextButton backButton = new TextButton("<= Back", buttonStyle);
+        backButton = new TextButton("<= Back", buttonStyle);
         backButton.setWidth(MainMenuScreen.BUTTON_WIDTH);
         backButton.setHeight(MainMenuScreen.BUTTON_HEIGHT);
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f);
@@ -63,6 +67,16 @@ public class StandardUIScreen extends BasicScreen {
         });
 
         stage.addActor(backButton);
+    }
+
+    /** Overrides render method to include detection of back button on android */
+    @Override
+    public void render(float delta) {
+        super.render(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            //On android, emulate backButton is pressed
+            backButton.toggle();
+        }
     }
 
     /** Overrides show method of basic screen */

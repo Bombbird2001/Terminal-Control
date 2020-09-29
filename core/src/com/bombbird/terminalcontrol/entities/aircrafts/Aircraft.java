@@ -717,7 +717,7 @@ public class Aircraft extends Actor {
 
     /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc */
     public boolean canCaptureILS() {
-        return getIls() != null && getNavState().getDispLatMode().first() == NavState.FLY_HEADING || (getNavState().getDispLatMode().first() == NavState.SID_STAR && getIls().isInsideILS(getDirect().getPosX(), getDirect().getPosY()));
+        return ils != null && navState.getDispLatMode().first() == NavState.FLY_HEADING || (navState.getDispLatMode().first() == NavState.SID_STAR && ils.isInsideILS(direct.getPosX(), direct.getPosY()));
     }
 
     private double findRequiredDistance(double deltaHeading) {
@@ -989,7 +989,7 @@ public class Aircraft extends Actor {
         }
         if (wakeTolerance < 0) wakeTolerance = 0;
 
-        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING) && ils.isInsideILS(x, y)) {
+        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING) && ils.isInsideILS(x, y) && (direct == null || ils.isInsideILS(direct.getPosX(), direct.getPosY()))) {
             locCap = true;
             navState.replaceAllTurnDirections();
             ui.updateAckHandButton(this);

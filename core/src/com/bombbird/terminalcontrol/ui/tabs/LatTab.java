@@ -337,6 +337,7 @@ public class LatTab extends Tab {
 
         //Show heading box if heading mode, otherwise hide it
         showHdgBoxes((latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || latMode == NavState.FLY_HEADING) && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
+        showDirBoxes(latMode == NavState.FLY_HEADING && visible && (!selectedAircraft.isLocCap() || clearedILS == null || Ui.NOT_CLEARED_APCH.equals(clearedILS) || !selectedAircraft.getAirport().getApproaches().get(clearedILS.substring(3)).equals(selectedAircraft.getNavState().getClearedIls().last())) && !(selectedAircraft.isLocCap() && Ui.NOT_CLEARED_APCH.equals(clearedILS)));
         if (latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
             hdgBox.setText(Integer.toString(afterWptHdg));
         } else if (latMode == NavState.FLY_HEADING) {
@@ -572,6 +573,9 @@ public class LatTab extends Tab {
         hdg10minus.setVisible(show);
         hdg5add.setVisible(show);
         hdg5minus.setVisible(show);
+    }
+
+    private void showDirBoxes(boolean show) {
         leftButton.setVisible(show);
         rightButton.setVisible(show);
     }
