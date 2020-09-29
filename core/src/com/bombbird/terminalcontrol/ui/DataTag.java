@@ -448,12 +448,10 @@ public class DataTag {
                         labelText[5] = "LOC";
                     } else {
                         labelText[5] = Integer.toString(LatTab.clearedHdg);
-                        if (latTab.isDirectionChanged()) {
-                            if (LatTab.turnDir == NavState.TURN_LEFT) {
-                                labelText[5] += "L";
-                            } else if (LatTab.turnDir == NavState.TURN_RIGHT) {
-                                labelText[5] += "R";
-                            }
+                        if (LatTab.turnDir == NavState.TURN_LEFT) {
+                            labelText[5] += "L";
+                        } else if (LatTab.turnDir == NavState.TURN_RIGHT) {
+                            labelText[5] += "R";
                         }
                         changed = latTab.isLatModeChanged() || latTab.isHdgChanged() || latTab.isDirectionChanged();
                     }
@@ -560,12 +558,10 @@ public class DataTag {
                         labelText[5] = "LOC";
                     } else {
                         labelText[5] = Integer.toString(LatTab.clearedHdg);
-                        if (latTab.isDirectionChanged()) {
-                            if (LatTab.turnDir == NavState.TURN_LEFT) {
-                                labelText[5] += "L";
-                            } else if (LatTab.turnDir == NavState.TURN_RIGHT) {
-                                labelText[5] += "R";
-                            }
+                        if (LatTab.turnDir == NavState.TURN_LEFT) {
+                            labelText[5] += "L";
+                        } else if (LatTab.turnDir == NavState.TURN_RIGHT) {
+                            labelText[5] += "R";
                         }
                         changed = latTab.isLatModeChanged() || latTab.isHdgChanged() || latTab.isDirectionChanged();
                     }
