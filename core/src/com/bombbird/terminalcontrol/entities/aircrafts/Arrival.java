@@ -383,7 +383,7 @@ public class Arrival extends Aircraft {
     /** Overrides updateAltRestrictions method in Aircraft, for setting aircraft altitude restrictions when descending via the STAR */
     @Override
     public void updateAltRestrictions() {
-        if (getNavState().containsCode(getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (getNavState().getDispLatMode().first() == NavState.HOLD_AT && !isHolding())) {
+        if (getNavState().containsCode(getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG) || (getNavState().getDispLatMode().first() == NavState.HOLD_AT && !isHolding())) {
             //Aircraft on STAR
             int highestAlt = -1;
             int lowestAlt = -1;
@@ -479,7 +479,7 @@ public class Arrival extends Aircraft {
     /** Instructs the aircraft to divert to an alternate airport */
     private void divertToAltn() {
         getNavState().getDispLatMode().clear();
-        getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
+        getNavState().getDispLatMode().addFirst(NavState.VECTORS);
         getNavState().getDispAltMode().clear();
         getNavState().getDispAltMode().addFirst(NavState.NO_RESTR);
         getNavState().getDispSpdMode().clear();
@@ -524,7 +524,7 @@ public class Arrival extends Aircraft {
                             Waypoint prevDirect = getDirect();
                             setDirect(null);
                             getNavState().getDispLatMode().removeFirst();
-                            getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
+                            getNavState().getDispLatMode().addFirst(NavState.VECTORS);
                             getNavState().replaceAllClearedAltMode();
                             getNavState().replaceAllClearedSpdMode();
                             setAfterLastWpt();
@@ -549,7 +549,7 @@ public class Arrival extends Aircraft {
                     nonPrecAlts = null;
                 }
             } else {
-                if (isLocCap() && getClearedAltitude() != getIls().getMissedApchProc().getClimbAlt() && getNavState().getDispLatMode().first() == NavState.FLY_HEADING) {
+                if (isLocCap() && getClearedAltitude() != getIls().getMissedApchProc().getClimbAlt() && getNavState().getDispLatMode().first() == NavState.VECTORS) {
                     setMissedAlt();
                 }
                 if (nonPrecAlts == null) {
@@ -562,7 +562,7 @@ public class Arrival extends Aircraft {
                 if (isLocCap()) {
                     if (nonPrecAlts != null && nonPrecAlts.size > 0) {
                         //Set target altitude to current restricted altitude
-                        if (getNavState().getDispLatMode().first() == NavState.FLY_HEADING) setTargetAltitude((int) nonPrecAlts.first()[0]);
+                        if (getNavState().getDispLatMode().first() == NavState.VECTORS) setTargetAltitude((int) nonPrecAlts.first()[0]);
                         while (nonPrecAlts.size > 0 && MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getIls().getX(), getIls().getY())) < nonPrecAlts.first()[1]) {
                             nonPrecAlts.removeFirst();
                         }

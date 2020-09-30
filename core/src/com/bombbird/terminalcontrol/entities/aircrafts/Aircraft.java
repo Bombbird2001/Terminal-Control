@@ -495,9 +495,9 @@ public class Aircraft extends Actor {
             //Draws cleared status
             if (navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedDirect().last() != null) {
                 drawSidStar();
-            } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && navState.getClearedDirect().last() != null && navState.getClearedAftWpt().last() != null) {
+            } else if (navState.getDispLatMode().last() == NavState.AFTER_WPT_HDG && navState.getClearedDirect().last() != null && navState.getClearedAftWpt().last() != null) {
                 drawAftWpt();
-            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.FLY_HEADING) && (!locCap || navState.getClearedIls().last() == null)) {
+            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.VECTORS) && (!locCap || navState.getClearedIls().last() == null)) {
                 drawHdgLine();
             } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
                 drawHoldPattern();
@@ -507,9 +507,9 @@ public class Aircraft extends Actor {
             if (isArrivalDeparture()) {
                 if (LatTab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawSidStar();
-                } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawAftWpt();
-                } else if (LatTab.latMode == NavState.FLY_HEADING && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
+                } else if (LatTab.latMode == NavState.VECTORS && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
                     uiDrawHdgLine();
                 } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
                     uiDrawHoldPattern();
@@ -717,7 +717,7 @@ public class Aircraft extends Actor {
 
     /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc */
     public boolean canCaptureILS() {
-        return ils != null && navState.getDispLatMode().first() == NavState.FLY_HEADING || (navState.getDispLatMode().first() == NavState.SID_STAR && ils.isInsideILS(direct.getPosX(), direct.getPosY()));
+        return ils != null && navState.getDispLatMode().first() == NavState.VECTORS || (navState.getDispLatMode().first() == NavState.SID_STAR && ils.isInsideILS(direct.getPosX(), direct.getPosY()));
     }
 
     private double findRequiredDistance(double deltaHeading) {
@@ -748,8 +748,8 @@ public class Aircraft extends Actor {
             windSpd = 0;
         }
 
-        boolean sidstar = navState != null && (navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT));
-        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first() == NavState.FLY_HEADING;
+        boolean sidstar = navState != null && (navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT));
+        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first() == NavState.VECTORS;
 
         if (this instanceof Departure) {
             //Check if aircraft has climbed past initial climb
@@ -878,7 +878,7 @@ public class Aircraft extends Actor {
                 resetHoldParameters();
                 if (navState != null && navState.getDispLatMode().first() == NavState.HOLD_AT && holdWpt == null) {
                     navState.getDispLatMode().removeFirst();
-                    navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
+                    navState.getDispLatMode().addFirst(NavState.VECTORS);
                     navState.getClearedHdg().removeFirst();
                     navState.getClearedHdg().addFirst((int) heading);
                 }
@@ -939,7 +939,7 @@ public class Aircraft extends Actor {
     }
 
     public double findNextTargetHdg() {
-        if ((navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING && direct.equals(afterWaypoint)) || (navState.getDispLatMode().first() == NavState.HOLD_AT && direct.equals(holdWpt))) {
+        if ((navState.getDispLatMode().first() == NavState.AFTER_WPT_HDG && direct.equals(afterWaypoint)) || (navState.getDispLatMode().first() == NavState.HOLD_AT && direct.equals(holdWpt))) {
             return targetHeading;
         }
         Waypoint nextWpt = route.getWaypoint(sidStarIndex + 1);
@@ -989,11 +989,11 @@ public class Aircraft extends Actor {
         }
         if (wakeTolerance < 0) wakeTolerance = 0;
 
-        if (!locCap && ils != null && navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING) && ils.isInsideILS(x, y) && (direct == null || ils.isInsideILS(direct.getPosX(), direct.getPosY()))) {
+        if (!locCap && ils != null && ils.isInsideILS(x, y) && (navState.getDispLatMode().first() == NavState.VECTORS || (navState.getDispLatMode().first() == NavState.SID_STAR && direct != null && ils.isInsideILS(direct.getPosX(), direct.getPosY())))) {
             locCap = true;
             navState.replaceAllTurnDirections();
             ui.updateAckHandButton(this);
-        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.FLY_HEADING)) {
+        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.VECTORS)) {
             locCap = false;
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
@@ -1142,7 +1142,7 @@ public class Aircraft extends Actor {
     private void updateDirect() {
         Waypoint prevDirect = direct;
         sidStarIndex++;
-        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first() == NavState.AFTER_WPT_HDG) {
             clearedHeading = afterWptHdg;
             navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false);
             navState.updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
@@ -1166,7 +1166,7 @@ public class Aircraft extends Actor {
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {
                 navState.getDispLatMode().removeFirst();
-                navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
+                navState.getDispLatMode().addFirst(NavState.VECTORS);
                 navState.replaceAllClearedAltMode();
                 navState.replaceAllClearedSpdMode();
                 setAfterLastWpt();
@@ -1193,7 +1193,7 @@ public class Aircraft extends Actor {
     public void updateVectorMode() {
         //Switch aircraft latmode to vector mode
         navState.getDispLatMode().removeFirst();
-        navState.getDispLatMode().addFirst(NavState.FLY_HEADING);
+        navState.getDispLatMode().addFirst(NavState.VECTORS);
     }
 
     /** Removes the SID/STAR options from aircraft UI after there are no waypoints left */
@@ -1272,7 +1272,7 @@ public class Aircraft extends Actor {
         if (navState.getClearedDirect().last() == null) return new Array<>();
         if (navState.getDispLatMode().last() == NavState.SID_STAR) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.getWaypoints().size - 1);
-        } else if (navState.getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+        } else if (navState.getDispLatMode().last() == NavState.AFTER_WPT_HDG) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedAftWpt().last().getName()));
         } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
             return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedHold().last().getName()));
@@ -1284,7 +1284,7 @@ public class Aircraft extends Actor {
         if (selected && isArrivalDeparture()) {
             if (Tab.latMode == NavState.SID_STAR) {
                 return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.getWaypoints().size - 1);
-            } else if (Tab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+            } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
                 return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt));
             } else if (Tab.latMode == NavState.HOLD_AT) {
                 return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt));
@@ -1295,7 +1295,7 @@ public class Aircraft extends Actor {
 
     /** Checks if aircraft is being manually vectored */
     public boolean isVectored() {
-        return navState.getDispLatMode().last() == NavState.FLY_HEADING;
+        return navState.getDispLatMode().last() == NavState.VECTORS;
     }
 
     /** Checks if aircraft has a sort of emergency (fuel or active emergency) */

@@ -58,7 +58,7 @@ public class Trajectory {
             }
             float remainingAngle = deltaHeading;
             Vector2 prevPos = new Vector2();
-            boolean sidStarMode = aircraft.getNavState() != null && (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (aircraft.getNavState().getDispLatMode().first() == NavState.HOLD_AT && !aircraft.isHolding()));
+            boolean sidStarMode = aircraft.getNavState() != null && (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG) || (aircraft.getNavState().getDispLatMode().first() == NavState.HOLD_AT && !aircraft.isHolding()));
             float prevTargetTrack = targetTrack;
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 if (remainingAngle / turnRate > INTERVAL) {

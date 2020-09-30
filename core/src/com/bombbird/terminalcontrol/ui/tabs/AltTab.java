@@ -109,7 +109,7 @@ public class AltTab extends Tab {
                 highestAlt = 10000; //Cannot climb above 10000 feet due to pressure loss
             }
             if (highestAlt < lowestAlt) highestAlt = lowestAlt;
-            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() != null && selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap()) && selectedAircraft.getNavState().getDispLatMode().first() == NavState.FLY_HEADING) {
+            if (selectedAircraft.isGsCap() || (selectedAircraft.getIls() != null && selectedAircraft.getIls().isNpa() && selectedAircraft.isLocCap()) && selectedAircraft.getNavState().getDispLatMode().first() == NavState.VECTORS) {
                 highestAlt = lowestAlt = selectedAircraft.getIls().getMissedApchProc().getClimbAlt();
             }
             allAlts = createAltArray(lowestAlt, highestAlt);

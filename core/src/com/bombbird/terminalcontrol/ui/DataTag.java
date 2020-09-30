@@ -429,21 +429,21 @@ public class DataTag {
         if (radarScreen.compactData) {
             if (aircraft.isSelected() && aircraft.isArrivalDeparture()) {
                 boolean changed = false;
-                if (LatTab.latMode == NavState.SID_STAR && (aircraft.isLocCap() || aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.FLY_HEADING, NavState.AFTER_WAYPOINT_FLY_HEADING, NavState.HOLD_AT))) {
+                if (LatTab.latMode == NavState.SID_STAR && (aircraft.isLocCap() || aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {
                     labelText[5] = LatTab.clearedWpt;
                     changed = latTab.isLatModeChanged() || latTab.isWptChanged();
                     if (aircraft.isLocCap() && !changed) labelText[5] = "LOC";
                 } else if (LatTab.latMode == NavState.HOLD_AT) {
                     labelText[5] = LatTab.holdWpt;
                     changed = latTab.isLatModeChanged() || latTab.isHoldWptChanged();
-                } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG) {
                     if (aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) || latTab.isLatModeChanged() || latTab.isAfterWptChanged() || latTab.isAfterWptHdgChanged()) {
                         labelText[5] = LatTab.afterWpt + "=>" + LatTab.afterWptHdg;
                         changed = latTab.isLatModeChanged() || latTab.isAfterWptChanged() || latTab.isAfterWptHdgChanged();
                     } else {
                         labelText[5] = "";
                     }
-                } else if (LatTab.latMode == NavState.FLY_HEADING) {
+                } else if (LatTab.latMode == NavState.VECTORS) {
                     if (aircraft.isLocCap()) {
                         labelText[5] = "LOC";
                     } else {
@@ -474,7 +474,7 @@ public class DataTag {
                     }
                 } else if (aircraft.getNavState().getDispLatMode().last() == NavState.HOLD_AT) {
                     labelText[5] = aircraft.getHoldWpt().getName();
-                } else if (aircraft.getNavState().getClearedDirect().last() != null && aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+                } else if (aircraft.getNavState().getClearedDirect().last() != null && aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WPT_HDG) {
                     labelText[5] = aircraft.getNavState().getClearedDirect().last().getName() + "=>" + aircraft.getNavState().getClearedAftWptHdg().last();
                 } else if (aircraft.isLocCap()) {
                     labelText[5] = "LOC";
@@ -486,7 +486,7 @@ public class DataTag {
                 boolean changed = false;
                 if (LatTab.latMode == NavState.SID_STAR) {
                     labelText[8] = aircraft.getSidStar().getName();
-                    changed = (latTab.isLatModeChanged() && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT) || latTab.isIlsChanged();
+                    changed = (latTab.isLatModeChanged() && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WPT_HDG && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT) || latTab.isIlsChanged();
                     if (!Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS)) {
                         if (aircraft.isLocCap()) {
                             labelText[8] = LatTab.clearedILS;
@@ -494,11 +494,11 @@ public class DataTag {
                             labelText[8] += " " + LatTab.clearedILS;
                         }
                     }
-                } else if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING || LatTab.latMode == NavState.HOLD_AT) {
+                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG || LatTab.latMode == NavState.HOLD_AT) {
                     labelText[8] = aircraft.getSidStar().getName();
                     changed = latTab.isIlsChanged();
                     if (!Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS)) labelText[8] += " " + LatTab.clearedILS;
-                } else if (LatTab.latMode == NavState.FLY_HEADING) {
+                } else if (LatTab.latMode == NavState.VECTORS) {
                     if (Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS)) {
                         if (aircraft.getEmergency().isEmergency() && aircraft.getEmergency().isActive() && !aircraft.getNavState().getLatModes().get(0).contains("arrival")) {
                             labelText[8] = "";
@@ -553,7 +553,7 @@ public class DataTag {
         } else {
             if (aircraft.isSelected() && aircraft.isArrivalDeparture()) {
                 boolean changed = false;
-                if (LatTab.latMode == NavState.FLY_HEADING) {
+                if (LatTab.latMode == NavState.VECTORS) {
                     if (aircraft.isLocCap()) {
                         labelText[5] = "LOC";
                     } else {
@@ -568,8 +568,8 @@ public class DataTag {
                 } else if (LatTab.latMode == NavState.HOLD_AT) {
                     labelText[5] = LatTab.holdWpt;
                     changed = latTab.isLatModeChanged() || latTab.isHoldWptChanged();
-                } else if (LatTab.latMode == NavState.SID_STAR || LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING) {
-                    if (LatTab.latMode == NavState.AFTER_WAYPOINT_FLY_HEADING && ((aircraft.getDirect() != null && LatTab.afterWpt.equals(aircraft.getDirect().getName())) || latTab.isAfterWptChanged() || latTab.isAfterWptHdgChanged())) {
+                } else if (LatTab.latMode == NavState.SID_STAR || LatTab.latMode == NavState.AFTER_WPT_HDG) {
+                    if (LatTab.latMode == NavState.AFTER_WPT_HDG && ((aircraft.getDirect() != null && LatTab.afterWpt.equals(aircraft.getDirect().getName())) || latTab.isAfterWptChanged() || latTab.isAfterWptHdgChanged())) {
                         labelText[5] = LatTab.afterWpt + "=>" + LatTab.afterWptHdg;
                         changed = latTab.isLatModeChanged() || latTab.isAfterWptHdgChanged() || latTab.isAfterWptChanged();
                     } else {
@@ -590,7 +590,7 @@ public class DataTag {
                         labelText[8] = "";
                     } else {
                         labelText[8] = aircraft.getSidStar().getName();
-                        changed = (latTab.isLatModeChanged() && LatTab.latMode == NavState.SID_STAR && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT) || latTab.isIlsChanged();
+                        changed = (latTab.isLatModeChanged() && LatTab.latMode == NavState.SID_STAR && aircraft.getNavState().getDispLatMode().last() != NavState.AFTER_WPT_HDG && aircraft.getNavState().getDispLatMode().last() != NavState.HOLD_AT) || latTab.isIlsChanged();
                         if (aircraft.isLocCap()) {
                             if (!LatTab.clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
                                 labelText[8] = LatTab.clearedILS;
@@ -622,8 +622,8 @@ public class DataTag {
                     } else if (aircraft.getDirect() != null) {
                         labelText[5] = aircraft.getDirect().getName();
                     }
-                } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING)) {
-                    if (aircraft.getNavState().getClearedDirect().last() != null && aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING) {
+                } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.SID_STAR, NavState.AFTER_WPT_HDG)) {
+                    if (aircraft.getNavState().getClearedDirect().last() != null && aircraft.getNavState().getClearedDirect().last().equals(aircraft.getNavState().getClearedAftWpt().last()) && aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WPT_HDG) {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName() + "=>" + aircraft.getNavState().getClearedAftWptHdg().last();
                     } else if (aircraft.getNavState().getClearedDirect().last() != null) {
                         labelText[5] = aircraft.getNavState().getClearedDirect().last().getName();

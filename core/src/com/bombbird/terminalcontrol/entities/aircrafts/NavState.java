@@ -36,15 +36,15 @@ public class NavState {
     public static final int UNKNOWN_STATE = -1;
     //Lateral modes
     public static final int SID_STAR = 20;
-    public static final int AFTER_WAYPOINT_FLY_HEADING = 21;
-    public static final int FLY_HEADING = 22;
-    public static final int NO_DIRECTION = 27;
+    public static final int AFTER_WPT_HDG = 21;
+    public static final int VECTORS = 22;
     public static final int HOLD_AT = 25;
     public static final int CHANGE_STAR = 26;
 
     //Turn directions - separate from lateral mode
     public static final int TURN_LEFT = 23;
     public static final int TURN_RIGHT = 24;
+    public static final int NO_DIRECTION = 27;
 
     //Altitude/Speed modes
     public static final int SID_STAR_RESTR = 30;
@@ -406,9 +406,9 @@ public class NavState {
             if (!aircraft.isLocCap()) {
                 Star newStar = aircraft.getAirport().getStars().get(clearedNewStar.first().split(" ")[0]);
                 ((Arrival) aircraft).setStar(newStar);
-                if (!dispLatMode.isEmpty() && !containsCode(dispLatMode.first(), FLY_HEADING)) {
+                if (!dispLatMode.isEmpty() && !containsCode(dispLatMode.first(), VECTORS)) {
                     dispLatMode.removeFirst();
-                    dispLatMode.addFirst(FLY_HEADING);
+                    dispLatMode.addFirst(VECTORS);
                 }
                 aircraft.setRoute(new Route(aircraft, newStar));
                 aircraft.setDirect(null);
@@ -435,7 +435,7 @@ public class NavState {
         int clearedDispLatMode = dispLatMode.get(1);
         Waypoint currentDirect = clearedDirect.first();
         Waypoint newDirect = clearedDirect.get(1);
-        if (containsCode(currentDispLatMode, FLY_HEADING) && containsCode(clearedDispLatMode, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
+        if (containsCode(currentDispLatMode, VECTORS) && containsCode(clearedDispLatMode, HOLD_AT, AFTER_WPT_HDG)) {
             //Case 1: Aircraft changed from after waypoint fly heading, to heading mode during delay: Remove hold at, after waypoint fly heading
             dispLatMode.removeFirst();
             dispLatMode.removeFirst();
@@ -455,7 +455,7 @@ public class NavState {
             clearedDirect.removeFirst();
             clearedDirect.addFirst(currentDirect);
             clearedDirect.addFirst(currentDirect);
-        } else if (newDirect != null && !aircraft.getRoute().getRemainingWaypoints(aircraft.getSidStarIndex(), aircraft.getRoute().getWaypoints().size - 1).contains(newDirect, false) && currentDispLatMode == FLY_HEADING && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WAYPOINT_FLY_HEADING)) {
+        } else if (newDirect != null && !aircraft.getRoute().getRemainingWaypoints(aircraft.getSidStarIndex(), aircraft.getRoute().getWaypoints().size - 1).contains(newDirect, false) && currentDispLatMode == VECTORS && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WPT_HDG)) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             //Set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg(aircraft.getClearedHeading());
@@ -485,8 +485,8 @@ public class NavState {
             int latMode = dispLatMode.removeFirst();
             int altMode = dispAltMode.removeFirst();
             int spdMode = dispSpdMode.removeFirst();
-            if (latMode == AFTER_WAYPOINT_FLY_HEADING) {
-                latMode = FLY_HEADING;
+            if (latMode == AFTER_WPT_HDG) {
+                latMode = VECTORS;
                 altMode = NO_RESTR;
                 spdMode = NO_RESTR;
             }
@@ -517,7 +517,7 @@ public class NavState {
         int latSize = dispLatMode.size;
         dispLatMode.clear();
         for (int i = 0; i < latSize; i++) {
-            dispLatMode.addLast(FLY_HEADING);
+            dispLatMode.addLast(VECTORS);
         }
         int size = clearedHdg.size;
         clearedHdg.clear();
@@ -531,7 +531,7 @@ public class NavState {
         int size = dispLatMode.size;
         for (int i = 0; i < size; i++) {
             int code = dispLatMode.removeFirst();
-            dispLatMode.addLast(containsCode(code, TURN_RIGHT, TURN_LEFT) ? FLY_HEADING : code);
+            dispLatMode.addLast(containsCode(code, TURN_RIGHT, TURN_LEFT) ? VECTORS : code);
         }
     }
 
@@ -619,7 +619,7 @@ public class NavState {
                 clearedHold.removeLast();
                 clearedHold.addLast(null);
             }
-        } else if (latMode == AFTER_WAYPOINT_FLY_HEADING) {
+        } else if (latMode == AFTER_WPT_HDG) {
             clearedAftWpt.addLast(radarScreen.waypoints.get(afterWpt));
             clearedAftWptHdg.addLast(afterWptHdg);
         } else if (latMode == HOLD_AT) {
@@ -627,10 +627,10 @@ public class NavState {
             updateLatModes(REMOVE_AFTERHDG_ONLY, false);
         } else if (latMode == CHANGE_STAR) {
             clearedNewStar.addLast(newStar);
-            if (dispLatMode.last() == FLY_HEADING) {
+            if (dispLatMode.last() == VECTORS) {
                 latModeName = dispLatMode.last();
             } else {
-                latModeName = FLY_HEADING;
+                latModeName = VECTORS;
                 this.clearedHdg.addLast((int) aircraft.getHeading());
             }
             clearedDirect.addLast(null);
@@ -638,6 +638,9 @@ public class NavState {
             clearedHold.addLast(null);
             updateLatModes(REMOVE_ALL_SIDSTAR, false);
         } else {
+            clearedDirect.addLast(null);
+            clearedAftWpt.addLast(null);
+            clearedHold.addLast(null);
             this.clearedHdg.addLast(clearedHdg);
             clearedTurnDir.addLast(turnDir);
         }
@@ -849,13 +852,13 @@ public class NavState {
         if (string.contains("arrival") || string.contains("departure")) {
             return SID_STAR;
         } else if (Ui.AFTER_WPT_FLY_HDG.equals(string)) {
-            return AFTER_WAYPOINT_FLY_HEADING;
+            return AFTER_WPT_HDG;
         } else if (Ui.FLY_HEADING.equals(string)) {
-            return FLY_HEADING;
+            return VECTORS;
         } else if (Ui.LEFT_HEADING.equals(string)) {
-            return FLY_HEADING; //No longer used, defaults to fly heading
+            return VECTORS; //No longer used, defaults to fly heading
         } else if (Ui.RIGHT_HEADING.equals(string)) {
-            return FLY_HEADING; //No longer used, defaults to fly heading
+            return VECTORS; //No longer used, defaults to fly heading
         } else if (Ui.HOLD_AT.equals(string)) {
             return HOLD_AT;
         } else if (Ui.CLIMB_VIA_SID.equals(string) || Ui.DESCEND_VIA_STAR.equals(string) || Ui.SID_SPD_RESTRICTIONS.equals(string) || Ui.STAR_SPD_RESTRICTIONS.equals(string)) {

@@ -219,14 +219,14 @@ public class TutorialManager {
                 group4.setActive(true);
             }
 
-            if (prompt2 && aircraft.getNavState().getDispLatMode().first() == NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getNavState().getClearedAftWpt().first().equals(radarScreen.waypoints.get("HAMMY")) && aircraft.getNavState().getClearedAftWptHdg().first() == 90) {
+            if (prompt2 && aircraft.getNavState().getDispLatMode().first() == NavState.AFTER_WPT_HDG && aircraft.getNavState().getClearedAftWpt().first().equals(radarScreen.waypoints.get("HAMMY")) && aircraft.getNavState().getClearedAftWptHdg().first() == 90) {
                 prompt2 = false;
                 tutorialMsg("Well done, the aircraft will automatically fly a heading of 90 after it reaches HAMMY.");
                 prompt3 = true;
                 group5.setActive(true);
             }
 
-            if (prompt3 && aircraft.getNavState().getDispLatMode().first() == NavState.FLY_HEADING && aircraft.getClearedHeading() == 90) {
+            if (prompt3 && aircraft.getNavState().getDispLatMode().first() == NavState.VECTORS && aircraft.getClearedHeading() == 90) {
                 prompt3 = false;
                 tutorialMsg("Ok, the aircraft has reached HAMMY and will now fly a heading of 90. Now, select the aircraft, go to the [YELLOW]lateral tab[], and in the 2nd dropdown box, select [YELLOW]ILS05L[] to replace \"Not cleared approach\".");
                 prompt4 = true;

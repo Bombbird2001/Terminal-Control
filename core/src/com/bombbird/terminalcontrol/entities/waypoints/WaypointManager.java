@@ -35,7 +35,7 @@ public class WaypointManager {
         Aircraft aircraft = radarScreen.getSelectedAircraft();
         if (aircraft != null) {
             int latMode = aircraft.getNavState().getDispLatMode().last();
-            if (aircraft.getNavState().containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WAYPOINT_FLY_HEADING) || (latMode == NavState.HOLD_AT && !aircraft.isHolding())) {
+            if (aircraft.getNavState().containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG) || (latMode == NavState.HOLD_AT && !aircraft.isHolding())) {
                 //Cleared is sidstar mode
                 Array<Waypoint> remaining = aircraft.getRemainingWaypoints();
                 for (int i = 0; i < remaining.size; i++) {
@@ -65,7 +65,7 @@ public class WaypointManager {
                 aircraft.getHoldWpt().setSelected(true);
             } else if (aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.HOLD_AT, NavState.SID_STAR) && aircraft.getNavState().getClearedDirect().last() != null) {
                 aircraft.getNavState().getClearedDirect().last().setSelected(true);
-            } else if (aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WAYPOINT_FLY_HEADING && aircraft.getDirect() != null) {
+            } else if (aircraft.getNavState().getDispLatMode().last() == NavState.AFTER_WPT_HDG && aircraft.getDirect() != null) {
                 aircraft.getDirect().setSelected(true);
             }
         }

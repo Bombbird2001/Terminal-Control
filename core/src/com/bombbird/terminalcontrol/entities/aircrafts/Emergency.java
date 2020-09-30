@@ -234,7 +234,7 @@ public class Emergency {
         aircraft.getNavState().updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, true); //UpdateUI only after all 3 modes are changed
 
         aircraft.getNavState().getDispLatMode().clear();
-        aircraft.getNavState().getDispLatMode().addFirst(NavState.FLY_HEADING);
+        aircraft.getNavState().getDispLatMode().addFirst(NavState.VECTORS);
         aircraft.getNavState().getDispAltMode().clear();
         aircraft.getNavState().getDispAltMode().addFirst(type == Type.PRESSURE_LOSS ? NavState.EXPEDITE : NavState.NO_RESTR);
         aircraft.getNavState().getDispSpdMode().clear();
