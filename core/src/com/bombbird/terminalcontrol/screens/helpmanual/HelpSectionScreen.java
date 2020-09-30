@@ -55,7 +55,7 @@ public class HelpSectionScreen extends StandardUIScreen {
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
         //Set back button params
-        TextButton backButton = new TextButton("<= Back", buttonStyle);
+        backButton = new TextButton("<= Back", buttonStyle);
         backButton.setWidth(MainMenuScreen.BUTTON_WIDTH);
         backButton.setHeight(MainMenuScreen.BUTTON_HEIGHT);
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f);

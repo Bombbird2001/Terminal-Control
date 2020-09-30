@@ -15,7 +15,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts;
 public class StandardUIScreen extends BasicScreen {
     public final Image background;
 
-    private TextButton backButton;
+    public TextButton backButton;
 
     public StandardUIScreen(final TerminalControl game, Image background) {
         super(game, 2880, 1620);

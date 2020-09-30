@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -243,5 +244,15 @@ public class SettingsTemplateScreen extends BasicScreen {
     /** Sets the current options into selectBoxes */
     public void setOptions() {
         //No default implementation
+    }
+
+    /** Overrides render method to include detection of back button on android */
+    @Override
+    public void render(float delta) {
+        super.render(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            //On android, emulate cancelButton is pressed
+            cancelButton.toggle();
+        }
     }
 }
