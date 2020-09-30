@@ -96,11 +96,7 @@ public class TerminalControl extends Game {
             trajectorySel = 90;
             pastTrajTime = -1;
             weatherSel = RadarScreen.Weather.LIVE;
-            if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-                soundSel = 1;
-            } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
-                soundSel = 2;
-            }
+            soundSel = getDefaultSoundSetting();
             sendAnonCrash = true;
             increaseZoom = false;
             saveInterval = 60;
@@ -134,7 +130,7 @@ public class TerminalControl extends Game {
                 //New format
                 weatherSel = RadarScreen.Weather.valueOf(settings.getString("weather"));
             }
-            soundSel = settings.optInt("sound", 1);
+            soundSel = settings.optInt("sound", TerminalControl.soundSel);
             sendAnonCrash = settings.optBoolean("sendCrash", true);
             if (settings.isNull("emerChance")) {
                 emerChance = Emergency.Chance.MEDIUM;
@@ -160,6 +156,10 @@ public class TerminalControl extends Game {
             revision = settings.optInt("revision", 0);
         }
         GameSaver.saveSettings();
+    }
+
+    public static int getDefaultSoundSetting() {
+        return Gdx.app.getType() == Application.ApplicationType.Android ? 2 : 1;
     }
 
     public static void loadVersionInfo() {

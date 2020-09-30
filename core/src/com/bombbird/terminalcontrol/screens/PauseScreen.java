@@ -64,7 +64,7 @@ public class PauseScreen extends BasicScreen {
         });
         stage.addActor(settingsButton);
 
-        TextButton quitButton = new TextButton("Save & Quit", textButtonStyle);
+        TextButton quitButton = new TextButton(radarScreen.tutorial ? "Quit" : "Save & Quit", textButtonStyle);
         quitButton.setSize(1200, 300);
         quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000);
         quitButton.addListener(new ChangeListener() {

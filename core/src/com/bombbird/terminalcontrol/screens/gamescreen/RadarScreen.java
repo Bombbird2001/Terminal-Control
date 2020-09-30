@@ -215,6 +215,7 @@ public class RadarScreen extends GameScreen {
             colourStyle = 0;
             realisticMetar = false;
             emerChance = Emergency.Chance.OFF;
+            soundSel = TerminalControl.getDefaultSoundSetting();
             weatherSel = Weather.STATIC;
         } else {
             trajectoryLine = TerminalControl.trajectorySel;
@@ -302,7 +303,7 @@ public class RadarScreen extends GameScreen {
         } else {
             weatherSel = RadarScreen.Weather.valueOf(save.getString("liveWeather"));
         }
-        soundSel = save.isNull("sounds") ? 2 : save.getInt("sounds");
+        soundSel = save.isNull("sounds") ? TerminalControl.getDefaultSoundSetting() : save.getInt("sounds");
         if (save.isNull("emerChance")) {
             emerChance = Emergency.Chance.MEDIUM;
         } else {

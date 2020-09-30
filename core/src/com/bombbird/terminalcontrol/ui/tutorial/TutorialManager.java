@@ -127,7 +127,7 @@ public class TutorialManager {
         group3.addMessage(0, "All right, the aircraft will now descend via the STAR to the altitude. Similar to SIDs, Standard Terminal Arrival Routes (STARs) are predefined arrival routes into the airport with altitude and speed restrictions.");
         group3.addMessage(10, "You will probably notice that the aircraft doesn't go directly to 4000 feet, but 5000 instead. This is because the current STAR it is on, NTN1A, has an altitude restriction of 5000 feet for all waypoints.");
         group3.addMessage(25, "Other STARs may not have altitude restrictions, or have different restrictions for different waypoints. The aircraft will always descend to the lowest altitude allowed at a waypoint if cleared to an altitude that is lower than it.");
-        group3.addMessage(40, "If you wish, you can override this restriction by going to the altitude tab and select the climb/descend option. The aircraft will ignore altitude restrictions and descend directly to the altitude.");
+        group3.addMessage(40, "If you wish, you can override this restriction by going to the altitude tab and select the \"Unrestricted\" option. The aircraft will ignore altitude restrictions and descend directly to the altitude.");
         group3.addMessage(55, "If you do, you should ensure that the aircraft maintains separation from terrain and other aircraft; the SID/STAR altitude restrictions usually takes all this into account so it may be preferred to follow the restrictions.");
         group3.addMessage(70, "Since we have no planes in front, lets clear the arrival to waypoint HAMMY directly. Select the aircraft, go to the [YELLOW]lateral tab[], select [YELLOW]HAMMY[] from the drop down box and [YELLOW]transmit[].");
         group3.addTask(70, "setPrompt1");
@@ -140,7 +140,7 @@ public class TutorialManager {
         group4.addMessage(50, "To capture the glide slope, the aircraft needs to be low enough. The rings on the ILS line represents the altitude at each point on the ILS: 1st ring is 2000 feet, 2nd ring is 3000 feet and so on. For [GREEN]4000 feet and above, the rings are green[] instead of cyan. The aircraft should be [YELLOW]at or below[] that altitude when intercepting.");
         group4.addMessage(75, "Here at TCTP, the maximum altitude for intercepting is 4000 feet, hence there are 3 rings. Other airports may have higher maximum altitudes to intercept.");
         group4.addMessage(90, "To prepare the aircraft for intercepting the ILS, let's ask it to fly a heading after reaching a waypoint.");
-        group4.addMessage(100, "Select the arrival, and go to the [YELLOW]lateral tab[]. At the 1st dropdown box, select [YELLOW]\"After waypoint, fly heading\"[]. After that, select [YELLOW]HAMMY[] in the 2nd dropdown box, and select [YELLOW]heading 90[] in the heading box.");
+        group4.addMessage(100, "Select the arrival, and go to the [YELLOW]lateral tab[]. Select [YELLOW]\"After wpt, hdg\"[]. After that, select [YELLOW]HAMMY[] in the 2nd dropdown box, and select [YELLOW]heading 90[] in the heading box.");
         group4.addTask(100, "setPrompt2");
 
         //Group 5
@@ -148,7 +148,7 @@ public class TutorialManager {
         group5.addMessage(5, "You may notice that the line showing heading 90 is not exactly towards the east on the screen. This is because there is a deviation between true heading and magnetic heading, and here that deviation is about 4 degrees west, which means a heading of 90 will give a track of about 86 degrees.");
         group5.addMessage(30, "Furthermore, you need to be mindful of the [YELLOW]wind direction and speed[] when giving heading clearances, since the wind affects the aircraft's track. When flying in heading mode, the aircraft will also [YELLOW]not follow any altitude restrictions[], hence you have to keep it separated from terrain.");
         group5.addMessage(55, "You can specify the direction the aircraft turns by selecting the turn left/right heading option. By default the fly heading option chooses the quickest direction to turn.");
-        group5.addMessage(80, "You can also instruct an aircraft to enter a holding pattern if there are too many planes. There is NO NEED to do so now, but you can select the \"Hold at\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as shown once it reaches the waypoint.");
+        group5.addMessage(80, "You can also instruct an aircraft to enter a holding pattern if there are too many planes. There is NO NEED to do so now, but you can select the \"Hold\" option, and select the waypoint you want the aircraft to hold at. The aircraft will enter a holding pattern as shown once it reaches the waypoint.");
         group5.addMessage(105, "We will now wait for EVA226 to reach HAMMY. You can speed up the tutorial in the settings while waiting - tap the pause || button and select settings.");
 
         //SID climb group
@@ -162,7 +162,7 @@ public class TutorialManager {
         locGroup.addMessage(40, "For aircraft [YELLOW]established on parallel ILS approaches[], you need to ensure a [YELLOW]staggered separation of 2nm[]. Some airports have an NTZ for parallel approaches and will not require this separation.");
         locGroup.addMessage(60, "For aircraft on the same ILS, the standard 3nm or 1000 feet separation applies, but once both aircraft are [YELLOW]less than 10nm from the runway[], separation can be reduced to [YELLOW]2.5nm or 1000 feet[].");
         locGroup.addMessage(80, "You can also give manual speed assignments to the aircraft if needed, but the aircraft will slow down automatically as it approaches the airport.");
-        locGroup.addMessage(110, "Let's wait till EVA226 is handed over to the tower.");
+        locGroup.addMessage(110, "Let's wait till EVA226 captures the ILS and is handed over to the tower.");
 
         //Tower handover group
         handoverGroup = new TutorialGroup(this);
@@ -171,7 +171,7 @@ public class TutorialManager {
         //Quit group
         quitGroup = new TutorialGroup(this);
         quitGroup.addMessage(15, "Quitting tutorial...");
-        quitGroup.addTask(15, "quit");
+        quitGroup.addTask(18, "quit");
     }
 
     /** Sets the initial transmissions */
@@ -228,7 +228,7 @@ public class TutorialManager {
 
             if (prompt3 && aircraft.getNavState().getDispLatMode().first() == NavState.VECTORS && aircraft.getClearedHeading() == 90) {
                 prompt3 = false;
-                tutorialMsg("Ok, the aircraft has reached HAMMY and will now fly a heading of 90. Now, select the aircraft, go to the [YELLOW]lateral tab[], and in the 2nd dropdown box, select [YELLOW]ILS05L[] to replace \"Not cleared approach\".");
+                tutorialMsg("Ok, the aircraft has reached HAMMY and will now fly a heading of 90. Now, select the aircraft, go to the [YELLOW]lateral tab[], tap \"Approach\" and select [YELLOW]ILS05L[].");
                 prompt4 = true;
             }
 
