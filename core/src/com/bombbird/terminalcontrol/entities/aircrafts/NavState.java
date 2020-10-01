@@ -507,7 +507,7 @@ public class NavState {
         int size = clearedDirect.size;
         for (int i = 0; i < size; i++) {
             Waypoint wpt = clearedDirect.removeFirst();
-            if (latestDirect == null || aircraft.getRoute().findWptIndex(wpt.getName()) < aircraft.getRoute().findWptIndex(latestDirect.getName())) wpt = latestDirect;
+            if (latestDirect == null || wpt != null && aircraft.getRoute().findWptIndex(wpt.getName()) < aircraft.getRoute().findWptIndex(latestDirect.getName())) wpt = latestDirect;
             clearedDirect.addLast(wpt);
         }
     }

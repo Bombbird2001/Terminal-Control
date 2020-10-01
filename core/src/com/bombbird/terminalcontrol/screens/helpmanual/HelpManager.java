@@ -15,15 +15,18 @@ public class HelpManager {
     /** Loads the hashmap content order if not loaded */
     private static void loadHashMap() {
         CONTENT_LIST.put("Aircraft instructions", new String[] {"When an aircraft is selected by tapping on its label, a pane is shown on the left. It contains 3 tabs - the lateral, altitude, and speed tabs.",
-        "Lateral tab: Controls the lateral aspects of the aircraft like heading.", "XXX arrival/departure - Aircraft will follow the prescribed STAR/SID, and the waypoint being flown to is displayed in the 2nd box below.",
-                "After waypoint, fly heading - Aircraft will follow the prescribed STAR till the waypoint selected, then turns to the heading selected in the heading box after reaching the waypoint. Not available in heading mode.",
-                "Fly heading - Aircraft will fly the selected heading. Turn left/right heading will force the aircraft to turn to the heading in the direction stated. You can instruct the aircraft to intercept the ILS/LDA in this mode.",
-                "Hold at - Aircraft will fly the STAR till a pre-defined holding pattern at the selected waypoint. The track is depicted on the radar screen. Not available in heading mode.",
-                "Change STAR - Changes the STAR used by an arrival. Arrival will change to fly heading mode, and you will need to re-clear it to a waypoint on the new STAR.",
+        "Lateral tab: Controls the lateral aspects of the aircraft like heading.", "XXX STAR/SID - Aircraft will follow the prescribed STAR/SID, and the waypoint being flown to is displayed in the box below.",
+                "After wpt, hdg - Aircraft will follow the prescribed STAR till the waypoint selected, then turns to the heading selected in the heading box after reaching the waypoint. Not available in heading mode.",
+                "Vectors - Aircraft will fly the selected heading. Selecting left/right will force the aircraft to turn to the heading in the direction stated.",
+                "Hold - Aircraft will fly the STAR till a pre-defined holding pattern at the selected waypoint. The track is depicted on the radar screen. Not available in heading mode.",
+                "Change STAR - Changes the STAR used by an arrival. Arrival will change to vectors mode, and you will need to re-clear it to a waypoint on the new STAR.",
+                "Approach - Select the approach to the desired runway. If activated in vectors mode, aircraft will maintain cleared heading till intercepting the localizer. " +
+                        "If activated in STAR mode, aircraft will fly the STAR till the approach path, then capture the localizer and glide slope automatically when appropriate.",
         "Altitude tab: Controls the altitude aspect of the aircraft.", "Descend via STAR/Climb via SID - Aircraft will fly to the selected altitude taking into consideration altitude restrictions of the SID/STAR. Not available in heading mode.",
-                "Climb/descend to - Aircraft will fly directly to the selected altitude with no restrictions",
-        "Speed tab: Controls the speed aspect of the aircraft.", "SID/STAR speed restrictions - Aircraft will follow the speed restrictions of the SID/STAR. Only allowed speeds are shown in the box. Not available in heading mode.",
-                "No speed restrictions - Aircraft can ignore SID/STAR speed restrictions, all allowed speeds are shown in the box."});
+                "Unrestricted - Aircraft will fly directly to the selected altitude with no restrictions",
+                "Expedite - Aircraft will increase the rate of climb/descent when activated",
+        "Speed tab: Controls the speed aspect of the aircraft.", "SID/STAR restrictions - Aircraft will follow the speed restrictions of the SID/STAR. Only allowed speeds are shown in the box. Not available in heading mode.",
+                "Unrestricted - Aircraft can ignore SID/STAR speed restrictions, all allowed speeds are shown in the box."});
         CONTENT_LIST.put("Scoring", new String[] {"Scoring is quite straightforward in this game: you get 1 point for every arrival that lands (vacated the runway), and 1 point for every departure handed over to the area control centre.",
                 "However, there are a few exceptions as follows:\n-If there are 12 or more arrivals within your control at the same time, you get 2 points instead of 1 for each arrival landed\n" +
                         "-If the airport is congested (runway labels are orange instead of white), you get no points for landing the arrival\n-If the arrival or departure was instructed to expedite for more than 2 minutes total, you get no points. This is to prevent an overuse of the expedite command for more realism.\n" +
@@ -32,7 +35,8 @@ public class HelpManager {
                         "-Wake separation infringement: 1 point penalty for every 3 seconds the infringement continues.\n-An arrival inbound for the airport leaving your airspace: 5% penalty\n" +
                         "-Fuel emergency, diversion: 10% penalty when an arrival declares a fuel emergency (in which player has about 10 minutes to land it), and an additional 10% penalty if the arrival diverts to alternate airport"});
         CONTENT_LIST.put("ILS, LDA", new String[] {"In this game, planes must capture the ILS/LDA before landing. To capture the ILS, the following must be ensured:",
-                "- The aircraft has been instructed to intercept the ILS in the pane's lateral tab. The aircraft must be flying in heading mode to do so.",
+                "- The aircraft has been instructed to intercept the ILS in the pane's lateral tab. Some airports have STARs that line the plane up with the ILS" +
+                        " - the aircraft will automatically capture the ILS as long as you clear it for approach.",
                 "- The aircraft's altitude must be equal to or lower than the glide slope altitude at the intercept point. You can refer to the circles on the ILS line for the altitude. " +
                         "Starting from the lowest altitude allowed (usually 2000 feet, but can be higher for some airports) to the highest altitude in intervals of 1000 feet. " +
                         "Cyan circles indicate 2000 or 3000 feet, while a green circle indicates 4000 feet or higher.",
@@ -46,9 +50,10 @@ public class HelpManager {
                 "For aircraft that are established on the same ILS, if both aircraft are less than 10nm from the runway, separation is reduced to 2.5nm or 1000 feet.",
                 "Other separation standards also apply, such as wake turbulence separation and terrain separation. Refer to the MVAs, restricted areas and wake turbulence sections for more details."});
         CONTENT_LIST.put("MVAs, restricted areas", new String[] {"Planes must be separated from terrain and restricted areas, or you will lose points.",
-                "Minimum vectoring altitude sectors (MVAs) are displayed on the radar screen as grey polygons with grey numbers, to help you keep aircraft separated from terrain. For simplicity, this only applies to planes flying in heading mode. " +
-                "For example, the number 70 will mean that an aircraft flying in heading mode needs to have a minimum altitude of 7000 feet.",
-                "On the other hand, restricted areas are displayed on the radar screen as orange polygons with orange numbers, and all aircraft must be kept separated from those areas at all times, including those flying on SIDs or STARs."});
+                "Minimum vectoring altitude sectors (MVAs) are displayed on the radar screen as grey polygons with grey numbers, to help you keep aircraft separated from terrain. This only applies to planes flying in vectors mode, " +
+                        "planes flying in STAR/SID mode that deviate significantly from original flight path, or planes flying below the minimum altitude restriction in STAR/SID mode.",
+                "For example, the number 70 will mean that an aircraft needs to have a minimum altitude of 7000 feet.",
+                "On the other hand, restricted areas are displayed on the radar screen as orange polygons with orange numbers, and all aircraft must be kept separated from those areas at all times."});
         CONTENT_LIST.put("NTZ", new String[] {"No transgression zones, or NTZs, are areas designated between the final approach course of 2 simultaneous independent ILS approaches.",
                 "Aircraft on parallel approaches must not intrude the NTZ, which is depicted as a red rectangle between 2 ILS lines, otherwise you lose points.",
                 "Planes still need to be separated by the standard 3nm, 1000 feet until they both capture the ILS or are both in the Normal operating zone (NOZ) depicted by the green rectangles beside the NTZ."});
