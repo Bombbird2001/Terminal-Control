@@ -317,7 +317,11 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
     /** Gets a random voice from all available voices */
     @Override
     public String getRandomVoice() {
-        if (tts == null || tts.getVoices().isEmpty()) return null;
+        try {
+            if (tts == null || tts.getVoices().isEmpty()) return null;
+        } catch (NullPointerException e) {
+            return null;
+        }
         Array<String> voices = new Array<>();
         for (Voice voice: tts.getVoices()) {
             if ("en".equals(voice.getName().substring(0, 2))) {
