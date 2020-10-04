@@ -1240,6 +1240,7 @@ public class Aircraft extends Actor {
         if (this instanceof Departure && !ui.altTab.valueBox.getSelected().contains("FL") && Integer.parseInt(ui.altTab.valueBox.getSelected()) < lowestAlt) {
             ui.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
         }
+        LatTab.turnDir = navState.getClearedTurnDir().last();
 
         ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
         SpdTab.clearedSpd = clearedIas;
