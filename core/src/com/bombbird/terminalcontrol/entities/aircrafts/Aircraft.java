@@ -44,14 +44,7 @@ public class Aircraft extends Actor {
     public static final int SHORTCUT_REQUEST = 1;
 
     //Android text-to-speech
-    private final String voice;
-    private static final String[] VOICES = {"en-gb-x-gba-local", "en-gb-x-fis#female_1-local", "en-us-x-sfg#male_1-local", "en-au-x-aud-local",
-            "en-us-x-sfg#female_1-local", "en-gb-x-rjs-local", "en-gb-x-rjs#female_3-local", "en-gb-x-gbd-local",
-            "en-gb-x-fis#male_2-local", "en-us-x-sfg#female_2-local", "en-gb-x-rjs#female_1-local",
-            "en-gb-x-fis#male_3-local", "en-gb-x-fis-local", "en-gb-x-gbb-local", "en-gb-x-fis#female_2-local",
-            "en-us-x-sfg#male_2-local", "en-gb-x-rjs#female_2-local", "en-gb-x-fis#male_1-local", "en-us-x-sfg#female_3-local",
-            "en-gb-x-fis#female_3-local"
-    };
+    private String voice;
 
     public RadarScreen radarScreen;
     private Stage stage;
@@ -217,7 +210,7 @@ public class Aircraft extends Actor {
 
         radarScreen.wakeManager.addAircraft(callsign);
 
-        voice = VOICES[MathUtils.random(0, VOICES.length - 1)];
+        voice = TerminalControl.tts.getRandomVoice();
 
         trajectory = new Trajectory(this);
         trajectoryConflict = false;
@@ -416,7 +409,7 @@ public class Aircraft extends Actor {
         radarAlt = (float) save.getDouble("radarAlt");
         radarVs = (float) save.getDouble("radarVs");
 
-        voice = save.isNull("voice") ? VOICES[MathUtils.random(0, VOICES.length - 1)] : save.getString("voice");
+        voice = save.isNull("voice") ? TerminalControl.tts.getRandomVoice() : save.getString("voice");
 
         trajectory = new Trajectory(this);
         trajectoryConflict = false;
@@ -1556,7 +1549,7 @@ public class Aircraft extends Actor {
 
     /** Checks whether the aircraft altitude is lower than the minimum altitude on current leg of SID/STAR, returns true if so; aircraft alt mode must be climb via SID/descend via STAR */
     public boolean isBelowSidStarMinAlt() {
-        if (navState.containsCode(navState.getDispLatMode().last(), NavState.SID_STAR) && navState.containsCode(navState.getDispAltMode().last(), NavState.SID_STAR_RESTR)) {
+        if (navState.getDispLatMode().last() == NavState.SID_STAR && navState.containsCode(navState.getDispAltMode().last(), NavState.SID_STAR_RESTR)) {
             //Aircraft is following SID/STAR, alt mode is SID/STAR restriction
             if (this instanceof Arrival) {
                 return altitude < route.getWptMinAlt(sidStarIndex) - 100;

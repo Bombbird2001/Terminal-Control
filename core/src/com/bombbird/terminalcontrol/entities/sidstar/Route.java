@@ -246,9 +246,9 @@ public class Route {
         }
     }
 
-    /** Checks whether supplied aircraft is within the sidstarzone of the route */
-    public boolean inSidStarZone(Aircraft aircraft) {
-        return sidStarZone.contains(aircraft);
+    /** Checks whether supplied coordinates is within the sidstarzone of the route */
+    public boolean inSidStarZone(float x, float y) {
+        return sidStarZone.contains(x, y);
     }
 
     public Array<Waypoint> getWaypoints() {

@@ -7,6 +7,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
@@ -311,5 +312,19 @@ public class TextToSpeechManager extends AndroidApplication implements TextToSpe
             tts.speak(sid.getPronunciation(), TextToSpeech.QUEUE_ADD, null, null);
         }
         */
+    }
+
+    /** Gets a random voice from all available voices */
+    @Override
+    public String getRandomVoice() {
+        if (tts == null || tts.getVoices().isEmpty()) return null;
+        Array<String> voices = new Array<>();
+        for (Voice voice: tts.getVoices()) {
+            if ("en".equals(voice.getName().substring(0, 2))) {
+                voices.add(voice.getName());
+            }
+        }
+
+        return voices.random();
     }
 }

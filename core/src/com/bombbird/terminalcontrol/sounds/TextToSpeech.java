@@ -38,4 +38,6 @@ public interface TextToSpeech {
     void cancel();
 
     void test(HashMap<String, Star> stars, HashMap<String, Sid> sids);
+
+    String getRandomVoice();
 }

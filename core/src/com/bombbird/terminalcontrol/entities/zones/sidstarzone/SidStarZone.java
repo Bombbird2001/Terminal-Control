@@ -82,9 +82,9 @@ public class SidStarZone {
     }
 
     /** Checks whether supplied aircraft is within any polygon */
-    public boolean contains(Aircraft aircraft) {
+    public boolean contains(float x, float y) {
         for (Polygon polygon: polygons) {
-            if (polygon.contains(aircraft.getX(), aircraft.getY())) return true;
+            if (polygon.contains(x, y)) return true;
         }
         return false;
     }

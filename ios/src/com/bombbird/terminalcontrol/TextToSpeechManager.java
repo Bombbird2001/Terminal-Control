@@ -88,4 +88,9 @@ public class TextToSpeechManager implements TextToSpeech {
     public void test(HashMap<String, Star> stars, HashMap<String, Sid> sids) {
         //No default implementation
     }
+
+    @Override
+    public String getRandomVoice() {
+        return null;
+    }
 }
