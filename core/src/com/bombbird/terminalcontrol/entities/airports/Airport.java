@@ -17,7 +17,6 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.trafficmanager.RunwayManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
-import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.entities.zones.ZoneLoader;
@@ -57,7 +56,6 @@ public class Airport {
 
     private Array<ApproachZone> approachZones;
     private Array<DepartureZone> departureZones;
-    private Array<AltitudeExclusionZone> altitudeExclusionZones;
 
     private boolean pendingRwyChange;
     private float rwyChangeTimer;
@@ -313,7 +311,6 @@ public class Airport {
     public void loadZones() {
         approachZones = ZoneLoader.loadApchZones(icao);
         departureZones = ZoneLoader.loadDepZones(icao);
-        altitudeExclusionZones = ZoneLoader.loadAltExclZones(icao);
     }
 
     /** Updates the active status of departure/approach/exclusion zones */
@@ -327,11 +324,6 @@ public class Airport {
         for (int i = 0; i < departureZones.size; i++) {
             departureZones.get(i).updateStatus(takeoffRunways);
         }
-
-        //Updates altitude exclusion zone status
-        for (int i = 0; i < altitudeExclusionZones.size; i++) {
-            altitudeExclusionZones.get(i).updateStatus(landingRunways);
-        }
     }
 
     public void renderZones() {
@@ -340,9 +332,6 @@ public class Airport {
         }
         for (int i = 0; i < departureZones.size; i++) {
             departureZones.get(i).renderShape();
-        }
-        for (int i = 0; i < altitudeExclusionZones.size; i++) {
-            altitudeExclusionZones.get(i).renderShape();
         }
     }
 
@@ -485,10 +474,6 @@ public class Airport {
 
     public Array<DepartureZone> getDepartureZones() {
         return departureZones;
-    }
-
-    public Array<AltitudeExclusionZone> getAltitudeExclusionZones() {
-        return altitudeExclusionZones;
     }
 
     public float getRwyChangeTimer() {

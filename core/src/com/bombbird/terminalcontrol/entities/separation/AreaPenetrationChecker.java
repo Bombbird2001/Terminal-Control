@@ -10,7 +10,6 @@ import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint;
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory;
-import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 
@@ -67,19 +66,6 @@ public class AreaPenetrationChecker {
                             //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                             continue;
                         }
-
-                        boolean excl = false;
-                        if (aircraft instanceof Arrival) {
-                            //Check if point is in altitude exclusion zone
-                            Array<AltitudeExclusionZone> zones = aircraft.getAirport().getAltitudeExclusionZones();
-                            for (int a = 0; a < zones.size; a++) {
-                                if (zones.get(a).isInside(positionPoint.x, positionPoint.y)) {
-                                    excl = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (excl) continue; //Suppress if position point is in altitude exclusion zone and aircraft is arrival
 
                         if (positionPoint.altitude < obstacle.getMinAlt() - 50 && obstacle.isIn(positionPoint.x, positionPoint.y)) {
                             //Possible conflict, add to save arrays

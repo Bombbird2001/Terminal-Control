@@ -15,7 +15,6 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.approaches.LDA;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
-import com.bombbird.terminalcontrol.entities.zones.AltitudeExclusionZone;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
@@ -270,18 +269,6 @@ public class SeparationChecker extends Actor {
             }
 
             boolean conflict = false;
-            boolean excl = false;
-
-            if (aircraft instanceof Arrival) {
-                //Check if aircraft is in altitude exclusion zone
-                Array<AltitudeExclusionZone> zones = aircraft.getAirport().getAltitudeExclusionZones();
-                for (int i = 0; i < zones.size; i++) {
-                    if (zones.get(i).isInside(aircraft)) {
-                        excl = true;
-                        break;
-                    }
-                }
-            }
 
             for (Obstacle obstacle : radarScreen.obsArray) {
                 //If aircraft is infringing obstacle
@@ -291,7 +278,7 @@ public class SeparationChecker extends Actor {
                         conflict = true;
                     } else {
                         //Not enforced, conflict only if not excluded, is vectored, is below the STAR minimum altitude or is not within the SID/STAR zone
-                        conflict = !excl && (aircraft.isVectored() || aircraft.isBelowSidStarMinAlt() || !aircraft.getRoute().inSidStarZone(aircraft));
+                        conflict = aircraft.isVectored() || aircraft.isBelowSidStarMinAlt() || !aircraft.getRoute().inSidStarZone(aircraft);
                         obstacle.setConflict(conflict);
                     }
                     if (conflict) break;

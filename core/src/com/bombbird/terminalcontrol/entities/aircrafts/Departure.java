@@ -256,7 +256,6 @@ public class Departure extends Aircraft {
             cruiseAltTime -= Gdx.graphics.getDeltaTime();
             if (cruiseAltTime <= 0) {
                 setClearedAltitude(cruiseAlt);
-                getNavState().replaceAllClearedAltMode();
                 getNavState().replaceAllClearedAlt();
             }
         }

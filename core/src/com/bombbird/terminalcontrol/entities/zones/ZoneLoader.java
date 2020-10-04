@@ -85,38 +85,4 @@ public class ZoneLoader {
 
         return departureZones;
     }
-
-    public static Array<AltitudeExclusionZone> loadAltExclZones(String icao) {
-        Array<AltitudeExclusionZone> zones = new Array<>();
-        if ("TCAA".equals(icao)) {
-            zones = loadExclTCAA();
-        } else if ("TCBD".equals(icao)) {
-            zones = loadExclTCBD();
-        } else if ("TCMD".equals(icao)) {
-            zones = loadExclTCMD();
-        }
-
-        return zones;
-    }
-
-    private static Array<AltitudeExclusionZone> loadExclTCAA() {
-        Array<AltitudeExclusionZone> zones = new Array<>();
-        zones.add(new AltitudeExclusionZone(new String[] {"16L", "16R"}, 3828.3f, 2060.9f, 157, 14, 5));
-
-        return zones;
-    }
-
-    private static Array<AltitudeExclusionZone> loadExclTCBD() {
-        Array<AltitudeExclusionZone> zones = new Array<>();
-        zones.add(new AltitudeExclusionZone(new String[] {"03L"}, 2952.6f, 1595.8f, 30, 12, 7));
-
-        return zones;
-    }
-
-    private static Array<AltitudeExclusionZone> loadExclTCMD() {
-        Array<AltitudeExclusionZone> zones = new Array<>();
-        zones.add(new AltitudeExclusionZone(new String[] {"18L", "18R"}, 2870.9f, 1737.3f, 181, 20, 5));
-
-        return zones;
-    }
 }
