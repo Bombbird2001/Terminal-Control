@@ -60,7 +60,7 @@ public class UnlockManager {
             addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED);
             addAchievement("masterOfConflicts", "Master of Conflicts", "Have a total of 500 separation incidents, excluding wake conflicts", 500, Achievement.CONFLICTS);
             addAchievement("wakeUp", "Wake Up!", "Have over 600 seconds of wake separation infringement", 600, Achievement.WAKE_CONFLICT_TIME);
-            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS" + (TerminalControl.full ? "/TCTT/TCAA" : ""), -1, Achievement.NONE);
+            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS" + (TerminalControl.full ? "/TCTT/TCAA/TCPG" : ""), -1, Achievement.NONE);
         }
         if (easterEggList.size() == 0) {
             easterEggList.put("HX", "Unlock Tai Kek International Airport, TCHX");

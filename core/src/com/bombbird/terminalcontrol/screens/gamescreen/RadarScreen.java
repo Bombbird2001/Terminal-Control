@@ -798,6 +798,8 @@ public class RadarScreen extends GameScreen {
                 if (ArrayUtils.contains(rwys, "02L") && ArrayUtils.contains(rwys, "02C") || ArrayUtils.contains(rwys, "20R") && ArrayUtils.contains(rwys, "20C")) return true;
             } else if ("TCTT".equals(airportIcao) || "TCAA".equals(airportIcao)) {
                 if (ArrayUtils.contains(rwys, "34L") && ArrayUtils.contains(rwys, "34R") || ArrayUtils.contains(rwys, "16R") && ArrayUtils.contains(rwys, "16L")) return true;
+            } else if ("TCPG".equals(airportIcao)) {
+                if (ArrayUtils.contains(rwys, "26L") && ArrayUtils.contains(rwys, "27R") || ArrayUtils.contains(rwys, "08R") && ArrayUtils.contains(rwys, "09L")) return true;
             }
         }
         simultaneousLanding.put(arrival.getCallsign(), 0f);

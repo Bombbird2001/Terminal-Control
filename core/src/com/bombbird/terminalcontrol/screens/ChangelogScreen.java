@@ -79,6 +79,14 @@ public class ChangelogScreen extends StandardUIScreen {
 
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
+        //Version 1.4.2010.2
+        Array<String> content13 = new Array<>();
+        content13.add("-UI: Aircraft pane overhaul - more intuitive user interface when selecting clearance for aircraft");
+        content13.add("-Mechanics: Planes can now be cleared for approach even in STAR mode; when cleared the aircraft will descend via STAR to the minimum altitude, and capture the ILS automatically - useful for STARs that end on the final approach course");
+        content13.add("-Mechanics: MVA check will now be activated for aircraft flying in SID/STAR mode whose position deviate significantly from the original route");
+        content13.add("-Achievements: Added new parallel landing achievement");
+        content13.add("-Bug fixes, optimisations");
+        changeLogContent.put("1.4.2010.2", content13);
 
         //Version 1.4.2010.1
         Array<String> content12 = new Array<>();
