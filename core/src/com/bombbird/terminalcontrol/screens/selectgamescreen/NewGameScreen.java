@@ -43,10 +43,11 @@ public class NewGameScreen extends SelectGameScreen {
             airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport");
             airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport");
         }
-        if (UnlockManager.isTCHXAvailable()) airports.add("TCHX\nTai Kek International Airport");
+        airports.add(UnlockManager.isTCHXAvailable() ? "TCHX\nTai Kek International Airport" : "????");
         for (final String airport: airports) {
             TextButton airportButton = new TextButton(airport, getButtonStyle());
             airportButton.setName(airport.substring(0, 4));
+            airportButton.getLabel().setWrap(true);
             airportButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -55,6 +56,9 @@ public class NewGameScreen extends SelectGameScreen {
                     if ("Tuto".equals(name)) {
                         name = "TCTP";
                         tutorial = true;
+                    } else if ("????".equals(name)) {
+                        airportButton.setText("Hmmm... there may or may not be a free airport somewhere?");
+                        return;
                     }
                     FileHandle handle = Gdx.files.internal("game/available.arpt");
                     String[] airports = handle.readString().split("\\r?\\n");
