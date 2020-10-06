@@ -15,6 +15,8 @@ public class AndroidLauncher extends TextToSpeechManager {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.numSamples = 0;
+        config.useAccelerometer = false;
+        config.useCompass = false;
         TerminalControl.ishtml = false;
         initialize(new TerminalControl(this, toastManager, new DiscordManager() {}), config);
 
