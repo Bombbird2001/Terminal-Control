@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.screens;
+package com.bombbird.terminalcontrol.screens.settingsscreen.customsetting;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
+import com.bombbird.terminalcontrol.screens.BasicScreen;
+import com.bombbird.terminalcontrol.screens.MainMenuScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.categories.OtherSettingsScreen;

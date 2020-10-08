@@ -1,9 +1,11 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen.categories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -13,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 import java.util.Locale;
@@ -169,6 +172,27 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
             timeLabel2.setPosition(nightStartHour.getX() - nightLabel.getWidth() + 1300, nightStartHour.getY() + nightStartHour.getHeight() / 2 - timeLabel2.getHeight() / 2);
             timeLabel2.setName("night");
         }
+    }
+
+    @Override
+    public void loadButton() {
+        super.loadButton();
+
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = Fonts.defaultFont20;
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
+
+        TextButton flowButton = new TextButton("Traffic flow settings", textButtonStyle);
+        flowButton.setSize(1200, 300);
+        flowButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //New traffic page
+                event.handle();
+            }
+        });
     }
 
     /** Loads actors for display settings into tabs */

@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.utilities.math
 
 import kotlin.math.*
 
-object MathTools_Kt {
+object MathToolsKt {
     //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel  */
     @kotlin.jvm.JvmStatic

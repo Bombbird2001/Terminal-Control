@@ -10,10 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
-import com.bombbird.terminalcontrol.screens.WeatherScreen;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.WeatherScreen;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
 import java.math.RoundingMode;
