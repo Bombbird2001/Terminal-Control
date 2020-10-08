@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.entities.weather;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 
 import java.util.HashMap;

@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;

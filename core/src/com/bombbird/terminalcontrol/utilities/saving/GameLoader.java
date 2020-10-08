@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.utilities.saving;
 import com.badlogic.gdx.Gdx;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;

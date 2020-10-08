@@ -13,13 +13,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.*;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.*;
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.airports.AirportName;
 import com.bombbird.terminalcontrol.entities.approaches.ILS;
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.separation.AreaPenetrationChecker;
 import com.bombbird.terminalcontrol.entities.separation.CollisionChecker;
 import com.bombbird.terminalcontrol.entities.separation.SeparationChecker;
@@ -463,7 +463,7 @@ public class RadarScreen extends GameScreen {
     }
 
     /** Creates a new departure at the given airport */
-    public void newDeparture(String callsign, String icaoType, Airport airport, Runway runway) {
+    public void newDeparture(String callsign, String icaoType, Airport airport, com.bombbird.terminalcontrol.entities.runways.Runway runway) {
         aircrafts.put(callsign, new Departure(callsign, icaoType, airport, runway));
     }
 

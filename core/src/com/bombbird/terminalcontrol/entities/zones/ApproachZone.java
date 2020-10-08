@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 

@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.entities.sidstar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;

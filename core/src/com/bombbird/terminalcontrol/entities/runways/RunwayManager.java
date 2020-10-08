@@ -1,10 +1,10 @@
-package com.bombbird.terminalcontrol.entities.trafficmanager;
+package com.bombbird.terminalcontrol.entities.runways;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.bombbird.terminalcontrol.TerminalControl;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.Runway;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 
 public class RunwayManager {
     private Airport airport;
