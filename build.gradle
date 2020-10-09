@@ -1,4 +1,6 @@
 buildscript {
+    ext.kotlin_version = '1.4.10'
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -12,6 +14,7 @@ buildscript {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.5'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -38,7 +41,7 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java"
-
+    apply plugin: "kotlin"
 
     dependencies {
         compile project(":core")
@@ -51,6 +54,8 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
+    apply plugin: "kotlin-android"
+    apply plugin: "kotlin-android-extensions"
 
     configurations { natives }
 
@@ -68,13 +73,14 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     }
 }
 
 project(":ios") {
     apply plugin: "java"
     apply plugin: "robovm"
-
+    apply plugin: "kotlin"
 
     dependencies {
         compile project(":core")
@@ -103,6 +109,7 @@ project(":html") {
 
 project(":core") {
     apply plugin: "java"
+    apply plugin: "kotlin"
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"

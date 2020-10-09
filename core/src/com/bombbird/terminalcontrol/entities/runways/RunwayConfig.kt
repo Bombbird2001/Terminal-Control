@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.entities.runways
 
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.airports.Airport
-import com.bombbird.terminalcontrol.utilities.math.MathToolsKt
+import com.bombbird.terminalcontrol.utilities.math.MathTools
 
 class RunwayConfig(private val airport: Airport, vararg runways: String): Comparable<RunwayConfig> {
     private val runways = Array<Runway?>()
@@ -21,7 +21,7 @@ class RunwayConfig(private val airport: Airport, vararg runways: String): Compar
 
         for (runway in runways) {
             if (runway == null) continue
-            val component = MathToolsKt.componentInDirection(windSpd, windHdg, runway.heading)
+            val component = MathTools.componentInDirection(windSpd, windHdg, runway.heading)
             windScore += component
             tailwindTotal += (-component).coerceAtLeast(0f) //Add to tailwindTotal if component < 0, if headwind set 0
         }

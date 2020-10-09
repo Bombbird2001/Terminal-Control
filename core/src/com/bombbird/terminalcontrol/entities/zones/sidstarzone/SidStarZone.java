@@ -59,8 +59,9 @@ public class SidStarZone {
         float oppY = runway.getOppRwy().getY();
         float wptX = route.getWaypoint(0).getPosX();
         float wptY = route.getWaypoint(0).getPosY();
-        int initialClimbAlt = sid != null ? sid.getInitClimb(runway.getName())[1] : -1;
-        int initialClimbHdg = sid != null ? sid.getInitClimb(runway.getName())[0] : -1;
+        int[] initClimb = sid != null ? sid.getInitClimb(runway.getName()) : null;
+        int initialClimbAlt = sid != null && initClimb != null ? initClimb[1] : -1;
+        int initialClimbHdg = sid != null && initClimb != null ? initClimb[0] : -1;
         if (initialClimbHdg == -1) initialClimbHdg = runway.getHeading();
         if (initialClimbAlt != -1 && initialClimbAlt - runway.getElevation() > 800) {
             //Give some distance for aircraft to climb, in px

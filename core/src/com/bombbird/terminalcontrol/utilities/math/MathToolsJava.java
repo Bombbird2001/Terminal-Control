@@ -1,6 +1,6 @@
 package com.bombbird.terminalcontrol.utilities.math;
 
-public class MathTools {
+public class MathToolsJava {
     //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel */
     public static float nmToPixel(float nm) {

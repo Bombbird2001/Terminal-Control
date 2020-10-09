@@ -2,7 +2,7 @@ package com.bombbird.terminalcontrol.utilities.math
 
 import kotlin.math.*
 
-object MathToolsKt {
+object MathTools {
     //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel  */
     @kotlin.jvm.JvmStatic
@@ -74,6 +74,7 @@ object MathToolsKt {
     }
 
     /** Checks whether integer is within range of 2 integers  */
+    @kotlin.jvm.JvmStatic
     fun withinRange(no: Int, min: Int, max: Int): Boolean {
         return no in min..max
     }
@@ -85,6 +86,7 @@ object MathToolsKt {
     }
 
     /** Calculates the required track to achieve a displacement of deltaX, deltaY  */
+    @kotlin.jvm.JvmStatic
     fun getRequiredTrack(deltaX: Float, deltaY: Float): Float {
         return 90 - Math.toDegrees(atan2(deltaY.toDouble(), deltaX.toDouble())).toFloat()
     }
@@ -96,20 +98,21 @@ object MathToolsKt {
     }
 
     /** Ensures the heading/track supplied is > 0 and <= 360  */
+    @kotlin.jvm.JvmStatic
     fun modulateHeading(heading: Double): Double {
         var newHeading = heading
-        while (heading > 360) newHeading -= 360.0
-        while (heading <= 0) newHeading += 360.0
-        return heading
+        while (newHeading > 360) newHeading -= 360.0
+        while (newHeading <= 0) newHeading += 360.0
+        return newHeading
     }
 
     /** Ensures the heading/track supplied is > 0 and <= 360  */
     @kotlin.jvm.JvmStatic
     fun modulateHeading(heading: Int): Int {
         var newHeading = heading
-        while (heading > 360) newHeading -= 360
-        while (heading <= 0) newHeading += 360
-        return heading
+        while (newHeading > 360) newHeading -= 360
+        while (newHeading <= 0) newHeading += 360
+        return newHeading
     }
 
     /** Calculates the component of vector with a magnitude towards one direction in another direction */
