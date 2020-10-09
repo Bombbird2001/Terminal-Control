@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab;
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen;
+import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen;
 import com.bombbird.terminalcontrol.utilities.Fonts;
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver;
 
@@ -33,6 +34,8 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
     private SelectBox<String> nightStartMin;
     private SelectBox<String> nightEndHour;
     private SelectBox<String> nightEndMin;
+
+    private TextButton flowButton;
 
     private Label tfcLabel;
     private RadarScreen.TfcMode tfcSel;
@@ -184,12 +187,13 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
-        TextButton flowButton = new TextButton("Traffic flow settings", textButtonStyle);
+        flowButton = new TextButton("Traffic flow settings", textButtonStyle);
         flowButton.setSize(1200, 300);
         flowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //New traffic page
+                game.setScreen(new TrafficFlowScreen(game));
                 event.handle();
             }
         });
@@ -205,6 +209,7 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
             tab1.addActors(tfcMode, tfcLabel);
             tab1.addActors(night, nightLabel);
             tab1.addActors(nightStartHour, timeLabel, nightStartMin, nightEndHour, nightEndMin, timeLabel2);
+            tab1.addButton(flowButton);
         }
 
         settingsTabs.add(tab1);

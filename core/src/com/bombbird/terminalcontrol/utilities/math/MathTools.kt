@@ -2,8 +2,8 @@ package com.bombbird.terminalcontrol.utilities.math
 
 import kotlin.math.*
 
+/** Constant conversions, formula methods */
 object MathTools {
-    //Set some constant conversion/formula methods
     /** Converts nautical mile to pixel  */
     @kotlin.jvm.JvmStatic
     fun nmToPixel(nm: Float): Float {
@@ -121,6 +121,7 @@ object MathTools {
         return magnitude * cos(Math.toRadians((dir1 - dir2).toDouble())).toFloat()
     }
 
+    /** Calculates the component of a vector with direction and magnitude, in another direction */
     @kotlin.jvm.JvmStatic
     fun componentInDirection(magnitude: Int, dir1: Int, dir2: Int): Float {
         return componentInDirection(magnitude.toFloat(), dir1.toFloat(), dir2.toFloat())
