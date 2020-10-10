@@ -3,7 +3,7 @@
   "maxAlt": 20000,
   "transLvl": 130,
   "minSep": 3,
-  "magHdgDev": 4.58,
+  "magHdgDev": 4.5,
   "divertHdg": 240,
   "apchCallsign": "Approach",
   "depCallsign": "Approach",

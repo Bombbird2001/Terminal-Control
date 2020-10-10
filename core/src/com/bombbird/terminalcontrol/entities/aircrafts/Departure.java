@@ -107,6 +107,7 @@ public class Departure extends Aircraft {
         float a = 3 / 3600f; //In nm/s^2
         float s = MathTools.feetToNm(feetDist); //In nm
         int maxV2 = (int) (Math.sqrt(Math.pow(u, 2) + 2 * a * s) * 3600); //In nm/h (knots)
+        maxV2 += MathTools.componentInDirection(getWinds()[1], getWinds()[0], runway.getHeading());
         maxV2 = (maxV2 / 5) * 5; //Round down to nearest 5 knots
         if (getV2() > maxV2) setV2(maxV2);
 

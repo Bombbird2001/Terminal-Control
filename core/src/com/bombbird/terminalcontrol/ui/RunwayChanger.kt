@@ -1,649 +1,234 @@
-package com.bombbird.terminalcontrol.ui;
+package com.bombbird.terminalcontrol.ui
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
-import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.runways.RunwayConfig
+import com.bombbird.terminalcontrol.utilities.Fonts
 
-public class RunwayChanger {
-    private final Image background;
-    private final Label airportLabel;
-    private final Label timeLabel;
-    private final TextButton changeButton;
-    private final ScrollPane scrollPane;
-    private final Label newRunwaysLabel;
-    private boolean doubleCfm;
-    private final Array<String> runways;
-    private final Array<boolean[]> tkofLdg;
-    private Airport airport;
-    private boolean visible;
+class RunwayChanger {
+    private val background: Image = Image(TerminalControl.skin.getDrawable("ListBackground"))
+    private val airportLabel: Label
+    private val timeLabel: Label
+    private val changeButton: TextButton
+    private val confirmButton: TextButton
+    private val scrollPane: ScrollPane
+    private val newRunwaysLabel: Label
+    private val possibleConfigs = Array<RunwayConfig>()
+    private var runwayConfig: RunwayConfig? = null
+    private var airport: Airport? = null
+    var isVisible: Boolean
+        private set
 
-    private static final boolean[] ALL_ACTIVE = {true, true, true};
-    private static final boolean[] ALL_INACTIVE = {false, false, false};
-    private static final boolean[] TKOFF_ONLY = {true, true, false};
-    private static final boolean[] LDG_ONLY = {true, false, true};
+    init {
+        val scrollTable = Table()
+        scrollPane = ScrollPane(scrollTable)
+        scrollPane.x = 0.11f * TerminalControl.radarScreen.ui.paneWidth
+        scrollPane.y = 3240 * 0.055f
+        scrollPane.setSize(0.78f * TerminalControl.radarScreen.ui.paneWidth, 3240 * 0.175f)
+        scrollPane.style.background = TerminalControl.skin.getDrawable("ListBackground")
+        scrollPane.isVisible = false
+        scrollPane.debugAll()
+        TerminalControl.radarScreen.uiStage.addActor(scrollPane)
 
-    public RunwayChanger() {
-        background = new Image(TerminalControl.skin.getDrawable("ListBackground"));
-        background.addListener(new ClickListener() {
+        val labelStyle1 = LabelStyle()
+        labelStyle1.fontColor = Color.BLACK
+        labelStyle1.font = Fonts.defaultFont20
+        newRunwaysLabel = Label("Loading...", labelStyle1)
+        newRunwaysLabel.setSize(100f, 100f)
+        newRunwaysLabel.setWrap(true)
+        scrollTable.add(newRunwaysLabel).width(0.76f * TerminalControl.radarScreen.ui.paneWidth).height(300f).pad(10f, 0.01f * TerminalControl.radarScreen.ui.paneWidth, 10f, 0.11f * TerminalControl.radarScreen.ui.paneWidth)
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                event.handle(); //Prevents hiding of runway changer when background is tapped
+        background.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent, x: Float, y: Float) {
+                super.clicked(event, x, y)
+                event.handle() //Prevents hiding of runway changer when background is tapped
             }
-        });
-        TerminalControl.radarScreen.ui.addActor(background, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f);
+        })
+        TerminalControl.radarScreen.ui.addActor(background, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.fontColor = Color.WHITE;
-        labelStyle.font = Fonts.defaultFont20;
+        val labelStyle = LabelStyle()
+        labelStyle.fontColor = Color.WHITE
+        labelStyle.font = Fonts.defaultFont20
+        airportLabel = Label("", labelStyle)
+        TerminalControl.radarScreen.ui.addActor(airportLabel, 0.45f, -1f, 3240 * 0.38f, airportLabel.height)
 
-        airportLabel = new Label("", labelStyle);
-        TerminalControl.radarScreen.ui.addActor(airportLabel, 0.45f, -1, 3240 * 0.35f, airportLabel.getHeight());
+        val textButtonStyle = TextButtonStyle()
+        textButtonStyle.font = Fonts.defaultFont20
+        textButtonStyle.fontColor = Color.WHITE
+        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up")
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
+        confirmButton = TextButton("Confirm runway change", textButtonStyle)
+        confirmButton.align(Align.center)
+        confirmButton.label.setWrap(true)
+        confirmButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                if (runwayConfig != null) {
+                    airport?.isPendingRwyChange = true
+                    airport?.rwyChangeTimer = -1f
+                    updateRunways()
+                    airport?.isPendingRwyChange = false
+                    airport?.rwyChangeTimer = 301f
+                    hideAll()
+                    TerminalControl.radarScreen.commBox.setVisible(true)
+                    TerminalControl.radarScreen.ui.updateMetar()
+                }
+                event.handle()
+            }
 
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont20;
-        textButtonStyle.fontColor = Color.WHITE;
-        textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
-        changeButton = new TextButton("Change runway configuration", textButtonStyle);
-        changeButton.align(Align.center);
-        doubleCfm = false;
-        changeButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                event.handle();
-                if (!doubleCfm) {
-                    scrollPane.setVisible(true);
-                    if (runways.size > 0) {
-                        doubleCfm = true;
-                        changeButton.setText("Confirm runway change");
+        })
+        TerminalControl.radarScreen.ui.addActor(confirmButton, 0.55f, 0.3f, 3240 * 0.25f, 3240 * 0.11f)
+
+        changeButton = TextButton("Change runway configuration", textButtonStyle)
+        changeButton.align(Align.center)
+        changeButton.label.setWrap(true)
+        changeButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                if (possibleConfigs.size > 0) {
+                    runwayConfig = if (runwayConfig == null) possibleConfigs.first() else {
+                        if (possibleConfigs.size > 1) possibleConfigs.add(possibleConfigs.removeIndex(0))
+                        possibleConfigs.first()
                     }
-                } else if (runways.size > 0) {
-                    airport.setPendingRwyChange(true);
-                    airport.setRwyChangeTimer(-1);
-                    updateRunways();
-                    airport.setPendingRwyChange(false);
-                    airport.setRwyChangeTimer(301);
-                    doubleCfm = false;
-                    hideAll();
-                    TerminalControl.radarScreen.getCommBox().setVisible(true);
-                    TerminalControl.radarScreen.ui.updateMetar();
+                }
+                confirmButton.isVisible = runwayConfig != null
+                scrollPane.isVisible = true
+                updateRunwayLabel()
+                event.handle()
+            }
+        })
+        TerminalControl.radarScreen.ui.addActor(changeButton, 0.15f, 0.3f, 3240 * 0.25f, 3240 * 0.11f)
+
+        var inputListener: InputListener? = null
+        for (eventListener in scrollPane.listeners) {
+            if (eventListener is InputListener) {
+                inputListener = eventListener
+            }
+        }
+        if (inputListener != null) scrollPane.removeListener(inputListener)
+
+        timeLabel = Label("Time left: ", labelStyle1)
+        TerminalControl.radarScreen.ui.addActor(timeLabel, 0.15f, 0.7f, 3240 * 0.3f, timeLabel.height)
+        timeLabel.isVisible = false
+        hideAll()
+        isVisible = false
+    }
+
+    fun update() {
+        if (airport == null) return
+        airport?.rwyChangeTimer?.let {
+            if (it < 0) hideAll()
+            val min = it.toInt() / 60
+            val sec = it.toInt() - min * 60
+            val secText = if (sec < 10) "0$sec" else sec.toString()
+            timeLabel.setText("Time left: $min:$secText")
+        }
+    }
+
+    fun setMainVisible(visible: Boolean) {
+        isVisible = visible
+        background.isVisible = visible
+        airportLabel.isVisible = visible
+        changeButton.isVisible = visible
+    }
+
+    fun hideAll() {
+        isVisible = false
+        background.isVisible = false
+        timeLabel.isVisible = false
+        airportLabel.isVisible = false
+        changeButton.isVisible = false
+        confirmButton.isVisible = false
+        scrollPane.isVisible = false
+        possibleConfigs.clear()
+    }
+
+    fun setAirport(icao: String) {
+        runwayConfig = null
+        possibleConfigs.clear()
+        scrollPane.isVisible = false
+        airportLabel.setText(icao)
+        TerminalControl.radarScreen.airports[icao]?.let { airport ->
+            timeLabel.isVisible = airport.isPendingRwyChange
+        }
+        airport?.metar?.let {
+            val windHdg = if (it.isNull("windDirection")) 0 else it.getInt("windDirection")
+            var windSpd = it.getInt("windSpeed")
+            if (windHdg == 0) windSpd = 0
+            airport?.runwayManager?.getSuitableConfigs(windHdg, windSpd)?.let { configs ->
+                for (config in configs) {
+                    if (config.landingRunways.keys == airport?.landingRunways?.keys && config.takeoffRunways.keys == airport?.takeoffRunways?.keys) continue
+                    possibleConfigs.add(config)
                 }
             }
-        });
-        TerminalControl.radarScreen.ui.addActor(changeButton, 0.15f, 0.7f, 3240 * 0.22f, 3240 * 0.08f);
-
-        Label.LabelStyle labelStyle1 = new Label.LabelStyle();
-        labelStyle1.fontColor = Color.BLACK;
-        labelStyle1.font = Fonts.defaultFont20;
-        newRunwaysLabel = new Label("Loading...", labelStyle1);
-        newRunwaysLabel.setX(0.15f * TerminalControl.radarScreen.ui.getPaneWidth());
-        newRunwaysLabel.setY(3240 * 0.1f);
-        newRunwaysLabel.setWrap(true);
-
-        Table scrollTable = new Table();
-        scrollPane = new ScrollPane(scrollTable);
-        scrollPane.setX(0.11f * TerminalControl.radarScreen.ui.getPaneWidth());
-        scrollPane.setY(3240 * 0.05f);
-        scrollPane.setSize(0.79f * TerminalControl.radarScreen.ui.getPaneWidth(), 3240 * 0.15f);
-        scrollPane.getStyle().background = TerminalControl.skin.getDrawable("ListBackground");
-        newRunwaysLabel.setWidth(scrollPane.getWidth());
-        scrollTable.add(newRunwaysLabel).width(scrollPane.getWidth()).pad(10, 0, 15, 0).getActor().invalidate();
-
-        InputListener inputListener = null;
-        for (EventListener eventListener: scrollPane.getListeners()) {
-            if (eventListener instanceof InputListener) {
-                inputListener = (InputListener) eventListener;
-            }
-        }
-        if (inputListener != null) scrollPane.removeListener(inputListener);
-        scrollPane.setVisible(false);
-        TerminalControl.radarScreen.uiStage.addActor(scrollPane);
-
-        timeLabel = new Label("Time left: ", labelStyle1);
-        TerminalControl.radarScreen.ui.addActor(timeLabel, 0.15f, 0.7f, 3240 * 0.3f, timeLabel.getHeight());
-        timeLabel.setVisible(false);
-
-        runways = new Array<>();
-        tkofLdg = new Array<>();
-
-        hideAll();
-
-        visible = false;
-    }
-
-    public void update() {
-        if (airport == null) return;
-        if (airport.getRwyChangeTimer() < 0) {
-            hideAll();
-        }
-        int min = ((int) airport.getRwyChangeTimer()) / 60;
-        int sec = (int) airport.getRwyChangeTimer() - min * 60;
-        String secText = sec < 10 ? "0" + sec : Integer.toString(sec);
-        timeLabel.setText("Time left: " + min + ":" + secText);
-    }
-
-    public void setMainVisible(boolean visible) {
-        this.visible = visible;
-        background.setVisible(visible);
-        airportLabel.setVisible(visible);
-        changeButton.setVisible(visible);
-    }
-
-    public void hideAll() {
-        visible = false;
-        background.setVisible(false);
-        timeLabel.setVisible(false);
-        airportLabel.setVisible(false);
-        changeButton.setVisible(false);
-        scrollPane.setVisible(false);
-        runways.clear();
-        tkofLdg.clear();
-        doubleCfm = false;
-    }
-
-    public void setAirport(String icao) {
-        runways.clear();
-        tkofLdg.clear();
-        doubleCfm = false;
-        scrollPane.setVisible(false);
-        changeButton.setText("Change runway configuration");
-        airportLabel.setText(icao);
-        airport = TerminalControl.radarScreen.airports.get(icao);
-        timeLabel.setVisible(airport.isPendingRwyChange());
-        int windDir = airport.getMetar().isNull("windDirection") ? 0 : airport.getMetar().getInt("windDirection");
-        int windSpd = airport.getMetar().getInt("windSpeed");
-        if (windDir == 0) windSpd = 0;
-        if ("TCTP".equals(icao)) {
-            updateTCTP(windDir, windSpd);
-        } else if ("TCSS".equals(icao)) {
-            updateTCSS(windDir, windSpd);
-        } else if ("TCWS".equals(icao)) {
-            updateTCWS(windDir, windSpd);
-        } else if ("TCTT".equals(icao)) {
-            updateTCTT(windDir, windSpd);
-        } else if ("TCAA".equals(icao)) {
-            updateTCAA(windDir, windSpd);
-        } else if ("TCBB".equals(icao)) {
-            updateTCBB(windDir, windSpd);
-        } else if ("TCOO".equals(icao)) {
-            updateTCOO(windDir, windSpd);
-        } else if ("TCBE".equals(icao)) {
-            updateTCBE(windDir, windSpd);
-        } else if ("TCHH".equals(icao)) {
-            updateTCHH(windDir, windSpd);
-        } else if ("TCMC".equals(icao)) {
-            updateTCMC(windDir, windSpd);
-        } else if ("TCBD".equals(icao)) {
-            updateTCBD(windDir, windSpd);
-        } else if ("TCBS".equals(icao)) {
-            updateTCBS(windDir, windSpd);
-        } else if ("TCMD".equals(icao)) {
-            updateTCMD(windDir, windSpd);
-        } else if ("TCPG".equals(icao)) {
-            updateTCPG(windDir, windSpd);
-        } else if ("TCPO".equals(icao)) {
-            updateTCPO(windDir, windSpd);
-        } else if ("TCHX".equals(icao)) {
-            updateTCHX(windDir, windSpd);
-        } else {
-            Gdx.app.log("Runway changer", "Runway change settings for " + icao + " are unavailable.");
         }
 
-        if (runways.size == 0) {
-            newRunwaysLabel.setText("Runway change not permitted due to winds");
-        } else {
-            if (runways.size != tkofLdg.size) Gdx.app.log("Runway changer", "Runway array length not equal to tkofldg array length for " + icao);
-            updateRunwayLabel();
-            if (airport.isPendingRwyChange()) {
-                doubleCfm = true;
-                changeButton.setText("Change runways now");
-                scrollPane.setVisible(true);
-            }
+        if (airport?.isPendingRwyChange == true) {
+            runwayConfig = airport?.runwayManager?.latestRunwayConfig
+            confirmButton.isVisible = true
+            scrollPane.isVisible = true
         }
     }
 
-    private void updateRunwayLabel() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < runways.size; i++) {
-            if (tkofLdg.get(i)[0] && !airport.getRunways().get(runways.get(i)).isEmergencyClosed() && !airport.getRunways().get(runways.get(i)).getOppRwy().isEmergencyClosed()) {
-                String tmp;
-                if (tkofLdg.get(i)[1] && tkofLdg.get(i)[2]) {
-                    tmp = "takeoffs and landings.";
-                } else if (tkofLdg.get(i)[1]) {
-                    tmp = "takeoffs.";
+    private fun updateRunwayLabel() {
+        if (runwayConfig == null && possibleConfigs.isEmpty) {
+            newRunwaysLabel.setText("Runway change not permitted due to winds")
+            return
+        }
+        val stringBuilder = StringBuilder()
+        val rwySet = HashSet<String>()
+        runwayConfig?.landingRunways?.keys?.let {
+            rwySet.addAll(it)
+        }
+        runwayConfig?.takeoffRunways?.keys?.let {
+            rwySet.addAll(it)
+        }
+        for (rwy in rwySet) {
+            if (airport?.runways?.get(rwy)?.isEmergencyClosed == false && airport?.runways?.get(rwy)?.oppRwy?.isEmergencyClosed == false) {
+                val tkof = runwayConfig?.takeoffRunways?.containsKey(rwy)
+                val ldg = runwayConfig?.landingRunways?.containsKey(rwy)
+                val tmp: String = if (tkof == true && ldg == true) {
+                    "takeoffs and landings."
+                } else if (tkof == true) {
+                    "takeoffs."
+                } else if (ldg == true) {
+                    "landings."
                 } else {
-                    tmp = "landings.";
+                    "nothing lol."
                 }
-                stringBuilder.append("Runway ");
-                stringBuilder.append(runways.get(i));
-                stringBuilder.append(" will be active for ");
-                stringBuilder.append(tmp);
-                stringBuilder.append("\n");
+                stringBuilder.append("Runway ")
+                stringBuilder.append(rwy)
+                stringBuilder.append(" will be active for ")
+                stringBuilder.append(tmp)
+                stringBuilder.append("\n")
             }
         }
-        if (stringBuilder.length() == 0) {
-            newRunwaysLabel.setText("All runways are/will be closed");
-            return;
+        if (stringBuilder.isEmpty()) {
+            newRunwaysLabel.setText("All runways are/will be closed")
+            return
         }
-        newRunwaysLabel.setText(stringBuilder.toString());
+        newRunwaysLabel.setText(stringBuilder.toString())
     }
 
     //Change runways
-    private void updateRunways() {
-        airport.setRwyChangeTimer(-1);
-        for (int i = 0; i < runways.size; i++) {
-            airport.setActive(runways.get(i), tkofLdg.get(i)[2], tkofLdg.get(i)[1]);
-        }
-        airport.updateZoneStatus();
-        airport.setPendingRwyChange(false);
-        airport.setRwyChangeTimer(301);
+    private fun updateRunways() {
+        airport?.rwyChangeTimer = -1f
+        runwayConfig?.applyConfig()
+        airport?.updateZoneStatus()
+        airport?.isPendingRwyChange = false
+        airport?.rwyChangeTimer = 301f
     }
 
-    public boolean containsLandingRunway(String icao, String rwy) {
-        int index = runways.indexOf(rwy, false);
-        return airport != null && icao.equals(airport.getIcao()) && index > -1 && tkofLdg.get(index)[0] && doubleCfm;
-    }
-
-    private void updateTCTP(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("05L") != null) {
-            //05s are active, set to 23s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("23L").getHeading()) > -5) {
-                runways.add("23L", "23R", "05L", "05R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //23s are active, set to 05s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("05L").getHeading()) > -5) {
-                runways.add("05L", "05R", "23L", "23R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCSS(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("10") != null) {
-            //10 is active, set to 28
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("28").getHeading()) > -5) {
-                runways.add("28", "10");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //28 is active, set to 10
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("10").getHeading()) > -5) {
-                runways.add("10", "28");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCWS(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("02L") != null) {
-            //02s are active, set to 20s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("20C").getHeading()) > -5) {
-                runways.add("20C", "20R", "02L", "02C");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //20s are active, set to 02s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("02L").getHeading()) > -5) {
-                runways.add("02L", "02C", "20C", "20R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCTT(int windDir, int windSpd) {
-        if (DayNightManager.isNight()) {
-            if (airport.getTakeoffRunways().size() == 2) {
-                //2 tkof runways in use, change to 1 tkof runway while keeping landing configuration
-                if (airport.getTakeoffRunways().containsKey("16L")) {
-                    //22 and 23 for landing, 16s for takeoff, set to 16L for takeoff, 22 and 23 for landings
-                    runways.add("16L", "16R", "22", "23");
-                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
-                    runways.add("34L", "34R", "05");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                } else {
-                    //05 and 34R for takeoff, 34s for landing, set to 34s for landing, 05 for takeoff
-                    runways.add("34L", "34R", "05");
-                    tkofLdg.add(LDG_ONLY, LDG_ONLY, TKOFF_ONLY);
-                    runways.add("16L", "16R", "22", "23");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                }
-            } else {
-                //Change whole configuration
-                if (windSpd < 7) {
-                    //Runway change permitted only when wind speed is below 7 knots or change in day-night operations
-                    if (airport.getTakeoffRunways().containsKey("05")) {
-                        //34s for landing, 05 for takeoff, set to 16L for takeoff, 22 and 23 for landings
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, LDG_ONLY, LDG_ONLY);
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    } else {
-                        //16L for takeoff, 22 and 23 for landing, set to 34s for landing, 05 for takeoff
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(LDG_ONLY, LDG_ONLY, TKOFF_ONLY);
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    }
-                } else {
-                    if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    }
-                }
-            }
-        } else {
-            if (airport.getTakeoffRunways().size() == 1) {
-                //Only 1 tkof runway in use, change to 2 tkof runways while keeping landing configuration constant
-                if (airport.getTakeoffRunways().containsKey("16L")) {
-                    //22 and 23 for landing, 16L for takeoff, set to 16s for takeoff, 22 and 23 for landings
-                    runways.add("16L", "16R", "22", "23");
-                    tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                    runways.add("34L", "34R", "05");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                } else {
-                    //05 for takeoff, 34s for landing, set to 34s for landing, 05 and 34R for takeoff
-                    runways.add("34L", "34R", "05");
-                    tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
-                    runways.add("16L", "16R", "22", "23");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                }
-            } else {
-                //Change whole configuration
-                if (windSpd < 7) {
-                    //Runway change permitted only when wind speed is below 7 knots or change in day-night operations
-                    if (airport.getTakeoffRunways().containsKey("05")) {
-                        //34s for landing, 05 and 34R for takeoff, set to 16s for takeoff, 22 and 23 for landings
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    } else {
-                        //16s for takeoff, 22 and 23 for landing, set to 34s for landing, 05 and 34R for takeoff
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    }
-                } else {
-                    if ((windDir > 283.5 && windDir <= 360 || windDir > 0 && windDir < 103.5) && airport.getLandingRunways().containsKey("23")) {
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(LDG_ONLY, ALL_ACTIVE, TKOFF_ONLY);
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    } else if (windDir > 103.5 && windDir < 283.5 && airport.getLandingRunways().containsKey("34L")) {
-                        runways.add("16L", "16R", "22", "23");
-                        tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                        runways.add("34L", "34R", "05");
-                        tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    }
-                }
-            }
-        }
-    }
-
-    private void updateTCAA(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("16L") != null) {
-            //16s are active, set to 34s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34L").getHeading()) > -5) {
-                runways.add("34L", "34R", "16L", "16R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //34s are active, set to 16s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("16L").getHeading()) > -5) {
-                runways.add("16L", "16R", "34L", "34R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCBB(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("06L") != null) {
-            //06s are active, set to 24s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("24L").getHeading()) > -5) {
-                runways.add("24L", "24R", "06L", "06R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //24s are active, set to 06s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06L").getHeading()) > -5) {
-                runways.add("06L", "06R", "24L", "24R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCOO(int windDir, int windSpd) {
-        if (!airport.getLandingRunways().containsKey("32L") && (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) > -5 || windDir == 0)) {
-            //32L wasn't active, change to active
-            runways.add("32L");
-            tkofLdg.add(ALL_ACTIVE);
-        } else if (airport.getLandingRunways().containsKey("32L") && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32L").getHeading()) < -5 && windDir != 0) {
-            //32L was active, change to inactive
-            runways.add("32L");
-            tkofLdg.add(ALL_INACTIVE);
-        }
-    }
-
-    private void updateTCBE(int windDir, int windSpd) {
-        if (!airport.getLandingRunways().containsKey("09") && (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) > -5 || windDir == 0)) {
-            //09 wasn't active, change to active
-            runways.add("09");
-            tkofLdg.add(ALL_ACTIVE);
-        } else if (airport.getLandingRunways().containsKey("09") && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("09").getHeading()) < -5 && windDir != 0) {
-            //09 was active, change to inactive
-            runways.add("09");
-            tkofLdg.add(ALL_INACTIVE);
-        }
-    }
-
-    private void updateTCHH(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("07L") != null) {
-            //07s are active, set to 25s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25L").getHeading()) > -5) {
-                runways.add("25L", "25R", "07L", "07R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //25s are active, set to 07s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("07L").getHeading()) > -5) {
-                runways.add("07L", "07R", "25L", "25R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCMC(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("16") != null) {
-            //16 is active, set to 34
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("34").getHeading()) > -5) {
-                runways.add("34", "16");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //34 is active, set to 16
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("16").getHeading()) > -5) {
-                runways.add("16", "34");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCBD(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("03L") != null) {
-            //03s are active, set to 21s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("21L").getHeading()) > -5) {
-                runways.add("21L", "21R", "03L", "03R");
-                tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //21s are active, set to 03s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("03L").getHeading()) > -5) {
-                runways.add("03L", "03R", "21L", "21R");
-                tkofLdg.add(LDG_ONLY, TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCBS(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("01L") != null) {
-            //01s are active, set to 19s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("19L").getHeading()) > -5) {
-                runways.add("19L", "19R", "01L", "01R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //25s are active, set to 01s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("01L").getHeading()) > -5) {
-                runways.add("01L", "01R", "19L", "19R");
-                tkofLdg.add(ALL_ACTIVE, ALL_ACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCMD(int windDir, int windSpd) {
-        if (DayNightManager.isNight()) {
-            //Night mode - 1 landing, 1 takeoff runway
-            if (airport.getLandingRunways().get("32R") != null) {
-                if (airport.getLandingRunways().size() == 2) {
-                    //Change 2 runways to 1 runway
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
-                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
-                    //32R, 36L active, change to 14L, 18L
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                }
-            } else if (airport.getLandingRunways().get("18L") != null) {
-                if (airport.getLandingRunways().size() == 2) {
-                    //Change 2 runways to 1 runway
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
-                    //14L, 18L active, change to 32R, 36L
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE, LDG_ONLY);
-                }
-            }
-        } else {
-            //Day mode - 2 landing, 2 takeoff runways
-            if (airport.getLandingRunways().get("32R") != null) {
-                if (airport.getLandingRunways().size() == 1) {
-                    //Change 1 runway to 2 runways
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("14L").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("18L").getHeading()) > -7) {
-                    //32s, 36s active, change to 14s, 18s
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                }
-            } else if (airport.getLandingRunways().get("18L") != null) {
-                if (airport.getLandingRunways().size() == 1) {
-                    //Change 1 runway to 2 runways
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                } else if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("32R").getHeading()) > -7 && windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("36L").getHeading()) > -7) {
-                    //14s, 18s active, change to 32s, 36s
-                    runways.add("14L", "18L", "14R", "18R");
-                    tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                    runways.add("36L", "36R", "32L", "32R");
-                    tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-                }
-            }
-        }
-    }
-
-    private void updateTCPG(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("08R") != null) {
-            //08s, 09s active, change to 26s, 27s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("26L").getHeading()) > -5) {
-                runways.add("26R", "26L", "27L", "27R");
-                tkofLdg.add(TKOFF_ONLY, LDG_ONLY, TKOFF_ONLY, LDG_ONLY);
-                runways.add("08L", "08R", "09L", "09R");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else if (airport.getLandingRunways().get("26L") != null) {
-            //26s, 27s active, change to 08s, 09s
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("08R").getHeading()) > -5) {
-                runways.add("26R", "26L", "27L", "27R");
-                tkofLdg.add(ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE, ALL_INACTIVE);
-                runways.add("08L", "09R", "08R", "09L");
-                tkofLdg.add(TKOFF_ONLY, TKOFF_ONLY, LDG_ONLY, LDG_ONLY);
-            }
-        }
-    }
-
-    private void updateTCPO(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("25") != null) {
-            //24, 25 are active, set to 06, 07
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("06").getHeading()) > -5) {
-                runways.add("06", "07", "24", "25");
-                tkofLdg.add(LDG_ONLY, TKOFF_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //06, 07 are active, set to 24, 25
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("25").getHeading()) > -5) {
-                runways.add("24", "25", "06", "07");
-                tkofLdg.add(TKOFF_ONLY, LDG_ONLY, ALL_INACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    private void updateTCHX(int windDir, int windSpd) {
-        if (airport.getLandingRunways().get("13") != null) {
-            //13 is active, set to 31
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("31").getHeading()) > -5) {
-                runways.add("31", "13");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        } else {
-            //31 is active, set to 13
-            if (windSpd * MathUtils.cosDeg(windDir - airport.getRunways().get("13").getHeading()) > -5) {
-                runways.add("13", "31");
-                tkofLdg.add(ALL_ACTIVE, ALL_INACTIVE);
-            }
-        }
-    }
-
-    public boolean isVisible() {
-        return visible;
+    fun containsLandingRunway(icao: String, rwy: String): Boolean {
+        return icao == airport?.icao && runwayConfig?.landingRunways?.containsKey(rwy) == true && confirmButton.isVisible
     }
 }

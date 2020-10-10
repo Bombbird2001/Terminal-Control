@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR;
 import com.bombbird.terminalcontrol.entities.sidstar.Sid;
 import com.bombbird.terminalcontrol.entities.sidstar.Star;
 import com.bombbird.terminalcontrol.entities.runways.RunwayManager;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager;
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone;
@@ -146,7 +147,7 @@ public class Airport {
         }
 
         takeoffManager = new TakeoffManager(this);
-        runwayManager = new RunwayManager(this);
+        runwayManager = new RunwayManager(this, (save != null) ? save.optBoolean("night", DayNightManager.isNight()) : DayNightManager.isNight());
 
         loadZones();
         updateZoneStatus();
@@ -412,6 +413,10 @@ public class Airport {
         }
     }
 
+    public boolean getNight() {
+        return runwayManager.getPrevNight();
+    }
+
     public int getVisibility() {
         return metar.getInt("visibility");
     }
@@ -502,5 +507,9 @@ public class Airport {
 
     public void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public RunwayManager getRunwayManager() {
+        return runwayManager;
     }
 }

@@ -515,6 +515,9 @@ public class GameSaver {
             }
             airportInfo.put("takeoffRunways", takeoffRunways);
 
+            //Runway manager night mode
+            airportInfo.put("night", airport.getNight());
+
             airportInfo.put("icao", airport.getIcao()); //ICAO code of airport
             airportInfo.put("elevation", airport.getElevation()); //Elevation of airport
             airportInfo.put("aircraftRatio", airport.getAircraftRatio()); //Ratio of flights to the airport
