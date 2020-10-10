@@ -1,23 +1,24 @@
-package com.bombbird.terminalcontrol;
+package com.bombbird.terminalcontrol
 
-import com.bombbird.terminalcontrol.utilities.DiscordManager;
-import com.bombbird.terminalcontrol.utilities.ToastManager;
-import org.robovm.apple.foundation.NSAutoreleasePool;
-import org.robovm.apple.uikit.UIApplication;
+import com.badlogic.gdx.backends.iosrobovm.IOSApplication
+import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration
+import com.bombbird.terminalcontrol.utilities.DiscordManager
+import com.bombbird.terminalcontrol.utilities.ToastManager
+import org.robovm.apple.foundation.NSAutoreleasePool
+import org.robovm.apple.uikit.UIApplication
 
-import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
-import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-
-public class IOSLauncher extends IOSApplication.Delegate {
-    @Override
-    protected IOSApplication createApplication() {
-        IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new TerminalControl(new TextToSpeechManager(), new ToastManager() {}, new DiscordManager() {}), config);
+class IOSLauncher : IOSApplication.Delegate() {
+    override fun createApplication(): IOSApplication {
+        val config = IOSApplicationConfiguration()
+        return IOSApplication(TerminalControl(TextToSpeechManager(), object : ToastManager {}, object : DiscordManager {}), config)
     }
 
-    public static void main(String[] argv) {
-        NSAutoreleasePool pool = new NSAutoreleasePool();
-        UIApplication.main(argv, null, IOSLauncher.class);
-        pool.close();
+    companion object {
+        @JvmStatic
+        fun main(argv: Array<String>) {
+            val pool = NSAutoreleasePool()
+            UIApplication.main<UIApplication, IOSLauncher>(argv, null, IOSLauncher::class.java)
+            pool.close()
+        }
     }
 }

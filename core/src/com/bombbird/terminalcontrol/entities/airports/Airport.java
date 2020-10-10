@@ -60,6 +60,8 @@ public class Airport {
     private boolean pendingRwyChange;
     private float rwyChangeTimer;
 
+    private boolean closed;
+
     public Airport(String icao, int elevation, int aircraftRatio) {
         save = null;
         this.icao = icao;
@@ -75,6 +77,7 @@ public class Airport {
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
         pendingRwyChange = false;
         rwyChangeTimer = 301; //In seconds
+        closed = false;
     }
 
     public Airport(JSONObject save) {
@@ -92,6 +95,7 @@ public class Airport {
         aircrafts = FileLoader.loadAirlineAircrafts(icao);
         pendingRwyChange = save.optBoolean("pendingRwyChange", false);
         rwyChangeTimer = (float) save.optDouble("rwyChangeTimer", 301);
+        closed = save.optBoolean("closed", false);
 
         JSONArray landing = save.getJSONArray("landingRunways");
         for (int i = 0; i < landing.length(); i++) {
@@ -490,5 +494,13 @@ public class Airport {
 
     public void setPendingRwyChange(boolean pendingRwyChange) {
         this.pendingRwyChange = pendingRwyChange;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }

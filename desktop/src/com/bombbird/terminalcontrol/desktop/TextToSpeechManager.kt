@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol
+package com.bombbird.terminalcontrol.desktop
 
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.sidstar.Sid

@@ -37,6 +37,7 @@ import com.bombbird.terminalcontrol.entities.weather.Metar;
 import com.bombbird.terminalcontrol.entities.weather.WindDirChance;
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance;
 import com.bombbird.terminalcontrol.entities.weather.WindspeedChance;
+import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen;
 import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
@@ -53,6 +54,10 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class RadarScreen extends GameScreen {
+    public float getPreviousOffset() {
+        return previousOffset;
+    }
+
     public enum Weather {
         LIVE,
         RANDOM,
@@ -97,6 +102,11 @@ public class RadarScreen extends GameScreen {
     public int colourStyle;
     public boolean realisticMetar;
 
+    //Advanced traffic settings
+    public int trafficMode;
+    public int maxPlanes;
+    public int flowRate;
+
     //Whether the game is a tutorial
     public boolean tutorial = false;
 
@@ -112,6 +122,7 @@ public class RadarScreen extends GameScreen {
     private int emergenciesLanded;
 
     private float spawnTimer;
+    private float previousOffset;
 
     private char information;
 
@@ -124,9 +135,6 @@ public class RadarScreen extends GameScreen {
     private float trailTime;
     private float saveTime;
     private float rpcTime;
-
-    //Whether sector is closed
-    private boolean sectorClosed;
 
     //Stores callsigns of all aircraft generated and aircraft waiting to be generated (for take offs)
     private HashSet<String> allAircraft;
@@ -184,6 +192,7 @@ public class RadarScreen extends GameScreen {
         wakeInfringeTime = 0;
         emergenciesLanded = 0;
         spawnTimer = 0;
+        previousOffset = 0;
         information = (char) MathUtils.random(65, 90);
 
         loadStageCamTimer();
@@ -193,8 +202,6 @@ public class RadarScreen extends GameScreen {
         trailTime = 10f;
         saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
-
-        sectorClosed = false;
 
         simultaneousLanding = new LinkedHashMap<>();
 
@@ -242,6 +249,10 @@ public class RadarScreen extends GameScreen {
         nightStart = 2200;
         nightEnd = 600;
 
+        trafficMode = 0;
+        maxPlanes = -1;
+        flowRate = -1;
+
         wakeManager = new WakeManager();
 
         loadEasterEggQueue();
@@ -267,7 +278,8 @@ public class RadarScreen extends GameScreen {
         separationIncidents = save.optInt("separationIncidents", 0);
         wakeInfringeTime = (float) save.optDouble("wakeInfringeTime", 0);
         emergenciesLanded = save.optInt("emergenciesLanded", 0);
-        spawnTimer = (float) save.getDouble("spawnTimer");
+        spawnTimer = (float) save.optDouble("spawnTimer", 60);
+        previousOffset = (float) save.optDouble("previousOffset", 0);
         information = save.isNull("information") ? (char) MathUtils.random(65, 90) : (char) save.getInt("information");
 
         loadStageCamTimer();
@@ -277,8 +289,6 @@ public class RadarScreen extends GameScreen {
         trailTime = (float) save.optDouble("trailTime", 10);
         saveTime = TerminalControl.saveInterval;
         rpcTime = 60f;
-
-        sectorClosed = save.optBoolean("sectorClosed", false);
 
         trajectoryLine = save.optInt("trajectoryLine", 90);
         pastTrajTime = save.optInt("pastTrajTime", -1);
@@ -317,6 +327,10 @@ public class RadarScreen extends GameScreen {
         allowNight = save.optBoolean("allowNight", true);
         nightStart = save.optInt("nightStart", 2200);
         nightEnd = save.optInt("nightEnd", 600);
+
+        trafficMode = save.optInt("trafficMode", 0);
+        maxPlanes = save.optInt("maxPlanes", -1);
+        flowRate = save.optInt("flowRate", -1);
 
         wakeManager = save.isNull("wakeManager") ? new WakeManager() : new WakeManager(save.getJSONObject("wakeManager"));
 
@@ -469,7 +483,27 @@ public class RadarScreen extends GameScreen {
 
     /** Creates a new arrival for random airport */
     private void newArrival() {
+        if (trafficMode == TrafficFlowScreen.FLOW_RATE) {
+            if (flowRate == 0) return;
+            setPlanesToControl(arrivals);
+            spawnTimer = -previousOffset; //Subtract the additional (or less) time before spawning previous aircraft
+            float defaultRate = 3600f / flowRate;
+            spawnTimer += defaultRate; //Add the constant rate timing
+            previousOffset = defaultRate * MathUtils.random(-0.1f, 0.1f);
+            spawnTimer += previousOffset;
+        } else {
+            //Min 50sec for >=4 planes diff, max 80sec for <=1 plane diff
+            spawnTimer = 90f - 10 * (planesToControl - arrivals);
+            spawnTimer = MathUtils.clamp(spawnTimer, 50, 80);
+        }
+
         Airport airport = RandomGenerator.randomAirport();
+        if (airport == null) {
+            //If airports not available, set planes to control equal to current arrival number
+            //so there won't be a sudden wave of new arrivals once airport is available again
+            setPlanesToControl(arrivals);
+            return;
+        }
         if (!RandomSTAR.starAvailable(airport)) {
             spawnTimer = 10f; //Wait for another 10 seconds if no spawn points available
             return;
@@ -478,10 +512,6 @@ public class RadarScreen extends GameScreen {
         Arrival arrival = new Arrival(aircraftInfo[0], aircraftInfo[1], airport);
         aircrafts.put(aircraftInfo[0], arrival);
         arrivals++;
-
-        //Min 50sec for >=4 planes diff, max 80sec for <=1 plane diff
-        spawnTimer = 90f - 10 * (planesToControl - arrivals);
-        spawnTimer = MathUtils.clamp(spawnTimer, 50, 80);
     }
 
     /** Loads the full UI for RadarScreen */
@@ -609,15 +639,7 @@ public class RadarScreen extends GameScreen {
             spawnTimer -= deltaTime;
             if (spawnTimer <= 0 && arrivals < planesToControl) {
                 //Minimum 50 sec interval between each new plane
-                if (sectorClosed) {
-                    //If sector is closed, set planes to control equal to current arrival number
-                    //so there won't be a sudden wave of new arrivals once sector is reopened
-                    setPlanesToControl(arrivals);
-                    spawnTimer = 90f - 10 * (planesToControl - arrivals);
-                    spawnTimer = MathUtils.clamp(spawnTimer, 50, 80);
-                } else {
-                    newArrival();
-                }
+                newArrival();
             }
         }
 
@@ -934,7 +956,7 @@ public class RadarScreen extends GameScreen {
     }
 
     public void setPlanesToControl(float planesToControl) {
-        planesToControl = MathUtils.clamp(planesToControl, 4f, MaxTraffic.getMaxTraffic(mainName));
+        planesToControl = trafficMode == TrafficFlowScreen.PLANES_IN_CONTROL ? maxPlanes : MathUtils.clamp(planesToControl, 4f, MaxTraffic.getMaxTraffic(mainName));
         this.planesToControl = planesToControl;
     }
 
@@ -1027,14 +1049,6 @@ public class RadarScreen extends GameScreen {
         }
 
         return count;
-    }
-
-    public boolean isSectorClosed() {
-        return sectorClosed;
-    }
-
-    public void setSectorClosed(boolean sectorClosed) {
-        this.sectorClosed = sectorClosed;
     }
 
     public int getRevision() {

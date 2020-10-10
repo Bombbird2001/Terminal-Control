@@ -1,11 +1,11 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-public interface DiscordManager {
-    default void initializeDiscord() {
+interface DiscordManager {
+    fun initializeDiscord() {
         //No default implementation
     }
 
-    default void updateRPC() {
+    fun updateRPC() {
         //No default implementation
     }
 }

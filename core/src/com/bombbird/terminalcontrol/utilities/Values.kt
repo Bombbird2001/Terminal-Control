@@ -1,14 +1,24 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-public class Values {
-    public static String SEND_METAR_URL;
-    public static String SEND_METAR_PASSWORD;
-    public static String API_URL;
-    public static String API_PASSWORD;
-    public static String GET_METAR_URL;
-    public static String GET_METAR_PASSWORD;
-    public static String SEND_ERROR_URL;
-    public static String SEND_ERROR_PASSWORD;
-    public static String DISCORD_ID_LITE;
-    public static String DISCORD_ID_FULL;
+object Values {
+    @JvmField
+    var SEND_METAR_URL = ""
+    @JvmField
+    var SEND_METAR_PASSWORD = ""
+    @JvmField
+    var API_URL = ""
+    @JvmField
+    var API_PASSWORD = ""
+    @JvmField
+    var GET_METAR_URL = ""
+    @JvmField
+    var GET_METAR_PASSWORD = ""
+    @JvmField
+    var SEND_ERROR_URL = ""
+    @JvmField
+    var SEND_ERROR_PASSWORD = ""
+    @JvmField
+    var DISCORD_ID_LITE = ""
+    @JvmField
+    var DISCORD_ID_FULL = ""
 }

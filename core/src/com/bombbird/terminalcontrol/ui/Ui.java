@@ -88,9 +88,6 @@ public class Ui {
     //TextButton that pauses the game
     private TextButton pauseButton;
 
-    //TextButton that allows player to open/close the sector
-    private TextButton sectorButton;
-
     //Array for METAR info on default pane
     private ScrollPane metarPane;
     private Array<Label> metarInfos;
@@ -332,27 +329,6 @@ public class Ui {
         }
         if (inputListener != null) metarPane.removeListener(inputListener);
         addActor(metarPane, 1 / 19.2f, 0.6f, 1550, 1200);
-
-        //Sector button
-        TextButton.TextButtonStyle textButtonStyle1 = new TextButton.TextButtonStyle();
-        textButtonStyle1.fontColor = Color.BLACK;
-        textButtonStyle1.font = Fonts.defaultFont20;
-        textButtonStyle1.up = TerminalControl.skin.getDrawable("ListBackground");
-        textButtonStyle1.down = TerminalControl.skin.getDrawable("Button_down");
-        sectorButton = new TextButton(radarScreen.isSectorClosed() ? "Open sector" : "Close sector", textButtonStyle1);
-        sectorButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //Change sectorClosed state
-                radarScreen.setSectorClosed(!radarScreen.isSectorClosed());
-                sectorButton.setText(radarScreen.isSectorClosed() ? "Open sector" : "Close sector");
-                radarScreen.getCommBox().normalMsg("Sector has been " + (radarScreen.isSectorClosed() ? "closed" : "opened"));
-                updateInfoLabel();
-            }
-        });
-        if (!radarScreen.tutorial) {
-            addActor(sectorButton, 0.7f, 0.25f, 1500, 300);
-        }
     }
 
     public void setNormalPane(boolean show) {
@@ -363,7 +339,6 @@ public class Ui {
         scoreLabel.setVisible(show);
         infoLabel.setVisible(show && infoLabel.getText().length > 0);
         pauseButton.setVisible(show);
-        sectorButton.setVisible(show);
         if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
     }
 
@@ -757,8 +732,6 @@ public class Ui {
         if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) text += "Arrivals only";
         if (!text.isEmpty() && DayNightManager.isNight()) text += "\n";
         if (DayNightManager.isNight()) text += "Night mode active";
-        if (!text.isEmpty() && radarScreen.isSectorClosed()) text += "\n";
-        if (radarScreen.isSectorClosed()) text += "Sector closed";
         infoLabel.setText(text);
         infoLabel.setVisible(!text.isEmpty() && selectedAircraft == null);
     }

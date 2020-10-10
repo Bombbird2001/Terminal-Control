@@ -57,10 +57,10 @@ public class GameSaver {
         jsonObject.put("emergenciesLanded", radarScreen.getEmergenciesLanded());
         jsonObject.put("playTime", (double) radarScreen.getPlayTime());
         jsonObject.put("spawnTimer", (double) radarScreen.getSpawnTimer());
+        jsonObject.put("previousOffset", (double) radarScreen.getPreviousOffset());
         jsonObject.put("information", radarScreen.getInformation());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
-        jsonObject.put("sectorClosed", radarScreen.isSectorClosed());
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
         jsonObject.put("pastTrajTime", radarScreen.pastTrajTime);
         jsonObject.put("radarSweep", (double) radarScreen.radarSweepDelay);
@@ -88,6 +88,9 @@ public class GameSaver {
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
         jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
+        jsonObject.put("trafficMode", radarScreen.trafficMode);
+        jsonObject.put("maxPlanes", radarScreen.maxPlanes);
+        jsonObject.put("flowRate", radarScreen.flowRate);
         jsonObject.put("revision", Revision.CURRENT_REVISION);
 
         JSONArray jsonArray = new JSONArray();
@@ -540,6 +543,7 @@ public class GameSaver {
             airportInfo.put("congestion", airport.isCongested()); //Congestion
             airportInfo.put("pendingRwyChange", airport.isPendingRwyChange()); //Whether is pending runway change
             airportInfo.put("rwyChangeTimer", (double) airport.getRwyChangeTimer()); //Runway change timer
+            airportInfo.put("closed", airport.isClosed()); //Whether airport is closed
 
             //STAR timers
             JSONObject starTimers = new JSONObject(RandomSTAR.getTime().get(airport.getIcao()));

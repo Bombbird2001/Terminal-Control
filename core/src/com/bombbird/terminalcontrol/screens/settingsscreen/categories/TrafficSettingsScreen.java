@@ -187,7 +187,7 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up");
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down");
 
-        flowButton = new TextButton("Traffic flow settings", textButtonStyle);
+        flowButton = new TextButton("Arrival traffic settings", textButtonStyle);
         flowButton.setSize(1200, 300);
         flowButton.addListener(new ChangeListener() {
             @Override

@@ -68,8 +68,8 @@ object MathTools {
 
     /** Calculates the point where the line from a point at a specified track meets a rectangle's border  */
     @kotlin.jvm.JvmStatic
-    fun pointsAtBorder(xBorder: FloatArray?, yBorder: FloatArray?, x: Float, y: Float, direction: Float): FloatArray {
-        val dist = distanceFromBorder(xBorder!!, yBorder!!, x, y, direction)
+    fun pointsAtBorder(xBorder: FloatArray, yBorder: FloatArray, x: Float, y: Float, direction: Float): FloatArray {
+        val dist = distanceFromBorder(xBorder, yBorder, x, y, direction)
         return floatArrayOf(x + dist * cos(Math.toRadians(90 - direction.toDouble())).toFloat(), y + dist * sin(Math.toRadians(90 - direction.toDouble())).toFloat())
     }
 
