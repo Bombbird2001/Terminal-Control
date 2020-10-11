@@ -43,8 +43,7 @@ public class GameLoader {
         }
         TerminalControl.radarScreen.setAllAircraft(allAircrafts);
 
-        TerminalControl.radarScreen.getUtilityBox().remove();
-        TerminalControl.radarScreen.setUtilityBox(new UtilityBox(save.getJSONArray("commBox")));
+        TerminalControl.radarScreen.getUtilityBox().loadSave(save.getJSONArray("commBox"));
 
         TerminalControl.radarScreen.separationChecker.setLastNumber(save.getInt("lastNumber"));
         TerminalControl.radarScreen.separationChecker.setTime(save.isNull("sepTime") ? 3 : (float) save.getDouble("sepTime"));

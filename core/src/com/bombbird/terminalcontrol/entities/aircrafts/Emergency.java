@@ -27,25 +27,25 @@ public class Emergency {
         HIGH
     }
 
-    private static final String[] canDumpFuel = new String[] {"A332", "A333", "A342", "A343", "A345", "A346", "A359", "A35K", "A388", "B742", "B743", "B744", "B748", "B762", "B763", "B764",
+    private static final String[] canDumpFuel = new String[] {"A332", "A333", "A339", "A342", "A343", "A345", "A346", "A359", "A35K", "A388", "B742", "B743", "B744", "B748", "B762", "B763", "B764",
             "B772", "B77L", "B773", "B77W", "B788", "B789", "B78X", "MD11"};
 
     private Aircraft aircraft;
     private boolean emergency;
     private boolean active;
     private Type type;
-    private float timeRequired; //Preparation time required before dump/approach
-    private boolean checklistsSaid; //Whether aircraft has informed controller of running checklists, fuel dump
-    private boolean readyForDump; //Preparation complete
-    private float fuelDumpLag; //Time between preparation complete and fuel dump
-    private boolean dumpingFuel; //Dumping fuel
-    private final boolean fuelDumpRequired; //Whether a fuel dump is required
-    private float fuelDumpTime; //Fuel dump time required before approach
-    private boolean remainingTimeSaid; //Whether aircraft has notified approach of remaining time
-    private final int sayRemainingTime; //Time to notify approach of remaining time
-    private boolean readyForApproach; //Ready for approach
-    private boolean stayOnRwy; //Needs to stay on runway, close it after landing
-    private float stayOnRwyTime; //Time for staying on runway
+    public float timeRequired; //Preparation time required before dump/approach
+    public boolean checklistsSaid; //Whether aircraft has informed controller of running checklists, fuel dump
+    public boolean readyForDump; //Preparation complete
+    public float fuelDumpLag; //Time between preparation complete and fuel dump
+    public boolean dumpingFuel; //Dumping fuel
+    public final boolean fuelDumpRequired; //Whether a fuel dump is required
+    public float fuelDumpTime; //Fuel dump time required before approach
+    public boolean remainingTimeSaid; //Whether aircraft has notified approach of remaining time
+    public final int sayRemainingTime; //Time to notify approach of remaining time
+    public boolean readyForApproach; //Ready for approach
+    public boolean stayOnRwy; //Needs to stay on runway, close it after landing
+    public float stayOnRwyTime; //Time for staying on runway
 
     private final int emergencyStartAlt; //Altitude where emergency occurs
 

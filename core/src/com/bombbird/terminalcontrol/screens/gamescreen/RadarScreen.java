@@ -693,6 +693,9 @@ public class RadarScreen extends GameScreen {
         //Update runway changer timer
         runwayChanger.update();
 
+        //Update status manager timer
+        utilityBox.getStatusManager().update();
+
         //Update tutorial stuff if is tutorial
         if (tutorialManager != null) {
             tutorialManager.update();

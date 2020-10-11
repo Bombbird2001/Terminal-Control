@@ -292,7 +292,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
         }
         utilityBox.commsTable.clearChildren()
         for (i in 0 until labels.size) {
-            utilityBox.commsTable.add(labels[i]).width(utilityBox.commsPane.width - 20).pad(15f, 10f, 15f, 0f).actor.invalidate()
+            utilityBox.commsTable.add(labels[i]).width(utilityBox.commsPane.width - 20).pad(15f, 10f, 15f, 10f).actor.invalidate()
             utilityBox.commsTable.row()
         }
 
