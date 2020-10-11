@@ -176,11 +176,13 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void sendChanges() {
         if (radarScreen != null) {
+            boolean changedToLive = weatherSel == RadarScreen.Weather.LIVE && radarScreen.weatherSel != RadarScreen.Weather.LIVE;
             radarScreen.weatherSel = weatherSel;
             radarScreen.soundSel = soundSel;
             radarScreen.speed = speedSel;
             radarScreen.radarSweepDelay = radarSweep;
             if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
+            if (changedToLive) radarScreen.getMetar().updateMetar(false); //If previous weather mode was not live, but now is changed to live, get live weather immediately
             Gdx.app.postRunnable(() -> radarScreen.ui.updateInfoLabel());
         } else {
             TerminalControl.weatherSel = weatherSel;

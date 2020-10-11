@@ -99,27 +99,30 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
             Gdx.app.log("RunwayManager", "No runway configurations available for ${airport.icao}")
             return
         }
-        if (!requiresChange(windHdg, windSpd)) return //Return if no change needed
-        latestRunwayConfig = if (airport.landingRunways.isEmpty()) arrayToUse.first() else {
-            for (config: RunwayConfig in arrayToUse) {
-                config.calculateScores(windHdg, windSpd)
+        if (!requiresChange(windHdg, windSpd)) {
+            if (airport.isPendingRwyChange) {
+                airport.resetRwyChangeTimer()
             }
-            arrayToUse.sort()
-            arrayToUse.first() //First element is the most preferred
+            return
+        } //Return if no change needed
+        for (config: RunwayConfig in arrayToUse) {
+            config.calculateScores(windHdg, windSpd)
         }
+        arrayToUse.sort()
+        latestRunwayConfig = arrayToUse.first() //First element is the most preferred
         val pendingChange = latestRunwayConfig.applyConfig()
         if (pendingChange && !airport.isPendingRwyChange) {
             airport.isPendingRwyChange = true
             airport.rwyChangeTimer = 300f
             TerminalControl.radarScreen.commBox.alertMsg("Runway change will occur for " + airport.icao + " soon due to change in winds. Tap the METAR label of " + airport.icao + " for more information.")
         } else if (!pendingChange && airport.isPendingRwyChange) {
-            airport.isPendingRwyChange = false
-            airport.rwyChangeTimer = 301f
+            airport.resetRwyChangeTimer()
         }
     }
 
     /** Check if the current runway configuration needs to be changed due to winds */
     private fun requiresChange(windHdg: Int, windSpd: Int): Boolean {
+        if (airport.takeoffRunways.isEmpty() && airport.landingRunways.isEmpty()) return true
         for (runway: Runway in airport.takeoffRunways.values) {
             if (MathTools.componentInDirection(windSpd, windHdg, runway.heading) < -5) return true
         }
@@ -129,11 +132,12 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         return prevNight != DayNightManager.isNight //Even if current config works, if config time no longer applies, needs to be changed also
     }
 
-    /** Returns a list of suitable configurations with all runway tailwind < 5 knots */
+    /** Returns a list of suitable configurations with all runway tailwind < 5 knots AND is not a "blank configuration" */
     fun getSuitableConfigs(windHdg: Int, windSpd: Int): Array<RunwayConfig> {
         val suitableConfigs = Array<RunwayConfig>()
         val arrayToUse = if (DayNightManager.isNight && !nightConfigs.isEmpty) nightConfigs else dayConfigs
         for (config: RunwayConfig in arrayToUse) {
+            if (config.isEmpty()) continue
             config.calculateScores(windHdg, windSpd)
             if (config.allRunwaysEligible) suitableConfigs.add(config)
         }

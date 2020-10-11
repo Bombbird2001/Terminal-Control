@@ -283,6 +283,12 @@ public class Airport {
         }
     }
 
+    /** Resets the runway change countdown timer, boolean to original */
+    public void resetRwyChangeTimer() {
+        pendingRwyChange = false;
+        rwyChangeTimer = 301;
+    }
+
     /** Update loop */
     public void update() {
         if (!TerminalControl.radarScreen.tutorial && TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
@@ -292,8 +298,7 @@ public class Airport {
         if (pendingRwyChange) rwyChangeTimer -= Gdx.graphics.getDeltaTime();
         if (rwyChangeTimer < 0) {
             if (pendingRwyChange) updateRunwayUsage();
-            pendingRwyChange = false;
-            rwyChangeTimer = 301;
+            resetRwyChangeTimer();
         }
     }
 

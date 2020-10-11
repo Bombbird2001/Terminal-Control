@@ -175,6 +175,7 @@ class WeatherScreen(game: TerminalControl?) : BasicScreen(game, 5760, 3240) {
             }
         })
         stage.addActor(cancelButton)
+
         val confirmButton = TextButton("Confirm", textButtonStyle)
         confirmButton.setSize(1200f, 300f)
         confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800.toFloat())

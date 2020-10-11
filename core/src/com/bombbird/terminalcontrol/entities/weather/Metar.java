@@ -83,8 +83,7 @@ public class Metar {
             }
             airport.setMetar(metarObject);
             if (prevMetar == null) {
-                airport.setRwyChangeTimer(301);
-                airport.setPendingRwyChange(false);
+                airport.resetRwyChangeTimer();
             }
         }
     }

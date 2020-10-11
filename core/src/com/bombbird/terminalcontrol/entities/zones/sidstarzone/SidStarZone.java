@@ -20,8 +20,8 @@ public class SidStarZone {
     }
 
     /** Returns the required polygon given the starting position, track (direction) and dist (length) */
-    private Polygon calculatePolygon(float posX, float posY, float track, float dist) {
-        float extraLengthPx = MathTools.nmToPixel(2);
+    private Polygon calculatePolygon(float posX, float posY, float track, float dist, float extraNm) {
+        float extraLengthPx = MathTools.nmToPixel(extraNm);
         float leftX = posX - extraLengthPx;
         float rightX = leftX + dist + 2 * extraLengthPx;
         float topY = posY + extraLengthPx;
@@ -40,21 +40,21 @@ public class SidStarZone {
             if (i + 1 < route.getWaypoints().size) {
                 Waypoint wpt2 = route.getWaypoint(i + 1);
                 Vector2 routeVector = new Vector2(wpt2.getPosX() - wpt1.getPosX(), wpt2.getPosY() - wpt1.getPosY());
-                polygons.add(calculatePolygon(wpt1.getPosX(), wpt1.getPosY(), routeVector.angle(), routeVector.len()));
+                polygons.add(calculatePolygon(wpt1.getPosX(), wpt1.getPosY(), routeVector.angle(), routeVector.len(), 2));
             }
 
             if (i == lastWpt) {
                 //Additionally calculates the polygon for inbound STAR/outbound SID segments - heading is from waypoint
                 float outboundTrack = route.getHeading() - TerminalControl.radarScreen.magHdgDev;
                 float dist = MathTools.distanceFromBorder(new float[] {1260, 4500}, new float[] {0, 3240}, wpt1.getPosX(), wpt1.getPosY(), outboundTrack);
-                polygons.add(calculatePolygon(wpt1.getPosX(), wpt1.getPosY(), 90 - outboundTrack, dist));
+                polygons.add(calculatePolygon(wpt1.getPosX(), wpt1.getPosY(), 90 - outboundTrack, dist, 2));
             }
         }
     }
 
     /** Calculates the runway polygons for departures */
     public void calculateDepRwyPolygons(Runway runway, Sid sid, int climbRate) {
-        polygons.add(calculatePolygon(runway.getX(), runway.getY(), 90 - runway.getTrueHdg(), MathTools.feetToPixel(runway.getFeetLength())));
+        polygons.add(calculatePolygon(runway.getX(), runway.getY(), 90 - runway.getTrueHdg(), MathTools.feetToPixel(runway.getFeetLength()), 4));
         float oppX = runway.getOppRwy().getX();
         float oppY = runway.getOppRwy().getY();
         float wptX = route.getWaypoint(0).getPosX();
@@ -67,17 +67,17 @@ public class SidStarZone {
             //Give some distance for aircraft to climb, in px
             float climbDist = MathTools.nmToPixel((initialClimbAlt - runway.getElevation()) / 60f / climbRate * 220); //Assume 220 knots climb speed on average
             float track = 90 - (initialClimbHdg - TerminalControl.radarScreen.magHdgDev);
-            polygons.add(calculatePolygon(oppX, oppY, track, climbDist));
+            polygons.add(calculatePolygon(oppX, oppY, track, climbDist, 3));
             Vector2 intermediateVector = new Vector2(climbDist, 0);
             intermediateVector.rotate(track);
             intermediateVector.add(oppX, oppY);
             Vector2 wptVector = new Vector2(wptX, wptY);
             Vector2 intermediateToWpt = wptVector.sub(intermediateVector);
-            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angle(), intermediateToWpt.len()));
+            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angle(), intermediateToWpt.len(), 3));
         } else {
             //Go directly to first waypoint
             Vector2 vector2 = new Vector2(wptX - oppX, wptY - oppY);
-            polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len()));
+            polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len(), 3));
         }
     }
 

@@ -19,7 +19,6 @@ class RunwayConfig(private val airport: Airport, landingRunways: kotlin.Array<St
             if (rwy == null) {
                 Gdx.app.log("RunwayConfig", "Landing rwy $runway unavailable for ${airport.icao}")
             } else this.landingRunways[rwy.name] = rwy
-
         }
 
         for (runway in takeoffRunways) {
@@ -32,7 +31,7 @@ class RunwayConfig(private val airport: Airport, landingRunways: kotlin.Array<St
 
     /** Calculate comparison scores */
     fun calculateScores(windHdg: Int, windSpd: Int) {
-        if (landingRunways.isEmpty() && takeoffRunways.isEmpty()) {
+        if (isEmpty()) {
             //Placeholder values: empty configurations will only be used if airport has only one configuration, which does not meet <5 knots tailwind requirement
             //Set allRunwaysEligible to true for empty configuration so it is used
             allRunwaysEligible = true
@@ -85,11 +84,16 @@ class RunwayConfig(private val airport: Airport, landingRunways: kotlin.Array<St
         return changeSet.isNotEmpty()
     }
 
+    /** Returns whether this configuration is an empty placeholder configuration */
+    fun isEmpty(): Boolean {
+        return landingRunways.isEmpty() && takeoffRunways.isEmpty()
+    }
+
     /** Implements comparison operator; returns -1 if configuration is preferred over other, else 1 */
     override operator fun compareTo(other: RunwayConfig): Int {
-        if (allRunwaysEligible && !other.allRunwaysEligible) return -1
-        else if (!allRunwaysEligible && other.allRunwaysEligible) return 1
-        if (windScore != other.windScore) return if (windScore > other.windScore) -1 else 1
-        return if (tailwindTotal < other.tailwindTotal) -1 else 1
+        return if (allRunwaysEligible && !other.allRunwaysEligible) -1
+        else if (!allRunwaysEligible && other.allRunwaysEligible) 1
+        else if (allRunwaysEligible && other.allRunwaysEligible) if (windScore > other.windScore) -1 else 1 //Compare windScore if both runways eligible
+        else if (tailwindTotal < other.tailwindTotal) -1 else 1 //If both ineligible, compare tailwindTotal instead
     }
 }
