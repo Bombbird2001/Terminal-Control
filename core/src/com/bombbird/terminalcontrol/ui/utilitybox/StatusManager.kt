@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.entities.airports.Airport
@@ -33,7 +34,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
 
         for (aircraft: Aircraft in TerminalControl.radarScreen.aircrafts.values) {
             var text = "${aircraft.callsign}: "
-            if (aircraft is Departure && aircraft.emergency.isActive) {
+            if (aircraft is Arrival && aircraft.emergency.isActive) {
                 text += when {
                     aircraft.emergency.readyForApproach -> "Ready for approach" + if (aircraft.emergency.stayOnRwy) ", will remain on runways" else ""
                     aircraft.emergency.dumpingFuel -> "Dumping fuel" + if (aircraft.emergency.remainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble())} mins remaining" else ""
