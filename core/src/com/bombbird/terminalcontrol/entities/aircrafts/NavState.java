@@ -419,11 +419,11 @@ public class NavState {
                 clearedNewStar.addFirst(null);
                 updateLatModes(ADD_ALL_SIDSTAR, false);
                 updateLatModes(REMOVE_AFTERHDG_HOLD, true);
-                radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " has been changed to " + newStar.getName() + ". You may clear the aircraft to a waypoint on the new STAR.");
+                radarScreen.getUtilityBox().getCommsManager().alertMsg("The STAR for " + aircraft.getCallsign() + " has been changed to " + newStar.getName() + ". You may clear the aircraft to a waypoint on the new STAR.");
             } else {
                 clearedNewStar.removeFirst();
                 clearedNewStar.addFirst(null);
-                radarScreen.getCommBox().alertMsg("The STAR for " + aircraft.getCallsign() + " cannot be changed now.");
+                radarScreen.getUtilityBox().getCommsManager().alertMsg("The STAR for " + aircraft.getCallsign() + " cannot be changed now.");
             }
         }
     }

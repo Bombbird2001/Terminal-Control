@@ -992,7 +992,7 @@ public class Aircraft extends Actor {
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this instanceof Arrival) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
-                radarScreen.getCommBox().warningMsg(callsign + " has left the airspace!");
+                radarScreen.getUtilityBox().getCommsManager().warningMsg(callsign + " has left the airspace!");
             } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedAlt().last() == radarScreen.maxAlt) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
                 contactOther();
@@ -1154,7 +1154,7 @@ public class Aircraft extends Actor {
             if (direct == null) {
                 navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true);
             }
-            radarScreen.getCommBox().holdEstablishMsg(this, holdWpt.getName());
+            radarScreen.getUtilityBox().getCommsManager().holdEstablishMsg(this, holdWpt.getName());
         } else {
             direct = route.getWaypoint(sidStarIndex);
             if (direct == null) {

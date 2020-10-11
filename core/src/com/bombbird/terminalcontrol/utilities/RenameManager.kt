@@ -1,57 +1,66 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-import java.util.HashMap;
+import java.util.*
 
-public class RenameManager {
-    private static final HashMap<String, String> icaoMap = new HashMap<>();
-    private static final HashMap<String, String> reverseIcaoMap = new HashMap<>();
+object RenameManager {
+    private val icaoMap = HashMap<String, String>()
+    private val reverseIcaoMap = HashMap<String, String>()
 
-    public static void loadMaps() {
-        if (icaoMap.size() == 0) {
-            icaoMap.put("RCTP", "TCTP");
-            icaoMap.put("RCSS", "TCSS");
-            icaoMap.put("WSSS", "TCWS");
-            icaoMap.put("RJTT", "TCTT");
-            icaoMap.put("RJAA", "TCAA");
-            icaoMap.put("VHHH", "TCHH");
-            icaoMap.put("VMMC", "TCMC");
-            icaoMap.put("RJBB", "TCBB");
-            icaoMap.put("RJOO", "TCOO");
-            icaoMap.put("RJBE", "TCBE");
-            icaoMap.put("VTBS", "TCBS");
-            icaoMap.put("VTBD", "TCBD");
-            icaoMap.put("LEMD", "TCMD");
-            icaoMap.put("LFPG", "TCPG");
-            icaoMap.put("LFPO", "TCPO");
-            icaoMap.put("VHHX", "TCHX");
+    @JvmStatic
+    fun loadMaps() {
+        if (icaoMap.size == 0) {
+            icaoMap["RCTP"] = "TCTP"
+            icaoMap["RCSS"] = "TCSS"
+            icaoMap["WSSS"] = "TCWS"
+            icaoMap["RJTT"] = "TCTT"
+            icaoMap["RJAA"] = "TCAA"
+            icaoMap["VHHH"] = "TCHH"
+            icaoMap["VMMC"] = "TCMC"
+            icaoMap["RJBB"] = "TCBB"
+            icaoMap["RJOO"] = "TCOO"
+            icaoMap["RJBE"] = "TCBE"
+            icaoMap["VTBS"] = "TCBS"
+            icaoMap["VTBD"] = "TCBD"
+            icaoMap["LEMD"] = "TCMD"
+            icaoMap["LFPG"] = "TCPG"
+            icaoMap["LFPO"] = "TCPO"
+            icaoMap["VHHX"] = "TCHX"
         }
-        if (reverseIcaoMap.size() == 0) {
-            reverseIcaoMap.put("TCTP", "RCTP");
-            reverseIcaoMap.put("TCSS", "RCSS");
-            reverseIcaoMap.put("TCWS", "WSSS");
-            reverseIcaoMap.put("TCTT", "RJTT");
-            reverseIcaoMap.put("TCAA", "RJAA");
-            reverseIcaoMap.put("TCHH", "VHHH");
-            reverseIcaoMap.put("TCMC", "VMMC");
-            reverseIcaoMap.put("TCBB", "RJBB");
-            reverseIcaoMap.put("TCOO", "RJOO");
-            reverseIcaoMap.put("TCBE", "RJBE");
-            reverseIcaoMap.put("TCBS", "VTBS");
-            reverseIcaoMap.put("TCBD", "VTBD");
-            reverseIcaoMap.put("TCMD", "LEMD");
-            reverseIcaoMap.put("TCPG", "LFPG");
-            reverseIcaoMap.put("TCPO", "LFPO");
-            reverseIcaoMap.put("TCHX", "VHHX");
+        if (reverseIcaoMap.size == 0) {
+            reverseIcaoMap["TCTP"] = "RCTP"
+            reverseIcaoMap["TCSS"] = "RCSS"
+            reverseIcaoMap["TCWS"] = "WSSS"
+            reverseIcaoMap["TCTT"] = "RJTT"
+            reverseIcaoMap["TCAA"] = "RJAA"
+            reverseIcaoMap["TCHH"] = "VHHH"
+            reverseIcaoMap["TCMC"] = "VMMC"
+            reverseIcaoMap["TCBB"] = "RJBB"
+            reverseIcaoMap["TCOO"] = "RJOO"
+            reverseIcaoMap["TCBE"] = "RJBE"
+            reverseIcaoMap["TCBS"] = "VTBS"
+            reverseIcaoMap["TCBD"] = "VTBD"
+            reverseIcaoMap["TCMD"] = "LEMD"
+            reverseIcaoMap["TCPG"] = "LFPG"
+            reverseIcaoMap["TCPO"] = "LFPO"
+            reverseIcaoMap["TCHX"] = "VHHX"
         }
     }
 
-    /** Changes old ICAO codes to new ICAO codes */
-    public static String renameAirportICAO(String icao) {
-        return icaoMap.containsKey(icao) ? icaoMap.get(icao) : icao;
+    /** Changes old ICAO codes to new ICAO codes  */
+    @JvmStatic
+    fun renameAirportICAO(icao: String): String {
+        icaoMap[icao]?.let {
+            return it
+        }
+        return icao
     }
 
-    /** Changes new ICAO to real ICAO */
-    public static String reverseNameAirportICAO(String icao) {
-        return reverseIcaoMap.containsKey(icao) ? reverseIcaoMap.get(icao) : icao;
+    /** Changes new ICAO to real ICAO  */
+    @JvmStatic
+    fun reverseNameAirportICAO(icao: String): String {
+        reverseIcaoMap[icao]?.let {
+            return it
+        }
+        return icao
     }
 }

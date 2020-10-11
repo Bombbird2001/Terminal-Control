@@ -1,85 +1,96 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.bombbird.terminalcontrol.TerminalControl;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.bombbird.terminalcontrol.TerminalControl
 
-public class Fonts {
-    private static FreeTypeFontGenerator defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
-    public static BitmapFont defaultFont6 = generateFont(defaultFont, 24, -1);
-    public static BitmapFont compressedFont6 = generateFont(defaultFont, 24, 26);
-    public static BitmapFont expandedFont6 = generateFont(defaultFont, 24, 40);
-    public static BitmapFont defaultFont8 = generateFont(defaultFont, 32, -1);
-    public static BitmapFont defaultFont10 = generateFont(defaultFont, 40, -1);
-    public static BitmapFont defaultFont12 = generateFont(defaultFont, 48, -1);
-    public static BitmapFont defaultFont16 = generateFont(defaultFont, 64, -1);
-    public static BitmapFont defaultFont20 = generateFont(defaultFont, 80, -1);
-    public static BitmapFont defaultFont24 = generateFont(defaultFont, 96, -1);
-    public static BitmapFont defaultFont30 = generateFont(defaultFont, 120, -1);
+object Fonts {
+    private var defaultFont: FreeTypeFontGenerator? = FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"))
+    @JvmField
+    var defaultFont6: BitmapFont? = generateFont(defaultFont, 24, -1)
+    @JvmField
+    var compressedFont6: BitmapFont? = generateFont(defaultFont, 24, 26)
+    @JvmField
+    var expandedFont6: BitmapFont? = generateFont(defaultFont, 24, 40)
+    @JvmField
+    var defaultFont8: BitmapFont? = generateFont(defaultFont, 32, -1)
+    @JvmField
+    var defaultFont10: BitmapFont? = generateFont(defaultFont, 40, -1)
+    @JvmField
+    var defaultFont12: BitmapFont? = generateFont(defaultFont, 48, -1)
+    @JvmField
+    var defaultFont16: BitmapFont? = generateFont(defaultFont, 64, -1)
+    @JvmField
+    var defaultFont20: BitmapFont? = generateFont(defaultFont, 80, -1)
+    @JvmField
+    var defaultFont24: BitmapFont? = generateFont(defaultFont, 96, -1)
+    @JvmField
+    var defaultFont30: BitmapFont? = generateFont(defaultFont, 120, -1)
 
-    public static void generateAllFonts() {
-        defaultFont = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
-        defaultFont6 = generateFont(defaultFont, 24, -1);
-        compressedFont6 = generateFont(defaultFont, 24, 26);
-        expandedFont6 = generateFont(defaultFont, 24, 40);
-        defaultFont8 = generateFont(defaultFont, 32, -1);
-        defaultFont10 = generateFont(defaultFont, 40, -1);
-        defaultFont12 = generateFont(defaultFont, 48, -1);
-        defaultFont16 = generateFont(defaultFont, 64, -1);
-        defaultFont20 = generateFont(defaultFont, 80, -1);
-        defaultFont24 = generateFont(defaultFont, 96, -1);
-        defaultFont30 = generateFont(defaultFont, 120, -1);
+    @JvmStatic
+    fun generateAllFonts() {
+        defaultFont = FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"))
+        defaultFont6 = generateFont(defaultFont, 24, -1)
+        compressedFont6 = generateFont(defaultFont, 24, 26)
+        expandedFont6 = generateFont(defaultFont, 24, 40)
+        defaultFont8 = generateFont(defaultFont, 32, -1)
+        defaultFont10 = generateFont(defaultFont, 40, -1)
+        defaultFont12 = generateFont(defaultFont, 48, -1)
+        defaultFont16 = generateFont(defaultFont, 64, -1)
+        defaultFont20 = generateFont(defaultFont, 80, -1)
+        defaultFont24 = generateFont(defaultFont, 96, -1)
+        defaultFont30 = generateFont(defaultFont, 120, -1)
     }
 
-    private static BitmapFont generateFont(FreeTypeFontGenerator generator, int size, int lineHeight) {
-        if (!TerminalControl.ishtml) {
-            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-            parameter.size = size;
-            parameter.minFilter = Texture.TextureFilter.Nearest;
-            parameter.magFilter = Texture.TextureFilter.MipMapLinearNearest;
-            generator.scaleForPixelHeight(size);
-            BitmapFont font = generator.generateFont(parameter);
-            font.getData().markupEnabled = true;
-            if (lineHeight > -1) font.getData().setLineHeight(lineHeight);
-            return font;
+    private fun generateFont(generator: FreeTypeFontGenerator?, size: Int, lineHeight: Int): BitmapFont {
+        return if (!TerminalControl.ishtml) {
+            val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
+            parameter.size = size
+            parameter.minFilter = Texture.TextureFilter.Nearest
+            parameter.magFilter = Texture.TextureFilter.MipMapLinearNearest
+            generator!!.scaleForPixelHeight(size)
+            val font = generator.generateFont(parameter)
+            font.data.markupEnabled = true
+            if (lineHeight > -1) font.data.setLineHeight(lineHeight.toFloat())
+            font
         } else {
-            BitmapFont bitmapFont = new BitmapFont();
-            bitmapFont.getData().setScale(size / 160f * 3f);
-            bitmapFont.getData().markupEnabled = true;
-            if (lineHeight > -1) bitmapFont.getData().setLineHeight(lineHeight);
-            return bitmapFont;
+            val bitmapFont = BitmapFont()
+            bitmapFont.data.setScale(size / 160f * 3f)
+            bitmapFont.data.markupEnabled = true
+            if (lineHeight > -1) bitmapFont.data.setLineHeight(lineHeight.toFloat())
+            bitmapFont
         }
     }
 
-    public static void dispose() {
+    @JvmStatic
+    fun dispose() {
         if (!TerminalControl.ishtml && defaultFont != null) {
-            defaultFont.dispose();
+            defaultFont!!.dispose()
         }
         if (defaultFont6 != null) {
-            defaultFont6.dispose();
-            compressedFont6.dispose();
-            expandedFont6.dispose();
-            defaultFont8.dispose();
-            defaultFont10.dispose();
-            defaultFont12.dispose();
-            defaultFont16.dispose();
-            defaultFont20.dispose();
-            defaultFont24.dispose();
-            defaultFont30.dispose();
+            defaultFont6!!.dispose()
+            compressedFont6!!.dispose()
+            expandedFont6!!.dispose()
+            defaultFont8!!.dispose()
+            defaultFont10!!.dispose()
+            defaultFont12!!.dispose()
+            defaultFont16!!.dispose()
+            defaultFont20!!.dispose()
+            defaultFont24!!.dispose()
+            defaultFont30!!.dispose()
         }
-
-        defaultFont = null;
-        defaultFont6 = null;
-        compressedFont6 = null;
-        expandedFont6 = null;
-        defaultFont8 = null;
-        defaultFont10 = null;
-        defaultFont12 = null;
-        defaultFont16 = null;
-        defaultFont20 = null;
-        defaultFont24 = null;
-        defaultFont30 = null;
+        defaultFont = null
+        defaultFont6 = null
+        compressedFont6 = null
+        expandedFont6 = null
+        defaultFont8 = null
+        defaultFont10 = null
+        defaultFont12 = null
+        defaultFont16 = null
+        defaultFont20 = null
+        defaultFont24 = null
+        defaultFont30 = null
     }
 }

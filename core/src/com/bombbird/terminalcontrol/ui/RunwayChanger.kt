@@ -72,7 +72,7 @@ class RunwayChanger {
                     airport?.rwyChangeTimer = -1f
                     updateRunways()
                     hideAll()
-                    TerminalControl.radarScreen.commBox.setVisible(true)
+                    TerminalControl.radarScreen.utilityBox.setVisible(true)
                     TerminalControl.radarScreen.ui.updateMetar()
                 }
                 event.handle()

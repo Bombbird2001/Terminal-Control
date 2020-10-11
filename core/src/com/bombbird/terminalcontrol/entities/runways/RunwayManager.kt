@@ -114,7 +114,7 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         if (pendingChange && !airport.isPendingRwyChange) {
             airport.isPendingRwyChange = true
             airport.rwyChangeTimer = 300f
-            TerminalControl.radarScreen.commBox.alertMsg("Runway change will occur for " + airport.icao + " soon due to change in winds. Tap the METAR label of " + airport.icao + " for more information.")
+            TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Runway change will occur for " + airport.icao + " soon due to change in winds. Tap the METAR label of " + airport.icao + " for more information.")
         } else if (!pendingChange && airport.isPendingRwyChange) {
             airport.resetRwyChangeTimer()
         }

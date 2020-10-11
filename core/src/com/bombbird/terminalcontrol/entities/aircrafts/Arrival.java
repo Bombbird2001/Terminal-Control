@@ -435,10 +435,10 @@ public class Arrival extends Aircraft {
             //Low fuel, request priority
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, different msg
-                radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and will divert in 10 minutes if no landing runway is available.");
+                radarScreen.getUtilityBox().getCommsManager().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and will divert in 10 minutes if no landing runway is available.");
                 TerminalControl.tts.lowFuel(this, 3);
             } else {
-                radarScreen.getCommBox().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
+                radarScreen.getUtilityBox().getCommsManager().warningMsg("Pan-pan, pan-pan, pan-pan, " + getCallsign() + " is low on fuel and requests priority landing.");
                 TerminalControl.tts.lowFuel(this, 0);
             }
 
@@ -452,11 +452,11 @@ public class Arrival extends Aircraft {
             //Minimum fuel, declare emergency
             if (getAirport().getLandingRunways().size() == 0) {
                 //Airport has no landing runways available, divert directly
-                radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and is diverting immediately.");
+                radarScreen.getUtilityBox().getCommsManager().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and is diverting immediately.");
                 TerminalControl.tts.lowFuel(this, 4);
                 divertToAltn();
             } else {
-                radarScreen.getCommBox().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.");
+                radarScreen.getUtilityBox().getCommsManager().warningMsg("Mayday, mayday, mayday, " + getCallsign() + " is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.");
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f));
                 TerminalControl.tts.lowFuel(this, 1);
             }
@@ -468,7 +468,7 @@ public class Arrival extends Aircraft {
 
         if (fuel < 1500 && !divert && !isLocCap() && getControlState() == ControlState.ARRIVAL) {
             //Diverting to alternate
-            radarScreen.getCommBox().warningMsg(getCallsign() + " is diverting to the alternate airport.");
+            radarScreen.getUtilityBox().getCommsManager().warningMsg(getCallsign() + " is diverting to the alternate airport.");
             TerminalControl.tts.lowFuel(this, 2);
             divertToAltn();
 
@@ -620,7 +620,7 @@ public class Arrival extends Aircraft {
         }
         if (getControlState() != ControlState.ARRIVAL && getAltitude() <= contactAlt && getAltitude() > getAirport().getElevation() + 1300 && !divert && !isLocCap()) {
             setControlState(ControlState.ARRIVAL);
-            radarScreen.getCommBox().initialContact(this);
+            radarScreen.getUtilityBox().getCommsManager().initialContact(this);
             setActionRequired(true);
             getDataTag().startFlash();
         }
@@ -638,7 +638,7 @@ public class Arrival extends Aircraft {
         } else {
             radarScreen.setPlanesToControl(radarScreen.getPlanesToControl() - 0.4f);
         }
-        radarScreen.getCommBox().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
+        radarScreen.getUtilityBox().getCommsManager().contactFreq(this, getIls().getTowerFreq()[0], getIls().getTowerFreq()[1]);
     }
 
     @Override
@@ -696,12 +696,12 @@ public class Arrival extends Aircraft {
         //Gonna split the returns into different segments just to make it easier to read
         if (willGoAround && getAltitude() < goAroundAlt && (getAirport().getWindshear().contains(getIls().getRwy().getName()) || getAirport().getWindshear().equals("ALL RWY"))) {
             //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
-            radarScreen.getCommBox().goAround(this, "windshear", getControlState());
+            radarScreen.getUtilityBox().getCommsManager().goAround(this, "windshear", getControlState());
             return true;
         }
         if (getWakeTolerance() > 25) {
             //If aircraft has reached wake limits
-            radarScreen.getCommBox().goAround(this, "wake turbulence", getControlState());
+            radarScreen.getUtilityBox().getCommsManager().goAround(this, "wake turbulence", getControlState());
             return true;
         }
         Aircraft firstAircraft = getIls().getRwy().getAircraftsOnAppr().size > 0 ? getIls().getRwy().getAircraftsOnAppr().get(0) : null;
@@ -709,46 +709,46 @@ public class Arrival extends Aircraft {
             //If distance from runway is less than 3nm
             if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign()) && firstAircraft.getEmergency().isActive() && firstAircraft.getEmergency().isStayOnRwy()) {
                 //If runway is closed due to emergency staying on runway
-                radarScreen.getCommBox().goAround(this, "runway closed", getControlState());
+                radarScreen.getUtilityBox().getCommsManager().goAround(this, "runway closed", getControlState());
                 return true;
             }
             if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && !isGsCap()) {
                 //If ILS GS has not been captured
-                radarScreen.getCommBox().goAround(this, "being too high", getControlState());
+                radarScreen.getUtilityBox().getCommsManager().goAround(this, "being too high", getControlState());
                 return true;
             } else if (getIas() - getApchSpd() > 10) {
                 //If airspeed is more than 10 knots higher than approach speed
-                radarScreen.getCommBox().goAround(this, "being too fast", getControlState());
+                radarScreen.getUtilityBox().getCommsManager().goAround(this, "being too fast", getControlState());
                 return true;
             } else if (!(getIls() instanceof LDA) && !getIls().getName().contains("IMG") && MathUtils.cosDeg(getIls().getRwy().getTrueHdg() - (float) getTrack()) < MathUtils.cosDeg(10)) {
                 //If aircraft is not fully stabilised on LOC course
-                radarScreen.getCommBox().goAround(this, "unstable approach", getControlState());
+                radarScreen.getUtilityBox().getCommsManager().goAround(this, "unstable approach", getControlState());
                 return true;
             } else {
                 int windDir = getAirport().getWinds()[0];
                 int windSpd = getAirport().getWinds()[1];
                 if (windSpd * MathUtils.cosDeg(windDir - getIls().getRwy().getHeading()) < -10) {
                     //If tailwind exceeds 10 knots
-                    radarScreen.getCommBox().goAround(this, "strong tailwind", getControlState());
+                    radarScreen.getUtilityBox().getCommsManager().goAround(this, "strong tailwind", getControlState());
                     return true;
                 }
             }
         }
         if (getAltitude() < getIls().getMinima() && getAirport().getVisibility() < MathTools.feetToMetre(getIls().getMinima() - getIls().getRwy().getElevation()) * 9) {
             //If altitude below minima and visibility is less than 9 times the minima (approx)
-            radarScreen.getCommBox().goAround(this, "runway not in sight", getControlState());
+            radarScreen.getUtilityBox().getCommsManager().goAround(this, "runway not in sight", getControlState());
             return true;
         }
         if (getAltitude() < getIls().getRwy().getElevation() + 150) {
             if (firstAircraft != null && !firstAircraft.getCallsign().equals(getCallsign())) {
                 //If previous arrival/departure has not cleared runway by the time aircraft reaches 150 feet AGL
-                radarScreen.getCommBox().goAround(this, "traffic on runway", getControlState());
+                radarScreen.getUtilityBox().getCommsManager().goAround(this, "traffic on runway", getControlState());
                 return true;
             } else {
                 //If departure has not cleared runway
                 Aircraft dep = getAirport().getTakeoffManager().getPrevAircraft().get(getIls().getRwy().getName());
                 if (dep != null && dep.getAltitude() - getIls().getRwy().getElevation() < 10) {
-                    radarScreen.getCommBox().goAround(this, "traffic on runway", getControlState());
+                    radarScreen.getUtilityBox().getCommsManager().goAround(this, "traffic on runway", getControlState());
                     return true;
                 }
             }

@@ -41,6 +41,7 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.Traffic
 import com.bombbird.terminalcontrol.ui.*;
 import com.bombbird.terminalcontrol.ui.tabs.Tab;
 import com.bombbird.terminalcontrol.sounds.Pronunciation;
+import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
 import com.bombbird.terminalcontrol.utilities.Revision;
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
@@ -157,7 +158,7 @@ public class RadarScreen extends GameScreen {
     public TutorialManager tutorialManager = null;
 
     //Communication box to keep track of aircraft transmissions
-    private CommBox commBox;
+    private UtilityBox utilityBox;
 
     //Runway change box for changing runway configuration
     private RunwayChanger runwayChanger;
@@ -465,7 +466,7 @@ public class RadarScreen extends GameScreen {
                 Gdx.app.postRunnable(() -> {
                     if (!runwayChanger.isVisible()) return;
                     runwayChanger.hideAll();
-                    commBox.setVisible(true);
+                    utilityBox.setVisible(true);
                 });
                 metar.updateMetar(tutorial);
             }
@@ -565,8 +566,8 @@ public class RadarScreen extends GameScreen {
         ui.setNormalPane(true);
         ui.setSelectedPane(null);
 
-        //Load communication box
-        commBox = new CommBox();
+        //Load utility box
+        utilityBox = new UtilityBox();
 
         //Load runway change box
         runwayChanger = new RunwayChanger();
@@ -802,7 +803,7 @@ public class RadarScreen extends GameScreen {
         if (!UnlockManager.isTCHXAvailable() && lastTapped.first() == 'H' && lastTapped.last() == 'X') {
             //Easter egg unlocked
             UnlockManager.unlockEgg("HX");
-            commBox.alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
+            utilityBox.getCommsManager().alertMsg("Congratulations, you have found the easter egg! A new airport is waiting for you!");
         }
     }
 
@@ -942,7 +943,7 @@ public class RadarScreen extends GameScreen {
         } else {
             ui.setNormalPane(true);
             ui.setSelectedPane(null);
-            commBox.setVisible(true);
+            utilityBox.setVisible(true);
         }
         selectedAircraft = aircraft;
     }
@@ -1008,12 +1009,12 @@ public class RadarScreen extends GameScreen {
         return spawnTimer;
     }
 
-    public CommBox getCommBox() {
-        return commBox;
+    public UtilityBox getUtilityBox() {
+        return utilityBox;
     }
 
-    public void setCommBox(CommBox commBox) {
-        this.commBox = commBox;
+    public void setUtilityBox(UtilityBox utilityBox) {
+        this.utilityBox = utilityBox;
     }
 
     public HashSet<String> getAllAircraft() {
@@ -1035,7 +1036,7 @@ public class RadarScreen extends GameScreen {
     public void updateInformation() {
         information++;
         if (information > 90) information -= 26;
-        if (commBox != null) commBox.normalMsg("Information " + information + " is now current");
+        if (utilityBox != null) utilityBox.getCommsManager().normalMsg("Information " + information + " is now current");
     }
 
     public void setRadarTime(float radarTime) {

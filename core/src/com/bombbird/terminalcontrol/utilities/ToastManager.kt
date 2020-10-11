@@ -1,17 +1,17 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.GdxRuntimeException
 
-public interface ToastManager {
-    default void saveFail(GdxRuntimeException e) {
+interface ToastManager {
+    fun saveFail(e: GdxRuntimeException) {
         //No default implementation
     }
 
-    default void readStorageFail() {
+    fun readStorageFail() {
         //No default implementation
     }
 
-    default void jsonParseFail() {
+    fun jsonParseFail() {
         //No default implementation
     }
 }

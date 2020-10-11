@@ -220,7 +220,7 @@ public class Departure extends Aircraft {
         }
         if (getAltitude() >= contactAlt && !contacted) {
             setControlState(ControlState.DEPARTURE);
-            radarScreen.getCommBox().initialContact(this);
+            radarScreen.getUtilityBox().getCommsManager().initialContact(this);
             setActionRequired(true);
             getDataTag().startFlash();
             contacted = true;
@@ -268,7 +268,7 @@ public class Departure extends Aircraft {
                 setActionRequired(true);
                 getDataTag().startFlash();
                 ui.updateAckHandButton(this);
-                radarScreen.getCommBox().requestHigherClimb(this);
+                radarScreen.getUtilityBox().getCommsManager().requestHigherClimb(this);
                 askedForHigher = true;
             }
         } else {
@@ -400,7 +400,7 @@ public class Departure extends Aircraft {
             setActionRequired(true);
             getDataTag().startFlash();
             ui.updateAckHandButton(this);
-            radarScreen.getCommBox().sayRequest(this);
+            radarScreen.getUtilityBox().getCommsManager().sayRequest(this);
             setRequested(true);
         }
     }
@@ -419,9 +419,9 @@ public class Departure extends Aircraft {
         setExpedite(false);
         if (getExpediteTime() <= 120 && getAltitude() > Math.min(10000, radarScreen.maxAlt - 6000)) radarScreen.setScore(radarScreen.getScore() + 1);
         if (sid.getCentre() != null) {
-            radarScreen.getCommBox().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
+            radarScreen.getUtilityBox().getCommsManager().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
         } else {
-            radarScreen.getCommBox().contactFreq(this, "Centre", "120.5");
+            radarScreen.getUtilityBox().getCommsManager().contactFreq(this, "Centre", "120.5");
         }
     }
 

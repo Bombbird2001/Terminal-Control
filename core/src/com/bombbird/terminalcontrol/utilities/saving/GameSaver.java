@@ -640,7 +640,7 @@ public class GameSaver {
 
     private static JSONArray getCommBox() {
         JSONArray jsonArray = new JSONArray();
-        for (Label label: TerminalControl.radarScreen.getCommBox().getLabels()) {
+        for (Label label: TerminalControl.radarScreen.getUtilityBox().getCommsManager().getLabels()) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", label.getText());
             jsonObject.put("color", label.getStyle().fontColor.toString());

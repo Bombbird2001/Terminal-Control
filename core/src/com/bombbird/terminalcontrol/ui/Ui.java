@@ -285,7 +285,7 @@ public class Ui {
                 //Set game state to paused
                 if (radarScreen.getRunwayChanger().isVisible()) {
                     radarScreen.getRunwayChanger().hideAll();
-                    radarScreen.getCommBox().setVisible(true);
+                    radarScreen.getUtilityBox().setVisible(true);
                 }
                 radarScreen.setGameRunning(false);
                 event.handle();
@@ -312,7 +312,7 @@ public class Ui {
                     event.handle();
                     TerminalControl.radarScreen.getRunwayChanger().setAirport(airport.getIcao());
                     TerminalControl.radarScreen.getRunwayChanger().setMainVisible(true);
-                    TerminalControl.radarScreen.getCommBox().setVisible(false);
+                    TerminalControl.radarScreen.getUtilityBox().setVisible(false);
                 }
             });
             metarTable.add(metarInfo).width(paneImage.getWidth() * 0.6f).padBottom(70);
@@ -339,7 +339,7 @@ public class Ui {
         scoreLabel.setVisible(show);
         infoLabel.setVisible(show && infoLabel.getText().length > 0);
         pauseButton.setVisible(show);
-        if (radarScreen.getCommBox() != null) radarScreen.getCommBox().setVisible(show);
+        if (radarScreen.getUtilityBox() != null) radarScreen.getUtilityBox().setVisible(show);
     }
 
     public void setSelectedPane(Aircraft aircraft) {
@@ -681,7 +681,7 @@ public class Ui {
             actorArray.get(i).setX(actorXArray.get(i) * paneImage.getWidth());
             if (actorWidthArray.get(i) > 0) actorArray.get(i).setWidth(actorWidthArray.get(i) * paneImage.getWidth());
         }
-        radarScreen.getCommBox().updateHeaderWidth(paneImage.getWidth());
+        radarScreen.getUtilityBox().updateHeaderWidth(paneImage.getWidth());
     }
 
     private void updateTabVisibility(boolean show) {

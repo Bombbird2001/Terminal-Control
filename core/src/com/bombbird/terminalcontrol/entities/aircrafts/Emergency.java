@@ -208,16 +208,16 @@ public class Emergency {
                     if (!aircraft.getAirport().getRunways().get(rwy).isEmergencyClosed()) {
                         aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(true);
                         aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(true);
-                        radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now closed");
-                        radarScreen.getCommBox().normalMsg("Emergency vehicles are proceeding onto runway " + rwy);
+                        radarScreen.getUtilityBox().getCommsManager().normalMsg("Runway " + rwy + " is now closed");
+                        radarScreen.getUtilityBox().getCommsManager().normalMsg("Emergency vehicles are proceeding onto runway " + rwy);
                     }
 
                     if (stayOnRwyTime < 0) {
                         if (aircraft.getAirport().getRunways().containsKey(rwy)) {
                             aircraft.getAirport().getRunways().get(rwy).setEmergencyClosed(false);
                             aircraft.getAirport().getRunways().get(rwy).getOppRwy().setEmergencyClosed(false);
-                            radarScreen.getCommBox().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
-                            radarScreen.getCommBox().normalMsg("Runway " + rwy + " is now open");
+                            radarScreen.getUtilityBox().getCommsManager().normalMsg("Emergency vehicles and subject aircraft have vacated runway " + rwy);
+                            radarScreen.getUtilityBox().getCommsManager().normalMsg("Runway " + rwy + " is now open");
                         }
                         aircraft.getAirport().updateRunwayUsage();
                         stayOnRwy = false;
@@ -339,19 +339,19 @@ public class Emergency {
             intent = ", levelling off at " + altitude;
         }
         String text = "Mayday, mayday, mayday, " + aircraft.getCallsign() + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + intent;
-        radarScreen.getCommBox().warningMsg(text);
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(text);
         TerminalControl.tts.sayEmergency(aircraft, emergency, intent);
     }
 
     /** Adds comm box message, TTS to notify controller of intentions, whether fuel dump is required */
     private void sayRunChecklists() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " will need a few more minutes to run checklists" + (fuelDumpRequired ? " before dumping fuel" : ""));
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " will need a few more minutes to run checklists" + (fuelDumpRequired ? " before dumping fuel" : ""));
         TerminalControl.tts.sayRemainingChecklists(aircraft, fuelDumpRequired);
     }
 
     /** Adds comm box message, TTS when aircraft is ready to dump fuel */
     private void sayReadyForDump() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we are ready to dump fuel");
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we are ready to dump fuel");
         float bearing = 90 - MathUtils.radiansToDegrees * MathUtils.atan2(aircraft.getY() - 1620, aircraft.getX() - 2880);
         int dist = (int) MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), 2880, 1620));
         String dir = "";
@@ -365,25 +365,25 @@ public class Emergency {
         if (MathTools.withinRange(bearing, 240, 300)) dir = "west";
         if (MathTools.withinRange(bearing, 300, 330)) dir = "north-west";
         String alt = aircraft.getAltitude() >= radarScreen.transLvl ? ((int)(aircraft.getAltitude() / 100)) * 100 + " feet" : "FL" + (int)(aircraft.getAltitude() / 100);
-        radarScreen.getCommBox().normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.mainName + ", " + alt);
+        radarScreen.getUtilityBox().getCommsManager().normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.mainName + ", " + alt);
         TerminalControl.tts.sayReadyForDump(aircraft);
     }
 
     /** Adds comm box message, TTS when aircraft starts dumping fuel */
     private void sayDumping() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " is now dumping fuel");
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " is now dumping fuel");
         TerminalControl.tts.sayDumping(aircraft);
     }
 
     /** Adds comm box message, TTS when aircraft is halfway through fuel dump */
     private void sayRemainingDumpTime() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we'll need about " + sayRemainingTime + " more minutes");
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + ", we'll need about " + sayRemainingTime + " more minutes");
         TerminalControl.tts.sayRemainingDumpTime(aircraft, sayRemainingTime);
     }
 
     /** Adds comm box message, TTS when aircraft has finished dumping fuel, is ready for approach */
     private void sayReadyForApproach() {
-        radarScreen.getCommBox().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " is ready for approach" + (stayOnRwy ? ", we will stay on the runway after landing" : ""));
+        radarScreen.getUtilityBox().getCommsManager().warningMsg(aircraft.getCallsign() + aircraft.getWakeString() + " is ready for approach" + (stayOnRwy ? ", we will stay on the runway after landing" : ""));
         TerminalControl.tts.sayReadyForApproach(aircraft, stayOnRwy);
     }
 

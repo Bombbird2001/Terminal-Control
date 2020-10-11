@@ -1,9 +1,9 @@
-package com.bombbird.terminalcontrol.utilities;
+package com.bombbird.terminalcontrol.utilities
 
-public class Revision {
+object Revision {
     //All revision values
-    public static final int NAVSTATE_REVISION = 2;
+    const val NAVSTATE_REVISION = 2
 
     //Current revision
-    public static final int CURRENT_REVISION = NAVSTATE_REVISION;
+    const val CURRENT_REVISION = NAVSTATE_REVISION
 }

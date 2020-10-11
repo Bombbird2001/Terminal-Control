@@ -7,7 +7,7 @@ import com.bombbird.terminalcontrol.entities.runways.Runway;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.ui.CommBox;
+import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox;
 import com.bombbird.terminalcontrol.utilities.RenameManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,8 +43,8 @@ public class GameLoader {
         }
         TerminalControl.radarScreen.setAllAircraft(allAircrafts);
 
-        TerminalControl.radarScreen.getCommBox().remove();
-        TerminalControl.radarScreen.setCommBox(new CommBox(save.getJSONArray("commBox")));
+        TerminalControl.radarScreen.getUtilityBox().remove();
+        TerminalControl.radarScreen.setUtilityBox(new UtilityBox(save.getJSONArray("commBox")));
 
         TerminalControl.radarScreen.separationChecker.setLastNumber(save.getInt("lastNumber"));
         TerminalControl.radarScreen.separationChecker.setTime(save.isNull("sepTime") ? 3 : (float) save.getDouble("sepTime"));
