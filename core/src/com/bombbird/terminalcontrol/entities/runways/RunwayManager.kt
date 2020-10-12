@@ -21,73 +21,73 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
     private fun loadConfigs() {
         when (airport.icao) {
             "TCTP" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("05L", "05R"), arrayOf("05L", "05R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("23L", "23R"), arrayOf("23L", "23R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("05L", "05R"), arrayOf("05L", "05R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("23L", "23R"), arrayOf("23L", "23R")))
             }
             "TCSS" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("10"), arrayOf("10"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("28"), arrayOf("28"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("10"), arrayOf("10")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("28"), arrayOf("28")))
             }
             "TCWS" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("02L", "02C"), arrayOf("02L", "02C"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("20R", "20C"), arrayOf("20R", "20C"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("02L", "02C"), arrayOf("02L", "02C")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("20R", "20C"), arrayOf("20R", "20C")))
             }
             "TCTT" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("34R", "05"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("22", "23"), arrayOf("16L", "16R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("34R", "05")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("22", "23"), arrayOf("16L", "16R")))
                 //dayConfigs.add(RunwayConfig(airport, arrayOf("16L", "16R"), arrayOf("22", "16L"), false)) //16R for departure also?
-                nightConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("05"), true))
-                nightConfigs.add(RunwayConfig(airport, arrayOf("22", "23"), arrayOf("16L"), true))
+                nightConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("05")))
+                nightConfigs.add(RunwayConfig(airport, arrayOf("22", "23"), arrayOf("16L")))
             }
             "TCAA" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("34L", "34R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("16L", "16R"), arrayOf("16L", "16R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("34L", "34R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("16L", "16R"), arrayOf("16L", "16R")))
             }
             "TCBB" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("06L", "06R"), arrayOf("06L", "06R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("24L", "24R"), arrayOf("24L", "24R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("06L", "06R"), arrayOf("06L", "06R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("24L", "24R"), arrayOf("24L", "24R")))
             }
             "TCOO" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("32L"), arrayOf("32L"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf(), false)) //Empty runway configuration to represent unavailable runway configuration
+                dayConfigs.add(RunwayConfig(airport, arrayOf("32L"), arrayOf("32L")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf())) //Empty runway configuration to represent unavailable runway configuration
             }
             "TCBE" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("09"), arrayOf("09"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf(), false)) //Empty runway configuration to represent unavailable runway configuration
+                dayConfigs.add(RunwayConfig(airport, arrayOf("09"), arrayOf("09")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf())) //Empty runway configuration to represent unavailable runway configuration
             }
             "TCHH" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("07L", "07R"), arrayOf("07L", "07R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("25L", "25R"), arrayOf("25L", "25R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("07L", "07R"), arrayOf("07L", "07R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("25L", "25R"), arrayOf("25L", "25R")))
             }
             "TCMC" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("34"), arrayOf("34"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("16"), arrayOf("16"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("34"), arrayOf("34")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("16"), arrayOf("16")))
             }
             "TCBD" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("03L"), arrayOf("03R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("21R"), arrayOf("21L"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("03L"), arrayOf("03R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("21R"), arrayOf("21L")))
             }
             "TCBS" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("19L", "19R"), arrayOf("19L", "19R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("01L", "01R"), arrayOf("01L", "01R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("19L", "19R"), arrayOf("19L", "19R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("01L", "01R"), arrayOf("01L", "01R")))
             }
             "TCMD" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("32L", "32R"), arrayOf("36L", "36R"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("18L", "18R"), arrayOf("14L", "14R"), false))
-                nightConfigs.add(RunwayConfig(airport, arrayOf("32R"), arrayOf("36L"), true))
-                nightConfigs.add(RunwayConfig(airport, arrayOf("18L"), arrayOf("14L"), true))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("32L", "32R"), arrayOf("36L", "36R")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("18L", "18R"), arrayOf("14L", "14R")))
+                nightConfigs.add(RunwayConfig(airport, arrayOf("32R"), arrayOf("36L")))
+                nightConfigs.add(RunwayConfig(airport, arrayOf("18L"), arrayOf("14L")))
             }
             "TCPG" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("09L", "08R"), arrayOf("09R", "08L"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("26L", "27R"), arrayOf("27L", "26R"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("09L", "08R"), arrayOf("09R", "08L")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("26L", "27R"), arrayOf("27L", "26R")))
             }
             "TCPO" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("06"), arrayOf("07"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("25"), arrayOf("24"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("06"), arrayOf("07")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("25"), arrayOf("24")))
             }
             "TCHX" -> {
-                dayConfigs.add(RunwayConfig(airport, arrayOf("13"), arrayOf("13"), false))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("31"), arrayOf("31"), false))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("13"), arrayOf("13")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("31"), arrayOf("31")))
             }
         }
     }

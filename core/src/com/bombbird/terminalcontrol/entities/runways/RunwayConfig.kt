@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 
 /** Stores individual runway configuration info and comparison logic */
-class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, takeoffRunways: Array<String>, private val night: Boolean): Comparable<RunwayConfig> {
+class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, takeoffRunways: Array<String>): Comparable<RunwayConfig> {
     val landingRunways = HashMap<String, Runway>()
     val takeoffRunways = HashMap<String, Runway>()
     var allRunwaysEligible = false
