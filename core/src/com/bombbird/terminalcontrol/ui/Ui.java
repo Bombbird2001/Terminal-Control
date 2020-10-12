@@ -681,6 +681,7 @@ public class Ui {
             actorArray.get(i).setX(actorXArray.get(i) * paneImage.getWidth());
             if (actorWidthArray.get(i) > 0) actorArray.get(i).setWidth(actorWidthArray.get(i) * paneImage.getWidth());
         }
+        radarScreen.getUtilityBox().updateHeaderPosition();
     }
 
     private void updateTabVisibility(boolean show) {

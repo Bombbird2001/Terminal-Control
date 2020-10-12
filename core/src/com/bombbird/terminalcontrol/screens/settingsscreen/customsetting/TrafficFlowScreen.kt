@@ -111,7 +111,7 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
                 for (x in 0..120 step 10) array.add(x.toString())
                 valueBox.items = array
                 valueBox.selected = TerminalControl.radarScreen.flowRate.toString()
-                valueLabel.setText("Flow rate:")
+                valueLabel.setText("Flow rate:\n(Arrivals/hour)")
             }
         }
 

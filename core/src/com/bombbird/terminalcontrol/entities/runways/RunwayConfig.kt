@@ -1,12 +1,11 @@
 package com.bombbird.terminalcontrol.entities.runways
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 
 /** Stores individual runway configuration info and comparison logic */
-class RunwayConfig(private val airport: Airport, landingRunways: kotlin.Array<String>, takeoffRunways: kotlin.Array<String>, private val night: Boolean): Comparable<RunwayConfig> {
+class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, takeoffRunways: Array<String>, private val night: Boolean): Comparable<RunwayConfig> {
     val landingRunways = HashMap<String, Runway>()
     val takeoffRunways = HashMap<String, Runway>()
     var allRunwaysEligible = false

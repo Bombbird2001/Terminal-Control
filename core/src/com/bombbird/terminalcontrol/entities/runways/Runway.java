@@ -134,13 +134,14 @@ public class Runway {
 
         if (landing || takeoff) {
             shapeRenderer.setColor(radarScreen.getDefaultColour());
+            shapeRenderer.polygon(polygon.getVertices());
         } else if (!oppRwy.takeoff && !oppRwy.landing) {
             shapeRenderer.setColor(Color.DARK_GRAY);
+            shapeRenderer.polygon(polygon.getVertices());
         }
-        shapeRenderer.polygon(polygon.getVertices());
     }
 
-    /** Called to remove aircraft from the array of aircrafts on approach, should be called during go arounds/cancelling approaches */
+    /** Called to remove aircraft from the array of aircraft on approach, should be called during go arounds/cancelling approaches */
     public void removeFromArray(Aircraft aircraft) {
         aircraftsOnAppr.removeValue(aircraft, false);
     }

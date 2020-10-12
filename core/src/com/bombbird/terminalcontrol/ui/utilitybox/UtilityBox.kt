@@ -14,7 +14,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import org.json.JSONArray
 import kotlin.collections.HashMap
 
-class UtilityBox() {
+class UtilityBox {
     private val header: Label
 
     private val labelStyleStorage: HashMap<String, Label.LabelStyle> = HashMap()
@@ -32,8 +32,9 @@ class UtilityBox() {
 
     init {
         header = Label("Communications", getLabelStyle(Color.WHITE))
-        header.setAlignment(Align.right)
-        TerminalControl.radarScreen.ui.addActor(header, 0.15f, 0.3f, 3240 * 0.42f, 50f)
+        header.setAlignment(Align.center)
+        header.setPosition(TerminalControl.radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
+        TerminalControl.radarScreen.uiStage.addActor(header)
 
         commsManager = CommsManager(this)
         commsTable = Table()
@@ -72,17 +73,22 @@ class UtilityBox() {
         textButtonStyle.down = TerminalControl.skin.getDrawable("ListBackground")
         textButtonStyle.font = Fonts.defaultFont20
         textButtonStyle.fontColor = Color.BLACK
-        toggleButton = TextButton("=>", textButtonStyle)
+        toggleButton = TextButton("< >", textButtonStyle)
         toggleButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 commsPane.isVisible = !commsPane.isVisible
                 statusPane.isVisible = !statusPane.isVisible
                 statusManager.active = statusPane.isVisible
                 header.setText(if (statusManager.active) "Status" else "Communications")
+                updateHeaderPosition()
                 event.handle()
             }
         })
-        TerminalControl.radarScreen.ui.addActor(toggleButton, 0.65f, 0.15f, 3240 * 0.42f - 15, 100f)
+        TerminalControl.radarScreen.ui.addActor(toggleButton, 0.8f, 0.15f, 3240 * 0.42f - 25, 300f)
+    }
+
+    fun updateHeaderPosition() {
+        header.setPosition(TerminalControl.radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
     }
 
     fun loadSave(save: JSONArray) {
@@ -104,7 +110,9 @@ class UtilityBox() {
 
     fun setVisible(show: Boolean) {
         commsPane.isVisible = show && !statusManager.active
+        val statusWasVisible = statusPane.isVisible
         statusPane.isVisible = show && statusManager.active
+        if (!statusWasVisible && statusPane.isVisible) statusManager.timer = -1f //Reset timer if status pane just became visible
         header.isVisible = show
         toggleButton.isVisible = show
     }

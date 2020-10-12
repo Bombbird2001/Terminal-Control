@@ -15,19 +15,20 @@ import kotlin.math.ceil
 class StatusManager(private val utilityBox: UtilityBox) {
     var active = false
         set(value) {
-            if (!value) timer = -1f
+            if (value && !field) timer = -1f //Reset if was inactive but now is active
             field = value
         }
-    private var timer = -1f
+    var timer = -1f
 
     fun update() {
-        if (!active) return
+        if (!active || !utilityBox.statusPane.isVisible) return
         timer -= Gdx.graphics.deltaTime
         if (timer > 0) return
         timer = 2f
 
         val emergency = Array<String>()
         val runwayChange = Array<String>()
+        val goAround = Array<String>()
         val requests = Array<String>()
         val initialContact = Array<String>()
         val info = Array<String>()
@@ -50,15 +51,15 @@ class StatusManager(private val utilityBox: UtilityBox) {
                     }
                 }
                 emergency.add("[RED]$text")
-                continue
             }
 
+            text = "${aircraft.callsign}: "
             val colorStr = aircraft.color.toString()
             if (aircraft.isActionRequired) {
                 if (aircraft is Departure && aircraft.isAskedForHigher) {
                     text += "Request higher"
                     requests.add("[#$colorStr]$text")
-                } else {
+                } else if (aircraft.isRequested) {
                     when (aircraft.request) {
                         Aircraft.HIGH_SPEED_REQUEST -> {
                             text += "Request high speed"
@@ -69,23 +70,35 @@ class StatusManager(private val utilityBox: UtilityBox) {
                             requests.add("[#$colorStr]$text")
                         }
                         else -> {
-                            text += "Initial contact"
+                            text += "Unknown request"
                             initialContact.add("[#$colorStr]$text")
                         }
                     }
+                } else if (aircraft is Arrival && aircraft.isGoAroundWindow) {
+                    text += "Missed approach"
+                    goAround.add("[YELLOW]$text")
+                } else {
+                    text += "Initial contact"
+                    initialContact.add("[#$colorStr]$text")
                 }
             }
         }
 
         for (airport: Airport in TerminalControl.radarScreen.airports.values) {
-            if (airport.isPendingRwyChange) runwayChange.add("[BLACK]${airport.icao}: Pending runway change")
+            if (airport.isPendingRwyChange) runwayChange.add("[YELLOW]${airport.icao}: Pending runway change")
             if (airport.isClosed) info.add("[BLACK]${airport.icao}: Airport closed")
         }
 
         when (TerminalControl.radarScreen.trafficMode) {
             TrafficFlowScreen.NORMAL -> info.add("[BLACK]Traffic mode: Normal")
-            TrafficFlowScreen.PLANES_IN_CONTROL -> info.add("[BLACK]Traffic mode: Planes in control")
-            TrafficFlowScreen.FLOW_RATE -> info.add("[BLACK]Traffic mode: Flow rate")
+            TrafficFlowScreen.PLANES_IN_CONTROL -> {
+                info.add("[BLACK]Traffic mode: Planes in control")
+                info.add("[BLACK]Arrivals to control: ${TerminalControl.radarScreen.maxPlanes}")
+            }
+            TrafficFlowScreen.FLOW_RATE -> {
+                info.add("[BLACK]Traffic mode: Flow rate")
+                info.add("[BLACK]Arrival flow: ${TerminalControl.radarScreen.flowRate}/hr")
+            }
         }
 
         if (TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
@@ -93,6 +106,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         val finalArray = Array<String>()
         finalArray.addAll(emergency)
         finalArray.addAll(runwayChange)
+        finalArray.addAll(goAround)
         finalArray.addAll(requests)
         finalArray.addAll(initialContact)
         finalArray.addAll(info)
