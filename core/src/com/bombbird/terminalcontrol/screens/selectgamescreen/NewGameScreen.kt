@@ -1,119 +1,145 @@
-package com.bombbird.terminalcontrol.screens.selectgamescreen;
+package com.bombbird.terminalcontrol.screens.selectgamescreen
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
-import com.bombbird.terminalcontrol.screens.MainMenuScreen;
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader;
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.isTCHXAvailable
+import com.bombbird.terminalcontrol.screens.MainMenuScreen
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
-public class NewGameScreen extends SelectGameScreen {
-    public NewGameScreen(final TerminalControl game, Image background) {
-        super(game, background);
-        TerminalControl.updateRevision();
+class NewGameScreen(game: TerminalControl?, background: Image?) : SelectGameScreen(game, background) {
+    init {
+        TerminalControl.updateRevision()
     }
 
-    /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label */
-    @Override
-    public void loadLabel() {
+    /** Overrides loadLabel method in SelectGameScreen to load appropriate title for label  */
+    override fun loadLabel() {
         //Set label params
-        super.loadLabel();
-        Label headerLabel = new Label("Choose airport:", getLabelStyle());
-        headerLabel.setWidth(MainMenuScreen.BUTTON_WIDTH);
-        headerLabel.setHeight(MainMenuScreen.BUTTON_HEIGHT);
-        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f);
-        headerLabel.setAlignment(Align.center);
-        getStage().addActor(headerLabel);
+        super.loadLabel()
+        val headerLabel = Label("Choose airport:", labelStyle)
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
+        headerLabel.setAlignment(Align.center)
+        getStage().addActor(headerLabel)
     }
 
-    /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane */
-    @Override
-    public void loadScroll() {
+    /** Overrides loadButton method in SelectGameScreen to load an additional tutorial button */
+    override fun loadButtons() {
+        super.loadButtons()
+
+        val tutorialButton = TextButton("Tutorial", getButtonStyle())
+        tutorialButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL.toFloat())
+        tutorialButton.setPosition(2880 - 350f, 1620 * 0.6f)
+        tutorialButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val handle = Gdx.files.internal("game/available.arpt")
+                val airportArray = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
+                var airac = 1
+                for (arptData in airportArray) {
+                    val arpt = arptData.split(":".toRegex()).toTypedArray()[0]
+                    if (arpt == "TCTP") {
+                        airac = arptData.split(":".toRegex()).toTypedArray()[1].split(",".toRegex()).toTypedArray()[0].split("-".toRegex()).toTypedArray()[1].toInt()
+                        break
+                    }
+                }
+
+                if (airac == -1) {
+                    Gdx.app.log("NewGameScreen", "Tutorial airport TCTP's AIRAC unavailable")
+                    return
+                }
+
+                val radarScreen = RadarScreen(game, "TCTP", airac, -1, true)
+                TerminalControl.radarScreen = radarScreen
+                game.screen = radarScreen
+            }
+
+        })
+        stage.addActor(tutorialButton)
+    }
+
+    /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane  */
+    override fun loadScroll() {
         //Load airports
-        Array<String> airports = new Array<>();
-        airports.add("Tutorial", "TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport");
+        val airports = Array<String>()
+        airports.add("TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport")
         if (TerminalControl.full) {
-            airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport");
-            airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport");
+            airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport")
+            airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport")
         }
-        airports.add(UnlockManager.isTCHXAvailable() ? "TCHX\nTai Kek International Airport" : "????");
-        for (final String airport: airports) {
-            TextButton airportButton = new TextButton(airport, getButtonStyle());
-            airportButton.setName(airport.substring(0, 4));
-            airportButton.getLabel().setWrap(true);
-            airportButton.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    String name = actor.getName();
-                    boolean tutorial = false;
-                    if ("Tuto".equals(name)) {
-                        name = "TCTP";
-                        tutorial = true;
-                    } else if ("????".equals(name)) {
-                        airportButton.setText("Hmmm... there may or may not be a free airport somewhere?");
-                        return;
+        airports.add(if (isTCHXAvailable) "TCHX\nTai Kek International Airport" else "????")
+        for (airport in airports) {
+            val airportButton = TextButton(airport, getButtonStyle())
+            airportButton.name = airport.substring(0, 4)
+            airportButton.label.setWrap(true)
+            airportButton.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent, actor: Actor) {
+                    val name = actor.name
+                    if ("????" == name) {
+                        airportButton.setText("Hmmm... there may or may not be a free airport somewhere?")
+                        return
                     }
-                    FileHandle handle = Gdx.files.internal("game/available.arpt");
-                    String[] airports = handle.readString().split("\\r?\\n");
-                    boolean found = false;
-                    int airac = -1;
-                    for (String arptData: airports) {
-                        String arpt = arptData.split(":")[0];
-                        if (arpt.equals(name)) {
-                            found = true;
-                            airac = Integer.parseInt(arptData.split(":")[1].split(",")[0].split("-")[1]);
-                            break;
+                    val handle = Gdx.files.internal("game/available.arpt")
+                    val airportArray = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
+                    var found = false
+                    var airac = -1
+                    for (arptData in airportArray) {
+                        val arpt = arptData.split(":".toRegex()).toTypedArray()[0]
+                        if (arpt == name) {
+                            found = true
+                            airac = arptData.split(":".toRegex()).toTypedArray()[1].split(",".toRegex()).toTypedArray()[0].split("-".toRegex()).toTypedArray()[1].toInt()
+                            break
                         }
                     }
-
-                    FileHandle handle1;
-                    if (Gdx.app.getType() == Application.ApplicationType.Android) {
-                        handle1 = Gdx.files.local("saves/saves.saves");
-                    } else if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-                        handle1 = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves");
-                    } else {
-                        handle1 = Gdx.files.local("saves/saves.saves");
-                        Gdx.app.log("File load error", "Unknown platform " + Gdx.app.getType().name() + " used!");
+                    val handle1: FileHandle
+                    when (Gdx.app.type) {
+                        Application.ApplicationType.Android -> handle1 = Gdx.files.local("saves/saves.saves")
+                        Application.ApplicationType.Desktop -> handle1 = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves")
+                        else -> {
+                            handle1 = Gdx.files.local("saves/saves.saves")
+                            Gdx.app.log("File load error", "Unknown platform " + Gdx.app.type.name + " used!")
+                        }
                     }
-                    int slot = 0;
+                    var slot = 0
                     if (handle1.exists()) {
-                        Array<String> saves = new Array<>(handle1.readString().split(","));
-                        while (saves.contains(Integer.toString(slot), false)) {
-                            slot++;
+                        val saves = Array(handle1.readString().split(",".toRegex()).toTypedArray())
+                        while (saves.contains(slot.toString(), false)) {
+                            slot++
                         }
                     }
-
                     if (found && airac > -1) {
-                        RadarScreen radarScreen = new RadarScreen(game, name, airac, slot, tutorial);
-                        TerminalControl.radarScreen = radarScreen;
-                        game.setScreen(radarScreen);
+                        val radarScreen = RadarScreen(game, name, airac, slot, false)
+                        TerminalControl.radarScreen = radarScreen
+                        game.screen = radarScreen
                     } else {
                         if (!found) {
-                            Gdx.app.log("Directory not found", "Directory not found for " + name);
+                            Gdx.app.log("Directory not found", "Directory not found for $name")
                         } else {
-                            Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle " + airac);
+                            Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle $airac")
                         }
                     }
-                    event.handle();
+                    event.handle()
                 }
-            });
-            getScrollTable().add(airportButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT);
-            getScrollTable().row();
+            })
+            scrollTable.add(airportButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT.toFloat())
+            scrollTable.row()
         }
-        ScrollPane scrollPane = new ScrollPane(getScrollTable());
-        scrollPane.setupFadeScrollBars(1, 1.5f);
-        scrollPane.setX(2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.6f);
-        scrollPane.setY(1620 * 0.2f);
-        scrollPane.setWidth(MainMenuScreen.BUTTON_WIDTH * 1.2f);
-        scrollPane.setHeight(1620 * 0.6f);
-
-        getStage().addActor(scrollPane);
+        val scrollPane = ScrollPane(scrollTable)
+        scrollPane.setupFadeScrollBars(1f, 1.5f)
+        scrollPane.x = 2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.6f
+        scrollPane.y = 1620 * 0.2f
+        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 1.2f
+        scrollPane.height = 1620 * 0.6f
+        getStage().addActor(scrollPane)
     }
 }

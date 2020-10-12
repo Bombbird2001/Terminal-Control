@@ -44,43 +44,33 @@ object Fonts {
         defaultFont30 = generateFont(defaultFont, 120, -1)
     }
 
-    private fun generateFont(generator: FreeTypeFontGenerator?, size: Int, lineHeight: Int): BitmapFont {
-        return if (!TerminalControl.ishtml) {
-            val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
-            parameter.size = size
-            parameter.minFilter = Texture.TextureFilter.Nearest
-            parameter.magFilter = Texture.TextureFilter.MipMapLinearNearest
-            generator!!.scaleForPixelHeight(size)
-            val font = generator.generateFont(parameter)
-            font.data.markupEnabled = true
-            if (lineHeight > -1) font.data.setLineHeight(lineHeight.toFloat())
-            font
-        } else {
-            val bitmapFont = BitmapFont()
-            bitmapFont.data.setScale(size / 160f * 3f)
-            bitmapFont.data.markupEnabled = true
-            if (lineHeight > -1) bitmapFont.data.setLineHeight(lineHeight.toFloat())
-            bitmapFont
-        }
+    private fun generateFont(generator: FreeTypeFontGenerator?, size: Int, lineHeight: Int): BitmapFont? {
+        if (generator == null) return null
+        val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
+        parameter.size = size
+        parameter.minFilter = Texture.TextureFilter.Nearest
+        parameter.magFilter = Texture.TextureFilter.MipMapLinearNearest
+        generator.scaleForPixelHeight(size)
+        val font = generator.generateFont(parameter)
+        font.data.markupEnabled = true
+        if (lineHeight > -1) font.data.setLineHeight(lineHeight.toFloat())
+        return font
     }
 
     @JvmStatic
     fun dispose() {
-        if (!TerminalControl.ishtml && defaultFont != null) {
-            defaultFont!!.dispose()
-        }
-        if (defaultFont6 != null) {
-            defaultFont6!!.dispose()
-            compressedFont6!!.dispose()
-            expandedFont6!!.dispose()
-            defaultFont8!!.dispose()
-            defaultFont10!!.dispose()
-            defaultFont12!!.dispose()
-            defaultFont16!!.dispose()
-            defaultFont20!!.dispose()
-            defaultFont24!!.dispose()
-            defaultFont30!!.dispose()
-        }
+        defaultFont?.dispose()
+        defaultFont6?.dispose()
+        compressedFont6?.dispose()
+        expandedFont6?.dispose()
+        defaultFont8?.dispose()
+        defaultFont10?.dispose()
+        defaultFont12?.dispose()
+        defaultFont16?.dispose()
+        defaultFont20?.dispose()
+        defaultFont24?.dispose()
+        defaultFont30?.dispose()
+
         defaultFont = null
         defaultFont6 = null
         compressedFont6 = null

@@ -15,7 +15,6 @@ class AndroidLauncher : TextToSpeechManager() {
         config.numSamples = 0
         config.useAccelerometer = false
         config.useCompass = false
-        TerminalControl.ishtml = false
         initialize(TerminalControl(this, toastManager, object : DiscordManager {}), config)
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA

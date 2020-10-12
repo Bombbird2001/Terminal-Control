@@ -164,7 +164,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
-        TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + achievementList[name]!!.title)
+        TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
     }
 
@@ -172,8 +172,10 @@ object UnlockManager {
     private fun checkNewUnlocks(): Boolean {
         var newUnlock = false
         for (unlockName in unlockList.keys) {
-            if (planesLanded >= unlockList[unlockName]!!) {
-                newUnlock = unlocks.add(unlockName)
+            unlockList[unlockName]?.let {
+                if (planesLanded >= it) {
+                    newUnlock = unlocks.add(unlockName)
+                }
             }
         }
         return newUnlock
