@@ -1016,10 +1016,6 @@ public class RadarScreen extends GameScreen {
         return utilityBox;
     }
 
-    public void setUtilityBox(UtilityBox utilityBox) {
-        this.utilityBox = utilityBox;
-    }
-
     public HashSet<String> getAllAircraft() {
         return allAircraft;
     }
