@@ -9,7 +9,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldProcedure;
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.zones.sidstarzone.SidStarZone;
+import com.bombbird.terminalcontrol.entities.zones.SidStarZone;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.utilities.math.MathTools;
 import org.json.JSONArray;
@@ -24,7 +24,7 @@ public class Route {
     private HoldProcedure holdProcedure;
 
     private int heading;
-    private final SidStarZone sidStarZone;
+    private SidStarZone sidStarZone;
 
     private String name;
 
@@ -37,8 +37,6 @@ public class Route {
         flyOver = new Array<>();
 
         heading = -1;
-
-        sidStarZone = new SidStarZone(this);
     }
 
     /** Create a new Route based on STAR, for compatibility with older versions */
@@ -60,7 +58,7 @@ public class Route {
 
         name = star.getName();
 
-        sidStarZone.calculatePolygons(0);
+        loadStarZone();
     }
 
     /** Create a new Route based on SID, for compatibility with older versions */
@@ -87,7 +85,7 @@ public class Route {
 
         name = sid.getName();
 
-        sidStarZone.calculatePolygons(wpts.size - 1);
+        loadSidZone(null, null, -1);
     }
 
     /** Create new Route based on newly assigned STAR */
@@ -137,7 +135,7 @@ public class Route {
 
         name = star.getName();
 
-        sidStarZone.calculatePolygons(0);
+        loadStarZone();
     }
 
     /** Create new Route based on newly assigned SID */
@@ -168,8 +166,7 @@ public class Route {
 
         name = sid.getName();
 
-        sidStarZone.calculatePolygons(wpts.size - 1);
-        sidStarZone.calculateDepRwyPolygons(aircraft.getAirport().getRunways().get(runway), sid, climbRate);
+        loadSidZone(aircraft.getAirport().getRunways().get(runway), sid, climbRate);
     }
 
     /** Create new Route based on saved route, called only by other constructors */
@@ -199,8 +196,7 @@ public class Route {
 
         if ("null".equals(name) && sid != null) name = sid.getName();
 
-        sidStarZone.calculatePolygons(wpts.size - 1);
-        sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate);
+        loadSidZone(runway, sid, climbRate);
     }
 
     /** Create new Route based on saved route and STAR name */
@@ -210,7 +206,20 @@ public class Route {
 
         name = star.getName();
 
+        loadStarZone();
+    }
+
+    /** Loads sidStarZone for STAR routes */
+    private void loadStarZone() {
+        sidStarZone = new SidStarZone(this, false);
         sidStarZone.calculatePolygons(0);
+    }
+
+    /** Loads sidStarZone for SID routes */
+    private void loadSidZone(Runway runway, Sid sid, int climbRate) {
+        sidStarZone = new SidStarZone(this, true);
+        sidStarZone.calculatePolygons(wpts.size - 1);
+        if (runway != null && sid != null && climbRate > -1) sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate);
     }
 
     /** Draws the lines between aircraft, waypoints with shapeRenderer */
@@ -239,16 +248,16 @@ public class Route {
         }
     }
 
-    /** Draws the sidstarzone boundaries */
+    /** Draws the sidStarZone boundaries */
     public void drawPolygons() {
         for (Polygon polygon: sidStarZone.getPolygons()) {
             radarScreen.shapeRenderer.polygon(polygon.getTransformedVertices());
         }
     }
 
-    /** Checks whether supplied coordinates is within the sidstarzone of the route */
-    public boolean inSidStarZone(float x, float y) {
-        return sidStarZone.contains(x, y);
+    /** Checks whether supplied coordinates is within the sidStarZone of the route */
+    public boolean inSidStarZone(float x, float y, float alt) {
+        return sidStarZone.contains(x, y, alt);
     }
 
     public Array<Waypoint> getWaypoints() {

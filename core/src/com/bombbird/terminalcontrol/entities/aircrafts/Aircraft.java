@@ -1547,24 +1547,6 @@ public class Aircraft extends Actor {
         //No default implementation
     }
 
-    /** Checks whether the aircraft altitude is lower than the minimum altitude on current leg of SID/STAR, returns true if so; aircraft alt mode must be climb via SID/descend via STAR */
-    public boolean isBelowSidStarMinAlt() {
-        if (navState.getDispLatMode().last() == NavState.SID_STAR && navState.getDispAltMode().last() == NavState.SID_STAR_RESTR) {
-            //Aircraft is following SID/STAR, alt mode is SID/STAR restriction
-            String wptName = navState.getClearedDirect().last().getName();
-            if (this instanceof Arrival) {
-                return route.findWptIndex(wptName) > -1 && altitude < route.getWptMinAlt(wptName) - 100;
-            } else if (this instanceof Departure) {
-                return route.findWptIndex(wptName) >= 1 && altitude < route.getWptMinAlt(route.findWptIndex(wptName) - 1) - 100;
-            } else {
-                //Unknown type???
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
     /** Overridden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
     public void resetApchSpdSet() {
         //No default implementation

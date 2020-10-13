@@ -51,8 +51,8 @@ public class AreaPenetrationChecker {
                             continue;
                         }
 
-                        if ((aircraft.getNavState().getDispLatMode().first() == NavState.SID_STAR || (aircraft.getIls() != null && aircraft.getIls().isInsideILS(positionPoint.x, positionPoint.y))) && !obstacle.isEnforced() && aircraft.getRoute().inSidStarZone(positionPoint.x, positionPoint.y)) {
-                            //If latMode is STAR/SID or point is within localizer range, is within sidstarzone and obstacle is not a restricted area, ignore
+                        if ((aircraft.getNavState().getDispLatMode().first() == NavState.SID_STAR || (aircraft.getIls() != null && aircraft.getIls().isInsideILS(positionPoint.x, positionPoint.y))) && !obstacle.isEnforced() && aircraft.getRoute().inSidStarZone(positionPoint.x, positionPoint.y, aircraft.getAltitude())) {
+                            //If latMode is STAR/SID or point is within localizer range, is within sidStarZone and obstacle is not a restricted area, ignore
                             continue;
                         }
 

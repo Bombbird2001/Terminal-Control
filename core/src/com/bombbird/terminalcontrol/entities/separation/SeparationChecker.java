@@ -270,8 +270,7 @@ public class SeparationChecker extends Actor {
 
             boolean conflict = false;
             boolean isVectored = aircraft.isVectored() && (aircraft.getIls() == null || !aircraft.getIls().isInsideILS(aircraft.getX(), aircraft.getY())); //Technically not being vectored if within localizer range
-            boolean isBelowMinAlt = aircraft.isBelowSidStarMinAlt();
-            boolean isInZone = aircraft.getRoute().inSidStarZone(aircraft.getX(), aircraft.getY());
+            boolean isInZone = aircraft.getRoute().inSidStarZone(aircraft.getX(), aircraft.getY(), aircraft.getAltitude()); //No need for belowMinAlt as this already takes into account
 
             for (Obstacle obstacle : radarScreen.obsArray) {
                 //If aircraft is infringing obstacle
@@ -281,7 +280,7 @@ public class SeparationChecker extends Actor {
                         conflict = true;
                     } else {
                         //Not enforced, conflict only if not excluded, is vectored, is below the STAR minimum altitude or is not within the SID/STAR zone
-                        conflict = isVectored || isBelowMinAlt || !isInZone;
+                        conflict = isVectored || !isInZone;
                         obstacle.setConflict(conflict);
                     }
                     if (conflict) break;
