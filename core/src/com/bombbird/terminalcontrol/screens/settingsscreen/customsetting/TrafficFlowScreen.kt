@@ -174,6 +174,7 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
                 TerminalControl.radarScreen.trafficMode = modeBox.selectedIndex
                 TerminalControl.radarScreen.flowRate = if (modeBox.selectedIndex == 2) (valueBox.selected?.toInt() ?: -1) else -1
                 TerminalControl.radarScreen.maxPlanes = if (modeBox.selectedIndex == 1) (valueBox.selected?.toInt() ?: -1) else -1
+                if (modeBox.selectedIndex == PLANES_IN_CONTROL) TerminalControl.radarScreen.planesToControl = valueBox.selected?.toFloat() ?: -1f
                 for (airport: Map.Entry<String, SelectBox<String>> in airportClosed) {
                     TerminalControl.radarScreen.airports[airport.key]?.isClosed = airport.value.selectedIndex == 1
                 }

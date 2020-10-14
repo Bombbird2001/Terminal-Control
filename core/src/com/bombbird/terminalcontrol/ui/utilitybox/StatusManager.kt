@@ -37,7 +37,8 @@ class StatusManager(private val utilityBox: UtilityBox) {
             var text = "${aircraft.callsign}: "
             if (aircraft is Arrival && aircraft.emergency.isActive) {
                 text += when {
-                    aircraft.emergency.readyForApproach -> "Ready for approach" + if (aircraft.emergency.stayOnRwy) ", will remain on runways" else ""
+                    aircraft.emergency.stayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.ils?.name?.substring(3)} closed"
+                    aircraft.emergency.readyForApproach -> "Ready for approach" + if (aircraft.emergency.stayOnRwy) ", will remain on runway" else ""
                     aircraft.emergency.dumpingFuel -> "Dumping fuel" + if (aircraft.emergency.remainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble())} mins remaining" else ""
                     aircraft.emergency.checklistsSaid -> "Running checklists" + if (aircraft.emergency.fuelDumpRequired) ", fuel dump required" else ""
                     else -> when (aircraft.emergency.type) {
