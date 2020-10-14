@@ -1,29 +1,30 @@
-package com.bombbird.terminalcontrol.entities.trafficmanager;
+package com.bombbird.terminalcontrol.entities.trafficmanager
 
-import java.util.HashMap;
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager.isNight
+import java.util.HashMap
 
-public class MaxTraffic {
-    private static final HashMap<String, Float> maxTraffic = new HashMap<>();
-    private static final HashMap<String, Float> nightMaxTraffic = new HashMap<>();
-
-    public static void loadHashmaps() {
-        maxTraffic.put("TCTP", 20f);
-        maxTraffic.put("TCWS", 16f);
-        maxTraffic.put("TCTT", 26f);
-        maxTraffic.put("TCBB", 18f);
-        maxTraffic.put("TCHH", 20f);
-        maxTraffic.put("TCBD", 20f);
-        maxTraffic.put("TCMD", 22f);
-        maxTraffic.put("TCPG", 24f);
-        maxTraffic.put("TCHX", 10f);
-
-        nightMaxTraffic.put("TCTT", 6f);
-        nightMaxTraffic.put("TCBB", 8f);
-        nightMaxTraffic.put("TCHH", 14f);
-        nightMaxTraffic.put("TCMD", 14f);
+object MaxTraffic {
+    private val maxTraffic = HashMap<String, Float>()
+    private val nightMaxTraffic = HashMap<String, Float>()
+    @JvmStatic
+    fun loadHashmaps() {
+        maxTraffic["TCTP"] = 20f
+        maxTraffic["TCWS"] = 16f
+        maxTraffic["TCTT"] = 26f
+        maxTraffic["TCBB"] = 18f
+        maxTraffic["TCHH"] = 20f
+        maxTraffic["TCBD"] = 20f
+        maxTraffic["TCMD"] = 22f
+        maxTraffic["TCPG"] = 24f
+        maxTraffic["TCHX"] = 10f
+        nightMaxTraffic["TCTT"] = 6f
+        nightMaxTraffic["TCBB"] = 8f
+        nightMaxTraffic["TCHH"] = 14f
+        nightMaxTraffic["TCMD"] = 14f
     }
 
-    public static float getMaxTraffic(String icao) {
-        return DayNightManager.isNight() && nightMaxTraffic.containsKey(icao) ? nightMaxTraffic.get(icao) : maxTraffic.get(icao);
+    @JvmStatic
+    fun getMaxTraffic(icao: String): Float {
+        return if (isNight && nightMaxTraffic.containsKey(icao)) nightMaxTraffic[icao]!! else maxTraffic[icao]!!
     }
 }
