@@ -606,7 +606,7 @@ public class LatTab extends Tab {
                 altMode = NavState.SID_STAR_RESTR;
                 selectedAircraft.getNavState().updateAltModes(NavState.REMOVE_UNRESTR, false);
                 int lowestAlt = selectedAircraft.getRoute().getWptMinAlt(selectedAircraft.getRoute().getWaypoints().size - 1);
-                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.minAlt;
+                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.getMinAlt();
                 clearedAlt = lowestAlt;
             } else if (clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
                 if (selectedAircraft.getNavState().containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT)) {

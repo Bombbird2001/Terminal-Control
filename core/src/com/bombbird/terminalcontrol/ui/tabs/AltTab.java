@@ -75,34 +75,34 @@ public class AltTab extends Tab {
         Array<Integer> allAlts;
         if (selectedAircraft instanceof Departure) {
             lowestAlt = selectedAircraft.getLowestAlt();
-            highestAlt = TerminalControl.radarScreen.maxAlt;
+            highestAlt = TerminalControl.radarScreen.getMaxAlt();
             if (altMode == NavState.SID_STAR_RESTR && selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt) > highestAlt) {
                 highestAlt = selectedAircraft.getRoute().getWptMinAlt(LatTab.clearedWpt);
             }
             allAlts = createAltArray(lowestAlt, highestAlt);
         } else if (selectedAircraft instanceof Arrival) {
-            lowestAlt = TerminalControl.radarScreen.minAlt;
+            lowestAlt = TerminalControl.radarScreen.getMinAlt();
             boolean apchMode = false;
             if (latMode == NavState.SID_STAR && !clearedILS.equals(Ui.NOT_CLEARED_APCH)) {
                 apchMode = true;
                 lowestAlt = selectedAircraft.getRoute().getWptMinAlt(selectedAircraft.getRoute().getWaypoints().size - 1);
-                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.minAlt;
+                if (lowestAlt == -1) lowestAlt = TerminalControl.radarScreen.getMinAlt();
                 highestAlt = lowestAlt;
             } else if (latMode == NavState.HOLD_AT) {
                 int[] restr = selectedAircraft.getRoute().getHoldProcedure().getAltRestAtWpt(TerminalControl.radarScreen.waypoints.get(LatTab.holdWpt));
                 lowestAlt = restr[0];
                 highestAlt = restr[1];
-            } else if (altMode == NavState.SID_STAR_RESTR && selectedAircraft.getAltitude() < TerminalControl.radarScreen.maxAlt) {
+            } else if (altMode == NavState.SID_STAR_RESTR && selectedAircraft.getAltitude() < TerminalControl.radarScreen.getMaxAlt()) {
                 //Set alt restrictions in box
                 highestAlt = (int) selectedAircraft.getAltitude();
                 highestAlt -= highestAlt % 1000;
-                int starHighestAlt = selectedAircraft.getDirect() == null ? TerminalControl.radarScreen.maxAlt : selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
+                int starHighestAlt = selectedAircraft.getDirect() == null ? TerminalControl.radarScreen.getMaxAlt() : selectedAircraft.getRoute().getWptMaxAlt(selectedAircraft.getDirect().getName());
                 if (starHighestAlt > -1) highestAlt = starHighestAlt;
             }
             if (highestAlt == -1) {
-                highestAlt = TerminalControl.radarScreen.maxAlt;
+                highestAlt = TerminalControl.radarScreen.getMaxAlt();
             }
-            if (!apchMode && highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.maxAlt) {
+            if (!apchMode && highestAlt < (int) selectedAircraft.getAltitude() && (int) selectedAircraft.getAltitude() <= TerminalControl.radarScreen.getMaxAlt()) {
                 highestAlt = ((int) selectedAircraft.getAltitude()) / 1000 * 1000;
             }
             if (selectedAircraft.getEmergency().isActive() && selectedAircraft.getEmergency().getType() == Emergency.Type.PRESSURE_LOSS) {
@@ -130,10 +130,10 @@ public class AltTab extends Tab {
         clearedAlt = MathUtils.clamp(clearedAlt, allAlts.first(), allAlts.get(allAlts.size - 1));
         //Adds the possible altitudes between range to array
         for (int alt: allAlts) {
-            alts.add(alt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + alt / 100 : String.valueOf(alt));
+            alts.add(alt / 100 >= TerminalControl.radarScreen.getTransLvl() ? "FL" + alt / 100 : String.valueOf(alt));
         }
         valueBox.setItems(alts);
-        valueBox.setSelected(clearedAlt / 100 >= TerminalControl.radarScreen.transLvl ? "FL" + clearedAlt / 100 : Integer.toString(clearedAlt));
+        valueBox.setSelected(clearedAlt / 100 >= TerminalControl.radarScreen.getTransLvl() ? "FL" + clearedAlt / 100 : Integer.toString(clearedAlt));
         expediteButton.setChecked(clearedExpedite);
         notListening = false;
     }

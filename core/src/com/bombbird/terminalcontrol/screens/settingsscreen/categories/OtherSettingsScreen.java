@@ -126,7 +126,7 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
     /** Loads actors for display settings into tabs */
     @Override
     public void loadTabs() {
-        if (radarScreen != null && radarScreen.tutorial) {
+        if (radarScreen != null && radarScreen.getTutorial()) {
             setOptions();
             //Only show speed tab in tutorial settings
             SettingsTab tab1 = new SettingsTab(this, 2);
@@ -153,10 +153,10 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
         if (radarScreen != null) {
             speedSel = radarScreen.speed;
             speed.setSelected(speedSel + "x");
-            weatherSel = radarScreen.weatherSel;
-            soundSel = radarScreen.soundSel;
-            radarSweep = radarScreen.radarSweepDelay;
-            if (radarScreen.tutorial) return;
+            weatherSel = radarScreen.getWeatherSel();
+            soundSel = radarScreen.getSoundSel();
+            radarSweep = radarScreen.getRadarSweepDelay();
+            if (radarScreen.getTutorial()) return;
         } else {
             radarSweep = TerminalControl.radarSweep;
             weatherSel = TerminalControl.weatherSel;
@@ -176,11 +176,11 @@ public class OtherSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void sendChanges() {
         if (radarScreen != null) {
-            boolean changedToLive = weatherSel == RadarScreen.Weather.LIVE && radarScreen.weatherSel != RadarScreen.Weather.LIVE;
-            radarScreen.weatherSel = weatherSel;
-            radarScreen.soundSel = soundSel;
+            boolean changedToLive = weatherSel == RadarScreen.Weather.LIVE && radarScreen.getWeatherSel() != RadarScreen.Weather.LIVE;
+            radarScreen.setWeatherSel(weatherSel);
+            radarScreen.setSoundSel(soundSel);
             radarScreen.speed = speedSel;
-            radarScreen.radarSweepDelay = radarSweep;
+            radarScreen.setRadarSweepDelay(radarSweep);
             if (radarSweep < radarScreen.getRadarTime()) radarScreen.setRadarTime(radarSweep);
             if (changedToLive) radarScreen.getMetar().updateMetar(false); //If previous weather mode was not live, but now is changed to live, get live weather immediately
             Gdx.app.postRunnable(() -> radarScreen.ui.updateInfoLabel());

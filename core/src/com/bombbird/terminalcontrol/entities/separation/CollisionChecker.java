@@ -31,7 +31,7 @@ public class CollisionChecker {
         }
         aircraftStorage.clear();
         pointStorage.clear();
-        for (int a = Trajectory.INTERVAL; a <= radarScreen.collisionWarning; a += Trajectory.INTERVAL) {
+        for (int a = Trajectory.INTERVAL; a <= radarScreen.getCollisionWarning(); a += Trajectory.INTERVAL) {
             Array<Array<PositionPoint>> altitudePositionMatrix = radarScreen.trajectoryStorage.getPoints().get(a / 5 - 1);
             //Check for each separate timing
             for (int i = 0; i < altitudePositionMatrix.size; i++) {
@@ -75,7 +75,7 @@ public class CollisionChecker {
                             continue;
                         }
 
-                        if (point1.altitude < aircraft1.getAirport().getElevation() + 1400 || point2.altitude < aircraft2.getAirport().getElevation() + 1400 || (aircraft1.getAltitude() > radarScreen.maxAlt && aircraft2.getAltitude() > radarScreen.maxAlt)) {
+                        if (point1.altitude < aircraft1.getAirport().getElevation() + 1400 || point2.altitude < aircraft2.getAirport().getElevation() + 1400 || (aircraft1.getAltitude() > radarScreen.getMaxAlt() && aircraft2.getAltitude() > radarScreen.getMaxAlt())) {
                             //If either point is below 1400 feet or both above max alt
                             continue;
                         }
@@ -109,7 +109,7 @@ public class CollisionChecker {
                         //Go around will not be considered as exceptions to the collision warning
 
                         float dist = MathTools.pixelToNm(MathTools.distanceBetween(point1.x, point1.y, point2.x, point2.y));
-                        float minima = radarScreen.separationMinima;
+                        float minima = radarScreen.getSeparationMinima();
 
                         if (aircraft1.getIls() != null && aircraft2.getIls() != null && aircraft1.getIls().isInsideILS(aircraft1.getX(), aircraft1.getY()) && aircraft2.getIls().isInsideILS(aircraft2.getX(), aircraft2.getY())) {
                             //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm (using 1.85 so effective is 2.05)
@@ -144,7 +144,7 @@ public class CollisionChecker {
 
             float midX = (point1.x + point2.x) / 2;
             float midY = (point1.y + point2.y) / 2;
-            float halfLength = MathTools.nmToPixel((radarScreen.separationMinima + 0.2f) / 2);
+            float halfLength = MathTools.nmToPixel((radarScreen.getSeparationMinima() + 0.2f) / 2);
             radarScreen.shapeRenderer.rect(midX - halfLength, midY - halfLength, 2 * halfLength, 2 * halfLength);
         }
     }

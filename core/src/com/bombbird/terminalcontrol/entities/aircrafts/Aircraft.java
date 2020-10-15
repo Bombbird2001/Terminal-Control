@@ -170,7 +170,7 @@ public class Aircraft extends Actor {
         apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor / 8));
         if (airport.getLandingRunways().size() == 0) {
             //No landing runways available at departure airport, land at main airport instead
-            this.airport = radarScreen.airports.get(radarScreen.mainName);
+            this.airport = radarScreen.airports.get(radarScreen.getMainName());
         } else {
             this.airport = airport;
         }
@@ -206,9 +206,9 @@ public class Aircraft extends Actor {
         terrainConflict = false;
         prevConflict = false;
         silenced = false;
-        emergency = new Emergency(this, radarScreen.emerChance);
+        emergency = new Emergency(this, radarScreen.getEmerChance());
 
-        radarScreen.wakeManager.addAircraft(callsign);
+        radarScreen.getWakeManager().addAircraft(callsign);
 
         voice = TerminalControl.tts.getRandomVoice();
 
@@ -478,7 +478,7 @@ public class Aircraft extends Actor {
         if (TerminalControl.full) trajectory.renderPoints();
         if (isArrivalDeparture()) {
             shapeRenderer.setColor(color);
-            shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.trajectoryLine / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));
+            shapeRenderer.line(radarX, radarY, radarX + radarScreen.getTrajectoryLine() / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.getTrajectoryLine() / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));
         }
     }
 
@@ -541,14 +541,14 @@ public class Aircraft extends Actor {
     /** Draws the cleared heading when selected */
     private void drawHdgLine() {
         shapeRenderer.setColor(radarScreen.getDefaultColour());
-        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, navState.getClearedHdg().last() - radarScreen.magHdgDev);
+        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, navState.getClearedHdg().last() - radarScreen.getMagHdgDev());
         shapeRenderer.line(radarX, radarY, point[0], point[1]);
     }
 
     /** Draws the heading for the UI */
     private void uiDrawHdgLine() {
         shapeRenderer.setColor(Color.YELLOW);
-        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, LatTab.clearedHdg - radarScreen.magHdgDev);
+        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, LatTab.clearedHdg - radarScreen.getMagHdgDev());
         shapeRenderer.line(radarX, radarY, point[0], point[1]);
     }
 
@@ -724,7 +724,7 @@ public class Aircraft extends Actor {
         if (altitude - airport.getElevation() <= 4000) {
             return airport.getWinds();
         } else {
-            return radarScreen.airports.get(radarScreen.mainName).getWinds();
+            return radarScreen.airports.get(radarScreen.getMainName()).getWinds();
         }
     }
 
@@ -852,7 +852,7 @@ public class Aircraft extends Actor {
                         }
                     }
                 } else {
-                    float track = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - radarScreen.magHdgDev;
+                    float track = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - radarScreen.getMagHdgDev();
                     if (holdTargetPtSelected[1]) {
                         track += 180;
                     }
@@ -926,7 +926,7 @@ public class Aircraft extends Actor {
         targetHeading -= angleDiff;  //Heading = track - anglediff
 
         //Add magnetic deviation to give magnetic heading
-        targetHeading += radarScreen.magHdgDev;
+        targetHeading += radarScreen.getMagHdgDev();
 
         return targetHeading;
     }
@@ -956,7 +956,7 @@ public class Aircraft extends Actor {
     /** Updates the lateral position of the aircraft and its label, removes aircraft if it goes out of radar range */
     private void updatePosition(double angleDiff) {
         //Angle diff is angle correction due to winds = track - heading
-        track = heading - radarScreen.magHdgDev + angleDiff;
+        track = heading - radarScreen.getMagHdgDev() + angleDiff;
         deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.cos(Math.toRadians(90 - track));
         deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.sin(Math.toRadians((90 - track)));
         x += deltaPosition.x;
@@ -966,9 +966,9 @@ public class Aircraft extends Actor {
         if (!onGround) prevDistTravelled += dist;
         if (prevDistTravelled > 0.5) {
             prevDistTravelled -= 0.5;
-            radarScreen.wakeManager.addPoint(this);
+            radarScreen.getWakeManager().addPoint(this);
         }
-        float diffDist = radarScreen.wakeManager.checkAircraftWake(this);
+        float diffDist = radarScreen.getWakeManager().checkAircraftWake(this);
         if (diffDist < 0) {
             //Safe separation
             wakeInfringe = false;
@@ -993,7 +993,7 @@ public class Aircraft extends Actor {
             if (this instanceof Arrival) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
                 radarScreen.getUtilityBox().getCommsManager().warningMsg(callsign + " has left the airspace!");
-            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedAlt().last() == radarScreen.maxAlt) {
+            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedAlt().last() == radarScreen.getMaxAlt()) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
                 contactOther();
             }
@@ -1120,7 +1120,7 @@ public class Aircraft extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         for (int i = 0; i < radarScreen.speed; i++) {
-            if (radarScreen.tutorialManager != null && radarScreen.tutorialManager.isPausedForReading()) break;
+            if (radarScreen.getTutorialManager() != null && radarScreen.getTutorialManager().isPausedForReading()) break;
             update();
         }
         dataTag.updateLabel();
@@ -1128,7 +1128,7 @@ public class Aircraft extends Actor {
 
         dataTag.drawTrailDots(batch, parentAlpha);
 
-        if (selected) radarScreen.wakeManager.drawSepRequired(batch, this);
+        if (selected) radarScreen.getWakeManager().drawSepRequired(batch, this);
     }
 
     /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
@@ -1539,7 +1539,7 @@ public class Aircraft extends Actor {
         radarScreen.getAllAircraft().remove(callsign);
         radarScreen.aircrafts.remove(callsign);
         radarScreen.separationChecker.updateAircraftPositions();
-        radarScreen.wakeManager.removeAircraft(callsign);
+        radarScreen.getWakeManager().removeAircraft(callsign);
     }
 
     /** Overridden method that sets the altitude restrictions of the aircraft */

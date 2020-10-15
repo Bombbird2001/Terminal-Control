@@ -109,9 +109,9 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground;
             lineSpacingValue = TerminalControl.lineSpacingValue;
         } else {
-            compactData = radarScreen.compactData;
-            alwaysShowBordersBackground = radarScreen.alwaysShowBordersBackground;
-            lineSpacingValue = radarScreen.lineSpacingValue;
+            compactData = radarScreen.getCompactData();
+            alwaysShowBordersBackground = radarScreen.getAlwaysShowBordersBackground();
+            lineSpacingValue = radarScreen.getLineSpacingValue();
         }
 
         dataTag.setSelected(compactData ? "Compact" : "Default");
@@ -123,16 +123,16 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void sendChanges() {
         if (radarScreen != null) {
-            radarScreen.compactData = compactData;
-            radarScreen.alwaysShowBordersBackground = alwaysShowBordersBackground;
-            boolean lineSpacingChanged = radarScreen.lineSpacingValue != lineSpacingValue;
-            radarScreen.lineSpacingValue = lineSpacingValue;
+            radarScreen.setCompactData(compactData);
+            radarScreen.setAlwaysShowBordersBackground(alwaysShowBordersBackground);
+            boolean lineSpacingChanged = radarScreen.getLineSpacingValue() != lineSpacingValue;
+            radarScreen.setLineSpacingValue(lineSpacingValue);
 
             //Apply the new line spacing to label
             if (lineSpacingChanged) {
                 Label.LabelStyle newLabelStyle = new Label.LabelStyle();
                 newLabelStyle.fontColor = Color.WHITE;
-                switch (radarScreen.lineSpacingValue) {
+                switch (radarScreen.getLineSpacingValue()) {
                     case 0:
                         newLabelStyle.font = Fonts.compressedFont6;
                         break;
@@ -144,7 +144,7 @@ public class DataTagSettingsScreen extends SettingsTemplateScreen {
                         break;
                     default:
                         newLabelStyle.font = Fonts.defaultFont6;
-                        Gdx.app.log(getClass().getName(), "Unknown radarScreen line spacing value " + radarScreen.lineSpacingValue);
+                        Gdx.app.log(getClass().getName(), "Unknown radarScreen line spacing value " + radarScreen.getLineSpacingValue());
                 }
                 for (Aircraft aircraft: radarScreen.aircrafts.values()) {
                     //Apply the changes to all

@@ -219,7 +219,7 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void setOptions() {
         if (radarScreen != null) {
-            emerChance = radarScreen.emerChance;
+            emerChance = radarScreen.getEmerChance();
         } else {
             emerChance = TerminalControl.emerChance;
         }
@@ -227,20 +227,20 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
         emer.setSelected(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
 
         if (radarScreen != null) {
-            tfcSel = radarScreen.tfcMode;
+            tfcSel = radarScreen.getTfcMode();
             String tmp2 = tfcSel.toString().toLowerCase(Locale.US);
             tfcMode.setSelected((tmp2.substring(0, 1).toUpperCase() + tmp2.substring(1)).replaceAll("_", " "));
 
-            allowNight = radarScreen.allowNight;
+            allowNight = radarScreen.getAllowNight();
             night.setSelected(allowNight ? "On" : "Off");
 
-            nightStart = radarScreen.nightStart;
+            nightStart = radarScreen.getNightStart();
             String hr = Integer.toString(nightStart / 100);
             if (hr.length() == 1) hr = "0" + hr;
             nightStartHour.setSelected(hr);
             nightStartMin.setSelected(Integer.toString(nightStart % 100));
 
-            nightEnd = radarScreen.nightEnd;
+            nightEnd = radarScreen.getNightEnd();
             String hr2 = Integer.toString(nightEnd / 100);
             if (hr2.length() == 1) hr2 = "0" + hr2;
             nightEndHour.setSelected(hr2);
@@ -256,14 +256,14 @@ public class TrafficSettingsScreen extends SettingsTemplateScreen {
 
             GameSaver.saveSettings();
         } else {
-            radarScreen.emerChance = emerChance;
-            radarScreen.tfcMode = tfcSel;
+            radarScreen.setEmerChance(emerChance);
+            radarScreen.setTfcMode(tfcSel);
 
             boolean changed;
-            changed = radarScreen.allowNight != allowNight || radarScreen.nightStart != nightStart || radarScreen.nightEnd != nightEnd;
-            radarScreen.allowNight = allowNight;
-            radarScreen.nightStart = nightStart;
-            radarScreen.nightEnd = nightEnd;
+            changed = radarScreen.getAllowNight() != allowNight || radarScreen.getNightStart() != nightStart || radarScreen.getNightEnd() != nightEnd;
+            radarScreen.setAllowNight(allowNight);
+            radarScreen.setNightStart(nightStart);
+            radarScreen.setNightEnd(nightEnd);
             if (changed) {
                 for (Airport airport: radarScreen.airports.values()) {
                     airport.updateRunwayUsage(); //Possible change in runway usage

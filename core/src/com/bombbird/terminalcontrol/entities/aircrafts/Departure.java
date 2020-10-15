@@ -41,26 +41,26 @@ public class Departure extends Aircraft {
         super(callsign, icaoType, departure);
         setOnGround(true);
         contactAlt = getAirport().getElevation() + 2000 + MathUtils.random(-500, 200);
-        handoverAlt = radarScreen.maxAlt + MathUtils.random(-800, -200);
+        handoverAlt = radarScreen.getMaxAlt() + MathUtils.random(-800, -200);
         v2set = false;
         accel = false;
         sidSet = false;
         contacted = false;
         cruiseAltTime = MathUtils.random(8, 20);
         int maxAlt = AircraftType.getMaxCruiseAlt(getIcaoType());
-        cruiseAlt = maxAlt >= 30000 ? MathUtils.random(30, maxAlt / 1000) * 1000 : MathUtils.random(TerminalControl.radarScreen.maxAlt / 1000, maxAlt / 1000) * 1000;
+        cruiseAlt = maxAlt >= 30000 ? MathUtils.random(30, maxAlt / 1000) * 1000 : MathUtils.random(TerminalControl.radarScreen.getMaxAlt() / 1000, maxAlt / 1000) * 1000;
         higherSpdSet = false;
         cruiseSpdSet = false;
 
         //Additional requests
-        if (MathUtils.randomBoolean(0.1f) && !radarScreen.tutorial) {
+        if (MathUtils.randomBoolean(0.1f) && !radarScreen.getTutorial()) {
             //10% chance to request shortcut/high speed climb, except in tutorial
             if (MathUtils.randomBoolean() && getClimbSpd() > 250) {
                 setRequest(HIGH_SPEED_REQUEST);
                 setRequestAlt(MathUtils.random(getAirport().getElevation() + 4000, 9000));
             } else {
                 setRequest(SHORTCUT_REQUEST);
-                setRequestAlt(MathUtils.random(getAirport().getElevation() + 5000, TerminalControl.radarScreen.maxAlt - 5000));
+                setRequestAlt(MathUtils.random(getAirport().getElevation() + 5000, TerminalControl.radarScreen.getMaxAlt() - 5000));
             }
         }
 
@@ -70,7 +70,7 @@ public class Departure extends Aircraft {
         //Gets a random SID
         sid = RandomSID.randomSID(departure, runway.getName());
 
-        if ("CAL641".equals(callsign) && radarScreen.tutorial) {
+        if ("CAL641".equals(callsign) && radarScreen.getTutorial()) {
             sid = getAirport().getSids().get("HICAL1C");
             getEmergency().setEmergency(false);
         }
@@ -121,7 +121,7 @@ public class Departure extends Aircraft {
 
         //Set takeoff heading
         setHeading(getRunway().getHeading());
-        setTrack(getHeading() - radarScreen.magHdgDev);
+        setTrack(getHeading() - radarScreen.getMagHdgDev());
 
         takeOff();
 
@@ -283,7 +283,7 @@ public class Departure extends Aircraft {
     /** Checks whether the aircraft should request for higher climb */
     private boolean checkHigherClimb() {
         //If altitude is within 100 feet below cleared altitude, cleared altitude is below maxAlt and departure is still in control by player
-        return isArrivalDeparture() && getClearedAltitude() >= getAltitude() - 1 && getClearedAltitude() - getAltitude() < 100 && getClearedAltitude() < radarScreen.maxAlt;
+        return isArrivalDeparture() && getClearedAltitude() >= getAltitude() - 1 && getClearedAltitude() - getAltitude() < 100 && getClearedAltitude() < radarScreen.getMaxAlt();
     }
 
     /** Overrides method in Aircraft class to join the lines between each SID waypoint */
@@ -331,7 +331,7 @@ public class Departure extends Aircraft {
             if (highestAlt > -1) {
                 setHighestAlt(highestAlt);
             } else if (contacted && getControlState() == ControlState.DEPARTURE) {
-                setHighestAlt(radarScreen.maxAlt);
+                setHighestAlt(radarScreen.getMaxAlt());
             } else {
                 setHighestAlt(cruiseAlt);
             }
@@ -407,7 +407,7 @@ public class Departure extends Aircraft {
 
     @Override
     public boolean canHandover() {
-        return getControlState() == ControlState.DEPARTURE && getAltitude() >= radarScreen.maxAlt - 4000 && getNavState().getDispLatMode().first() == NavState.SID_STAR;
+        return getControlState() == ControlState.DEPARTURE && getAltitude() >= radarScreen.getMaxAlt() - 4000 && getNavState().getDispLatMode().first() == NavState.SID_STAR;
     }
 
     @Override
@@ -417,7 +417,7 @@ public class Departure extends Aircraft {
         super.updateSpd();
         handedOver = true;
         setExpedite(false);
-        if (getExpediteTime() <= 120 && getAltitude() > Math.min(10000, radarScreen.maxAlt - 6000)) radarScreen.setScore(radarScreen.getScore() + 1);
+        if (getExpediteTime() <= 120 && getAltitude() > Math.min(10000, radarScreen.getMaxAlt() - 6000)) radarScreen.setScore(radarScreen.getScore() + 1);
         if (sid.getCentre() != null) {
             radarScreen.getUtilityBox().getCommsManager().contactFreq(this, sid.getCentre()[0], sid.getCentre()[1]);
         } else {

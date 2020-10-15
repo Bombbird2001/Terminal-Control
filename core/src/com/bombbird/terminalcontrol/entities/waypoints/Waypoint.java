@@ -68,7 +68,7 @@ public class Waypoint extends Actor {
             restrLabel.moveBy(-80, -16);
             return;
         }
-        String icao = TerminalControl.radarScreen.mainName;
+        String icao = TerminalControl.radarScreen.getMainName();
         if (WaypointShifter.movementData.containsKey(icao) && WaypointShifter.movementData.get(icao).containsKey(name)) {
             int[] shiftData = WaypointShifter.movementData.get(icao).get(name);
             restrLabel.moveBy(shiftData[0], shiftData[1]);

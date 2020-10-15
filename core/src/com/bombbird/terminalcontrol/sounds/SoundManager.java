@@ -28,7 +28,7 @@ public class SoundManager {
 
     /** Loops the conflict audio effect */
     public void playConflict() {
-        if (!conflictPlaying && TerminalControl.radarScreen.soundSel >= 1) {
+        if (!conflictPlaying && TerminalControl.radarScreen.getSoundSel() >= 1) {
             conflict.play(0.8f);
             conflictPlaying = true;
             timer.scheduleTask(new Timer.Task() {
@@ -42,7 +42,7 @@ public class SoundManager {
 
     /** Plays a runway change sound effect if not playing */
     public void playRunwayChange() {
-        if (!runwayChangePlaying && TerminalControl.radarScreen.soundSel >= 1) {
+        if (!runwayChangePlaying && TerminalControl.radarScreen.getSoundSel() >= 1) {
             runwayChange.play(0.8f);
             runwayChangePlaying = true;
             timer.scheduleTask(new Timer.Task() {
@@ -57,7 +57,7 @@ public class SoundManager {
     /** Plays initial contact sound effect if not playing */
     public void playInitialContact() {
         //Play only if not playing AND sound selected is sound effects only
-        if (!initialContactPlaying && TerminalControl.radarScreen.soundSel == 1) {
+        if (!initialContactPlaying && TerminalControl.radarScreen.getSoundSel() == 1) {
             if (alertPlaying) {
                 //If alert playing, wait till alert has finished then play this again
                 timer.scheduleTask(new Timer.Task() {
@@ -82,7 +82,7 @@ public class SoundManager {
     /** Plays alert sound effect if not playing */
     public void playAlert() {
         //Play only if not playing AND sound selected is sound effects only
-        if (!alertPlaying && TerminalControl.radarScreen.soundSel == 1) {
+        if (!alertPlaying && TerminalControl.radarScreen.getSoundSel() == 1) {
             alert.play(0.8f);
             alertPlaying = true;
             timer.scheduleTask(new Timer.Task() {

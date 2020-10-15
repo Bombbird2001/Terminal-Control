@@ -45,9 +45,9 @@ public class GameSaver {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("aircrafts", saveAircraft());
         jsonObject.put("airports", saveAirports());
-        jsonObject.put("saveId", radarScreen.saveId);
-        jsonObject.put("MAIN_NAME", radarScreen.mainName);
-        jsonObject.put("AIRAC", radarScreen.airac);
+        jsonObject.put("saveId", radarScreen.getSaveId());
+        jsonObject.put("MAIN_NAME", radarScreen.getMainName());
+        jsonObject.put("AIRAC", radarScreen.getAirac());
         jsonObject.put("score", radarScreen.getScore());
         jsonObject.put("highScore", radarScreen.getHighScore());
         jsonObject.put("planesToControl", (double) radarScreen.getPlanesToControl());
@@ -61,36 +61,36 @@ public class GameSaver {
         jsonObject.put("information", radarScreen.getInformation());
         jsonObject.put("radarTime", (double) radarScreen.getRadarTime());
         jsonObject.put("trailTime", (double) radarScreen.getTrailTime());
-        jsonObject.put("trajectoryLine", radarScreen.trajectoryLine);
-        jsonObject.put("pastTrajTime", radarScreen.pastTrajTime);
-        jsonObject.put("radarSweep", (double) radarScreen.radarSweepDelay);
-        jsonObject.put("advTraj", radarScreen.advTraj);
-        jsonObject.put("areaWarning", radarScreen.areaWarning);
-        jsonObject.put("collisionWarning", radarScreen.collisionWarning);
-        jsonObject.put("showMva", radarScreen.showMva);
-        jsonObject.put("showIlsDash", radarScreen.showIlsDash);
-        jsonObject.put("compactData", radarScreen.compactData);
-        jsonObject.put("showUncontrolled", radarScreen.showUncontrolled);
-        jsonObject.put("alwaysShowBordersBackground", radarScreen.alwaysShowBordersBackground);
+        jsonObject.put("trajectoryLine", radarScreen.getTrajectoryLine());
+        jsonObject.put("pastTrajTime", radarScreen.getPastTrajTime());
+        jsonObject.put("radarSweep", (double) radarScreen.getRadarSweepDelay());
+        jsonObject.put("advTraj", radarScreen.getAdvTraj());
+        jsonObject.put("areaWarning", radarScreen.getAreaWarning());
+        jsonObject.put("collisionWarning", radarScreen.getCollisionWarning());
+        jsonObject.put("showMva", radarScreen.getShowMva());
+        jsonObject.put("showIlsDash", radarScreen.getShowIlsDash());
+        jsonObject.put("compactData", radarScreen.getCompactData());
+        jsonObject.put("showUncontrolled", radarScreen.getShowUncontrolled());
+        jsonObject.put("alwaysShowBordersBackground", radarScreen.getAlwaysShowBordersBackground());
         jsonObject.put("rangeCircleDist", radarScreen.rangeCircleDist);
-        jsonObject.put("lineSpacingValue", radarScreen.lineSpacingValue);
-        jsonObject.put("colourStyle", radarScreen.colourStyle);
-        jsonObject.put("liveWeather", radarScreen.weatherSel);
-        jsonObject.put("sounds", radarScreen.soundSel);
-        jsonObject.put("realisticMetar", radarScreen.realisticMetar);
-        jsonObject.put("emerChance", radarScreen.emerChance.toString());
-        jsonObject.put("tfcMode", radarScreen.tfcMode.toString());
-        jsonObject.put("allowNight", radarScreen.allowNight);
-        jsonObject.put("nightStart", radarScreen.nightStart);
-        jsonObject.put("nightEnd", radarScreen.nightEnd);
+        jsonObject.put("lineSpacingValue", radarScreen.getLineSpacingValue());
+        jsonObject.put("colourStyle", radarScreen.getColourStyle());
+        jsonObject.put("liveWeather", radarScreen.getWeatherSel());
+        jsonObject.put("sounds", radarScreen.getSoundSel());
+        jsonObject.put("realisticMetar", radarScreen.getRealisticMetar());
+        jsonObject.put("emerChance", radarScreen.getEmerChance().toString());
+        jsonObject.put("tfcMode", radarScreen.getTfcMode().toString());
+        jsonObject.put("allowNight", radarScreen.getAllowNight());
+        jsonObject.put("nightStart", radarScreen.getNightStart());
+        jsonObject.put("nightEnd", radarScreen.getNightEnd());
         jsonObject.put("commBox", getCommBox());
         jsonObject.put("metar", radarScreen.getMetar().getMetarObject());
         jsonObject.put("lastNumber", radarScreen.separationChecker.getLastNumber());
         jsonObject.put("sepTime", (double) radarScreen.separationChecker.getTime());
-        jsonObject.put("wakeManager", radarScreen.wakeManager.getSave());
-        jsonObject.put("trafficMode", radarScreen.trafficMode);
-        jsonObject.put("maxPlanes", radarScreen.maxPlanes);
-        jsonObject.put("flowRate", radarScreen.flowRate);
+        jsonObject.put("wakeManager", radarScreen.getWakeManager().getSave());
+        jsonObject.put("trafficMode", radarScreen.getTrafficMode());
+        jsonObject.put("maxPlanes", radarScreen.getMaxPlanes());
+        jsonObject.put("flowRate", radarScreen.getFlowRate());
         jsonObject.put("revision", Revision.CURRENT_REVISION);
 
         JSONArray jsonArray = new JSONArray();
@@ -118,12 +118,12 @@ public class GameSaver {
         }
         jsonObject.put("backupWpts", backup);
 
-        FileHandle handle = FileLoader.getExtDir("saves/" + radarScreen.saveId + ".json");
+        FileHandle handle = FileLoader.getExtDir("saves/" + radarScreen.getSaveId() + ".json");
         if (handle != null) {
             String encode = Base64Coder.encodeString(jsonObject.toString());
             try {
                 handle.writeString(encode, false);
-                saveID(radarScreen.saveId);
+                saveID(radarScreen.getSaveId());
             } catch (GdxRuntimeException e) {
                 TerminalControl.toastManager.saveFail(e);
                 //ErrorHandler.sendSaveErrorNoThrow(e, encode);

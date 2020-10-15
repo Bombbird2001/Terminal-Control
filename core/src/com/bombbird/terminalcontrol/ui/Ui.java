@@ -19,7 +19,6 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
 import com.bombbird.terminalcontrol.entities.airports.Airport;
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager;
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
 import com.bombbird.terminalcontrol.ui.tabs.AltTab;
 import com.bombbird.terminalcontrol.ui.tabs.LatTab;
@@ -148,7 +147,7 @@ public class Ui {
             //Get airport: ICAO code is 1st 4 letters on label's text
             Airport airport = radarScreen.airports.get(label.getText().toString().substring(0, 4));
             String[] metarText;
-            if (radarScreen.realisticMetar) {
+            if (radarScreen.getRealisticMetar()) {
                 //Realistic metar format
                 metarText = new String[3];
                 metarText[0] = airport.getIcao() + " - " + radarScreen.getInformation();
@@ -339,7 +338,7 @@ public class Ui {
         scoreLabel.setVisible(show);
         infoLabel.setVisible(show && infoLabel.getText().length > 0);
         pauseButton.setVisible(show);
-        if (radarScreen.getUtilityBox() != null) radarScreen.getUtilityBox().setVisible(show);
+        if (radarScreen.isUtilityBoxInitialized()) radarScreen.getUtilityBox().setVisible(show);
     }
 
     public void setSelectedPane(Aircraft aircraft) {

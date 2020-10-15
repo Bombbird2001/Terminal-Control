@@ -82,9 +82,9 @@ public class DataTag {
         labelText[9] = aircraft.getAirport().getIcao();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = Fonts.defaultFont6;
-        if (radarScreen.lineSpacingValue == 0) {
+        if (radarScreen.getLineSpacingValue() == 0) {
             labelStyle.font = Fonts.compressedFont6;
-        } else if (radarScreen.lineSpacingValue == 2) {
+        } else if (radarScreen.getLineSpacingValue() == 2) {
             labelStyle.font = Fonts.expandedFont6;
         }
         labelStyle.fontColor = Color.WHITE;
@@ -110,7 +110,7 @@ public class DataTag {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!dragging) {
-                    if (radarScreen.tutorialManager == null || !radarScreen.tutorialManager.isPausedForReading()) {
+                    if (radarScreen.getTutorialManager() == null || !radarScreen.getTutorialManager().isPausedForReading()) {
                         radarScreen.setSelectedAircraft(radarScreen.aircrafts.get(actor.getName()));
                         radarScreen.addToEasterEggQueue(aircraft);
                         aircraft.setSilenced(true);
@@ -239,12 +239,12 @@ public class DataTag {
             setAsDrawLast();
         }
         if (aircraft.hasEmergency()) {
-            labelButton.setVisible(visible || radarScreen.alwaysShowBordersBackground);
+            labelButton.setVisible(visible || radarScreen.getAlwaysShowBordersBackground());
             setEmergency();
             return;
         }
         //If always show background
-        if (radarScreen.alwaysShowBordersBackground) {
+        if (radarScreen.getAlwaysShowBordersBackground()) {
             labelButton.setVisible(true);
             if (!flashing) {
                 NinePatchDrawable ninePatchDrawable = null;
@@ -328,7 +328,7 @@ public class DataTag {
             return;
         }
         NinePatchDrawable ninePatchDrawable = null;
-        if (radarScreen.alwaysShowBordersBackground || aircraft.isSelected()) {
+        if (radarScreen.getAlwaysShowBordersBackground() || aircraft.isSelected()) {
             if (aircraft instanceof Departure) {
                 ninePatchDrawable = DRAWABLE_GREEN;
             } else if (aircraft instanceof Arrival) {
@@ -345,12 +345,12 @@ public class DataTag {
 
     /** Draws the trail dots for aircraft */
     public void drawTrailDots(Batch batch, float parentAlpha) {
-        if (radarScreen.pastTrajTime == 0) return;
+        if (radarScreen.getPastTrajTime() == 0) return;
         int index = 0;
         int size = trailDots.size;
-        int selectedRequired = radarScreen.pastTrajTime / 10;
+        int selectedRequired = radarScreen.getPastTrajTime() / 10;
         for (Image trail: trailDots) {
-            if ((aircraft.isSelected() && (radarScreen.pastTrajTime == -1 || size - index <= selectedRequired)) || (size - index <= 6 && (aircraft.isArrivalDeparture() || radarScreen.showUncontrolled))) {
+            if ((aircraft.isSelected() && (radarScreen.getPastTrajTime() == -1 || size - index <= selectedRequired)) || (size - index <= 6 && (aircraft.isArrivalDeparture() || radarScreen.getShowUncontrolled()))) {
                 trail.draw(batch, parentAlpha);
             }
             index++;
@@ -426,7 +426,7 @@ public class DataTag {
             if (altTab.isExpediteChanged()) exped = "[YELLOW]" + exped + "[WHITE]";
         }
         String updatedText;
-        if (radarScreen.compactData) {
+        if (radarScreen.getCompactData()) {
             if (aircraft.isSelected() && aircraft.isArrivalDeparture()) {
                 boolean changed = false;
                 if (LatTab.latMode == NavState.SID_STAR && (aircraft.isLocCap() || aircraft.getNavState().getClearedDirect().last() == null || !LatTab.clearedWpt.equals(aircraft.getNavState().getClearedDirect().last().getName()) || aircraft.getNavState().containsCode(aircraft.getNavState().getDispLatMode().last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {

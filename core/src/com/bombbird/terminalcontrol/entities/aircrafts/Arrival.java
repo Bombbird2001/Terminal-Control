@@ -59,7 +59,7 @@ public class Arrival extends Aircraft {
         //Gets a STAR for active runways
         star = RandomSTAR.randomSTAR(arrival);
 
-        if ("EVA226".equals(callsign) && radarScreen.tutorial) {
+        if ("EVA226".equals(callsign) && radarScreen.getTutorial()) {
             star = arrival.getStars().get("NTN1A");
             getEmergency().setEmergency(false);
             setTypDes(2900);
@@ -72,7 +72,7 @@ public class Arrival extends Aircraft {
         setDirect(getRoute().getWaypoint(0));
 
         setClearedHeading((int)getHeading());
-        setTrack(getHeading() - TerminalControl.radarScreen.magHdgDev);
+        setTrack(getHeading() - TerminalControl.radarScreen.getMagHdgDev());
 
         //Calculate spawn border
         float[] point = MathTools.pointsAtBorder(new float[] {1310, 4450}, new float[] {50, 3190}, getDirect().getPosX(), getDirect().getPosY(), 180 + (float) getTrack());
@@ -122,7 +122,7 @@ public class Arrival extends Aircraft {
             }
         }
         if (initAlt > AircraftType.getMaxCruiseAlt(icaoType)) initAlt = AircraftType.getMaxCruiseAlt(icaoType);
-        if (radarScreen.tutorial && "EVA226".equals(callsign)) {
+        if (radarScreen.getTutorial() && "EVA226".equals(callsign)) {
             initAlt = 23400;
         }
         setAltitude(initAlt);
@@ -173,7 +173,7 @@ public class Arrival extends Aircraft {
         setColor(new Color(0x00b3ffff));
 
         setHeading(update());
-        setTrack(getHeading() - radarScreen.magHdgDev + updateTargetHeading()[1]);
+        setTrack(getHeading() - radarScreen.getMagHdgDev() + updateTargetHeading()[1]);
 
         initRadarPos();
     }
@@ -391,10 +391,10 @@ public class Arrival extends Aircraft {
                 highestAlt = Math.max(getRoute().getWptMaxAlt(getDirect().getName()), ((int) getAltitude()) / 1000 * 1000);
                 lowestAlt = getRoute().getWptMinAlt(getDirect().getName());
             }
-            if (highestAlt == -1) highestAlt = radarScreen.maxAlt;
-            if (lowestAlt == -1) lowestAlt = radarScreen.minAlt;
-            if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt;
-            if (highestAlt < radarScreen.minAlt) highestAlt = radarScreen.minAlt;
+            if (highestAlt == -1) highestAlt = radarScreen.getMaxAlt();
+            if (lowestAlt == -1) lowestAlt = radarScreen.getMinAlt();
+            if (highestAlt > radarScreen.getMaxAlt()) highestAlt = radarScreen.getMaxAlt();
+            if (highestAlt < radarScreen.getMinAlt()) highestAlt = radarScreen.getMinAlt();
             if (highestAlt < lowestAlt) highestAlt = lowestAlt;
             Array<Integer> tmpArray = ui.altTab.createAltArray(lowestAlt, highestAlt);
             if ("TCOO".equals(getAirport().getIcao())) {
@@ -410,8 +410,8 @@ public class Arrival extends Aircraft {
             int[] altRestr = getRoute().getHoldProcedure().getAltRestAtWpt(getHoldWpt());
             int highestAlt = altRestr[1];
             int lowestAlt = altRestr[0];
-            setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.maxAlt);
-            setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.minAlt);
+            setHighestAlt(highestAlt > -1 ? highestAlt : radarScreen.getMaxAlt());
+            setLowestAlt(lowestAlt > -1 ? lowestAlt : radarScreen.getMinAlt());
         }
     }
 
@@ -486,13 +486,13 @@ public class Arrival extends Aircraft {
         getNavState().getDispSpdMode().addFirst(NavState.NO_RESTR);
 
         getNavState().getClearedHdg().clear();
-        getNavState().getClearedHdg().addFirst(radarScreen.divertHdg);
+        getNavState().getClearedHdg().addFirst(radarScreen.getDivertHdg());
         getNavState().getClearedDirect().clear();
         getNavState().getClearedDirect().addFirst(null);
         getNavState().getClearedAftWpt().clear();
         getNavState().getClearedAftWpt().addFirst(null);
         getNavState().getClearedAftWptHdg().clear();
-        getNavState().getClearedAftWptHdg().addFirst(radarScreen.divertHdg);
+        getNavState().getClearedAftWptHdg().addFirst(radarScreen.getDivertHdg());
         getNavState().getClearedHold().clear();
         getNavState().getClearedHold().addFirst(null);
         getNavState().getClearedIls().clear();
@@ -775,7 +775,7 @@ public class Arrival extends Aircraft {
         if (getGs() <= 35 && (!getEmergency().isActive() || !getEmergency().isStayOnRwy())) {
             int score = 1;
             if (radarScreen.getArrivals() >= 12) score = 2; //2 points if you're controlling at least 12 planes at a time
-            if ((getAirport().isCongested() && radarScreen.tfcMode != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
+            if ((getAirport().isCongested() && radarScreen.getTfcMode() != RadarScreen.TfcMode.ARRIVALS_ONLY) || getExpediteTime() > 120) score = 0; //Add score only if the airport is not congested, if mode is not arrival only, and aircraft has not expedited for >2 mins
             if (getEmergency().isEmergency()) {
                 score = 5; //5 points for landing an emergency!
                 UnlockManager.incrementEmergency();

@@ -155,7 +155,7 @@ public class SettingsTemplateScreen extends BasicScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (radarScreen != null) {
-                    if (radarScreen.tutorial) {
+                    if (radarScreen.getTutorial()) {
                         game.setScreen(new PauseScreen(game, radarScreen));
                     } else {
                         game.setScreen(new CategorySelectScreen(game, null, radarScreen));
@@ -172,7 +172,7 @@ public class SettingsTemplateScreen extends BasicScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 sendChanges();
                 if (radarScreen != null) {
-                    if (radarScreen.tutorial) {
+                    if (radarScreen.getTutorial()) {
                         game.setScreen(new PauseScreen(game, radarScreen));
                     } else {
                         game.setScreen(new CategorySelectScreen(game, null, radarScreen));

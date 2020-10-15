@@ -215,14 +215,14 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
             realisticMetar = TerminalControl.realisticMetar;
         } else {
             //Use game settings
-            trajectorySel = radarScreen.trajectoryLine;
-            pastTrajTime = radarScreen.pastTrajTime;
-            showMva = radarScreen.showMva;
-            showIlsDash = radarScreen.showIlsDash;
-            showUncontrolled = radarScreen.showUncontrolled;
+            trajectorySel = radarScreen.getTrajectoryLine();
+            pastTrajTime = radarScreen.getPastTrajTime();
+            showMva = radarScreen.getShowMva();
+            showIlsDash = radarScreen.getShowIlsDash();
+            showUncontrolled = radarScreen.getShowUncontrolled();
             rangeCircleDist = radarScreen.rangeCircleDist;
-            colourStyle = radarScreen.colourStyle;
-            realisticMetar = radarScreen.realisticMetar;
+            colourStyle = radarScreen.getColourStyle();
+            realisticMetar = radarScreen.getRealisticMetar();
         }
 
         trajectoryLine.setSelected(trajectorySel == 0 ? "Off" : trajectorySel + " sec");
@@ -246,17 +246,17 @@ public class DisplaySettingsScreen extends SettingsTemplateScreen {
     @Override
     public void sendChanges() {
         if (radarScreen != null) {
-            radarScreen.trajectoryLine = trajectorySel;
-            radarScreen.pastTrajTime = pastTrajTime;
-            radarScreen.showMva = showMva;
-            radarScreen.showIlsDash = showIlsDash;
-            radarScreen.showUncontrolled = showUncontrolled;
+            radarScreen.setTrajectoryLine(trajectorySel);
+            radarScreen.setPastTrajTime(pastTrajTime);
+            radarScreen.setShowMva(showMva);
+            radarScreen.setShowIlsDash(showIlsDash);
+            radarScreen.setShowUncontrolled(showUncontrolled);
             boolean rangeDistChanged = radarScreen.rangeCircleDist != rangeCircleDist;
             radarScreen.rangeCircleDist = rangeCircleDist;
-            boolean colourChanged = radarScreen.colourStyle != colourStyle;
-            radarScreen.colourStyle = colourStyle;
-            boolean metarChanged = radarScreen.realisticMetar != realisticMetar;
-            radarScreen.realisticMetar = realisticMetar;
+            boolean colourChanged = radarScreen.getColourStyle() != colourStyle;
+            radarScreen.setColourStyle(colourStyle);
+            boolean metarChanged = radarScreen.getRealisticMetar() != realisticMetar;
+            radarScreen.setRealisticMetar(realisticMetar);
 
             Gdx.app.postRunnable(() -> {
                 if (rangeDistChanged) radarScreen.loadRange(); //Reload the range circles in case of any changes

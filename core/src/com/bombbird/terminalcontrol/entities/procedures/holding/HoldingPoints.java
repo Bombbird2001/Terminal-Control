@@ -44,7 +44,7 @@ public class HoldingPoints {
 
     /** Calculates the coordinates of the point opposite to the fix in the holding pattern, using the given turn diameter and leg distance */
     private void calculateOppPoint() {
-        float inboundTrack = inboundHdg - radarScreen.magHdgDev;
+        float inboundTrack = inboundHdg - radarScreen.getMagHdgDev();
         float legPxDist = MathTools.nmToPixel(legDist);
 
         float xOffset1 = legPxDist * MathUtils.cosDeg(270 - inboundTrack);
@@ -64,7 +64,7 @@ public class HoldingPoints {
     public void renderShape() {
         float radiusPx = MathTools.nmToPixel(turnDiameterNm / 2f);
 
-        float track1 = inboundHdg - radarScreen.magHdgDev;
+        float track1 = inboundHdg - radarScreen.getMagHdgDev();
         track1 += left ? -90 : 90;
         float[] midpoint1 = new float[] {waypoint.getPosX() + radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + radiusPx * MathUtils.sinDeg(90 - track1)};
         float[] end1 = new float[] {waypoint.getPosX() + 2 * radiusPx * MathUtils.cosDeg(90 - track1), waypoint.getPosY() + 2 * radiusPx * MathUtils.sinDeg(90 - track1)};

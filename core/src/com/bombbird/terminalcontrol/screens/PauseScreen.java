@@ -55,7 +55,7 @@ public class PauseScreen extends BasicScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Change to settings state
-                if (radarScreen.tutorial) {
+                if (radarScreen.getTutorial()) {
                     game.setScreen(new OtherSettingsScreen(game, radarScreen, null));
                 } else {
                     game.setScreen(new CategorySelectScreen(game, null, radarScreen));
@@ -64,7 +64,7 @@ public class PauseScreen extends BasicScreen {
         });
         stage.addActor(settingsButton);
 
-        TextButton quitButton = new TextButton(radarScreen.tutorial ? "Quit" : "Save & Quit", textButtonStyle);
+        TextButton quitButton = new TextButton(radarScreen.getTutorial() ? "Quit" : "Save & Quit", textButtonStyle);
         quitButton.setSize(1200, 300);
         quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000);
         quitButton.addListener(new ChangeListener() {
@@ -72,7 +72,7 @@ public class PauseScreen extends BasicScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 //Go back to main menu screen
                 radarScreen.getMetar().setQuit(true);
-                if (!radarScreen.tutorial) GameSaver.saveGame(); //Save the game first
+                if (!radarScreen.getTutorial()) GameSaver.saveGame(); //Save the game first
                 TerminalControl.radarScreen = null;
                 radarScreen.game.setScreen(new MainMenuScreen(radarScreen.game, null));
                 radarScreen.dispose();

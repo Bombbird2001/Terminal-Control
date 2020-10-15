@@ -43,7 +43,7 @@ public class CircleObstacle extends Obstacle {
                 case 4: centreX = Float.parseFloat(s1); break;
                 case 5: centreY = Float.parseFloat(s1); break;
                 case 6: radius = Float.parseFloat(s1); break;
-                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/restricted.rest");
+                default: Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.getMainName() + "/restricted.rest");
             }
             index++;
         }
@@ -56,7 +56,7 @@ public class CircleObstacle extends Obstacle {
     @Override
     public void renderShape() {
         shapeRenderer.end();
-        shapeRenderer.begin("TCWS".equals(radarScreen.mainName) && getMinAlt() == 30000 ? ShapeRenderer.ShapeType.Filled : ShapeRenderer.ShapeType.Line);
+        shapeRenderer.begin("TCWS".equals(radarScreen.getMainName()) && getMinAlt() == 30000 ? ShapeRenderer.ShapeType.Filled : ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.circle(circle.x, circle.y, circle.radius);
         shapeRenderer.end();

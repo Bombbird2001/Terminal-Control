@@ -14,7 +14,7 @@ public class TrajectoryStorage {
     public TrajectoryStorage() {
         radarScreen = TerminalControl.radarScreen;
 
-        int requiredSize = Math.max(Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning), TerminalControl.radarScreen.advTraj) / Trajectory.INTERVAL;
+        int requiredSize = Math.max(Math.max(TerminalControl.radarScreen.getAreaWarning(), TerminalControl.radarScreen.getCollisionWarning()), TerminalControl.radarScreen.getAdvTraj()) / Trajectory.INTERVAL;
         points = new Array<>(true, requiredSize);
         resetStorage();
 
@@ -24,11 +24,11 @@ public class TrajectoryStorage {
     /** Clears the storage before updating with new points */
     private void resetStorage() {
         points.clear();
-        int maxTime = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning);
-        maxTime = Math.max(maxTime, TerminalControl.radarScreen.advTraj);
+        int maxTime = Math.max(TerminalControl.radarScreen.getAreaWarning(), TerminalControl.radarScreen.getCollisionWarning());
+        maxTime = Math.max(maxTime, TerminalControl.radarScreen.getAdvTraj());
         for (int j = 0; j < maxTime / Trajectory.INTERVAL; j++) {
             Array<Array<PositionPoint>> altitudePositionMatrix = new Array<>();
-            for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
+            for (int i = 0; i < radarScreen.getMaxAlt() / 1000; i++) {
                 altitudePositionMatrix.add(new Array<>());
             }
             points.add(altitudePositionMatrix);
@@ -52,7 +52,7 @@ public class TrajectoryStorage {
             aircraft.getTrajectory().calculateTrajectory();
             int timeIndex = 0;
             for (PositionPoint positionPoint: aircraft.getTrajectory().getPositionPoints()) {
-                if (positionPoint.altitude / 1000 < radarScreen.maxAlt / 1000) {
+                if (positionPoint.altitude / 1000 < radarScreen.getMaxAlt() / 1000) {
                     points.get(timeIndex).get(positionPoint.altitude / 1000).add(positionPoint);
                 }
                 timeIndex++;

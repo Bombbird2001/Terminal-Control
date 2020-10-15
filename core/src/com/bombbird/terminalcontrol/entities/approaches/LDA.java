@@ -57,7 +57,7 @@ public class LDA extends ILS {
         } else {
             Array<Vector2> gsRings = new Array<>();
             for (int i = 0; i < nonPrecAlts.size; i++) {
-                gsRings.add(new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev), getY() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.magHdgDev)));
+                gsRings.add(new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.getMagHdgDev()), getY() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.getMagHdgDev())));
             }
             setGsRings(gsRings);
         }

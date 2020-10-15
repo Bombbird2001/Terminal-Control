@@ -140,7 +140,7 @@ public class WakeManager {
             if (reqDist < 3) continue;
             Vector2 centre = aircraft.getIls().getPointAtDist(aircraft.getIls().getDistFrom(aircraft.getRadarX(), aircraft.getRadarY()) + reqDist);
             int halfWidth = aircraft.isSelected() ? 50 : 30;
-            double trackRad = Math.toRadians(aircraft.getIls().getHeading() - TerminalControl.radarScreen.magHdgDev);
+            double trackRad = Math.toRadians(aircraft.getIls().getHeading() - TerminalControl.radarScreen.getMagHdgDev());
             float xOffset = halfWidth * (float) Math.cos(trackRad);
             float yOffset = halfWidth * (float) Math.sin(trackRad);
             TerminalControl.radarScreen.shapeRenderer.setColor(aircraft.isSelected() ? Color.YELLOW : Color.ORANGE);

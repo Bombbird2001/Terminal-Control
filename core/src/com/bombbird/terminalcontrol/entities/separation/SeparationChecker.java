@@ -39,10 +39,10 @@ public class SeparationChecker extends Actor {
         updateTimer = 0;
         active = 0;
 
-        flightLevels = new Array<>(true, radarScreen.maxAlt / 1000);
+        flightLevels = new Array<>(true, radarScreen.getMaxAlt() / 1000);
         labels = new Array<>();
         lineStorage = new Array<>();
-        for (int i = 0; i < radarScreen.maxAlt / 1000; i++) {
+        for (int i = 0; i < radarScreen.getMaxAlt() / 1000; i++) {
             flightLevels.add(new Array<>());
         }
     }
@@ -121,7 +121,7 @@ public class SeparationChecker extends Actor {
             array.clear();
         }
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
-            if (((int)(aircraft.getAltitude() / 1000)) < radarScreen.maxAlt / 1000) {
+            if (((int)(aircraft.getAltitude() / 1000)) < radarScreen.getMaxAlt() / 1000) {
                 flightLevels.get((int)(aircraft.getAltitude() / 1000)).add(aircraft);
             }
         }
@@ -153,7 +153,7 @@ public class SeparationChecker extends Actor {
                         continue;
                     }
 
-                    if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.maxAlt && plane2.getAltitude() > radarScreen.maxAlt)) {
+                    if (plane1.getAltitude() < plane1.getAirport().getElevation() + 1400 || plane2.getAltitude() < plane1.getAirport().getElevation() + 1400 || (plane1.getAltitude() > radarScreen.getMaxAlt() && plane2.getAltitude() > radarScreen.getMaxAlt())) {
                         //If either plane is below 1400 feet or both above max alt
                         continue;
                     }
@@ -190,7 +190,7 @@ public class SeparationChecker extends Actor {
                     }
 
                     float dist = MathTools.pixelToNm(MathTools.distanceBetween(plane1.getX(), plane1.getY(), plane2.getX(), plane2.getY()));
-                    float minima = radarScreen.separationMinima;
+                    float minima = radarScreen.getSeparationMinima();
 
                     if (plane1.getIls() != null && plane2.getIls() != null && !plane1.getIls().equals(plane2.getIls()) && plane1.getIls().isInsideILS(plane1.getX(), plane1.getY()) && plane2.getIls().isInsideILS(plane2.getX(), plane2.getY())) {
                         //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce separation to 2nm (staggered separation)
@@ -299,7 +299,7 @@ public class SeparationChecker extends Actor {
 
     /** Renders the separation rings if aircraft is in conflict */
     public void renderShape() {
-        int radius = (int)(MathTools.nmToPixel(radarScreen.separationMinima) / 2);
+        int radius = (int)(MathTools.nmToPixel(radarScreen.getSeparationMinima()) / 2);
         for (Aircraft aircraft: radarScreen.aircrafts.values()) {
             if (aircraft.isConflict() || aircraft.isTerrainConflict()) {
                 radarScreen.shapeRenderer.setColor(Color.RED);

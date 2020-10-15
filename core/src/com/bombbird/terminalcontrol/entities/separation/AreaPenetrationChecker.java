@@ -31,11 +31,11 @@ public class AreaPenetrationChecker {
         }
         aircraftStorage.clear();
         pointStorage.clear();
-        for (int i = Trajectory.INTERVAL; i <= radarScreen.areaWarning; i += Trajectory.INTERVAL) {
+        for (int i = Trajectory.INTERVAL; i <= radarScreen.getAreaWarning(); i += Trajectory.INTERVAL) {
             //For each trajectory timing
             for (Obstacle obstacle: radarScreen.obsArray) {
                 //Check only the array levels below obstacle height
-                int requiredArrays = Math.min(obstacle.getMinAlt() / 1000, radarScreen.maxAlt / 1000 - 1);
+                int requiredArrays = Math.min(obstacle.getMinAlt() / 1000, radarScreen.getMaxAlt() / 1000 - 1);
                 for (int j = 0; j < requiredArrays; j++) {
                     for (PositionPoint positionPoint: radarScreen.trajectoryStorage.getPoints().get(i / 5 - 1).get(j)) {
                         Aircraft aircraft = positionPoint.getAircraft();

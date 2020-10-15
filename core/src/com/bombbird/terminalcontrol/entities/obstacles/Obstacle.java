@@ -25,7 +25,7 @@ public class Obstacle extends Actor {
     /** Draws the label to screen */
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (!radarScreen.showMva) return;
+        if (!radarScreen.getShowMva()) return;
         if (conflict || label.getText().toString().charAt(0) == '#') {
             label.getStyle().fontColor = Color.RED;
         } else if (!enforced) {

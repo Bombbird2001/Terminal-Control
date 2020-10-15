@@ -291,7 +291,7 @@ public class Airport {
 
     /** Update loop */
     public void update() {
-        if (!TerminalControl.radarScreen.tutorial && TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
+        if (!TerminalControl.radarScreen.getTutorial() && TerminalControl.radarScreen.getTfcMode() == RadarScreen.TfcMode.NORMAL) {
             takeoffManager.update();
         }
 
@@ -304,7 +304,7 @@ public class Airport {
 
     /** Draws runways */
     public void renderRunways() {
-        if (landings - airborne > 12 && TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
+        if (landings - airborne > 12 && TerminalControl.radarScreen.getTfcMode() == RadarScreen.TfcMode.NORMAL) {
             if (!congested) TerminalControl.radarScreen.getUtilityBox().getCommsManager().warningMsg(icao + " is experiencing congestion! To allow aircraft on the ground to take off, reduce the number of arrivals into the airport by reducing speed, putting them in holding patterns or by closing the sector.");
             congested = true;
         } else {

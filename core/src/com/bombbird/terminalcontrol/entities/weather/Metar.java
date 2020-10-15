@@ -33,7 +33,7 @@ public class Metar {
 
     /** Initialise the getting of live weather/changing of random weather */
     public void updateMetar(final boolean tutorial) {
-        if (radarScreen.weatherSel == RadarScreen.Weather.LIVE && !tutorial) {
+        if (radarScreen.getWeatherSel() == RadarScreen.Weather.LIVE && !tutorial) {
             HttpRequests.getMetar(this, true);
         } else {
             Runnable threadRunner = () -> {
@@ -166,7 +166,7 @@ public class Metar {
     public void randomWeather() {
         if (metarObject == null) {
             metarObject = generateRandomWeather();
-        } else if (radarScreen.weatherSel == RadarScreen.Weather.RANDOM) {
+        } else if (radarScreen.getWeatherSel() == RadarScreen.Weather.RANDOM) {
             metarObject = randomBasedOnCurrent();
         }
         updateRadarScreenState();

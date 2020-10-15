@@ -103,7 +103,7 @@ public class Runway {
                         pxLength = MathTools.feetToPixel(feetLength);
                         break;
                 case 4: heading = Integer.parseInt(s1);
-                        trueHdg = heading - radarScreen.magHdgDev;
+                        trueHdg = heading - radarScreen.getMagHdgDev();
                         break;
                 case 5: label.setX(Float.parseFloat(s1)); break;
                 case 6: label.setY(Float.parseFloat(s1)); break;

@@ -98,7 +98,7 @@ public class NavState {
             latModes = new Array<>(6);
             latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
             latModes.add(Ui.HOLD_AT);
-            if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
+            if (!radarScreen.getTutorial()) latModes.add(Ui.CHANGE_STAR);
 
             altModes.add(Ui.DESCEND_VIA_STAR);
 
@@ -390,7 +390,7 @@ public class NavState {
         aircraft.setIls(clearedIls.first());
         if (clearedIls.first() != null && dispLatMode.first() == NavState.SID_STAR) {
             int lowestAlt = aircraft.getRoute().getWptMinAlt(aircraft.getRoute().getWaypoints().size - 1);
-            if (lowestAlt == -1) lowestAlt = radarScreen.minAlt;
+            if (lowestAlt == -1) lowestAlt = radarScreen.getMinAlt();
             aircraft.setClearedAltitude(lowestAlt);
             replaceAllClearedAlt();
         } else {
@@ -734,7 +734,7 @@ public class NavState {
             case REMOVE_ALL_SIDSTAR:
                 latModes.clear();
                 latModes.add(Ui.FLY_HEADING);
-                if (!radarScreen.tutorial && aircraft instanceof Arrival) latModes.add(Ui.CHANGE_STAR);
+                if (!radarScreen.getTutorial() && aircraft instanceof Arrival) latModes.add(Ui.CHANGE_STAR);
                 break;
             case REMOVE_AFTERHDG_HOLD:
                 latModes.removeValue(Ui.AFTER_WPT_FLY_HDG, false);
@@ -760,7 +760,7 @@ public class NavState {
                 if (aircraft instanceof Arrival) {
                     latModes.add(aircraft.getSidStar().getName() + " arrival", Ui.AFTER_WPT_FLY_HDG, Ui.FLY_HEADING);
                     latModes.add(Ui.HOLD_AT);
-                    if (!radarScreen.tutorial) latModes.add(Ui.CHANGE_STAR);
+                    if (!radarScreen.getTutorial()) latModes.add(Ui.CHANGE_STAR);
                 } else if (aircraft instanceof Departure) {
                     latModes.add(aircraft.getSidStar().getName() + " departure", Ui.FLY_HEADING);
                 }

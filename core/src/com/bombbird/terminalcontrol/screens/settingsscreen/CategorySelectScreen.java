@@ -38,7 +38,7 @@ public class CategorySelectScreen extends StandardUIScreen {
                 game.setScreen(new DisplaySettingsScreen(game, radarScreen, background));
             }
         });
-        if (radarScreen == null || !radarScreen.tutorial) stage.addActor(displayButton);
+        if (radarScreen == null || !radarScreen.getTutorial()) stage.addActor(displayButton);
 
         TextButton dataTagButton = new TextButton("Data tag", buttonStyle);
         dataTagButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT);
@@ -49,7 +49,7 @@ public class CategorySelectScreen extends StandardUIScreen {
                 game.setScreen(new DataTagSettingsScreen(game, radarScreen, background));
             }
         });
-        if (radarScreen == null || !radarScreen.tutorial) stage.addActor(dataTagButton);
+        if (radarScreen == null || !radarScreen.getTutorial()) stage.addActor(dataTagButton);
 
         TextButton trafficButton = new TextButton("Traffic", buttonStyle);
         trafficButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT);
@@ -60,7 +60,7 @@ public class CategorySelectScreen extends StandardUIScreen {
                 game.setScreen(new TrafficSettingsScreen(game, radarScreen, background));
             }
         });
-        if (radarScreen == null || !radarScreen.tutorial) stage.addActor(trafficButton);
+        if (radarScreen == null || !radarScreen.getTutorial()) stage.addActor(trafficButton);
 
         TextButton othersButton = new TextButton("Others", buttonStyle);
         othersButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT);
@@ -82,7 +82,7 @@ public class CategorySelectScreen extends StandardUIScreen {
                 game.setScreen(new AlertsSettingsScreen(game, radarScreen, background));
             }
         });
-        if ((radarScreen == null || !radarScreen.tutorial) && TerminalControl.full) stage.addActor(alertsButton);
+        if ((radarScreen == null || !radarScreen.getTutorial()) && TerminalControl.full) stage.addActor(alertsButton);
 
         //Set button textures
         TextButton.TextButtonStyle buttonStyle1 = new TextButton.TextButtonStyle();

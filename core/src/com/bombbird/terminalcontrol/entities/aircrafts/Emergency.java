@@ -335,7 +335,7 @@ public class Emergency {
         if (type == Type.PRESSURE_LOSS) {
             intent = ", we are initiating an emergency descent to 9000 feet";
         } else {
-            String altitude = aircraft.getClearedAltitude() >= radarScreen.transLvl * 100 ? "FL" + aircraft.getClearedAltitude() / 100 : aircraft.getClearedAltitude() + " feet";
+            String altitude = aircraft.getClearedAltitude() >= radarScreen.getTransLvl() * 100 ? "FL" + aircraft.getClearedAltitude() / 100 : aircraft.getClearedAltitude() + " feet";
             intent = ", levelling off at " + altitude;
         }
         String text = "Mayday, mayday, mayday, " + aircraft.getCallsign() + aircraft.getWakeString() + " is declaring " + emergency + " and would like to return to the airport" + intent;
@@ -364,8 +364,8 @@ public class Emergency {
         if (MathTools.withinRange(bearing, 210, 240)) dir = "south-west";
         if (MathTools.withinRange(bearing, 240, 300)) dir = "west";
         if (MathTools.withinRange(bearing, 300, 330)) dir = "north-west";
-        String alt = aircraft.getAltitude() >= radarScreen.transLvl ? ((int)(aircraft.getAltitude() / 100)) * 100 + " feet" : "FL" + (int)(aircraft.getAltitude() / 100);
-        radarScreen.getUtilityBox().getCommsManager().normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.mainName + ", " + alt);
+        String alt = aircraft.getAltitude() >= radarScreen.getTransLvl() ? ((int)(aircraft.getAltitude() / 100)) * 100 + " feet" : "FL" + (int)(aircraft.getAltitude() / 100);
+        radarScreen.getUtilityBox().getCommsManager().normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.getMainName() + ", " + alt);
         TerminalControl.tts.sayReadyForDump(aircraft);
     }
 

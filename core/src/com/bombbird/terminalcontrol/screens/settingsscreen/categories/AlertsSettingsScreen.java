@@ -106,9 +106,9 @@ public class AlertsSettingsScreen extends SettingsTemplateScreen {
             areaWarning = TerminalControl.areaWarning;
             collisionWarning = TerminalControl.collisionWarning;
         } else {
-            advTrajTime = radarScreen.advTraj;
-            areaWarning = radarScreen.areaWarning;
-            collisionWarning = radarScreen.collisionWarning;
+            advTrajTime = radarScreen.getAdvTraj();
+            areaWarning = radarScreen.getAreaWarning();
+            collisionWarning = radarScreen.getCollisionWarning();
         }
 
         advTraj.setSelected(advTrajTime == -1 ? "Off" : advTrajTime + " sec");
@@ -120,9 +120,9 @@ public class AlertsSettingsScreen extends SettingsTemplateScreen {
     @Override
     public void sendChanges() {
         if (radarScreen != null) {
-            radarScreen.advTraj = advTrajTime;
-            radarScreen.areaWarning = areaWarning;
-            radarScreen.collisionWarning = collisionWarning;
+            radarScreen.setAdvTraj(advTrajTime);
+            radarScreen.setAreaWarning(areaWarning);
+            radarScreen.setCollisionWarning(collisionWarning);
         } else {
             TerminalControl.advTraj = advTrajTime;
             TerminalControl.areaWarning = areaWarning;

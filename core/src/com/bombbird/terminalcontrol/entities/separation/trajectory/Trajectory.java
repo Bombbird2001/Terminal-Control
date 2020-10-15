@@ -24,14 +24,14 @@ public class Trajectory {
     /** Calculates trajectory of aircraft, adds points to array */
     public void calculateTrajectory() {
         //Calculate simple linear trajectory, plus arc if aircraft is turning > 5 degrees
-        int requiredTime = Math.max(TerminalControl.radarScreen.areaWarning, TerminalControl.radarScreen.collisionWarning);
-        requiredTime = Math.max(requiredTime, TerminalControl.radarScreen.advTraj);
+        int requiredTime = Math.max(TerminalControl.radarScreen.getAreaWarning(), TerminalControl.radarScreen.getCollisionWarning());
+        requiredTime = Math.max(requiredTime, TerminalControl.radarScreen.getAdvTraj());
         positionPoints.clear();
         float targetHeading = (float) aircraft.getHeading() + deltaHeading;
         int windSpd = aircraft.getWinds()[1];
         int windHdg = aircraft.getWinds()[0];
         if (windHdg == 0) windSpd = 0;
-        float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading,  windHdg + 180, windSpd) - TerminalControl.radarScreen.magHdgDev;
+        float targetTrack = targetHeading + (float) aircraft.calculateAngleDiff(targetHeading,  windHdg + 180, windSpd) - TerminalControl.radarScreen.getMagHdgDev();
         targetTrack = (float) MathTools.modulateHeading(targetTrack);
         if (Math.abs(deltaHeading) > 5) {
             //Calculate arc if aircraft is turning > 5 degrees
@@ -89,7 +89,7 @@ public class Trajectory {
         } else {
             for (int i = INTERVAL; i <= requiredTime; i += INTERVAL) {
                 Vector2 trackVector = new Vector2(0, MathTools.nmToPixel(i * aircraft.getGs() / 3600));
-                trackVector.rotate(aircraft.isOnGround() ? -aircraft.getRunway().getHeading() + TerminalControl.radarScreen.magHdgDev : -targetTrack);
+                trackVector.rotate(aircraft.isOnGround() ? -aircraft.getRunway().getHeading() + TerminalControl.radarScreen.getMagHdgDev() : -targetTrack);
                 positionPoints.add(new PositionPoint(aircraft, aircraft.getX() + trackVector.x, aircraft.getY() + trackVector.y, 0));
             }
         }
@@ -113,7 +113,7 @@ public class Trajectory {
     public void renderPoints() {
         if (!aircraft.isSelected()) return;
         TerminalControl.radarScreen.shapeRenderer.setColor(Color.ORANGE);
-        for (int i = 0; i < TerminalControl.radarScreen.advTraj / 5; i++) {
+        for (int i = 0; i < TerminalControl.radarScreen.getAdvTraj() / 5; i++) {
             if (i >= positionPoints.size) break;
             PositionPoint positionPoint = positionPoints.get(i);
             TerminalControl.radarScreen.shapeRenderer.circle(positionPoint.x, positionPoint.y, 5);

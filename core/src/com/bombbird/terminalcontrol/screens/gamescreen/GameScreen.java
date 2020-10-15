@@ -309,7 +309,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
                 //Draw to the spritebatch
                 game.batch.setProjectionMatrix(labelStage.getCamera().combined);
-                boolean liveWeather = ((RadarScreen) this).weatherSel == RadarScreen.Weather.LIVE && !((RadarScreen) this).tutorial;
+                boolean liveWeather = ((RadarScreen) this).getWeatherSel() == RadarScreen.Weather.LIVE && !((RadarScreen) this).getTutorial();
                 String loadingText = liveWeather ? "Loading live weather.   " : "Loading.   ";
                 if (loading) {
                     //Write loading text if loading
@@ -373,7 +373,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener, Inpu
 
     /** Check if tutorial is in paused state */
     private boolean checkTutorialPaused() {
-        return (((RadarScreen)this).tutorialManager != null && ((RadarScreen)this).tutorialManager.isPausedForReading());
+        return (((RadarScreen)this).getTutorialManager() != null && ((RadarScreen)this).getTutorialManager().isPausedForReading());
     }
 
     /** Implements resize method of screen, adjusts camera & viewport properties after resize for better UI */
