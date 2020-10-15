@@ -1,360 +1,295 @@
-package com.bombbird.terminalcontrol.entities.sidstar;
+package com.bombbird.terminalcontrol.entities.sidstar
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.runways.Runway;
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.entities.procedures.holding.HoldProcedure;
-import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.zones.SidStarZone;
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure
+import com.bombbird.terminalcontrol.entities.procedures.holding.HoldProcedure
+import com.bombbird.terminalcontrol.entities.runways.Runway
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
+import com.bombbird.terminalcontrol.entities.zones.SidStarZone
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
+import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
+import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
+import org.json.JSONObject
 
-public class Route {
-    private final RadarScreen radarScreen;
+class Route private constructor() {
+    private val radarScreen: RadarScreen = TerminalControl.radarScreen
+    val waypoints: Array<Waypoint> = Array()
+    val restrictions: Array<IntArray> = Array()
+    val flyOver: Array<Boolean> = Array()
+    lateinit var holdProcedure: HoldProcedure
+        private set
+    var heading: Int
+        private set
+    private lateinit var sidStarZone: SidStarZone
+    lateinit var name: String
+        private set
 
-    private final Array<Waypoint> wpts;
-    private final Array<int[]> restrictions;
-    private final Array<Boolean> flyOver;
-    private HoldProcedure holdProcedure;
-
-    private int heading;
-    private SidStarZone sidStarZone;
-
-    private String name;
-
-    /** Basic constructor for Route, should only be called by other Route constructors */
-    private Route() {
-        radarScreen = TerminalControl.radarScreen;
-
-        wpts = new Array<>();
-        restrictions = new Array<>();
-        flyOver = new Array<>();
-
-        heading = -1;
+    /** Basic constructor for Route, should only be called by other Route constructors  */
+    init {
+        heading = -1
     }
 
-    /** Create a new Route based on STAR, for compatibility with older versions */
-    public Route(Star star) {
-        this();
-        Array<String> inbound = star.getRandomInbound();
-        if (!"HDG".equals(inbound.get(0).split(" ")[0])) {
-            String[] data = inbound.get(0).split(" ");
-            wpts.add(radarScreen.waypoints.get(data[1]));
-            restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
-            flyOver.add(data.length > 5 && data[5].equals("FO"));
+    /** Create a new Route based on STAR, for compatibility with older versions  */
+    constructor(star: Star) : this() {
+        val inbound = star.randomInbound
+        if ("HDG" != inbound[0].split(" ".toRegex()).toTypedArray()[0]) {
+            val data = inbound[0].split(" ".toRegex()).toTypedArray()
+            waypoints.add(radarScreen.waypoints[data[1]])
+            restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
+            flyOver.add(data.size > 5 && data[5] == "FO")
         }
-
-        wpts.addAll(star.getWaypoints());
-        restrictions.addAll(star.getRestrictions());
-        flyOver.addAll(star.getFlyOver());
-
-        holdProcedure = new HoldProcedure(star);
-
-        name = star.getName();
-
-        loadStarZone();
+        waypoints.addAll(star.waypoints)
+        restrictions.addAll(star.restrictions)
+        flyOver.addAll(star.flyOver)
+        holdProcedure = HoldProcedure(star)
+        name = star.name
+        loadStarZone()
     }
 
-    /** Create a new Route based on SID, for compatibility with older versions */
-    public Route(Sid sid, String runway) {
-        this();
-        wpts.addAll(sid.getInitWpts(runway));
-        restrictions.addAll(sid.getInitRestrictions(runway));
-        flyOver.addAll(sid.getInitFlyOver(runway));
-        wpts.addAll(sid.getWaypoints());
-        restrictions.addAll(sid.getRestrictions());
-        flyOver.addAll(sid.getFlyOver());
-        Array<String> transition = sid.getRandomTransition();
-        for (int i = 0; i < transition.size; i++) {
-            String[] data = transition.get(i).split(" ");
-            if (data[0].equals("WPT")) {
+    /** Create a new Route based on SID, for compatibility with older versions  */
+    constructor(sid: Sid, runway: String) : this() {
+        waypoints.addAll(sid.getInitWpts(runway))
+        restrictions.addAll(sid.getInitRestrictions(runway))
+        flyOver.addAll(sid.getInitFlyOver(runway))
+        waypoints.addAll(sid.waypoints)
+        restrictions.addAll(sid.restrictions)
+        flyOver.addAll(sid.flyOver)
+        val transition = sid.randomTransition
+        for (i in 0 until transition.size) {
+            val data = transition[i].split(" ".toRegex()).toTypedArray()
+            if (data[0] == "WPT") {
                 //Waypoint
-                wpts.add(TerminalControl.radarScreen.waypoints.get(data[1]));
-                restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
-                flyOver.add(data.length > 5 && data[5].equals("FO"));
+                waypoints.add(TerminalControl.radarScreen.waypoints[data[1]])
+                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
+                flyOver.add(data.size > 5 && data[5] == "FO")
             }
         }
-
-        holdProcedure = new HoldProcedure();
-
-        name = sid.getName();
-
-        loadSidZone(null, null, -1);
+        holdProcedure = HoldProcedure()
+        name = sid.name
+        loadSidZone(null, null, -1)
     }
 
-    /** Create new Route based on newly assigned STAR */
-    public Route(Aircraft aircraft, Star star) {
-        this();
-        Array<String> inbound = star.getRandomInbound();
-        for (int i = 0; i < inbound.size; i++) {
-            if ("HDG".equals(inbound.get(i).split(" ")[0])) {
-                if (aircraft.getRoute() == null) {
-                    aircraft.setHeading(Integer.parseInt(inbound.get(i).split(" ")[1]));
-                    heading = (int) aircraft.getHeading() + 180;
-                }
+    /** Create new Route based on newly assigned STAR  */
+    constructor(aircraft: Aircraft, star: Star) : this() {
+        val inbound = star.randomInbound
+        for (i in 0 until inbound.size) {
+            if ("HDG" == inbound[i].split(" ".toRegex()).toTypedArray()[0]) {
+                aircraft.heading = inbound[i].split(" ".toRegex()).toTypedArray()[1].toInt().toDouble()
+                heading = aircraft.heading.toInt() + 180
             } else {
-                String[] data = inbound.get(i).split(" ");
-                wpts.add(radarScreen.waypoints.get(data[1]));
-                restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
-                flyOver.add(data.length > 5 && data[5].equals("FO"));
+                val data = inbound[i].split(" ".toRegex()).toTypedArray()
+                waypoints.add(radarScreen.waypoints[data[1]])
+                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
+                flyOver.add(data.size > 5 && data[5] == "FO")
             }
         }
-
-        wpts.addAll(star.getWaypoints());
-        restrictions.addAll(star.getRestrictions());
-        flyOver.addAll(star.getFlyOver());
-
-        String runway = null;
-        for (int i = 0; i < star.getRunways().size; i++) {
-            String rwy = star.getRunways().get(i);
-            if (aircraft.getAirport().getLandingRunways().containsKey(rwy)) {
-                runway = rwy;
-                break;
+        waypoints.addAll(star.waypoints)
+        restrictions.addAll(star.restrictions)
+        flyOver.addAll(star.flyOver)
+        var runway: String? = null
+        for (i in 0 until star.runways.size) {
+            val rwy = star.runways[i]
+            if (aircraft.airport.landingRunways.containsKey(rwy)) {
+                runway = rwy
+                break
             }
         }
-
         if (runway == null) {
-            if (!star.getRunways().isEmpty()) {
-                runway = star.getRunways().first();
+            runway = if (!star.runways.isEmpty) {
+                star.runways.first()
             } else {
-                throw new RuntimeException("Runway selected is null");
+                throw RuntimeException("Runway selected is null")
             }
         }
-
-        wpts.addAll(star.getRwyWpts(runway));
-        restrictions.addAll(star.getRwyRestrictions(runway));
-        flyOver.addAll(star.getRwyFlyOver(runway));
-
-        holdProcedure = new HoldProcedure(star);
-
-        name = star.getName();
-
-        loadStarZone();
+        waypoints.addAll(star.getRwyWpts(runway))
+        restrictions.addAll(star.getRwyRestrictions(runway))
+        flyOver.addAll(star.getRwyFlyOver(runway))
+        holdProcedure = HoldProcedure(star)
+        name = star.name
+        loadStarZone()
     }
 
-    /** Create new Route based on newly assigned SID */
-    public Route(Aircraft aircraft, Sid sid, String runway, int climbRate) {
-        this();
-        wpts.addAll(sid.getInitWpts(runway));
-        restrictions.addAll(sid.getInitRestrictions(runway));
-        flyOver.addAll(sid.getInitFlyOver(runway));
-        wpts.addAll(sid.getWaypoints());
-        restrictions.addAll(sid.getRestrictions());
-        flyOver.addAll(sid.getFlyOver());
-        Array<String> transition = sid.getRandomTransition();
-        for (int i = 0; i < transition.size; i++) {
-            String[] data = transition.get(i).split(" ");
-            if (data[0].equals("WPT")) {
+    /** Create new Route based on newly assigned SID  */
+    constructor(aircraft: Aircraft, sid: Sid, runway: String, climbRate: Int) : this() {
+        waypoints.addAll(sid.getInitWpts(runway))
+        restrictions.addAll(sid.getInitRestrictions(runway))
+        flyOver.addAll(sid.getInitFlyOver(runway))
+        waypoints.addAll(sid.waypoints)
+        restrictions.addAll(sid.restrictions)
+        flyOver.addAll(sid.flyOver)
+        val transition = sid.randomTransition
+        for (i in 0 until transition.size) {
+            val data = transition[i].split(" ".toRegex()).toTypedArray()
+            if (data[0] == "WPT") {
                 //Waypoint
-                wpts.add(TerminalControl.radarScreen.waypoints.get(data[1]));
-                restrictions.add(new int[] {Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4])});
-                flyOver.add(data.length > 5 && data[5].equals("FO"));
+                waypoints.add(TerminalControl.radarScreen.waypoints[data[1]])
+                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
+                flyOver.add(data.size > 5 && data[5] == "FO")
             } else {
                 //Outbound heading
-                ((Departure) aircraft).setOutboundHdg(Integer.parseInt(data[MathUtils.random(1, data.length - 1)]));
-                heading = ((Departure) aircraft).getOutboundHdg();
+                (aircraft as Departure).outboundHdg = data[MathUtils.random(1, data.size - 1)].toInt()
+                heading = aircraft.outboundHdg
             }
         }
-
-        holdProcedure = new HoldProcedure();
-
-        name = sid.getName();
-
-        loadSidZone(aircraft.getAirport().getRunways().get(runway), sid, climbRate);
+        holdProcedure = HoldProcedure()
+        name = sid.name
+        loadSidZone(aircraft.airport.runways[runway], sid, climbRate)
     }
 
-    /** Create new Route based on saved route, called only by other constructors */
-    private Route(JSONObject jo) {
-        this();
-
-        JSONArray waypoints = jo.getJSONArray("waypoints");
-        JSONArray restr = jo.getJSONArray("restrictions");
-        JSONArray fo = jo.getJSONArray("flyOver");
-        for (int i = 0; i < waypoints.length(); i++) {
-            wpts.add(radarScreen.waypoints.get(waypoints.getString(i)));
-            String[] data = restr.getString(i).split(" ");
-            restrictions.add(new int[] {Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2])});
-            flyOver.add(fo.getBoolean(i));
+    /** Create new Route based on saved route, called only by other constructors  */
+    private constructor(jo: JSONObject) : this() {
+        val waypoints = jo.getJSONArray("waypoints")
+        val restr = jo.getJSONArray("restrictions")
+        val fo = jo.getJSONArray("flyOver")
+        for (i in 0 until waypoints.length()) {
+            this.waypoints.add(radarScreen.waypoints[waypoints.getString(i)])
+            val data = restr.getString(i).split(" ".toRegex()).toTypedArray()
+            restrictions.add(intArrayOf(data[0].toInt(), data[1].toInt(), data[2].toInt()))
+            flyOver.add(fo.getBoolean(i))
         }
-
-        holdProcedure = new HoldProcedure();
-
-        heading = jo.optInt("heading", -1);
-
-        name = jo.optString("name", "null");
+        holdProcedure = HoldProcedure()
+        heading = jo.optInt("heading", -1)
+        name = jo.optString("name", "null")
     }
 
-    /** Create new Route based on saved route and SID name */
-    public Route(JSONObject jo, Sid sid, Runway runway, int climbRate) {
-        this(jo);
-
-        if ("null".equals(name) && sid != null) name = sid.getName();
-
-        loadSidZone(runway, sid, climbRate);
+    /** Create new Route based on saved route and SID name  */
+    constructor(jo: JSONObject, sid: Sid?, runway: Runway?, climbRate: Int) : this(jo) {
+        if ("null" == name && sid != null) name = sid.name
+        loadSidZone(runway, sid, climbRate)
     }
 
-    /** Create new Route based on saved route and STAR name */
-    public Route(JSONObject jo, Star star) {
-        this(jo);
-        holdProcedure = new HoldProcedure(star);
-
-        name = star.getName();
-
-        loadStarZone();
+    /** Create new Route based on saved route and STAR name  */
+    constructor(jo: JSONObject, star: Star) : this(jo) {
+        holdProcedure = HoldProcedure(star)
+        name = star.name
+        loadStarZone()
     }
 
-    /** Loads sidStarZone for STAR routes */
-    private void loadStarZone() {
-        sidStarZone = new SidStarZone(this, false);
-        sidStarZone.calculatePolygons(0);
+    /** Loads sidStarZone for STAR routes  */
+    private fun loadStarZone() {
+        sidStarZone = SidStarZone(this, false)
+        sidStarZone.calculatePolygons(0)
     }
 
-    /** Loads sidStarZone for SID routes */
-    private void loadSidZone(Runway runway, Sid sid, int climbRate) {
-        sidStarZone = new SidStarZone(this, true);
-        sidStarZone.calculatePolygons(wpts.size - 1);
-        if (runway != null && sid != null && climbRate > -1) sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate);
+    /** Loads sidStarZone for SID routes  */
+    private fun loadSidZone(runway: Runway?, sid: Sid?, climbRate: Int) {
+        sidStarZone = SidStarZone(this, true)
+        sidStarZone.calculatePolygons(waypoints.size - 1)
+        if (runway != null && sid != null && climbRate > -1) sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate)
     }
 
-    /** Draws the lines between aircraft, waypoints with shapeRenderer */
-    public void joinLines(int start, int end, int outbound) {
-        Waypoint prevPt = null;
-        int index = start;
+    /** Draws the lines between aircraft, waypoints with shapeRenderer  */
+    fun joinLines(start: Int, end: Int, outbound: Int) {
+        var prevPt: Waypoint? = null
+        var index = start
         while (index < end) {
-            Waypoint waypoint = getWaypoint(index);
-            if (prevPt != null) {
-                radarScreen.shapeRenderer.line(prevPt.getPosX(), prevPt.getPosY(), waypoint.getPosX(), waypoint.getPosY());
+            val waypoint = getWaypoint(index)
+            if (prevPt != null && waypoint != null) {
+                radarScreen.shapeRenderer.line(prevPt.posX.toFloat(), prevPt.posY.toFloat(), waypoint.posX.toFloat(), waypoint.posY.toFloat())
             }
-            prevPt = waypoint;
-            index++;
+            prevPt = waypoint
+            index++
         }
         if (prevPt != null) {
-            drawOutbound(prevPt.getPosX(), prevPt.getPosY(), outbound);
+            drawOutbound(prevPt.posX.toFloat(), prevPt.posY.toFloat(), outbound)
         }
     }
 
-    /** Draws the outbound track from waypoint (if latMode is After waypoint, fly heading) */
-    private void drawOutbound(float previousX, float previousY, int outbound) {
+    /** Draws the outbound track from waypoint (if latMode is After waypoint, fly heading)  */
+    private fun drawOutbound(previousX: Float, previousY: Float, outbound: Int) {
         if (outbound != -1 && previousX <= 4500 && previousX >= 1260 && previousY <= 3240 && previousY >= 0) {
-            float outboundTrack = outbound - radarScreen.getMagHdgDev();
-            float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, previousX, previousY, outboundTrack);
-            radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1]);
+            val outboundTrack = outbound - radarScreen.magHdgDev
+            val point = pointsAtBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), previousX, previousY, outboundTrack)
+            radarScreen.shapeRenderer.line(previousX, previousY, point[0], point[1])
         }
     }
 
-    /** Draws the sidStarZone boundaries */
-    public void drawPolygons() {
-        for (Polygon polygon: sidStarZone.getPolygons()) {
-            radarScreen.shapeRenderer.polygon(polygon.getTransformedVertices());
+    /** Draws the sidStarZone boundaries  */
+    fun drawPolygons() {
+        for (polygon in sidStarZone.polygons) {
+            radarScreen.shapeRenderer.polygon(polygon.transformedVertices)
         }
     }
 
-    /** Checks whether supplied coordinates is within the sidStarZone of the route */
-    public boolean inSidStarZone(float x, float y, float alt) {
-        return sidStarZone.contains(x, y, alt);
+    /** Checks whether supplied coordinates is within the sidStarZone of the route  */
+    fun inSidStarZone(x: Float, y: Float, alt: Float): Boolean {
+        return sidStarZone.contains(x, y, alt)
     }
 
-    public Array<Waypoint> getWaypoints() {
-        return wpts;
+    fun getWaypoint(index: Int): Waypoint? {
+        return if (index >= waypoints.size) {
+            null
+        } else waypoints[index]
     }
 
-    public Waypoint getWaypoint(int index) {
-        if (index >= wpts.size) {
-            return null;
+    /** Calculates distance between remaining points, excluding distance between aircraft and current waypoint  */
+    fun distBetRemainPts(nextWptIndex: Int): Float {
+        var currentIndex = nextWptIndex
+        var dist = 0f
+        while (currentIndex < waypoints.size - 1) {
+            if (getWaypoint(currentIndex + 1)?.isInsideRadar != true) break
+            dist += distBetween(currentIndex, currentIndex + 1)
+            currentIndex++
         }
-        return wpts.get(index);
+        return dist
     }
 
-    /** Calculates distance between remaining points, excluding distance between aircraft and current waypoint */
-    public float distBetRemainPts(int nextWptIndex) {
-        int currentIndex = nextWptIndex;
-        float dist = 0;
-        while (currentIndex < getWaypoints().size - 1) {
-            if (!getWaypoint(currentIndex + 1).isInsideRadar()) break;
-            dist += distBetween(currentIndex, currentIndex + 1);
-            currentIndex++;
-        }
-        return dist;
+    /** Calculates distance between 2 waypoints in the route based on their indices  */
+    fun distBetween(pt1: Int, pt2: Int): Float {
+        val waypoint1 = getWaypoint(pt1)
+        val waypoint2 = getWaypoint(pt2)
+        return if (waypoint1 != null && waypoint2 != null) pixelToNm(distanceBetween(waypoint1.posX.toFloat(), waypoint1.posY.toFloat(), waypoint2.posX.toFloat(), waypoint2.posY.toFloat())) else 0f
     }
 
-    /** Calculates distance between 2 waypoints in the route based on their indices */
-    public float distBetween(int pt1, int pt2) {
-        Waypoint waypoint1 = getWaypoint(pt1);
-        Waypoint waypoint2 = getWaypoint(pt2);
-        return MathTools.pixelToNm(MathTools.distanceBetween(waypoint1.getPosX(), waypoint1.getPosY(), waypoint2.getPosX(), waypoint2.getPosY()));
-    }
-
-    /** Returns an array of waypoints from start to end index inclusive */
-    public Array<Waypoint> getRemainingWaypoints(int start, int end) {
+    /** Returns an array of waypoints from start to end index inclusive  */
+    fun getRemainingWaypoints(start: Int, end: Int): Array<Waypoint?> {
         //Returns array of waypoints from index start to end
-        Array<Waypoint> newRange = new Array<>(wpts);
+        val newRange = Array(waypoints)
         if (end >= start) {
             if (start > 0) {
-                newRange.removeRange(0, start - 1);
+                newRange.removeRange(0, start - 1)
             }
-            int newEnd = end - start;
+            val newEnd = end - start
             if (newEnd < newRange.size - 1) {
-                newRange.removeRange(newEnd + 1, newRange.size - 1);
+                newRange.removeRange(newEnd + 1, newRange.size - 1)
             }
         }
-        return newRange;
+        return newRange
     }
 
-    public int findWptIndex(String wptName) {
-        return wpts.indexOf(radarScreen.waypoints.get(wptName), false);
+    fun findWptIndex(wptName: String?): Int {
+        return waypoints.indexOf(radarScreen.waypoints[wptName], false)
     }
 
-    public int getWptMinAlt(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[0];
+    fun getWptMinAlt(wptName: String?): Int {
+        return restrictions[findWptIndex(wptName)][0]
     }
 
-    public int getWptMinAlt(int index) {
-        return restrictions.get(index)[0];
+    fun getWptMinAlt(index: Int): Int {
+        return restrictions[index][0]
     }
 
-    public int getWptMaxAlt(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[1];
+    fun getWptMaxAlt(wptName: String?): Int {
+        return restrictions[findWptIndex(wptName)][1]
     }
 
-    public int getWptMaxAlt(int index) {
-        return restrictions.get(index)[1];
+    fun getWptMaxAlt(index: Int): Int {
+        return restrictions[index][1]
     }
 
-    public int getWptMaxSpd(String wptName) {
-        return restrictions.get(findWptIndex(wptName))[2];
+    fun getWptMaxSpd(wptName: String?): Int {
+        return restrictions[findWptIndex(wptName)][2]
     }
 
-    public int getWptMaxSpd(int index) {
-        return restrictions.get(index)[2];
+    fun getWptMaxSpd(index: Int): Int {
+        return restrictions[index][2]
     }
 
-    public boolean getWptFlyOver(String wptName) {
-        return flyOver.get(findWptIndex(wptName));
-    }
-
-    public HoldProcedure getHoldProcedure() {
-        return holdProcedure;
-    }
-
-    public Array<int[]> getRestrictions() {
-        return restrictions;
-    }
-
-    public Array<Boolean> getFlyOver() {
-        return flyOver;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getHeading() {
-        return heading;
+    fun getWptFlyOver(wptName: String?): Boolean {
+        return flyOver[findWptIndex(wptName)]
     }
 }

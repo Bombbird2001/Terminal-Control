@@ -1,77 +1,62 @@
-package com.bombbird.terminalcontrol.entities.approaches;
+package com.bombbird.terminalcontrol.entities.approaches
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Queue;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
-import org.apache.commons.lang3.StringUtils;
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Queue
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
+import org.apache.commons.lang3.StringUtils
 
-public class LDA extends ILS {
-    private Queue<float[]> nonPrecAlts;
-    private float lineUpDist;
-    private ILS imaginaryIls;
+class LDA(airport: Airport, toParse: String) : ILS(airport, toParse) {
+    var nonPrecAlts: Queue<FloatArray>? = null
+        private set
+    var lineUpDist = 0f
+        private set
+    lateinit var imaginaryIls: ILS
+        private set
 
-    public LDA(Airport airport, String toParse) {
-        super(airport, toParse);
-        loadImaginaryIls();
+    init {
+        parseLDAInfo(toParse)
+        loadImaginaryIls()
+        calculateLDARings()
     }
 
-    /** Overrides method in ILS to also load the non precision approach altitudes if applicable */
-    @Override
-    public void parseInfo(String toParse) {
-        super.parseInfo(toParse);
-
-        String[] info = toParse.split(",");
-        lineUpDist = Float.parseFloat(info[9]);
-
-        if (info.length >= 11) {
-            setNpa(true);
-            nonPrecAlts = new Queue<>();
-
-            for (String s3 : info[10].split("-")) {
-                float[] altDist = new float[2];
-                int index1 = 0;
-                for (String s2 : s3.split(">")) {
-                    altDist[index1] = Float.parseFloat(s2);
-                    index1++;
+    /** Overrides method in ILS to also load the non precision approach altitudes if applicable  */
+    private fun parseLDAInfo(toParse: String) {
+        super.parseInfo(toParse)
+        val info = toParse.split(",".toRegex()).toTypedArray()
+        lineUpDist = info[9].toFloat()
+        if (info.size >= 11) {
+            isNpa = true
+            nonPrecAlts = Queue()
+            for (s3 in info[10].split("-".toRegex()).toTypedArray()) {
+                val altDist = FloatArray(2)
+                for ((index1, s2) in s3.split(">".toRegex()).toTypedArray().withIndex()) {
+                    altDist[index1] = s2.toFloat()
                 }
-                nonPrecAlts.addLast(altDist);
+                nonPrecAlts?.addLast(altDist)
             }
         }
     }
 
-    /** Loads the imaginary ILS from runway center line */
-    private void loadImaginaryIls() {
-        String text = "IMG" + getRwy().getName() + "," + getRwy().getName() + "," + getRwy().getHeading() + "," + getRwy().getX() + "," + getRwy().getY() + ",0,0,4000," + StringUtils.join(getTowerFreq(), ">");
-        imaginaryIls = new ILS(getAirport(), text);
+    /** Loads the imaginary ILS from runway center line  */
+    private fun loadImaginaryIls() {
+        val text = "IMG" + rwy!!.name + "," + rwy!!.name + "," + rwy!!.heading + "," + rwy!!.x + "," + rwy!!.y + ",0,0,4000," + StringUtils.join(towerFreq, ">")
+        imaginaryIls = ILS(airport, text)
     }
 
-    /** Overrides method in ILS to ignore it if NPA */
-    @Override
-    public void calculateGsRings() {
-        if (!isNpa()) {
-            super.calculateGsRings();
+    /** Overrides method in ILS to ignore it if NPA  */
+    private fun calculateLDARings() {
+        if (!isNpa) {
+            super.calculateGsRings()
         } else {
-            Array<Vector2> gsRings = new Array<>();
-            for (int i = 0; i < nonPrecAlts.size; i++) {
-                gsRings.add(new Vector2(getX() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.cosDeg(270 - getHeading() + TerminalControl.radarScreen.getMagHdgDev()), getY() + MathTools.nmToPixel(nonPrecAlts.get(i)[1]) * MathUtils.sinDeg(270 - getHeading() + TerminalControl.radarScreen.getMagHdgDev())));
+            val gsRings = Array<Vector2>()
+            for (i in 0 until nonPrecAlts!!.size) {
+                gsRings.add(Vector2(x + nmToPixel(nonPrecAlts!![i][1]) * MathUtils.cosDeg(270 - heading + TerminalControl.radarScreen.magHdgDev), y + nmToPixel(nonPrecAlts!![i][1]) * MathUtils.sinDeg(270 - heading + TerminalControl.radarScreen.magHdgDev)))
             }
-            setGsRings(gsRings);
+            setGsRings(gsRings)
         }
-    }
-
-    public Queue<float[]> getNonPrecAlts() {
-        return nonPrecAlts;
-    }
-
-    public float getLineUpDist() {
-        return lineUpDist;
-    }
-
-    public ILS getImaginaryIls() {
-        return imaginaryIls;
     }
 }

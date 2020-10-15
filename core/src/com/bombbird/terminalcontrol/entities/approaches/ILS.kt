@@ -1,302 +1,269 @@
-package com.bombbird.terminalcontrol.entities.approaches;
+package com.bombbird.terminalcontrol.entities.approaches
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.runways.Runway;
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
-import com.bombbird.terminalcontrol.entities.procedures.MissedApproach;
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
-import com.bombbird.terminalcontrol.ui.tabs.LatTab;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
+import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.procedures.MissedApproach
+import com.bombbird.terminalcontrol.entities.runways.Runway
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.tabs.LatTab
+import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
+import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToNm
+import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
+import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
+import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
+import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.tan
 
-public class ILS extends Actor {
-    private final Airport airport;
-    private String name;
-    private float x;
-    private float y;
-    private int heading;
-    private float gsOffsetNm;
-    private int minima;
-    private int gsAlt;
-    private String[] towerFreq;
-    private Runway rwy;
-    private final MissedApproach missedApchProc;
-    private boolean npa;
-
-    private Array<Vector2> gsRings = new Array<>();
-    int minAlt;
-
-    private static final float distance1 = MathTools.nmToPixel(10);
-    private static final int angle1 = 6;
-
-    private static final float ilsDistNm = 25;
-    private static final float distance2 = MathTools.nmToPixel(ilsDistNm);
-    private static final int angle2 = 3;
-
-    private static final float dashDistNm = 1;
-
-    private final RadarScreen radarScreen;
-
-    public ILS(Airport airport, String toParse) {
-        radarScreen = TerminalControl.radarScreen;
-
-        this.airport = airport;
-        parseInfo(toParse);
-
-        String missed = name;
-        if ("IMG".equals(name.substring(0, 3))) missed = "LDA" + name.substring(3);
-        if ("TCHX".equals(airport.getIcao()) && "IMG13".equals(name)) missed = "IGS13";
-        missedApchProc = airport.getMissedApproaches().get(missed);
-
-        calculateGsRings();
+open class ILS(val airport: Airport, toParse: String) : Actor() {
+    companion object {
+        private val distance1 = nmToPixel(10f)
+        private const val angle1 = 6
+        private const val ilsDistNm = 25f
+        private val distance2 = nmToPixel(ilsDistNm)
+        private const val angle2 = 3
+        private const val dashDistNm = 1f
     }
 
-    /** Parses the input string into info for the ILS */
-    public void parseInfo(String toParse) {
-        int index = 0;
-        npa = false;
-        for (String s1: toParse.split(",")) {
-            switch (index) {
-                case 0: name = s1; break;
-                case 1: rwy = airport.getRunways().get(s1); break;
-                case 2: heading = Integer.parseInt(s1); break;
-                case 3: x = Float.parseFloat(s1); break;
-                case 4: y = Float.parseFloat(s1); break;
-                case 5: gsOffsetNm = Float.parseFloat(s1); break;
-                case 6: minima = Integer.parseInt(s1); break;
-                case 7: gsAlt = Integer.parseInt(s1); break;
-                case 8: towerFreq = s1.split(">"); break;
-                default:
-                    if (!(this instanceof LDA)) {
-                        Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.getMainName() + "/ils" + airport.getIcao() + ".ils");
-                    }
-            }
-            index++;
-        }
+    private lateinit var name: String
+    private var x = 0f
+    private var y = 0f
+    var heading = 0
+        private set
+    private var gsOffsetNm = 0f
+    var minima = 0
+        private set
+    var gsAlt = 0
+        private set
+    lateinit var towerFreq: Array<String>
+        private set
+    var rwy: Runway? = null
+        private set
+    val missedApchProc: MissedApproach?
+    var isNpa = false
+    private var gsRings = com.badlogic.gdx.utils.Array<Vector2>()
+    var minAlt = 0
+    private val radarScreen: RadarScreen = TerminalControl.radarScreen
+
+    init {
+        parseInfo(toParse)
+        var missed = name
+        if ("IMG" == name.substring(0, 3)) missed = "LDA" + name.substring(3)
+        if ("TCHX" == airport.icao && "IMG13" == name) missed = "IGS13"
+        missedApchProc = airport.missedApproaches[missed]
+        calculateGsRings()
     }
 
-    /** Calculates positions of the GS rings; overridden for LDAs */
-    public void calculateGsRings() {
-        minAlt = -1;
-        for (int i = 2; i <= gsAlt / 1000; i++) {
-            if (i * 1000 > airport.getElevation() + 1000) {
-                gsRings.add(new Vector2(x + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.getMagHdgDev())), y + MathTools.nmToPixel(getDistAtGsAlt(i * 1000)) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.getMagHdgDev()))));
-                if (minAlt == -1) minAlt = i;
+    /** Parses the input string into info for the ILS  */
+    fun parseInfo(toParse: String) {
+        isNpa = false
+        for ((index, s1) in toParse.split(",".toRegex()).toTypedArray().withIndex()) {
+            when (index) {
+                0 -> name = s1
+                1 -> rwy = airport.runways[s1]
+                2 -> heading = s1.toInt()
+                3 -> x = s1.toFloat()
+                4 -> y = s1.toFloat()
+                5 -> gsOffsetNm = s1.toFloat()
+                6 -> minima = s1.toInt()
+                7 -> gsAlt = s1.toInt()
+                8 -> towerFreq = s1.split(">".toRegex()).toTypedArray()
+                else -> if (this !is LDA) {
+                    Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/ils" + airport.icao + ".ils")
+                }
             }
         }
     }
 
-    /** Draws ILS line using shapeRenderer */
-    public void renderShape() {
-        boolean landing = rwy.isLanding();
-        Aircraft aircraft = radarScreen.getSelectedAircraft();
-        boolean selectedIls = aircraft instanceof Arrival && aircraft.getAirport().equals(airport) && ((aircraft.getControlState() == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS.equals(name)) || (aircraft.getControlState() == Aircraft.ControlState.UNCONTROLLED && this.equals(aircraft.getIls())));
-        boolean rwyChange = radarScreen.getRunwayChanger().containsLandingRunway(airport.getIcao(), rwy.getName());
-        if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed()) {
-            radarScreen.shapeRenderer.setColor(radarScreen.getILSColour());
-            if (selectedIls || rwyChange) radarScreen.shapeRenderer.setColor(Color.YELLOW);
-            if (radarScreen.getShowIlsDash()) {
-                float gsOffsetPx = -MathTools.nmToPixel(gsOffsetNm);
-                float trackerX = x + gsOffsetPx * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.getMagHdgDev()));
-                float trackerY = y + gsOffsetPx * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.getMagHdgDev()));
-                float deltaX = MathTools.nmToPixel(dashDistNm) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.getMagHdgDev()));
-                float deltaY = MathTools.nmToPixel(dashDistNm) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.getMagHdgDev()));
-                boolean drawing = true;
-                radarScreen.shapeRenderer.line(x, y, trackerX, trackerY);
-                for (int i = 0; i < ilsDistNm + gsOffsetNm; i += dashDistNm) {
-                    drawing = !drawing;
-                    if (drawing) {
-                        radarScreen.shapeRenderer.line(trackerX, trackerY, trackerX + deltaX, trackerY + deltaY);
+    /** Calculates positions of the GS rings; overridden for LDAs  */
+    fun calculateGsRings() {
+        minAlt = -1
+        for (i in 2..gsAlt / 1000) {
+            if (i * 1000 > airport.elevation + 1000) {
+                gsRings.add(Vector2(x + nmToPixel(getDistAtGsAlt(i * 1000.toFloat())) * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat(), y + nmToPixel(getDistAtGsAlt(i * 1000.toFloat())) * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()))
+                if (minAlt == -1) minAlt = i
+            }
+        }
+    }
+
+    /** Draws ILS line using shapeRenderer  */
+    fun renderShape() {
+        val landing = rwy?.isLanding == true
+        val aircraft = radarScreen.getSelectedAircraft()
+        val selectedIls = aircraft is Arrival && aircraft.airport == airport && (aircraft.controlState == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS == name || aircraft.controlState == Aircraft.ControlState.UNCONTROLLED && this == aircraft.getIls())
+        val rwyChange = radarScreen.runwayChanger.containsLandingRunway(airport.icao, rwy?.name ?: "")
+        if ((landing || selectedIls || rwyChange) && rwy?.isEmergencyClosed == false) {
+            radarScreen.shapeRenderer.color = radarScreen.iLSColour
+            if (selectedIls || rwyChange) radarScreen.shapeRenderer.color = Color.YELLOW
+            if (radarScreen.showIlsDash) {
+                val gsOffsetPx = -nmToPixel(gsOffsetNm)
+                var trackerX = x + gsOffsetPx * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()
+                var trackerY = y + gsOffsetPx * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()
+                val deltaX = nmToPixel(dashDistNm) * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()
+                val deltaY = nmToPixel(dashDistNm) * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()
+                var drawing = true
+                radarScreen.shapeRenderer.line(x, y, trackerX, trackerY)
+                run {
+                    var i = 0
+                    while (i < ilsDistNm + gsOffsetNm) {
+                        drawing = !drawing
+                        if (drawing) {
+                            radarScreen.shapeRenderer.line(trackerX, trackerY, trackerX + deltaX, trackerY + deltaY)
+                        }
+                        trackerX += deltaX
+                        trackerY += deltaY
+                        i += dashDistNm.toInt()
                     }
-                    trackerX += deltaX;
-                    trackerY += deltaY;
                 }
 
                 //Separation marks at 5, 10, 15, 20 miles (except some airports)
-                int halfWidth = 30;
-                double trackRad = Math.toRadians(heading - radarScreen.getMagHdgDev());
-                float xOffset = halfWidth * (float) Math.cos(trackRad);
-                float yOffset = halfWidth * (float) Math.sin(trackRad);
-                int marksDist = (int) ilsDistNm;
-                if ("TCSS".equals(airport.getIcao()) && "ILS10".equals(name)) {
-                    marksDist = 11;
-                } else if ("TCBD".equals(airport.getIcao()) && "ILS03L".equals(name)) {
-                    marksDist = 6;
-                } else if ("TCBB".equals(airport.getIcao()) && name.contains("ILS24")) {
-                    marksDist = 11;
+                val halfWidth = 30
+                val trackRad = Math.toRadians(heading - radarScreen.magHdgDev.toDouble())
+                val xOffset = halfWidth * cos(trackRad).toFloat()
+                val yOffset = halfWidth * sin(trackRad).toFloat()
+                var marksDist = ilsDistNm.toInt()
+                if ("TCSS" == airport.icao && "ILS10" == name) {
+                    marksDist = 11
+                } else if ("TCBD" == airport.icao && "ILS03L" == name) {
+                    marksDist = 6
+                } else if ("TCBB" == airport.icao && name.contains("ILS24")) {
+                    marksDist = 11
                 }
-                for (int i = 5; i < marksDist; i += 5) {
-                    Vector2 centre = getPointAtDist(i - gsOffsetNm);
-                    TerminalControl.radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset);
+                var i = 5
+                while (i < marksDist) {
+                    val centre = getPointAtDist(i - gsOffsetNm)
+                    TerminalControl.radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset)
+                    i += 5
                 }
             } else {
-                radarScreen.shapeRenderer.line(x, y, x + distance2 * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.getMagHdgDev())), y + distance2 * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.getMagHdgDev())));
+                radarScreen.shapeRenderer.line(x, y, x + distance2 * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat(), y + distance2 * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat())
             }
-            drawGsCircles();
+            drawGsCircles()
         }
     }
 
-    public void drawGsCircles() {
-        int i = 0;
-        for (Vector2 vector2: gsRings) {
-            radarScreen.shapeRenderer.setColor(i + minAlt > 3 && !npa ? Color.GREEN : radarScreen.getILSColour());
-            radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8);
-            i++;
+    private fun drawGsCircles() {
+        for ((i, vector2) in gsRings.withIndex()) {
+            radarScreen.shapeRenderer.color = if (i + minAlt > 3 && !isNpa) Color.GREEN else radarScreen.iLSColour
+            radarScreen.shapeRenderer.circle(vector2.x, vector2.y, 8f)
         }
     }
 
-    /** Tests if coordinates input is inside either of the 2 ILS arcs */
-    public boolean isInsideILS(float planeX, float planeY) {
-        return isInsideArc(planeX, planeY, distance1, angle1) || isInsideArc(planeX, planeY, distance2, angle2);
+    /** Tests if coordinates input is inside either of the 2 ILS arcs  */
+    fun isInsideILS(planeX: Float, planeY: Float): Boolean {
+        return isInsideArc(planeX, planeY, distance1, angle1) || isInsideArc(planeX, planeY, distance2, angle2)
     }
 
-    /** Tests if coordinates input is inside the arc of the ILS given the arc angle and distance */
-    private boolean isInsideArc(float planeX, float planeY, float distance, int angle) {
-        float deltaX = planeX - x;
-        float deltaY = planeY - y;
-        double planeHdg = 0;
-        if (deltaX == 0) {
+    /** Tests if coordinates input is inside the arc of the ILS given the arc angle and distance  */
+    private fun isInsideArc(planeX: Float, planeY: Float, distance: Float, angle: Int): Boolean {
+        val deltaX = planeX - x
+        val deltaY = planeY - y
+        var planeHdg = 0.0
+        if (deltaX == 0f) {
             if (deltaY > 0) {
-                planeHdg = 180;
+                planeHdg = 180.0
             } else if (deltaY < 0) {
-                planeHdg = 360;
+                planeHdg = 360.0
             }
         } else {
-            double principleAngle = Math.toDegrees(Math.atan(deltaY / deltaX));
-            if (deltaX > 0) {
+            val principleAngle = Math.toDegrees(atan(deltaY / deltaX.toDouble()))
+            planeHdg = if (deltaX > 0) {
                 //Quadrant 1/4
-                planeHdg = 270 - principleAngle;
+                270 - principleAngle
             } else {
                 //Quadrant 2/3
-                planeHdg = 90 - principleAngle;
+                90 - principleAngle
             }
         }
-
-        planeHdg += radarScreen.getMagHdgDev();
-        planeHdg = MathTools.modulateHeading(planeHdg);
-
-        float smallRange = heading - angle / 2f;
-        float bigRange = smallRange + angle;
-
-        boolean inAngle = false;
-
+        planeHdg += radarScreen.magHdgDev
+        planeHdg = modulateHeading(planeHdg)
+        val smallRange = heading - angle / 2f
+        val bigRange = smallRange + angle
+        var inAngle = false
         if (smallRange <= 0) {
             if (planeHdg >= smallRange + 360 && planeHdg <= 360) {
-                inAngle = true;
+                inAngle = true
             } else if (planeHdg > 0 && planeHdg <= bigRange) {
-                inAngle = true;
+                inAngle = true
             }
         } else if (bigRange > 360) {
             if (planeHdg <= bigRange - 360 && planeHdg > 0) {
-                inAngle = true;
-            } else if (planeHdg <= 360 && planeHdg >= smallRange) {
-                inAngle = true;
+                inAngle = true
+            } else if (planeHdg in smallRange..360f) {
+                inAngle = true
             }
-        } else if (planeHdg <= bigRange && planeHdg >= smallRange) {
-            inAngle = true;
+        } else if (planeHdg in smallRange..bigRange) {
+            inAngle = true
         }
-
-        boolean inDist;
-
-        float dist = MathTools.distanceBetween(x, y, planeX, planeY);
-        inDist = dist <= distance;
-
-        return inAngle && inDist;
+        val inDist: Boolean
+        val dist = distanceBetween(x, y, planeX, planeY)
+        inDist = dist <= distance
+        return inAngle && inDist
     }
 
-    /** Gets the coordinates of the point on the localiser a distance ahead (behind if -ve) of aircraft */
-    public Vector2 getPointAhead(Aircraft aircraft, float distAhead) {
-        return getPointAtDist(getDistFrom(aircraft.getX(), aircraft.getY()) - distAhead);
+    /** Gets the coordinates of the point on the localiser a distance ahead (behind if -ve) of aircraft  */
+    fun getPointAhead(aircraft: Aircraft, distAhead: Float): Vector2 {
+        return getPointAtDist(getDistFrom(aircraft.x, aircraft.y) - distAhead)
     }
 
-    /** Gets the coordinates of the point on the localiser at a distance away from ILS origin */
-    public Vector2 getPointAtDist(float dist) {
-        return new Vector2(x + MathTools.nmToPixel(dist) * (float) Math.cos(Math.toRadians(270 - heading + radarScreen.getMagHdgDev())), y + MathTools.nmToPixel(dist) * (float) Math.sin(Math.toRadians(270 - heading + radarScreen.getMagHdgDev())));
+    /** Gets the coordinates of the point on the localiser at a distance away from ILS origin  */
+    fun getPointAtDist(dist: Float): Vector2 {
+        return Vector2(x + nmToPixel(dist) * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat(), y + nmToPixel(dist) * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat())
     }
 
-    /** Gets the glide slope altitude (in feet) at distance away from ILS origin */
-    public float getGSAltAtDist(float dist) {
-        return MathTools.nmToFeet(dist + gsOffsetNm) * (float) Math.tan(Math.toRadians(3)) + rwy.getElevation();
+    /** Gets the glide slope altitude (in feet) at distance away from ILS origin  */
+    fun getGSAltAtDist(dist: Float): Float {
+        return nmToFeet(dist + gsOffsetNm) * tan(Math.toRadians(3.0)).toFloat() + (rwy?.elevation ?: 0)
     }
 
-    /** Gets the glide slope altitude (in feet) of aircraft */
-    public float getGSAlt(Aircraft aircraft) {
-        return getGSAltAtDist(getDistFrom(aircraft.getX(), aircraft.getY()));
+    /** Gets the glide slope altitude (in feet) of aircraft  */
+    fun getGSAlt(aircraft: Aircraft): Float {
+        return getGSAltAtDist(getDistFrom(aircraft.x, aircraft.y))
     }
 
-    /** Gets the distance (in nautical miles) from GS origin for a specified altitude */
-    public float getDistAtGsAlt(float altitude) {
-        return MathTools.feetToNm((altitude - rwy.getElevation()) / (float) Math.tan(Math.toRadians(3))) - gsOffsetNm;
+    /** Gets the distance (in nautical miles) from GS origin for a specified altitude  */
+    fun getDistAtGsAlt(altitude: Float): Float {
+        return feetToNm((altitude - (rwy?.elevation ?: 0)) / tan(Math.toRadians(3.0)).toFloat()) - gsOffsetNm
     }
 
-    /** Gets distance (in nautical miles) from ILS origin, of the input coordinates */
-    public float getDistFrom(float planeX, float planeY) {
-        return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY));
+    /** Gets distance (in nautical miles) from ILS origin, of the input coordinates  */
+    fun getDistFrom(planeX: Float, planeY: Float): Float {
+        return pixelToNm(distanceBetween(x, y, planeX, planeY))
     }
 
-    @Override
-    public String getName() {
-        return name;
+    override fun getName(): String {
+        return name
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    override fun setName(name: String) {
+        this.name = name
     }
 
-    public Runway getRwy() {
-        return rwy;
+    override fun getX(): Float {
+        return x
     }
 
-    @Override
-    public float getX() {
-        return x;
+    override fun setX(x: Float) {
+        this.x = x
     }
 
-    @Override
-    public float getY() {
-        return y;
+    override fun getY(): Float {
+        return y
     }
 
-    public int getHeading() {
-        return heading;
+    override fun setY(y: Float) {
+        this.y = y
     }
 
-    public int getMinima() {
-        return minima;
-    }
-
-    public int getGsAlt() {
-        return gsAlt;
-    }
-
-    public MissedApproach getMissedApchProc() {
-        return missedApchProc;
-    }
-
-    public String[] getTowerFreq() {
-        return towerFreq;
-    }
-
-    public Airport getAirport() {
-        return airport;
-    }
-
-    public void setGsRings(Array<Vector2> gsRings) {
-        this.gsRings = gsRings;
-    }
-
-    public boolean isNpa() {
-        return npa;
-    }
-
-    public void setNpa(boolean npa) {
-        this.npa = npa;
+    fun setGsRings(gsRings: com.badlogic.gdx.utils.Array<Vector2>) {
+        this.gsRings = gsRings
     }
 }

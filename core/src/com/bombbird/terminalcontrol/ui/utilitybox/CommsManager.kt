@@ -148,25 +148,25 @@ class CommsManager(private val utilityBox: UtilityBox) {
             }
         }
         if (aircraft is Arrival) {
-            if (!aircraft.isGoAroundWindow() && aircraft.getDirect() != null) {
-                text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + action + starString + inboundString + infoString
-                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.getSidStar().pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.getDirect().name, inboundSaid, infoString)
+            if (!aircraft.isGoAroundWindow() && aircraft.direct != null) {
+                text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + action + starString + inboundString + infoString
+                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct.name, inboundSaid, infoString)
             } else {
                 action = (if (MathUtils.randomBoolean()) "going around, " else "missed approach, ") + action //Go around message
-                text = apchCallsign + ", " + aircraft.getCallsign() + wake + " with you, " + action + ", heading " + aircraft.getClearedHeading()
-                TerminalControl.tts.goAroundContact(aircraft, apchCallsign, action, aircraft.getClearedHeading().toString())
+                text = apchCallsign + ", " + aircraft.callsign + wake + " with you, " + action + ", heading " + aircraft.clearedHeading
+                TerminalControl.tts.goAroundContact(aircraft, apchCallsign, action, aircraft.clearedHeading.toString())
             }
         } else if (aircraft is Departure) {
             var outboundText = ""
-            if ("-" != AirportName.getAirportName(aircraft.getAirport().icao)) outboundText = "outbound " + AirportName.getAirportName(aircraft.getAirport().icao) + ", "
+            if ("-" != AirportName.getAirportName(aircraft.airport.icao)) outboundText = "outbound " + AirportName.getAirportName(aircraft.airport.icao) + ", "
             var sidString = ""
             val sidSaid = MathUtils.randomBoolean()
             if (sidSaid) {
-                sidString = ", " + aircraft.getSidStar().name + " departure"
+                sidString = ", " + aircraft.sidStar.name + " departure"
             }
             val airborne = if (MathUtils.randomBoolean()) "" else "airborne "
-            text = apchCallsign + greeting + ", " + aircraft.getCallsign() + wake + " with you, " + outboundText + airborne + action + sidString
-            TerminalControl.tts.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.getSidStar().pronunciation.toLowerCase(Locale.ROOT), sidSaid)
+            text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + outboundText + airborne + action + sidString
+            TerminalControl.tts.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), sidSaid)
         }
         val finalText = text
         Gdx.app.postRunnable {

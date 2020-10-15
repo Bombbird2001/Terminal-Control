@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
@@ -283,7 +284,7 @@ class RadarScreen : GameScreen {
         }
     }
 
-    constructor(game: TerminalControl?, save: JSONObject) : super(game) {
+    constructor(game: TerminalControl, save: JSONObject) : super(game) {
         //Loads the game from save
         this.save = save
         saveId = save.getInt("saveId")
@@ -396,12 +397,13 @@ class RadarScreen : GameScreen {
             camera.position[2286f, 1620f] = 0f
         }
         labelStage = Stage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
-        labelStage.getViewport().camera = camera
-        labelStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
+        labelStage.viewport.camera = camera
+        labelStage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
     }
 
     private fun loadInputProcessors() {
         //Set input processors
+        gd = GestureDetector(40f, 0.2f, 1.1f, 0.15f, this)
         inputMultiplexer.addProcessor(uiStage)
         inputMultiplexer.addProcessor(labelStage)
         inputMultiplexer.addProcessor(gd)
@@ -611,7 +613,7 @@ class RadarScreen : GameScreen {
             }
             arrivals = 0
             for (aircraft in aircrafts.values) {
-                if (aircraft is Arrival && aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) arrivals++
+                if (aircraft is Arrival && aircraft.controlState == Aircraft.ControlState.ARRIVAL) arrivals++
             }
             spawnTimer -= deltaTime
             if (spawnTimer <= 0 && arrivals < planesToControl) {

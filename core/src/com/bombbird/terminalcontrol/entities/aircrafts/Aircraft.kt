@@ -1,1964 +1,1460 @@
-package com.bombbird.terminalcontrol.entities.aircrafts;
+package com.bombbird.terminalcontrol.entities.aircrafts
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.achievements.UnlockManager;
-import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.approaches.ILS;
-import com.bombbird.terminalcontrol.entities.runways.Runway;
-import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory;
-import com.bombbird.terminalcontrol.entities.sidstar.Route;
-import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
-import com.bombbird.terminalcontrol.entities.approaches.LDA;
-import com.bombbird.terminalcontrol.entities.sidstar.SidStar;
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen;
-import com.bombbird.terminalcontrol.ui.DataTag;
-import com.bombbird.terminalcontrol.ui.tabs.LatTab;
-import com.bombbird.terminalcontrol.ui.tabs.SpdTab;
-import com.bombbird.terminalcontrol.ui.tabs.Tab;
-import com.bombbird.terminalcontrol.ui.Ui;
-import com.bombbird.terminalcontrol.utilities.RenameManager;
-import com.bombbird.terminalcontrol.utilities.math.MathTools;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementWakeConflictTime
+import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.ILS
+import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.runways.Runway
+import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
+import com.bombbird.terminalcontrol.entities.sidstar.Route
+import com.bombbird.terminalcontrol.entities.sidstar.SidStar
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.DataTag
+import com.bombbird.terminalcontrol.ui.Ui
+import com.bombbird.terminalcontrol.ui.tabs.LatTab
+import com.bombbird.terminalcontrol.ui.tabs.SpdTab
+import com.bombbird.terminalcontrol.ui.tabs.Tab
+import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
+import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
+import com.bombbird.terminalcontrol.utilities.math.MathTools.iasToTas
+import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
+import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
+import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
+import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
+import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
+import org.json.JSONObject
+import kotlin.math.*
 
-public class Aircraft extends Actor {
-    public enum ControlState {
-        UNCONTROLLED,
-        ARRIVAL,
-        DEPARTURE,
-        ENROUTE
+abstract class Aircraft : Actor {
+    companion object {
+        //Request types
+        const val NO_REQUEST = -1
+        const val HIGH_SPEED_REQUEST = 0
+        const val SHORTCUT_REQUEST = 1
     }
 
-    //Request types
-    public static final int NO_REQUEST = -1;
-    public static final int HIGH_SPEED_REQUEST = 0;
-    public static final int SHORTCUT_REQUEST = 1;
+    enum class ControlState {
+        UNCONTROLLED, ARRIVAL, DEPARTURE, ENROUTE
+    }
 
     //Android text-to-speech
-    private final String voice;
-
-    public RadarScreen radarScreen;
-    private Stage stage;
-    public ShapeRenderer shapeRenderer;
-    public Ui ui;
-
-    private DataTag dataTag;
-    private Color color;
-
-    private boolean selected;
-    private boolean actionRequired;
-    private boolean fuelEmergency;
+    val voice: String
+    val radarScreen: RadarScreen = TerminalControl.radarScreen
+    private val stage = radarScreen.stage
+    val shapeRenderer = radarScreen.shapeRenderer
+    val ui = radarScreen.ui
+    lateinit var dataTag: DataTag
+        private set
+    private lateinit var color: Color
+    var isSelected = false
+    var isActionRequired = false
+    var isFuelEmergency = false
 
     //Aircraft information
-    private Airport airport;
-    private Runway runway;
-    private boolean onGround;
-    private boolean tkOfLdg;
-    private final Trajectory trajectory;
-    private boolean trajectoryConflict;
-    private boolean trajectoryTerrainConflict;
+    var airport: Airport
+    var runway: Runway? = null
+    var isOnGround = false
+    var isTkOfLdg: Boolean
+    val trajectory: Trajectory
+    var isTrajectoryConflict: Boolean
+    var isTrajectoryTerrainConflict: Boolean
 
     //Aircraft characteristics
-    private String callsign;
-    private final String icaoType;
-    private final char wakeCat;
-    private final char recat;
-    private boolean wakeInfringe;
-    private float wakeTolerance;
-    private int v2;
-    private int typClimb;
-    private int maxClimb;
-    private int typDes;
-    private final int maxDes;
-    private final int apchSpd;
-    private ControlState controlState;
-    private NavState navState;
-    private boolean goAround;
-    private boolean goAroundWindow;
-    private float goAroundTime;
-    private boolean conflict;
-    private boolean warning;
-    private boolean terrainConflict;
-    private boolean prevConflict;
-    private boolean silenced;
-    private final Emergency emergency;
+    var callsign: String
+    val icaoType: String
+    val wakeCat: Char
+    val recat: Char
+    var isWakeInfringe: Boolean
+        private set
+    var wakeTolerance: Float
+    var v2: Int
+    var typClimb: Int
+    var maxClimb: Int
+    var typDes: Int
+    val maxDes: Int
+    val apchSpd: Int
+    lateinit var controlState: ControlState
+        private set
+    lateinit var navState: NavState
+    var isGoAround: Boolean
+    private var goAroundWindow: Boolean
+    var goAroundTime: Float
+        private set
+    var isConflict: Boolean
+    var isWarning: Boolean
+    var isTerrainConflict = false
+    var isPrevConflict: Boolean
+    var isSilenced = false
+    val emergency: Emergency
 
     //Additional requests
-    private int request = NO_REQUEST;
-    private boolean requested = false;
-    private int requestAlt = -1;
+    var request = NO_REQUEST
+    var isRequested = false
+    var requestAlt = -1
 
     //Aircraft position
-    private float x;
-    private float y;
-    private double heading;
-    private double targetHeading;
-    private int clearedHeading;
-    private double angularVelocity;
-    private double track;
-    private Route route;
-    private int sidStarIndex;
-    private Waypoint direct;
-    private Waypoint afterWaypoint;
-    private int afterWptHdg;
-    private ILS ils;
-    private boolean locCap;
-    private Waypoint holdWpt;
-    private boolean holding;
-    private int holdingType;
-    private boolean init;
-    private boolean type1leg;
-    private float[][] holdTargetPt;
-    private boolean[] holdTargetPtSelected;
-    private float prevDistTravelled;
+    private var x = 0f
+    private var y = 0f
+    var heading: Double
+    var targetHeading: Double
+    var clearedHeading: Int
+    var angularVelocity = 0.0
+        private set
+    var track: Double
+    lateinit var route: Route
+    abstract val sidStar: SidStar
+    var sidStarIndex: Int
+    var direct: Waypoint? = null
+    var afterWaypoint: Waypoint? = null
+    var afterWptHdg: Int
+    private var ils: ILS? = null
+    var isLocCap: Boolean
+        private set
+    private var holdWpt: Waypoint? = null
+    var isHolding = false
+        private set
+    var holdingType: Int
+        private set
+    var isInit = false
+        private set
+    var isType1leg = false
+        private set
+    var holdTargetPt: Array<FloatArray>? = null
+        private set
+    var holdTargetPtSelected: BooleanArray? = null
+        private set
+    var prevDistTravelled: Float
+        private set
 
     //Altitude
-    private float prevAlt;
-    private float altitude;
-    private int clearedAltitude;
-    private int targetAltitude;
-    private float verticalSpeed;
-    private boolean expedite;
-    private float expediteTime;
-    private int lowestAlt;
-    private int highestAlt;
-    private boolean gsCap;
+    var prevAlt = 0f
+        private set
+    var altitude: Float
+    private var clearedAltitude: Int
+    var targetAltitude: Int
+    var verticalSpeed: Float
+    var isExpedite: Boolean
+    var expediteTime = 0f
+        private set
+    var lowestAlt = 0
+    var highestAlt = 0
+    var isGsCap: Boolean
 
     //Speed
-    private float ias;
-    private float tas;
-    private float gs;
-    private final Vector2 deltaPosition;
-    private int clearedIas;
-    private float deltaIas;
-    private final int climbSpd;
+    var ias: Float
+    var tas: Float
+        private set
+    var gs: Float
+    val deltaPosition: Vector2
+    private var clearedIas: Int
+        set(value) {
+            field = value
+            updateClearedSpd()
+        }
+    var deltaIas: Float
+        private set
+    val climbSpd: Int
 
     //Radar returns (for sweep delay)
-    private float radarX;
-    private float radarY;
-    private double radarHdg;
-    private double radarTrack;
-    private float radarGs;
-    private float radarAlt;
-    private float radarVs;
+    var radarX = 0f
+        private set
+    var radarY = 0f
+        private set
+    var radarHdg = 0.0
+    var radarTrack = 0.0
+        private set
+    var radarGs = 0f
+        private set
+    var radarAlt = 0f
+        private set
+    var radarVs = 0f
+        private set
 
-    public Aircraft(String callsign, String icaoType, Airport airport) {
-        loadResources();
-
-        this.callsign = callsign;
-        stage.addActor(this);
-        this.icaoType = icaoType;
-        wakeCat = AircraftType.getWakeCat(icaoType);
-        recat = AircraftType.getRecat(icaoType);
-        wakeInfringe = false;
-        wakeTolerance = 0;
-        float loadFactor = MathUtils.random(-1 , 1) / 5f;
-        v2 = (int)(AircraftType.getV2(icaoType) * (1 + loadFactor));
-        typClimb = (int)(AircraftType.getTypClimb(icaoType) * (1 - loadFactor));
-        maxClimb = typClimb + 800;
-        typDes = (int)(AircraftType.getTypDes(icaoType) * (1 - loadFactor) * 0.9);
-        maxDes = typDes + 800;
-        apchSpd = (int)(AircraftType.getApchSpd(icaoType) * (1 + loadFactor / 8));
-        if (airport.getLandingRunways().size() == 0) {
-            //No landing runways available at departure airport, land at main airport instead
-            this.airport = radarScreen.airports.get(radarScreen.getMainName());
-        } else {
-            this.airport = airport;
+    constructor(callsign: String, icaoType: String, airport: Airport) {
+        this.callsign = callsign
+        stage.addActor(this)
+        this.icaoType = icaoType
+        wakeCat = AircraftType.getWakeCat(icaoType)
+        recat = AircraftType.getRecat(icaoType)
+        isWakeInfringe = false
+        wakeTolerance = 0f
+        val loadFactor = MathUtils.random(-1, 1) / 5f
+        v2 = (AircraftType.getV2(icaoType) * (1 + loadFactor)).toInt()
+        typClimb = (AircraftType.getTypClimb(icaoType) * (1 - loadFactor)).toInt()
+        maxClimb = typClimb + 800
+        typDes = (AircraftType.getTypDes(icaoType) * (1 - loadFactor) * 0.9).toInt()
+        maxDes = typDes + 800
+        apchSpd = (AircraftType.getApchSpd(icaoType) * (1 + loadFactor / 8)).toInt()
+        this.airport = airport
+        if (airport.landingRunways.size == 0) {
+            radarScreen.airports[radarScreen.mainName]?.let {
+                //No landing runways available at departure airport, land at main airport instead
+                this.airport = airport
+            }
         }
-        heading = 0;
-        targetHeading = 0;
-        clearedHeading = (int)(heading);
-        track = 0;
-        sidStarIndex = 0;
-        afterWptHdg = 360;
-        altitude = 10000;
-        clearedAltitude = 10000;
-        targetAltitude = 10000;
-        verticalSpeed = 0;
-        expedite = false;
-        expediteTime = 0;
-        ias = 250;
-        tas = MathTools.iasToTas(ias, altitude);
-        gs = tas;
-        deltaPosition = new Vector2();
-        prevDistTravelled = 0;
-        clearedIas = 250;
-        deltaIas = 0;
-        tkOfLdg = false;
-        gsCap = false;
-        locCap = false;
-        holdingType = 0;
-        climbSpd = AircraftType.getMaxCruiseSpd(icaoType) == -1 ? MathUtils.random(270, 280) : AircraftType.getMaxCruiseSpd(icaoType);
-        goAround = false;
-        goAroundWindow = false;
-        goAroundTime = 0;
-        conflict = false;
-        warning = false;
-        terrainConflict = false;
-        prevConflict = false;
-        silenced = false;
-        emergency = new Emergency(this, radarScreen.getEmerChance());
-
-        radarScreen.getWakeManager().addAircraft(callsign);
-
-        voice = TerminalControl.tts.getRandomVoice();
-
-        trajectory = new Trajectory(this);
-        trajectoryConflict = false;
-        trajectoryTerrainConflict = false;
+        heading = 0.0
+        targetHeading = 0.0
+        clearedHeading = heading.toInt()
+        track = 0.0
+        sidStarIndex = 0
+        afterWptHdg = 360
+        altitude = 10000f
+        clearedAltitude = 10000
+        targetAltitude = 10000
+        verticalSpeed = 0f
+        isExpedite = false
+        expediteTime = 0f
+        ias = 250f
+        tas = iasToTas(ias, altitude)
+        gs = tas
+        deltaPosition = Vector2()
+        prevDistTravelled = 0f
+        clearedIas = 250
+        deltaIas = 0f
+        isTkOfLdg = false
+        isGsCap = false
+        isLocCap = false
+        holdingType = 0
+        climbSpd = if (AircraftType.getMaxCruiseSpd(icaoType) == -1) MathUtils.random(270, 280) else AircraftType.getMaxCruiseSpd(icaoType)
+        isGoAround = false
+        goAroundWindow = false
+        goAroundTime = 0f
+        isConflict = false
+        isWarning = false
+        isTerrainConflict = false
+        isPrevConflict = false
+        isSilenced = false
+        emergency = Emergency(this, radarScreen.emerChance)
+        radarScreen.wakeManager.addAircraft(callsign)
+        voice = TerminalControl.tts.getRandomVoice()
+        trajectory = Trajectory(this)
+        isTrajectoryConflict = false
+        isTrajectoryTerrainConflict = false
     }
 
-    /** Constructs aircraft from another aircraft */
-    public Aircraft(Aircraft aircraft) {
-        loadResources();
-
-        callsign = aircraft.callsign;
-        stage.addActor(this);
-        this.icaoType = aircraft.icaoType;
-        wakeCat = aircraft.wakeCat;
-        recat = aircraft.recat;
-        wakeInfringe = aircraft.wakeInfringe;
-        wakeTolerance = aircraft.wakeTolerance;
-        v2 = aircraft.v2;
-        typClimb = aircraft.typClimb;
-        maxClimb = aircraft.maxClimb;
-        typDes = aircraft.typDes;
-        maxDes = aircraft.maxDes;
-        apchSpd = aircraft.apchSpd;
-        airport = aircraft.airport;
-        heading = aircraft.heading;
-        targetHeading = aircraft.targetHeading;
-        clearedHeading = aircraft.clearedHeading;
-        track = aircraft.track;
-        sidStarIndex = aircraft.sidStarIndex;
-        afterWptHdg = aircraft.afterWptHdg;
-        altitude = aircraft.altitude;
-        clearedAltitude = aircraft.clearedAltitude;
-        targetAltitude = aircraft.targetAltitude;
-        verticalSpeed = aircraft.verticalSpeed;
-        expedite = aircraft.expedite;
-        expediteTime = aircraft.expediteTime;
-        ias = aircraft.ias;
-        tas = aircraft.tas;
-        gs = aircraft.gs;
-        deltaPosition = aircraft.deltaPosition;
-        prevDistTravelled = aircraft.prevDistTravelled;
-        clearedIas = aircraft.clearedIas;
-        deltaIas = aircraft.deltaIas;
-        tkOfLdg = aircraft.tkOfLdg;
-        gsCap = aircraft.gsCap;
-        locCap = aircraft.locCap;
-        holdingType = aircraft.holdingType;
-        climbSpd = aircraft.climbSpd;
-        goAround = aircraft.goAround;
-        goAroundWindow = aircraft.goAroundWindow;
-        goAroundTime = aircraft.goAroundTime;
-        conflict = aircraft.conflict;
-        warning = aircraft.warning;
-        terrainConflict = aircraft.terrainConflict;
-        prevConflict = aircraft.prevConflict;
-        silenced = aircraft.silenced;
-        emergency = aircraft.emergency;
-        radarAlt = aircraft.radarAlt;
-        radarGs = aircraft.radarGs;
-        radarHdg = aircraft.radarHdg;
-        radarTrack = aircraft.radarTrack;
-        radarVs = aircraft.radarVs;
-        radarX = aircraft.radarX;
-        radarY = aircraft.radarY;
-        actionRequired = aircraft.actionRequired;
-        route = aircraft.route;
-        x = aircraft.x;
-        y = aircraft.y;
-        angularVelocity = aircraft.angularVelocity;
-        onGround = aircraft.onGround;
-        navState = aircraft.navState;
-        navState.setAircraft(this);
-
-        voice = aircraft.voice;
-
-        trajectory = new Trajectory(this);
-        trajectoryConflict = false;
-        trajectoryTerrainConflict = false;
-
-        request = NO_REQUEST;
-        requested = false;
-        requestAlt = -1;
+    /** Constructs aircraft from another aircraft  */
+    constructor(aircraft: Aircraft) {
+        callsign = aircraft.callsign
+        stage.addActor(this)
+        icaoType = aircraft.icaoType
+        wakeCat = aircraft.wakeCat
+        recat = aircraft.recat
+        isWakeInfringe = aircraft.isWakeInfringe
+        wakeTolerance = aircraft.wakeTolerance
+        v2 = aircraft.v2
+        typClimb = aircraft.typClimb
+        maxClimb = aircraft.maxClimb
+        typDes = aircraft.typDes
+        maxDes = aircraft.maxDes
+        apchSpd = aircraft.apchSpd
+        airport = aircraft.airport
+        heading = aircraft.heading
+        targetHeading = aircraft.targetHeading
+        clearedHeading = aircraft.clearedHeading
+        track = aircraft.track
+        sidStarIndex = aircraft.sidStarIndex
+        afterWptHdg = aircraft.afterWptHdg
+        altitude = aircraft.altitude
+        clearedAltitude = aircraft.clearedAltitude
+        targetAltitude = aircraft.targetAltitude
+        verticalSpeed = aircraft.verticalSpeed
+        isExpedite = aircraft.isExpedite
+        expediteTime = aircraft.expediteTime
+        ias = aircraft.ias
+        tas = aircraft.tas
+        gs = aircraft.gs
+        deltaPosition = aircraft.deltaPosition
+        prevDistTravelled = aircraft.prevDistTravelled
+        clearedIas = aircraft.clearedIas
+        deltaIas = aircraft.deltaIas
+        isTkOfLdg = aircraft.isTkOfLdg
+        isGsCap = aircraft.isGsCap
+        isLocCap = aircraft.isLocCap
+        holdingType = aircraft.holdingType
+        climbSpd = aircraft.climbSpd
+        isGoAround = aircraft.isGoAround
+        goAroundWindow = aircraft.goAroundWindow
+        goAroundTime = aircraft.goAroundTime
+        isConflict = aircraft.isConflict
+        isWarning = aircraft.isWarning
+        isTerrainConflict = aircraft.isTerrainConflict
+        isPrevConflict = aircraft.isPrevConflict
+        isSilenced = aircraft.isSilenced
+        emergency = aircraft.emergency
+        radarAlt = aircraft.radarAlt
+        radarGs = aircraft.radarGs
+        radarHdg = aircraft.radarHdg
+        radarTrack = aircraft.radarTrack
+        radarVs = aircraft.radarVs
+        radarX = aircraft.radarX
+        radarY = aircraft.radarY
+        isActionRequired = aircraft.isActionRequired
+        route = aircraft.route
+        x = aircraft.x
+        y = aircraft.y
+        angularVelocity = aircraft.angularVelocity
+        isOnGround = aircraft.isOnGround
+        navState = aircraft.navState
+        navState.aircraft = this
+        voice = aircraft.voice
+        trajectory = Trajectory(this)
+        isTrajectoryConflict = false
+        isTrajectoryTerrainConflict = false
+        request = NO_REQUEST
+        isRequested = false
+        requestAlt = -1
     }
 
-    public Aircraft(JSONObject save) {
-        loadResources();
-
-        airport = radarScreen.airports.get(RenameManager.renameAirportICAO(save.getString("airport")));
-        runway = save.isNull("runway") ? null : airport.getRunways().get(save.getString("runway"));
-        onGround = save.getBoolean("onGround");
-        tkOfLdg = save.getBoolean("tkOfLdg");
-
-        callsign = save.getString("callsign");
-        stage.addActor(this);
-        icaoType = save.getString("icaoType");
-        wakeCat = save.getString("wakeCat").charAt(0);
-        recat = save.isNull("recat") ? AircraftType.getRecat(icaoType) : (char) save.getInt("recat");
-        wakeInfringe = save.optBoolean("wakeInfringe");
-        wakeTolerance = (float) save.optDouble("wakeTolerance", 0);
-        v2 = save.getInt("v2");
-        typClimb = save.getInt("typClimb");
-        maxClimb = save.getInt("maxClimb");
-        typDes = save.getInt("typDes");
-        maxDes = save.getInt("maxDes");
-        apchSpd = save.getInt("apchSpd");
-        navState = new NavState(this, save.getJSONObject("navState"));
-        goAround = save.getBoolean("goAround");
-        goAroundWindow = save.getBoolean("goAroundWindow");
-        goAroundTime = (float) save.getDouble("goAroundTime");
-        conflict = save.getBoolean("conflict");
-        warning = save.getBoolean("warning");
+    constructor(save: JSONObject) {
+        airport = radarScreen.airports[renameAirportICAO(save.getString("airport"))]!!
+        runway = if (save.isNull("runway")) null else airport.runways[save.getString("runway")]
+        isOnGround = save.getBoolean("onGround")
+        isTkOfLdg = save.getBoolean("tkOfLdg")
+        callsign = save.getString("callsign")
+        stage.addActor(this)
+        icaoType = save.getString("icaoType")
+        wakeCat = save.getString("wakeCat")[0]
+        recat = if (save.isNull("recat")) AircraftType.getRecat(icaoType) else save.getInt("recat").toChar()
+        isWakeInfringe = save.optBoolean("wakeInfringe")
+        wakeTolerance = save.optDouble("wakeTolerance", 0.0).toFloat()
+        v2 = save.getInt("v2")
+        typClimb = save.getInt("typClimb")
+        maxClimb = save.getInt("maxClimb")
+        typDes = save.getInt("typDes")
+        maxDes = save.getInt("maxDes")
+        apchSpd = save.getInt("apchSpd")
+        navState = NavState(this, save.getJSONObject("navState"))
+        isGoAround = save.getBoolean("goAround")
+        goAroundWindow = save.getBoolean("goAroundWindow")
+        goAroundTime = save.getDouble("goAroundTime").toFloat()
+        isConflict = save.getBoolean("conflict")
+        isWarning = save.getBoolean("warning")
         if (save.isNull("terrainConflict")) {
-            terrainConflict = false;
+            isTerrainConflict = false
         } else {
-            terrainConflict = save.getBoolean("terrainConflict");
+            isTerrainConflict = save.getBoolean("terrainConflict")
         }
-        prevConflict = conflict;
-        emergency = save.optJSONObject("emergency") == null ? new Emergency(this, false) : new Emergency(this, save.getJSONObject("emergency"));
-
-        request = save.optInt("request", NO_REQUEST);
-        requested = save.optBoolean("requested", false);
-        requestAlt = save.optInt("requestAlt", -1);
-
-        x = (float) save.getDouble("x");
-        y = (float) save.getDouble("y");
-        prevDistTravelled = (float) save.optDouble("prevDistTravelled", 0);
-        heading = save.getDouble("heading");
-        targetHeading = save.getDouble("targetHeading");
-        clearedHeading = save.getInt("clearedHeading");
-        angularVelocity = save.getDouble("angularVelocity");
-        track = save.getDouble("track");
-        sidStarIndex = save.getInt("sidStarIndex");
-        direct = save.isNull("direct") ? null : radarScreen.waypoints.get(save.getString("direct"));
-        afterWaypoint = save.isNull("afterWaypoint") ? null : radarScreen.waypoints.get(save.getString("afterWaypoint"));
-        afterWptHdg = save.getInt("afterWptHdg");
-        ils = save.isNull("ils") ? null : airport.getApproaches().get(save.getString("ils").substring(3));
-        locCap = save.getBoolean("locCap");
-        holdWpt = save.isNull("holdWpt") ? null : radarScreen.waypoints.get(save.getString("holdWpt"));
-        holding = save.getBoolean("holding");
-        holdingType = save.isNull("holdingType") ? 0 : save.getInt("holdingType");
-        init = save.getBoolean("init");
-        type1leg = save.getBoolean("type1leg");
-
+        isPrevConflict = isConflict
+        emergency = if (save.optJSONObject("emergency") == null) Emergency(this, false) else Emergency(this, save.getJSONObject("emergency"))
+        request = save.optInt("request", NO_REQUEST)
+        isRequested = save.optBoolean("requested", false)
+        requestAlt = save.optInt("requestAlt", -1)
+        x = save.getDouble("x").toFloat()
+        y = save.getDouble("y").toFloat()
+        prevDistTravelled = save.optDouble("prevDistTravelled", 0.0).toFloat()
+        heading = save.getDouble("heading")
+        targetHeading = save.getDouble("targetHeading")
+        clearedHeading = save.getInt("clearedHeading")
+        angularVelocity = save.getDouble("angularVelocity")
+        track = save.getDouble("track")
+        sidStarIndex = save.getInt("sidStarIndex")
+        direct = if (save.isNull("direct")) null else radarScreen.waypoints[save.getString("direct")]
+        afterWaypoint = if (save.isNull("afterWaypoint")) null else radarScreen.waypoints[save.getString("afterWaypoint")]
+        afterWptHdg = save.getInt("afterWptHdg")
+        ils = if (save.isNull("ils")) null else airport.approaches[save.getString("ils").substring(3)]
+        isLocCap = save.getBoolean("locCap")
+        holdWpt = if (save.isNull("holdWpt")) null else radarScreen.waypoints[save.getString("holdWpt")]
+        isHolding = save.getBoolean("holding")
+        holdingType = if (save.isNull("holdingType")) 0 else save.getInt("holdingType")
+        isInit = save.getBoolean("init")
+        isType1leg = save.getBoolean("type1leg")
         if (save.isNull("holdTargetPt")) {
             //Null holding arrays
-            holdTargetPt = null;
-            holdTargetPtSelected = null;
+            holdTargetPt = null
+            holdTargetPtSelected = null
         } else {
             //Not null
-            JSONArray the2points = save.getJSONArray("holdTargetPt");
-            holdTargetPt = new float[2][2];
-            for (int i = 0; i < the2points.length(); i++) {
-                JSONArray coordinates = the2points.getJSONArray(i);
-                holdTargetPt[i][0] = (float) coordinates.getDouble(0);
-                holdTargetPt[i][1] = (float) coordinates.getDouble(1);
+            val the2points = save.getJSONArray("holdTargetPt")
+            holdTargetPt = Array(2) { FloatArray(2) }
+            for (i in 0 until the2points.length()) {
+                val coordinates = the2points.getJSONArray(i)
+                holdTargetPt?.let {
+                    it[i][0] = coordinates.getDouble(0).toFloat()
+                    it[i][1] = coordinates.getDouble(1).toFloat()
+                }
             }
-            JSONArray the2bools = save.getJSONArray("holdTargetPtSelected");
-            holdTargetPtSelected = new boolean[2];
-            holdTargetPtSelected[0] = the2bools.getBoolean(0);
-            holdTargetPtSelected[1] = the2bools.getBoolean(1);
+            val the2bools = save.getJSONArray("holdTargetPtSelected")
+            holdTargetPtSelected = BooleanArray(2)
+            holdTargetPtSelected?.let {
+                it[0] = the2bools.getBoolean(0)
+                it[1] = the2bools.getBoolean(1)
+            }
         }
-
-        prevAlt = (float) save.getDouble("prevAlt");
-        altitude = (float) save.getDouble("altitude");
-        clearedAltitude = save.getInt("clearedAltitude");
-        targetAltitude = save.getInt("targetAltitude");
-        verticalSpeed = (float) save.getDouble("verticalSpeed");
-        expedite = save.getBoolean("expedite");
-        if (save.isNull("expediteTime")) {
-            expediteTime = 0;
+        prevAlt = save.getDouble("prevAlt").toFloat()
+        altitude = save.getDouble("altitude").toFloat()
+        clearedAltitude = save.getInt("clearedAltitude")
+        targetAltitude = save.getInt("targetAltitude")
+        verticalSpeed = save.getDouble("verticalSpeed").toFloat()
+        isExpedite = save.getBoolean("expedite")
+        expediteTime = if (save.isNull("expediteTime")) {
+            0f
         } else {
-            expediteTime = (float) save.getDouble("expediteTime");
+            save.getDouble("expediteTime").toFloat()
         }
-        lowestAlt = save.getInt("lowestAlt");
-        highestAlt = save.getInt("highestAlt");
-        gsCap = save.getBoolean("gsCap");
-
-        ias = (float) save.getDouble("ias");
-        tas = (float) save.getDouble("tas");
-        gs = (float) save.getDouble("gs");
-
-        JSONArray delta = save.getJSONArray("deltaPosition");
-        deltaPosition = new Vector2();
-        deltaPosition.x = (float) delta.getDouble(0);
-        deltaPosition.y = (float) delta.getDouble(1);
-
-        clearedIas = save.getInt("clearedIas");
-        deltaIas = (float) save.getDouble("deltaIas");
-        climbSpd = save.getInt("climbSpd");
-
-        radarX = (float) save.getDouble("radarX");
-        radarY = (float) save.getDouble("radarY");
-        radarHdg = save.getDouble("radarHdg");
-        radarTrack = save.getDouble("radarTrack");
-        radarGs = (float) save.getDouble("radarGs");
-        radarAlt = (float) save.getDouble("radarAlt");
-        radarVs = (float) save.getDouble("radarVs");
-
-        voice = save.isNull("voice") ? TerminalControl.tts.getRandomVoice() : save.getString("voice");
-
-        trajectory = new Trajectory(this);
-        trajectoryConflict = false;
-        trajectoryTerrainConflict = false;
+        lowestAlt = save.getInt("lowestAlt")
+        highestAlt = save.getInt("highestAlt")
+        isGsCap = save.getBoolean("gsCap")
+        ias = save.getDouble("ias").toFloat()
+        tas = save.getDouble("tas").toFloat()
+        gs = save.getDouble("gs").toFloat()
+        val delta = save.getJSONArray("deltaPosition")
+        deltaPosition = Vector2()
+        deltaPosition.x = delta.getDouble(0).toFloat()
+        deltaPosition.y = delta.getDouble(1).toFloat()
+        clearedIas = save.getInt("clearedIas")
+        deltaIas = save.getDouble("deltaIas").toFloat()
+        climbSpd = save.getInt("climbSpd")
+        radarX = save.getDouble("radarX").toFloat()
+        radarY = save.getDouble("radarY").toFloat()
+        radarHdg = save.getDouble("radarHdg")
+        radarTrack = save.getDouble("radarTrack")
+        radarGs = save.getDouble("radarGs").toFloat()
+        radarAlt = save.getDouble("radarAlt").toFloat()
+        radarVs = save.getDouble("radarVs").toFloat()
+        voice = if (save.isNull("voice")) TerminalControl.tts.getRandomVoice() else save.getString("voice")
+        trajectory = Trajectory(this)
+        isTrajectoryConflict = false
+        isTrajectoryTerrainConflict = false
     }
 
-    /** Loads & sets aircraft resources */
-    private void loadResources() {
-        radarScreen = TerminalControl.radarScreen;
-        stage = radarScreen.stage;
-        shapeRenderer = radarScreen.shapeRenderer;
-        ui = radarScreen.ui;
+    /** Sets the initial radar position for aircraft  */
+    fun initRadarPos() {
+        radarX = x
+        radarY = y
+        radarHdg = heading
+        radarTrack = track
+        radarGs = gs
+        radarAlt = altitude
+        radarVs = verticalSpeed
     }
 
-    /** Sets the initial radar position for aircraft */
-    public void initRadarPos() {
-        radarX = x;
-        radarY = y;
-        radarHdg = heading;
-        radarTrack = track;
-        radarGs = gs;
-        radarAlt = altitude;
-        radarVs = verticalSpeed;
+    /** Loads the aircraft data labels  */
+    fun loadLabel() {
+        dataTag = DataTag(this)
     }
 
-    /** Loads the aircraft data labels */
-    public void loadLabel() {
-        dataTag = new DataTag(this);
-    }
-
-    /** Loads other aircraft data label info */
-    public void loadOtherLabelInfo(JSONObject save) {
-        JSONArray trails = save.getJSONArray("trailDots");
-        for (int i = 0; i < trails.length(); i++) {
-            getDataTag().addTrailDot((float) trails.getJSONArray(i).getDouble(0), (float) trails.getJSONArray(i).getDouble(1));
+    /** Loads other aircraft data label info  */
+    fun loadOtherLabelInfo(save: JSONObject) {
+        val trails = save.getJSONArray("trailDots")
+        for (i in 0 until trails.length()) {
+            dataTag.addTrailDot(trails.getJSONArray(i).getDouble(0).toFloat(), trails.getJSONArray(i).getDouble(1).toFloat())
         }
-
         if (!save.isNull("labelPos")) {
-            JSONArray labelPos = save.getJSONArray("labelPos");
-            dataTag.setLabelPosition((float) labelPos.getDouble(0), (float) labelPos.getDouble(1));
+            val labelPos = save.getJSONArray("labelPos")
+            dataTag.setLabelPosition(labelPos.getDouble(0).toFloat(), labelPos.getDouble(1).toFloat())
         }
-
-        dataTag.setMinimized(!save.isNull("dataTagMin") && save.getBoolean("dataTagMin"));
-
+        dataTag.isMinimized = !save.isNull("dataTagMin") && save.getBoolean("dataTagMin")
         if (save.isNull("fuelEmergency")) {
-            if (save.isNull("emergency")) {
+            isFuelEmergency = if (save.isNull("emergency")) {
                 //Save from before fuel emergency update
-                fuelEmergency = false;
+                false
             } else {
                 //Change key from emergency to fuel emergency
-                fuelEmergency = save.getBoolean("emergency");
+                save.getBoolean("emergency")
             }
         }
-        if (hasEmergency()) dataTag.setEmergency();
-
-        actionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired");
-        if (actionRequired) dataTag.startFlash();
+        if (hasEmergency()) dataTag.setEmergency()
+        isActionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired")
+        if (isActionRequired) dataTag.startFlash()
     }
 
-    /** Renders shapes using shapeRenderer; all rendering should be called here */
-    public void renderShape() {
-        drawLatLines();
-        dataTag.moderateLabel();
-        shapeRenderer.setColor(Color.WHITE);
-        dataTag.renderShape();
-        if (TerminalControl.full) trajectory.renderPoints();
-        if (isArrivalDeparture()) {
-            shapeRenderer.setColor(color);
-            shapeRenderer.line(radarX, radarY, radarX + radarScreen.getTrajectoryLine() / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.cos(Math.toRadians(90 - radarTrack)), radarY + radarScreen.getTrajectoryLine() / 3600f * MathTools.nmToPixel(radarGs) * (float) Math.sin(Math.toRadians(90 - radarTrack)));
+    /** Renders shapes using shapeRenderer; all rendering should be called here  */
+    fun renderShape() {
+        drawLatLines()
+        dataTag.moderateLabel()
+        shapeRenderer.color = Color.WHITE
+        dataTag.renderShape()
+        if (TerminalControl.full) trajectory.renderPoints()
+        if (isArrivalDeparture) {
+            shapeRenderer.color = color
+            shapeRenderer.line(radarX, radarY, radarX + radarScreen.trajectoryLine / 3600f * nmToPixel(radarGs) * cos(Math.toRadians(90 - radarTrack)).toFloat(), radarY + radarScreen.trajectoryLine / 3600f * nmToPixel(radarGs) * sin(Math.toRadians(90 - radarTrack)).toFloat())
         }
     }
 
-    /** Draws the lines displaying the lateral status of aircraft */
-    private void drawLatLines() {
-        if (selected) {
+    /** Draws the lines displaying the lateral status of aircraft  */
+    private fun drawLatLines() {
+        if (isSelected) {
             //Draws cleared status
-            if (navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedDirect().last() != null) {
-                drawSidStar();
-            } else if (navState.getDispLatMode().last() == NavState.AFTER_WPT_HDG && navState.getClearedDirect().last() != null && navState.getClearedAftWpt().last() != null) {
-                drawAftWpt();
-            } else if (navState.containsCode(navState.getDispLatMode().last(), NavState.VECTORS) && (!locCap || navState.getClearedIls().last() == null)) {
-                drawHdgLine();
-            } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
-                drawHoldPattern();
+            if (navState.dispLatMode.last() == NavState.SID_STAR && navState.clearedDirect.last() != null) {
+                drawSidStar()
+            } else if (navState.dispLatMode.last() == NavState.AFTER_WPT_HDG && navState.clearedDirect.last() != null && navState.clearedAftWpt.last() != null) {
+                drawAftWpt()
+            } else if (navState.containsCode(navState.dispLatMode.last(), NavState.VECTORS) && (!isLocCap || navState.clearedIls.last() == null)) {
+                drawHdgLine()
+            } else if (navState.dispLatMode.last() == NavState.HOLD_AT) {
+                drawHoldPattern()
             }
 
             //Draws selected status (from UI)
-            if (isArrivalDeparture()) {
-                if (LatTab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged() || ui.latTab.isLatModeChanged())) {
-                    uiDrawSidStar();
-                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged() || ui.latTab.isAfterWptHdgChanged() || ui.latTab.isLatModeChanged())) {
-                    uiDrawAftWpt();
-                } else if (LatTab.latMode == NavState.VECTORS && (this instanceof Departure || Ui.NOT_CLEARED_APCH.equals(LatTab.clearedILS) || !locCap) && (ui.latTab.isHdgChanged() || ui.latTab.isLatModeChanged())) {
-                    uiDrawHdgLine();
-                } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged() || ui.latTab.isHoldWptChanged())) {
-                    uiDrawHoldPattern();
+            if (isArrivalDeparture) {
+                if (LatTab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged)) {
+                    uiDrawSidStar()
+                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged || ui.latTab.isAfterWptHdgChanged || ui.latTab.isLatModeChanged)) {
+                    uiDrawAftWpt()
+                } else if (LatTab.latMode == NavState.VECTORS && (this is Departure || Ui.NOT_CLEARED_APCH == LatTab.clearedILS || !isLocCap) && (ui.latTab.isHdgChanged || ui.latTab.isLatModeChanged)) {
+                    uiDrawHdgLine()
+                } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged || ui.latTab.isHoldWptChanged)) {
+                    uiDrawHoldPattern()
                 }
             }
         }
     }
 
-    /** Draws the cleared sidStar when selected */
-    public void drawSidStar() {
-        shapeRenderer.setColor(radarScreen.getDefaultColour());
-        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
-        route.joinLines(getRoute().findWptIndex(getNavState().getClearedDirect().last().getName()), getRoute().getWaypoints().size, -1);
+    /** Draws the cleared sidStar when selected  */
+    open fun drawSidStar() {
+        shapeRenderer.color = radarScreen.defaultColour
+        shapeRenderer.line(radarX, radarY, navState.clearedDirect.last().posX.toFloat(), navState.clearedDirect.last().posY.toFloat())
+        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size, -1)
         //route.drawPolygons();
     }
 
-    /** Draws the sidStar for the UI */
-    public void uiDrawSidStar() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, radarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), radarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
-        route.joinLines(getRoute().findWptIndex(LatTab.clearedWpt), getRoute().getWaypoints().size, -1);
-    }
-
-    /** Draws the cleared after waypoint + cleared outbound heading when selected */
-    public void drawAftWpt() {
-        shapeRenderer.setColor(radarScreen.getDefaultColour());
-        shapeRenderer.line(radarX, radarY, navState.getClearedDirect().last().getPosX(), navState.getClearedDirect().last().getPosY());
-    }
-
-    /** Draws the after waypoint + outbound heading for UI */
-    public void uiDrawAftWpt() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, radarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), radarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
-    }
-
-    /** Draws the cleared heading when selected */
-    private void drawHdgLine() {
-        shapeRenderer.setColor(radarScreen.getDefaultColour());
-        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, navState.getClearedHdg().last() - radarScreen.getMagHdgDev());
-        shapeRenderer.line(radarX, radarY, point[0], point[1]);
-    }
-
-    /** Draws the heading for the UI */
-    private void uiDrawHdgLine() {
-        shapeRenderer.setColor(Color.YELLOW);
-        float[] point = MathTools.pointsAtBorder(new float[] {1260, 4500}, new float[] {0, 3240}, radarX, radarY, LatTab.clearedHdg - radarScreen.getMagHdgDev());
-        shapeRenderer.line(radarX, radarY, point[0], point[1]);
-    }
-
-    /** Draws the cleared holding pattern when selected */
-    public void drawHoldPattern() {
-        shapeRenderer.setColor(radarScreen.getDefaultColour());
-        if (!holding && direct != null) shapeRenderer.line(radarX, radarY, direct.getPosX(), direct.getPosY());
-        route.getHoldProcedure().renderShape(navState.getClearedHold().last());
-    }
-
-    /** Draws the holding pattern for the UI */
-    public void uiDrawHoldPattern() {
-        shapeRenderer.setColor(Color.YELLOW);
-        shapeRenderer.line(radarX, radarY, radarScreen.waypoints.get(LatTab.clearedWpt).getPosX(), radarScreen.waypoints.get(LatTab.clearedWpt).getPosY());
-        route.getHoldProcedure().renderShape(radarScreen.waypoints.get(LatTab.holdWpt));
-    }
-
-    /** The main update function */
-    public double update() {
-        if (navState!= null) navState.updateTime();
-        tas = MathTools.iasToTas(ias, altitude);
-        updateIas();
-        if (tkOfLdg) {
-            updateTkofLdg();
+    /** Draws the sidStar for the UI  */
+    open fun uiDrawSidStar() {
+        shapeRenderer.color = Color.YELLOW
+        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
-        if (!onGround) {
-            double[] info = updateTargetHeading();
-            targetHeading = info[0];
-            updateHeading(targetHeading);
-            updatePosition(info[1]);
-            updateAltitude(false, false);
-            updateSpd();
-            if (goAround) {
-                updateGoAround();
+        route.joinLines(route.findWptIndex(LatTab.clearedWpt), route.waypoints.size, -1)
+    }
+
+    /** Draws the cleared after waypoint + cleared outbound heading when selected  */
+    open fun drawAftWpt() {
+        shapeRenderer.color = radarScreen.defaultColour
+        shapeRenderer.line(radarX, radarY, navState.clearedDirect.last().posX.toFloat(), navState.clearedDirect.last().posY.toFloat())
+    }
+
+    /** Draws the after waypoint + outbound heading for UI  */
+    open fun uiDrawAftWpt() {
+        shapeRenderer.color = Color.YELLOW
+        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+        }
+    }
+
+    /** Draws the cleared heading when selected  */
+    private fun drawHdgLine() {
+        shapeRenderer.color = radarScreen.defaultColour
+        val point = pointsAtBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), radarX, radarY, navState.clearedHdg.last() - radarScreen.magHdgDev)
+        shapeRenderer.line(radarX, radarY, point[0], point[1])
+    }
+
+    /** Draws the heading for the UI  */
+    private fun uiDrawHdgLine() {
+        shapeRenderer.color = Color.YELLOW
+        val point = pointsAtBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), radarX, radarY, LatTab.clearedHdg - radarScreen.magHdgDev)
+        shapeRenderer.line(radarX, radarY, point[0], point[1])
+    }
+
+    /** Draws the cleared holding pattern when selected  */
+    open fun drawHoldPattern() {
+        shapeRenderer.color = radarScreen.defaultColour
+        if (!isHolding) direct?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+        }
+        route.holdProcedure.renderShape(navState.clearedHold.last())
+    }
+
+    /** Draws the holding pattern for the UI  */
+    open fun uiDrawHoldPattern() {
+        shapeRenderer.color = Color.YELLOW
+        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+        }
+        route.holdProcedure.renderShape(radarScreen.waypoints[LatTab.holdWpt])
+    }
+
+    /** The main update function  */
+    open fun update(): Double {
+        navState.updateTime()
+        tas = iasToTas(ias, altitude)
+        updateIas()
+        if (isTkOfLdg) {
+            updateTkofLdg()
+        }
+        return if (!isOnGround) {
+            val info = updateTargetHeading()
+            targetHeading = info[0]
+            updateHeading(targetHeading)
+            updatePosition(info[1])
+            updateAltitude(holdAlt = false, fixedVs = false)
+            updateSpd()
+            if (isGoAround) {
+                updateGoAround()
             }
             if (goAroundWindow) {
-                goAroundTime -= Gdx.graphics.getDeltaTime();
+                goAroundTime -= Gdx.graphics.deltaTime
                 if (goAroundTime < 0) {
-                    goAroundWindow = false;
-                    goAroundTime = 0;
+                    goAroundWindow = false
+                    goAroundTime = 0f
                 }
             }
-            emergency.update();
-            return targetHeading;
+            emergency.update()
+            targetHeading
         } else {
-            gs = tas - airport.getWinds()[1] * (float) Math.cos(Math.toRadians(airport.getWinds()[0] - runway.getHeading()));
-            if (tas == 0 || gs < 0) gs = 0;
-            updatePosition(0);
-            emergency.update();
-            return 0;
+            gs = tas - (airport.winds?.get(1) ?: 0) * cos(Math.toRadians((airport.winds?.get(0)?.toDouble() ?: 90.0) - (runway?.heading?.toDouble() ?: 0.0))).toFloat()
+            if (tas == 0f || gs < 0) gs = 0f
+            updatePosition(0.0)
+            emergency.update()
+            0.0
         }
     }
 
-    /** Overridden method that updates the target speed of the aircraft depending on situation */
-    public void updateSpd() {
-        navState.getClearedSpd().removeFirst();
-        navState.getClearedSpd().addFirst(clearedIas);
-        if (selected && isArrivalDeparture()) {
-            updateUISelections();
-            ui.updateState();
+    /** Overridden method that updates the target speed of the aircraft depending on situation  */
+    open fun updateSpd() {
+        navState.clearedSpd.removeFirst()
+        navState.clearedSpd.addFirst(clearedIas)
+        if (isSelected && isArrivalDeparture) {
+            updateUISelections()
+            ui.updateState()
         }
     }
 
-    /** Overridden method for arrival/departure */
-    public void updateTkofLdg() {
+    /** Overridden method for arrival/departure  */
+    open fun updateTkofLdg() {
         //No default implementation
     }
 
-    /** Overridden method for arrivals during go around */
-    public void updateGoAround() {
+    /** Overridden method for arrivals during go around  */
+    open fun updateGoAround() {
         //No default implementation
     }
 
-    /** Updates the aircraft speed */
-    private void updateIas() {
-        float targetDeltaIas = (clearedIas - ias) / 5;
-        if (targetDeltaIas > deltaIas + 0.05) {
-            deltaIas += 0.2f * Gdx.graphics.getDeltaTime();
-        } else if (targetDeltaIas < deltaIas - 0.05) {
-            deltaIas -= 0.2f * Gdx.graphics.getDeltaTime();
-        } else {
-            deltaIas = targetDeltaIas;
+    /** Updates the aircraft speed  */
+    private fun updateIas() {
+        val targetDeltaIas = (clearedIas - ias) / 5
+        when {
+            targetDeltaIas > deltaIas + 0.05 -> deltaIas += 0.2f * Gdx.graphics.deltaTime
+            targetDeltaIas < deltaIas - 0.05 -> deltaIas -= 0.2f * Gdx.graphics.deltaTime
+            else -> deltaIas = targetDeltaIas
         }
-        float max;
-        float min;
-        if (tkOfLdg) {
-            max = 3;
-            if (gs >= 60) {
-                min = -4.5f;
+        val max: Float
+        val min: Float
+        if (isTkOfLdg) {
+            max = 3f
+            min = if (gs >= 60) {
+                -4.5f
             } else {
-                min = -1.5f;
+                -1.5f
             }
         } else {
-            max = 1.5f * (1 - verticalSpeed / maxClimb);
-            min = -1.5f * (1 + verticalSpeed / maxDes);
+            max = 1.5f * (1 - verticalSpeed / maxClimb)
+            min = -1.5f * (1 + verticalSpeed / maxDes)
         }
         if (deltaIas > max) {
-            deltaIas = max;
+            deltaIas = max
         } else if (deltaIas < min) {
-            deltaIas = min;
+            deltaIas = min
         }
-        ias = ias + deltaIas * Gdx.graphics.getDeltaTime();
-        if (Math.abs(clearedIas - ias) < 1) {
-            ias = clearedIas;
+        ias += deltaIas * Gdx.graphics.deltaTime
+        if (abs(clearedIas - ias) < 1) {
+            ias = clearedIas.toFloat()
         }
     }
 
-    public float[] getEffectiveVertSpd() {
-        if (gsCap) return new float[] {-MathTools.nmToFeet(gs / 60) * (float) Math.sin(Math.toRadians(3)), typClimb};
-        float multiplier = 1;
-        if (typClimb <= 2200) multiplier = 1.1f;
-        if (altitude > 20000) multiplier -= 0.2f;
-        if (!expedite) return new float[] {-typDes * multiplier, typClimb * multiplier};
-        return new float[] {-maxDes * multiplier, maxClimb * multiplier};
-    }
+    val effectiveVertSpd: FloatArray
+        get() {
+            if (isGsCap) return floatArrayOf(-nmToFeet(gs / 60) * sin(Math.toRadians(3.0)).toFloat(), typClimb.toFloat())
+            var multiplier = 1f
+            if (typClimb <= 2200) multiplier = 1.1f
+            if (altitude > 20000) multiplier -= 0.2f
+            return if (!isExpedite) floatArrayOf(-typDes * multiplier, typClimb * multiplier) else floatArrayOf(-maxDes * multiplier, maxClimb * multiplier)
+        }
 
-    public void updateAltitude(boolean holdAlt, boolean fixedVs) {
-        float targetVertSpd = 0;
-        if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f;
-        if (fixedVs) targetVertSpd = verticalSpeed;
+    open fun updateAltitude(holdAlt: Boolean, fixedVs: Boolean) {
+        var targetVertSpd = 0f
+        if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f
+        if (fixedVs) targetVertSpd = verticalSpeed
         if (targetVertSpd > verticalSpeed + 100) {
-            verticalSpeed = verticalSpeed + 300 * Gdx.graphics.getDeltaTime();
+            verticalSpeed += 300 * Gdx.graphics.deltaTime
         } else if (targetVertSpd < verticalSpeed - 100) {
-            verticalSpeed = verticalSpeed - 300 * Gdx.graphics.getDeltaTime();
+            verticalSpeed -= 300 * Gdx.graphics.deltaTime
         }
-        float[] range = getEffectiveVertSpd();
-        verticalSpeed = MathUtils.clamp(verticalSpeed, range[0], range[1]);
-        expediteTime += expedite ? Gdx.graphics.getDeltaTime() : 0;
-        altitude += verticalSpeed / 60 * Gdx.graphics.getDeltaTime();
-
-        if (Math.abs(targetAltitude - altitude) < 50 && Math.abs(verticalSpeed) < 200) {
-            altitude = targetAltitude;
-            verticalSpeed = 0;
-            if (navState.getClearedExpedite().first()) {
-                navState.getClearedExpedite().removeFirst();
-                navState.getClearedExpedite().addFirst(false);
-                expedite = false;
+        val range = effectiveVertSpd
+        verticalSpeed = MathUtils.clamp(verticalSpeed, range[0], range[1])
+        expediteTime += if (isExpedite) Gdx.graphics.deltaTime else 0f
+        altitude += verticalSpeed / 60 * Gdx.graphics.deltaTime
+        if (abs(targetAltitude - altitude) < 50 && abs(verticalSpeed) < 200) {
+            altitude = targetAltitude.toFloat()
+            verticalSpeed = 0f
+            if (navState.clearedExpedite.first()) {
+                navState.clearedExpedite.removeFirst()
+                navState.clearedExpedite.addFirst(false)
+                isExpedite = false
             }
         }
-        if (prevAlt < altitude && (int)(prevAlt / 1000) <= (int)(altitude / 1000)) {
-            updateAltRestrictions();
+        if (prevAlt < altitude && (prevAlt / 1000).toInt() <= (altitude / 1000).toInt()) {
+            updateAltRestrictions()
         }
-        if ((int)(prevAlt / 1000) != (int)(altitude / 1000)) {
-            radarScreen.separationChecker.updateAircraftPositions();
+        if ((prevAlt / 1000).toInt() != (altitude / 1000).toInt()) {
+            radarScreen.separationChecker.updateAircraftPositions()
         }
-        prevAlt = altitude;
+        prevAlt = altitude
     }
 
-    /** Gets aircraft to contact other frequencies, overridden in Arrival, Departure */
-    public void contactOther() {
+    /** Gets aircraft to contact other frequencies, overridden in Arrival, Departure  */
+    open fun contactOther() {
         //No default implementation
     }
 
-    /** Returns whether aircraft can be handed over to tower/centre, overridden in Arrival, Departure */
-    public boolean canHandover() {
+    /** Returns whether aircraft can be handed over to tower/centre, overridden in Arrival, Departure  */
+    open fun canHandover(): Boolean {
         //No default implementation
-        return false;
+        return false
     }
 
-    /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc */
-    public boolean canCaptureILS() {
-        return ils != null && navState.getDispLatMode().first() == NavState.VECTORS || (navState.getDispLatMode().first() == NavState.SID_STAR && ils.isInsideILS(direct.getPosX(), direct.getPosY()));
+    /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc  */
+    fun canCaptureILS(): Boolean {
+        if (ils == null) return false
+        if (navState.dispLatMode.first() == NavState.VECTORS) return true
+        ils?.let {
+            direct?.let { it2 ->
+                return navState.dispLatMode.first() == NavState.SID_STAR && it.isInsideILS(it2.posX.toFloat(), it2.posY.toFloat())
+            }
+        }
+        return false
     }
 
-    private double findRequiredDistance(double deltaHeading) {
-        float turnRate = ias > 250 ? 1.5f : 3f;
-        double radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate);
-        double halfTheta = (180 - deltaHeading) / 2f;
-        return 32.4 * radius / Math.tan(Math.toRadians(halfTheta)) + 10;
+    private fun findRequiredDistance(deltaHeading: Double): Double {
+        val turnRate = if (ias > 250) 1.5f else 3f
+        val radius = gs / 3600 / (MathUtils.degreesToRadians * turnRate).toDouble()
+        val halfTheta = (180 - deltaHeading) / 2f
+        return 32.4 * radius / tan(Math.toRadians(halfTheta)) + 10
     }
 
-    public int[] getWinds() {
-        if (altitude - airport.getElevation() <= 4000) {
-            return airport.getWinds();
+    val winds: IntArray
+        get() = if (altitude - airport.elevation <= 4000) {
+            airport.winds
         } else {
-            return radarScreen.airports.get(radarScreen.getMainName()).getWinds();
+            radarScreen.airports[radarScreen.mainName]?.winds ?: intArrayOf(0, 0)
         }
-    }
 
-    /** Called to update the heading aircraft should turn towards to follow instructed lateral mode, returns the heading it should fly as well as the resulting difference in angle of the track due to winds */
-    public double[] updateTargetHeading() {
-        deltaPosition.setZero();
-        double targetHeading;
+    /** Called to update the heading aircraft should turn towards to follow instructed lateral mode, returns the heading it should fly as well as the resulting difference in angle of the track due to winds  */
+    fun updateTargetHeading(): DoubleArray {
+        deltaPosition.setZero()
+        var targetHeading = 360.0
 
         //Get wind data
-        int[] winds = getWinds();
-        int windHdg = winds[0] + 180;
-        int windSpd = winds[1];
+        val winds = winds
+        val windHdg = winds[0] + 180
+        var windSpd = winds[1]
         if (winds[0] == 0) {
-            windSpd = 0;
+            windSpd = 0
         }
-
-        boolean sidstar = navState != null && (navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT));
-        boolean vector = navState != null && !sidstar && navState.getDispLatMode().first() == NavState.VECTORS;
-
-        if (this instanceof Departure) {
+        var sidstar = navState.containsCode(navState.dispLatMode.first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT)
+        var vector = !sidstar && navState.dispLatMode.first() == NavState.VECTORS
+        if (this is Departure) {
             //Check if aircraft has climbed past initial climb
-            sidstar = sidstar && ((Departure) this).isSidSet();
+            sidstar = sidstar && this.isSidSet
             if (!sidstar) {
                 //Otherwise continue climbing on current heading
-                vector = true;
+                vector = true
             }
         }
-
         if (vector) {
-            if (!locCap) {
-                targetHeading = clearedHeading;
+            if (!isLocCap) {
+                targetHeading = clearedHeading.toDouble()
             } else {
-                clearedHeading = ils.getHeading();
-                if (!ils.getRwy().equals(runway)) {
-                    runway = ils.getRwy();
-                }
-                if (ils instanceof LDA && MathTools.pixelToNm(MathTools.distanceBetween(x, y, runway.getX(), runway.getY()) - 15) <= ((LDA) ils).getLineUpDist()) {
-                    ils = ((LDA) ils).getImaginaryIls();
-                    gsCap = !getIls().isNpa();
-                    return updateTargetHeading();
-                } else {
-                    //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
-                    float distAhead;
-                    float distFromIls = ils.getDistFrom(x, y);
-                    if (distFromIls > 10) {
-                        distAhead = 1.5f;
-                    } else if (distFromIls > 2) {
-                        distAhead = 0.75f;
-                    } else {
-                        distAhead = 0.25f;
+                ils?.let {
+                    clearedHeading = it.heading
+                    if (it.rwy != runway) {
+                        runway = ils?.rwy
                     }
-                    Vector2 position = ils.getPointAhead(this, distAhead);
-                    targetHeading = calculatePointTargetHdg(new float[] {position.x, position.y}, windHdg, windSpd);
+                    if (ils is LDA && pixelToNm(distanceBetween(x, y, runway?.x ?: 0f, runway?.y ?: 0f) - 15) <= (ils as LDA).lineUpDist) {
+                        ils = (ils as LDA).imaginaryIls
+                        isGsCap = ils?.isNpa == false
+                        return updateTargetHeading()
+                    } else {
+                        //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
+                        val distAhead: Float
+                        val distFromIls = it.getDistFrom(x, y)
+                        distAhead = when {
+                            distFromIls > 10 -> 1.5f
+                            distFromIls > 2 -> 0.75f
+                            else -> 0.25f
+                        }
+                        val position = it.getPointAhead(this, distAhead)
+                        targetHeading = calculatePointTargetHdg(floatArrayOf(position.x, position.y), windHdg, windSpd)
+                    }
                 }
             }
-        } else if (sidstar && !holding && direct != null) {
-            targetHeading = calculateWaypointTargetHdg(direct, windHdg, windSpd);
+        } else if (sidstar && !isHolding && direct != null) {
+            direct?.let {
+                targetHeading = calculateWaypointTargetHdg(it, windHdg, windSpd)
 
-            //If within __px of waypoint, target next waypoint
-            //Distance determined by angle that needs to be turned
-            double distance = MathTools.distanceBetween(x, y, direct.getPosX(), direct.getPosY());
-            double requiredDistance;
-            if (holdWpt != null && direct.getName().equals(holdWpt.getName())) {
-                holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
-                if (holdingType == 1) {
-                    int requiredHdg = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
-                    int turnDir = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1; //Inverse left & right directions for initial turn
-                    requiredDistance = findRequiredDistance(Math.abs(findDeltaHeading(requiredHdg, turnDir, heading)));
-                    requiredDistance = MathUtils.clamp(requiredDistance, 4, 180);
+                //If within __px of waypoint, target next waypoint
+                //Distance determined by angle that needs to be turned
+                val distance = distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat()).toDouble()
+                var requiredDistance: Double
+                if (holdWpt != null && it.name == holdWpt?.name) {
+                    holdingType = route.holdProcedure.getEntryProcAtWpt(holdWpt, heading)
+                    if (holdingType == 1) {
+                        val requiredHdg = route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180
+                        val turnDir = if (route.holdProcedure.isLeftAtWpt(holdWpt)) 2 else 1 //Inverse left & right directions for initial turn
+                        requiredDistance = findRequiredDistance(abs(findDeltaHeading(requiredHdg.toDouble(), turnDir, heading)))
+                        requiredDistance = MathUtils.clamp(requiredDistance, 4.0, 180.0)
+                    } else {
+                        requiredDistance = 4.0
+                    }
+                } else if (route.getWptFlyOver(it.name)) {
+                    requiredDistance = 4.0
                 } else {
-                    requiredDistance = 4;
+                    requiredDistance = findRequiredDistance(abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)))
                 }
-            } else if (route.getWptFlyOver(direct.getName())) {
-                requiredDistance = 4;
-            } else {
-                requiredDistance = findRequiredDistance(Math.abs(findSidStarDeltaHeading(findNextTargetHdg(), targetHeading)));
+                if (this is Departure && distance <= requiredDistance + 15 && controlState == ControlState.DEPARTURE && route.getWaypoint(sidStarIndex + 1) == null) {
+                    //If departure hasn't contacted centre before reaching last waypoint, contact centre immediately
+                    contactOther()
+                }
+                if (distance <= requiredDistance) {
+                    updateDirect()
+                }
             }
-            if (this instanceof Departure && distance <= requiredDistance + 15 && controlState == ControlState.DEPARTURE && route.getWaypoint(sidStarIndex + 1) == null) {
-                //If departure hasn't contacted centre before reaching last waypoint, contact centre immediately
-                this.contactOther();
-            }
-            if (distance <= requiredDistance) {
-                updateDirect();
-            }
-        } else if (holding) {
-            if (holdWpt == null && navState != null) {
-                holdWpt = navState.getClearedHold().first();
+        } else if (isHolding) {
+            if (holdWpt == null) {
+                holdWpt = navState.clearedHold.first()
             }
             if (holdWpt != null) {
-                if (navState != null && navState.getDispLatMode().first() != NavState.HOLD_AT) {
-                    resetHoldParameters();
-                    return updateTargetHeading();
-                }
-                if (holdTargetPt == null) {
-                    float[] point = route.getHoldProcedure().getOppPtAtWpt(holdWpt);
-                    holdTargetPt = new float[][]{{holdWpt.getPosX(), holdWpt.getPosY()}, point};
-                    holdTargetPtSelected = new boolean[] {false, false};
-                    navState.replaceAllClearedSpdToLower();
-                }
-                if (!init) {
-                    if (holdingType == 0) holdingType = route.getHoldProcedure().getEntryProcAtWpt(holdWpt, heading);
-                    //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
-                    if (holdingType == 1) {
-                        //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
-                        targetHeading = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180;
-                        if (MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt) || type1leg) {
-                            //Once it has flown leg dist, turn back towards entry fix
-                            type1leg = true;
-                            targetHeading = calculateWaypointTargetHdg(holdWpt, windHdg, windSpd);
-                            //Once it reaches entry fix, init has ended
-                            if (MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY()) <= 10) {
-                                init = true;
-                                holdTargetPtSelected[1] = true;
-                            }
+                holdWpt?.let {
+                    if (navState.dispLatMode.first() != NavState.HOLD_AT) {
+                        resetHoldParameters()
+                        return updateTargetHeading()
+                    }
+                    if (holdTargetPt == null) {
+                        val point = route.holdProcedure.getOppPtAtWpt(holdWpt)
+                        holdTargetPt = arrayOf(floatArrayOf(it.posX.toFloat(), it.posY.toFloat()), point)
+                        holdTargetPtSelected = booleanArrayOf(false, false)
+                        navState.replaceAllClearedSpdToLower()
+                    }
+                    if (!isInit) {
+                        if (holdingType == 0) holdingType = route.holdProcedure.getEntryProcAtWpt(holdWpt, heading)
+                        //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
+                        if (holdingType == 1) {
+                            //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
+                            targetHeading = route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180.toDouble()
+                            if (pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat())) >= route.holdProcedure.getLegDistAtWpt(holdWpt) || isType1leg) {
+                                //Once it has flown leg dist, turn back towards entry fix
+                                isType1leg = true
+                                targetHeading = calculateWaypointTargetHdg(it, windHdg, windSpd)
+                                //Once it reaches entry fix, init has ended
+                                if (distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat()) <= 10) {
+                                    isInit = true
+                                    holdTargetPtSelected?.set(1, true)
+                                } else Unit
+                            } else Unit
+                        } else {
+                            //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
+                            targetHeading = calculatePointTargetHdg(holdTargetPt?.get(1) ?: floatArrayOf(0f, 0f), windHdg, windSpd)
+                            holdTargetPtSelected?.set(1, true)
+                            val deltaHdg = findDeltaHeading(route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180.toDouble())
+                            val left = route.holdProcedure.isLeftAtWpt(holdWpt)
+                            if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
+                                //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
+                                isInit = true
+                            } else Unit
                         }
                     } else {
-                        //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
-                        targetHeading = calculatePointTargetHdg(holdTargetPt[1], windHdg, windSpd);
-                        holdTargetPtSelected[1] = true;
-                        double deltaHdg = findDeltaHeading(route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) + 180);
-                        boolean left = route.getHoldProcedure().isLeftAtWpt(holdWpt);
-                        if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
-                            //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
-                            init = true;
+                        holdTargetPtSelected?.let { it2 ->
+                            var track = route.holdProcedure.getInboundHdgAtWpt(holdWpt) - radarScreen.magHdgDev
+                            if (it2[1]) {
+                                track += 180f
+                            }
+                            val target = holdTargetPt?.let { it3 ->
+                                if (it2[0]) it3[0] else it3[1]
+                            } ?: floatArrayOf(0f, 0f)
+                            //Just keep turning and turning and turning
+                            var distance = distanceBetween(x, y, target[0], target[1])
+                            if (distance <= 10) {
+                                //If reached target point
+                                holdTargetPtSelected?.set(0, !it2[0])
+                                holdTargetPtSelected?.set(1, !it2[1])
+                            }
+                            distance -= nmToPixel(0.5f)
+                            targetHeading = calculatePointTargetHdg(floatArrayOf(target[0] + distance * cos(Math.toRadians(270 - track.toDouble())).toFloat(), target[1] + distance * sin(Math.toRadians(270 - track.toDouble())).toFloat()), windHdg, windSpd)
                         }
                     }
-                } else {
-                    float track = route.getHoldProcedure().getInboundHdgAtWpt(holdWpt) - radarScreen.getMagHdgDev();
-                    if (holdTargetPtSelected[1]) {
-                        track += 180;
-                    }
-                    float[] target = holdTargetPtSelected[0] ? holdTargetPt[0] : holdTargetPt[1];
-                    //Just keep turning and turning and turning
-                    float distance = MathTools.distanceBetween(x, y, target[0], target[1]);
-                    if (distance <= 10) {
-                        //If reached target point
-                        holdTargetPtSelected[0] = !holdTargetPtSelected[0];
-                        holdTargetPtSelected[1] = !holdTargetPtSelected[1];
-                    }
-                    distance -= MathTools.nmToPixel(0.5f);
-                    targetHeading = calculatePointTargetHdg(new float[]{target[0] + distance * (float) Math.cos(Math.toRadians(270 - track)), target[1] + distance * (float) Math.sin(Math.toRadians(270 - track))}, windHdg, windSpd);
                 }
             } else {
-                resetHoldParameters();
-                if (navState != null && navState.getDispLatMode().first() == NavState.HOLD_AT && holdWpt == null) {
-                    navState.getDispLatMode().removeFirst();
-                    navState.getDispLatMode().addFirst(NavState.VECTORS);
-                    navState.getClearedHdg().removeFirst();
-                    navState.getClearedHdg().addFirst((int) heading);
+                resetHoldParameters()
+                if (navState.dispLatMode.first() == NavState.HOLD_AT && holdWpt == null) {
+                    navState.dispLatMode.removeFirst()
+                    navState.dispLatMode.addFirst(NavState.VECTORS)
+                    navState.clearedHdg.removeFirst()
+                    navState.clearedHdg.addFirst(heading.toInt())
                 }
-                return updateTargetHeading();
+                return updateTargetHeading()
             }
         } else {
-            targetHeading = heading;
-            Gdx.app.log("Update target heading", "Oops, something went wrong");
+            targetHeading = heading
+            Gdx.app.log("Update target heading", "Oops, something went wrong")
         }
-
-        targetHeading = MathTools.modulateHeading(targetHeading);
-
-        return new double[] {targetHeading, calculateAngleDiff(heading, windHdg, windSpd)};
+        targetHeading = modulateHeading(targetHeading)
+        return doubleArrayOf(targetHeading, calculateAngleDiff(heading, windHdg, windSpd))
     }
 
-    private void resetHoldParameters() {
-        holding = false;
-        holdTargetPt = null;
-        holdTargetPtSelected = null;
-        init = false;
+    private fun resetHoldParameters() {
+        isHolding = false
+        holdTargetPt = null
+        holdTargetPtSelected = null
+        isInit = false
     }
 
-    public double calculateAngleDiff(double heading, int windHdg, int windSpd) {
-        double angle = 180 - windHdg + heading;
-        gs = (float) Math.sqrt(Math.pow(tas, 2) + Math.pow(windSpd, 2) - 2 * tas * windSpd * Math.cos(Math.toRadians(angle)));
-        return Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / gs) * MathUtils.radiansToDegrees;
+    fun calculateAngleDiff(heading: Double, windHdg: Int, windSpd: Int): Double {
+        val angle = 180 - windHdg + heading
+        gs = sqrt(tas.toDouble().pow(2.0) + windSpd.toDouble().pow(2.0) - 2 * tas * windSpd * cos(Math.toRadians(angle))).toFloat()
+        return asin(windSpd * sin(Math.toRadians(angle)) / gs) * MathUtils.radiansToDegrees
     }
 
-    private double calculateWaypointTargetHdg(Waypoint waypoint, int windHdg, int windSpd) {
-        return calculatePointTargetHdg(waypoint.getPosX() - x, waypoint.getPosY() - y, windHdg, windSpd);
+    private fun calculateWaypointTargetHdg(waypoint: Waypoint, windHdg: Int, windSpd: Int): Double {
+        return calculatePointTargetHdg(waypoint.posX - x, waypoint.posY - y, windHdg, windSpd)
     }
 
-    private double calculatePointTargetHdg(float[] position, int windHdg, int windSpd) {
-        return calculatePointTargetHdg(position[0] - x, position[1] - y, windHdg, windSpd);
+    private fun calculatePointTargetHdg(position: FloatArray, windHdg: Int, windSpd: Int): Double {
+        return calculatePointTargetHdg(position[0] - x, position[1] - y, windHdg, windSpd)
     }
 
-    private double calculatePointTargetHdg(float deltaX, float deltaY, int windHdg, int windSpd) {
-        double angleDiff;
+    private fun calculatePointTargetHdg(deltaX: Float, deltaY: Float, windHdg: Int, windSpd: Int): Double {
+        val angleDiff: Double
 
         //Find target track angle
-        double principleAngle = Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees;
-        if (deltaX >= 0) {
-            targetHeading = 90 - principleAngle;
+        val principleAngle = atan(deltaY / deltaX.toDouble()) * MathUtils.radiansToDegrees
+        targetHeading = if (deltaX >= 0) {
+            90 - principleAngle
         } else {
-            targetHeading = 270 - principleAngle;
+            270 - principleAngle
         }
 
         //Calculate required aircraft heading to account for winds
         //Using sine rule to determine angle between aircraft velocity and actual velocity
-        double angle = windHdg - targetHeading;
-        angleDiff = Math.asin(windSpd * Math.sin(Math.toRadians(angle)) / tas) * MathUtils.radiansToDegrees;
-        targetHeading -= angleDiff;  //Heading = track - anglediff
+        val angle = windHdg - targetHeading
+        angleDiff = asin(windSpd * sin(Math.toRadians(angle)) / tas) * MathUtils.radiansToDegrees
+        targetHeading -= angleDiff //Heading = track - anglediff
 
         //Add magnetic deviation to give magnetic heading
-        targetHeading += radarScreen.getMagHdgDev();
-
-        return targetHeading;
+        targetHeading += radarScreen.magHdgDev
+        return targetHeading
     }
 
-    public double findNextTargetHdg() {
-        if ((navState.getDispLatMode().first() == NavState.AFTER_WPT_HDG && direct.equals(afterWaypoint)) || (navState.getDispLatMode().first() == NavState.HOLD_AT && direct.equals(holdWpt))) {
-            return targetHeading;
+    open fun findNextTargetHdg(): Double {
+        if (navState.dispLatMode.first() == NavState.AFTER_WPT_HDG && direct == afterWaypoint || navState.dispLatMode.first() == NavState.HOLD_AT && direct == holdWpt) {
+            return targetHeading
         }
-        Waypoint nextWpt = route.getWaypoint(sidStarIndex + 1);
-        if (nextWpt == null) {
-            if (this instanceof Departure) return ((Departure) this).getOutboundHdg();
-            return targetHeading;
+        val nextWpt = route.getWaypoint(sidStarIndex + 1)
+        return if (nextWpt == null) {
+            if (this is Departure) this.outboundHdg.toDouble() else targetHeading
         } else {
-            float deltaX = nextWpt.getPosX() - getDirect().getPosX();
-            float deltaY = nextWpt.getPosY() - getDirect().getPosY();
-            double nextTarget;
-            double principleAngle = Math.atan(deltaY / deltaX) * MathUtils.radiansToDegrees;
-            if (deltaX >= 0) {
-                nextTarget = 90 - principleAngle;
-            } else {
-                nextTarget = 270 - principleAngle;
-            }
-            return nextTarget;
+            direct?.let {
+                val deltaX = nextWpt.posX - it.posX.toFloat()
+                val deltaY = nextWpt.posY - it.posY.toFloat()
+                val nextTarget: Double
+                val principleAngle = atan(deltaY / deltaX.toDouble()) * MathUtils.radiansToDegrees
+                nextTarget = if (deltaX >= 0) {
+                    90 - principleAngle
+                } else {
+                    270 - principleAngle
+                }
+                nextTarget
+            } ?: 360.0
         }
     }
 
-    /** Updates the lateral position of the aircraft and its label, removes aircraft if it goes out of radar range */
-    private void updatePosition(double angleDiff) {
+    /** Updates the lateral position of the aircraft and its label, removes aircraft if it goes out of radar range  */
+    private fun updatePosition(angleDiff: Double) {
         //Angle diff is angle correction due to winds = track - heading
-        track = heading - radarScreen.getMagHdgDev() + angleDiff;
-        deltaPosition.x = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.cos(Math.toRadians(90 - track));
-        deltaPosition.y = Gdx.graphics.getDeltaTime() * MathTools.nmToPixel(gs) / 3600 * (float) Math.sin(Math.toRadians((90 - track)));
-        x += deltaPosition.x;
-        y += deltaPosition.y;
-
-        float dist = MathTools.pixelToNm(MathTools.distanceBetween(0, 0, deltaPosition.x, deltaPosition.y));
-        if (!onGround) prevDistTravelled += dist;
+        track = heading - radarScreen.magHdgDev + angleDiff
+        deltaPosition.x = Gdx.graphics.deltaTime * nmToPixel(gs) / 3600 * cos(Math.toRadians(90 - track)).toFloat()
+        deltaPosition.y = Gdx.graphics.deltaTime * nmToPixel(gs) / 3600 * sin(Math.toRadians(90 - track)).toFloat()
+        x += deltaPosition.x
+        y += deltaPosition.y
+        val dist = pixelToNm(distanceBetween(0f, 0f, deltaPosition.x, deltaPosition.y))
+        if (!isOnGround) prevDistTravelled += dist
         if (prevDistTravelled > 0.5) {
-            prevDistTravelled -= 0.5;
-            radarScreen.getWakeManager().addPoint(this);
+            prevDistTravelled -= 0.5f
+            radarScreen.wakeManager.addPoint(this)
         }
-        float diffDist = radarScreen.getWakeManager().checkAircraftWake(this);
+        val diffDist = radarScreen.wakeManager.checkAircraftWake(this)
         if (diffDist < 0) {
             //Safe separation
-            wakeInfringe = false;
-            wakeTolerance -= Gdx.graphics.getDeltaTime() * 2;
+            isWakeInfringe = false
+            wakeTolerance -= Gdx.graphics.deltaTime * 2
         } else {
-            wakeInfringe = true;
-            if (!prevConflict) silenced = false;
-            wakeTolerance += Gdx.graphics.getDeltaTime() * diffDist;
-            UnlockManager.incrementWakeConflictTime(Gdx.graphics.getDeltaTime());
-            radarScreen.setWakeInfringeTime(radarScreen.getWakeInfringeTime() + Gdx.graphics.getDeltaTime());
+            isWakeInfringe = true
+            if (!isPrevConflict) isSilenced = false
+            wakeTolerance += Gdx.graphics.deltaTime * diffDist
+            incrementWakeConflictTime(Gdx.graphics.deltaTime)
+            radarScreen.wakeInfringeTime = radarScreen.wakeInfringeTime + Gdx.graphics.deltaTime
         }
-        if (wakeTolerance < 0) wakeTolerance = 0;
-
-        if (!locCap && ils != null && ils.isInsideILS(x, y) && (navState.getDispLatMode().first() == NavState.VECTORS || (navState.getDispLatMode().first() == NavState.SID_STAR && direct != null && ils.isInsideILS(direct.getPosX(), direct.getPosY())))) {
-            locCap = true;
-            navState.replaceAllTurnDirections();
-            ui.updateAckHandButton(this);
-        } else if (locCap && !navState.containsCode(navState.getDispLatMode().first(), NavState.SID_STAR, NavState.VECTORS)) {
-            locCap = false;
+        if (wakeTolerance < 0) wakeTolerance = 0f
+        if (!isLocCap && ils != null && ils?.isInsideILS(x, y) == true && (navState.dispLatMode.first() == NavState.VECTORS || navState.dispLatMode.first() == NavState.SID_STAR && direct != null && ils?.isInsideILS(direct?.posX?.toFloat() ?: 0f, direct?.posY?.toFloat() ?: 0f) == true)) {
+            isLocCap = true
+            navState.replaceAllTurnDirections()
+            ui.updateAckHandButton(this)
+        } else if (isLocCap && !navState.containsCode(navState.dispLatMode.first(), NavState.SID_STAR, NavState.VECTORS)) {
+            isLocCap = false
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
-            if (this instanceof Arrival) {
-                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f));
-                radarScreen.getUtilityBox().getCommsManager().warningMsg(callsign + " has left the airspace!");
-            } else if (this instanceof Departure && navState != null && navState.getDispLatMode().last() == NavState.SID_STAR && navState.getClearedAlt().last() == radarScreen.getMaxAlt()) {
+            if (this is Arrival) {
+                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f))
+                radarScreen.utilityBox.commsManager.warningMsg("$callsign has left the airspace!")
+            } else if (this is Departure && navState.dispLatMode.last() == NavState.SID_STAR && navState.clearedAlt.last() == radarScreen.maxAlt) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
-                contactOther();
+                contactOther()
             }
-            removeAircraft();
+            removeAircraft()
         }
     }
 
-    /** Finds the deltaHeading with the appropriate force direction under different circumstances */
-    private double findDeltaHeading(double targetHeading) {
-        int forceDirection = 0;
-        if (navState.getClearedTurnDir().first() == NavState.TURN_LEFT) {
-            forceDirection = 1;
-        } else if (navState.getClearedTurnDir().first() == NavState.TURN_RIGHT) {
-            forceDirection = 2;
-        } else if (navState.getDispLatMode().first() == NavState.HOLD_AT && holding && !init) {
-            if (holdingType == 1 && MathTools.pixelToNm(MathTools.distanceBetween(x, y, holdWpt.getPosX(), holdWpt.getPosY())) >= route.getHoldProcedure().getLegDistAtWpt(holdWpt)) {
-                forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 2 : 1;
-            } else if (holdingType == 2 || holdingType == 3) {
-                forceDirection = route.getHoldProcedure().isLeftAtWpt(holdWpt) ? 1 : 2;
+    /** Finds the deltaHeading with the appropriate force direction under different circumstances  */
+    private fun findDeltaHeading(targetHeading: Double): Double {
+        var forceDirection = 0
+        if (navState.clearedTurnDir.first() == NavState.TURN_LEFT) {
+            forceDirection = 1
+        } else if (navState.clearedTurnDir.first() == NavState.TURN_RIGHT) {
+            forceDirection = 2
+        } else if (navState.dispLatMode.first() == NavState.HOLD_AT && isHolding && !isInit) {
+            holdWpt?.let {
+                if (holdingType == 1 && pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat())) >= route.holdProcedure.getLegDistAtWpt(it)) {
+                    forceDirection = if (route.holdProcedure.isLeftAtWpt(it)) 2 else 1
+                } else if (holdingType == 2 || holdingType == 3) {
+                    forceDirection = if (route.holdProcedure.isLeftAtWpt(it)) 1 else 2
+                }
             }
-        } else if (this instanceof Departure && navState.getDispLatMode().first() == NavState.SID_STAR) {
-            //Force directions for certain departure procedures
-            if (getSidStar().getName().contains("ANNKO1") && runway.getName().contains("06") && direct != null && "ANNKO".equals(direct.getName()) && heading > 90 && heading < 320) {
-                //RJBB ANNKO1(6L) and ANNKO1(6R) departures
-                forceDirection = 1;
-            } else if (getSidStar().getName().contains("NKE1") && runway.getName().contains("24") && direct != null && "NKE".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJBB NKE1(24L) and NKE1(24R) departures
-                forceDirection = 2;
-            } else if ("SAUKA4".equals(getSidStar().getName()) && direct != null && "SAUKA".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO SAUKA4 departure
-                forceDirection = 1;
-            } else if ("APSU5".equals(getSidStar().getName()) && direct != null && "SHINY".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO APSU5 departure
-                forceDirection = 1;
-            } else if ("IRNAC4".equals(getSidStar().getName()) && direct != null && "BOKUN".equals(direct.getName()) && heading > 180 && heading <= 360) {
-                //RJOO IRNAC4 departure
-                forceDirection = 1;
-            } else if ((getSidStar().getName().contains("LNG2D") || "HSL2D".equals(getSidStar().getName()) || "IMPAG2D".equals(getSidStar().getName())) && direct != null && "CMU".equals(direct.getName()) && heading > 90 && heading <= 360) {
-                //VMMC LNG2D, HSL2D and IMPAG2D departures
-                forceDirection = 2;
-            } else if ("POPAR3".equals(getSidStar().getName()) && runway.getName().contains("16") && direct != null && "POPAR".equals(direct.getName()) && heading < 165) {
-                //RJTT POPAR3 departure
-                forceDirection = 1;
+        } else if (this is Departure && navState.dispLatMode.first() == NavState.SID_STAR) {
+            direct?.let {
+                //Force directions for certain departure procedures
+                if (sidStar.name.contains("ANNKO1") && runway?.name?.contains("06") == true && direct != null && "ANNKO" == it.name && heading > 90 && heading < 320) {
+                    //RJBB ANNKO1(6L) and ANNKO1(6R) departures
+                    forceDirection = 1
+                } else if (sidStar.name.contains("NKE1") && runway?.name?.contains("24") == true  && direct != null && "NKE" == it.name && heading > 180 && heading <= 360) {
+                    //RJBB NKE1(24L) and NKE1(24R) departures
+                    forceDirection = 2
+                } else if ("SAUKA4" == sidStar.name && direct != null && "SAUKA" == it.name && heading > 180 && heading <= 360) {
+                    //RJOO SAUKA4 departure
+                    forceDirection = 1
+                } else if ("APSU5" == sidStar.name && direct != null && "SHINY" == it.name && heading > 180 && heading <= 360) {
+                    //RJOO APSU5 departure
+                    forceDirection = 1
+                } else if ("IRNAC4" == sidStar.name && direct != null && "BOKUN" == it.name && heading > 180 && heading <= 360) {
+                    //RJOO IRNAC4 departure
+                    forceDirection = 1
+                } else if ((sidStar.name.contains("LNG2D") || "HSL2D" == sidStar.name || "IMPAG2D" == sidStar.name) && direct != null && "CMU" == it.name && heading > 90 && heading <= 360) {
+                    //VMMC LNG2D, HSL2D and IMPAG2D departures
+                    forceDirection = 2
+                } else if ("POPAR3" == sidStar.name && runway?.name?.contains("16") == true && direct != null && "POPAR" == it.name && heading < 165) {
+                    //RJTT POPAR3 departure
+                    forceDirection = 1
+                }
             }
         }
-        return findDeltaHeading(targetHeading, forceDirection, heading);
+        return findDeltaHeading(targetHeading, forceDirection, heading)
     }
 
-    /** Finds the deltaHeading for the leg after current leg */
-    private double findSidStarDeltaHeading(double targetHeading, double prevHeading) {
-        if (targetHeading == -1) return 0; //Return 0 if last waypoint is outside radar, no early turn required
-        return findDeltaHeading(targetHeading, 0, prevHeading);
+    /** Finds the deltaHeading for the leg after current leg  */
+    private fun findSidStarDeltaHeading(targetHeading: Double, prevHeading: Double): Double {
+        return if (targetHeading == -1.0) 0.0 else findDeltaHeading(targetHeading, 0, prevHeading) //Return 0 if last waypoint is outside radar, no early turn required
     }
 
-    /** Finds the deltaHeading given a forced direction */
-    private double findDeltaHeading(double targetHeading, int forceDirection, double heading) {
-        double deltaHeading = targetHeading - heading;
-        while (deltaHeading > 360) deltaHeading -= 360;
-        while (deltaHeading < -360) deltaHeading += 360;
-        switch (forceDirection) {
-            case 0: //Not specified: pick quickest direction
-                if (deltaHeading > 180) {
-                    deltaHeading -= 360; //Turn left: deltaHeading is -ve
-                } else if (deltaHeading <= -180) {
-                    deltaHeading += 360; //Turn right: deltaHeading is +ve
-                }
-                break;
-            case 1: //Must turn left
-                if (deltaHeading > 0) {
-                    deltaHeading -= 360;
-                }
-                break;
-            case 2: //Must turn right
-                if (deltaHeading < 0) {
-                    deltaHeading += 360;
-                }
-                break;
-            default:
-                Gdx.app.log("Direction error", "Invalid turn direction specified!");
+    /** Finds the deltaHeading given a forced direction  */
+    private fun findDeltaHeading(targetHeading: Double, forceDirection: Int, heading: Double): Double {
+        var deltaHeading = targetHeading - heading
+        while (deltaHeading > 360) deltaHeading -= 360.0
+        while (deltaHeading < -360) deltaHeading += 360.0
+        when (forceDirection) {
+            0 -> if (deltaHeading > 180) {
+                deltaHeading -= 360.0 //Turn left: deltaHeading is -ve
+            } else if (deltaHeading <= -180) {
+                deltaHeading += 360.0 //Turn right: deltaHeading is +ve
+            }
+            1 -> if (deltaHeading > 0) {
+                deltaHeading -= 360.0
+            }
+            2 -> if (deltaHeading < 0) {
+                deltaHeading += 360.0
+            }
+            else -> Gdx.app.log("Direction error", "Invalid turn direction specified!")
         }
-        trajectory.setDeltaHeading((float) deltaHeading);
-        return deltaHeading;
+        trajectory.setDeltaHeading(deltaHeading.toFloat())
+        return deltaHeading
     }
 
-    /** Updates the aircraft heading given an input targetHeading */
-    private void updateHeading(double targetHeading) {
-        double deltaHeading = findDeltaHeading(targetHeading);
+    /** Updates the aircraft heading given an input targetHeading  */
+    private fun updateHeading(targetHeading: Double) {
+        val deltaHeading = findDeltaHeading(targetHeading)
         //Note: angular velocities unit is change in heading per second
-        double targetAngularVelocity = 0;
+        var targetAngularVelocity = 0.0
         if (deltaHeading > 0) {
             //Aircraft needs to turn right
-            targetAngularVelocity = ias > 250 ? 1.5 : 3;
+            targetAngularVelocity = if (ias > 250) 1.5 else 3.0
         } else if (deltaHeading < 0) {
             //Aircraft needs to turn left
-            targetAngularVelocity = ias > 250 ? -1.5 : -3;
+            targetAngularVelocity = if (ias > 250) -1.5 else -3.0
         }
-        if (Math.abs(deltaHeading) <= 10) {
-            targetAngularVelocity = deltaHeading / 3;
-            if (navState.containsCode(navState.getClearedTurnDir().first(), NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
-                navState.replaceAllTurnDirections();
-                if (selected && isArrivalDeparture()) {
-                    updateUISelections();
-                    ui.updateState();
+        if (abs(deltaHeading) <= 10) {
+            targetAngularVelocity = deltaHeading / 3
+            if (navState.containsCode(navState.clearedTurnDir.first(), NavState.TURN_LEFT, NavState.TURN_RIGHT)) {
+                navState.replaceAllTurnDirections()
+                if (isSelected && isArrivalDeparture) {
+                    updateUISelections()
+                    ui.updateState()
                 }
             }
         }
         //Update angular velocity towards target angular velocity
-        if (targetAngularVelocity > angularVelocity + 0.1f) {
-            //If need to turn right, start turning right
-            angularVelocity += 0.3f * Gdx.graphics.getDeltaTime();
-        } else if (targetAngularVelocity < angularVelocity - 0.1f) {
-            //If need to turn left, start turning left
-            angularVelocity -= 0.3f * Gdx.graphics.getDeltaTime();
-        } else {
-            //If within +-0.1 of target, set equal to target
-            angularVelocity = targetAngularVelocity;
+        when {
+            targetAngularVelocity > angularVelocity + 0.1f -> angularVelocity += 0.3f * Gdx.graphics.deltaTime.toDouble() //If need to turn right, start turning right
+            targetAngularVelocity < angularVelocity - 0.1f -> angularVelocity -= 0.3f * Gdx.graphics.deltaTime.toDouble() //If need to turn left, start turning left
+            else -> angularVelocity = targetAngularVelocity //If within +-0.1 of target, set equal to target
         }
 
         //Add angular velocity to heading
-        heading = heading + angularVelocity * Gdx.graphics.getDeltaTime();
-        heading = MathTools.modulateHeading(heading);
+        heading += angularVelocity * Gdx.graphics.deltaTime
+        heading = modulateHeading(heading)
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        for (int i = 0; i < radarScreen.speed; i++) {
-            if (radarScreen.getTutorialManager() != null && radarScreen.getTutorialManager().isPausedForReading()) break;
-            update();
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        for (i in 0 until radarScreen.speed) {
+            if (radarScreen.tutorialManager?.isPausedForReading == true) break
+            update()
         }
-        dataTag.updateLabel();
-        dataTag.updateIcon(batch);
-
-        dataTag.drawTrailDots(batch, parentAlpha);
-
-        if (selected) radarScreen.getWakeManager().drawSepRequired(batch, this);
+        dataTag.updateLabel()
+        dataTag.updateIcon(batch)
+        dataTag.drawTrailDots(batch, parentAlpha)
+        if (isSelected) radarScreen.wakeManager.drawSepRequired(batch, this)
     }
 
-    /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected */
-    private void updateDirect() {
-        Waypoint prevDirect = direct;
-        sidStarIndex++;
-        if (direct.equals(afterWaypoint) && navState.getDispLatMode().first() == NavState.AFTER_WPT_HDG) {
-            clearedHeading = afterWptHdg;
-            navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false);
-            navState.updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false);
-            navState.updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, false);
-            navState.replaceAllAfterWptModesWithHdg(afterWptHdg);
-            direct = null;
-        } else if (direct.equals(holdWpt) && navState.getDispLatMode().first() == NavState.HOLD_AT) {
-            holding = true;
-            int spdRestr = route.getHoldProcedure().getMaxSpdAtWpt(holdWpt);
+    /** Updates direct waypoint of aircraft to next waypoint in SID/STAR, or switches to vector mode if after waypoint, fly heading option selected  */
+    private fun updateDirect() {
+        val prevDirect = direct
+        sidStarIndex++
+        if (direct == afterWaypoint && navState.dispLatMode.first() == NavState.AFTER_WPT_HDG) {
+            clearedHeading = afterWptHdg
+            navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false)
+            navState.updateAltModes(NavState.REMOVE_SIDSTAR_RESTR, false)
+            navState.updateSpdModes(NavState.REMOVE_SIDSTAR_RESTR, false)
+            navState.replaceAllAfterWptModesWithHdg(afterWptHdg)
+            direct = null
+        } else if (direct == holdWpt && navState.dispLatMode.first() == NavState.HOLD_AT) {
+            isHolding = true
+            val spdRestr = route.holdProcedure.getMaxSpdAtWpt(holdWpt)
             if (spdRestr > -1 && clearedIas > spdRestr) {
-                clearedIas = spdRestr;
+                clearedIas = spdRestr
             } else if (spdRestr == -1 && clearedIas > 250) {
-                clearedIas = 250;
+                clearedIas = 250
             }
-            direct = route.getWaypoint(sidStarIndex);
+            direct = route.getWaypoint(sidStarIndex)
             if (direct == null) {
-                navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true);
+                navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true)
             }
-            radarScreen.getUtilityBox().getCommsManager().holdEstablishMsg(this, holdWpt.getName());
+            radarScreen.utilityBox.commsManager.holdEstablishMsg(this, holdWpt?.name ?: "")
         } else {
-            direct = route.getWaypoint(sidStarIndex);
+            direct = route.getWaypoint(sidStarIndex)
             if (direct == null) {
-                navState.getDispLatMode().removeFirst();
-                navState.getDispLatMode().addFirst(NavState.VECTORS);
-                navState.replaceAllClearedAltMode();
-                navState.replaceAllClearedSpdMode();
-                setAfterLastWpt();
+                navState.dispLatMode.removeFirst()
+                navState.dispLatMode.addFirst(NavState.VECTORS)
+                navState.replaceAllClearedAltMode()
+                navState.replaceAllClearedSpdMode()
+                setAfterLastWpt()
             }
         }
-        navState.replaceAllOutdatedDirects(direct);
-        updateAltRestrictions();
-        updateTargetAltitude();
-        updateClearedSpd();
-        prevDirect.updateFlyOverStatus();
-        if (direct != null) direct.updateFlyOverStatus();
-        if (selected && isArrivalDeparture()) {
-            updateUISelections();
-            ui.updateState();
+        navState.replaceAllOutdatedDirects(direct)
+        updateAltRestrictions()
+        updateTargetAltitude()
+        updateClearedSpd()
+        prevDirect?.updateFlyOverStatus()
+        direct?.updateFlyOverStatus()
+        if (isSelected && isArrivalDeparture) {
+            updateUISelections()
+            ui.updateState()
         }
     }
 
-    /** Overridden method that sets aircraft heading after the last waypoint is reached */
-    public void setAfterLastWpt() {
+    /** Overridden method that sets aircraft heading after the last waypoint is reached  */
+    open fun setAfterLastWpt() {
         //No default implementation
     }
 
-    /** Switches aircraft latMode to vector, sets active nav state latMode to vector */
-    public void updateVectorMode() {
+    /** Switches aircraft latMode to vector, sets active nav state latMode to vector  */
+    fun updateVectorMode() {
         //Switch aircraft latmode to vector mode
-        navState.getDispLatMode().removeFirst();
-        navState.getDispLatMode().addFirst(NavState.VECTORS);
+        navState.dispLatMode.removeFirst()
+        navState.dispLatMode.addFirst(NavState.VECTORS)
     }
 
-    /** Removes the SID/STAR options from aircraft UI after there are no waypoints left */
-    public void removeSidStarMode() {
-        if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
-            navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, true); //Don't remove hold at if aircraft is gonna hold
+    /** Removes the SID/STAR options from aircraft UI after there are no waypoints left  */
+    fun removeSidStarMode() {
+        if (navState.dispLatMode.last() == NavState.HOLD_AT) {
+            navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, true) //Don't remove hold at if aircraft is gonna hold
         } else {
-            navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true);
+            navState.updateLatModes(NavState.REMOVE_ALL_SIDSTAR, true)
         }
     }
 
-    /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected */
-    public void setControlState(ControlState controlState) {
-        this.controlState = controlState;
-        dataTag.updateIconColors(controlState);
-        actionRequired = actionRequired && isArrivalDeparture();
-        if (selected) {
+    /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected  */
+    fun setControlState(controlState: ControlState) {
+        this.controlState = controlState
+        dataTag.updateIconColors(controlState)
+        isActionRequired = isActionRequired && isArrivalDeparture
+        if (isSelected) {
             if (controlState == ControlState.UNCONTROLLED || controlState == ControlState.ENROUTE) {
-                ui.setNormalPane(true);
-                ui.setSelectedPane(null);
+                ui.setNormalPane(true)
+                ui.setSelectedPane(null)
             } else {
-                ui.setNormalPane(false);
-                ui.setSelectedPane(this);
+                ui.setNormalPane(false)
+                ui.setSelectedPane(this)
             }
         }
     }
 
-    /** Returns whether control state of aircraft is arrival or departure */
-    public boolean isArrivalDeparture() {
-        return controlState == ControlState.ARRIVAL || controlState == ControlState.DEPARTURE;
-    }
+    /** Returns whether control state of aircraft is arrival or departure  */
+    val isArrivalDeparture: Boolean
+        get() = controlState == ControlState.ARRIVAL || controlState == ControlState.DEPARTURE
 
-    /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid */
-    public void updateUISelections() {
-        ui.latTab.modeButtons.setMode(navState.getDispLatMode().last());
-        ui.altTab.modeButtons.setMode(navState.getDispAltMode().last());
-        ui.spdTab.modeButtons.setMode(navState.getDispSpdMode().last());
-        LatTab.clearedHdg = navState.getClearedHdg().last();
-        if (direct != null && ui.latTab.modeButtons.getMode() == NavState.SID_STAR && route.findWptIndex(direct.getName()) > route.findWptIndex(ui.latTab.getValueBox().getSelected())) {
+    /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid  */
+    fun updateUISelections() {
+        ui.latTab.modeButtons.mode = navState.dispLatMode.last()
+        ui.altTab.modeButtons.mode = navState.dispAltMode.last()
+        ui.spdTab.modeButtons.mode = navState.dispSpdMode.last()
+        LatTab.clearedHdg = navState.clearedHdg.last()
+        if (direct != null && ui.latTab.modeButtons.mode == NavState.SID_STAR && route.findWptIndex(direct?.name) > route.findWptIndex(ui.latTab.getValueBox().selected)) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point
-            ui.latTab.getValueBox().setSelected(direct.getName());
+            ui.latTab.getValueBox().selected = direct?.name ?: ""
         }
-
-        if (this instanceof Departure && !ui.altTab.valueBox.getSelected().contains("FL") && Integer.parseInt(ui.altTab.valueBox.getSelected()) < lowestAlt) {
-            ui.altTab.getValueBox().setSelected(Integer.toString(lowestAlt));
+        if (this is Departure && !ui.altTab.valueBox.selected.contains("FL") && ui.altTab.valueBox.selected.toInt() < lowestAlt) {
+            ui.altTab.getValueBox().selected = lowestAlt.toString()
         }
-        LatTab.turnDir = navState.getClearedTurnDir().last();
-
-        ui.spdTab.getValueBox().setSelected(Integer.toString(clearedIas));
-        SpdTab.clearedSpd = clearedIas;
-
-        ui.updateElements();
-        ui.compareWithAC();
-        ui.updateElementColours();
+        LatTab.turnDir = navState.clearedTurnDir.last()
+        ui.spdTab.getValueBox().selected = clearedIas.toString()
+        SpdTab.clearedSpd = clearedIas
+        ui.updateElements()
+        ui.compareWithAC()
+        ui.updateElementColours()
     }
 
-    /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep */
-    public void updateRadarInfo() {
-        dataTag.moveLabel(x - radarX, y - radarY);
-        radarX = x;
-        radarY = y;
-        radarHdg = heading;
-        radarTrack = track;
-        radarAlt = altitude;
-        radarGs = gs;
-        radarVs = verticalSpeed;
+    /** Gets the current aircraft data and sets the radar data to it, called after every radar sweep  */
+    fun updateRadarInfo() {
+        dataTag.moveLabel(x - radarX, y - radarY)
+        radarX = x
+        radarY = y
+        radarHdg = heading
+        radarTrack = track
+        radarAlt = altitude
+        radarGs = gs
+        radarVs = verticalSpeed
     }
 
-    /** Calculates remaining distance on SID/STAR from current aircraft position, excluding outbound */
-    public float distToGo() {
-        float dist = MathTools.pixelToNm(MathTools.distanceBetween(getX(), getY(), getDirect().getPosX(), getDirect().getPosY()));
-        dist += getRoute().distBetRemainPts(getSidStarIndex());
-        return dist;
+    /** Calculates remaining distance on SID/STAR from current aircraft position, excluding outbound  */
+    fun distToGo(): Float {
+        var dist = direct?.let {
+            pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat()))
+        } ?: 0f
+        dist += route.distBetRemainPts(sidStarIndex)
+        return dist
     }
 
-    public Array<Waypoint> getRemainingWaypoints() {
-        if (navState.getClearedDirect().last() == null) return new Array<>();
-        if (navState.getDispLatMode().last() == NavState.SID_STAR) {
-            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.getWaypoints().size - 1);
-        } else if (navState.getDispLatMode().last() == NavState.AFTER_WPT_HDG) {
-            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedAftWpt().last().getName()));
-        } else if (navState.getDispLatMode().last() == NavState.HOLD_AT) {
-            return route.getRemainingWaypoints(route.findWptIndex(navState.getClearedDirect().last().getName()), route.findWptIndex(navState.getClearedHold().last().getName()));
-        }
-        return new Array<>();
-    }
-
-    public Array<Waypoint> getUiRemainingWaypoints() {
-        if (selected && isArrivalDeparture()) {
-            if (Tab.latMode == NavState.SID_STAR) {
-                return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.getWaypoints().size - 1);
-            } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
-                return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt));
-            } else if (Tab.latMode == NavState.HOLD_AT) {
-                return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt));
+    val remainingWaypoints: com.badlogic.gdx.utils.Array<Waypoint>
+        get() {
+            if (navState.clearedDirect.last() == null) return com.badlogic.gdx.utils.Array()
+            when (navState.dispLatMode.last()) {
+                NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size - 1)
+                NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedAftWpt.last().name))
+                NavState.HOLD_AT -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedHold.last().name))
             }
+            return com.badlogic.gdx.utils.Array()
         }
-        return null;
+
+    val uiRemainingWaypoints: com.badlogic.gdx.utils.Array<Waypoint>
+        get() {
+            if (isSelected && isArrivalDeparture) {
+                when (Tab.latMode) {
+                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.waypoints.size - 1)
+                    NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt))
+                    NavState.HOLD_AT -> return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt))
+                }
+            }
+            return com.badlogic.gdx.utils.Array()
+        }
+
+    /** Checks if aircraft is being manually vectored  */
+    val isVectored: Boolean
+        get() = navState.dispLatMode.last() == NavState.VECTORS
+
+    /** Checks if aircraft has a sort of emergency (fuel or active emergency)  */
+    fun hasEmergency(): Boolean {
+        return isFuelEmergency || emergency.isActive
     }
 
-    /** Checks if aircraft is being manually vectored */
-    public boolean isVectored() {
-        return navState.getDispLatMode().last() == NavState.VECTORS;
+    override fun getX(): Float {
+        return x
     }
 
-    /** Checks if aircraft has a sort of emergency (fuel or active emergency) */
-    public boolean hasEmergency() {
-        return fuelEmergency || emergency.isActive();
+    override fun setX(x: Float) {
+        this.x = x
     }
 
-    public SidStar getSidStar() {
-        return null;
+    override fun getY(): Float {
+        return y
     }
 
-    public int getSidStarIndex() {
-        return sidStarIndex;
+    override fun setY(y: Float) {
+        this.y = y
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    override fun getStage(): Stage {
+        return stage
     }
 
-    public boolean isSelected() {
-        return selected;
+    fun getClearedAltitude(): Int {
+        return clearedAltitude
     }
 
-    public Airport getAirport() {
-        return airport;
+    fun setClearedAltitude(clearedAltitude: Int) {
+        this.clearedAltitude = clearedAltitude
+        updateAltRestrictions()
+        updateTargetAltitude()
     }
 
-    public void setAirport(Airport airport) {
-        this.airport = airport;
-    }
-
-    public Runway getRunway() {
-        return runway;
-    }
-
-    public void setRunway(Runway runway) {
-        this.runway = runway;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
-    }
-
-    public void setOnGround(boolean onGround) {
-        this.onGround = onGround;
-    }
-
-    public boolean isTkOfLdg() {
-        return tkOfLdg;
-    }
-
-    public void setTkOfLdg(boolean tkOfLdg) {
-        this.tkOfLdg = tkOfLdg;
-    }
-
-    public String getCallsign() {
-        return callsign;
-    }
-
-    public void setCallsign(String callsign) {
-        this.callsign = callsign;
-    }
-
-    public String getIcaoType() {
-        return icaoType;
-    }
-
-    public char getWakeCat() {
-        return wakeCat;
-    }
-
-    public int getV2() {
-        return v2;
-    }
-
-    public int getTypClimb() {
-        return typClimb;
-    }
-
-    public void setTypClimb(int typClimb) {
-        this.typClimb = typClimb;
-    }
-
-    public int getTypDes() {
-        return typDes;
-    }
-
-    public void setTypDes(int typDes) {
-        this.typDes = typDes;
-    }
-
-    public int getMaxDes() {
-        return maxDes;
-    }
-
-    public int getApchSpd() {
-        return apchSpd;
-    }
-
-    public ControlState getControlState() {
-        return controlState;
-    }
-
-    @Override
-    public float getX() {
-        return x;
-    }
-
-    @Override
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    @Override
-    public float getY() {
-        return y;
-    }
-
-    @Override
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public double getHeading() {
-        return heading;
-    }
-
-    public void setHeading(double heading) {
-        this.heading = heading;
-    }
-
-    public double getTargetHeading() {
-        return targetHeading;
-    }
-
-    public void setTargetHeading(double targetHeading) {
-        this.targetHeading = targetHeading;
-    }
-
-    public int getClearedHeading() {
-        return clearedHeading;
-    }
-
-    public void setClearedHeading(int clearedHeading) {
-        this.clearedHeading = clearedHeading;
-    }
-
-    public double getAngularVelocity() {
-        return angularVelocity;
-    }
-
-    public double getTrack() {
-        return track;
-    }
-
-    public void setTrack(double track) {
-        this.track = track;
-    }
-
-    public Waypoint getDirect() {
-        return direct;
-    }
-
-    public void setDirect(Waypoint direct) {
-        this.direct = direct;
-    }
-
-    public float getAltitude() {
-        return altitude;
-    }
-
-    public void setAltitude(float altitude) {
-        this.altitude = altitude;
-    }
-
-    public int getClearedAltitude() {
-        return clearedAltitude;
-    }
-
-    public void setClearedAltitude(int clearedAltitude) {
-        this.clearedAltitude = clearedAltitude;
-        updateAltRestrictions();
-        updateTargetAltitude();
-    }
-
-    public int getTargetAltitude() {
-        return targetAltitude;
-    }
-
-    public void setTargetAltitude(int targetAltitude) {
-        this.targetAltitude = targetAltitude;
-    }
-
-    /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself */
-    public void updateTargetAltitude() {
+    /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself  */
+    fun updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
-        if (navState.containsCode(navState.getDispAltMode().first(), NavState.NO_RESTR, NavState.EXPEDITE)) {
+        if (navState.containsCode(navState.dispAltMode.first(), NavState.NO_RESTR, NavState.EXPEDITE)) {
             //No alt restrictions
-            targetAltitude = clearedAltitude;
+            targetAltitude = clearedAltitude
         } else {
             //Restrictions
-            if (clearedAltitude > highestAlt) {
-                if (this instanceof Arrival) {
-                    clearedAltitude = highestAlt;
-                    navState.replaceAllClearedAlt();
+            when {
+                clearedAltitude > highestAlt -> {
+                    if (this is Arrival) {
+                        clearedAltitude = highestAlt
+                        navState.replaceAllClearedAlt()
+                    }
+                    targetAltitude = highestAlt
                 }
-                targetAltitude = highestAlt;
-            } else if (clearedAltitude < lowestAlt) {
-                if (this instanceof Departure) {
-                    clearedAltitude = lowestAlt;
-                    navState.replaceAllClearedAlt();
+                clearedAltitude < lowestAlt -> {
+                    if (this is Departure) {
+                        clearedAltitude = lowestAlt
+                        navState.replaceAllClearedAlt()
+                    }
+                    targetAltitude = lowestAlt
                 }
-                targetAltitude = lowestAlt;
-            } else {
-                targetAltitude = clearedAltitude;
+                else -> targetAltitude = clearedAltitude
             }
         }
     }
 
-    /** Updates the cleared IAS under certain circumstances */
-    public void updateClearedSpd() {
-        int highestSpd = -1;
-        if (navState.getDispSpdMode().last() == NavState.SID_STAR_RESTR && direct != null) {
-            highestSpd = route.getWptMaxSpd(direct.getName());
+    /** Updates the cleared IAS under certain circumstances  */
+    fun updateClearedSpd() {
+        var highestSpd = -1
+        if (navState.dispSpdMode.last() == NavState.SID_STAR_RESTR && direct != null) {
+            highestSpd = direct?.let { route.getWptMaxSpd(it.name) } ?: -1
         }
         if (highestSpd == -1) {
-            if (altitude >= 9900 || request == HIGH_SPEED_REQUEST) {
-                highestSpd = climbSpd;
+            highestSpd = if (altitude >= 9900 || request == HIGH_SPEED_REQUEST) {
+                climbSpd
             } else {
-                highestSpd = 250;
+                250
             }
         }
         if (clearedIas > highestSpd) {
-            clearedIas = highestSpd;
-            navState.replaceAllClearedSpdToLower();
-            if (selected && isArrivalDeparture()) {
-                updateUISelections();
-                ui.updateState();
+            clearedIas = highestSpd
+            navState.replaceAllClearedSpdToLower()
+            if (isSelected && isArrivalDeparture) {
+                updateUISelections()
+                ui.updateState()
             }
         }
     }
 
-    /** Removes the aircraft completely from game, including its labels, other elements */
-    public void removeAircraft() {
-        dataTag.removeLabel();
-        remove();
-        radarScreen.getAllAircraft().remove(callsign);
-        radarScreen.aircrafts.remove(callsign);
-        radarScreen.separationChecker.updateAircraftPositions();
-        radarScreen.getWakeManager().removeAircraft(callsign);
+    /** Removes the aircraft completely from game, including its labels, other elements  */
+    fun removeAircraft() {
+        dataTag.removeLabel()
+        remove()
+        radarScreen.allAircraft.remove(callsign)
+        radarScreen.aircrafts.remove(callsign)
+        radarScreen.separationChecker.updateAircraftPositions()
+        radarScreen.wakeManager.removeAircraft(callsign)
     }
 
-    /** Overridden method that sets the altitude restrictions of the aircraft */
-    public void updateAltRestrictions() {
+    /** Overridden method that sets the altitude restrictions of the aircraft  */
+    open fun updateAltRestrictions() {
         //No default implementation
     }
 
-    /** Overridden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set */
-    public void resetApchSpdSet() {
+    /** Overridden method that resets the booleans in arrival checking whether the appropriate speeds during approach have been set  */
+    open fun resetApchSpdSet() {
         //No default implementation
     }
 
-    /** Appends a new image to end of queue for aircraft's own position */
-    public void addTrailDot() {
-        if (gs <= 80) return; //Don't add dots if below 80 knots ground speed
-        dataTag.addTrailDot(x, y);
+    /** Appends a new image to end of queue for aircraft's own position  */
+    fun addTrailDot() {
+        if (gs <= 80) return  //Don't add dots if below 80 knots ground speed
+        dataTag.addTrailDot(x, y)
     }
 
-    /** Returns heavy/super if wake category is heavy or super */
-    public String getWakeString() {
-        if (wakeCat == 'H') return " heavy";
-        if (wakeCat == 'J') return " super";
-        return "";
+    /** Returns heavy/super if wake category is heavy or super  */
+    val wakeString: String
+        get() {
+            if (wakeCat == 'H') return " heavy"
+            return if (wakeCat == 'J') " super" else ""
+        }
+
+    override fun getColor(): Color {
+        return color
     }
 
-    public float getVerticalSpeed() {
-        return verticalSpeed;
+    override fun setColor(color: Color) {
+        this.color = color
     }
 
-    public void setVerticalSpeed(float verticalSpeed) {
-        this.verticalSpeed = verticalSpeed;
+    fun getMaxWptSpd(wpt: String?): Int {
+        return route.getWptMaxSpd(wpt)
     }
 
-    public boolean isExpedite() {
-        return expedite;
+    fun getIls(): ILS? {
+        return ils
     }
 
-    public void setExpedite(boolean expedite) {
-        this.expedite = expedite;
-    }
-
-    public float getIas() {
-        return ias;
-    }
-
-    public void setIas(float ias) {
-        this.ias = ias;
-    }
-
-    public float getTas() {
-        return tas;
-    }
-
-    public float getGs() {
-        return gs;
-    }
-
-    public void setGs(float gs) {
-        this.gs = gs;
-    }
-
-    public Vector2 getDeltaPosition() {
-        return deltaPosition;
-    }
-
-    public int getClearedIas() {
-        return clearedIas;
-    }
-
-    public void setClearedIas(int clearedIas) {
-        this.clearedIas = clearedIas;
-        updateClearedSpd();
-    }
-
-    public float getDeltaIas() {
-        return deltaIas;
-    }
-
-    public NavState getNavState() {
-        return navState;
-    }
-
-    public void setNavState(NavState navState) {
-        this.navState = navState;
-    }
-
-    public int getMaxClimb() {
-        return maxClimb;
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
-    }
-
-    @Override
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setSidStarIndex(int sidStarIndex) {
-        this.sidStarIndex = sidStarIndex;
-    }
-
-    public Waypoint getAfterWaypoint() {
-        return afterWaypoint;
-    }
-
-    public void setAfterWaypoint(Waypoint afterWaypoint) {
-        this.afterWaypoint = afterWaypoint;
-    }
-
-    public int getAfterWptHdg() {
-        return afterWptHdg;
-    }
-
-    public void setAfterWptHdg(int afterWptHdg) {
-        this.afterWptHdg = afterWptHdg;
-    }
-
-    public int getLowestAlt() {
-        return lowestAlt;
-    }
-
-    public void setLowestAlt(int lowestAlt) {
-        this.lowestAlt = lowestAlt;
-    }
-
-    public int getHighestAlt() {
-        return highestAlt;
-    }
-
-    public void setHighestAlt(int highestAlt) {
-        this.highestAlt = highestAlt;
-    }
-
-    public int getClimbSpd() {
-        return climbSpd;
-    }
-
-    public int getMaxWptSpd(String wpt) {
-        return route.getWptMaxSpd(wpt);
-    }
-
-    public ILS getIls() {
-        return ils;
-    }
-
-    public void setIls(ILS ils) {
-        if (this.ils != ils) {
-            if (this instanceof Arrival) ((Arrival) this).setNonPrecAlts(null);
-            if (locCap) {
-                if (!(this.ils instanceof LDA) || ils == null) this.ils.getRwy().removeFromArray(this); //Remove from runway array only if is not LDA or is LDA but new ILS is null
-                if (selected && isArrivalDeparture()) ui.updateState();
+    open fun setIls(ils: ILS?) {
+        if (this.ils !== ils) {
+            if (this is Arrival) this.nonPrecAlts = null
+            if (isLocCap) {
+                if (this.ils !is LDA || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
+                if (isSelected && isArrivalDeparture) ui.updateState()
             }
-            gsCap = false;
-            locCap = false;
-            resetApchSpdSet();
+            isGsCap = false
+            isLocCap = false
+            resetApchSpdSet()
             if (clearedIas < 160) {
-                clearedIas = 160;
-                navState.replaceAllClearedSpdToHigher();
+                clearedIas = 160
+                navState.replaceAllClearedSpdToHigher()
             }
         }
-        this.ils = ils;
+        this.ils = ils
     }
 
-    public boolean isGsCap() {
-        return gsCap;
+    fun getHoldWpt(): Waypoint? {
+        if (holdWpt == null && navState.dispLatMode.last() == NavState.HOLD_AT) holdWpt = radarScreen.waypoints[navState.clearedHold.last().name]
+        return holdWpt
     }
 
-    public void setGsCap(boolean gsCap) {
-        this.gsCap = gsCap;
+    fun setHoldWpt(holdWpt: Waypoint?) {
+        this.holdWpt = holdWpt
     }
 
-    public boolean isLocCap() {
-        return locCap;
+    fun isGoAroundWindow(): Boolean {
+        return goAroundWindow
     }
 
-    public Waypoint getHoldWpt() {
-        if (holdWpt == null && navState.getDispLatMode().last() == NavState.HOLD_AT) holdWpt = radarScreen.waypoints.get(navState.getClearedHold().last().getName());
-        return holdWpt;
-    }
-
-    public void setHoldWpt(Waypoint holdWpt) {
-        this.holdWpt = holdWpt;
-    }
-
-    public boolean isHolding() {
-        return holding;
-    }
-
-    public boolean isGoAround() {
-        return goAround;
-    }
-
-    public void setGoAround(boolean goAround) {
-        this.goAround = goAround;
-    }
-
-    public boolean isConflict() {
-        return conflict;
-    }
-
-    public void setConflict(boolean conflict) {
-        this.conflict = conflict;
-    }
-
-    public float getRadarX() {
-        return radarX;
-    }
-
-    public float getRadarY() {
-        return radarY;
-    }
-
-    public boolean isWarning() {
-        return warning;
-    }
-
-    public void setWarning(boolean warning) {
-        this.warning = warning;
-    }
-
-    public boolean isGoAroundWindow() {
-        return goAroundWindow;
-    }
-
-    public void setGoAroundWindow(boolean goAroundWindow) {
-        this.goAroundWindow = goAroundWindow;
+    fun setGoAroundWindow(goAroundWindow: Boolean) {
+        this.goAroundWindow = goAroundWindow
         if (goAroundWindow) {
-            goAroundTime = 120;
+            goAroundTime = 120f
         }
-    }
-
-    public float getGoAroundTime() {
-        return goAroundTime;
-    }
-
-    public boolean isInit() {
-        return init;
-    }
-
-    public boolean isType1leg() {
-        return type1leg;
-    }
-
-    public float[][] getHoldTargetPt() {
-        return holdTargetPt;
-    }
-
-    public boolean[] getHoldTargetPtSelected() {
-        return holdTargetPtSelected;
-    }
-
-    public float getPrevAlt() {
-        return prevAlt;
-    }
-
-    public double getRadarHdg() {
-        return radarHdg;
-    }
-
-    public double getRadarTrack() {
-        return radarTrack;
-    }
-
-    public float getRadarGs() {
-        return radarGs;
-    }
-
-    public float getRadarAlt() {
-        return radarAlt;
-    }
-
-    public float getRadarVs() {
-        return radarVs;
-    }
-
-    public boolean isTerrainConflict() {
-        return terrainConflict;
-    }
-
-    public void setTerrainConflict(boolean terrainConflict) {
-        this.terrainConflict = terrainConflict;
-    }
-
-    public float getExpediteTime() {
-        return expediteTime;
-    }
-
-    public String getVoice() {
-        return voice;
-    }
-
-    public void setRadarHdg(double radarHdg) {
-        this.radarHdg = radarHdg;
-    }
-
-    public DataTag getDataTag() {
-        return dataTag;
-    }
-
-    public boolean isActionRequired() {
-        return actionRequired;
-    }
-
-    public void setActionRequired(boolean actionRequired) {
-        this.actionRequired = actionRequired;
-    }
-
-    public boolean isFuelEmergency() {
-        return fuelEmergency;
-    }
-
-    public void setFuelEmergency(boolean fuelEmergency) {
-        this.fuelEmergency = fuelEmergency;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
-    }
-
-    public int getHoldingType() {
-        return holdingType;
-    }
-
-    public Emergency getEmergency() {
-        return emergency;
-    }
-
-    public void setMaxClimb(int maxClimb) {
-        this.maxClimb = maxClimb;
-    }
-
-    public float getPrevDistTravelled() {
-        return prevDistTravelled;
-    }
-
-    public char getRecat() {
-        return recat;
-    }
-
-    public boolean isWakeInfringe() {
-        return wakeInfringe;
-    }
-
-    public float getWakeTolerance() {
-        return wakeTolerance;
-    }
-
-    public void setWakeTolerance(float wakeTolerance) {
-        this.wakeTolerance = wakeTolerance;
-    }
-
-    public Trajectory getTrajectory() {
-        return trajectory;
-    }
-
-    public boolean isTrajectoryConflict() {
-        return trajectoryConflict;
-    }
-
-    public void setTrajectoryConflict(boolean trajectoryConflict) {
-        this.trajectoryConflict = trajectoryConflict;
-    }
-
-    public boolean isTrajectoryTerrainConflict() {
-        return trajectoryTerrainConflict;
-    }
-
-    public void setTrajectoryTerrainConflict(boolean trajectoryTerrainConflict) {
-        this.trajectoryTerrainConflict = trajectoryTerrainConflict;
-    }
-
-    public boolean isSilenced() {
-        return silenced;
-    }
-
-    public void setSilenced(boolean silenced) {
-        this.silenced = silenced;
-    }
-
-    public boolean isPrevConflict() {
-        return prevConflict;
-    }
-
-    public void setPrevConflict(boolean prevConflict) {
-        this.prevConflict = prevConflict;
-    }
-
-    public int getRequest() {
-        return request;
-    }
-
-    public void setRequest(int request) {
-        this.request = request;
-    }
-
-    public boolean isRequested() {
-        return requested;
-    }
-
-    public void setRequested(boolean requested) {
-        this.requested = requested;
-    }
-
-    public int getRequestAlt() {
-        return requestAlt;
-    }
-
-    public void setRequestAlt(int requestAlt) {
-        this.requestAlt = requestAlt;
-    }
-
-    public void setV2(int v2) {
-        this.v2 = v2;
     }
 }
