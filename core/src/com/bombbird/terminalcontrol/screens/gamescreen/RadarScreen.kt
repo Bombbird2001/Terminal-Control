@@ -48,8 +48,7 @@ import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager
 import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.Revision
-import com.bombbird.terminalcontrol.utilities.math.RandomGenerator.randomAirport
-import com.bombbird.terminalcontrol.utilities.math.RandomGenerator.randomPlane
+import com.bombbird.terminalcontrol.utilities.math.RandomGenerator
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
@@ -145,7 +144,6 @@ class RadarScreen : GameScreen {
     var wakeInfringeTime: Float
     var emergenciesLanded: Int
     var spawnTimer: Float
-        private set
     var previousOffset: Float
         private set
     var information: Char
@@ -202,6 +200,9 @@ class RadarScreen : GameScreen {
     private val save: JSONObject?
     val revision //Revision for indicating if save parser needs to do anything special
             : Int
+
+    //Stores aircraft generators
+    private val generatorList = Array<RandomGenerator.MultiThreadGenerator>()
 
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
@@ -474,7 +475,7 @@ class RadarScreen : GameScreen {
     }
 
     /** Creates a new departure at the given airport  */
-    fun newDeparture(callsign: String?, icaoType: String?, airport: Airport?, runway: Runway?) {
+    fun newDeparture(callsign: String, icaoType: String, airport: Airport, runway: Runway) {
         aircrafts[callsign] = Departure(callsign, icaoType, airport, runway)
     }
 
@@ -493,21 +494,11 @@ class RadarScreen : GameScreen {
             spawnTimer = 90f - 10 * (planesToControl - arrivals)
             spawnTimer = MathUtils.clamp(spawnTimer, 50f, 80f)
         }
-        val airport = randomAirport()
-        if (airport == null) {
-            //If airports not available, set planes to control equal to current arrival number
-            //so there won't be a sudden wave of new arrivals once airport is available again
-            planesToControl = arrivals.toFloat()
-            return
-        }
-        if (!RandomSTAR.starAvailable(airport)) {
-            spawnTimer = 10f //Wait for another 10 seconds if no spawn points available
-            return
-        }
-        val aircraftInfo = randomPlane(airport)
-        val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], airport)
-        aircrafts[aircraftInfo[0]] = arrival
-        arrivals++
+
+        //Start a new thread for generating arrivals to prevent lag in main game loop
+        val multiThreadGenerator = RandomGenerator.MultiThreadGenerator(this, allAircraft)
+        generatorList.add(multiThreadGenerator)
+        Thread(multiThreadGenerator).start()
     }
 
     /** Loads the full UI for RadarScreen  */
@@ -627,6 +618,7 @@ class RadarScreen : GameScreen {
                 //Minimum 50 sec interval between each new plane
                 newArrival()
             }
+            checkGenerators()
         }
         if (!UnlockManager.unlocks.contains("parallelLanding")) {
             //Update simultaneous landing linkedhashmap
@@ -635,6 +627,24 @@ class RadarScreen : GameScreen {
                 val entry = iterator.next()
                 entry.setValue(entry.value + deltaTime)
                 if (entry.value > 5) iterator.remove()
+            }
+        }
+    }
+
+    /** Checks the list of multi threaded generators, creates new arrival if done */
+    private fun checkGenerators() {
+        val generatorIterator = generatorList.iterator()
+        while (generatorIterator.hasNext()) {
+            val generator = generatorIterator.next()
+            if (generator?.done == true) {
+                //If generator is done generating, copy info to local variables and create a new arrival from them
+                val aircraftInfo = generator.aircraftInfo ?: continue
+                val finalAirport = generator.finalAirport ?: continue
+                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport)
+                allAircraft.add(aircraftInfo[0])
+                aircrafts[aircraftInfo[0]] = arrival
+                arrivals++
+                generatorIterator.remove() //Remove the generator since it's no longer needed
             }
         }
     }

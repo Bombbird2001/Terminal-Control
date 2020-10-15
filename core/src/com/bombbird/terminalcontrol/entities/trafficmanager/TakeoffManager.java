@@ -72,7 +72,7 @@ public class TakeoffManager {
         for (String rwy: timers.keySet()) {
             timers.put(rwy, timers.get(rwy) + Gdx.graphics.getDeltaTime());
             if (nextAircraft.get(rwy) == null) {
-                String[] aircraftInfo = RandomGenerator.randomPlane(airport);
+                String[] aircraftInfo = RandomGenerator.randomPlane(airport, radarScreen.getAllAircraft());
                 nextAircraft.put(rwy, aircraftInfo);
             }
         }
@@ -229,7 +229,7 @@ public class TakeoffManager {
                     runway = runway1;
                     if (airport.getTakeoffRunways().containsKey("22") && distance > 24.9) break;
                     dist = distance;
-                } else if (airport.allowSimultDep() && "22".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34L"))) {
+                } else if (airport.allowSimultDep() && "22".equals(runway1.getName()) && checkLandingTCTT16R()) {
                     //Use only 16R if departure volume is low
                     runway = runway1;
                     dist = distance;
@@ -518,6 +518,32 @@ public class TakeoffManager {
     private boolean checkLandingTCTT23() {
         if (!"TCTT".equals(airport.getIcao())) return false;
         Runway runway = airport.getRunways().get("23");
+        if (runway == null) return false;
+        if (runway.getAircraftsOnAppr().size == 0) {
+            //No aircraft on approach
+            return true;
+        } else {
+            Aircraft aircraft = runway.getAircraftsOnAppr().first();
+            Aircraft aircraft1 = null;
+            if (runway.getAircraftsOnAppr().size > 1) aircraft1 = runway.getAircraftsOnAppr().get(1);
+            if (runway.getOppRwy().getAircraftsOnAppr().size == 0) {
+                //No planes landing opposite
+                if (MathTools.pixelToNm(MathTools.distanceBetween(aircraft.getX(), aircraft.getY(), runway.getX(), runway.getY())) >= 5 && !aircraft.isOnGround()) {
+                    //If latest aircraft is more than 5 miles away and not landed yet
+                    return true;
+                } else {
+                    //If first aircraft has touched down, 2nd aircraft is non-existent OR is more than 5 miles away
+                    return aircraft.isOnGround() && (aircraft1 == null || !aircraft1.isOnGround() && MathTools.pixelToNm(MathTools.distanceBetween(aircraft1.getX(), aircraft1.getY(), runway.getX(), runway.getY())) >= 5);
+                }
+            }
+            return false;
+        }
+    }
+
+    /** Checks specific case for TCTT's runway 16R, same as above function but will also return true if aircraft has landed */
+    private boolean checkLandingTCTT16R() {
+        if (!"TCTT".equals(airport.getIcao())) return false;
+        Runway runway = airport.getRunways().get("16R");
         if (runway == null) return false;
         if (runway.getAircraftsOnAppr().size == 0) {
             //No aircraft on approach

@@ -21,7 +21,7 @@ public class LoadGameScreen extends SelectGameScreen {
     private final Timer timer;
     private Label loadingLabel;
 
-    class MultithreadLoad implements Runnable {
+    class MultiThreadLoad implements Runnable {
         @Override
         public void run() {
             JSONArray saves = FileLoader.loadSaves();
@@ -60,7 +60,7 @@ public class LoadGameScreen extends SelectGameScreen {
         stage.addActor(loadingLabel);
         animateLoadingLabel();
 
-        new Thread(new MultithreadLoad()).start(); //Load the saves from another thread
+        new Thread(new MultiThreadLoad()).start(); //Load the saves from another thread
     }
 
     /** Called after file I/O is complete to display the loaded saves */
