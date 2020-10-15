@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import kotlin.math.ceil
@@ -84,6 +85,8 @@ class StatusManager(private val utilityBox: UtilityBox) {
                 }
             }
         }
+
+        if (DayNightManager.isNight) info.add("[BLACK]Night mode active")
 
         for (airport: Airport in TerminalControl.radarScreen.airports.values) {
             if (airport.isPendingRwyChange) runwayChange.add("[YELLOW]${airport.icao}: Pending runway change")

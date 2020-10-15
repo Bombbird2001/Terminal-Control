@@ -1,49 +1,52 @@
-package com.bombbird.terminalcontrol.entities.waypoints;
+package com.bombbird.terminalcontrol.entities.waypoints
 
-import java.util.HashMap;
+import java.util.*
 
-public class WaypointShifter {
-    public static final HashMap<String, HashMap<String, int[]>> movementData = new HashMap<>();
+object WaypointShifter {
+    @JvmField
+    val movementData = HashMap<String, HashMap<String, IntArray>>()
 
-    public static void loadData() {
-        if (movementData.size() > 0) return;
+    @JvmStatic
+    fun loadData() {
+        if (movementData.size > 0) return
         //TCTP - No adjustments needed
         //TCWS - No adjustments needed
         //TCTT
-        putData("TCTT", 32, 0, "LOBBI", "ABSON");
-        putData("TCTT", 20, 0, "SCODI");
-        putData("TCTT", 0, -96, "BOMDA", "BALAD", "ADMON");
-        putData("TCTT", 16, 0, "COCOA", "MELAC", "COALL");
-        putData("TCTT", -64, -64, "GHOUL", "RALON");
-        putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA");
-        putData("TCTT", -88, -64, "RAZOR");
-        putData("TCTT", -80, -80, "VALON", "LALLI");
+        putData("TCTT", 32, 0, "LOBBI", "ABSON")
+        putData("TCTT", 20, 0, "SCODI")
+        putData("TCTT", 0, -96, "BOMDA", "BALAD", "ADMON")
+        putData("TCTT", 16, 0, "COCOA", "MELAC", "COALL", "ROOLY", "COSTY")
+        putData("TCTT", -64, -64, "GHOUL", "RALON")
+        putData("TCTT", -48, -64, "CRICK", "NOMIN")
+        putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA")
+        putData("TCTT", -88, -64, "RAZOR")
+        putData("TCTT", -80, -80, "VALON", "LALLI")
         //TCHH
-        putData("TCHH", 20, 0, "MUMMY", "CLIPP");
+        putData("TCHH", 20, 0, "MUMMY", "CLIPP")
         //TCBB
-        putData("TCBB", -20, 0, "BANDE");
-        putData("TCBB", 20, 0, "CLIPS", "BAYNO");
-        putData("TCBB", 96, -24, "PONCH");
-        putData("TCBB", 64, -112, "ERIGE", "GROND");
+        putData("TCBB", -20, 0, "BANDE")
+        putData("TCBB", 20, 0, "CLIPS", "BAYNO")
+        putData("TCBB", 96, -24, "PONCH")
+        putData("TCBB", 64, -112, "ERIGE", "GROND")
         //TCBD
-        putData("TCBD", 0, -96, "LANNI");
-        putData("TCBD", 32, 0, "DIVER");
+        putData("TCBD", 0, -96, "LANNI")
+        putData("TCBD", 32, 0, "DIVER")
         //TCMD
-        putData("TCMD", 16, -96, "DPT");
-        putData("TCMD", -20, 0, "TENSI");
-        putData("TCMD", 88, -64, "ABSIT", "GLADI");
-        putData("TCMD", 20, 0, "VERDE");
-        putData("TCMD", -88, -64, "EMDOT", "PEGAS");
+        putData("TCMD", 16, -96, "DPT")
+        putData("TCMD", -20, 0, "TENSI")
+        putData("TCMD", 88, -64, "ABSIT", "GLADI")
+        putData("TCMD", 20, 0, "VERDE")
+        putData("TCMD", -88, -64, "EMDOT", "PEGAS")
         //TCPG - No adjustments needed
         //TCHX
-        putData("TCHX", -8, 0, "CS");
-        putData("TCHX", 8, 0, "WR");
+        putData("TCHX", -8, 0, "CS")
+        putData("TCHX", 8, 0, "WR")
     }
 
-    private static void putData(String icao, int xShift, int yShift, String... wpts) {
-        if (!movementData.containsKey(icao)) movementData.put(icao, new HashMap<>());
-        for (String wpt: wpts) {
-            movementData.get(icao).put(wpt, new int[] {xShift, yShift});
+    private fun putData(icao: String, xShift: Int, yShift: Int, vararg wpts: String) {
+        if (!movementData.containsKey(icao)) movementData[icao] = HashMap()
+        for (wpt in wpts) {
+            movementData[icao]?.set(wpt, intArrayOf(xShift, yShift))
         }
     }
 }

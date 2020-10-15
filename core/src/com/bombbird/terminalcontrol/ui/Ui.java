@@ -728,10 +728,6 @@ public class Ui {
     public void updateInfoLabel() {
         String text = "";
         if (radarScreen.speed > 1) text = radarScreen.speed + "x speed";
-        if (!text.isEmpty() && radarScreen.tfcMode != RadarScreen.TfcMode.NORMAL) text += "\n";
-        if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) text += "Arrivals only";
-        if (!text.isEmpty() && DayNightManager.isNight()) text += "\n";
-        if (DayNightManager.isNight()) text += "Night mode active";
         infoLabel.setText(text);
         infoLabel.setVisible(!text.isEmpty() && selectedAircraft == null);
     }

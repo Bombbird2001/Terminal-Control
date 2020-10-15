@@ -224,8 +224,13 @@ public class TakeoffManager {
                     runway = runway1;
                     if (distance > 24.9) break;
                     dist = distance;
-                } else if (airport.allowSimultDep() && "16R".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
-                    //Use only 16L if departure volume is low
+                } else if ((airport.getTakeoffRunways().containsKey("22") || airport.allowSimultDep()) && "16R".equals(runway1.getName()) && checkLandingTCTT23() && checkOppLanding(airport.getRunways().get("16L")) && checkPreceding("05")) {
+                    //Use 16R only if departure volume is low, or if other departure runway in use is 22
+                    runway = runway1;
+                    if (airport.getTakeoffRunways().containsKey("22") && distance > 24.9) break;
+                    dist = distance;
+                } else if (airport.allowSimultDep() && "22".equals(runway1.getName()) && checkOppLanding(airport.getRunways().get("34L"))) {
+                    //Use only 16R if departure volume is low
                     runway = runway1;
                     dist = distance;
                 }
