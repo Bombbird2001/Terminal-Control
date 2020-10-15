@@ -638,13 +638,17 @@ class RadarScreen : GameScreen {
             val generator = generatorIterator.next()
             if (generator?.done == true) {
                 //If generator is done generating, copy info to local variables and create a new arrival from them
+                generatorIterator.remove() //Remove the generator since it's no longer needed
                 val aircraftInfo = generator.aircraftInfo ?: continue
                 val finalAirport = generator.finalAirport ?: continue
+                if (allAircraft.contains(aircraftInfo[0])) {
+                    spawnTimer = 5f //If by coincidence 2 generators somehow give the same result before either was added, don't add, instead generate another arrival in 5 seconds
+                    continue
+                }
                 val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport)
                 allAircraft.add(aircraftInfo[0])
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
-                generatorIterator.remove() //Remove the generator since it's no longer needed
             }
         }
     }
