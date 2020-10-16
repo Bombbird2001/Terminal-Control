@@ -387,7 +387,7 @@ public class NavState {
         aircraft.setAfterWaypoint(clearedAftWpt.first());
         aircraft.setAfterWptHdg(clearedAftWptHdg.first());
         aircraft.setHoldWpt(clearedHold.first());
-        aircraft.setIls(clearedIls.first());
+        aircraft.updateILS(clearedIls.first());
         if (clearedIls.first() != null && dispLatMode.first() == NavState.SID_STAR) {
             int lowestAlt = aircraft.getRoute().getWptMinAlt(aircraft.getRoute().getWaypoints().size - 1);
             if (lowestAlt == -1) lowestAlt = radarScreen.getMinAlt();

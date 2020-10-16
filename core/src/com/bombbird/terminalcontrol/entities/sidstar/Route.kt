@@ -157,8 +157,8 @@ class Route private constructor() {
     }
 
     /** Create new Route based on saved route and SID name  */
-    constructor(jo: JSONObject, sid: Sid?, runway: Runway?, climbRate: Int) : this(jo) {
-        if ("null" == name && sid != null) name = sid.name
+    constructor(jo: JSONObject, sid: Sid, runway: Runway, climbRate: Int) : this(jo) {
+        if ("null" == name) name = sid.name
         loadSidZone(runway, sid, climbRate)
     }
 
@@ -246,7 +246,7 @@ class Route private constructor() {
     }
 
     /** Returns an array of waypoints from start to end index inclusive  */
-    fun getRemainingWaypoints(start: Int, end: Int): Array<Waypoint?> {
+    fun getRemainingWaypoints(start: Int, end: Int): Array<Waypoint> {
         //Returns array of waypoints from index start to end
         val newRange = Array(waypoints)
         if (end >= start) {
@@ -266,6 +266,7 @@ class Route private constructor() {
     }
 
     fun getWptMinAlt(wptName: String?): Int {
+        if (wptName == null) return -1
         return restrictions[findWptIndex(wptName)][0]
     }
 
@@ -274,6 +275,7 @@ class Route private constructor() {
     }
 
     fun getWptMaxAlt(wptName: String?): Int {
+        if (wptName == null) return -1
         return restrictions[findWptIndex(wptName)][1]
     }
 
@@ -282,6 +284,7 @@ class Route private constructor() {
     }
 
     fun getWptMaxSpd(wptName: String?): Int {
+        if (wptName == null) return -1
         return restrictions[findWptIndex(wptName)][2]
     }
 
@@ -290,6 +293,7 @@ class Route private constructor() {
     }
 
     fun getWptFlyOver(wptName: String?): Boolean {
+        if (wptName == null) return false
         return flyOver[findWptIndex(wptName)]
     }
 }

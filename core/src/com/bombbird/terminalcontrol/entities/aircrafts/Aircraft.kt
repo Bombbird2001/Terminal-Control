@@ -48,7 +48,7 @@ abstract class Aircraft : Actor {
 
     //Android text-to-speech
     val voice: String
-    val radarScreen: RadarScreen = TerminalControl.radarScreen
+    val radarScreen: RadarScreen = TerminalControl.radarScreen!!
     private val stage = radarScreen.stage
     val shapeRenderer = radarScreen.shapeRenderer
     val ui = radarScreen.ui
@@ -86,7 +86,13 @@ abstract class Aircraft : Actor {
         private set
     lateinit var navState: NavState
     var isGoAround: Boolean
-    private var goAroundWindow: Boolean
+    var isGoAroundWindow: Boolean
+        set(value) {
+            field = value
+            if (value) {
+                goAroundTime = 120f
+            }
+        }
     var goAroundTime: Float
         private set
     var isConflict: Boolean
@@ -116,10 +122,15 @@ abstract class Aircraft : Actor {
     var direct: Waypoint? = null
     var afterWaypoint: Waypoint? = null
     var afterWptHdg: Int
-    private var ils: ILS? = null
+    var ils: ILS? = null
+        private set
     var isLocCap: Boolean
         private set
-    private var holdWpt: Waypoint? = null
+    var holdWpt: Waypoint? = null
+        get() {
+            if (field == null && navState.dispLatMode.last() == NavState.HOLD_AT) field = radarScreen.waypoints[navState.clearedHold.last().name]
+            return field
+        }
     var isHolding = false
         private set
     var holdingType: Int
@@ -139,7 +150,12 @@ abstract class Aircraft : Actor {
     var prevAlt = 0f
         private set
     var altitude: Float
-    private var clearedAltitude: Int
+    var clearedAltitude: Int
+        set(value) {
+            field = value
+            updateAltRestrictions()
+            updateTargetAltitude()
+        }
     var targetAltitude: Int
     var verticalSpeed: Float
     var isExpedite: Boolean
@@ -155,11 +171,8 @@ abstract class Aircraft : Actor {
         private set
     var gs: Float
     val deltaPosition: Vector2
-    private var clearedIas: Int
-        set(value) {
-            field = value
-            updateClearedSpd()
-        }
+    var clearedIas: Int
+        private set
     var deltaIas: Float
         private set
     val climbSpd: Int
@@ -226,7 +239,7 @@ abstract class Aircraft : Actor {
         holdingType = 0
         climbSpd = if (AircraftType.getMaxCruiseSpd(icaoType) == -1) MathUtils.random(270, 280) else AircraftType.getMaxCruiseSpd(icaoType)
         isGoAround = false
-        goAroundWindow = false
+        isGoAroundWindow = false
         goAroundTime = 0f
         isConflict = false
         isWarning = false
@@ -282,7 +295,7 @@ abstract class Aircraft : Actor {
         holdingType = aircraft.holdingType
         climbSpd = aircraft.climbSpd
         isGoAround = aircraft.isGoAround
-        goAroundWindow = aircraft.goAroundWindow
+        isGoAroundWindow = aircraft.isGoAroundWindow
         goAroundTime = aircraft.goAroundTime
         isConflict = aircraft.isConflict
         isWarning = aircraft.isWarning
@@ -334,14 +347,14 @@ abstract class Aircraft : Actor {
         apchSpd = save.getInt("apchSpd")
         navState = NavState(this, save.getJSONObject("navState"))
         isGoAround = save.getBoolean("goAround")
-        goAroundWindow = save.getBoolean("goAroundWindow")
+        isGoAroundWindow = save.getBoolean("goAroundWindow")
         goAroundTime = save.getDouble("goAroundTime").toFloat()
         isConflict = save.getBoolean("conflict")
         isWarning = save.getBoolean("warning")
-        if (save.isNull("terrainConflict")) {
-            isTerrainConflict = false
+        isTerrainConflict = if (save.isNull("terrainConflict")) {
+            false
         } else {
-            isTerrainConflict = save.getBoolean("terrainConflict")
+            save.getBoolean("terrainConflict")
         }
         isPrevConflict = isConflict
         emergency = if (save.optJSONObject("emergency") == null) Emergency(this, false) else Emergency(this, save.getJSONObject("emergency"))
@@ -424,6 +437,13 @@ abstract class Aircraft : Actor {
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
+
+        when (val control = save.optString("controlState")) {
+            "0" -> setControlState(ControlState.UNCONTROLLED)
+            "1" -> setControlState(ControlState.ARRIVAL)
+            "2" -> setControlState(ControlState.DEPARTURE)
+            else -> setControlState(ControlState.valueOf(control))
+        }
     }
 
     /** Sets the initial radar position for aircraft  */
@@ -590,10 +610,10 @@ abstract class Aircraft : Actor {
             if (isGoAround) {
                 updateGoAround()
             }
-            if (goAroundWindow) {
+            if (isGoAroundWindow) {
                 goAroundTime -= Gdx.graphics.deltaTime
                 if (goAroundTime < 0) {
-                    goAroundWindow = false
+                    isGoAroundWindow = false
                     goAroundTime = 0f
                 }
             }
@@ -1166,7 +1186,7 @@ abstract class Aircraft : Actor {
         navState.replaceAllOutdatedDirects(direct)
         updateAltRestrictions()
         updateTargetAltitude()
-        updateClearedSpd()
+        updateClearedSpd(clearedIas)
         prevDirect?.updateFlyOverStatus()
         direct?.updateFlyOverStatus()
         if (isSelected && isArrivalDeparture) {
@@ -1310,16 +1330,6 @@ abstract class Aircraft : Actor {
         return stage
     }
 
-    fun getClearedAltitude(): Int {
-        return clearedAltitude
-    }
-
-    fun setClearedAltitude(clearedAltitude: Int) {
-        this.clearedAltitude = clearedAltitude
-        updateAltRestrictions()
-        updateTargetAltitude()
-    }
-
     /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself  */
     fun updateTargetAltitude() {
         //When called, gets current cleared altitude, alt nav mode and updates the target altitude of aircraft
@@ -1349,7 +1359,8 @@ abstract class Aircraft : Actor {
     }
 
     /** Updates the cleared IAS under certain circumstances  */
-    fun updateClearedSpd() {
+    fun updateClearedSpd(ias: Int) {
+        clearedIas = ias
         var highestSpd = -1
         if (navState.dispSpdMode.last() == NavState.SID_STAR_RESTR && direct != null) {
             highestSpd = direct?.let { route.getWptMaxSpd(it.name) } ?: -1
@@ -1416,11 +1427,7 @@ abstract class Aircraft : Actor {
         return route.getWptMaxSpd(wpt)
     }
 
-    fun getIls(): ILS? {
-        return ils
-    }
-
-    open fun setIls(ils: ILS?) {
+    open fun updateILS(ils: ILS?) {
         if (this.ils !== ils) {
             if (this is Arrival) this.nonPrecAlts = null
             if (isLocCap) {
@@ -1436,25 +1443,5 @@ abstract class Aircraft : Actor {
             }
         }
         this.ils = ils
-    }
-
-    fun getHoldWpt(): Waypoint? {
-        if (holdWpt == null && navState.dispLatMode.last() == NavState.HOLD_AT) holdWpt = radarScreen.waypoints[navState.clearedHold.last().name]
-        return holdWpt
-    }
-
-    fun setHoldWpt(holdWpt: Waypoint?) {
-        this.holdWpt = holdWpt
-    }
-
-    fun isGoAroundWindow(): Boolean {
-        return goAroundWindow
-    }
-
-    fun setGoAroundWindow(goAroundWindow: Boolean) {
-        this.goAroundWindow = goAroundWindow
-        if (goAroundWindow) {
-            goAroundTime = 120f
-        }
     }
 }

@@ -248,7 +248,7 @@ class RadarScreen : GameScreen {
             colourStyle = 0
             realisticMetar = false
             emerChance = Emergency.Chance.OFF
-            soundSel = TerminalControl.getDefaultSoundSetting()
+            soundSel = TerminalControl.defaultSoundSetting
             weatherSel = Weather.STATIC
         } else {
             trajectoryLine = TerminalControl.trajectorySel
@@ -329,7 +329,7 @@ class RadarScreen : GameScreen {
             "false" -> Weather.RANDOM
             else -> Weather.valueOf(save.getString("liveWeather"))
         }
-        soundSel = if (save.isNull("sounds")) TerminalControl.getDefaultSoundSetting() else save.getInt("sounds")
+        soundSel = if (save.isNull("sounds")) TerminalControl.defaultSoundSetting else save.getInt("sounds")
         emerChance = if (save.isNull("emerChance")) {
             Emergency.Chance.MEDIUM
         } else {
@@ -808,9 +808,9 @@ class RadarScreen : GameScreen {
             if (arrival.airport != aircraft?.airport) continue
             val airportIcao = arrival.airport.icao
             if (arrival.ils == null) return false
-            val rwy1 = arrival.ils.rwy.name
-            if (aircraft?.ils == null) continue
-            val rwy2 = aircraft.ils.rwy.name
+            val rwy1 = arrival.ils?.rwy?.name
+            if (aircraft.ils == null) continue
+            val rwy2 = aircraft.ils?.rwy?.name
             val rwys = arrayOf(rwy1, rwy2)
             if ("TCWS" == airportIcao) {
                 if (ArrayUtils.contains(rwys, "02L") && ArrayUtils.contains(rwys, "02C") || ArrayUtils.contains(rwys, "20R") && ArrayUtils.contains(rwys, "20C")) return true
@@ -952,7 +952,7 @@ class RadarScreen : GameScreen {
         get() {
             var count = 0
             for (aircraft in aircrafts.values) {
-                if (aircraft is Departure && aircraft.isArrivalDeparture()) {
+                if (aircraft is Departure && aircraft.isArrivalDeparture) {
                     //If aircraft is a departure, and is in your control
                     count++
                 }

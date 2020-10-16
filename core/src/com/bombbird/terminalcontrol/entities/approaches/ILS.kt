@@ -98,7 +98,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     fun renderShape() {
         val landing = rwy?.isLanding == true
         val aircraft = radarScreen.getSelectedAircraft()
-        val selectedIls = aircraft is Arrival && aircraft.airport == airport && (aircraft.controlState == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS == name || aircraft.controlState == Aircraft.ControlState.UNCONTROLLED && this == aircraft.getIls())
+        val selectedIls = aircraft is Arrival && aircraft.airport == airport && (aircraft.controlState == Aircraft.ControlState.ARRIVAL && LatTab.clearedILS == name || aircraft.controlState == Aircraft.ControlState.UNCONTROLLED && this == aircraft.ils)
         val rwyChange = radarScreen.runwayChanger.containsLandingRunway(airport.icao, rwy?.name ?: "")
         if ((landing || selectedIls || rwyChange) && rwy?.isEmergencyClosed == false) {
             radarScreen.shapeRenderer.color = radarScreen.iLSColour

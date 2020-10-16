@@ -122,7 +122,7 @@ object UnlockManager {
     fun incrementLanded() {
         planesLanded++
         if (checkNewUnlocks() && TerminalControl.full) {
-            TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!")
+            TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!")
         }
         checkAchievement(Achievement.PLANES_LANDED)
         GameSaver.saveStats()
@@ -164,7 +164,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
-        TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
+        TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
     }
 
@@ -187,7 +187,7 @@ object UnlockManager {
             if (value.checkAchievement(type) && !unlocks.contains(key)) {
                 unlocks.add(key)
                 value.isUnlocked = true
-                if (TerminalControl.radarScreen != null) TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + value.title)
+                if (TerminalControl.radarScreen != null) TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + value.title)
             }
         }
     }
