@@ -79,6 +79,15 @@ public class ChangelogScreen extends StandardUIScreen {
 
     private void loadHashmapContent() {
         if (changeLogContent.size() > 0) return;
+
+        //Version 1.4.2011.1
+        Array<String> content14 = new Array<>();
+        content14.add("-Traffic: Custom traffic settings are now available under Settings => Traffic => Arrival traffic settings - 3 different modes are available");
+        content14.add("-UI: Added a new status pane which can be toggled from the communication pane; useful for keeping track of requests and better situational awareness when traffic volume is high");
+        if (TerminalControl.full) content14.add("-TCTT: Added new south runway configurations, SIDs and STARs");
+        content14.add("-Many bug fixes, optimisations");
+        changeLogContent.put("1.4.2011.1", content14);
+
         //Version 1.4.2010.2
         Array<String> content13 = new Array<>();
         content13.add("-UI: Aircraft pane overhaul - more intuitive user interface when selecting clearance for aircraft");
