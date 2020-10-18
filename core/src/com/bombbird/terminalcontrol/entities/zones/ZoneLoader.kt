@@ -49,6 +49,7 @@ object ZoneLoader {
     private fun loadDepTCTT(): Array<DepartureZone> {
         val departureZones = Array<DepartureZone>()
         departureZones.add(DepartureZone("16L", "16R", 2875.6f, 1636.8f, 157, 3.1f, 10f, 0.329f))
+        departureZones.add(DepartureZone("22", "16R", 2862.0f, 1623.8f, 175, 3.1f, 10f, 0.329f))
         return departureZones
     }
 

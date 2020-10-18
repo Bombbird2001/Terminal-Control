@@ -34,6 +34,7 @@ object RandomTip {
         tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in the game settings")
         tips.add("Airspace too congested? Go to Settings => Traffic => Arrival traffic settings to adjust the traffic")
         tips.add("Colour scheme can be changed in the game settings, under the display section")
+        tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
         if (Gdx.app.type == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!")
     }
 
