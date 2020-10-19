@@ -9,6 +9,8 @@ import org.json.JSONObject
 import java.util.*
 
 class Sid : SidStar {
+    private val radarScreen = TerminalControl.radarScreen!!
+
     private lateinit var initClimb: HashMap<String, IntArray>
     private lateinit var initWpts: HashMap<String, com.badlogic.gdx.utils.Array<Waypoint>>
     private lateinit var initRestrictions: HashMap<String, com.badlogic.gdx.utils.Array<IntArray>>
@@ -45,7 +47,7 @@ class Sid : SidStar {
             for (i in 0 until initWptData.length()) {
                 val data = initWptData.getString(i).split(" ".toRegex()).toTypedArray()
                 val wptName = data[0]
-                wpts.add(TerminalControl.radarScreen.waypoints[wptName])
+                wpts.add(radarScreen.waypoints[wptName])
                 restrictions.add(intArrayOf(data[1].toInt(), data[2].toInt(), data[3].toInt()))
                 val fo = data.size > 4 && data[4] == "FO"
                 flyOver.add(fo)

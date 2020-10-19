@@ -424,7 +424,7 @@ object GameSaver {
         emer.put("emergency", aircraft.emergency.isEmergency)
         emer.put("active", aircraft.emergency.isActive)
         emer.put("type", aircraft.emergency.type.name)
-        emer.put("timeRequired", aircraft.emergency.getTimeRequired().toDouble())
+        emer.put("timeRequired", aircraft.emergency.timeRequired.toDouble())
         emer.put("checklistsSaid", aircraft.emergency.isChecklistsSaid)
         emer.put("readyForDump", aircraft.emergency.isReadyForDump)
         emer.put("fuelDumpLag", aircraft.emergency.fuelDumpLag.toDouble())
@@ -441,7 +441,7 @@ object GameSaver {
     }
 
     /** Returns a JSONArray given an input queue of strings  */
-    private fun getStringArray(queue: Queue<String>): JSONArray {
+    private fun getStringArray(queue: Queue<String?>): JSONArray {
         val array = JSONArray()
         for (string in queue) {
             array.put(string)
@@ -459,10 +459,10 @@ object GameSaver {
     }
 
     /** Returns a JSONArray given an input queue of waypoints  */
-    private fun getWptArray(queue: Queue<Waypoint>): JSONArray {
+    private fun getWptArray(queue: Queue<Waypoint?>): JSONArray {
         val array = JSONArray()
         for (waypoint in queue) {
-            array.put(if (waypoint == null) JSONObject.NULL else waypoint.name)
+            array.put(waypoint?.name ?: JSONObject.NULL)
         }
         return array
     }

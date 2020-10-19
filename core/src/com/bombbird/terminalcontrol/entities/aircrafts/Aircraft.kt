@@ -128,7 +128,7 @@ abstract class Aircraft : Actor {
         private set
     var holdWpt: Waypoint? = null
         get() {
-            if (field == null && navState.dispLatMode.last() == NavState.HOLD_AT) field = radarScreen.waypoints[navState.clearedHold.last().name]
+            if (field == null && navState.dispLatMode.last() == NavState.HOLD_AT) field = radarScreen.waypoints[navState.clearedHold.last()?.name]
             return field
         }
     var isHolding = false
@@ -532,8 +532,10 @@ abstract class Aircraft : Actor {
     /** Draws the cleared sidStar when selected  */
     open fun drawSidStar() {
         shapeRenderer.color = radarScreen.defaultColour
-        shapeRenderer.line(radarX, radarY, navState.clearedDirect.last().posX.toFloat(), navState.clearedDirect.last().posY.toFloat())
-        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size, -1)
+        navState.clearedDirect.last()?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+            route.joinLines(route.findWptIndex(it.name), route.waypoints.size, -1)
+        }
         //route.drawPolygons();
     }
 
@@ -549,7 +551,7 @@ abstract class Aircraft : Actor {
     /** Draws the cleared after waypoint + cleared outbound heading when selected  */
     open fun drawAftWpt() {
         shapeRenderer.color = radarScreen.defaultColour
-        shapeRenderer.line(radarX, radarY, navState.clearedDirect.last().posX.toFloat(), navState.clearedDirect.last().posY.toFloat())
+        navState.clearedDirect.last()?.let { shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat()) }
     }
 
     /** Draws the after waypoint + outbound heading for UI  */
@@ -620,7 +622,7 @@ abstract class Aircraft : Actor {
             emergency.update()
             targetHeading
         } else {
-            gs = tas - (airport.winds?.get(1) ?: 0) * cos(Math.toRadians((airport.winds?.get(0)?.toDouble() ?: 90.0) - (runway?.heading?.toDouble() ?: 0.0))).toFloat()
+            gs = tas - airport.winds[1] * cos(Math.toRadians(airport.winds[0].toDouble() - (runway?.heading?.toDouble() ?: 0.0))).toFloat()
             if (tas == 0f || gs < 0) gs = 0f
             updatePosition(0.0)
             emergency.update()
@@ -1280,11 +1282,13 @@ abstract class Aircraft : Actor {
 
     val remainingWaypoints: com.badlogic.gdx.utils.Array<Waypoint>
         get() {
-            if (navState.clearedDirect.last() == null) return com.badlogic.gdx.utils.Array()
-            when (navState.dispLatMode.last()) {
-                NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size - 1)
-                NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedAftWpt.last().name))
-                NavState.HOLD_AT -> return route.getRemainingWaypoints(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedHold.last().name))
+            navState.clearedDirect.last()?.let {
+                return when (navState.dispLatMode.last()) {
+                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(it.name), route.waypoints.size - 1)
+                    NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(route.findWptIndex(it.name), navState.clearedAftWpt.last()?.let { it2 -> route.findWptIndex(it2.name) } ?: route.findWptIndex(it.name))
+                    NavState.HOLD_AT -> return route.getRemainingWaypoints(route.findWptIndex(it.name), navState.clearedHold.last()?.let { it2 -> route.findWptIndex(it2.name) } ?: route.findWptIndex(it.name))
+                    else -> com.badlogic.gdx.utils.Array()
+                }
             }
             return com.badlogic.gdx.utils.Array()
         }

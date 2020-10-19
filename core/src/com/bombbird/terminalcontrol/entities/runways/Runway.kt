@@ -73,7 +73,7 @@ class Runway(toParse: String) {
 
     //Whether emergency aircraft is staying on it
     var isEmergencyClosed: Boolean
-    private val radarScreen: RadarScreen = TerminalControl.radarScreen
+    private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
     private val shapeRenderer: ShapeRenderer
 
     init {
@@ -172,6 +172,11 @@ class Runway(toParse: String) {
     /** Changes the color of the runway label  */
     fun setLabelColor(color: Color?) {
         label.style.fontColor = color
+    }
+
+    /** Returns whether opposite runway has been set */
+    fun isOppRwySet(): Boolean {
+        return this::oppRwy.isInitialized
     }
 
     val position: FloatArray

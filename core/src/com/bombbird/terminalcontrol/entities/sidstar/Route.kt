@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
 import org.json.JSONObject
 
 class Route private constructor() {
-    private val radarScreen: RadarScreen = TerminalControl.radarScreen
+    private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
     val waypoints: Array<Waypoint> = Array()
     val restrictions: Array<IntArray> = Array()
     val flyOver: Array<Boolean> = Array()
@@ -63,7 +63,7 @@ class Route private constructor() {
             val data = transition[i].split(" ".toRegex()).toTypedArray()
             if (data[0] == "WPT") {
                 //Waypoint
-                waypoints.add(TerminalControl.radarScreen.waypoints[data[1]])
+                waypoints.add(radarScreen.waypoints[data[1]])
                 restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
                 flyOver.add(data.size > 5 && data[5] == "FO")
             }
@@ -126,7 +126,7 @@ class Route private constructor() {
             val data = transition[i].split(" ".toRegex()).toTypedArray()
             if (data[0] == "WPT") {
                 //Waypoint
-                waypoints.add(TerminalControl.radarScreen.waypoints[data[1]])
+                waypoints.add(radarScreen.waypoints[data[1]])
                 restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
                 flyOver.add(data.size > 5 && data[5] == "FO")
             } else {

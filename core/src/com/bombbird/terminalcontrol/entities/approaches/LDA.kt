@@ -43,7 +43,7 @@ class LDA(airport: Airport, toParse: String) : ILS(airport, toParse) {
 
     /** Loads the imaginary ILS from runway center line  */
     private fun loadImaginaryIls() {
-        val text = "IMG" + rwy!!.name + "," + rwy!!.name + "," + rwy!!.heading + "," + rwy!!.x + "," + rwy!!.y + ",0,0,4000," + StringUtils.join(towerFreq, ">")
+        val text = "IMG" + rwy?.name + "," + rwy?.name + "," + rwy?.heading + "," + rwy?.x + "," + rwy?.y + ",0,0,4000," + StringUtils.join(towerFreq, ">")
         imaginaryIls = ILS(airport, text)
     }
 
@@ -53,8 +53,10 @@ class LDA(airport: Airport, toParse: String) : ILS(airport, toParse) {
             super.calculateGsRings()
         } else {
             val gsRings = Array<Vector2>()
-            for (i in 0 until nonPrecAlts!!.size) {
-                gsRings.add(Vector2(x + nmToPixel(nonPrecAlts!![i][1]) * MathUtils.cosDeg(270 - heading + TerminalControl.radarScreen.magHdgDev), y + nmToPixel(nonPrecAlts!![i][1]) * MathUtils.sinDeg(270 - heading + TerminalControl.radarScreen.magHdgDev)))
+            nonPrecAlts?.let {
+                for (i in 0 until it.size) {
+                    gsRings.add(Vector2(x + nmToPixel(it[i][1]) * MathUtils.cosDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f)), y + nmToPixel(it[i][1]) * MathUtils.sinDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f))))
+                }
             }
             setGsRings(gsRings)
         }

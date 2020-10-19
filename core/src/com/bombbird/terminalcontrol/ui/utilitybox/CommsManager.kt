@@ -21,6 +21,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
     private val atcByeTwr = Array<String>()
     private val pilotBye = Array<String>()
 
+    private val radarScreen = TerminalControl.radarScreen!!
     val labels: Queue<Label> = Queue()
     private val greetingByTime: String
         get() {
@@ -97,14 +98,14 @@ class CommsManager(private val utilityBox: UtilityBox) {
 
     /** Adds a message for an aircraft contacting the player for the first time  */
     fun initialContact(aircraft: Aircraft) {
-        val apchCallsign = if (aircraft is Arrival) TerminalControl.radarScreen.callsign else TerminalControl.radarScreen.deptCallsign
+        val apchCallsign = if (aircraft is Arrival) radarScreen.callsign else radarScreen.deptCallsign
         val wake = aircraft.wakeString
-        val altitude: String = if (aircraft.altitude >= TerminalControl.radarScreen.transLvl * 100) {
+        val altitude: String = if (aircraft.altitude >= radarScreen.transLvl * 100) {
             "FL" + (aircraft.altitude / 100).toInt()
         } else {
             ((aircraft.altitude / 100).toInt() * 100).toString()
         }
-        val clearedAltitude: String = if (aircraft.clearedAltitude >= TerminalControl.radarScreen.transLvl * 100) {
+        val clearedAltitude: String = if (aircraft.clearedAltitude >= radarScreen.transLvl * 100) {
             "FL" + aircraft.clearedAltitude / 100
         } else {
             (aircraft.clearedAltitude / 100 * 100).toString() + " feet"
@@ -136,21 +137,21 @@ class CommsManager(private val utilityBox: UtilityBox) {
         }
         var inboundString = ""
         val inboundSaid = MathUtils.randomBoolean()
-        if (inboundSaid && !aircraft.isGoAroundWindow && aircraft.direct != null) {
-            inboundString = ", inbound " + aircraft.direct.name
+        if (inboundSaid && !aircraft.isGoAroundWindow) {
+            inboundString = ", inbound " + (aircraft.direct?.name ?: "somewhere")
         }
         var infoString = ""
         if (MathUtils.randomBoolean()) {
             infoString = if (MathUtils.randomBoolean()) {
-                ", information " + TerminalControl.radarScreen.information
+                ", information " + radarScreen.information
             } else {
-                ", we have information " + TerminalControl.radarScreen.information
+                ", we have information " + radarScreen.information
             }
         }
         if (aircraft is Arrival) {
-            if (!aircraft.isGoAroundWindow() && aircraft.direct != null) {
+            if (!aircraft.isGoAroundWindow && aircraft.direct != null) {
                 text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + action + starString + inboundString + infoString
-                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct.name, inboundSaid, infoString)
+                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct?.name ?: "somewhere", inboundSaid, infoString)
             } else {
                 action = (if (MathUtils.randomBoolean()) "going around, " else "missed approach, ") + action //Go around message
                 text = apchCallsign + ", " + aircraft.callsign + wake + " with you, " + action + ", heading " + aircraft.clearedHeading
@@ -173,7 +174,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
             updateLabelQueue(label)
         }
-        TerminalControl.radarScreen.soundManager.playInitialContact()
+        radarScreen.soundManager.playInitialContact()
     }
 
     /** Says a request for an aircraft  */
@@ -183,12 +184,12 @@ class CommsManager(private val utilityBox: UtilityBox) {
         var requestText = ""
         val random = MathUtils.random(1)
         when (aircraft.request) {
-            Departure.HIGH_SPEED_REQUEST -> if (random == 0) {
+            Aircraft.HIGH_SPEED_REQUEST -> if (random == 0) {
                 requestText = ", requesting high speed climb"
             } else if (random == 1) {
                 requestText = ", we request high speed climb"
             }
-            Departure.SHORTCUT_REQUEST -> if (random == 0) {
+            Aircraft.SHORTCUT_REQUEST -> if (random == 0) {
                 requestText = ", requesting direct"
             } else if (random == 1) {
                 requestText = ", request direct"
@@ -201,7 +202,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
             updateLabelQueue(label)
         }
-        TerminalControl.radarScreen.soundManager.playInitialContact()
+        radarScreen.soundManager.playInitialContact()
     }
 
     /** Requests higher climb for a departure  */
@@ -219,7 +220,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             val label = Label(finalText, utilityBox.getLabelStyle(departure.color))
             updateLabelQueue(label)
         }
-        TerminalControl.radarScreen.soundManager.playInitialContact()
+        radarScreen.soundManager.playInitialContact()
     }
 
     /** Adds a message for an aircraft established in hold over a waypoint  */
@@ -239,7 +240,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
             updateLabelQueue(label)
         }
-        TerminalControl.radarScreen.soundManager.playInitialContact()
+        radarScreen.soundManager.playInitialContact()
     }
 
     /** Adds a normal message  */
@@ -270,7 +271,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
                 }
             }
         }
-        TerminalControl.radarScreen.soundManager.playAlert()
+        radarScreen.soundManager.playAlert()
     }
 
     /** Adds a message in red for warnings  */
@@ -279,7 +280,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             val label = Label(msg, utilityBox.getLabelStyle(Color.RED))
             updateLabelQueue(label)
         }
-        TerminalControl.radarScreen.soundManager.playConflict()
+        radarScreen.soundManager.playConflict()
     }
 
     /** Adds the label to queue and removes labels if necessary, updates scrollPane to show messages  */

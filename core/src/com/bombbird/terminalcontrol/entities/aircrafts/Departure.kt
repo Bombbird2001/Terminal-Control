@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.entities.aircrafts
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
-import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
@@ -50,7 +49,7 @@ class Departure : Aircraft {
     var isAskedForHigher = false
         private set
 
-    constructor(callsign: String, icaoType: String?, departure: Airport?, runway: Runway) : super(callsign, icaoType!!, departure!!) {
+    constructor(callsign: String, icaoType: String, departure: Airport, runway: Runway) : super(callsign, icaoType, departure) {
         isOnGround = true
         contactAlt = airport.elevation + 2000 + MathUtils.random(-500, 200)
         handoverAlt = radarScreen.maxAlt + MathUtils.random(-800, -200)
@@ -60,7 +59,7 @@ class Departure : Aircraft {
         isContacted = false
         cruiseAltTime = MathUtils.random(8, 20).toFloat()
         val maxAlt = AircraftType.getMaxCruiseAlt(icaoType)
-        cruiseAlt = if (maxAlt >= 30000) MathUtils.random(30, maxAlt / 1000) * 1000 else MathUtils.random(TerminalControl.radarScreen.maxAlt / 1000, maxAlt / 1000) * 1000
+        cruiseAlt = if (maxAlt >= 30000) MathUtils.random(30, maxAlt / 1000) * 1000 else MathUtils.random(radarScreen.maxAlt / 1000, maxAlt / 1000) * 1000
         isHigherSpdSet = false
         isCruiseSpdSet = false
 
@@ -72,7 +71,7 @@ class Departure : Aircraft {
                 requestAlt = MathUtils.random(airport.elevation + 4000, 9000)
             } else {
                 request = SHORTCUT_REQUEST
-                requestAlt = MathUtils.random(airport.elevation + 5000, TerminalControl.radarScreen.maxAlt - 5000)
+                requestAlt = MathUtils.random(airport.elevation + 5000, radarScreen.maxAlt - 5000)
             }
         }
 
@@ -167,10 +166,10 @@ class Departure : Aircraft {
             airport.airborne = airport.airborne + 1
             updateClearedSpd(v2)
             super.updateSpd()
-            setClearedAltitude(it.initClimb)
+            clearedAltitude = it.initClimb
             updateAltRestrictions()
             navState.clearedAlt.removeFirst()
-            navState.clearedAlt.addFirst(getClearedAltitude())
+            navState.clearedAlt.addFirst(clearedAltitude)
             clearedHeading = if (sid.getInitClimb(it.name)?.get(0) ?: -1 != -1) {
                 sid.getInitClimb(it.name)?.get(0) ?: 360
             } else {
@@ -242,7 +241,7 @@ class Departure : Aircraft {
         if (isHandedOver && cruiseAltTime > 0) {
             cruiseAltTime -= Gdx.graphics.deltaTime
             if (cruiseAltTime <= 0) {
-                setClearedAltitude(cruiseAlt)
+                clearedAltitude = cruiseAlt
                 navState.replaceAllClearedAlt()
             }
         }
@@ -267,15 +266,17 @@ class Departure : Aircraft {
     /** Checks whether the aircraft should request for higher climb  */
     private fun checkHigherClimb(): Boolean {
         //If altitude is within 100 feet below cleared altitude, cleared altitude is below maxAlt and departure is still in control by player
-        return isArrivalDeparture && getClearedAltitude() >= altitude - 1 && getClearedAltitude() - altitude < 100 && getClearedAltitude() < radarScreen.maxAlt
+        return isArrivalDeparture && clearedAltitude >= altitude - 1 && clearedAltitude - altitude < 100 && clearedAltitude < radarScreen.maxAlt
     }
 
     /** Overrides method in Aircraft class to join the lines between each SID waypoint  */
     override fun drawSidStar() {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar()
-        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size, outboundHdg)
-        radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size)
+        navState.clearedDirect.last()?.let {
+            route.joinLines(route.findWptIndex(it.name), route.waypoints.size, outboundHdg)
+            radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(it.name), route.waypoints.size)
+        }
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint  */
@@ -323,7 +324,7 @@ class Departure : Aircraft {
                 //If lowest alt value is less than the next flight level after current altitude that divisible by 10 (e.g. if at 5500 ft, next is 6000ft)
                 lowestAlt = if (!isSidSet) {
                     //If still climbing on init climb
-                    sid.getInitClimb(runway?.name)?.get(1) ?: TerminalControl.radarScreen.minAlt
+                    sid.getInitClimb(runway?.name)?.get(1) ?: radarScreen.minAlt
                 } else {
                     nextFL
                 }

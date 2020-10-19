@@ -51,7 +51,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     var isNpa = false
     private var gsRings = com.badlogic.gdx.utils.Array<Vector2>()
     var minAlt = 0
-    private val radarScreen: RadarScreen = TerminalControl.radarScreen
+    private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
 
     init {
         parseInfo(toParse)
@@ -140,7 +140,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
                 var i = 5
                 while (i < marksDist) {
                     val centre = getPointAtDist(i - gsOffsetNm)
-                    TerminalControl.radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset)
+                    radarScreen.shapeRenderer.line(centre.x - xOffset, centre.y + yOffset, centre.x + xOffset, centre.y - yOffset)
                     i += 5
                 }
             } else {

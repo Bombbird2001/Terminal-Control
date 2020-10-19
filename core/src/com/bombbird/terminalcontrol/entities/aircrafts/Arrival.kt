@@ -83,7 +83,7 @@ class Arrival : Aircraft {
         route = Route(this, star)
         direct = route.getWaypoint(0)
         clearedHeading = heading.toInt()
-        track = (heading - TerminalControl.radarScreen.magHdgDev)
+        track = (heading - radarScreen.magHdgDev)
 
         //Calculate spawn border
         val point = pointsAtBorder(floatArrayOf(1310f, 4450f), floatArrayOf(50f, 3190f), direct?.posX?.toFloat() ?: 2880f, direct?.posY?.toFloat() ?: 1620f, 180 + track.toFloat())
@@ -134,17 +134,17 @@ class Arrival : Aircraft {
         }
         altitude = initAlt
         updateAltRestrictions()
-        if ("BULLA-T" == star.name || "KOPUS-T" == star.name) {
-            setClearedAltitude(6000)
+        clearedAltitude = if ("BULLA-T" == star.name || "KOPUS-T" == star.name) {
+            6000
         } else if (initAlt > 15000) {
-            setClearedAltitude(15000)
+            15000
         } else {
-            setClearedAltitude(initAlt.toInt() - initAlt.toInt() % 1000)
+            initAlt.toInt() - initAlt.toInt() % 1000
         }
-        verticalSpeed = if (getClearedAltitude() < altitude - 500) {
+        verticalSpeed = if (clearedAltitude < altitude - 500) {
             -typDes.toFloat()
         } else {
-            -typDes * (altitude - getClearedAltitude()) / 500
+            -typDes * (altitude - clearedAltitude) / 500
         }
         updateClearedSpd(climbSpd)
         ias = climbSpd.toFloat()
@@ -167,7 +167,7 @@ class Arrival : Aircraft {
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
         navState.clearedAlt.removeLast()
-        navState.clearedAlt.addLast(getClearedAltitude())
+        navState.clearedAlt.addLast(clearedAltitude)
         setControlState(ControlState.UNCONTROLLED)
         color = Color(0x00b3ffff)
         heading = update()
@@ -250,7 +250,7 @@ class Arrival : Aircraft {
     /** Overrides method in Aircraft class to join the lines between each STAR waypoint  */
     override fun drawSidStar() {
         super.drawSidStar()
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.waypoints.size)
+        navState.clearedDirect.last()?.let { radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.waypoints.size) }
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint  */
@@ -262,24 +262,32 @@ class Arrival : Aircraft {
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there  */
     override fun drawAftWpt() {
         super.drawAftWpt()
-        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedAftWpt.last().name) + 1, navState.clearedAftWptHdg.last())
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedAftWpt.last().name) + 1)
+        navState.clearedDirect.last()?.let {
+            navState.clearedAftWpt.last()?.let { it2 ->
+                route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, navState.clearedAftWptHdg.last())
+                radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1)
+            }
+        }
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till selected afterWpt, then draws a heading line from there  */
     override fun uiDrawAftWpt() {
         super.uiDrawAftWpt()
-        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg)
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(LatTab.afterWpt) + 1)
+        navState.clearedDirect.last()?.let {
+            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg)
+            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(LatTab.afterWpt) + 1)
+        }
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till holdWpt  */
     override fun drawHoldPattern() {
         super.drawHoldPattern()
         radarScreen.shapeRenderer.color = Color.WHITE
-        if (navState.clearedHold.size > 0 && navState.clearedHold.last() != null && navState.clearedDirect.size > 0 && navState.clearedDirect.last() != null) {
-            route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedHold.last().name) + 1, -1)
-            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(navState.clearedHold.last().name) + 1)
+        navState.clearedDirect.last()?.let {
+            navState.clearedHold.last()?.let { it2 ->
+                route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, -1)
+                radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1)
+            }
         }
     }
 
@@ -287,8 +295,10 @@ class Arrival : Aircraft {
     override fun uiDrawHoldPattern() {
         super.uiDrawHoldPattern()
         radarScreen.shapeRenderer.color = Color.YELLOW
-        route.joinLines(route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(LatTab.holdWpt) + 1, -1)
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(navState.clearedDirect.last().name), route.findWptIndex(LatTab.holdWpt) + 1)
+        navState.clearedDirect.last()?.let {
+            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(LatTab.holdWpt) + 1, -1)
+            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(LatTab.holdWpt) + 1)
+        }
     }
 
     /** Overrides method in Aircraft class to set to current heading  */
@@ -497,7 +507,7 @@ class Arrival : Aircraft {
                     nonPrecAlts = null
                 }
             } else {
-                if (isLocCap && getClearedAltitude() != it.missedApchProc?.climbAlt && navState.dispLatMode.first() == NavState.VECTORS) {
+                if (isLocCap && clearedAltitude != it.missedApchProc?.climbAlt && navState.dispLatMode.first() == NavState.VECTORS) {
                     setMissedAlt()
                 }
                 if (nonPrecAlts == null) {
@@ -712,7 +722,7 @@ class Arrival : Aircraft {
 
     /** Sets the cleared altitude for aircraft on approach, updates UI altitude selections if selected  */
     private fun setMissedAlt() {
-        setClearedAltitude(ils?.missedApchProc?.climbAlt ?: 4000)
+        clearedAltitude = ils?.missedApchProc?.climbAlt ?: 4000
         navState.replaceAllClearedAltMode()
         navState.replaceAllClearedAlt()
         if (isSelected && controlState == ControlState.ARRIVAL) {
@@ -771,10 +781,10 @@ class Arrival : Aircraft {
         updateClearedSpd(missedApproach?.climbSpd ?: 220)
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
-        if (getClearedAltitude() <= missedApproach?.climbAlt ?: 4000) {
-            setClearedAltitude(missedApproach?.climbAlt ?: 4000)
+        if (clearedAltitude <= missedApproach?.climbAlt ?: 4000) {
+            clearedAltitude = missedApproach?.climbAlt ?: 4000
             navState.clearedAlt.removeFirst()
-            navState.clearedAlt.addFirst(getClearedAltitude())
+            navState.clearedAlt.addFirst(clearedAltitude)
         }
         updateILS(null)
         navState.voidAllIls()
@@ -792,7 +802,7 @@ class Arrival : Aircraft {
 
     /** Check initial arrival spawn separation  */
     private fun checkArrival() {
-        for (aircraft in TerminalControl.radarScreen.aircrafts.values) {
+        for (aircraft in radarScreen.aircrafts.values) {
             if (aircraft === this || aircraft is Departure) continue
             if (altitude - aircraft.altitude < 2500 && pixelToNm(distanceBetween(x, y, aircraft.x, aircraft.y)) < 6) {
                 altitude = if (typDes - aircraft.typDes > 300) {
@@ -802,8 +812,8 @@ class Arrival : Aircraft {
                 }
                 updateClearedSpd(if (aircraft.clearedIas > 250) 250 else aircraft.clearedIas - 10)
                 ias = clearedIas.toFloat()
-                if (getClearedAltitude() < aircraft.getClearedAltitude() + 1000) {
-                    setClearedAltitude(aircraft.getClearedAltitude() + 1000)
+                if (clearedAltitude < aircraft.clearedAltitude + 1000) {
+                    clearedAltitude = aircraft.clearedAltitude + 1000
                 }
             }
         }

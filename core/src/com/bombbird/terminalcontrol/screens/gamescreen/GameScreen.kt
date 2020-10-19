@@ -317,7 +317,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     tipLabel.setPosition(1920 - tipLabel.prefWidth / 2, 960f)
                     tipLabel.draw(game.batch, 1f)
                     game.batch.end()
-                } else if (checkAircraftLoaded()) {
+                } else {
                     stage.draw()
                     labelStage.viewport.apply()
                     labelStage.draw()
@@ -342,14 +342,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         } catch (e: Exception) {
             ErrorHandler.sendGenericError(e, true)
         }
-    }
-
-    /** Try to fix crash on some devices where navstate is null after loading  */
-    private fun checkAircraftLoaded(): Boolean {
-        for (aircraft in aircrafts.values) {
-            if (aircraft.navState == null) return false
-        }
-        return true
     }
 
     /** Check if tutorial is in paused state  */
@@ -425,7 +417,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements tap method of gestureListener, tests for tap and double tap  */
     override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean {
-        TerminalControl.radarScreen.setSelectedAircraft(null)
+        TerminalControl.radarScreen?.setSelectedAircraft(null)
         if (count == 2 && !loading) {
             //Gdx.app.postRunnable(() -> obsArray = FileLoader.loadObstacles()); Reload obstacles - Debug use only
             zooming = true

@@ -14,6 +14,7 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.Traffic
 import kotlin.math.ceil
 
 class StatusManager(private val utilityBox: UtilityBox) {
+    private val radarScreen = TerminalControl.radarScreen!!
     var active = false
         set(value) {
             if (value && !field) timer = -1f //Reset if was inactive but now is active
@@ -35,14 +36,14 @@ class StatusManager(private val utilityBox: UtilityBox) {
         val initialContact = Array<String>()
         val info = Array<String>()
 
-        for (aircraft: Aircraft in TerminalControl.radarScreen.aircrafts.values) {
+        for (aircraft: Aircraft in radarScreen.aircrafts.values) {
             var text = "${aircraft.callsign}: "
             if (aircraft is Arrival && aircraft.emergency.isActive) {
                 text += when {
-                    aircraft.emergency.stayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.ils?.name?.substring(3)} closed"
-                    aircraft.emergency.readyForApproach -> "Ready for approach" + if (aircraft.emergency.stayOnRwy) ", will remain on runway" else ""
-                    aircraft.emergency.dumpingFuel -> "Dumping fuel" + if (aircraft.emergency.remainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60)} mins remaining" else ""
-                    aircraft.emergency.checklistsSaid -> "Running checklists" + if (aircraft.emergency.fuelDumpRequired) ", fuel dump required" else ""
+                    aircraft.emergency.isStayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.ils?.name?.substring(3)} closed"
+                    aircraft.emergency.isReadyForApproach -> "Ready for approach" + if (aircraft.emergency.isStayOnRwy) ", will remain on runway" else ""
+                    aircraft.emergency.isDumpingFuel -> "Dumping fuel" + if (aircraft.emergency.isRemainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60)} mins remaining" else ""
+                    aircraft.emergency.isChecklistsSaid -> "Running checklists" + if (aircraft.emergency.isFuelDumpRequired) ", fuel dump required" else ""
                     else -> when (aircraft.emergency.type) {
                         Emergency.Type.MEDICAL -> "Medical emergency"
                         Emergency.Type.ENGINE_FAIL -> "Engine failure"
@@ -89,25 +90,25 @@ class StatusManager(private val utilityBox: UtilityBox) {
 
         if (DayNightManager.isNight) info.add("[BLACK]Night mode active")
 
-        for (airport: Airport in TerminalControl.radarScreen.airports.values) {
+        for (airport: Airport in radarScreen.airports.values) {
             if (airport.isPendingRwyChange) runwayChange.add("[YELLOW]${airport.icao}: Pending runway change")
             if (airport.isClosed) info.add("[BLACK]${airport.icao}: Airport closed")
             if (airport.isCongested) congested.add("[YELLOW]${airport.icao}: Departure congestion")
         }
 
-        when (TerminalControl.radarScreen.trafficMode) {
+        when (radarScreen.trafficMode) {
             TrafficFlowScreen.NORMAL -> info.add("[BLACK]Traffic mode: Normal")
             TrafficFlowScreen.PLANES_IN_CONTROL -> {
-                info.add("[BLACK]Traffic mode: Planes in control")
-                info.add("[BLACK]Arrivals to control: ${TerminalControl.radarScreen.maxPlanes}")
+                info.add("[BLACK]Traffic mode: Arrivals in control")
+                info.add("[BLACK]Arrivals to control: ${radarScreen.maxPlanes}")
             }
             TrafficFlowScreen.FLOW_RATE -> {
                 info.add("[BLACK]Traffic mode: Flow rate")
-                info.add("[BLACK]Arrival flow: ${TerminalControl.radarScreen.flowRate}/hr")
+                info.add("[BLACK]Arrival flow: ${radarScreen.flowRate}/hr")
             }
         }
 
-        if (TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
+        if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
 
         val finalArray = Array<String>()
         finalArray.addAll(emergency)
