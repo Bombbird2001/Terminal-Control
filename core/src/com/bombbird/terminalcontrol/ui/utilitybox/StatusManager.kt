@@ -29,6 +29,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
 
         val emergency = Array<String>()
         val runwayChange = Array<String>()
+        val congested = Array<String>()
         val goAround = Array<String>()
         val requests = Array<String>()
         val initialContact = Array<String>()
@@ -91,6 +92,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         for (airport: Airport in TerminalControl.radarScreen.airports.values) {
             if (airport.isPendingRwyChange) runwayChange.add("[YELLOW]${airport.icao}: Pending runway change")
             if (airport.isClosed) info.add("[BLACK]${airport.icao}: Airport closed")
+            if (airport.isCongested) congested.add("[YELLOW]${airport.icao}: Departure congestion")
         }
 
         when (TerminalControl.radarScreen.trafficMode) {
@@ -110,6 +112,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         val finalArray = Array<String>()
         finalArray.addAll(emergency)
         finalArray.addAll(runwayChange)
+        finalArray.addAll(congested)
         finalArray.addAll(goAround)
         finalArray.addAll(requests)
         finalArray.addAll(initialContact)
