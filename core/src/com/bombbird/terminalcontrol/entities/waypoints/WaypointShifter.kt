@@ -3,10 +3,10 @@ package com.bombbird.terminalcontrol.entities.waypoints
 import java.util.*
 
 object WaypointShifter {
-    @JvmField
+
     val movementData = HashMap<String, HashMap<String, IntArray>>()
 
-    @JvmStatic
+
     fun loadData() {
         if (movementData.size > 0) return
         //TCTP - No adjustments needed

@@ -20,7 +20,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import java.util.*
 
 /** The screen to set custom weather */
-class WeatherScreen(game: TerminalControl?) : BasicScreen(game, 5760, 3240) {
+class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
     private var boxMap: HashMap<String, Array<SelectBox<Int>>> = HashMap()
     fun loadUI() {
         stage.clear()

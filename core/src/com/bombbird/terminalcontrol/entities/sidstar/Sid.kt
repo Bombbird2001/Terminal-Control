@@ -1,7 +1,5 @@
 package com.bombbird.terminalcontrol.entities.sidstar
 
-import com.badlogic.gdx.math.MathUtils
-import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import org.json.JSONArray
@@ -9,8 +7,6 @@ import org.json.JSONObject
 import java.util.*
 
 class Sid : SidStar {
-    private val radarScreen = TerminalControl.radarScreen!!
-
     private lateinit var initClimb: HashMap<String, IntArray>
     private lateinit var initWpts: HashMap<String, com.badlogic.gdx.utils.Array<Waypoint>>
     private lateinit var initRestrictions: HashMap<String, com.badlogic.gdx.utils.Array<IntArray>>
@@ -20,7 +16,10 @@ class Sid : SidStar {
     lateinit var centre: Array<String>
         private set
 
-    constructor(airport: Airport, jo: JSONObject) : super(airport, jo)
+    constructor(airport: Airport, jo: JSONObject) : super(airport) {
+        parseInfo(jo)
+    }
+
     constructor(airport: Airport, wpts: JSONArray, restrictions: JSONArray, fo: JSONArray, name: String) : super(airport, wpts, restrictions, fo, name) {
         initClimb = HashMap()
         initWpts = HashMap()
@@ -74,7 +73,7 @@ class Sid : SidStar {
     }
 
     val randomTransition: com.badlogic.gdx.utils.Array<String>
-        get() = transition[MathUtils.random(0, transition.size - 1)]
+        get() = transition.random()
 
     fun getInitClimb(runway: String?): IntArray? {
         if (runway == null) return null

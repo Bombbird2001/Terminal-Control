@@ -37,7 +37,6 @@ object RandomGenerator {
     private val excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n".toRegex()).toTypedArray()
 
     /** Generates a random plane (with callsign, aircraft type)  */
-    @JvmStatic
     fun randomPlane(airport: Airport, allAircraft: HashSet<String>): Array<String> {
         val size = airport.airlines.size
         var airline: String?
@@ -53,7 +52,7 @@ object RandomGenerator {
     }
 
     /** Generates a random airport given the RadarScreen mainName variable  */
-    @JvmStatic
+
     fun randomAirport(): Airport? {
         val radarScreen = TerminalControl.radarScreen!!
         var total = 0

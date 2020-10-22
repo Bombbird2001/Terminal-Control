@@ -12,13 +12,13 @@ object DayNightManager {
     }
 
     /** Checks if a SID/STAR is allowed depending on whether night mode is active */
-    @JvmStatic
+
     fun checkNoiseAllowed(night: Boolean): Boolean {
         return if (isNight) night else !night
     }
 
     /** Checks whether airport is utilising night operations */
-    @JvmStatic
+
     val isNight: Boolean
         get() {
             TerminalControl.radarScreen?.let {
@@ -37,7 +37,7 @@ object DayNightManager {
         }
 
     /** Check whether this airport has night operations available */
-    @JvmStatic
+
     val isNightAvailable: Boolean
         get() {
             if (NIGHT_AVAILABLE.size == 0) loadArray()

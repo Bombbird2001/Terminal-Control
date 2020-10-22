@@ -25,8 +25,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.Fonts.generateAllFonts
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
-class MainMenuScreen(game: TerminalControl, //Background image
-                     private var background: Image?) : BasicScreen(game, 2880, 1620) {
+class MainMenuScreen(game: TerminalControl, private var background: Image?) : BasicScreen(game, 2880, 1620) {
     companion object {
         //Button constants
         const val BUTTON_WIDTH = 1000

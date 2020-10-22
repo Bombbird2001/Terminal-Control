@@ -60,11 +60,11 @@ import kotlin.collections.HashSet
 
 class RadarScreen : GameScreen {
     companion object {
-        /** Disposes of static final variables after user quits app  */
-        @JvmStatic
+        /** Disposes of static variables after user quits app  */
         fun disposeStatic() {
-            if (DataTag.SKIN != null) DataTag.SKIN.dispose()
-            if (DataTag.ICON_ATLAS != null) DataTag.ICON_ATLAS.dispose()
+            if (!DataTag.LOADED_ICONS) return
+            DataTag.SKIN.dispose()
+            DataTag.ICON_ATLAS.dispose()
         }
     }
 
@@ -780,8 +780,8 @@ class RadarScreen : GameScreen {
             }
         }
         separationChecker.renderShape()
-        if (selectedAircraft != null) {
-            wakeManager.renderWake(selectedAircraft)
+        selectedAircraft?.let {
+            wakeManager.renderWake(it)
         }
         wakeManager.renderIlsWake()
         shapeRenderer.end()
@@ -879,8 +879,8 @@ class RadarScreen : GameScreen {
         //Implements show method of screen, loads UI & save (if available) after show is called if it hasn't been done
         if (!uiLoaded) {
             Ui.generatePaneTextures()
-            DataTag.setLoadedIcons(false)
-            Tab.setLoadedStyles(false)
+            DataTag.LOADED_ICONS = false
+            Tab.LOADED_STYLES = false
             loadUI()
             GameLoader.loadSaveData(save)
             uiLoaded = true

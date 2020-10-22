@@ -18,7 +18,7 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.categories.TrafficSet
 import com.bombbird.terminalcontrol.utilities.Fonts
 
 /** Screen for managing traffic flow into airports */
-class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240) {
+class TrafficFlowScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
     companion object {
         const val NORMAL = 0
         const val PLANES_IN_CONTROL = 1

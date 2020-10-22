@@ -282,8 +282,8 @@ class Departure : Aircraft {
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint  */
     override fun uiDrawSidStar() {
         super.uiDrawSidStar()
-        route.joinLines(route.findWptIndex(LatTab.clearedWpt), route.waypoints.size, -1)
-        radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(LatTab.clearedWpt), route.waypoints.size)
+        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
+        radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(Tab.clearedWpt), route.waypoints.size)
     }
 
     /** Overrides method in Aircraft class to set to outbound heading  */

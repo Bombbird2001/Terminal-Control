@@ -99,12 +99,9 @@ class Route private constructor() {
             }
         }
         if (runway == null) {
-            runway = if (!star.runways.isEmpty) {
-                star.runways.first()
-            } else {
-                throw RuntimeException("Runway selected is null")
-            }
+            runway = if (!star.runways.isEmpty) star.runways.first() else null
         }
+        if (runway == null) throw RuntimeException("Runway selected is null")
         waypoints.addAll(star.getRwyWpts(runway))
         restrictions.addAll(star.getRwyRestrictions(runway))
         flyOver.addAll(star.getRwyFlyOver(runway))

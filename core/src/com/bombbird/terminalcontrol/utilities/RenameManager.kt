@@ -6,7 +6,7 @@ object RenameManager {
     private val icaoMap = HashMap<String, String>()
     private val reverseIcaoMap = HashMap<String, String>()
 
-    @JvmStatic
+
     fun loadMaps() {
         if (icaoMap.size == 0) {
             icaoMap["RCTP"] = "TCTP"
@@ -47,7 +47,7 @@ object RenameManager {
     }
 
     /** Changes old ICAO codes to new ICAO codes  */
-    @JvmStatic
+
     fun renameAirportICAO(icao: String): String {
         icaoMap[icao]?.let {
             return it
@@ -56,7 +56,7 @@ object RenameManager {
     }
 
     /** Changes new ICAO to real ICAO  */
-    @JvmStatic
+
     fun reverseNameAirportICAO(icao: String): String {
         reverseIcaoMap[icao]?.let {
             return it

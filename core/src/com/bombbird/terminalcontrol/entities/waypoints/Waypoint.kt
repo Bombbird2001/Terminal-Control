@@ -12,12 +12,17 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import java.util.*
 
 class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor() {
+    companion object {
+        val flyOverPts = HashMap<String, Boolean>()
+    }
+
     private var restrVisible: Boolean
     private val restrLabel: Label
     val label: Label
     var isSelected = false
     private var flyOver = false
-    private val shapeRenderer = TerminalControl.radarScreen!!.shapeRenderer
+    private val radarScreen = TerminalControl.radarScreen!!
+    private val shapeRenderer = radarScreen.shapeRenderer
 
     init {
         //Set the label
@@ -54,10 +59,10 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
             restrLabel.moveBy(-80f, -16f)
             return
         }
-        val icao = TerminalControl.radarScreen!!.mainName
-        if (WaypointShifter.movementData.containsKey(icao) && WaypointShifter.movementData[icao]!!.containsKey(name)) {
-            val shiftData = WaypointShifter.movementData[icao]!![name]
-            restrLabel.moveBy(shiftData!![0].toFloat(), shiftData[1].toFloat())
+        val icao = radarScreen.mainName
+        if (WaypointShifter.movementData.containsKey(icao) && WaypointShifter.movementData[icao]?.containsKey(name) == true) {
+            val shiftData = WaypointShifter.movementData[icao]?.get(name) ?: return
+            restrLabel.moveBy(shiftData[0].toFloat(), shiftData[1].toFloat())
         }
     }
 
@@ -72,7 +77,7 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
     fun updateFlyOverStatus() {
         //Flyover is true if at least one aircraft has it as a direct flyover
         flyOver = false
-        for (aircraft in TerminalControl.radarScreen!!.aircrafts.values) {
+        for (aircraft in radarScreen.aircrafts.values) {
             val direct = aircraft.navState.clearedDirect.first()
             if (direct != null && direct.getName() == name && aircraft.route.getWptFlyOver(name)) {
                 flyOver = true
@@ -88,7 +93,7 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
 
     /** Checks whether the waypoint is marked as a flyover waypoint for correct rendering  */
     fun isFlyOver(): Boolean {
-        val selectedAircraft = TerminalControl.radarScreen!!.getSelectedAircraft()
+        val selectedAircraft = radarScreen.getSelectedAircraft()
         return if (selectedAircraft != null && selectedAircraft.remainingWaypoints.contains(this, true)) {
             //If there is aircraft selected, and remaining waypoints contains this waypoint, return whether this waypoint is flyover
             selectedAircraft.route.getWptFlyOver(name)
@@ -140,10 +145,5 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
 
     override fun setName(name: String) {
         this.name = name
-    }
-
-    companion object {
-        @JvmField
-        val flyOverPts = HashMap<String, Boolean>()
     }
 }

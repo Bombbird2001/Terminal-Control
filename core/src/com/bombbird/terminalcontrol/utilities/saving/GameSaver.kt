@@ -32,7 +32,7 @@ object GameSaver {
     private lateinit var backupHoldingPts: HashMap<String, HashMap<String, HoldingPoints>>
 
     /** Saves current game state  */
-    @JvmStatic
+
     fun saveGame() {
         val radarScreen = TerminalControl.radarScreen ?: return
         backupWpts = HashMap()
@@ -528,7 +528,7 @@ object GameSaver {
             airportInfo.put("closed", airport.isClosed) //Whether airport is closed
 
             //STAR timers
-            val starTimers = JSONObject(RandomSTAR.getTime()[airport.icao])
+            val starTimers = JSONObject(RandomSTAR.time[airport.icao])
             airportInfo.put("starTimers", starTimers)
 
             //Backup holding points
@@ -627,7 +627,7 @@ object GameSaver {
     }
 
     /** Deletes a save given input game ID, returns true if success, false if fail  */
-    @JvmStatic
+
     fun deleteSave(id: Int): Boolean {
         var handle = getExtDir("saves/saves.saves")
         if (handle != null && handle.exists()) {
@@ -651,7 +651,7 @@ object GameSaver {
     }
 
     /** Saves the default settings  */
-    @JvmStatic
+
     fun saveSettings() {
         val handle = getExtDir("settings.json")
         if (handle != null) {

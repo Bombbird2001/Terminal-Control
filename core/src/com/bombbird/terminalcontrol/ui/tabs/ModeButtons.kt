@@ -1,120 +1,97 @@
-package com.bombbird.terminalcontrol.ui.tabs;
+package com.bombbird.terminalcontrol.ui.tabs
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.aircrafts.NavState;
-import com.bombbird.terminalcontrol.ui.Ui;
-import com.bombbird.terminalcontrol.utilities.Fonts;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.aircrafts.NavState
+import com.bombbird.terminalcontrol.ui.Ui
+import com.bombbird.terminalcontrol.utilities.Fonts
+import java.util.*
 
-import java.util.HashMap;
-import java.util.HashSet;
+class ModeButtons(private val tab: Tab) {
+    var mode = 0
+    private val buttons: HashMap<Int, TextButton> = HashMap()
+    private val inactiveButtons: HashSet<Int> = HashSet()
 
-public class ModeButtons {
-    private final Tab tab;
-    private int mode;
-
-    private final HashMap<Integer, TextButton> buttons;
-    private final HashSet<Integer> inactiveButtons;
-
-    public ModeButtons(Tab tab) {
-        this.tab = tab;
-        buttons = new HashMap<>();
-        inactiveButtons = new HashSet<>();
-    }
-
-    /** Initializes the button with its mode code and display text */
-    public void addButton(int code, String text) {
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = Fonts.defaultFont20;
-        textButtonStyle.fontColor = Color.BLACK;
-        textButtonStyle.up = Ui.lightBoxBackground;
-        textButtonStyle.down = Ui.lightBoxBackground;
-
-        TextButton button = new TextButton(text, textButtonStyle);
-        button.setName(String.valueOf(code));
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!isInactive(Integer.parseInt(actor.getName()))) {
-                    mode = Integer.parseInt(actor.getName());
-                    tab.choiceMade();
+    /** Initializes the button with its mode code and display text  */
+    fun addButton(code: Int, text: String?) {
+        val textButtonStyle = TextButton.TextButtonStyle()
+        textButtonStyle.font = Fonts.defaultFont20
+        textButtonStyle.fontColor = Color.BLACK
+        textButtonStyle.up = Ui.lightBoxBackground
+        textButtonStyle.down = Ui.lightBoxBackground
+        val button = TextButton(text, textButtonStyle)
+        button.name = code.toString()
+        button.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                if (!isInactive(actor.name.toInt())) {
+                    mode = actor.name.toInt()
+                    tab.choiceMade()
                 }
-                event.handle();
+                event.handle()
             }
-        });
-
-        int column = buttons.size() % 3;
-        int row = buttons.size() / 3;
-        tab.addActor(button, 0.1f + column * 0.275f, 0.25f, 2240 - 325 * row, 300);
-        button.getLabel().setWrap(true);
-
-        buttons.put(code, button);
+        })
+        val column = buttons.size % 3
+        val row = buttons.size / 3
+        tab.addActor(button, 0.1f + column * 0.275f, 0.25f, 2240 - 325 * row.toFloat(), 300f)
+        button.label.setWrap(true)
+        buttons[code] = button
     }
 
-    /** Changes the text on the button */
-    public void changeButtonText(int code, String text) {
-        if (!buttons.containsKey(code)) return;
-        buttons.get(code).setText(text);
+    /** Changes the text on the button  */
+    fun changeButtonText(code: Int, text: String?) {
+        if (!buttons.containsKey(code)) return
+        buttons[code]?.setText(text)
     }
 
-    /** Sets the currently selected button font as yellow when mode has changed */
-    public void setButtonColour(boolean modeChanged) {
-        for (TextButton textButton: buttons.values()) {
-            if (textButton.getName().equals(Integer.toString(mode))) {
-                textButton.getStyle().down = TerminalControl.skin.getDrawable("Button_down");
-                textButton.getStyle().up = TerminalControl.skin.getDrawable("Button_down");
-                textButton.getStyle().fontColor = modeChanged ? Color.YELLOW : Color.WHITE;
+    /** Sets the currently selected button font as yellow when mode has changed  */
+    fun setButtonColour(modeChanged: Boolean) {
+        for (textButton in buttons.values) {
+            if (textButton.name == mode.toString()) {
+                textButton.style.down = TerminalControl.skin.getDrawable("Button_down")
+                textButton.style.up = TerminalControl.skin.getDrawable("Button_down")
+                textButton.style.fontColor = if (modeChanged) Color.YELLOW else Color.WHITE
             } else {
-                textButton.getStyle().fontColor = Color.BLACK;
+                textButton.style.fontColor = Color.BLACK
             }
         }
     }
 
-    /** Checks whether the mode for each button exists in the aircraft's allowed modes, sets activity */
-    public void updateButtonActivity(Array<String> modes) {
-        HashSet<Integer> allowedModes = new HashSet<>();
-        for (String mode: modes) {
-            allowedModes.add(NavState.getCodeFromString(mode));
+    /** Checks whether the mode for each button exists in the aircraft's allowed modes, sets activity  */
+    fun updateButtonActivity(modes: Array<String>) {
+        val allowedModes = HashSet<Int>()
+        for (mode in modes) {
+            allowedModes.add(NavState.getCodeFromString(mode))
         }
-
-        for (TextButton textButton: buttons.values()) {
-            int code = Integer.parseInt(textButton.getName());
+        for (textButton in buttons.values) {
+            val code = textButton.name.toInt()
             if (allowedModes.contains(code)) {
-                setActive(code);
+                setActive(code)
             } else {
-                setInactive(code);
+                setInactive(code)
             }
         }
     }
 
-    /** Sets the button with the code to be inactive (greyed out) */
-    public void setInactive(int button) {
-        inactiveButtons.add(button);
-        buttons.get(button).getStyle().down = TerminalControl.skin.getDrawable("ListBackground");
-        buttons.get(button).getStyle().up = TerminalControl.skin.getDrawable("ListBackground");
+    /** Sets the button with the code to be inactive (greyed out)  */
+    fun setInactive(button: Int) {
+        inactiveButtons.add(button)
+        buttons[button]?.style?.down = TerminalControl.skin.getDrawable("ListBackground")
+        buttons[button]?.style?.up = TerminalControl.skin.getDrawable("ListBackground")
     }
 
-    /** Sets the button with the code to be active */
-    public void setActive(int button) {
-        inactiveButtons.remove(button);
-        buttons.get(button).getStyle().down = Ui.lightBoxBackground;
-        buttons.get(button).getStyle().up = Ui.lightBoxBackground;
+    /** Sets the button with the code to be active  */
+    fun setActive(button: Int) {
+        inactiveButtons.remove(button)
+        buttons[button]?.style?.down = Ui.lightBoxBackground
+        buttons[button]?.style?.up = Ui.lightBoxBackground
     }
 
-    /** Checks whether the button with the code is inactive */
-    private boolean isInactive(int button) {
-        return inactiveButtons.contains(button);
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
-    }
-
-    public int getMode() {
-        return mode;
+    /** Checks whether the button with the code is inactive  */
+    private fun isInactive(button: Int): Boolean {
+        return inactiveButtons.contains(button)
     }
 }

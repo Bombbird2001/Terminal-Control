@@ -292,7 +292,7 @@ class Airport {
 
     /** Update loop  */
     fun update() {
-        if (!radarScreen.tutorial && radarScreen.tfcMode === RadarScreen.TfcMode.NORMAL) {
+        if (!radarScreen.tutorial && radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
             takeoffManager.update()
         }
         if (isPendingRwyChange) rwyChangeTimer -= Gdx.graphics.deltaTime
@@ -304,7 +304,7 @@ class Airport {
 
     /** Draws runways  */
     fun renderRunways() {
-        isCongested = if (landings - airborne > 12 && radarScreen.tfcMode === RadarScreen.TfcMode.NORMAL) {
+        isCongested = if (landings - airborne > 12 && radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
             if (!isCongested) radarScreen.utilityBox.commsManager.warningMsg("$icao is experiencing congestion! To allow aircraft on the ground to take off, reduce the number of arrivals into the airport by reducing speed, putting them in holding patterns or by closing the sector.")
             true
         } else {
@@ -379,7 +379,7 @@ class Airport {
     val winds: IntArray
         get() = if (metar.isNull("windDirection")) intArrayOf(0, 0) else intArrayOf(metar.getInt("windDirection"), metar.getInt("windSpeed"))
     val gusts: Int
-        get() = if (metar["windGust"] === JSONObject.NULL) {
+        get() = if (metar["windGust"] == JSONObject.NULL) {
             -1
         } else {
             metar.getInt("windGust")

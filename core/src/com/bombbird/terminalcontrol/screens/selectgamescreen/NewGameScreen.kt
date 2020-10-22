@@ -17,7 +17,7 @@ import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
-class NewGameScreen(game: TerminalControl?, background: Image?) : SelectGameScreen(game, background) {
+class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     init {
         TerminalControl.updateRevision()
     }
@@ -31,14 +31,14 @@ class NewGameScreen(game: TerminalControl?, background: Image?) : SelectGameScre
         headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
-        getStage().addActor(headerLabel)
+        stage.addActor(headerLabel)
     }
 
     /** Overrides loadButton method in SelectGameScreen to load an additional tutorial button */
     override fun loadButtons() {
         super.loadButtons()
 
-        val tutorialButton = TextButton("Tutorial", getButtonStyle())
+        val tutorialButton = TextButton("Tutorial", buttonStyle)
         tutorialButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL.toFloat())
         tutorialButton.setPosition(2880 - 350f, 1620 * 0.6f)
         tutorialButton.addListener(object : ChangeListener() {
@@ -79,7 +79,7 @@ class NewGameScreen(game: TerminalControl?, background: Image?) : SelectGameScre
         }
         airports.add(if (isTCHXAvailable) "TCHX\nTai Kek International Airport" else "????")
         for (airport in airports) {
-            val airportButton = TextButton(airport, getButtonStyle())
+            val airportButton = TextButton(airport, buttonStyle)
             airportButton.name = airport.substring(0, 4)
             airportButton.label.setWrap(true)
             airportButton.addListener(object : ChangeListener() {
@@ -140,6 +140,6 @@ class NewGameScreen(game: TerminalControl?, background: Image?) : SelectGameScre
         scrollPane.y = 1620 * 0.2f
         scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 1.2f
         scrollPane.height = 1620 * 0.6f
-        getStage().addActor(scrollPane)
+        stage.addActor(scrollPane)
     }
 }

@@ -1,84 +1,77 @@
-package com.bombbird.terminalcontrol.utilities.saving;
+package com.bombbird.terminalcontrol.utilities.saving
 
-import com.badlogic.gdx.Gdx;
-import com.bombbird.terminalcontrol.TerminalControl;
-import com.bombbird.terminalcontrol.entities.airports.Airport;
-import com.bombbird.terminalcontrol.entities.runways.Runway;
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft;
-import com.bombbird.terminalcontrol.entities.aircrafts.Arrival;
-import com.bombbird.terminalcontrol.entities.aircrafts.Departure;
-import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox;
-import com.bombbird.terminalcontrol.utilities.RenameManager;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.badlogic.gdx.Gdx
+import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure
+import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.*
 
-import java.util.HashSet;
-
-public class GameLoader {
-    /** Loads save information from the save JSONObject */
-    public static void loadSaveData(JSONObject save) {
-        if (save == null) return;
-
-        JSONArray airports = save.getJSONArray("airports");
-
-        for (Airport airport: TerminalControl.radarScreen.airports.values()) {
-            for (Runway runway: airport.getRunways().values()) {
-                runway.getLabel().remove();
+object GameLoader {
+    /** Loads save information from the save JSONObject  */
+    fun loadSaveData(save: JSONObject?) {
+        val radarScreen = TerminalControl.radarScreen!!
+        if (save == null) return
+        val airports = save.getJSONArray("airports")
+        for (airport in radarScreen.airports.values) {
+            for (runway in airport.runways.values) {
+                runway.label.remove()
             }
         }
-        loadAirportData(airports);
-        TerminalControl.radarScreen.getMetar().updateMetar(false);
-        loadAircraft(save.getJSONArray("aircrafts"));
-
-        for (int i = 0; i < airports.length(); i++) {
-            Airport airport = TerminalControl.radarScreen.airports.get(RenameManager.renameAirportICAO(airports.getJSONObject(i).getString("icao")));
-            airport.getTakeoffManager().updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"));
-            airport.updateOtherRunwayInfo(airports.getJSONObject(i));
+        loadAirportData(airports)
+        radarScreen.metar.updateMetar(false)
+        loadAircraft(save.getJSONArray("aircrafts"))
+        for (i in 0 until airports.length()) {
+            val airport = radarScreen.airports[renameAirportICAO(airports.getJSONObject(i).getString("icao"))]
+            airport?.takeoffManager?.updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"))
+            airport?.updateOtherRunwayInfo(airports.getJSONObject(i))
         }
-
-        JSONArray jsonArray = save.getJSONArray("allAircraft");
-        HashSet<String> allAircrafts = new HashSet<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            allAircrafts.add(jsonArray.getString(i));
+        val jsonArray = save.getJSONArray("allAircraft")
+        val allAircrafts = HashSet<String>()
+        for (i in 0 until jsonArray.length()) {
+            allAircrafts.add(jsonArray.getString(i))
         }
-        TerminalControl.radarScreen.setAllAircraft(allAircrafts);
-
-        TerminalControl.radarScreen.getUtilityBox().loadSave(save.getJSONArray("commBox"));
-
-        TerminalControl.radarScreen.separationChecker.setLastNumber(save.getInt("lastNumber"));
-        TerminalControl.radarScreen.separationChecker.setTime(save.isNull("sepTime") ? 3 : (float) save.getDouble("sepTime"));
+        radarScreen.allAircraft = allAircrafts
+        radarScreen.utilityBox.loadSave(save.getJSONArray("commBox"))
+        radarScreen.separationChecker.lastNumber = save.getInt("lastNumber")
+        radarScreen.separationChecker.time = if (save.isNull("sepTime")) 3f else save.getDouble("sepTime").toFloat()
 
         //GameSaver.saveGame();
     }
 
-    /** Loads aircraft data from save */
-    private static void loadAircraft(JSONArray aircrafts) {
-        for (Aircraft aircraft: TerminalControl.radarScreen.aircrafts.values()) {
-            aircraft.removeAircraft();
+    /** Loads aircraft data from save  */
+    private fun loadAircraft(aircrafts: JSONArray) {
+        val radarScreen = TerminalControl.radarScreen!!
+        for (aircraft in radarScreen.aircrafts.values) {
+            aircraft.removeAircraft()
         }
-
-        for (int i = 0; i < aircrafts.length(); i++) {
-            if ("Arrival".equals(aircrafts.getJSONObject(i).getString("TYPE"))) {
-                //Load arrival
-                Arrival arrival = new Arrival(aircrafts.getJSONObject(i));
-                TerminalControl.radarScreen.aircrafts.put(arrival.getCallsign(), arrival);
-            } else if ("Departure".equals(aircrafts.getJSONObject(i).getString("TYPE"))) {
-                //Load departure
-                Departure departure = new Departure(aircrafts.getJSONObject(i));
-                TerminalControl.radarScreen.aircrafts.put(departure.getCallsign(), departure);
-            } else {
+        for (i in 0 until aircrafts.length()) {
+            when (aircrafts.getJSONObject(i).getString("TYPE")) {
+                "Arrival" -> {
+                    //Load arrival
+                    val arrival = Arrival(aircrafts.getJSONObject(i))
+                    radarScreen.aircrafts[arrival.callsign] = arrival
+                }
+                "Departure" -> {
+                    //Load departure
+                    val departure = Departure(aircrafts.getJSONObject(i))
+                    radarScreen.aircrafts[departure.callsign] = departure
+                }
                 //Unknown type TODO En-route aircraft in future
-                Gdx.app.log("Aircraft load error", "Unknown aircraft type " + aircrafts.getJSONObject(i).getString("TYPE") + " in save file!");
+                else -> Gdx.app.log("Aircraft load error", "Unknown aircraft type " + aircrafts.getJSONObject(i).getString("TYPE") + " in save file!")
             }
         }
     }
 
-    /** Loads airport data from save */
-    private static void loadAirportData(JSONArray airports) {
-        for (int i = 0; i < airports.length(); i++) {
-            Airport airport = new Airport(airports.getJSONObject(i));
-            TerminalControl.radarScreen.airports.put(airport.getIcao(), airport);
-            airport.loadOthers(airports.getJSONObject(i));
+    /** Loads airport data from save  */
+    private fun loadAirportData(airports: JSONArray) {
+        for (i in 0 until airports.length()) {
+            val airport = Airport(airports.getJSONObject(i))
+            TerminalControl.radarScreen?.airports?.set(airport.icao, airport)
+            airport.loadOthers(airports.getJSONObject(i))
         }
     }
 }

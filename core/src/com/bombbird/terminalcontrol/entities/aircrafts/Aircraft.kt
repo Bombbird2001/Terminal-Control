@@ -20,8 +20,6 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.DataTag
 import com.bombbird.terminalcontrol.ui.Ui
-import com.bombbird.terminalcontrol.ui.tabs.LatTab
-import com.bombbird.terminalcontrol.ui.tabs.SpdTab
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
@@ -516,13 +514,13 @@ abstract class Aircraft : Actor {
 
             //Draws selected status (from UI)
             if (isArrivalDeparture) {
-                if (LatTab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged)) {
+                if (Tab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged)) {
                     uiDrawSidStar()
-                } else if (LatTab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged || ui.latTab.isAfterWptHdgChanged || ui.latTab.isLatModeChanged)) {
+                } else if (Tab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged || ui.latTab.isAfterWptHdgChanged || ui.latTab.isLatModeChanged)) {
                     uiDrawAftWpt()
-                } else if (LatTab.latMode == NavState.VECTORS && (this is Departure || Ui.NOT_CLEARED_APCH == LatTab.clearedILS || !isLocCap) && (ui.latTab.isHdgChanged || ui.latTab.isLatModeChanged)) {
+                } else if (Tab.latMode == NavState.VECTORS && (this is Departure || Ui.NOT_CLEARED_APCH == Tab.clearedILS || !isLocCap) && (ui.latTab.isHdgChanged || ui.latTab.isLatModeChanged)) {
                     uiDrawHdgLine()
-                } else if (LatTab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged || ui.latTab.isHoldWptChanged)) {
+                } else if (Tab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged || ui.latTab.isHoldWptChanged)) {
                     uiDrawHoldPattern()
                 }
             }
@@ -542,10 +540,10 @@ abstract class Aircraft : Actor {
     /** Draws the sidStar for the UI  */
     open fun uiDrawSidStar() {
         shapeRenderer.color = Color.YELLOW
-        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+        radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
-        route.joinLines(route.findWptIndex(LatTab.clearedWpt), route.waypoints.size, -1)
+        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
     }
 
     /** Draws the cleared after waypoint + cleared outbound heading when selected  */
@@ -557,7 +555,7 @@ abstract class Aircraft : Actor {
     /** Draws the after waypoint + outbound heading for UI  */
     open fun uiDrawAftWpt() {
         shapeRenderer.color = Color.YELLOW
-        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+        radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
     }
@@ -572,7 +570,7 @@ abstract class Aircraft : Actor {
     /** Draws the heading for the UI  */
     private fun uiDrawHdgLine() {
         shapeRenderer.color = Color.YELLOW
-        val point = pointsAtBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), radarX, radarY, LatTab.clearedHdg - radarScreen.magHdgDev)
+        val point = pointsAtBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), radarX, radarY, Tab.clearedHdg - radarScreen.magHdgDev)
         shapeRenderer.line(radarX, radarY, point[0], point[1])
     }
 
@@ -588,10 +586,10 @@ abstract class Aircraft : Actor {
     /** Draws the holding pattern for the UI  */
     open fun uiDrawHoldPattern() {
         shapeRenderer.color = Color.YELLOW
-        radarScreen.waypoints[LatTab.clearedWpt]?.let {
+        radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
-        route.holdProcedure.renderShape(radarScreen.waypoints[LatTab.holdWpt])
+        route.holdProcedure.renderShape(radarScreen.waypoints[Tab.holdWpt])
     }
 
     /** The main update function  */
@@ -1243,17 +1241,17 @@ abstract class Aircraft : Actor {
         ui.latTab.modeButtons.mode = navState.dispLatMode.last()
         ui.altTab.modeButtons.mode = navState.dispAltMode.last()
         ui.spdTab.modeButtons.mode = navState.dispSpdMode.last()
-        LatTab.clearedHdg = navState.clearedHdg.last()
-        if (direct != null && ui.latTab.modeButtons.mode == NavState.SID_STAR && route.findWptIndex(direct?.name) > route.findWptIndex(ui.latTab.getValueBox().selected)) {
+        Tab.clearedHdg = navState.clearedHdg.last()
+        if (direct != null && ui.latTab.modeButtons.mode == NavState.SID_STAR && route.findWptIndex(direct?.name) > route.findWptIndex(ui.latTab.valueBox.selected)) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point
-            ui.latTab.getValueBox().selected = direct?.name ?: ""
+            ui.latTab.valueBox.selected = direct?.name ?: ""
         }
         if (this is Departure && !ui.altTab.valueBox.selected.contains("FL") && ui.altTab.valueBox.selected.toInt() < lowestAlt) {
-            ui.altTab.getValueBox().selected = lowestAlt.toString()
+            ui.altTab.valueBox.selected = lowestAlt.toString()
         }
-        LatTab.turnDir = navState.clearedTurnDir.last()
-        ui.spdTab.getValueBox().selected = clearedIas.toString()
-        SpdTab.clearedSpd = clearedIas
+        Tab.turnDir = navState.clearedTurnDir.last()
+        ui.spdTab.valueBox.selected = clearedIas.toString()
+        Tab.clearedSpd = clearedIas
         ui.updateElements()
         ui.compareWithAC()
         ui.updateElementColours()

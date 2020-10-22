@@ -55,7 +55,7 @@ class NavState {
         const val EXPEDITE = 32
 
         /** Gets the appropriate navState code from string  */
-        @JvmStatic
+
         fun getCodeFromString(string: String): Int {
             return if (string.contains("arrival") || string.contains("departure")) {
                 SID_STAR
@@ -577,7 +577,7 @@ class NavState {
     }
 
     /** Adds new lateral instructions to queue  */
-    fun sendLat(latMode: Int, clearedWpt: String?, afterWpt: String?, holdWpt: String?, afterWptHdg: Int, clearedHdg: Int, clearedApch: String, newStar: String?, turnDir: Int) {
+    fun sendLat(latMode: Int, clearedWpt: String?, afterWpt: String?, holdWpt: String?, afterWptHdg: Int, clearedHdg: Int, clearedApch: String?, newStar: String?, turnDir: Int) {
         var latModeName = latMode
         if (latMode == SID_STAR) {
             clearedDirect.addLast(radarScreen.waypoints[clearedWpt])
@@ -614,7 +614,7 @@ class NavState {
             clearedTurnDir.addLast(turnDir)
         }
         if (aircraft is Arrival) {
-            clearedIls.addLast(aircraft.airport.approaches[clearedApch.substring(3)])
+            clearedIls.addLast(aircraft.airport.approaches[clearedApch?.substring(3)])
             if (latMode == SID_STAR) {
                 if (clearedIls.last() != null) {
                     updateLatModes(REMOVE_AFTERHDG_HOLD, false)

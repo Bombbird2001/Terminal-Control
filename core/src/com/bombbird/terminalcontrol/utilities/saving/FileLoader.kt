@@ -80,7 +80,6 @@ object FileLoader {
         return waypoints
     }
 
-    @JvmStatic
     fun loadRunways(icao: String): HashMap<String, Runway> {
         val runways = HashMap<String, Runway>()
         TerminalControl.radarScreen?.let {
@@ -95,7 +94,6 @@ object FileLoader {
         return runways
     }
 
-    @JvmStatic
     fun loadStars(airport: Airport): HashMap<String, Star> {
         //Load STARs
         val stars = HashMap<String, Star>()
@@ -112,7 +110,6 @@ object FileLoader {
         return stars
     }
 
-    @JvmStatic
     fun loadSids(airport: Airport): HashMap<String, Sid> {
         //Load SIDs
         val sids = HashMap<String, Sid>()
@@ -129,7 +126,6 @@ object FileLoader {
         return sids
     }
 
-    @JvmStatic
     fun loadAircraftData(): HashMap<String, IntArray> {
         val aircrafts = HashMap<String, IntArray>()
         val handle = Gdx.files.internal("game/aircrafts/aircrafts.air")
@@ -164,7 +160,6 @@ object FileLoader {
         return aircrafts
     }
 
-    @JvmStatic
     fun loadILS(airport: Airport): HashMap<String, ILS> {
         val approaches = HashMap<String, ILS>()
         TerminalControl.radarScreen?.let {
@@ -186,7 +181,6 @@ object FileLoader {
         return approaches
     }
 
-    @JvmStatic
     fun loadHoldingPoints(airport: Airport): HashMap<String, HoldingPoints> {
         val holdingPoints = HashMap<String, HoldingPoints>()
         TerminalControl.radarScreen?.let {
@@ -199,7 +193,6 @@ object FileLoader {
         return holdingPoints
     }
 
-    @JvmStatic
     fun loadMissedInfo(airport: Airport): HashMap<String, MissedApproach> {
         val missedApproaches = HashMap<String, MissedApproach>()
         TerminalControl.radarScreen?.let {
@@ -212,7 +205,6 @@ object FileLoader {
         return missedApproaches
     }
 
-    @JvmStatic
     fun loadSaves(): JSONArray {
         val saves = JSONArray()
         val handle = getExtDir("saves/saves.saves")
@@ -263,7 +255,6 @@ object FileLoader {
         } else false
     }
 
-    @JvmStatic
     fun loadAirlines(icao: String): HashMap<Int, String> {
         val airlines = HashMap<Int, String>()
         TerminalControl.radarScreen?.let {
@@ -281,7 +272,6 @@ object FileLoader {
         return airlines
     }
 
-    @JvmStatic
     fun loadAirlineAircrafts(icao: String): HashMap<String, String> {
         val aircrafts = HashMap<String, String>()
         TerminalControl.radarScreen?.let {
@@ -293,7 +283,6 @@ object FileLoader {
         return aircrafts
     }
 
-    @JvmStatic
     fun loadIcaoCallsigns(): HashMap<String, String> {
         val callsigns = HashMap<String, String>()
         val info = Gdx.files.internal("game/aircrafts/callsigns.call").readString().split("\\r?\\n".toRegex()).toTypedArray()
@@ -303,7 +292,6 @@ object FileLoader {
         return callsigns
     }
 
-    @JvmStatic
     fun loadNoise(icao: String, sid: Boolean): HashMap<String, Boolean> {
         val noise = HashMap<String, Boolean>()
         TerminalControl.radarScreen?.let {
@@ -321,7 +309,6 @@ object FileLoader {
         return noise
     }
 
-    @JvmStatic
     fun loadShoreline(): Array<Array<Int>> {
         val shoreline = Array<Array<Int>>()
         TerminalControl.radarScreen?.let {
@@ -371,7 +358,6 @@ object FileLoader {
         return stats
     }
 
-    @JvmStatic
     fun getExtDir(path: String): FileHandle? {
         var handle: FileHandle? = null
         if (Gdx.app.type == Application.ApplicationType.Desktop) {

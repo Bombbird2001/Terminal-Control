@@ -8,7 +8,7 @@ object AircraftType {
         return if (!aircraftTypes.containsKey(type)) 'M' else aircraftTypes[type]!![0].toChar()
     }
 
-    @JvmStatic
+
     fun getRecat(type: String): Char {
         return if (!aircraftTypes.containsKey(type)) 'D' else aircraftTypes[type]!![5].toChar()
     }

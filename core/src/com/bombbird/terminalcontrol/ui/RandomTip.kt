@@ -8,7 +8,7 @@ object RandomTip {
     private val tips = Array<String>()
 
     /** Loads a list of tips to be shown during loading screen  */
-    @JvmStatic
+
     fun loadTips() {
         tips.add("Double tap the label of a controlled aircraft to minimise/maximise it")
         tips.add("Separation is reduced to 2.5nm for aircraft on the same ILS both within 10nm from touchdown")
@@ -39,13 +39,13 @@ object RandomTip {
     }
 
     /** Checks if the tips array has been loaded  */
-    @JvmStatic
+
     fun tipsLoaded(): Boolean {
         return tips.size > 0
     }
 
     /** Returns a random tip to be used  */
-    @JvmStatic
+
     fun randomTip(): String {
         return tips.random()
     }

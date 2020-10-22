@@ -21,6 +21,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.tabs.LatTab
+import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToMetre
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
@@ -256,7 +257,7 @@ class Arrival : Aircraft {
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint  */
     override fun uiDrawSidStar() {
         super.uiDrawSidStar()
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(LatTab.clearedWpt), route.waypoints.size)
+        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(Tab.clearedWpt), route.waypoints.size)
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there  */
@@ -274,8 +275,8 @@ class Arrival : Aircraft {
     override fun uiDrawAftWpt() {
         super.uiDrawAftWpt()
         navState.clearedDirect.last()?.let {
-            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(LatTab.afterWpt) + 1, LatTab.afterWptHdg)
-            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(LatTab.afterWpt) + 1)
+            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(Tab.afterWpt) + 1, Tab.afterWptHdg)
+            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.afterWpt) + 1)
         }
     }
 
@@ -296,8 +297,8 @@ class Arrival : Aircraft {
         super.uiDrawHoldPattern()
         radarScreen.shapeRenderer.color = Color.YELLOW
         navState.clearedDirect.last()?.let {
-            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(LatTab.holdWpt) + 1, -1)
-            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(LatTab.holdWpt) + 1)
+            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(Tab.holdWpt) + 1, -1)
+            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.holdWpt) + 1)
         }
     }
 
@@ -803,7 +804,7 @@ class Arrival : Aircraft {
     /** Check initial arrival spawn separation  */
     private fun checkArrival() {
         for (aircraft in radarScreen.aircrafts.values) {
-            if (aircraft === this || aircraft is Departure) continue
+            if (aircraft == this || aircraft is Departure) continue
             if (altitude - aircraft.altitude < 2500 && pixelToNm(distanceBetween(x, y, aircraft.x, aircraft.y)) < 6) {
                 altitude = if (typDes - aircraft.typDes > 300) {
                     aircraft.altitude + 3500

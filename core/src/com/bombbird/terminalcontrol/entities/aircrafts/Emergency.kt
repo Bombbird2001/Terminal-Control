@@ -4,7 +4,6 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
 import com.bombbird.terminalcontrol.utilities.math.MathTools.withinRange
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.TerminalControl
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.MathUtils
@@ -12,7 +11,12 @@ import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
 
 class Emergency {
-    private val radarScreen: RadarScreen?
+    companion object {
+        private val canDumpFuel = arrayOf("A332", "A333", "A339", "A342", "A343", "A345", "A346", "A359", "A35K", "A388", "B742", "B743", "B744", "B748", "B762", "B763", "B764",
+                "B772", "B77L", "B773", "B77W", "B788", "B789", "B78X", "MD11")
+    }
+
+    private val radarScreen = TerminalControl.radarScreen!!
 
     enum class Type {
         MEDICAL, ENGINE_FAIL, BIRD_STRIKE, HYDRAULIC_FAIL, PRESSURE_LOSS, FUEL_LEAK
@@ -56,7 +60,6 @@ class Emergency {
             : Int
 
     constructor(aircraft: Aircraft, emerChance: Chance) {
-        radarScreen = TerminalControl.radarScreen
         this.aircraft = aircraft
         if (emerChance == Chance.OFF || aircraft !is Departure) {
             isEmergency = false
@@ -86,7 +89,6 @@ class Emergency {
 
     constructor(aircraft: Aircraft, forceEmergency: Boolean) {
         //Special constructor used when you want to force an aircraft to have an emergency or not
-        radarScreen = TerminalControl.radarScreen
         this.aircraft = aircraft
         isEmergency = forceEmergency
         isActive = false
@@ -107,7 +109,6 @@ class Emergency {
     }
 
     constructor(aircraft: Aircraft, save: JSONObject) {
-        radarScreen = TerminalControl.radarScreen
         this.aircraft = aircraft
         isEmergency = save.getBoolean("emergency")
         isActive = save.getBoolean("active")
@@ -137,7 +138,7 @@ class Emergency {
                 aircraft.dataTag.setEmergency()
                 cancelSidStar()
                 isActive = true
-                radarScreen!!.planesToControl = radarScreen.planesToControl.coerceAtMost(5f)
+                radarScreen.planesToControl = radarScreen.planesToControl.coerceAtMost(5f)
                 aircraft.dataTag.isMinimized = false
                 if (type == Type.BIRD_STRIKE || type == Type.ENGINE_FAIL) {
                     aircraft.typClimb = (aircraft.typClimb * 0.5).toInt()
@@ -209,20 +210,18 @@ class Emergency {
                     stayOnRwyTime = -1f
                 } else {
                     stayOnRwyTime -= dt
-                    val rwy = aircraft.ils!!.name.substring(3)
-                    if (!aircraft.airport.runways[rwy]!!.isEmergencyClosed) {
-                        aircraft.airport.runways[rwy]!!.isEmergencyClosed = true
-                        aircraft.airport.runways[rwy]!!.oppRwy.isEmergencyClosed = true
-                        radarScreen!!.utilityBox.commsManager.normalMsg("Runway $rwy is now closed")
-                        radarScreen.utilityBox.commsManager.normalMsg("Emergency vehicles are proceeding onto runway $rwy")
+                    val rwy = aircraft.airport.runways[aircraft.ils?.name?.substring(3)] ?: return
+                    if (!rwy.isEmergencyClosed) {
+                        rwy.isEmergencyClosed = true
+                        rwy.oppRwy.isEmergencyClosed = true
+                        radarScreen.utilityBox.commsManager.normalMsg("Runway ${rwy.name} is now closed")
+                        radarScreen.utilityBox.commsManager.normalMsg("Emergency vehicles are proceeding onto runway ${rwy.name}")
                     }
                     if (stayOnRwyTime < 0) {
-                        if (aircraft.airport.runways.containsKey(rwy)) {
-                            aircraft.airport.runways[rwy]!!.isEmergencyClosed = false
-                            aircraft.airport.runways[rwy]!!.oppRwy.isEmergencyClosed = false
-                            radarScreen!!.utilityBox.commsManager.normalMsg("Emergency vehicles and subject aircraft have vacated runway $rwy")
-                            radarScreen.utilityBox.commsManager.normalMsg("Runway $rwy is now open")
-                        }
+                        rwy.isEmergencyClosed = false
+                        rwy.oppRwy.isEmergencyClosed = false
+                        radarScreen.utilityBox.commsManager.normalMsg("Emergency vehicles and subject aircraft have vacated runway ${rwy.name}")
+                        radarScreen.utilityBox.commsManager.normalMsg("Runway ${rwy.name} is now open")
                         aircraft.airport.updateRunwayUsage()
                         isStayOnRwy = false
                     }
@@ -323,23 +322,23 @@ class Emergency {
         intent = if (type == Type.PRESSURE_LOSS) {
             ", we are initiating an emergency descent to 9000 feet"
         } else {
-            val altitude = if (aircraft.clearedAltitude >= radarScreen!!.transLvl * 100) "FL" + aircraft.clearedAltitude / 100 else aircraft.clearedAltitude.toString() + " feet"
+            val altitude = if (aircraft.clearedAltitude >= radarScreen.transLvl * 100) "FL" + aircraft.clearedAltitude / 100 else aircraft.clearedAltitude.toString() + " feet"
             ", levelling off at $altitude"
         }
         val text = "Mayday, mayday, mayday, " + aircraft.callsign + aircraft.wakeString + " is declaring " + emergency + " and would like to return to the airport" + intent
-        radarScreen!!.utilityBox.commsManager.warningMsg(text)
+        radarScreen.utilityBox.commsManager.warningMsg(text)
         TerminalControl.tts.sayEmergency(aircraft, emergency, intent)
     }
 
     /** Adds comm box message, TTS to notify controller of intentions, whether fuel dump is required  */
     private fun sayRunChecklists() {
-        radarScreen!!.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " will need a few more minutes to run checklists" + if (isFuelDumpRequired) " before dumping fuel" else "")
+        radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " will need a few more minutes to run checklists" + if (isFuelDumpRequired) " before dumping fuel" else "")
         TerminalControl.tts.sayRemainingChecklists(aircraft, isFuelDumpRequired)
     }
 
     /** Adds comm box message, TTS when aircraft is ready to dump fuel  */
     private fun sayReadyForDump() {
-        radarScreen!!.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + ", we are ready to dump fuel")
+        radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + ", we are ready to dump fuel")
         var bearing = 90 - MathUtils.radiansToDegrees * MathUtils.atan2(aircraft.y - 1620, aircraft.x - 2880)
         val dist = pixelToNm(distanceBetween(aircraft.x, aircraft.y, 2880f, 1620f)).toInt()
         var dir = ""
@@ -359,24 +358,19 @@ class Emergency {
 
     /** Adds comm box message, TTS when aircraft starts dumping fuel  */
     private fun sayDumping() {
-        radarScreen!!.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is now dumping fuel")
+        radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is now dumping fuel")
         TerminalControl.tts.sayDumping(aircraft)
     }
 
     /** Adds comm box message, TTS when aircraft is halfway through fuel dump  */
     private fun sayRemainingDumpTime() {
-        radarScreen!!.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + ", we'll need about " + sayRemainingTime + " more minutes")
+        radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + ", we'll need about " + sayRemainingTime + " more minutes")
         TerminalControl.tts.sayRemainingDumpTime(aircraft, sayRemainingTime)
     }
 
     /** Adds comm box message, TTS when aircraft has finished dumping fuel, is ready for approach  */
     private fun sayReadyForApproach() {
-        radarScreen!!.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is ready for approach" + if (isStayOnRwy) ", we will stay on the runway after landing" else "")
+        radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is ready for approach" + if (isStayOnRwy) ", we will stay on the runway after landing" else "")
         TerminalControl.tts.sayReadyForApproach(aircraft, isStayOnRwy)
-    }
-
-    companion object {
-        private val canDumpFuel = arrayOf("A332", "A333", "A339", "A342", "A343", "A345", "A346", "A359", "A35K", "A388", "B742", "B743", "B744", "B748", "B762", "B763", "B764",
-                "B772", "B77L", "B773", "B77W", "B788", "B789", "B78X", "MD11")
     }
 }
