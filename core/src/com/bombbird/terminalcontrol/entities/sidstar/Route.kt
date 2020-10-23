@@ -74,11 +74,11 @@ class Route private constructor() {
     }
 
     /** Create new Route based on newly assigned STAR  */
-    constructor(aircraft: Aircraft, star: Star) : this() {
+    constructor(aircraft: Aircraft, star: Star, changeSTAR: Boolean) : this() {
         val inbound = star.randomInbound
         for (i in 0 until inbound.size) {
             if ("HDG" == inbound[i].split(" ".toRegex()).toTypedArray()[0]) {
-                aircraft.heading = inbound[i].split(" ".toRegex()).toTypedArray()[1].toInt().toDouble()
+                if (!changeSTAR) aircraft.heading = inbound[i].split(" ".toRegex()).toTypedArray()[1].toInt().toDouble()
                 heading = aircraft.heading.toInt() + 180
             } else {
                 val data = inbound[i].split(" ".toRegex()).toTypedArray()

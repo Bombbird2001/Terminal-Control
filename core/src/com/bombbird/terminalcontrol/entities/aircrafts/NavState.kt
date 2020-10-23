@@ -383,7 +383,7 @@ class NavState {
                         dispLatMode.removeFirst()
                         dispLatMode.addFirst(VECTORS)
                     }
-                    aircraft.route = Route(aircraft, newStar)
+                    aircraft.route = Route(aircraft, newStar, true)
                     aircraft.direct = null
                     aircraft.afterWaypoint = null
                     aircraft.afterWptHdg = aircraft.clearedHeading

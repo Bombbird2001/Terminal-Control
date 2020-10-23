@@ -80,7 +80,7 @@ class Arrival : Aircraft {
             contactAlt = 22000
         }
         RandomSTAR.starUsed(arrival.icao, star.name)
-        route = Route(this, star)
+        route = Route(this, star, false)
         direct = route.getWaypoint(0)
         clearedHeading = heading.toInt()
         track = (heading - radarScreen.magHdgDev)
