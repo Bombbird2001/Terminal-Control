@@ -20,7 +20,6 @@ import com.bombbird.terminalcontrol.entities.sidstar.SidStar
 import com.bombbird.terminalcontrol.entities.sidstar.Star
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
-import com.bombbird.terminalcontrol.ui.tabs.LatTab
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToMetre
@@ -135,13 +134,13 @@ class Arrival : Aircraft {
         }
         altitude = initAlt
         updateAltRestrictions()
-        clearedAltitude = if ("BULLA-T" == star.name || "KOPUS-T" == star.name) {
+        updateClearedAltitude(if ("BULLA-T" == star.name || "KOPUS-T" == star.name) {
             6000
         } else if (initAlt > 15000) {
             15000
         } else {
             initAlt.toInt() - initAlt.toInt() % 1000
-        }
+        })
         verticalSpeed = if (clearedAltitude < altitude - 500) {
             -typDes.toFloat()
         } else {
@@ -380,11 +379,13 @@ class Arrival : Aircraft {
             this.highestAlt = tmpArray[tmpArray.size - 1]
             this.lowestAlt = tmpArray.first()
         } else if (navState.dispLatMode.first() == NavState.HOLD_AT && isHolding && holdWpt != null) {
-            val altRestr: IntArray = route.holdProcedure.getAltRestAtWpt(holdWpt)
-            val highestAlt = altRestr[1]
-            val lowestAlt = altRestr[0]
-            this.highestAlt = if (highestAlt > -1) highestAlt else radarScreen.maxAlt
-            this.lowestAlt = if (lowestAlt > -1) lowestAlt else radarScreen.minAlt
+            holdWpt?.let {
+                val altRestr: IntArray = route.holdProcedure.getAltRestAtWpt(it)
+                val highestAlt = altRestr[1]
+                val lowestAlt = altRestr[0]
+                this.highestAlt = if (highestAlt > -1) highestAlt else radarScreen.maxAlt
+                this.lowestAlt = if (lowestAlt > -1) lowestAlt else radarScreen.minAlt
+            }
         }
     }
 
@@ -723,7 +724,7 @@ class Arrival : Aircraft {
 
     /** Sets the cleared altitude for aircraft on approach, updates UI altitude selections if selected  */
     private fun setMissedAlt() {
-        clearedAltitude = ils?.missedApchProc?.climbAlt ?: 4000
+        updateClearedAltitude(ils?.missedApchProc?.climbAlt ?: 4000)
         navState.replaceAllClearedAltMode()
         navState.replaceAllClearedAlt()
         if (isSelected && controlState == ControlState.ARRIVAL) {
@@ -783,7 +784,7 @@ class Arrival : Aircraft {
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
         if (clearedAltitude <= missedApproach?.climbAlt ?: 4000) {
-            clearedAltitude = missedApproach?.climbAlt ?: 4000
+            updateClearedAltitude(missedApproach?.climbAlt ?: 4000)
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
         }
@@ -814,7 +815,7 @@ class Arrival : Aircraft {
                 updateClearedSpd(if (aircraft.clearedIas > 250) 250 else aircraft.clearedIas - 10)
                 ias = clearedIas.toFloat()
                 if (clearedAltitude < aircraft.clearedAltitude + 1000) {
-                    clearedAltitude = aircraft.clearedAltitude + 1000
+                    updateClearedAltitude(aircraft.clearedAltitude + 1000)
                 }
             }
         }

@@ -149,11 +149,7 @@ abstract class Aircraft : Actor {
         private set
     var altitude: Float
     var clearedAltitude: Int
-        set(value) {
-            field = value
-            updateAltRestrictions()
-            updateTargetAltitude()
-        }
+        private set
     var targetAltitude: Int
     var verticalSpeed: Float
     var isExpedite: Boolean
@@ -580,7 +576,7 @@ abstract class Aircraft : Actor {
         if (!isHolding) direct?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
-        route.holdProcedure.renderShape(navState.clearedHold.last())
+        navState.clearedHold.last()?.let { route.holdProcedure.renderShape(it) }
     }
 
     /** Draws the holding pattern for the UI  */
@@ -589,7 +585,7 @@ abstract class Aircraft : Actor {
         radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
-        route.holdProcedure.renderShape(radarScreen.waypoints[Tab.holdWpt])
+        radarScreen.waypoints[Tab.holdWpt]?.let { route.holdProcedure.renderShape(it) }
     }
 
     /** The main update function  */
@@ -813,16 +809,18 @@ abstract class Aircraft : Actor {
                 //If within __px of waypoint, target next waypoint
                 //Distance determined by angle that needs to be turned
                 val distance = distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat()).toDouble()
-                var requiredDistance: Double
+                var requiredDistance = 4.0
                 if (holdWpt != null && it.name == holdWpt?.name) {
-                    holdingType = route.holdProcedure.getEntryProcAtWpt(holdWpt, heading)
-                    if (holdingType == 1) {
-                        val requiredHdg = route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180
-                        val turnDir = if (route.holdProcedure.isLeftAtWpt(holdWpt)) 2 else 1 //Inverse left & right directions for initial turn
-                        requiredDistance = findRequiredDistance(abs(findDeltaHeading(requiredHdg.toDouble(), turnDir, heading)))
-                        requiredDistance = MathUtils.clamp(requiredDistance, 4.0, 180.0)
-                    } else {
-                        requiredDistance = 4.0
+                    holdWpt?.let { it2 ->
+                        holdingType = route.holdProcedure.getEntryProcAtWpt(it2, heading)
+                        if (holdingType == 1) {
+                            val requiredHdg = route.holdProcedure.getInboundHdgAtWpt(it2) + 180
+                            val turnDir = if (route.holdProcedure.isLeftAtWpt(it2)) 2 else 1 //Inverse left & right directions for initial turn
+                            requiredDistance = findRequiredDistance(abs(findDeltaHeading(requiredHdg.toDouble(), turnDir, heading)))
+                            requiredDistance = MathUtils.clamp(requiredDistance, 4.0, 180.0)
+                        } else {
+                            requiredDistance = 4.0
+                        }
                     }
                 } else if (route.getWptFlyOver(it.name)) {
                     requiredDistance = 4.0
@@ -848,18 +846,18 @@ abstract class Aircraft : Actor {
                         return updateTargetHeading()
                     }
                     if (holdTargetPt == null) {
-                        val point = route.holdProcedure.getOppPtAtWpt(holdWpt)
+                        val point = route.holdProcedure.getOppPtAtWpt(it)
                         holdTargetPt = arrayOf(floatArrayOf(it.posX.toFloat(), it.posY.toFloat()), point)
                         holdTargetPtSelected = booleanArrayOf(false, false)
                         navState.replaceAllClearedSpdToLower()
                     }
                     if (!isInit) {
-                        if (holdingType == 0) holdingType = route.holdProcedure.getEntryProcAtWpt(holdWpt, heading)
+                        if (holdingType == 0) holdingType = route.holdProcedure.getEntryProcAtWpt(it, heading)
                         //Aircraft has just entered holding pattern, follow procedures relevant to each type of holding pattern entry
                         if (holdingType == 1) {
                             //After reaching waypoint, fly opposite inbound track, then after flying for leg dist, turn back to entry fix in direction opposite of holding direction
-                            targetHeading = route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180.toDouble()
-                            if (pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat())) >= route.holdProcedure.getLegDistAtWpt(holdWpt) || isType1leg) {
+                            targetHeading = route.holdProcedure.getInboundHdgAtWpt(it) + 180.toDouble()
+                            if (pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat())) >= route.holdProcedure.getLegDistAtWpt(it) || isType1leg) {
                                 //Once it has flown leg dist, turn back towards entry fix
                                 isType1leg = true
                                 targetHeading = calculateWaypointTargetHdg(it, windHdg, windSpd)
@@ -873,8 +871,8 @@ abstract class Aircraft : Actor {
                             //Apparently no difference for types 2 and 3 in this case - fly straight towards opp waypoint with direction same as hold direction
                             targetHeading = calculatePointTargetHdg(holdTargetPt?.get(1) ?: floatArrayOf(0f, 0f), windHdg, windSpd)
                             holdTargetPtSelected?.set(1, true)
-                            val deltaHdg = findDeltaHeading(route.holdProcedure.getInboundHdgAtWpt(holdWpt) + 180.toDouble())
-                            val left = route.holdProcedure.isLeftAtWpt(holdWpt)
+                            val deltaHdg = findDeltaHeading(route.holdProcedure.getInboundHdgAtWpt(it) + 180.toDouble())
+                            val left = route.holdProcedure.isLeftAtWpt(it)
                             if (left && deltaHdg > -150 || !left && deltaHdg < 150) {
                                 //Set init to true once aircraft has turned to a heading of not more than 150 deg offset from target, in the turn direction
                                 isInit = true
@@ -882,7 +880,7 @@ abstract class Aircraft : Actor {
                         }
                     } else {
                         holdTargetPtSelected?.let { it2 ->
-                            var track = route.holdProcedure.getInboundHdgAtWpt(holdWpt) - radarScreen.magHdgDev
+                            var track = route.holdProcedure.getInboundHdgAtWpt(it) - radarScreen.magHdgDev
                             if (it2[1]) {
                                 track += 180f
                             }
@@ -1161,18 +1159,20 @@ abstract class Aircraft : Actor {
             navState.replaceAllAfterWptModesWithHdg(afterWptHdg)
             direct = null
         } else if (direct == holdWpt && navState.dispLatMode.first() == NavState.HOLD_AT) {
-            isHolding = true
-            val spdRestr = route.holdProcedure.getMaxSpdAtWpt(holdWpt)
-            if (spdRestr > -1 && clearedIas > spdRestr) {
-                clearedIas = spdRestr
-            } else if (spdRestr == -1 && clearedIas > 250) {
-                clearedIas = 250
+            holdWpt?.let {
+                isHolding = true
+                val spdRestr = route.holdProcedure.getMaxSpdAtWpt(it)
+                if (spdRestr > -1 && clearedIas > spdRestr) {
+                    clearedIas = spdRestr
+                } else if (spdRestr == -1 && clearedIas > 250) {
+                    clearedIas = 250
+                }
+                direct = route.getWaypoint(sidStarIndex)
+                if (direct == null) {
+                    navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true)
+                }
+                radarScreen.utilityBox.commsManager.holdEstablishMsg(this, holdWpt?.name ?: "")
             }
-            direct = route.getWaypoint(sidStarIndex)
-            if (direct == null) {
-                navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true)
-            }
-            radarScreen.utilityBox.commsManager.holdEstablishMsg(this, holdWpt?.name ?: "")
         } else {
             direct = route.getWaypoint(sidStarIndex)
             if (direct == null) {
@@ -1330,6 +1330,12 @@ abstract class Aircraft : Actor {
 
     override fun getStage(): Stage {
         return stage
+    }
+
+    fun updateClearedAltitude(alt: Int) {
+        clearedAltitude = alt
+        updateAltRestrictions()
+        updateTargetAltitude()
     }
 
     /** Gets current cleared altitude, compares it to highest and lowest possible altitudes, sets the target altitude and possibly the cleared altitude itself  */

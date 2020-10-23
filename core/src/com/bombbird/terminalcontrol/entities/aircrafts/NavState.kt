@@ -365,10 +365,10 @@ class NavState {
         if (clearedIls.first() != null && dispLatMode.first() == SID_STAR) {
             var lowestAlt = aircraft.route.getWptMinAlt(aircraft.route.waypoints.size - 1)
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-            aircraft.clearedAltitude = lowestAlt
+            aircraft.updateClearedAltitude(lowestAlt)
             replaceAllClearedAlt()
         } else {
-            aircraft.clearedAltitude = clearedAlt.first()
+            aircraft.updateClearedAltitude(clearedAlt.first())
         }
         aircraft.isExpedite = clearedExpedite.first()
         if (aircraft is Arrival || aircraft is Departure && (aircraft as Departure).isSidSet) {

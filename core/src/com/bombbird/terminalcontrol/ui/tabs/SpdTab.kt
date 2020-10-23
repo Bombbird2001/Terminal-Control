@@ -38,7 +38,7 @@ class SpdTab(ui: Ui) : Tab(ui) {
             if (spdMode == NavState.SID_STAR_RESTR) {
                 //Set spd restrictions in box
                 if (latMode == NavState.HOLD_AT && it.isHolding) {
-                    highestSpd = it.route.holdProcedure.getMaxSpdAtWpt(it.holdWpt)
+                    highestSpd = it.holdWpt?.let { it1 -> it.route.holdProcedure.getMaxSpdAtWpt(it1) } ?: -1
                     if (highestSpd == -1) highestSpd = 250
                 } else if (clearedWpt != null) {
                     highestSpd = it.getMaxWptSpd(clearedWpt)

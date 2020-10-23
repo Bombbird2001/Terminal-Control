@@ -22,7 +22,8 @@ object ErrorHandler {
         }
 
     fun sendGenericError(e: Exception, exit: Boolean) {
-        val error = """
+        val error =
+            """
             $versionInfo${if (exit) "Crash" else "No crash"}
             ${ExceptionUtils.getStackTrace(e)}
             """.trimIndent()
@@ -40,10 +41,11 @@ object ErrorHandler {
 
     fun sendStringError(e: Exception, str: String) {
         var error = versionInfo + ExceptionUtils.getStackTrace(e)
-        error = """
-               $str
-               $error
-               """.trimIndent()
+        error =
+            """
+            $str
+            $error
+            """.trimIndent()
         HttpRequests.sendError(error, 0)
         e.printStackTrace()
         //Quit game
@@ -56,11 +58,13 @@ object ErrorHandler {
     }
 
     fun sendSaveErrorNoThrow(e: Exception, str: String) {
-        var error = """
+        var error =
+            """
             ${versionInfo}No crash
             ${ExceptionUtils.getStackTrace(e)}
             """.trimIndent()
-        error = """
+        error =
+            """
             $str
             $error
             """.trimIndent()
@@ -70,7 +74,8 @@ object ErrorHandler {
     }
 
     fun sendRepeatableError(original: String, e: Exception, attempt: Int) {
-        val error = """
+        val error =
+            """
             ${versionInfo}Try $attempt:
             $original
             ${ExceptionUtils.getStackTrace(e)}

@@ -7,7 +7,6 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.withinRange
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
 object Shoreline {
-    private val radarScreen = TerminalControl.radarScreen!!
     private var landmasses = Array<Array<Int>>()
 
     fun loadShoreline() {
@@ -15,6 +14,7 @@ object Shoreline {
     }
 
     fun renderShape() {
+        val radarScreen = TerminalControl.radarScreen ?: return
         for (i in 0 until landmasses.size) {
             var j = 2
             while (j < landmasses[i].size) {

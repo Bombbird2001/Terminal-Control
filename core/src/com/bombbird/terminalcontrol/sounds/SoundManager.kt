@@ -3,9 +3,11 @@ package com.bombbird.terminalcontrol.sounds
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 
 class SoundManager {
-    private val radarScreen = TerminalControl.radarScreen!!
+    private val radarScreen: RadarScreen
+        get() = TerminalControl.radarScreen!!
     private val conflict = Gdx.audio.newSound(Gdx.files.internal("game/audio/conflict.wav"))
     private val runwayChange = Gdx.audio.newSound(Gdx.files.internal("game/audio/rwy_change.wav"))
     private val initialContact = Gdx.audio.newSound(Gdx.files.internal("game/audio/initial_contact.wav"))

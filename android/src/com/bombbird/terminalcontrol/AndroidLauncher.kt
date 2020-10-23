@@ -22,7 +22,7 @@ class AndroidLauncher : TextToSpeechManager() {
             startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA)
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
-            toastManager?.initTTSFail()
+            toastManager.initTTSFail()
         }
 
         //playGamesManager = new PlayGamesManager();

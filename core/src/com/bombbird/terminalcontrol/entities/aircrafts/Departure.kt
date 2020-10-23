@@ -9,7 +9,6 @@ import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
 import com.bombbird.terminalcontrol.entities.sidstar.Route
 import com.bombbird.terminalcontrol.entities.sidstar.Sid
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar
-import com.bombbird.terminalcontrol.ui.tabs.LatTab
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.math.MathTools.componentInDirection
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
@@ -166,8 +165,7 @@ class Departure : Aircraft {
             airport.airborne = airport.airborne + 1
             updateClearedSpd(v2)
             super.updateSpd()
-            clearedAltitude = it.initClimb
-            updateAltRestrictions()
+            updateClearedAltitude(it.initClimb)
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
             clearedHeading = if (sid.getInitClimb(it.name)?.get(0) ?: -1 != -1) {
@@ -241,7 +239,7 @@ class Departure : Aircraft {
         if (isHandedOver && cruiseAltTime > 0) {
             cruiseAltTime -= Gdx.graphics.deltaTime
             if (cruiseAltTime <= 0) {
-                clearedAltitude = cruiseAlt
+                updateClearedAltitude(cruiseAlt)
                 navState.replaceAllClearedAlt()
             }
         }

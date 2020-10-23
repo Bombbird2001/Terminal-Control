@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
@@ -20,7 +21,8 @@ import kotlin.math.sin
 
 class WakeManager() {
     private val aircraftWakes: HashMap<String, Array<PositionPoint>> = HashMap()
-    private val radarScreen = TerminalControl.radarScreen!!
+    private val radarScreen: RadarScreen
+        get() = TerminalControl.radarScreen!!
 
     constructor(save: JSONObject) : this() {
         for (i in 0 until save.length()) {
@@ -167,5 +169,4 @@ class WakeManager() {
             }
             return save
         }
-
 }

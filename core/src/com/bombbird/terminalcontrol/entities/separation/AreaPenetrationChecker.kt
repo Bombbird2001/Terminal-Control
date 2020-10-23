@@ -32,7 +32,7 @@ class AreaPenetrationChecker {
                 val requiredArrays = (obstacle.minAlt / 1000).coerceAtMost(radarScreen.maxAlt / 1000 - 1)
                 for (j in 0 until requiredArrays) {
                     for (positionPoint in radarScreen.trajectoryStorage.points[i / 5 - 1][j]) {
-                        val aircraft = positionPoint.aircraft
+                        val aircraft = positionPoint.aircraft ?: continue
 
                         //Exception cases
                         if (aircraft.isConflict || aircraft.isTerrainConflict) {

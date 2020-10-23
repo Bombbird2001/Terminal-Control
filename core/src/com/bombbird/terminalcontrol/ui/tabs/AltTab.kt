@@ -91,7 +91,7 @@ class AltTab(ui: Ui) : Tab(ui) {
                         if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
                         highestAlt = lowestAlt
                     } else if (latMode == NavState.HOLD_AT) {
-                        val restr: IntArray = it.route.holdProcedure.getAltRestAtWpt(radarScreen.waypoints[holdWpt])
+                        val restr: IntArray = radarScreen.waypoints[holdWpt]?.let { it1 -> it.route.holdProcedure.getAltRestAtWpt(it1) } ?: intArrayOf(-1, -1)
                         lowestAlt = restr[0]
                         highestAlt = restr[1]
                     } else if (altMode == NavState.SID_STAR_RESTR && it.altitude < radarScreen.maxAlt) {

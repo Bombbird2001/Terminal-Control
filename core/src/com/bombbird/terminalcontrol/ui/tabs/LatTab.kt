@@ -34,9 +34,9 @@ class LatTab(ui: Ui) : Tab(ui) {
     private lateinit var ilsBox: SelectBox<String>
     private lateinit var leftButton: TextButton
     private lateinit var rightButton: TextButton
-    private val waypoints: Array<String>
-    private val ils: Array<String>
-    
+    private val waypoints: Array<String> = Array()
+    private val ils: Array<String> = Array()
+
     var isLatModeChanged = false
         private set
     var isWptChanged = false
@@ -54,8 +54,6 @@ class LatTab(ui: Ui) : Tab(ui) {
     init {
         loadHdgElements()
         loadILSBox()
-        waypoints = Array()
-        ils = Array()
     }
 
     fun loadModes() {

@@ -81,7 +81,7 @@ class Metar(private val radarScreen: RadarScreen) {
         val airports = JSONObject()
         for (airport in radarScreen.airports.keys) {
             val jsonObject = JSONObject()
-            jsonObject.put("visibility", VisibilityChance.getRandomVis())
+            jsonObject.put("visibility", VisibilityChance.randomVis)
             var windDir = metarObject?.getJSONObject(reverseNameAirportICAO(airport))?.getInt("windDirection")?.let { it + MathUtils.random(-2, 2) * 10 } ?: WindDirChance.getRandomWindDir(airport)
             windDir = modulateHeading(windDir)
             jsonObject.put("windDirection", windDir)
@@ -111,7 +111,7 @@ class Metar(private val radarScreen: RadarScreen) {
             var windSpd: Int
             var gust = -1
             var ws: String
-            val visibility: Int = VisibilityChance.getRandomVis()
+            val visibility: Int = VisibilityChance.randomVis
             val windDir: Int = WindDirChance.getRandomWindDir(airport)
             windSpd = WindspeedChance.getRandomWindspeed(airport, windDir)
             ws = WindshearChance.getRandomWsForAllRwy(airport, windSpd)
@@ -194,7 +194,7 @@ class Metar(private val radarScreen: RadarScreen) {
             newObject.put("windSpeed", value[1])
             val randomWs = WindshearChance.getRandomWsForAllRwy(key, value[1])
             newObject.put("windshear", if ("" == randomWs) JSONObject.NULL else randomWs)
-            newObject.put("visibility", VisibilityChance.getRandomVis())
+            newObject.put("visibility", VisibilityChance.randomVis)
             newObject.put("metar", generateRawMetar(newObject))
         }
         updateRadarScreenState()

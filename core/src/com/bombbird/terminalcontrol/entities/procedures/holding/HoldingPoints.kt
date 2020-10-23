@@ -7,13 +7,8 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import org.json.JSONObject
 
-class HoldingPoints(wpt: String, altRestrictions: IntArray, maxSpd: Int, left: Boolean, inboundHdg: Int, legDist: Float) {
+class HoldingPoints(wpt: String, val altRestrictions: IntArray, val maxSpd: Int, val isLeft: Boolean, val inboundHdg: Int, val legDist: Float) {
     val waypoint: Waypoint
-    val altRestrictions: IntArray
-    val maxSpd: Int
-    val isLeft: Boolean
-    val inboundHdg: Int
-    val legDist: Float
     lateinit var oppPoint: FloatArray
         private set
     private val radarScreen = TerminalControl.radarScreen!!
@@ -26,11 +21,6 @@ class HoldingPoints(wpt: String, altRestrictions: IntArray, maxSpd: Int, left: B
 
     init {
         waypoint = radarScreen.waypoints[wpt]!!
-        this.altRestrictions = altRestrictions
-        this.maxSpd = maxSpd
-        isLeft = left
-        this.inboundHdg = inboundHdg
-        this.legDist = legDist
         calculateOppPoint()
     }
 

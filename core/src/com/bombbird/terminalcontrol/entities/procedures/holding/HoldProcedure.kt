@@ -1,64 +1,50 @@
-package com.bombbird.terminalcontrol.entities.procedures.holding;
+package com.bombbird.terminalcontrol.entities.procedures.holding
 
-import com.badlogic.gdx.utils.Array;
-import com.bombbird.terminalcontrol.entities.sidstar.Star;
-import com.bombbird.terminalcontrol.entities.waypoints.Waypoint;
+import com.bombbird.terminalcontrol.entities.sidstar.Star
+import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
+import java.util.*
 
-import java.util.HashMap;
+class HoldProcedure() {
+    val holdingPoints: HashMap<String, HoldingPoints> = HashMap()
 
-public class HoldProcedure {
-    private final HashMap<String, HoldingPoints> holdingPoints;
-
-    public HoldProcedure() {
-        holdingPoints = new HashMap<>();
-    }
-
-    public HoldProcedure(Star star) {
-        this();
-
-        Array<Waypoint> waypoints = star.getWaypoints();
-        for (int i = 0; i < waypoints.size; i++) {
-            String wptName = waypoints.get(i).getName();
-            HashMap<String, HoldingPoints> holdingPoint = star.getAirport().getHoldingPoints();
-            if (holdingPoint.containsKey(wptName)) {
-                holdingPoints.put(wptName, holdingPoint.get(wptName));
-            }
+    constructor(star: Star) : this() {
+        val waypoints = star.waypoints
+        for (i in 0 until waypoints.size) {
+            val wptName = waypoints[i].name
+            val holdingPoint = star.airport.holdingPoints
+            holdingPoint[wptName]?.let { holdingPoints[wptName] = it }
         }
     }
 
-    public int getEntryProcAtWpt(Waypoint waypoint, double heading) {
-        return holdingPoints.get(waypoint.getName()).getEntryProc(heading);
+    fun getEntryProcAtWpt(waypoint: Waypoint, heading: Double): Int {
+        return holdingPoints[waypoint.name]?.getEntryProc(heading) ?: 3
     }
 
-    public void renderShape(Waypoint waypoint) {
-        holdingPoints.get(waypoint.getName()).renderShape();
+    fun renderShape(waypoint: Waypoint) {
+        holdingPoints[waypoint.name]?.renderShape()
     }
 
-    public int getMaxSpdAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).getMaxSpd();
+    fun getMaxSpdAtWpt(waypoint: Waypoint): Int {
+        return holdingPoints[waypoint.name]?.maxSpd ?: 250
     }
 
-    public int getInboundHdgAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).getInboundHdg();
+    fun getInboundHdgAtWpt(waypoint: Waypoint): Int {
+        return holdingPoints[waypoint.name]?.inboundHdg ?: 360
     }
 
-    public float getLegDistAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).getLegDist();
+    fun getLegDistAtWpt(waypoint: Waypoint): Float {
+        return holdingPoints[waypoint.name]?.legDist ?: 5f
     }
 
-    public float[] getOppPtAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).getOppPoint();
+    fun getOppPtAtWpt(waypoint: Waypoint): FloatArray {
+        return holdingPoints[waypoint.name]?.oppPoint ?: floatArrayOf(0f, 0f)
     }
 
-    public boolean isLeftAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).isLeft();
+    fun isLeftAtWpt(waypoint: Waypoint): Boolean {
+        return holdingPoints[waypoint.name]?.isLeft == true
     }
 
-    public int[] getAltRestAtWpt(Waypoint waypoint) {
-        return holdingPoints.get(waypoint.getName()).getAltRestrictions();
-    }
-
-    public HashMap<String, HoldingPoints> getHoldingPoints() {
-        return holdingPoints;
+    fun getAltRestAtWpt(waypoint: Waypoint): IntArray {
+        return holdingPoints[waypoint.name]?.altRestrictions ?: intArrayOf(-1, -1)
     }
 }
