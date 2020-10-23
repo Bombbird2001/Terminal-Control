@@ -583,10 +583,9 @@ class RadarScreen : GameScreen {
     /** Updates the time values for each timer & runs tasks when time is reached  */
     private fun updateTimers() {
         val deltaTime = Gdx.graphics.deltaTime
-        updateRadarInfo()
         radarTime -= deltaTime
         if (radarTime <= 0) {
-            //updateRadarInfo()
+            updateRadarInfo()
             radarTime += if (radarSweepDelay / speed < 0.25f) {
                 0.25f * speed
             } else {

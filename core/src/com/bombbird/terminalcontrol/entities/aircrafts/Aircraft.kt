@@ -432,12 +432,13 @@ abstract class Aircraft : Actor {
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
 
-        when (val control = save.optString("controlState")) {
-            "0" -> setControlState(ControlState.UNCONTROLLED)
-            "1" -> setControlState(ControlState.ARRIVAL)
-            "2" -> setControlState(ControlState.DEPARTURE)
-            else -> setControlState(ControlState.valueOf(control))
-        }
+        loadLabel()
+        updateControlState(when (val control = save.optString("controlState")) {
+            "0" -> ControlState.UNCONTROLLED
+            "1" -> ControlState.ARRIVAL
+            "2" -> ControlState.DEPARTURE
+            else -> ControlState.valueOf(control)
+        })
     }
 
     /** Sets the initial radar position for aircraft  */
@@ -1217,7 +1218,7 @@ abstract class Aircraft : Actor {
     }
 
     /** Updates the control state of the aircraft, and updates the UI pane visibility if aircraft is selected  */
-    fun setControlState(controlState: ControlState) {
+    fun updateControlState(controlState: ControlState) {
         this.controlState = controlState
         dataTag.updateIconColors(controlState)
         isActionRequired = isActionRequired && isArrivalDeparture

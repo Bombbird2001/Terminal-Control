@@ -120,7 +120,7 @@ class Departure : Aircraft {
         loadLabel()
         navState = NavState(this)
         if (direct?.let { route.getWptFlyOver(it.name) } == true) direct?.setDepFlyOver() //Set the flyOver separately if is flyover waypoint
-        setControlState(ControlState.UNCONTROLLED)
+        updateControlState(ControlState.UNCONTROLLED)
         color = Color(0x11ff00ff)
 
         //Set takeoff heading
@@ -154,7 +154,6 @@ class Departure : Aircraft {
         isCruiseSpdSet = save.getBoolean("cruiseSpdSet")
         altitudeMaintainTime = save.optDouble("altitudeMaintainTime", 0.0).toFloat()
         isAskedForHigher = save.optBoolean("askedForHigher", false)
-        loadLabel()
         color = Color(0x11ff00ff)
         loadOtherLabelInfo(save)
     }
@@ -204,7 +203,7 @@ class Departure : Aircraft {
             }
         }
         if (altitude >= contactAlt && !isContacted) {
-            setControlState(ControlState.DEPARTURE)
+            updateControlState(ControlState.DEPARTURE)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true
             dataTag.startFlash()
@@ -385,7 +384,7 @@ class Departure : Aircraft {
     }
 
     override fun contactOther() {
-        setControlState(ControlState.UNCONTROLLED)
+        updateControlState(ControlState.UNCONTROLLED)
         if (direct == null || route.getWptMaxSpd(direct?.name) == -1) updateClearedSpd(climbSpd)
         super.updateSpd()
         isHandedOver = true

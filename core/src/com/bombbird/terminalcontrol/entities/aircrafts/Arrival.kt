@@ -168,7 +168,7 @@ class Arrival : Aircraft {
         navState.clearedSpd.addFirst(clearedIas)
         navState.clearedAlt.removeLast()
         navState.clearedAlt.addLast(clearedAltitude)
-        setControlState(ControlState.UNCONTROLLED)
+        updateControlState(ControlState.UNCONTROLLED)
         color = Color(0x00b3ffff)
         heading = update()
         track = heading - radarScreen.magHdgDev + updateTargetHeading()[1]
@@ -206,7 +206,6 @@ class Arrival : Aircraft {
         isRequestPriority = !save.isNull("requestPriority") && save.getBoolean("requestPriority")
         isDeclareEmergency = !save.isNull("declareEmergency") && save.getBoolean("declareEmergency")
         isDivert = !save.isNull("divert") && save.getBoolean("divert")
-        loadLabel()
         color = Color(0x00b3ffff)
         loadOtherLabelInfo(save)
     }
@@ -224,7 +223,7 @@ class Arrival : Aircraft {
         navState = departure.navState
         fuel = 99999f //Just assume they won't run out of fuel
         color = Color(0x00b3ffff)
-        setControlState(ControlState.ARRIVAL)
+        updateControlState(ControlState.ARRIVAL)
         val size: Int = departure.dataTag.trailDots.size
         for (i in 0 until size) {
             val image: Image = departure.dataTag.trailDots.removeFirst()
@@ -468,7 +467,7 @@ class Arrival : Aircraft {
         navState.clearedSpd.addFirst(250)
         navState.length = 1
         navState.updateAircraftInfo()
-        setControlState(ControlState.UNCONTROLLED)
+        updateControlState(ControlState.UNCONTROLLED)
         isDivert = true
     }
 
@@ -584,7 +583,7 @@ class Arrival : Aircraft {
             super.updateAltitude(holdAlt, fixedVs)
         }
         if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 1300 && !isDivert && !isLocCap) {
-            setControlState(ControlState.ARRIVAL)
+            updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true
             dataTag.startFlash()
@@ -594,7 +593,7 @@ class Arrival : Aircraft {
     /** Checks when aircraft should contact tower  */
     override fun contactOther() {
         //Contact the tower
-        setControlState(ControlState.UNCONTROLLED)
+        updateControlState(ControlState.UNCONTROLLED)
         var points = 0.6f - radarScreen.planesToControl / 30
         points = MathUtils.clamp(points, 0.15f, 0.5f)
         if (!airport.isCongested) {
@@ -767,7 +766,7 @@ class Arrival : Aircraft {
     /** Overrides updateGoAround method in Aircraft, called to set aircraft status during go-arounds  */
     override fun updateGoAround() {
         if (altitude > airport.elevation + 1300 && isGoAround) {
-            setControlState(ControlState.ARRIVAL)
+            updateControlState(ControlState.ARRIVAL)
             isGoAround = false
         }
     }
