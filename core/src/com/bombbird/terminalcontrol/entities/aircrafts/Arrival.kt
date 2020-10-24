@@ -675,7 +675,7 @@ class Arrival : Aircraft {
                         radarScreen.utilityBox.commsManager.goAround(this, "runway closed", controlState)
                         return true
                     }
-                    if (it !is LDA && !it.name.contains("IMG") && isGsCap) {
+                    if (it !is LDA && !it.name.contains("IMG") && !isGsCap) {
                         //If ILS GS has not been captured
                         radarScreen.utilityBox.commsManager.goAround(this, "being too high", controlState)
                         return true

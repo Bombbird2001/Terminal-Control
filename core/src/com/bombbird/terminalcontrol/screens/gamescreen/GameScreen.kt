@@ -419,14 +419,14 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean {
         TerminalControl.radarScreen?.setSelectedAircraft(null)
         if (count == 2 && !loading) {
-            //Gdx.app.postRunnable(() -> obsArray = FileLoader.loadObstacles()); Reload obstacles - Debug use only
+            //Gdx.app.postRunnable{ obsArray = FileLoader.loadObstacles()} //Reload obstacles - Debug use only
             zooming = true
             return true
         }
         //Shows approximate position of mouse pointer click in game world - Debug use only
-        //Vector3 vector3 = new Vector3(x, y, 0);
-        //Vector3 vector3_new = stage.getCamera().unproject(vector3);
-        //Gdx.app.log("Coordinates", vector3_new.toString());
+        //val vector3 = Vector3(x, y, 0f)
+        //val vector3New = stage.camera.unproject(vector3)
+        //Gdx.app.log("Coordinates", vector3New.toString())
         return false
     }
 
