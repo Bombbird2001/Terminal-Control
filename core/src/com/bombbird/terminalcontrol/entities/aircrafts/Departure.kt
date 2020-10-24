@@ -193,7 +193,8 @@ class Departure : Aircraft {
                 if (dist < 10) {
                     //Applicable only if initial waypoint is less than 10nm from liftoff
                     val estTime = dist / 220 * 60 //Assume average 220 knots speed
-                    val minClimb: Float = (route.getWptMinAlt(0) + 200) / estTime
+                    var minClimb: Float = (route.getWptMinAlt(0) + 200) / estTime
+                    if (minClimb > 3500) minClimb = 3500f
                     if (minClimb > typClimb) {
                         //Set the new climb speed only if minimum required is more than the actual aircraft climb speed
                         typClimb = minClimb.toInt()

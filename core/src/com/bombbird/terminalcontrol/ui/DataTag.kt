@@ -454,7 +454,7 @@ class DataTag(aircraft: Aircraft) {
                 } else if (aircraft.navState.dispLatMode.last() == NavState.HOLD_AT) {
                     labelText[5] = aircraft.holdWpt?.name ?: ""
                 } else if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
-                    labelText[5] = aircraft.navState.clearedDirect.last()?.name ?: "" + "=>" + aircraft.navState.clearedAftWptHdg.last()
+                    labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
                 } else if (aircraft.isLocCap) {
                     labelText[5] = "LOC"
                 } else {
@@ -607,7 +607,7 @@ $clearedAltStr  ${aircraft.icaoType}"""
                     }
                 } else if (aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.SID_STAR, NavState.AFTER_WPT_HDG)) {
                     if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
-                        labelText[5] = aircraft.navState.clearedDirect.last()?.name ?: "" + "=>" + aircraft.navState.clearedAftWptHdg.last()
+                        labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
                     } else if (aircraft.navState.clearedDirect.last() != null) {
                         labelText[5] = aircraft.navState.clearedDirect.last()?.name ?: ""
                         if (aircraft.isLocCap) labelText[5] = "LOC"
