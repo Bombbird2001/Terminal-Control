@@ -1240,8 +1240,11 @@ abstract class Aircraft : Actor {
     /** Updates the selections in the UI when it is active and aircraft state changes that requires selections to change in order to be valid  */
     fun updateUISelections() {
         ui.latTab.modeButtons.mode = navState.dispLatMode.last()
+        Tab.latMode = navState.dispLatMode.last()
         ui.altTab.modeButtons.mode = navState.dispAltMode.last()
+        Tab.altMode = navState.dispAltMode.last()
         ui.spdTab.modeButtons.mode = navState.dispSpdMode.last()
+        Tab.spdMode = navState.dispSpdMode.last()
         Tab.clearedHdg = navState.clearedHdg.last()
         if (direct != null && ui.latTab.modeButtons.mode == NavState.SID_STAR && route.findWptIndex(direct?.name) > route.findWptIndex(ui.latTab.valueBox.selected)) {
             //Update the selected direct when aircraft direct changes itself - only in SID/STAR mode and direct must after the currently selected point

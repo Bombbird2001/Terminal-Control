@@ -17,14 +17,14 @@ object ErrorHandler {
                 type = "Desktop"
             }
             val arpt = TerminalControl.radarScreen?.mainName ?: "unknown airport"
-            return """$type ${if (TerminalControl.full) "full" else "lite"} version ${TerminalControl.versionName}, build ${TerminalControl.versionCode}, $arpt
-"""
+            return """$type ${if (TerminalControl.full) "full" else "lite"} version ${TerminalControl.versionName}, build ${TerminalControl.versionCode}, $arpt"""
         }
 
     fun sendGenericError(e: Exception, exit: Boolean) {
         val error =
             """
-            $versionInfo${if (exit) "Crash" else "No crash"}
+            $versionInfo
+            ${if (exit) "Crash" else "No crash"}
             ${ExceptionUtils.getStackTrace(e)}
             """.trimIndent()
         HttpRequests.sendError(error, 0)
@@ -40,7 +40,11 @@ object ErrorHandler {
     }
 
     fun sendStringError(e: Exception, str: String) {
-        var error = versionInfo + ExceptionUtils.getStackTrace(e)
+        var error =
+                """
+                $versionInfo
+                ${ExceptionUtils.getStackTrace(e)}
+                """.trimIndent()
         error =
             """
             $str
@@ -60,7 +64,8 @@ object ErrorHandler {
     fun sendSaveErrorNoThrow(e: Exception, str: String) {
         var error =
             """
-            ${versionInfo}No crash
+            $versionInfo
+            No crash
             ${ExceptionUtils.getStackTrace(e)}
             """.trimIndent()
         error =
@@ -76,7 +81,8 @@ object ErrorHandler {
     fun sendRepeatableError(original: String, e: Exception, attempt: Int) {
         val error =
             """
-            ${versionInfo}Try $attempt:
+            $versionInfo
+            Try $attempt:
             $original
             ${ExceptionUtils.getStackTrace(e)}
             """.trimIndent()
