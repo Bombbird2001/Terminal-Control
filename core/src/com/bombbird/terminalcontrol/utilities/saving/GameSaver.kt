@@ -188,7 +188,7 @@ object GameSaver {
                 for ((index, info) in it.withIndex()) {
                     val point = JSONArray()
                     for (info2 in info) {
-                        point.put(info2)
+                        point.put(info2.toDouble())
                     }
                     info0.put(point)
                     info1.put(it[index])
