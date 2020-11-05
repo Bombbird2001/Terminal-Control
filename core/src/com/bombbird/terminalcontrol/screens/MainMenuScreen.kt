@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.screens.upgradescreen.AchievementScreen
 import com.bombbird.terminalcontrol.screens.upgradescreen.UpgradeScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.Fonts.defaultFont20
 import com.bombbird.terminalcontrol.utilities.Fonts.generateAllFonts
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
@@ -73,7 +74,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
 
         //Set button textures
         val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.font = Fonts.defaultFont20
+        buttonStyle.font = defaultFont20
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
 
@@ -251,6 +252,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         if (Fonts.defaultFont6 == null) {
             //Regenerate fonts that were disposed
             generateAllFonts()
+            TerminalControl.skin.get("defaultDialog", Window.WindowStyle::class.java).titleFont = defaultFont20
         }
         loadUI()
     }
