@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.isTCHXAvailable
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
 class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
@@ -27,8 +28,8 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
         //Set label params
         super.loadLabel()
         val headerLabel = Label("Choose airport:", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -39,7 +40,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
         super.loadButtons()
 
         val tutorialButton = TextButton("Tutorial", buttonStyle)
-        tutorialButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL.toFloat())
+        tutorialButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL)
         tutorialButton.setPosition(2880 - 350f, 1620 * 0.6f)
         tutorialButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -86,7 +87,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     val name = actor.name
                     if ("????" == name) {
-                        airportButton.setText("Hmmm... there may or may not be a free airport somewhere?")
+                        CustomDialog("????", "Hmmm... there may or may not\nbe a free airport somewhere?", "", "Oh cool").show(stage)
                         return
                     }
                     val handle = Gdx.files.internal("game/available.arpt")
@@ -131,7 +132,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
                     event.handle()
                 }
             })
-            scrollTable.add(airportButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT.toFloat())
+            scrollTable.add(airportButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT)
             scrollTable.row()
         }
         val scrollPane = ScrollPane(scrollTable)

@@ -10,14 +10,16 @@ import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.dialogs.DeleteDialog
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import org.json.JSONArray
 
 class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     private val timer: Timer = Timer()
     private lateinit var loadingLabel: Label
+
+    val deleteDialog = DeleteDialog()
 
     internal inner class MultiThreadLoad : Runnable {
         override fun run() {
@@ -38,8 +40,8 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         //Set label params
         super.loadLabel()
         val headerLabel = Label("Choose save to load:", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -105,29 +107,9 @@ Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject
             })
             scrollTable.add(saveButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier)
             val deleteButton = TextButton("Delete", buttonStyle)
-            deleteButton.name = "" + 0
             deleteButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
-                    Gdx.app.postRunnable {
-                        if ("0" == deleteButton.name) {
-                            deleteButton.setText("Press again to\nconfirm delete")
-                            deleteButton.name = "" + 1
-                        } else {
-                            GameSaver.deleteSave(jsonObject.getInt("saveId"))
-                            val cell: Cell<TextButton> = scrollTable.getCell(deleteButton)
-                            val cell1: Cell<TextButton> = scrollTable.getCell(saveButton)
-                            scrollTable.removeActor(deleteButton)
-                            scrollTable.removeActor(saveButton)
-
-                            //Fix UI bug that may happen after deleting cells - set cell size to 0 rather than deleting them
-                            cell.size(cell.prefWidth, 0f)
-                            cell1.size(cell1.prefWidth, 0f)
-                            scrollTable.invalidate()
-                        }
-                        if (!scrollTable.hasChildren()) {
-                            label.isVisible = true
-                        }
-                    }
+                    deleteDialog.show(stage, toDisplay, jsonObject.getInt("saveId"), scrollTable, deleteButton, saveButton, label)
                 }
             })
             scrollTable.add(deleteButton).width(MainMenuScreen.BUTTON_WIDTH * 0.4f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier)

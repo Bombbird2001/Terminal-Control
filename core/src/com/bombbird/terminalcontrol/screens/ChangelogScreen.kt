@@ -72,6 +72,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.4.2012.1
+        val content15 = Array<String>()
+        content15.add("-UI: Added dialogs to prevent accidental quitting, deleting")
+        if (TerminalControl.full) content15.add("-TCMD, TCPG: Updated MVA data")
+        content15.add("-Bug fixes, optimisations")
+        changeLogContent["1.4.2012.1"] = content15
+
         //Version 1.4.2011.1
         val content14 = Array<String>()
         content14.add("-Traffic: Custom traffic settings are now available under Settings => Traffic => Arrival traffic settings - 3 different modes are available")

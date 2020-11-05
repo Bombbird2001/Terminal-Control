@@ -59,15 +59,6 @@ import java.util.*
 import kotlin.collections.HashSet
 
 class RadarScreen : GameScreen {
-    companion object {
-        /** Disposes of static variables after user quits app  */
-        fun disposeStatic() {
-            if (!DataTag.LOADED_ICONS) return
-            DataTag.SKIN.dispose()
-            DataTag.ICON_ATLAS.dispose()
-        }
-    }
-
     enum class Weather {
         LIVE, RANDOM, STATIC
     }

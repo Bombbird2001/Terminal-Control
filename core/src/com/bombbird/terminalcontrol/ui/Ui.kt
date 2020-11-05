@@ -2,15 +2,13 @@ package com.bombbird.terminalcontrol.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
@@ -44,39 +42,19 @@ class Ui {
         const val SID_SPD_RESTRICTIONS = "SID speed restrictions"
         const val STAR_SPD_RESTRICTIONS = "STAR speed restrictions"
         const val NO_SPD_RESTRICTIONS = "No speed restrictions"
-        private var transBackground: Texture? = null
-        private var hdgBoxBackground: Texture? = null
-        private var paneTexture: Texture? = null
-        private var lightBackground: Texture? = null
-        private var lightestBackground: Texture? = null
-        lateinit var hdgBoxBackgroundDrawable: SpriteDrawable
-        lateinit var transBackgroundDrawable: SpriteDrawable
-        lateinit var lightBoxBackground: SpriteDrawable
-        lateinit var lightestBoxBackground: SpriteDrawable
+        lateinit var paneDrawable: NinePatchDrawable
+        lateinit var hdgBoxBackgroundDrawable: NinePatchDrawable
+        lateinit var transBackgroundDrawable: NinePatchDrawable
+        lateinit var lightBoxBackground: NinePatchDrawable
+        lateinit var lightestBoxBackground: NinePatchDrawable
 
         /** Loads the textures for the UI pane  */
         fun generatePaneTextures() {
-            hdgBoxBackground = Texture(Gdx.files.internal("game/ui/BoxBackground.png"))
-            transBackground = Texture(Gdx.files.internal("game/ui/TransBackground.png"))
-            paneTexture = Texture(Gdx.files.internal("game/ui/UI Pane_Normal.png"))
-            lightBackground = Texture(Gdx.files.internal("game/ui/LightBoxBackground.png"))
-            lightestBackground = Texture(Gdx.files.internal("game/ui/LightestBoxBackground.png"))
-            hdgBoxBackgroundDrawable = SpriteDrawable(Sprite(hdgBoxBackground))
-            transBackgroundDrawable = SpriteDrawable(Sprite(transBackground))
-            lightBoxBackground = SpriteDrawable(Sprite(lightBackground))
-            lightestBoxBackground = SpriteDrawable(Sprite(lightestBackground))
-        }
-
-        /** Disposes of static textures  */
-        fun disposeStatic() {
-            hdgBoxBackground?.dispose()
-            lightBackground?.dispose()
-            lightestBackground?.dispose()
-            paneTexture?.dispose()
-            hdgBoxBackground = null
-            lightBackground = null
-            lightestBackground = null
-            paneTexture = null
+            paneDrawable = NinePatchDrawable(TerminalControl.skin.getPatch("UiPane"))
+            hdgBoxBackgroundDrawable = NinePatchDrawable(TerminalControl.skin.getPatch("BoxBackground"))
+            transBackgroundDrawable = NinePatchDrawable(TerminalControl.skin.getPatch("TransBackground"))
+            lightBoxBackground = NinePatchDrawable(TerminalControl.skin.getPatch("LightBoxBackground"))
+            lightestBoxBackground = NinePatchDrawable(TerminalControl.skin.getPatch("LightestBoxBackground"))
         }
     }
 
@@ -115,10 +93,6 @@ class Ui {
     private val radarScreen = TerminalControl.radarScreen!!
 
     init {
-        if (hdgBoxBackground == null) {
-            generatePaneTextures()
-        }
-
         tab = 0
         loadNormalPane()
         loadAircraftLabel()
@@ -233,9 +207,8 @@ class Ui {
     private fun loadNormalPane() {
         //Background click "catcher"
         val buttonStyle = Button.ButtonStyle()
-        val drawable = SpriteDrawable(Sprite(paneTexture))
-        buttonStyle.up = drawable
-        buttonStyle.down = drawable
+        buttonStyle.up = paneDrawable
+        buttonStyle.down = paneDrawable
         paneImage = Button(buttonStyle)
         paneImage.setPosition(0f, 0f)
         paneImage.setSize(1080 * TerminalControl.WIDTH.toFloat() / TerminalControl.HEIGHT, 3240f)

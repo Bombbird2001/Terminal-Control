@@ -32,8 +32,6 @@ object ErrorHandler {
         if (!exit) return
         //Quit game
         TerminalControl.radarScreen?.metar?.isQuit = true
-        RadarScreen.disposeStatic()
-        Ui.disposeStatic()
         TerminalControl.radarScreen?.dispose()
         Gdx.app.exit()
         if (Gdx.app.type == Application.ApplicationType.Android) throw RuntimeException(e)
@@ -54,8 +52,6 @@ object ErrorHandler {
         e.printStackTrace()
         //Quit game
         TerminalControl.radarScreen?.metar?.isQuit = true
-        RadarScreen.disposeStatic()
-        Ui.disposeStatic()
         TerminalControl.radarScreen?.dispose()
         Gdx.app.exit()
         if (Gdx.app.type == Application.ApplicationType.Android) throw RuntimeException(e)

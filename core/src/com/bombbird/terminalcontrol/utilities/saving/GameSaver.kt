@@ -32,7 +32,6 @@ object GameSaver {
     private lateinit var backupHoldingPts: HashMap<String, HashMap<String, HoldingPoints>>
 
     /** Saves current game state  */
-
     fun saveGame() {
         val radarScreen = TerminalControl.radarScreen ?: return
         backupWpts = HashMap()

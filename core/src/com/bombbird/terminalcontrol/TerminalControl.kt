@@ -3,9 +3,11 @@ package com.bombbird.terminalcontrol
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
@@ -170,13 +172,23 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         useDiscord = false
     }
 
+    private fun loadDialogSkin() {
+        val ws = Window.WindowStyle()
+        ws.titleFont = Fonts.defaultFont20
+        ws.titleFontColor = Color.WHITE
+        ws.background = skin.getDrawable("ListBackground")
+        ws.stageBackground = skin.getDrawable("DarkBackground")
+        skin.add("defaultDialog", ws)
+    }
+
     override fun create() {
         WIDTH = Gdx.graphics.width
         HEIGHT = Gdx.graphics.height
         batch = SpriteBatch()
-        buttonAtlas = TextureAtlas(Gdx.files.internal("game/ui/mainmenubuttons.atlas"))
+        buttonAtlas = TextureAtlas(Gdx.files.internal("game/ui/terminal-control.atlas"))
         skin = Skin()
         skin.addRegions(buttonAtlas)
+        loadDialogSkin()
         loadMaps()
         Gdx.input.isCatchBackKey = true
         setScreen(MainMenuScreen(this, null))

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -12,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
 import com.badlogic.gdx.utils.Queue
 import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
@@ -28,8 +28,6 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.withinRange
 class DataTag(aircraft: Aircraft) {
     companion object {
         //Rendering parameters
-        lateinit var ICON_ATLAS: TextureAtlas
-        lateinit var SKIN: Skin
         private val BUTTON_STYLE_CTRL = ImageButton.ImageButtonStyle()
         private val BUTTON_STYLE_DEPT = ImageButton.ImageButtonStyle()
         private val BUTTON_STYLE_UNCTRL = ImageButton.ImageButtonStyle()
@@ -99,7 +97,7 @@ class DataTag(aircraft: Aircraft) {
         labelStyle.fontColor = Color.WHITE
         label = Label("Loading...", labelStyle)
         label.setPosition(aircraft.x - label.width / 2, aircraft.y + 25)
-        labelButton = Button(SKIN.getDrawable("labelBackgroundSmall"), SKIN.getDrawable("labelBackgroundSmall"))
+        labelButton = Button(TerminalControl.skin.getDrawable("FillerImage"), TerminalControl.skin.getDrawable("FillerImage"))
         labelButton.setSize(label.width + 10, label.height)
         val clickSpotStyle = Button.ButtonStyle(null, null, null)
         clickSpot = Button(clickSpotStyle)
@@ -146,21 +144,19 @@ class DataTag(aircraft: Aircraft) {
     /** Loads label, icon resources  */
     private fun loadResources() {
         if (!LOADED_ICONS) {
-            ICON_ATLAS = TextureAtlas(Gdx.files.internal("game/aircrafts/aircraftIcons.atlas"))
-            SKIN = Skin(ICON_ATLAS)
-            BUTTON_STYLE_CTRL.imageUp = SKIN.getDrawable("aircraftControlled")
-            BUTTON_STYLE_CTRL.imageDown = SKIN.getDrawable("aircraftControlled")
-            BUTTON_STYLE_DEPT.imageUp = SKIN.getDrawable("aircraftDeparture")
-            BUTTON_STYLE_DEPT.imageDown = SKIN.getDrawable("aircraftDeparture")
-            BUTTON_STYLE_UNCTRL.imageUp = SKIN.getDrawable("aircraftNotControlled")
-            BUTTON_STYLE_UNCTRL.imageDown = SKIN.getDrawable("aircraftNotControlled")
-            BUTTON_STYLE_ENROUTE.imageUp = SKIN.getDrawable("aircraftEnroute")
-            BUTTON_STYLE_ENROUTE.imageDown = SKIN.getDrawable("aircraftEnroute")
-            val labelPatchGreen = NinePatch(SKIN.getRegion("labelBorderGreen"), 3, 3, 3, 3)
-            val labelPatchBlue = NinePatch(SKIN.getRegion("labelBorderBlue"), 3, 3, 3, 3)
-            val labelPatchOrange = NinePatch(SKIN.getRegion("labelBorderOrange"), 3, 3, 3, 3)
-            val labelPatchRed = NinePatch(SKIN.getRegion("labelBorderRed"), 3, 3, 3, 3)
-            val labelPatchMagenta = NinePatch(SKIN.getRegion("labelBorderMagenta"), 3, 3, 3, 3)
+            BUTTON_STYLE_CTRL.imageUp = TerminalControl.skin.getDrawable("aircraftControlled")
+            BUTTON_STYLE_CTRL.imageDown = TerminalControl.skin.getDrawable("aircraftControlled")
+            BUTTON_STYLE_DEPT.imageUp = TerminalControl.skin.getDrawable("aircraftDeparture")
+            BUTTON_STYLE_DEPT.imageDown = TerminalControl.skin.getDrawable("aircraftDeparture")
+            BUTTON_STYLE_UNCTRL.imageUp = TerminalControl.skin.getDrawable("aircraftNotControlled")
+            BUTTON_STYLE_UNCTRL.imageDown = TerminalControl.skin.getDrawable("aircraftNotControlled")
+            BUTTON_STYLE_ENROUTE.imageUp = TerminalControl.skin.getDrawable("aircraftEnroute")
+            BUTTON_STYLE_ENROUTE.imageDown = TerminalControl.skin.getDrawable("aircraftEnroute")
+            val labelPatchGreen = NinePatch(TerminalControl.skin.getRegion("labelBorderGreen"), 3, 3, 3, 3)
+            val labelPatchBlue = NinePatch(TerminalControl.skin.getRegion("labelBorderBlue"), 3, 3, 3, 3)
+            val labelPatchOrange = NinePatch(TerminalControl.skin.getRegion("labelBorderOrange"), 3, 3, 3, 3)
+            val labelPatchRed = NinePatch(TerminalControl.skin.getRegion("labelBorderRed"), 3, 3, 3, 3)
+            val labelPatchMagenta = NinePatch(TerminalControl.skin.getRegion("labelBorderMagenta"), 3, 3, 3, 3)
             DRAWABLE_GREEN = NinePatchDrawable(labelPatchGreen)
             DRAWABLE_BLUE = NinePatchDrawable(labelPatchBlue)
             DRAWABLE_ORANGE = NinePatchDrawable(labelPatchOrange)
@@ -342,17 +338,17 @@ class DataTag(aircraft: Aircraft) {
 
     /** Appends a new image to end of queue for drawing trail dots given a set of coordinates  */
     fun addTrailDot(x: Float, y: Float) {
-        val image: Image
+        val dot: Image
         when (aircraft) {
-            is Arrival -> image = Image(SKIN.getDrawable("DotsArrival"))
-            is Departure -> image = Image(SKIN.getDrawable("DotsDeparture"))
+            is Arrival -> dot = Image(TerminalControl.skin.getDrawable("DotsArrival"))
+            is Departure -> dot = Image(TerminalControl.skin.getDrawable("DotsDeparture"))
             else -> {
-                image = Image()
+                dot = Image()
                 Gdx.app.log("Trail dot error", "Aircraft not instance of arrival or departure, trail image not found!")
             }
         }
-        image.setPosition(x - image.width / 2, y - image.height / 2)
-        trailDots.addLast(image)
+        dot.setPosition(x - dot.width / 2, y - dot.height / 2)
+        trailDots.addLast(dot)
     }
 
     /** Updates the position of the label to prevent it from going out of bounds  */
