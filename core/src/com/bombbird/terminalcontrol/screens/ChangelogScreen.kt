@@ -74,6 +74,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
 
         //Version 1.4.2012.1
         val content15 = Array<String>()
+        content15.add("-UI: Added conflict display, reason for conflict to status pane")
         content15.add("-UI: Added dialogs to prevent accidental quitting, deleting")
         if (TerminalControl.full) content15.add("-TCMD, TCPG: Updated MVA data")
         content15.add("-Bug fixes, optimisations")
