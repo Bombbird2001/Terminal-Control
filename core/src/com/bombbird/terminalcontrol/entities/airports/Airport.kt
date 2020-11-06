@@ -358,13 +358,9 @@ class Airport {
 
     fun updateRunwayUsage() {
         //Update active runways (windHdg 0 is VRB wind)
-        val windHdg = if (metar.isNull("windDirection")) 0 else metar.getInt("windDirection")
+        val windHdg = metar.optInt("windDirection", 0)
         windshear = ""
-        windshear = if (!metar.isNull("windshear")) {
-            metar.getString("windshear")
-        } else {
-            "None"
-        }
+        windshear = metar.optString("windshear", "None")
         runwayManager.updateRunways(windHdg, metar.getInt("windSpeed"))
         for (runway in runways.values) {
             runway.isWindshear = runway.isLanding && ("ALL RWY" == windshear || ArrayUtils.contains(windshear.split(" ".toRegex()).toTypedArray(), "R" + runway.name))

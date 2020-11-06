@@ -291,7 +291,7 @@ class RadarScreen : GameScreen {
         emergenciesLanded = save.optInt("emergenciesLanded", 0)
         spawnTimer = save.optDouble("spawnTimer", 60.0).toFloat()
         previousOffset = save.optDouble("previousOffset", 0.0).toFloat()
-        information = if (save.isNull("information")) MathUtils.random(65, 90).toChar() else save.getInt("information").toChar()
+        information = save.optInt("information", MathUtils.random(65, 90)).toChar()
         loadStageCamTimer()
 
         //Set timer for radar delay, trails and autosave
@@ -320,7 +320,7 @@ class RadarScreen : GameScreen {
             "false" -> Weather.RANDOM
             else -> Weather.valueOf(save.getString("liveWeather"))
         }
-        soundSel = if (save.isNull("sounds")) TerminalControl.defaultSoundSetting else save.getInt("sounds")
+        soundSel = save.optInt("sounds", TerminalControl.defaultSoundSetting)
         emerChance = if (save.isNull("emerChance")) {
             Emergency.Chance.MEDIUM
         } else {

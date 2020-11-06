@@ -16,7 +16,7 @@ open class CustomDialog(title: String, val text: String, val negative: String, v
 
     init {
         titleLabel.setAlignment(Align.top)
-        buttonTable.defaults().width(500f).padLeft(30f).padRight(30f)
+        buttonTable.defaults().width(500f).height(160f).padLeft(30f).padRight(30f)
         initialize()
     }
 
@@ -37,12 +37,10 @@ open class CustomDialog(title: String, val text: String, val negative: String, v
 
         if (negative.isNotEmpty()) {
             val negativeButton = TextButton(negative, buttonStyle)
-            negativeButton.labelCell.padTop(40f).padBottom(40f)
             button(negativeButton, DIALOG_NEGATIVE)
         }
         if (positive.isNotEmpty()) {
             val positiveButton = TextButton(positive, buttonStyle)
-            positiveButton.labelCell.padTop(40f).padBottom(40f)
             button(positiveButton, DIALOG_POSITIVE)
         }
 

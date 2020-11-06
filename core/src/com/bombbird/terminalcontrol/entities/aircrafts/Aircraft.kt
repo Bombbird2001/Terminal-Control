@@ -29,6 +29,7 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
+import org.json.JSONException
 import org.json.JSONObject
 import kotlin.math.*
 
@@ -345,11 +346,7 @@ abstract class Aircraft : Actor {
         goAroundTime = save.getDouble("goAroundTime").toFloat()
         isConflict = save.getBoolean("conflict")
         isWarning = save.getBoolean("warning")
-        isTerrainConflict = if (save.isNull("terrainConflict")) {
-            false
-        } else {
-            save.getBoolean("terrainConflict")
-        }
+        isTerrainConflict = save.optBoolean("terrainConflict", false)
         isPrevConflict = isConflict
         emergency = if (save.optJSONObject("emergency") == null) Emergency(this, false) else Emergency(this, save.getJSONObject("emergency"))
         request = save.optInt("request", NO_REQUEST)
@@ -371,7 +368,7 @@ abstract class Aircraft : Actor {
         isLocCap = save.getBoolean("locCap")
         holdWpt = if (save.isNull("holdWpt")) null else radarScreen.waypoints[save.getString("holdWpt")]
         isHolding = save.getBoolean("holding")
-        holdingType = if (save.isNull("holdingType")) 0 else save.getInt("holdingType")
+        holdingType = save.optInt("holdingType", 0)
         isInit = save.getBoolean("init")
         isType1leg = save.getBoolean("type1leg")
         if (save.isNull("holdTargetPt")) {
@@ -392,8 +389,13 @@ abstract class Aircraft : Actor {
             val the2bools = save.getJSONArray("holdTargetPtSelected")
             holdTargetPtSelected = BooleanArray(2)
             holdTargetPtSelected?.let {
-                it[0] = the2bools.getBoolean(0)
-                it[1] = the2bools.getBoolean(1)
+                try {
+                    it[0] = the2bools.getBoolean(0)
+                    it[1] = the2bools.getBoolean(1)
+                } catch (e: JSONException) {
+                    it[0] = true
+                    it[1] = false
+                }
             }
         }
         prevAlt = save.getDouble("prevAlt").toFloat()
@@ -402,11 +404,7 @@ abstract class Aircraft : Actor {
         targetAltitude = save.getInt("targetAltitude")
         verticalSpeed = save.getDouble("verticalSpeed").toFloat()
         isExpedite = save.getBoolean("expedite")
-        expediteTime = if (save.isNull("expediteTime")) {
-            0f
-        } else {
-            save.getDouble("expediteTime").toFloat()
-        }
+        expediteTime = save.optDouble("expediteTime", 0.0).toFloat()
         lowestAlt = save.getInt("lowestAlt")
         highestAlt = save.getInt("highestAlt")
         isGsCap = save.getBoolean("gsCap")
@@ -427,7 +425,7 @@ abstract class Aircraft : Actor {
         radarGs = save.getDouble("radarGs").toFloat()
         radarAlt = save.getDouble("radarAlt").toFloat()
         radarVs = save.getDouble("radarVs").toFloat()
-        voice = if (save.isNull("voice")) TerminalControl.tts.getRandomVoice() else save.getString("voice")
+        voice = save.optString("voice", TerminalControl.tts.getRandomVoice())
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
@@ -467,18 +465,10 @@ abstract class Aircraft : Actor {
             val labelPos = save.getJSONArray("labelPos")
             dataTag.setLabelPosition(labelPos.getDouble(0).toFloat(), labelPos.getDouble(1).toFloat())
         }
-        dataTag.isMinimized = !save.isNull("dataTagMin") && save.getBoolean("dataTagMin")
-        if (save.isNull("fuelEmergency")) {
-            isFuelEmergency = if (save.isNull("emergency")) {
-                //Save from before fuel emergency update
-                false
-            } else {
-                //Change key from emergency to fuel emergency
-                save.getBoolean("emergency")
-            }
-        }
+        dataTag.isMinimized = save.optBoolean("dataTagMin", false)
+        isFuelEmergency = save.optBoolean("fuelEmergency", save.optBoolean("emergency", false))
         if (hasEmergency()) dataTag.setEmergency()
-        isActionRequired = !save.isNull("actionRequired") && save.getBoolean("actionRequired")
+        isActionRequired = save.optBoolean("actionRequired", false)
         if (isActionRequired) dataTag.startFlash()
     }
 

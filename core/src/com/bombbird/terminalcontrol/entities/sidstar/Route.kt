@@ -33,46 +33,6 @@ class Route private constructor() {
         heading = -1
     }
 
-    /** Create a new Route based on STAR, for compatibility with older versions  */
-    constructor(star: Star) : this() {
-        val inbound = star.randomInbound
-        if ("HDG" != inbound[0].split(" ".toRegex()).toTypedArray()[0]) {
-            val data = inbound[0].split(" ".toRegex()).toTypedArray()
-            waypoints.add(radarScreen.waypoints[data[1]])
-            restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
-            flyOver.add(data.size > 5 && data[5] == "FO")
-        }
-        waypoints.addAll(star.waypoints)
-        restrictions.addAll(star.restrictions)
-        flyOver.addAll(star.flyOver)
-        holdProcedure = HoldProcedure(star)
-        name = star.name
-        loadStarZone()
-    }
-
-    /** Create a new Route based on SID, for compatibility with older versions  */
-    constructor(sid: Sid, runway: String) : this() {
-        waypoints.addAll(sid.getInitWpts(runway))
-        restrictions.addAll(sid.getInitRestrictions(runway))
-        flyOver.addAll(sid.getInitFlyOver(runway))
-        waypoints.addAll(sid.waypoints)
-        restrictions.addAll(sid.restrictions)
-        flyOver.addAll(sid.flyOver)
-        val transition = sid.randomTransition
-        for (i in 0 until transition.size) {
-            val data = transition[i].split(" ".toRegex()).toTypedArray()
-            if (data[0] == "WPT") {
-                //Waypoint
-                waypoints.add(radarScreen.waypoints[data[1]])
-                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
-                flyOver.add(data.size > 5 && data[5] == "FO")
-            }
-        }
-        holdProcedure = HoldProcedure()
-        name = sid.name
-        loadSidZone(null, null, -1)
-    }
-
     /** Create new Route based on newly assigned STAR  */
     constructor(aircraft: Aircraft, star: Star, changeSTAR: Boolean) : this() {
         val inbound = star.randomInbound

@@ -131,20 +131,18 @@ class Departure : Aircraft {
     }
 
     constructor(save: JSONObject) : super(save) {
-        sid = airport.sids[save.getString("sid")]!!
-        runway?.let {
-            if (save.isNull("route")) {
-                route = Route(sid, it.name)
-            } else {
-                val route = save.getJSONObject("route")
-                this.route = Route(route, sid, it, typClimb)
-            }
+        if (save.isNull("route")) {
+            throw RuntimeException("Save is old - incompatible with subsequent versions")
         }
+        val route = save.getJSONObject("route")
+
+        sid = airport.sids[save.getString("sid")] ?: Sid(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.optString("name", "null"))
+        this.route = Route(route, sid, runway!!, typClimb)
         outboundHdg = save.getInt("outboundHdg")
         contactAlt = save.getInt("contactAlt")
         handoverAlt = save.getInt("handOverAlt")
         isV2set = save.getBoolean("v2set")
-        isAccel = !save.isNull("accel") && save.getBoolean("accel")
+        isAccel = save.optBoolean("accel", false)
         isSidSet = save.getBoolean("sidSet")
         isContacted = save.getBoolean("contacted")
         isHandedOver = save.optBoolean("handedOver", !isArrivalDeparture && altitude > handoverAlt)

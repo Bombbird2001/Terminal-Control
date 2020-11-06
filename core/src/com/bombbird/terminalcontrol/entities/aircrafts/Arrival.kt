@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
@@ -176,14 +177,14 @@ class Arrival : Aircraft {
     }
 
     constructor(save: JSONObject) : super(save) {
-        star = airport.stars[save.getString("star")]!!
         if (save.isNull("route")) {
-            route = Route(star)
-        } else {
-            val route = save.getJSONObject("route")
-            star = Star(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), if (route.isNull("name")) "null" else route.getString("name"))
-            this.route = Route(route, star)
+            throw RuntimeException("Save is old - incompatible with subsequent versions")
         }
+        val route = save.getJSONObject("route")
+
+        star = airport.stars[save.getString("star")] ?: Star(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.optString("name", "null"))
+
+        this.route = Route(route, star)
         if (save.isNull("nonPrecAlts")) {
             //If non precision alt is null
             nonPrecAlts = null
@@ -202,10 +203,10 @@ class Arrival : Aircraft {
         goAroundAlt = save.getInt("goAroundAlt")
         isGoAroundSet = save.getBoolean("goAroundSet")
         contactAlt = save.getInt("contactAlt")
-        fuel = if (save.isNull("fuel")) 75f * 60 else save.getDouble("fuel").toFloat()
-        isRequestPriority = !save.isNull("requestPriority") && save.getBoolean("requestPriority")
-        isDeclareEmergency = !save.isNull("declareEmergency") && save.getBoolean("declareEmergency")
-        isDivert = !save.isNull("divert") && save.getBoolean("divert")
+        fuel = save.optDouble("fuel", 75.0 * 60).toFloat()
+        isRequestPriority = save.optBoolean("requestPriority", false)
+        isDeclareEmergency = save.optBoolean("declareEmergency", false)
+        isDivert = save.optBoolean("divert", false)
         color = Color(0x00b3ffff)
         loadOtherLabelInfo(save)
     }
@@ -369,10 +370,12 @@ class Arrival : Aircraft {
             if (highestAlt < lowestAlt) highestAlt = lowestAlt
             val tmpArray = ui.altTab.createAltArray(lowestAlt, highestAlt)
             if ("TCOO" == airport.icao) {
-                ui.altTab.checkAndAddIntermediate(tmpArray, altitude, 3500)
+                checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 3500)
             } else if ("TCHH" == airport.icao && sidStar.runways.contains("25R", false)) {
-                ui.altTab.checkAndAddIntermediate(tmpArray, altitude, 4300)
-                ui.altTab.checkAndAddIntermediate(tmpArray, altitude, 4500)
+                checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4300)
+                checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4500)
+            } else if ("TCHX" == airport.icao && sidStar.runways.contains("31", false)) {
+                checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4500)
             }
             tmpArray.sort()
             this.highestAlt = tmpArray[tmpArray.size - 1]
@@ -385,6 +388,13 @@ class Arrival : Aircraft {
                 this.highestAlt = if (highestAlt > -1) highestAlt else radarScreen.maxAlt
                 this.lowestAlt = if (lowestAlt > -1) lowestAlt else radarScreen.minAlt
             }
+        }
+    }
+
+    /** Adds the odd altitudes if they are in range of the supplied lowest and highest altitudes */
+    fun checkAndAddOddAltitudes(allAlts: Array<Int>, lowestAlt: Int, highestAlt: Int, altToAdd: Int) {
+        if (altToAdd in lowestAlt..highestAlt) {
+            allAlts.add(altToAdd)
         }
     }
 

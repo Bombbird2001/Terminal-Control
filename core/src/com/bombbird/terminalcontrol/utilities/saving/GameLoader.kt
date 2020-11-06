@@ -37,7 +37,7 @@ object GameLoader {
         radarScreen.allAircraft = allAircrafts
         radarScreen.utilityBox.loadSave(save.getJSONArray("commBox"))
         radarScreen.separationChecker.lastNumber = save.getInt("lastNumber")
-        radarScreen.separationChecker.time = if (save.isNull("sepTime")) 3f else save.getDouble("sepTime").toFloat()
+        radarScreen.separationChecker.time = save.optDouble("sepTime", 3.0).toFloat()
 
         //GameSaver.saveGame();
     }

@@ -182,18 +182,20 @@ object GameSaver {
 
             //More additional holding info
             aircraft.holdTargetPt?.let {
-                val info0 = JSONArray()
-                val info1 = JSONArray()
-                for ((index, info) in it.withIndex()) {
-                    val point = JSONArray()
-                    for (info2 in info) {
-                        point.put(info2.toDouble())
+                aircraft.holdTargetPtSelected?.let { it2 ->
+                    val info0 = JSONArray()
+                    val info1 = JSONArray()
+                    for ((index, info) in it.withIndex()) {
+                        val point = JSONArray()
+                        for (info2 in info) {
+                            point.put(info2.toDouble())
+                        }
+                        info0.put(point)
+                        info1.put(it2[index])
                     }
-                    info0.put(point)
-                    info1.put(it[index])
+                    aircraftInfo.put("holdTargetPt", info0)
+                    aircraftInfo.put("holdTargetPtSelected", info1)
                 }
-                aircraftInfo.put("holdTargetPt", info0)
-                aircraftInfo.put("holdTargetPtSelected", info1)
             } ?: run {
                 aircraftInfo.put("holdTargetPt", JSONObject.NULL)
                 aircraftInfo.put("holdTargetPtSelected", JSONObject.NULL)

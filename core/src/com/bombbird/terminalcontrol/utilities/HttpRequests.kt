@@ -77,147 +77,19 @@ object HttpRequests {
                         metar.randomWeather()
                     }
                 } else {
-                    val responseText = response.body?.string() ?: "Null getMetar response"
+                    val responseText = response.body?.string()
                     response.close()
-                    if ("Update" == responseText) {
-                        //Server requested for METAR update
-                        println("Update requested")
-                        if (metar.isQuit) return
-                        radarScreen.loadingPercent = "20%"
-                        getApiKey(metar, 0)
-                    } else {
-                        //METAR JSON text has been received
-                        metar.metarObject = JSONObject(responseText)
-                        metar.updateRadarScreenState()
-                    }
-                }
-            }
-        })
-    }
 
-    private fun getApiKey(metar: Metar, count: Int) {
-        val body = "{\"password\":\"${Values.API_PASSWORD}\"}".toRequestBody(json)
-        val request = Request.Builder()
-                .url(Values.API_URL)
-                .post(body)
-                .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                //If requests fails due to timeout
-                e.printStackTrace()
-                if (count <= 2) {
-                    getApiKey(metar, count + 1)
-                    return
-                }
-                metar.randomWeather()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Gdx.app.log("getApiKey", response.toString())
-                    response.close()
-                    if (count <= 2) {
-                        getApiKey(metar, count + 1)
+                    if (responseText == null) {
+                        println("Null getMetar response")
+                        metar.randomWeather()
                         return
                     }
-                    metar.randomWeather()
-                } else {
-                    val apiKey: String = response.body?.string() ?: "Null getApiKey response"
-                    response.close()
-                    if (apiKey == "Null getApiKey response") {
-                        if (count <= 2) {
-                            getApiKey(metar, count + 1)
-                        } else {
-                            metar.randomWeather()
-                        }
-                        return
-                    }
-                    if (metar.isQuit) return
-                    receiveMetar(metar, apiKey, true)
-                    TerminalControl.radarScreen?.loadingPercent = "40%"
+
+                    //METAR JSON text has been received
+                    metar.metarObject = JSONObject(responseText)
+                    metar.updateRadarScreenState()
                 }
-            }
-        })
-    }
-
-    private fun receiveMetar(metar: Metar, apiKey: String, retry: Boolean) {
-        val radarScreen = TerminalControl.radarScreen ?: return
-        val stringBuilder = StringBuilder()
-        for (newIcao in radarScreen.airports.keys) {
-            if (stringBuilder.isNotEmpty()) stringBuilder.append(",")
-            var arpt = reverseNameAirportICAO(newIcao)
-            if ("VHHX" == arpt) arpt = "VHHH"
-            stringBuilder.append(arpt)
-        }
-        val request = Request.Builder()
-                .addHeader("X-API-KEY", apiKey)
-                .url("https://api.checkwx.com/metar/$stringBuilder/decoded")
-                .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                //If requests fails due to timeout
-                e.printStackTrace()
-                Gdx.app.log("API metar error", "CheckWX API may not be working!")
-
-                //If retrying
-                if (retry) {
-                    Gdx.app.log("receiveMetar", "Retrying getting weather from API")
-                    receiveMetar(metar, apiKey, false)
-                    return
-                }
-                metar.randomWeather()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Gdx.app.log("receiveMetar", response.toString())
-                    response.close()
-                    if (retry) {
-                        Gdx.app.log("receiveMetar", "Retrying getting weather from API")
-                        receiveMetar(metar, apiKey, false)
-                        return
-                    }
-                    metar.randomWeather()
-                } else {
-                    val responseText = response.body?.string() ?: ""
-                    response.close()
-                    val jo = JSONObject(responseText)
-                    sendMetar(metar, jo)
-                    if (metar.isQuit) return
-                    TerminalControl.radarScreen?.loadingPercent = "60%"
-                }
-            }
-        })
-    }
-
-    private fun sendMetar(metar: Metar, jo: JSONObject) {
-        jo.put("password", Values.SEND_METAR_PASSWORD)
-        val body = jo.toString().toRequestBody(json)
-        val request = Request.Builder()
-                .url(Values.SEND_METAR_URL)
-                .post(body)
-                .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                //If requests fails due to timeout
-                e.printStackTrace()
-                sendMetar(metar, jo)
-            }
-
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Gdx.app.log("sendMetar", response.toString())
-                    metar.randomWeather()
-                    response.close()
-                    return
-                } else {
-                    println(response.body?.string())
-                }
-                response.close()
-                if (metar.isQuit) return
-                getMetar(metar, true)
-                TerminalControl.radarScreen?.loadingPercent = "80%"
             }
         })
     }

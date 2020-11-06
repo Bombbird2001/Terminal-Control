@@ -149,7 +149,7 @@ class RunwayChanger {
         airportLabel.setText(icao)
         airport = radarScreen.airports[icao]
         airport?.metar?.let {
-            val windHdg = if (it.isNull("windDirection")) 0 else it.getInt("windDirection")
+            val windHdg = it.optInt("windDirection", 0)
             var windSpd = it.getInt("windSpeed")
             if (windHdg == 0) windSpd = 0
             airport?.runwayManager?.getSuitableConfigs(windHdg, windSpd)?.let { configs ->

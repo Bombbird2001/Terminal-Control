@@ -119,8 +119,10 @@ class AltTab(ui: Ui) : Tab(ui) {
                     val icao: String = it.airport.icao
                     if ("TCOO" == icao) {
                         checkAndAddIntermediate(allAlts, it.altitude, 3500)
-                    } else if ("TCHH" == icao && it.sidStar.runways.contains("25R", false) || "TCHX" == icao) {
+                    } else if ("TCHH" == icao && it.sidStar.runways.contains("25R", false)) {
                         checkAndAddIntermediate(allAlts, it.altitude, 4300)
+                        checkAndAddIntermediate(allAlts, it.altitude, 4500)
+                    } else if ("TCHX" == icao && it.sidStar.runways.contains("31", false)) {
                         checkAndAddIntermediate(allAlts, it.altitude, 4500)
                     }
                     allAlts.sort()
@@ -164,7 +166,7 @@ class AltTab(ui: Ui) : Tab(ui) {
         return newAltArray
     }
 
-    fun checkAndAddIntermediate(allAlts: Array<Int>, currentAlt: Float, altToAdd: Int) {
+    private fun checkAndAddIntermediate(allAlts: Array<Int>, currentAlt: Float, altToAdd: Int) {
         if (currentAlt < altToAdd - 20) return  //Current aircraft altitude must be at lowest 20 feet lower than altitude to add
         allAlts.add(altToAdd)
     }
