@@ -11,9 +11,9 @@ class Sid : SidStar {
     private lateinit var initWpts: HashMap<String, com.badlogic.gdx.utils.Array<Waypoint>>
     private lateinit var initRestrictions: HashMap<String, com.badlogic.gdx.utils.Array<IntArray>>
     private lateinit var initFlyOver: HashMap<String, com.badlogic.gdx.utils.Array<Boolean>>
-    lateinit var transition: com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>
+    var transition = com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>()
         private set
-    lateinit var centre: Array<String>
+    var centre = arrayOf("Control", "125.5")
         private set
 
     constructor(airport: Airport, jo: JSONObject) : super(airport) {
@@ -33,7 +33,6 @@ class Sid : SidStar {
         initWpts = HashMap()
         initRestrictions = HashMap()
         initFlyOver = HashMap()
-        transition = com.badlogic.gdx.utils.Array()
         val rwys = jo.getJSONObject("rwys")
         for (rwy in rwys.keySet()) {
             runways.add(rwy)
@@ -67,13 +66,12 @@ class Sid : SidStar {
             transition.add(transData)
         }
         val control = jo.getJSONArray("control")
-        centre = arrayOf("Control", "125.5")
         centre[0] = control.getString(0)
         centre[1] = control.getString(1)
     }
 
-    val randomTransition: com.badlogic.gdx.utils.Array<String>
-        get() = transition.random()
+    val randomTransition: com.badlogic.gdx.utils.Array<String>?
+        get() = if (transition.isEmpty) null else transition.random()
 
     fun getInitClimb(runway: String?): IntArray? {
         if (runway == null) return null

@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.entities.zones.SidStarZone
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
@@ -79,7 +80,15 @@ class Route private constructor() {
         restrictions.addAll(sid.restrictions)
         flyOver.addAll(sid.flyOver)
         val transition = sid.randomTransition
-        for (i in 0 until transition.size) {
+        if (transition == null) {
+            val calculatedTrack =  if (waypoints.size >= 2) {
+                val wpt1 = waypoints[waypoints.size - 2]
+                val wpt2 = waypoints[waypoints.size - 1]
+                MathTools.getRequiredTrack(wpt1.posX, wpt1.posY, wpt2.posX, wpt2.posY).toInt()
+            } else -1
+            (aircraft as Departure).outboundHdg = calculatedTrack
+            heading = calculatedTrack
+        } else for (i in 0 until transition.size) {
             val data = transition[i].split(" ".toRegex()).toTypedArray()
             if (data[0] == "WPT") {
                 //Waypoint

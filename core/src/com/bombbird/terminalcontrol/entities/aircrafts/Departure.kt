@@ -136,7 +136,7 @@ class Departure : Aircraft {
         }
         val route = save.getJSONObject("route")
 
-        sid = airport.sids[save.getString("sid")] ?: Sid(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.optString("name", "null"))
+        sid = airport.sids[save.getString("sid")] ?: Sid(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.optString("name", save.optString("sid", "null")))
         this.route = Route(route, sid, runway!!, typClimb)
         outboundHdg = save.getInt("outboundHdg")
         contactAlt = save.getInt("contactAlt")

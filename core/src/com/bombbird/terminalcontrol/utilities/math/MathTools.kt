@@ -83,6 +83,11 @@ object MathTools {
         return getRequiredTrack(destX - x, destY - y)
     }
 
+    /** Calculates the required track to go from initial point with x, y to destination point with destX, destY  */
+    fun getRequiredTrack(x: Int, y: Int, destX: Int, destY: Int): Float {
+        return getRequiredTrack((destX - x).toFloat(), (destY - y).toFloat())
+    }
+
     /** Ensures the heading/track supplied is > 0 and <= 360  */
     fun modulateHeading(heading: Double): Double {
         var newHeading = heading
