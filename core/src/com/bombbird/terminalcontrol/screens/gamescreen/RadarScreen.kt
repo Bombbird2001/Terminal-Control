@@ -55,6 +55,7 @@ import com.bombbird.terminalcontrol.utilities.saving.GameLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
+import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.HashSet
 

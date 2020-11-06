@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Queue
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.ui.Ui
-import com.bombbird.terminalcontrol.utilities.ErrorHandler
+import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.Fonts
 
 open class Tab(ui: Ui) {
@@ -172,6 +172,6 @@ open class Tab(ui: Ui) {
         notListening = false
     }
 
-    val paneWidth: Float
+    private val paneWidth: Float
         get() = ui.paneWidth
 }

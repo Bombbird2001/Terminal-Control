@@ -24,7 +24,7 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
     lateinit var buttonStyle: TextButton.TextButtonStyle
 
     /** Loads the full UI of this screen  */
-    private fun loadUI() {
+    open fun loadUI() {
         //Reset stage
         stage.clear()
         stage.addActor(background)
@@ -51,8 +51,8 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
 
         //Set back button params
         backButton = TextButton("<= Back", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        backButton.width = MainMenuScreen.BUTTON_WIDTH
+        backButton.height = MainMenuScreen.BUTTON_HEIGHT
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {

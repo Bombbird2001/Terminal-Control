@@ -181,7 +181,6 @@ class Metar(private val radarScreen: RadarScreen) {
         updateAirports()
         prevMetar = metarObject
         Gdx.app.postRunnable { radarScreen.ui.updateMetar() }
-        radarScreen.loadingPercent = "100%"
         radarScreen.loading = false
     }
 

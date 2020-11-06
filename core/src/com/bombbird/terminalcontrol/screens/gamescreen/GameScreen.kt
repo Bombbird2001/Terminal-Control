@@ -28,7 +28,7 @@ import com.bombbird.terminalcontrol.ui.RandomTip.randomTip
 import com.bombbird.terminalcontrol.ui.RandomTip.tipsLoaded
 import com.bombbird.terminalcontrol.ui.RequestFlasher
 import com.bombbird.terminalcontrol.ui.Ui
-import com.bombbird.terminalcontrol.utilities.ErrorHandler
+import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.Fonts
 import kotlin.collections.HashMap
 
@@ -38,7 +38,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     var uiLoaded = false
     var loading = false
     var loadingTime = 0f
-    var loadingPercent = "0%"
     private var loadedTime = 0f
     private lateinit var loadingLabel: Label
     private lateinit var tipLabel: Label
@@ -298,7 +297,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     //Write loading text if loading
                     loadingTime += delta
                     loadedTime += delta
-                    var loadingText = when {
+                    val loadingText = when {
                         loadedTime > 1.5 -> {
                             loadedTime = 0f
                             if (liveWeather) "Loading live weather.   " else "Loading.   "
@@ -307,7 +306,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                         loadedTime > 0.5 -> if (liveWeather) "Loading live weather..  " else "Loading..  "
                         else -> if (liveWeather) "Loading live weather.   " else "Loading.   "
                     }
-                    loadingText += loadingPercent
                     loadingLabel.setText(loadingText)
                     loadingLabel.setPosition(1920 - loadingLabel.prefWidth / 2, 1550f)
                     game.batch.begin()

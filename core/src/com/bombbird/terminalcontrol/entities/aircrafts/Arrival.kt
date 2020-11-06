@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Star
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.tabs.Tab
+import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToMetre
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
@@ -178,7 +179,7 @@ class Arrival : Aircraft {
 
     constructor(save: JSONObject) : super(save) {
         if (save.isNull("route")) {
-            throw RuntimeException("Save is old - incompatible with subsequent versions")
+            throw IncompatibleSaveException("Old save format - route is null")
         }
         val route = save.getJSONObject("route")
 

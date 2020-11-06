@@ -11,7 +11,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.airports.AirportName
-import com.bombbird.terminalcontrol.utilities.ErrorHandler
+import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import org.json.JSONArray
 import java.util.*
 import kotlin.math.abs

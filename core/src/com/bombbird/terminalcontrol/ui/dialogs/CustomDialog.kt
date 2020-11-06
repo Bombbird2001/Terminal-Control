@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.Fonts
 
-open class CustomDialog(title: String, val text: String, val negative: String, val positive: String): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
+open class CustomDialog(title: String, val text: String, var negative: String, var positive: String): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
     companion object {
         //Dialog constants
         const val DIALOG_NEGATIVE = 0
@@ -24,11 +24,29 @@ open class CustomDialog(title: String, val text: String, val negative: String, v
         padTop(140f)
         padBottom(20f)
 
+        updateText(text)
+        generateButtons()
+
+        isModal = true
+    }
+
+    fun updateText(newText: String) {
+        contentTable.clearChildren()
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont12
-        val label = Label(text, labelStyle)
+        val label = Label(newText, labelStyle)
         label.setAlignment(Align.center)
         text(label)
+    }
+
+    fun updateButtons(newNegative: String, newPositive: String) {
+        negative = newNegative
+        positive = newPositive
+        generateButtons()
+    }
+
+    private fun generateButtons() {
+        buttonTable.clearChildren()
 
         val buttonStyle = TextButton.TextButtonStyle()
         buttonStyle.font = Fonts.defaultFont16
@@ -43,8 +61,6 @@ open class CustomDialog(title: String, val text: String, val negative: String, v
             val positiveButton = TextButton(positive, buttonStyle)
             button(positiveButton, DIALOG_POSITIVE)
         }
-
-        isModal = true
     }
 
     override fun getPrefHeight(): Float {

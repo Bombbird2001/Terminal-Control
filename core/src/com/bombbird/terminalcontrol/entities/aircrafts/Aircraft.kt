@@ -29,7 +29,6 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
-import org.json.JSONException
 import org.json.JSONObject
 import kotlin.math.*
 
@@ -389,13 +388,8 @@ abstract class Aircraft : Actor {
             val the2bools = save.getJSONArray("holdTargetPtSelected")
             holdTargetPtSelected = BooleanArray(2)
             holdTargetPtSelected?.let {
-                try {
-                    it[0] = the2bools.getBoolean(0)
-                    it[1] = the2bools.getBoolean(1)
-                } catch (e: JSONException) {
-                    it[0] = true
-                    it[1] = false
-                }
+                it[0] = the2bools.getBoolean(0)
+                it[1] = the2bools.getBoolean(1)
             }
         }
         prevAlt = save.getDouble("prevAlt").toFloat()

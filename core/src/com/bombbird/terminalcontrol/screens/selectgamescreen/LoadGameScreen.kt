@@ -10,9 +10,13 @@ import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.ui.dialogs.DeleteDialog
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
+import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
+import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import org.json.JSONArray
 
 class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
@@ -69,8 +73,12 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         for (i in 0 until saves.length()) {
             var multiplier = 1f
             val jsonObject = saves.getJSONObject(i)
-            val toDisplay = """${renameAirportICAO(jsonObject.getString("MAIN_NAME"))} (Score: ${jsonObject.getInt("score")}    High score: ${jsonObject.getInt("highScore")})
-Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject.getInt("airborne")}"""
+            var toDisplay =
+                    """
+                        ${renameAirportICAO(jsonObject.getString("MAIN_NAME"))} (Score: ${jsonObject.getInt("score")}    High score: ${jsonObject.getInt("highScore")})
+                        Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject.getInt("airborne")}
+                    """.trimIndent()
+            if (jsonObject.optBoolean("incompatible", false)) toDisplay += "\nIncompatible save"
             val saveButton = TextButton(toDisplay, buttonStyle)
             saveButton.name = toDisplay.substring(0, 4)
             val handle = Gdx.files.internal("game/available.arpt")
@@ -99,9 +107,67 @@ Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject
             }
             saveButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
-                    val radarScreen = RadarScreen(game, jsonObject)
-                    TerminalControl.radarScreen = radarScreen
-                    game.screen = radarScreen
+                    var radarScreen: RadarScreen? = null
+                    var success = false
+                    try {
+                        radarScreen = RadarScreen(game, jsonObject)
+                        TerminalControl.radarScreen = radarScreen
+                        game.screen = radarScreen
+                        success = true
+                    } catch (e: Exception) {
+                        TerminalControl.radarScreen = null
+                        val newScreen = MainMenuScreen(game, background)
+                        game.screen = newScreen
+                        radarScreen?.dispose()
+                        Timer.schedule(object : Timer.Task() {
+                            override fun run() {
+                                if (e is IncompatibleSaveException) {
+                                    //Old save, set incompatible flag to true
+                                    jsonObject.put("incompatible", true)
+                                    GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
+                                    //Show incompatible dialog
+                                    object : CustomDialog("Game load error", "Sorry, this save is no longer\ncompatible with the game.", "", "Oh...") {}.show(newScreen.stage)
+                                } else {
+                                    //Load error, show error
+                                    if (jsonObject.optBoolean("errorSent", false)) {
+                                        //Error already sent
+                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!") {}.show(newScreen.stage)
+                                    } else {
+                                        //Send save dialog
+                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send") {
+                                            override fun result(resObj: Any?) {
+                                                super.result(resObj)
+                                                if (resObj == DIALOG_POSITIVE) {
+                                                    when (positive) {
+                                                        "Sending..." -> {
+                                                            cancel()
+                                                        }
+                                                        "Send" -> {
+                                                            //Send the save file to server
+                                                            updateButtons("", "Sending...")
+                                                            ErrorHandler.sendSaveError(e, jsonObject, this)
+                                                            cancel()
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            override fun getPrefHeight(): Float {
+                                                return 600f
+                                            }
+                                        }.show(newScreen.stage)
+                                    }
+                                }
+                            }
+
+                        }, 0.2f)
+                    }
+                    if (success) {
+                        //If loaded successfully, clear error sent, incompatible flag
+                        jsonObject.put("errorSent", false)
+                        jsonObject.put("incompatible", false)
+                        GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
+                    }
                     event.handle()
                 }
             })

@@ -110,15 +110,18 @@ object GameSaver {
             backup.put(key, wpt)
         }
         jsonObject.put("backupWpts", backup)
-        val handle = getExtDir("saves/" + radarScreen.saveId + ".json")
+        writeObjectToFile(jsonObject, radarScreen.saveId)
+    }
+
+    fun writeObjectToFile(jsonObject: JSONObject, saveId: Int) {
+        val handle = getExtDir("saves/$saveId.json")
         if (handle != null) {
             val encode = Base64Coder.encodeString(jsonObject.toString())
             try {
                 handle.writeString(encode, false)
-                saveID(radarScreen.saveId)
+                saveID(saveId)
             } catch (e: GdxRuntimeException) {
                 TerminalControl.toastManager.saveFail(e)
-                //ErrorHandler.sendSaveErrorNoThrow(e, encode);
             }
         }
     }
