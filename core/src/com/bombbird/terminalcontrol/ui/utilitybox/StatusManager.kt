@@ -8,6 +8,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.separation.SeparationChecker
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
@@ -28,6 +29,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         if (timer > 0) return
         timer = 2f
 
+        val conflicts = Array<String>()
         val emergency = Array<String>()
         val runwayChange = Array<String>()
         val congested = Array<String>()
@@ -35,6 +37,23 @@ class StatusManager(private val utilityBox: UtilityBox) {
         val requests = Array<String>()
         val initialContact = Array<String>()
         val info = Array<String>()
+
+        for ((index, callsign) in radarScreen.separationChecker.allConflictCallsigns.withIndex()) {
+            val conflictMsg = if (index >= radarScreen.separationChecker.allConflicts.size) "???" else {
+                when (radarScreen.separationChecker.allConflicts[index]) {
+                    SeparationChecker.NORMAL_CONFLICT -> "3nm, 1000ft infringement"
+                    SeparationChecker.ILS_LESS_THAN_10NM -> "2.5nm, 1000ft infringement - both aircraft less than 10nm final on same ILS"
+                    SeparationChecker.PARALLEL_ILS -> "2nm, 1000ft infringement - aircraft on parallel ILS"
+                    SeparationChecker.ILS_NTZ -> "Simultaneous ILS approach NTZ infringement"
+                    SeparationChecker.MVA -> "MVA sector infringement"
+                    SeparationChecker.SID_STAR_MVA -> "MVA sector infringement - aircraft deviates from SID/STAR route"
+                    SeparationChecker.RESTRICTED -> "Restricted area infringement"
+                    SeparationChecker.WAKE_INFRINGE -> "Wake separation infringement"
+                    else -> "???"
+                }
+            }
+            conflicts.add("[RED]$callsign: $conflictMsg")
+        }
 
         for (aircraft: Aircraft in radarScreen.aircrafts.values) {
             var text = "${aircraft.callsign}: "
@@ -51,7 +70,6 @@ class StatusManager(private val utilityBox: UtilityBox) {
                         Emergency.Type.HYDRAULIC_FAIL -> "Hydraulic issue"
                         Emergency.Type.PRESSURE_LOSS -> "Cabin pressure lost" + if (aircraft.altitude > 9500) ", in emergency descent" else ""
                         Emergency.Type.FUEL_LEAK -> "Fuel leak"
-                        else -> "Unknown emergency"
                     }
                 }
                 emergency.add("[RED]$text")
@@ -111,6 +129,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
 
         val finalArray = Array<String>()
+        finalArray.addAll(conflicts)
         finalArray.addAll(emergency)
         finalArray.addAll(runwayChange)
         finalArray.addAll(congested)

@@ -17,7 +17,6 @@ import com.bombbird.terminalcontrol.entities.approaches.LDA
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
@@ -26,23 +25,32 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class SeparationChecker : Actor() {
+    companion object {
+        const val NORMAL_CONFLICT = 0
+        const val ILS_LESS_THAN_10NM = 1
+        const val PARALLEL_ILS = 2
+        const val ILS_NTZ = 3
+        const val MVA = 4
+        const val SID_STAR_MVA = 5
+        const val RESTRICTED = 6
+        const val WAKE_INFRINGE = 7
+    }
+
     private val flightLevels: Array<Array<Aircraft>>
-    private val labels: Array<Label>
-    private val lineStorage: Array<FloatArray>
+    private val labels = Array<Label>()
+    private val lineStorage = Array<FloatArray>()
     private val radarScreen = TerminalControl.radarScreen!!
     var lastNumber: Int
     var time: Float
     private var updateTimer: Float
-    private var active: Int
+    val allConflictCallsigns = Array<String>()
+    val allConflicts = Array<Int>()
 
     init {
         lastNumber = 0
         time = 0f
         updateTimer = 0f
-        active = 0
         flightLevels = Array(true, radarScreen.maxAlt / 1000)
-        labels = Array()
-        lineStorage = Array()
         for (i in 0 until radarScreen.maxAlt / 1000) {
             flightLevels.add(Array())
         }
@@ -81,9 +89,11 @@ class SeparationChecker : Actor() {
             for (obstacle in radarScreen.obsArray) {
                 obstacle.isConflict = false
             }
-            active = checkAircraftSep()
-            active += checkRestrSep()
-            var tmpActive = active
+            allConflicts.clear()
+            allConflictCallsigns.clear()
+            checkAircraftSep()
+            checkRestrSep()
+            var tmpActive = allConflicts.size
             while (tmpActive > lastNumber) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f))
                 radarScreen.separationIncidents = radarScreen.separationIncidents + 1
@@ -93,17 +103,18 @@ class SeparationChecker : Actor() {
             //Subtract wake separately (don't include 5% penalty)
             for (aircraft in radarScreen.aircrafts.values) {
                 if (aircraft.isWakeInfringe && aircraft.isArrivalDeparture) {
-                    active++
+                    allConflicts.add(WAKE_INFRINGE)
+                    allConflictCallsigns.add(aircraft.callsign)
                     aircraft.isConflict = true
                     radarScreen.shapeRenderer.color = Color.RED
                     radarScreen.shapeRenderer.circle(aircraft.radarX, aircraft.radarY, 48.6f)
                 }
             }
-            lastNumber = active
+            lastNumber = allConflicts.size
         }
         if (time <= 0) {
             time += 3f
-            radarScreen.setScore(radarScreen.getScore() - active)
+            radarScreen.setScore(radarScreen.getScore() - allConflicts.size)
         }
         for (aircraft in radarScreen.aircrafts.values) {
             if ((aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isWakeInfringe) && !aircraft.isSilenced) {
@@ -128,9 +139,8 @@ class SeparationChecker : Actor() {
     }
 
     /** Checks that each aircraft is separated from one another  */
-    private fun checkAircraftSep(): Int {
+    private fun checkAircraftSep() {
         lineStorage.clear()
-        var active = 0
         for (i in 0 until flightLevels.size) {
             //Get all the possible planes to check
             val planesToCheck = Array<Aircraft>()
@@ -208,8 +218,33 @@ class SeparationChecker : Actor() {
                                 plane1.isConflict = true
                                 plane2.isConflict = true
                                 lineStorage.add(floatArrayOf(plane1.radarX, plane1.radarY, plane2.radarX, plane2.radarY, 1f))
-                                active++
                                 if (abs(plane1.altitude - plane2.altitude) < 200 && dist < 0.5f) completeAchievement("thatWasClose")
+                                when (minima) {
+                                    2f -> allConflicts.add(PARALLEL_ILS)
+                                    2.5f -> allConflicts.add(ILS_LESS_THAN_10NM)
+                                    else -> {
+                                        var found = false
+                                        if (plane1 is Arrival && plane2 is Arrival && plane1.airport.icao == plane2.airport.icao && plane1.altitude < plane1.airport.elevation + 6000 && plane2.altitude < plane2.airport.elevation + 6000) {
+                                            //If both planes are arrivals into same airport, check whether they are in different NOZ for simultaneous approach
+                                            val approachZones: Array<ApproachZone> = plane1.airport.approachZones
+                                            for (l in 0 until approachZones.size) {
+                                                if (approachZones[l].isInNTZ(plane1) || approachZones[l].isInNTZ(plane2)) {
+                                                    found = true
+                                                }
+                                            }
+                                        } else if (plane1 is Departure && plane2 is Departure && plane1.airport.icao == plane2.airport.icao) {
+                                            //If both planes are departures from same airport, check whether they are in different NOZ for simultaneous departure
+                                            val departureZones: Array<DepartureZone> = plane1.airport.departureZones
+                                            for (l in 0 until departureZones.size) {
+                                                if (departureZones[l].isInNTZ(plane1) || departureZones[l].isInNTZ(plane2)) {
+                                                    found = true
+                                                }
+                                            }
+                                        }
+                                        allConflicts.add(if (found) ILS_NTZ else NORMAL_CONFLICT)
+                                    }
+                                }
+                                allConflictCallsigns.add("${plane1.callsign}, ${plane2.callsign}")
                             }
                         } else if (!plane1.isWarning || !plane2.isWarning) {
                             //Aircraft within 1000 feet, 5nm of each other
@@ -234,7 +269,6 @@ class SeparationChecker : Actor() {
                 }
             }
         }
-        return active
     }
 
     /** Called to update the label with aircraft data  */
@@ -249,8 +283,7 @@ class SeparationChecker : Actor() {
     }
 
     /** Checks that each aircraft is separated from each obstacles/restricted area  */
-    private fun checkRestrSep(): Int {
-        var terrainActive = 0
+    private fun checkRestrSep() {
         for (aircraft in radarScreen.aircrafts.values) {
             if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is LDA && aircraft.isLocCap ||
                     aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
@@ -272,17 +305,24 @@ class SeparationChecker : Actor() {
                         conflict = isVectored || !isInZone
                         obstacle.isConflict = conflict
                     }
-                    if (conflict) break
+                    if (conflict) {
+                        when {
+                            obstacle.isEnforced -> allConflicts.add(RESTRICTED)
+                            isVectored -> allConflicts.add(MVA)
+                            !isInZone -> allConflicts.add(SID_STAR_MVA)
+                            else -> allConflicts.add(MVA) //Shouldn't even happen
+                        }
+                        allConflictCallsigns.add(aircraft.callsign)
+                        break
+                    }
                 }
             }
             if (conflict && !aircraft.isTerrainConflict) {
                 aircraft.isTerrainConflict = true
                 aircraft.isConflict = true
                 if (!aircraft.isPrevConflict) aircraft.isSilenced = false
-                terrainActive++
             }
         }
-        return terrainActive
     }
 
     /** Renders the separation rings if aircraft is in conflict  */

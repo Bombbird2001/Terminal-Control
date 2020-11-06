@@ -92,4 +92,8 @@ open class ApproachZone(private val rwy1: String, private val rwy2: String, xMid
     fun checkSeparation(plane1: Aircraft, plane2: Aircraft): Boolean {
         return noz1.contains(plane1.x, plane1.y) && noz2.contains(plane2.x, plane2.y) || noz1.contains(plane2.x, plane2.y) && noz2.contains(plane1.x, plane1.y)
     }
+
+    fun isInNTZ(plane: Aircraft): Boolean {
+        return ntz.contains(plane.x, plane.y)
+    }
 }
