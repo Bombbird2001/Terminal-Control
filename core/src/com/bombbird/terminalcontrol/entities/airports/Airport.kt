@@ -361,6 +361,7 @@ class Airport {
         val windHdg = metar.optInt("windDirection", 0)
         windshear = ""
         windshear = metar.optString("windshear", "None")
+        if (windshear == "null") windshear = "None"
         runwayManager.updateRunways(windHdg, metar.getInt("windSpeed"))
         for (runway in runways.values) {
             runway.isWindshear = runway.isLanding && ("ALL RWY" == windshear || ArrayUtils.contains(windshear.split(" ".toRegex()).toTypedArray(), "R" + runway.name))

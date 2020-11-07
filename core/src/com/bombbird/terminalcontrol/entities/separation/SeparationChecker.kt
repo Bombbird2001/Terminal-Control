@@ -293,7 +293,7 @@ class SeparationChecker : Actor() {
             }
             var conflict = false
             val isVectored = aircraft.isVectored && (aircraft.ils == null || aircraft.ils?.isInsideILS(aircraft.x, aircraft.y) == false) //Technically not being vectored if within localizer range
-            val isInZone: Boolean = aircraft.route.inSidStarZone(aircraft.x, aircraft.y, aircraft.altitude) //No need for belowMinAlt as this already takes into account
+            val isInZone: Boolean = aircraft.route.inSidStarZone(aircraft.x, aircraft.y, aircraft.altitude) || (aircraft.isHolding && aircraft.holdWpt?.let { aircraft.altitude > aircraft.route.holdProcedure.getAltRestAtWpt(it)[0] - 100 } == true) //No need for belowMinAlt as this already takes into account
             for (obstacle in radarScreen.obsArray) {
                 //If aircraft is infringing obstacle
                 if (obstacle.isIn(aircraft) && aircraft.altitude < obstacle.minAlt - 100) {

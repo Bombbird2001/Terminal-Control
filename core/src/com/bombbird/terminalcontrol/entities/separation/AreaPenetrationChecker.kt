@@ -43,7 +43,7 @@ class AreaPenetrationChecker {
                             //If aircraft is already predicted to conflict with terrain
                             continue
                         }
-                        if ((aircraft.navState.dispLatMode.first() == NavState.SID_STAR || aircraft.ils != null && aircraft.ils?.isInsideILS(positionPoint.x, positionPoint.y) == true) && !obstacle.isEnforced && aircraft.route.inSidStarZone(positionPoint.x, positionPoint.y, aircraft.altitude)) {
+                        if ((aircraft.navState.dispLatMode.first() == NavState.SID_STAR || aircraft.ils != null && aircraft.ils?.isInsideILS(positionPoint.x, positionPoint.y) == true) && !obstacle.isEnforced && (aircraft.route.inSidStarZone(positionPoint.x, positionPoint.y, aircraft.altitude) || (aircraft.isHolding && aircraft.holdWpt?.let { aircraft.altitude > aircraft.route.holdProcedure.getAltRestAtWpt(it)[0] - 100 } == true))) {
                             //If latMode is STAR/SID or point is within localizer range, is within sidStarZone and obstacle is not a restricted area, ignore
                             continue
                         }
