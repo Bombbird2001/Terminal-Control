@@ -5,6 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,7 +40,20 @@ object GameLoader {
         radarScreen.separationChecker.lastNumber = save.getInt("lastNumber")
         radarScreen.separationChecker.time = save.optDouble("sepTime", 3.0).toFloat()
 
+        radarScreen.playTime = save.optDouble("playTime", estimatePlayTime(radarScreen).toDouble()).toFloat()
+
         //GameSaver.saveGame();
+    }
+
+    /** Estimates the duration played (if save has no play time data)  */
+    private fun estimatePlayTime(radarScreen: RadarScreen): Float {
+        var landed = 0
+        for (airport in radarScreen.airports.values) {
+            landed += airport.landings
+        }
+
+        //Assume 90 seconds between landings lol
+        return (landed * 90).toFloat()
     }
 
     /** Loads aircraft data from save  */

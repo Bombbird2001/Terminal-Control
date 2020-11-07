@@ -181,7 +181,7 @@ class Metar(private val radarScreen: RadarScreen) {
         updateAirports()
         prevMetar = metarObject
         Gdx.app.postRunnable { radarScreen.ui.updateMetar() }
-        radarScreen.loading = false
+        radarScreen.metarLoading = false
     }
 
     /** Updates the METAR object and in game weather given custom weather data for airports  */

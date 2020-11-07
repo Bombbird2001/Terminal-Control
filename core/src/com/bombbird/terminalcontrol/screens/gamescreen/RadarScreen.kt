@@ -41,6 +41,7 @@ import com.bombbird.terminalcontrol.entities.weather.Metar
 import com.bombbird.terminalcontrol.entities.weather.WindDirChance
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance
 import com.bombbird.terminalcontrol.entities.weather.WindspeedChance
+import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
 import com.bombbird.terminalcontrol.ui.*
@@ -55,7 +56,6 @@ import com.bombbird.terminalcontrol.utilities.saving.GameLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
-import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -197,6 +197,9 @@ class RadarScreen : GameScreen {
     //Stores aircraft generators
     private val generatorList = Array<RandomGenerator.MultiThreadGenerator>()
 
+    //Temporary storage of loadGameScreen for exception handling
+    private var loadGameScreen: LoadGameScreen? = null
+
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
         save = null
@@ -276,7 +279,9 @@ class RadarScreen : GameScreen {
         }
     }
 
-    constructor(game: TerminalControl, save: JSONObject) : super(game) {
+    constructor(game: TerminalControl, save: JSONObject, loadGameScreen: LoadGameScreen) : super(game) {
+        this.loadGameScreen = loadGameScreen
+
         //Loads the game from save
         this.save = save
         saveId = save.getInt("saveId")
@@ -501,7 +506,7 @@ class RadarScreen : GameScreen {
         stage.clear()
 
         //Show loading screen
-        loading = true
+        metarLoading = true
         loadingTime = 0f
 
         //Load range circles
@@ -816,17 +821,6 @@ class RadarScreen : GameScreen {
         return false
     }
 
-    /** Estimates the duration played (if save has no play time data)  */
-    private fun estimatePlayTime(): Float {
-        var landed = 0
-        for (airport in airports.values) {
-            landed += airport.landings
-        }
-
-        //Assume 90 seconds between landings lol
-        return (landed * 90).toFloat()
-    }
-
     /** Updates the colour scheme of the radar screen  */
     fun updateColourStyle() {
         //Runway label colour
@@ -860,7 +854,7 @@ class RadarScreen : GameScreen {
         }
 
     override fun render(delta: Float) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && finishedLoading) {
             //On android, change to pause screen if not paused, un-pause if paused
             setGameRunning(!running)
         }
@@ -874,9 +868,16 @@ class RadarScreen : GameScreen {
             DataTag.LOADED_ICONS = false
             Tab.LOADED_STYLES = false
             loadUI()
-            GameLoader.loadSaveData(save)
-            uiLoaded = true
-            playTime = save?.optDouble("playTime", estimatePlayTime().toDouble())?.toFloat() ?: 0f
+            val newThread = Thread {
+                try {
+                    GameLoader.loadSaveData(save)
+                    uiLoaded = true
+                    loadGameScreen = null
+                } catch (e: Exception) {
+                    Gdx.app.postRunnable { save?.let { loadGameScreen?.handleSaveLoadError(this, it, e) } }
+                }
+            }
+            newThread.start()
         }
         TerminalControl.discordManager.updateRPC()
         updateWaypointDisplay()

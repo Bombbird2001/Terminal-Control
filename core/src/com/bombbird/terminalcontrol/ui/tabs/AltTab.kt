@@ -167,7 +167,7 @@ class AltTab(ui: Ui) : Tab(ui) {
     }
 
     private fun checkAndAddIntermediate(allAlts: Array<Int>, currentAlt: Float, altToAdd: Int) {
-        if (currentAlt < altToAdd - 20) return  //Current aircraft altitude must be at lowest 20 feet lower than altitude to add
+        if (currentAlt < altToAdd - 20 || allAlts.contains(altToAdd, false)) return  //Current aircraft altitude must be at lowest 20 feet lower than altitude to add
         allAlts.add(altToAdd)
     }
 

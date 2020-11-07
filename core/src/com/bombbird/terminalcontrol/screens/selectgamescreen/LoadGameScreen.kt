@@ -18,22 +18,13 @@ import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import org.json.JSONArray
+import org.json.JSONObject
 
 class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     private val timer: Timer = Timer()
     private lateinit var loadingLabel: Label
 
     val deleteDialog = DeleteDialog()
-
-    internal inner class MultiThreadLoad : Runnable {
-        override fun run() {
-            val saves = FileLoader.loadSaves()
-            Gdx.app.postRunnable {
-                loadSavedGamesUI(saves)
-                stopAnimatingLabel()
-            }
-        }
-    }
 
     init {
         TerminalControl.updateRevision()
@@ -58,7 +49,13 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         loadingLabel.isVisible = true
         stage.addActor(loadingLabel)
         animateLoadingLabel()
-        Thread(MultiThreadLoad()).start() //Load the saves from another thread
+        Thread {
+            val saves = FileLoader.loadSaves()
+            Gdx.app.postRunnable {
+                loadSavedGamesUI(saves)
+                stopAnimatingLabel()
+            }
+        }.start() //Load the saves from another thread
     }
 
     /** Called after file I/O is complete to display the loaded saves  */
@@ -110,53 +107,12 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                     var radarScreen: RadarScreen? = null
                     var success = false
                     try {
-                        radarScreen = RadarScreen(game, jsonObject)
+                        radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
                         TerminalControl.radarScreen = radarScreen
                         game.screen = radarScreen
                         success = true
                     } catch (e: Exception) {
-                        TerminalControl.radarScreen = null
-                        val newScreen = MainMenuScreen(game, background)
-                        game.screen = newScreen
-                        radarScreen?.dispose()
-                        Timer.schedule(object : Timer.Task() {
-                            override fun run() {
-                                if (e is IncompatibleSaveException) {
-                                    //Old save, set incompatible flag to true
-                                    jsonObject.put("incompatible", true)
-                                    GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
-                                    //Show incompatible dialog
-                                    object : CustomDialog("Game load error", "Sorry, this save is no longer\ncompatible with the game.", "", "Oh...") {}.show(newScreen.stage)
-                                } else {
-                                    //Load error, show error
-                                    if (jsonObject.optBoolean("errorSent", false)) {
-                                        //Error already sent
-                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!") {}.show(newScreen.stage)
-                                    } else {
-                                        //Send save dialog
-                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send", height = 600) {
-                                            override fun result(resObj: Any?) {
-                                                super.result(resObj)
-                                                if (resObj == DIALOG_POSITIVE) {
-                                                    when (positive) {
-                                                        "Sending..." -> {
-                                                            cancel()
-                                                        }
-                                                        "Send" -> {
-                                                            //Send the save file to server
-                                                            updateButtons("", "Sending...")
-                                                            ErrorHandler.sendSaveError(e, jsonObject, this)
-                                                            cancel()
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }.show(newScreen.stage)
-                                    }
-                                }
-                            }
-
-                        }, 0.2f)
+                        Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
                     }
                     if (success) {
                         //If loaded successfully, clear error sent, incompatible flag
@@ -185,6 +141,52 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 1.6f
         scrollPane.height = 1620 * 0.6f
         stage.addActor(scrollPane)
+    }
+
+    /** Deals with error that occurs when loading save */
+    fun handleSaveLoadError(radarScreen: RadarScreen?, jsonObject: JSONObject, e: Exception) {
+        TerminalControl.radarScreen = null
+        val newScreen = MainMenuScreen(game, background)
+        game.screen = newScreen
+        radarScreen?.dispose()
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                if (e is IncompatibleSaveException) {
+                    //Old save, set incompatible flag to true
+                    jsonObject.put("incompatible", true)
+                    GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
+                    //Show incompatible dialog
+                    object : CustomDialog("Game load error", "Sorry, this save is no longer\ncompatible with the game.", "", "Oh...") {}.show(newScreen.stage)
+                } else {
+                    //Load error, show error
+                    if (jsonObject.optBoolean("errorSent", false)) {
+                        //Error already sent
+                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!") {}.show(newScreen.stage)
+                    } else {
+                        //Send save dialog
+                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send", height = 600) {
+                            override fun result(resObj: Any?) {
+                                super.result(resObj)
+                                if (resObj == DIALOG_POSITIVE) {
+                                    when (positive) {
+                                        "Sending..." -> {
+                                            cancel()
+                                        }
+                                        "Send" -> {
+                                            //Send the save file to server
+                                            updateButtons("", "Sending...")
+                                            ErrorHandler.sendSaveError(e, jsonObject, this)
+                                            cancel()
+                                        }
+                                    }
+                                }
+                            }
+                        }.show(newScreen.stage)
+                    }
+                }
+            }
+
+        }, 0.2f)
     }
 
     /** Starts animating the loading label  */

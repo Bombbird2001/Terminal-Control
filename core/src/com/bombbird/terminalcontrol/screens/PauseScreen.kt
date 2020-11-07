@@ -68,14 +68,14 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
         if (TerminalControl.full) {
             val imageButtonStyle3 = ImageButton.ImageButtonStyle()
             imageButtonStyle3.imageUp = TerminalControl.skin.getDrawable("Upgrade_up")
-            imageButtonStyle3.imageUp.minWidth = buttonWidthSmall.toFloat()
-            imageButtonStyle3.imageUp.minHeight = buttonHeightSmall.toFloat()
+            imageButtonStyle3.imageUp.minWidth = buttonWidthSmall
+            imageButtonStyle3.imageUp.minHeight = buttonHeightSmall
             imageButtonStyle3.imageDown = TerminalControl.skin.getDrawable("Upgrade_down")
-            imageButtonStyle3.imageDown.minWidth = buttonWidthSmall.toFloat()
-            imageButtonStyle3.imageDown.minHeight = buttonHeightSmall.toFloat()
+            imageButtonStyle3.imageDown.minWidth = buttonWidthSmall
+            imageButtonStyle3.imageDown.minHeight = buttonHeightSmall
             val upgradeButton = ImageButton(imageButtonStyle3)
-            upgradeButton.setPosition(5760 - buttonWidthSmall.toFloat(), 1790 + 50.toFloat())
-            upgradeButton.setSize(buttonWidthSmall.toFloat(), buttonHeightSmall.toFloat())
+            upgradeButton.setPosition(5760 - buttonWidthSmall, 1790 + 50.toFloat())
+            upgradeButton.setSize(buttonWidthSmall, buttonHeightSmall)
             upgradeButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     //Go to upgrade screen
@@ -88,14 +88,14 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
         //Set achievement button
         val imageButtonStyle4 = ImageButton.ImageButtonStyle()
         imageButtonStyle4.imageUp = TerminalControl.skin.getDrawable("Medal_up")
-        imageButtonStyle4.imageUp.minWidth = buttonWidthSmall.toFloat()
-        imageButtonStyle4.imageUp.minHeight = buttonHeightSmall.toFloat()
+        imageButtonStyle4.imageUp.minWidth = buttonWidthSmall
+        imageButtonStyle4.imageUp.minHeight = buttonHeightSmall
         imageButtonStyle4.imageDown = TerminalControl.skin.getDrawable("Medal_down")
-        imageButtonStyle4.imageDown.minWidth = buttonWidthSmall.toFloat()
-        imageButtonStyle4.imageDown.minHeight = buttonHeightSmall.toFloat()
+        imageButtonStyle4.imageDown.minWidth = buttonWidthSmall
+        imageButtonStyle4.imageDown.minHeight = buttonHeightSmall
         val achievementButton = ImageButton(imageButtonStyle4)
-        achievementButton.setPosition(5760 - buttonWidthSmall.toFloat(), if (TerminalControl.full) 1790f - 50 - buttonHeightSmall else 1790 - buttonHeightSmall / 2.0f)
-        achievementButton.setSize(buttonWidthSmall.toFloat(), buttonHeightSmall.toFloat())
+        achievementButton.setPosition(5760 - buttonWidthSmall, if (TerminalControl.full) 1790f - 50 - buttonHeightSmall else 1790 - buttonHeightSmall / 2.0f)
+        achievementButton.setSize(buttonWidthSmall, buttonHeightSmall)
         achievementButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to upgrade screen

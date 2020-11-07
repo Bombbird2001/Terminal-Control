@@ -36,14 +36,14 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     lateinit var stage: Stage
     lateinit var labelStage: Stage
     var uiLoaded = false
-    var loading = false
+    var metarLoading = false
     var loadingTime = 0f
     private var loadedTime = 0f
     private lateinit var loadingLabel: Label
     private lateinit var tipLabel: Label
 
     //Flag whether to quit the tutorial on next loop
-    private var tutorialQuit = false
+    var tutorialQuit = false
 
     //Play time timer
     var playTime: Float
@@ -164,7 +164,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             camera.zoom = minZoom
             zooming = false
             zoomedIn = true
-        } else if (Gdx.app.type == Application.ApplicationType.Android && camera.zoom > maxZoomAndroid && !loading) {
+        } else if (Gdx.app.type == Application.ApplicationType.Android && camera.zoom > maxZoomAndroid && finishedLoading) {
             camera.zoom = maxZoomAndroid
             zooming = false
             zoomedIn = false
@@ -259,7 +259,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT or if (Gdx.graphics.bufferFormat.coverageSampling) GL20.GL_COVERAGE_BUFFER_BIT_NV else 0)
             if (running) {
                 //Test for input, update camera
-                if (!loading) {
+                if (finishedLoading) {
                     handleInput(delta)
                 }
                 camera.update()
@@ -276,7 +276,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                 }
 
                 //Render each of the range circles, obstacles using shaperenderer, update loop
-                if (!loading) {
+                if (finishedLoading) {
                     stage.viewport.apply()
                     for (i in 0 until speed) {
                         updateTutorial() //Tutorial timer is updated even if tutorial is paused
@@ -293,7 +293,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                 //Draw to the spritebatch
                 game.batch.projectionMatrix = labelStage.camera.combined
                 val liveWeather = (this as RadarScreen).weatherSel == RadarScreen.Weather.LIVE && !this.tutorial
-                if (loading) {
+                if (!finishedLoading) {
                     //Write loading text if loading
                     loadingTime += delta
                     loadedTime += delta
@@ -326,7 +326,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
                 //Draw the UI overlay
                 uiCam.update()
-                if (!loading) {
+                if (finishedLoading) {
                     game.batch.projectionMatrix = uiCam.combined
                     uiStage.act()
                     uiStage.viewport.apply()
@@ -416,7 +416,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     /** Implements tap method of gestureListener, tests for tap and double tap  */
     override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean {
         TerminalControl.radarScreen?.setSelectedAircraft(null)
-        if (count == 2 && !loading) {
+        if (count == 2 && finishedLoading) {
             //Gdx.app.postRunnable{ obsArray = FileLoader.loadObstacles()} //Reload obstacles - Debug use only
             zooming = true
             return true
@@ -440,7 +440,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements pan method of gestureListener, tests for panning to shift radar screen around  */
     override fun pan(x: Float, y: Float, deltaX: Float, deltaY: Float): Boolean {
-        if (loading) {
+        if (!finishedLoading) {
             return false
         }
         val screenHeightRatio = 3240f / Gdx.graphics.height
@@ -457,7 +457,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements zoom method of gestureListener, tests for pinch zooming to adjust radar screen zoom level  */
     override fun zoom(initialDistance: Float, distance: Float): Boolean {
-        if (loading) {
+        if (!finishedLoading) {
             return true
         }
         if (initialDistance != lastInitialDist) {
@@ -518,7 +518,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements scrolled method of inputListener, tests for scrolling to adjust radar screen zoom levels  */
     override fun scrolled(amount: Int): Boolean {
-        if (!loading) {
+        if (finishedLoading) {
             camera.zoom += amount * 0.042f
         }
         return true
@@ -544,7 +544,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         }
     }
 
-    fun setTutorialQuit(tutorialQuit: Boolean) {
-        this.tutorialQuit = tutorialQuit
-    }
+    val finishedLoading
+        get() = !metarLoading && uiLoaded
 }

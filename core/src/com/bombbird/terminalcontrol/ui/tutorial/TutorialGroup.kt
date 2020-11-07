@@ -58,7 +58,7 @@ class TutorialGroup(private val tutorialManager: TutorialManager) {
                 "setPrompt5" -> tutorialManager.prompt5 = true
                 "setPrompt6" -> tutorialManager.prompt6 = true
                 "activateGroup2" -> tutorialManager.activateGroup2()
-                "quit" -> radarScreen.setTutorialQuit(true)
+                "quit" -> radarScreen.tutorialQuit = true
                 else -> Gdx.app.log("TutorialGroup", "Unknown task " + tasks[time] + " at time " + time)
             }
         }

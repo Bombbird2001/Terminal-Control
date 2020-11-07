@@ -114,16 +114,18 @@ object GameSaver {
     }
 
     fun writeObjectToFile(jsonObject: JSONObject, saveId: Int) {
-        val handle = getExtDir("saves/$saveId.json")
-        if (handle != null) {
-            val encode = Base64Coder.encodeString(jsonObject.toString())
-            try {
-                handle.writeString(encode, false)
-                saveID(saveId)
-            } catch (e: GdxRuntimeException) {
-                TerminalControl.toastManager.saveFail(e)
+        Thread {
+            val handle = getExtDir("saves/$saveId.json")
+            if (handle != null) {
+                val encode = Base64Coder.encodeString(jsonObject.toString())
+                try {
+                    handle.writeString(encode, false)
+                    saveID(saveId)
+                } catch (e: GdxRuntimeException) {
+                    TerminalControl.toastManager.saveFail(e)
+                }
             }
-        }
+        }.start()
     }
 
     /** Saves all aircraft information  */
