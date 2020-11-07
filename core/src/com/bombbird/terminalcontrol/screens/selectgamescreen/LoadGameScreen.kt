@@ -134,7 +134,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                                         object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!") {}.show(newScreen.stage)
                                     } else {
                                         //Send save dialog
-                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send") {
+                                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send", height = 600) {
                                             override fun result(resObj: Any?) {
                                                 super.result(resObj)
                                                 if (resObj == DIALOG_POSITIVE) {
@@ -150,10 +150,6 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                                                         }
                                                     }
                                                 }
-                                            }
-
-                                            override fun getPrefHeight(): Float {
-                                                return 600f
                                             }
                                         }.show(newScreen.stage)
                                     }

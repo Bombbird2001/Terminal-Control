@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.Fonts
 
-open class CustomDialog(title: String, val text: String, var negative: String, var positive: String): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
+open class CustomDialog(title: String, val text: String, var negative: String, var positive: String, val height: Int = 500, val width: Int = 1200): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
     companion object {
         //Dialog constants
         const val DIALOG_NEGATIVE = 0
@@ -64,10 +64,10 @@ open class CustomDialog(title: String, val text: String, var negative: String, v
     }
 
     override fun getPrefHeight(): Float {
-        return 500f
+        return height.toFloat()
     }
 
     override fun getPrefWidth(): Float {
-        return 1200f
+        return width.toFloat()
     }
 }

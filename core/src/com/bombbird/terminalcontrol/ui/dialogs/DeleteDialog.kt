@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 
-class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete") {
+class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 600) {
     var saveId = -1
     var scrollTable: Table? = null
     var deleteButton: TextButton? = null
