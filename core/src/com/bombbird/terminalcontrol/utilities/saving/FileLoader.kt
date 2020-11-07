@@ -69,7 +69,7 @@ object FileLoader {
                         0 -> name = s1
                         1 -> x = s1.toInt()
                         2 -> y = s1.toInt()
-                        else -> Gdx.app.log("Load error", "Unexpected additional parameter in game/" + it.mainName + "/" + it.airac + "/restricted.rest")
+                        else -> Gdx.app.log("Load error", "Unexpected additional parameter in game/" + it.mainName + "/" + it.airac + "/waypoint.way -> $name")
                     }
                 }
                 val waypoint = Waypoint(name, x, y)
