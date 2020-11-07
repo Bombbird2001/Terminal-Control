@@ -373,7 +373,7 @@ class Airport {
     }
 
     val winds: IntArray
-        get() = if (metar.isNull("windDirection")) intArrayOf(0, 0) else intArrayOf(metar.getInt("windDirection"), metar.getInt("windSpeed"))
+        get() = intArrayOf(metar.optInt("windDirection", 0), metar.optInt("windSpeed", 0))
     val gusts: Int
         get() = if (metar["windGust"] == JSONObject.NULL) {
             -1
