@@ -36,6 +36,7 @@ allprojects {
         jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://repo.spring.io/plugins-release/" }
     }
 }
 
@@ -48,7 +49,8 @@ project(":desktop") {
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-        implementation 'club.minnced:java-discord-rpc:2.0.2'
+        implementation "club.minnced:java-discord-rpc:2.0.2"
+        implementation "club.minnced:discord-rpc-release:v3.4.0"
     }
 }
 
@@ -97,10 +99,10 @@ project(":core") {
     apply plugin: "kotlin"
 
     dependencies {
-        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        implementation 'com.squareup.okhttp3:okhttp:4.9.0'
-        implementation 'org.json:json:20200518'
-        api 'org.apache.commons:commons-lang3:3.11'
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.squareup.okhttp3:okhttp:4.9.0"
+        api "org.json:json:20200518"
+        api "org.apache.commons:commons-lang3:3.11"
     }
 }
