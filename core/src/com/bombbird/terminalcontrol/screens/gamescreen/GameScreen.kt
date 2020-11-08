@@ -517,9 +517,9 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     }
 
     /** Implements scrolled method of inputListener, tests for scrolling to adjust radar screen zoom levels  */
-    override fun scrolled(amount: Int): Boolean {
+    override fun scrolled(amountX: Float, amountY: Float): Boolean {
         if (finishedLoading) {
-            camera.zoom += amount * 0.042f
+            camera.zoom += amountY * 0.042f
         }
         return true
     }

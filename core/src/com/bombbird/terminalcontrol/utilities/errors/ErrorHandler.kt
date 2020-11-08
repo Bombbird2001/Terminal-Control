@@ -24,11 +24,10 @@ object ErrorHandler {
 
     fun sendGenericError(e: Exception, exit: Boolean) {
         val error =
-        """
-$versionInfo
-${if (exit) "Crash" else "No crash"}
-${ExceptionUtils.getStackTrace(e)}
-        """.trimIndent()
+            """
+            $versionInfo
+            ${if (exit) "Crash" else "No crash"}
+            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
         HttpRequests.sendError(error, 0)
         e.printStackTrace()
         if (!exit) return
@@ -41,27 +40,25 @@ ${ExceptionUtils.getStackTrace(e)}
 
     fun sendSaveError(e: Exception, save: JSONObject, dialog: CustomDialog) {
         val saveError =
-        """
-$versionInfo
-Save string: ${Base64Coder.encodeString(save.toString())}
-${ExceptionUtils.getStackTrace(e)}
-        """.trimIndent()
+            """
+            $versionInfo
+            Save string: ${Base64Coder.encodeString(save.toString())}
+            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
         HttpRequests.sendSaveError(saveError, 0, save, dialog)
         e.printStackTrace()
     }
 
     fun sendSaveErrorNoThrow(e: Exception, str: String) {
         var error =
-        """
-$versionInfo
-No crash
-${ExceptionUtils.getStackTrace(e)}
-        """.trimIndent()
+            """
+            $versionInfo
+            No crash
+            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
         error =
-        """
-$str
-$error
-        """.trimIndent()
+            """
+            $str
+            $error
+            """.trimIndent()
         HttpRequests.sendError(error, 0)
         e.printStackTrace()
         //Don't throw runtime exception
@@ -69,12 +66,11 @@ $error
 
     fun sendRepeatableError(original: String, e: Exception, attempt: Int) {
         val error =
-        """
-$versionInfo
-Try $attempt:
-$original
-${ExceptionUtils.getStackTrace(e)}
-        """.trimIndent()
+            """
+            $versionInfo
+            Try $attempt:
+            $original
+            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
         HttpRequests.sendError(error, 0)
         e.printStackTrace()
         println(original)

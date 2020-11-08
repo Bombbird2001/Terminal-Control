@@ -36,7 +36,7 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
             if (i + 1 < route.waypoints.size) {
                 route.getWaypoint(i + 1)?.let { wpt2 ->
                     val routeVector = Vector2((wpt2.posX - wpt1.posX).toFloat(), (wpt2.posY - wpt1.posY).toFloat())
-                    polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), routeVector.angle(), routeVector.len(), 2f))
+                    polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), routeVector.angleDeg(), routeVector.len(), 2f))
                     minAlt.add(route.getWptMinAlt(i + if (isSid) 0 else 1))
                 }
             }
@@ -69,16 +69,16 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
             polygons.add(calculatePolygon(oppX, oppY, track, climbDist, 3f))
             minAlt.add(-1)
             val intermediateVector = Vector2(climbDist, 0f)
-            intermediateVector.rotate(track)
+            intermediateVector.rotateDeg(track)
             intermediateVector.add(oppX, oppY)
             val wptVector = Vector2(wptX, wptY)
             val intermediateToWpt = wptVector.sub(intermediateVector)
-            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angle(), intermediateToWpt.len(), 3f))
+            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angleDeg(), intermediateToWpt.len(), 3f))
             minAlt.add(initialClimbAlt)
         } else {
             //Go directly to first waypoint
             val vector2 = Vector2(wptX - oppX, wptY - oppY)
-            polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len(), 3f))
+            polygons.add(calculatePolygon(oppX, oppY, vector2.angleDeg(), vector2.len(), 3f))
             minAlt.add(initialClimbAlt)
         }
     }

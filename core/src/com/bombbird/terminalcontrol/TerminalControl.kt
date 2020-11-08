@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -190,7 +191,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         skin.addRegions(buttonAtlas)
         loadDialogSkin()
         loadMaps()
-        Gdx.input.isCatchBackKey = true
+        Gdx.input.setCatchKey(Input.Keys.BACK, true)
         setScreen(MainMenuScreen(this, null))
     }
 

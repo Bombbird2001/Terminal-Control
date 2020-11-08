@@ -105,20 +105,12 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
             saveButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     var radarScreen: RadarScreen? = null
-                    var success = false
                     try {
                         radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
                         TerminalControl.radarScreen = radarScreen
                         game.screen = radarScreen
-                        success = true
                     } catch (e: Exception) {
                         Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
-                    }
-                    if (success) {
-                        //If loaded successfully, clear error sent, incompatible flag
-                        jsonObject.put("errorSent", false)
-                        jsonObject.put("incompatible", false)
-                        GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
                     }
                     event.handle()
                 }

@@ -871,6 +871,11 @@ class RadarScreen : GameScreen {
             val newThread = Thread {
                 try {
                     GameLoader.loadSaveData(save)
+                    //If loaded successfully, clear error sent, incompatible flag
+                    save?.put("errorSent", false)
+                    save?.put("incompatible", false)
+                    GameSaver.writeObjectToFile(save, save?.getInt("saveId") ?: -1)
+                    Thread.sleep(100)
                     uiLoaded = true
                     loadGameScreen = null
                 } catch (e: Exception) {

@@ -113,7 +113,8 @@ object GameSaver {
         writeObjectToFile(jsonObject, radarScreen.saveId)
     }
 
-    fun writeObjectToFile(jsonObject: JSONObject, saveId: Int) {
+    fun writeObjectToFile(jsonObject: JSONObject?, saveId: Int) {
+        if (jsonObject == null || saveId < 0) return
         Thread {
             val handle = getExtDir("saves/$saveId.json")
             if (handle != null) {

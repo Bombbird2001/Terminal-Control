@@ -63,7 +63,7 @@ class Trajectory(private val aircraft: Aircraft) {
             while (i <= requiredTime) {
                 if (remainingAngle / turnRate > INTERVAL) {
                     remainingAngle -= turnRate * INTERVAL
-                    centerToCircum.rotate(-turnRate * INTERVAL)
+                    centerToCircum.rotateDeg(-turnRate * INTERVAL)
                     val newVector = Vector2(turnCenter)
                     prevPos = newVector.add(centerToCircum)
                     if (sidStarMode && aircraft.direct != null) {
@@ -78,12 +78,12 @@ class Trajectory(private val aircraft: Aircraft) {
                     }
                 } else {
                     val remainingTime = INTERVAL - remainingAngle / turnRate
-                    centerToCircum.rotate(-remainingAngle)
+                    centerToCircum.rotateDeg(-remainingAngle)
                     val newVector = Vector2(turnCenter)
                     if (abs(remainingAngle) > 0.1) prevPos = newVector.add(centerToCircum)
                     remainingAngle = 0f
                     val straightVector = Vector2(0f, nmToPixel(remainingTime * aircraft.gs / 3600))
-                    straightVector.rotate(-prevTargetTrack)
+                    straightVector.rotateDeg(-prevTargetTrack)
                     prevPos.add(straightVector)
                 }
                 positionPoints.add(PositionPoint(aircraft, prevPos.x, prevPos.y, 0))
@@ -93,7 +93,7 @@ class Trajectory(private val aircraft: Aircraft) {
             var i = INTERVAL
             while (i <= requiredTime) {
                 val trackVector = Vector2(0f, nmToPixel(i * aircraft.gs / 3600))
-                trackVector.rotate(if (aircraft.isOnGround) -(aircraft.runway?.heading ?: 0) + radarScreen.magHdgDev else -targetTrack)
+                trackVector.rotateDeg(if (aircraft.isOnGround) -(aircraft.runway?.heading ?: 0) + radarScreen.magHdgDev else -targetTrack)
                 positionPoints.add(PositionPoint(aircraft, aircraft.x + trackVector.x, aircraft.y + trackVector.y, 0))
                 i += INTERVAL
             }

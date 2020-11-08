@@ -110,10 +110,6 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         }
         arrayToUse.sort()
         latestRunwayConfig = arrayToUse.first() //First element is the most preferred
-        if (latestRunwayConfig.isEmpty() && arrayToUse.size > 1) {
-            arrayToUse.removeIndex(0)
-            latestRunwayConfig = arrayToUse.first()
-        }
         val pendingChange = latestRunwayConfig.applyConfig()
         if (pendingChange && !airport.isPendingRwyChange) {
             airport.isPendingRwyChange = true
