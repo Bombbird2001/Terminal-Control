@@ -2,38 +2,39 @@ package com.bombbird.terminalcontrol.screens
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.loadStats
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.MenuSettingsScreen
 import com.bombbird.terminalcontrol.screens.upgradescreen.AchievementScreen
 import com.bombbird.terminalcontrol.screens.upgradescreen.UpgradeScreen
-import com.bombbird.terminalcontrol.ui.Ui
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.Fonts.defaultFont20
 import com.bombbird.terminalcontrol.utilities.Fonts.generateAllFonts
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 
-class MainMenuScreen(game: TerminalControl, //Background image
-                     private var background: Image?) : BasicScreen(game, 2880, 1620) {
+class MainMenuScreen(game: TerminalControl, private var background: Image?) : BasicScreen(game, 2880, 1620) {
     companion object {
         //Button constants
-        const val BUTTON_WIDTH = 1000
-        const val BUTTON_HEIGHT = 200
-        const val BUTTON_WIDTH_SMALL = 200
-        const val BUTTON_HEIGHT_SMALL = 200
+        const val BUTTON_WIDTH = 1000f
+        const val BUTTON_HEIGHT = 200f
+        const val BUTTON_WIDTH_SMALL = 200f
+        const val BUTTON_HEIGHT_SMALL = 200f
     }
+
+    private var endDialog: Dialog? = null
+    var dialogVisible = false
 
     init {
         TerminalControl.loadVersionInfo()
@@ -58,14 +59,14 @@ class MainMenuScreen(game: TerminalControl, //Background image
         stage.addActor(background)
 
         //Set title icon
-        val image = Image(Texture(Gdx.files.internal("game/ui/MainMenuIcon.png")))
+        val image = Image(Texture(Gdx.files.internal("game/ui/mainMenuImages/MainMenuIcon.png")))
         image.scaleBy(0.5f)
         image.setPosition(2880 / 2.0f - 1.5f * image.width / 2.0f, 1620 * 0.775f)
         stage.addActor(image)
 
         //Additional lite image if version is lite
         if (!TerminalControl.full) {
-            val image1 = Image(Texture(Gdx.files.internal("game/ui/Lite.png")))
+            val image1 = Image(Texture(Gdx.files.internal("game/ui/mainMenuImages/Lite.png")))
             image1.scaleBy(0.25f)
             image1.setPosition(2880 / 2.0f + 2.5f * image1.width, 1620 * 0.83f)
             stage.addActor(image1)
@@ -73,7 +74,7 @@ class MainMenuScreen(game: TerminalControl, //Background image
 
         //Set button textures
         val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.font = Fonts.defaultFont20
+        buttonStyle.font = defaultFont20
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
 
@@ -81,7 +82,7 @@ class MainMenuScreen(game: TerminalControl, //Background image
         val newGameButton = TextButton("New Game", buttonStyle)
         val yPos = if (Gdx.app.type == Application.ApplicationType.Android) 0.45f else 0.55f
         newGameButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * yPos)
-        newGameButton.setSize(BUTTON_WIDTH.toFloat(), BUTTON_HEIGHT.toFloat())
+        newGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         newGameButton.label.setAlignment(Align.center)
         newGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -95,7 +96,7 @@ class MainMenuScreen(game: TerminalControl, //Background image
         val loadGameButton = TextButton("Load Game", buttonStyle)
         val yPos1 = if (Gdx.app.type == Application.ApplicationType.Android) 0.3f else 0.4f
         loadGameButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * yPos1)
-        loadGameButton.setSize(BUTTON_WIDTH.toFloat(), BUTTON_HEIGHT.toFloat())
+        loadGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         loadGameButton.label.setAlignment(Align.center)
         loadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -110,8 +111,8 @@ class MainMenuScreen(game: TerminalControl, //Background image
         imageButtonStyle.imageUp = TerminalControl.skin.getDrawable("Settings_up")
         imageButtonStyle.imageDown = TerminalControl.skin.getDrawable("Settings_down")
         val settingsButton = ImageButton(imageButtonStyle)
-        settingsButton.setPosition(1440 - 1200 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL.toFloat())
-        settingsButton.setSize(BUTTON_WIDTH_SMALL.toFloat(), BUTTON_HEIGHT_SMALL.toFloat())
+        settingsButton.setPosition(1440 - 1200 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+        settingsButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
         settingsButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to settings screen
@@ -125,8 +126,8 @@ class MainMenuScreen(game: TerminalControl, //Background image
         imageButtonStyle1.imageUp = TerminalControl.skin.getDrawable("Information_up")
         imageButtonStyle1.imageDown = TerminalControl.skin.getDrawable("Information_down")
         val infoButton = ImageButton(imageButtonStyle1)
-        infoButton.setPosition(1440 - 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL.toFloat())
-        infoButton.setSize(BUTTON_WIDTH_SMALL.toFloat(), BUTTON_HEIGHT_SMALL.toFloat())
+        infoButton.setPosition(1440 - 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+        infoButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
         infoButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to info screen
@@ -140,8 +141,8 @@ class MainMenuScreen(game: TerminalControl, //Background image
         imageButtonStyle2.imageUp = TerminalControl.skin.getDrawable("Help_up")
         imageButtonStyle2.imageDown = TerminalControl.skin.getDrawable("Help_down")
         val helpButton = ImageButton(imageButtonStyle2)
-        helpButton.setPosition(1440 - 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL.toFloat())
-        helpButton.setSize(BUTTON_WIDTH_SMALL.toFloat(), BUTTON_HEIGHT_SMALL.toFloat())
+        helpButton.setPosition(1440 - 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+        helpButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
         helpButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to help screen
@@ -156,8 +157,8 @@ class MainMenuScreen(game: TerminalControl, //Background image
             imageButtonStyle3.imageUp = TerminalControl.skin.getDrawable("Upgrade_up")
             imageButtonStyle3.imageDown = TerminalControl.skin.getDrawable("Upgrade_down")
             val upgradeButton = ImageButton(imageButtonStyle3)
-            upgradeButton.setPosition(1440 + 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL.toFloat())
-            upgradeButton.setSize(BUTTON_WIDTH_SMALL.toFloat(), BUTTON_HEIGHT_SMALL.toFloat())
+            upgradeButton.setPosition(1440 + 700 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+            upgradeButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
             upgradeButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     //Go to upgrade screen
@@ -171,9 +172,10 @@ class MainMenuScreen(game: TerminalControl, //Background image
         val imageButtonStyle4 = ImageButton.ImageButtonStyle()
         imageButtonStyle4.imageUp = TerminalControl.skin.getDrawable("Medal_up")
         imageButtonStyle4.imageDown = TerminalControl.skin.getDrawable("Medal_down")
+
         val achievementButton = ImageButton(imageButtonStyle4)
-        achievementButton.setPosition(1440 + 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL.toFloat())
-        achievementButton.setSize(BUTTON_WIDTH_SMALL.toFloat(), BUTTON_HEIGHT_SMALL.toFloat())
+        achievementButton.setPosition(1440 + 950 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+        achievementButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
         achievementButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to upgrade screen
@@ -189,7 +191,7 @@ class MainMenuScreen(game: TerminalControl, //Background image
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         val changelogButton = TextButton("Changelog", textButtonStyle)
-        changelogButton.setSize(350f, BUTTON_HEIGHT_SMALL.toFloat())
+        changelogButton.setSize(350f, BUTTON_HEIGHT_SMALL)
         changelogButton.setPosition(2880 - changelogButton.width, 1620 * 0.6f)
         changelogButton.label.setAlignment(Align.center)
         changelogButton.addListener(object : ChangeListener() {
@@ -199,17 +201,20 @@ class MainMenuScreen(game: TerminalControl, //Background image
         })
         stage.addActor(changelogButton)
 
+        //Loads the quit game dialog
+        loadDialog()
+
         //Set quit button params if desktop
-        if (Gdx.app.type == Application.ApplicationType.Android) return
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            return
+        }
         val quitButton = TextButton("Quit", buttonStyle)
         quitButton.setPosition(2880 / 2.0f - BUTTON_WIDTH / 2.0f, 1620 * 0.1f)
-        quitButton.setSize(BUTTON_WIDTH.toFloat(), BUTTON_HEIGHT.toFloat())
+        quitButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         quitButton.label.setAlignment(Align.center)
         quitButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Quit game
-                RadarScreen.disposeStatic()
-                Ui.disposeStatic()
                 dispose()
                 Gdx.app.exit()
             }
@@ -217,11 +222,37 @@ class MainMenuScreen(game: TerminalControl, //Background image
         stage.addActor(quitButton)
     }
 
+    /** Loads the exit dialog for Android */
+    private fun loadDialog() {
+        endDialog = object : CustomDialog("Quit Game?", "", "Cancel", "Quit") {
+            override fun result(resObj: Any?) {
+                super.result(resObj)
+                if (resObj == DIALOG_POSITIVE) {
+                    //Quit game
+                    dispose()
+                    Gdx.app.exit()
+                }
+                dialogVisible = false
+            }
+        }
+    }
+
+    /** Overrides render method to include detection of back button on android  */
+    override fun render(delta: Float) {
+        super.render(delta)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            //On android, emulate backButton is pressed - show exit dialog
+            if (dialogVisible) endDialog?.hide() else endDialog?.show(stage)
+            dialogVisible = !dialogVisible
+        }
+    }
+
     /** Overrides show method of BasicScreen  */
     override fun show() {
         if (Fonts.defaultFont6 == null) {
             //Regenerate fonts that were disposed
             generateAllFonts()
+            TerminalControl.skin.get("defaultDialog", Window.WindowStyle::class.java).titleFont = defaultFont20
         }
         loadUI()
     }

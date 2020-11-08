@@ -8,28 +8,28 @@ import com.bombbird.terminalcontrol.utilities.saving.GameSaver
 import java.util.*
 
 object UnlockManager {
-    @JvmStatic
+
     var planesLanded = 0
         private set
-    @JvmStatic
+
     var emergenciesLanded = 0
         private set
-    @JvmStatic
+
     var conflicts = 0
         private set
     private var prevWakeConflictTime = 0f
-    @JvmStatic
+
     var wakeConflictTime = 0f
         private set
-    @JvmField
+
     val unlocks = HashSet<String>()
-    @JvmField
+
     val unlockList = LinkedHashMap<String, Int>()
-    @JvmField
+
     val unlockDescription = HashMap<String, String>()
-    @JvmField
+
     val achievementList = LinkedHashMap<String, Achievement>()
-    @JvmField
+
     val easterEggList = LinkedHashMap<String, String>()
 
     /** Loads all the milestones, achievements and easter eggs  */
@@ -83,7 +83,7 @@ object UnlockManager {
     }
 
     /** Function called on game launch to load achievements, milestones and stats  */
-    @JvmStatic
+
     fun loadStats() {
         loadUnlockList()
         val stats = FileLoader.loadStats()
@@ -118,18 +118,18 @@ object UnlockManager {
     }
 
     /** Called when an aircraft has landed; further checks whether any new milestone or achievement has been unlocked  */
-    @JvmStatic
+
     fun incrementLanded() {
         planesLanded++
         if (checkNewUnlocks() && TerminalControl.full) {
-            TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!")
+            TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!")
         }
         checkAchievement(Achievement.PLANES_LANDED)
         GameSaver.saveStats()
     }
 
     /** Called when an emergency has landed; further checks whether any new milestone or achievement has been unlocked  */
-    @JvmStatic
+
     fun incrementEmergency() {
         emergenciesLanded++
         checkAchievement(Achievement.EMERGENCIES_LANDED)
@@ -137,7 +137,7 @@ object UnlockManager {
     }
 
     /** Called when a new conflict has occurred; further checks whether any new milestone or achievement has been unlocked  */
-    @JvmStatic
+
     fun incrementConflicts() {
         conflicts++
         checkAchievement(Achievement.CONFLICTS)
@@ -145,7 +145,7 @@ object UnlockManager {
     }
 
     /** Called when wake separation infringement time is increased by the specified time; further checks whether any new milestone or achievement has been unlocked  */
-    @JvmStatic
+
     fun incrementWakeConflictTime(time: Float) {
         wakeConflictTime += time
         if (wakeConflictTime > prevWakeConflictTime + 2) { //Save & check every 2 seconds of wake time to reduce File I/O load
@@ -156,7 +156,7 @@ object UnlockManager {
     }
 
     /** Called to unlock a new achievement that cannot be unlocked using planesLanded, emergenciesLanded, conflicts or wakeConflictTime  */
-    @JvmStatic
+
     fun completeAchievement(name: String) {
         if (!achievementList.containsKey(name)) {
             Gdx.app.log("UnlockManager", "Unknown achievement $name")
@@ -164,7 +164,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
-        TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
+        TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
     }
 
@@ -187,7 +187,7 @@ object UnlockManager {
             if (value.checkAchievement(type) && !unlocks.contains(key)) {
                 unlocks.add(key)
                 value.isUnlocked = true
-                if (TerminalControl.radarScreen != null) TerminalControl.radarScreen.utilityBox.commsManager.alertMsg("Congratulations, you have unlocked an achievement: " + value.title)
+                if (TerminalControl.radarScreen != null) TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + value.title)
             }
         }
     }
@@ -208,14 +208,14 @@ object UnlockManager {
     }
 
     /** Called to unlock an easter egg with the given name  */
-    @JvmStatic
+
     fun unlockEgg(name: String) {
         if (easterEggList.containsKey(name)) unlocks.add(name)
         GameSaver.saveStats()
     }
 
     /** Returns the sweep times available depending on milestones unlocked  */
-    @JvmStatic
+
     val sweepAvailable: Array<String>
         get() {
             val sweeps = Array<String>()
@@ -228,7 +228,7 @@ object UnlockManager {
         }
 
     /** Returns the trajectory times available depending on milestones unlocked  */
-    @JvmStatic
+
     val trajAvailable: Array<String>
         get() {
             val areas = Array<String>()
@@ -240,7 +240,7 @@ object UnlockManager {
         }
 
     /** Returns the APW times available depending on milestones unlocked  */
-    @JvmStatic
+
     val areaAvailable: Array<String>
         get() {
             val areas = Array<String>()
@@ -252,7 +252,7 @@ object UnlockManager {
         }
 
     /** Returns the STCAS times available depending on milestones unlocked  */
-    @JvmStatic
+
     val collisionAvailable: Array<String>
         get() {
             val collisions = Array<String>()
@@ -264,7 +264,7 @@ object UnlockManager {
         }
 
     /** Returns whether the TCHX easter egg has been unlocked  */
-    @JvmStatic
+
     val isTCHXAvailable: Boolean
         get() = unlocks.contains("HX")
 }

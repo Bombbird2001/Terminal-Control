@@ -8,12 +8,14 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.separation.SeparationChecker
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import kotlin.math.ceil
 
 class StatusManager(private val utilityBox: UtilityBox) {
+    private val radarScreen = TerminalControl.radarScreen!!
     var active = false
         set(value) {
             if (value && !field) timer = -1f //Reset if was inactive but now is active
@@ -27,6 +29,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         if (timer > 0) return
         timer = 2f
 
+        val conflicts = Array<String>()
         val emergency = Array<String>()
         val runwayChange = Array<String>()
         val congested = Array<String>()
@@ -35,14 +38,31 @@ class StatusManager(private val utilityBox: UtilityBox) {
         val initialContact = Array<String>()
         val info = Array<String>()
 
-        for (aircraft: Aircraft in TerminalControl.radarScreen.aircrafts.values) {
+        for ((index, callsign) in radarScreen.separationChecker.allConflictCallsigns.withIndex()) {
+            val conflictMsg = if (index >= radarScreen.separationChecker.allConflicts.size) "???" else {
+                when (radarScreen.separationChecker.allConflicts[index]) {
+                    SeparationChecker.NORMAL_CONFLICT -> "3nm, 1000ft infringement"
+                    SeparationChecker.ILS_LESS_THAN_10NM -> "2.5nm, 1000ft infringement - both aircraft less than 10nm final on same ILS"
+                    SeparationChecker.PARALLEL_ILS -> "2nm, 1000ft infringement - aircraft on parallel ILS"
+                    SeparationChecker.ILS_NTZ -> "Simultaneous ILS approach NTZ infringement"
+                    SeparationChecker.MVA -> "MVA sector infringement"
+                    SeparationChecker.SID_STAR_MVA -> "MVA sector infringement - aircraft deviates from SID/STAR route or is below minimum waypoint altitude"
+                    SeparationChecker.RESTRICTED -> "Restricted area infringement"
+                    SeparationChecker.WAKE_INFRINGE -> "Wake separation infringement"
+                    else -> "???"
+                }
+            }
+            conflicts.add("[RED]$callsign: $conflictMsg")
+        }
+
+        for (aircraft: Aircraft in radarScreen.aircrafts.values) {
             var text = "${aircraft.callsign}: "
             if (aircraft is Arrival && aircraft.emergency.isActive) {
                 text += when {
-                    aircraft.emergency.stayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.ils?.name?.substring(3)} closed"
-                    aircraft.emergency.readyForApproach -> "Ready for approach" + if (aircraft.emergency.stayOnRwy) ", will remain on runway" else ""
-                    aircraft.emergency.dumpingFuel -> "Dumping fuel" + if (aircraft.emergency.remainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60)} mins remaining" else ""
-                    aircraft.emergency.checklistsSaid -> "Running checklists" + if (aircraft.emergency.fuelDumpRequired) ", fuel dump required" else ""
+                    aircraft.emergency.isStayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.ils?.name?.substring(3)} closed"
+                    aircraft.emergency.isReadyForApproach -> "Ready for approach" + if (aircraft.emergency.isStayOnRwy) ", will remain on runway" else ""
+                    aircraft.emergency.isDumpingFuel -> "Dumping fuel" + if (aircraft.emergency.isRemainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60)} mins remaining" else ""
+                    aircraft.emergency.isChecklistsSaid -> "Running checklists" + if (aircraft.emergency.isFuelDumpRequired) ", fuel dump required" else ""
                     else -> when (aircraft.emergency.type) {
                         Emergency.Type.MEDICAL -> "Medical emergency"
                         Emergency.Type.ENGINE_FAIL -> "Engine failure"
@@ -50,7 +70,6 @@ class StatusManager(private val utilityBox: UtilityBox) {
                         Emergency.Type.HYDRAULIC_FAIL -> "Hydraulic issue"
                         Emergency.Type.PRESSURE_LOSS -> "Cabin pressure lost" + if (aircraft.altitude > 9500) ", in emergency descent" else ""
                         Emergency.Type.FUEL_LEAK -> "Fuel leak"
-                        else -> "Unknown emergency"
                     }
                 }
                 emergency.add("[RED]$text")
@@ -89,27 +108,28 @@ class StatusManager(private val utilityBox: UtilityBox) {
 
         if (DayNightManager.isNight) info.add("[BLACK]Night mode active")
 
-        for (airport: Airport in TerminalControl.radarScreen.airports.values) {
+        for (airport: Airport in radarScreen.airports.values) {
             if (airport.isPendingRwyChange) runwayChange.add("[YELLOW]${airport.icao}: Pending runway change")
             if (airport.isClosed) info.add("[BLACK]${airport.icao}: Airport closed")
             if (airport.isCongested) congested.add("[YELLOW]${airport.icao}: Departure congestion")
         }
 
-        when (TerminalControl.radarScreen.trafficMode) {
+        when (radarScreen.trafficMode) {
             TrafficFlowScreen.NORMAL -> info.add("[BLACK]Traffic mode: Normal")
             TrafficFlowScreen.PLANES_IN_CONTROL -> {
-                info.add("[BLACK]Traffic mode: Planes in control")
-                info.add("[BLACK]Arrivals to control: ${TerminalControl.radarScreen.maxPlanes}")
+                info.add("[BLACK]Traffic mode: Arrivals in control")
+                info.add("[BLACK]Arrivals to control: ${radarScreen.maxPlanes}")
             }
             TrafficFlowScreen.FLOW_RATE -> {
                 info.add("[BLACK]Traffic mode: Flow rate")
-                info.add("[BLACK]Arrival flow: ${TerminalControl.radarScreen.flowRate}/hr")
+                info.add("[BLACK]Arrival flow: ${radarScreen.flowRate}/hr")
             }
         }
 
-        if (TerminalControl.radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
+        if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
 
         val finalArray = Array<String>()
+        finalArray.addAll(conflicts)
         finalArray.addAll(emergency)
         finalArray.addAll(runwayChange)
         finalArray.addAll(congested)

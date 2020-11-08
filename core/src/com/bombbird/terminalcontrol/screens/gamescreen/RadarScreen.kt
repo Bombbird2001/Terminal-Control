@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
@@ -40,6 +41,7 @@ import com.bombbird.terminalcontrol.entities.weather.Metar
 import com.bombbird.terminalcontrol.entities.weather.WindDirChance
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance
 import com.bombbird.terminalcontrol.entities.weather.WindspeedChance
+import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
 import com.bombbird.terminalcontrol.ui.*
@@ -58,15 +60,6 @@ import java.util.*
 import kotlin.collections.HashSet
 
 class RadarScreen : GameScreen {
-    companion object {
-        /** Disposes of static final variables after user quits app  */
-        @JvmStatic
-        fun disposeStatic() {
-            if (DataTag.SKIN != null) DataTag.SKIN.dispose()
-            if (DataTag.ICON_ATLAS != null) DataTag.ICON_ATLAS.dispose()
-        }
-    }
-
     enum class Weather {
         LIVE, RANDOM, STATIC
     }
@@ -204,6 +197,9 @@ class RadarScreen : GameScreen {
     //Stores aircraft generators
     private val generatorList = Array<RandomGenerator.MultiThreadGenerator>()
 
+    //Temporary storage of loadGameScreen for exception handling
+    private var loadGameScreen: LoadGameScreen? = null
+
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
         save = null
@@ -247,7 +243,7 @@ class RadarScreen : GameScreen {
             colourStyle = 0
             realisticMetar = false
             emerChance = Emergency.Chance.OFF
-            soundSel = TerminalControl.getDefaultSoundSetting()
+            soundSel = TerminalControl.defaultSoundSetting
             weatherSel = Weather.STATIC
         } else {
             trajectoryLine = TerminalControl.trajectorySel
@@ -283,7 +279,9 @@ class RadarScreen : GameScreen {
         }
     }
 
-    constructor(game: TerminalControl?, save: JSONObject) : super(game) {
+    constructor(game: TerminalControl, save: JSONObject, loadGameScreen: LoadGameScreen) : super(game) {
+        this.loadGameScreen = loadGameScreen
+
         //Loads the game from save
         this.save = save
         saveId = save.getInt("saveId")
@@ -299,7 +297,7 @@ class RadarScreen : GameScreen {
         emergenciesLanded = save.optInt("emergenciesLanded", 0)
         spawnTimer = save.optDouble("spawnTimer", 60.0).toFloat()
         previousOffset = save.optDouble("previousOffset", 0.0).toFloat()
-        information = if (save.isNull("information")) MathUtils.random(65, 90).toChar() else save.getInt("information").toChar()
+        information = save.optInt("information", MathUtils.random(65, 90)).toChar()
         loadStageCamTimer()
 
         //Set timer for radar delay, trails and autosave
@@ -328,7 +326,7 @@ class RadarScreen : GameScreen {
             "false" -> Weather.RANDOM
             else -> Weather.valueOf(save.getString("liveWeather"))
         }
-        soundSel = if (save.isNull("sounds")) TerminalControl.getDefaultSoundSetting() else save.getInt("sounds")
+        soundSel = save.optInt("sounds", TerminalControl.defaultSoundSetting)
         emerChance = if (save.isNull("emerChance")) {
             Emergency.Chance.MEDIUM
         } else {
@@ -396,12 +394,13 @@ class RadarScreen : GameScreen {
             camera.position[2286f, 1620f] = 0f
         }
         labelStage = Stage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
-        labelStage.getViewport().camera = camera
-        labelStage.getViewport().update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
+        labelStage.viewport.camera = camera
+        labelStage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
     }
 
     private fun loadInputProcessors() {
         //Set input processors
+        gd = GestureDetector(40f, 0.2f, 1.1f, 0.15f, this)
         inputMultiplexer.addProcessor(uiStage)
         inputMultiplexer.addProcessor(labelStage)
         inputMultiplexer.addProcessor(gd)
@@ -507,7 +506,7 @@ class RadarScreen : GameScreen {
         stage.clear()
 
         //Show loading screen
-        loading = true
+        metarLoading = true
         loadingTime = 0f
 
         //Load range circles
@@ -611,7 +610,7 @@ class RadarScreen : GameScreen {
             }
             arrivals = 0
             for (aircraft in aircrafts.values) {
-                if (aircraft is Arrival && aircraft.getControlState() == Aircraft.ControlState.ARRIVAL) arrivals++
+                if (aircraft is Arrival && aircraft.controlState == Aircraft.ControlState.ARRIVAL) arrivals++
             }
             spawnTimer -= deltaTime
             if (spawnTimer <= 0 && arrivals < planesToControl) {
@@ -749,7 +748,7 @@ class RadarScreen : GameScreen {
         val flyOver = Array<Waypoint>()
         for (waypoint in waypoints.values) {
             waypoint.setRestrDisplay(-1, -1, -1) //Reset all restrictions before drawing in renderShape
-            if (waypoint.isFlyOver) {
+            if (waypoint.isFlyOver()) {
                 //Save flyovers for later
                 flyOver.add(waypoint)
             } else {
@@ -778,8 +777,8 @@ class RadarScreen : GameScreen {
             }
         }
         separationChecker.renderShape()
-        if (selectedAircraft != null) {
-            wakeManager.renderWake(selectedAircraft)
+        selectedAircraft?.let {
+            wakeManager.renderWake(it)
         }
         wakeManager.renderIlsWake()
         shapeRenderer.end()
@@ -806,9 +805,9 @@ class RadarScreen : GameScreen {
             if (arrival.airport != aircraft?.airport) continue
             val airportIcao = arrival.airport.icao
             if (arrival.ils == null) return false
-            val rwy1 = arrival.ils.rwy.name
-            if (aircraft?.ils == null) continue
-            val rwy2 = aircraft.ils.rwy.name
+            val rwy1 = arrival.ils?.rwy?.name
+            if (aircraft.ils == null) continue
+            val rwy2 = aircraft.ils?.rwy?.name
             val rwys = arrayOf(rwy1, rwy2)
             if ("TCWS" == airportIcao) {
                 if (ArrayUtils.contains(rwys, "02L") && ArrayUtils.contains(rwys, "02C") || ArrayUtils.contains(rwys, "20R") && ArrayUtils.contains(rwys, "20C")) return true
@@ -820,17 +819,6 @@ class RadarScreen : GameScreen {
         }
         simultaneousLanding[arrival.callsign] = 0f
         return false
-    }
-
-    /** Estimates the duration played (if save has no play time data)  */
-    private fun estimatePlayTime(): Float {
-        var landed = 0
-        for (airport in airports.values) {
-            landed += airport.landings
-        }
-
-        //Assume 90 seconds between landings lol
-        return (landed * 90).toFloat()
     }
 
     /** Updates the colour scheme of the radar screen  */
@@ -866,7 +854,7 @@ class RadarScreen : GameScreen {
         }
 
     override fun render(delta: Float) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && !loading) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) && !tutorial && finishedLoading) {
             //On android, change to pause screen if not paused, un-pause if paused
             setGameRunning(!running)
         }
@@ -877,12 +865,24 @@ class RadarScreen : GameScreen {
         //Implements show method of screen, loads UI & save (if available) after show is called if it hasn't been done
         if (!uiLoaded) {
             Ui.generatePaneTextures()
-            DataTag.setLoadedIcons(false)
-            Tab.setLoadedStyles(false)
+            DataTag.LOADED_ICONS = false
+            Tab.LOADED_STYLES = false
             loadUI()
-            GameLoader.loadSaveData(save)
-            uiLoaded = true
-            playTime = save?.optDouble("playTime", estimatePlayTime().toDouble())?.toFloat() ?: 0f
+            val newThread = Thread {
+                try {
+                    GameLoader.loadSaveData(save)
+                    //If loaded successfully, clear error sent, incompatible flag
+                    save?.put("errorSent", false)
+                    save?.put("incompatible", false)
+                    GameSaver.writeObjectToFile(save, save?.getInt("saveId") ?: -1)
+                    Thread.sleep(100)
+                    uiLoaded = true
+                    loadGameScreen = null
+                } catch (e: Exception) {
+                    Gdx.app.postRunnable { save?.let { loadGameScreen?.handleSaveLoadError(this, it, e) } }
+                }
+            }
+            newThread.start()
         }
         TerminalControl.discordManager.updateRPC()
         updateWaypointDisplay()
@@ -950,7 +950,7 @@ class RadarScreen : GameScreen {
         get() {
             var count = 0
             for (aircraft in aircrafts.values) {
-                if (aircraft is Departure && aircraft.isArrivalDeparture()) {
+                if (aircraft is Departure && aircraft.isArrivalDeparture) {
                     //If aircraft is a departure, and is in your control
                     count++
                 }

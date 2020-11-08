@@ -31,17 +31,18 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
     /** Calculates all route polygons  */
     fun calculatePolygons(lastWpt: Int) {
         for (i in 0 until route.waypoints.size) {
-            val wpt1 = route.getWaypoint(i)
+            val wpt1 = route.getWaypoint(i) ?: continue
             if (!wpt1.isInsideRadar) continue
             if (i + 1 < route.waypoints.size) {
-                val wpt2 = route.getWaypoint(i + 1)
-                val routeVector = Vector2((wpt2.posX - wpt1.posX).toFloat(), (wpt2.posY - wpt1.posY).toFloat())
-                polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), routeVector.angle(), routeVector.len(), 2f))
-                minAlt.add(route.getWptMinAlt(i + if (isSid) 0 else 1))
+                route.getWaypoint(i + 1)?.let { wpt2 ->
+                    val routeVector = Vector2((wpt2.posX - wpt1.posX).toFloat(), (wpt2.posY - wpt1.posY).toFloat())
+                    polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), routeVector.angleDeg(), routeVector.len(), 2f))
+                    minAlt.add(route.getWptMinAlt(i + if (isSid) 0 else 1))
+                }
             }
             if (i == lastWpt) {
                 //Additionally calculates the polygon for inbound STAR/outbound SID segments - heading is from waypoint
-                val outboundTrack = route.heading - TerminalControl.radarScreen.magHdgDev
+                val outboundTrack = route.heading - (TerminalControl.radarScreen?.magHdgDev ?: 0f)
                 val dist = distanceFromBorder(floatArrayOf(1260f, 4500f), floatArrayOf(0f, 3240f), wpt1.posX.toFloat(), wpt1.posY.toFloat(), outboundTrack)
                 polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), 90 - outboundTrack, dist, 2f))
                 minAlt.add(route.getWptMinAlt(i))
@@ -55,8 +56,8 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
         minAlt.add(-1)
         val oppX = runway.oppRwy.x
         val oppY = runway.oppRwy.y
-        val wptX = route.getWaypoint(0).posX.toFloat()
-        val wptY = route.getWaypoint(0).posY.toFloat()
+        val wptX = route.getWaypoint(0)?.posX?.toFloat() ?: 0f
+        val wptY = route.getWaypoint(0)?.posY?.toFloat() ?: 0f
         val initClimb = sid?.getInitClimb(runway.name)
         val initialClimbAlt = initClimb?.get(1) ?: -1
         var initialClimbHdg = initClimb?.get(0) ?: -1
@@ -64,20 +65,20 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
         if (initialClimbAlt != -1 && initialClimbAlt - runway.elevation > 800) {
             //Give some distance for aircraft to climb, in px
             val climbDist = nmToPixel((initialClimbAlt - runway.elevation) / 60f / climbRate * 220) //Assume 220 knots climb speed on average
-            val track = 90 - (initialClimbHdg - TerminalControl.radarScreen.magHdgDev)
+            val track = 90 - (initialClimbHdg - (TerminalControl.radarScreen?.magHdgDev ?: 0f))
             polygons.add(calculatePolygon(oppX, oppY, track, climbDist, 3f))
             minAlt.add(-1)
             val intermediateVector = Vector2(climbDist, 0f)
-            intermediateVector.rotate(track)
+            intermediateVector.rotateDeg(track)
             intermediateVector.add(oppX, oppY)
             val wptVector = Vector2(wptX, wptY)
             val intermediateToWpt = wptVector.sub(intermediateVector)
-            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angle(), intermediateToWpt.len(), 3f))
+            polygons.add(calculatePolygon(intermediateVector.x, intermediateVector.y, intermediateToWpt.angleDeg(), intermediateToWpt.len(), 3f))
             minAlt.add(initialClimbAlt)
         } else {
             //Go directly to first waypoint
             val vector2 = Vector2(wptX - oppX, wptY - oppY)
-            polygons.add(calculatePolygon(oppX, oppY, vector2.angle(), vector2.len(), 3f))
+            polygons.add(calculatePolygon(oppX, oppY, vector2.angleDeg(), vector2.len(), 3f))
             minAlt.add(initialClimbAlt)
         }
     }

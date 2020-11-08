@@ -17,6 +17,7 @@ import com.bombbird.terminalcontrol.entities.runways.RunwayConfig
 import com.bombbird.terminalcontrol.utilities.Fonts
 
 class RunwayChanger {
+    private val radarScreen = TerminalControl.radarScreen!!
     private val background: Image = Image(TerminalControl.skin.getDrawable("ListBackground"))
     private val airportLabel: Label
     private val changeButton: TextButton
@@ -36,26 +37,26 @@ class RunwayChanger {
                 event.handle() //Prevents hiding of runway changer when background is tapped
             }
         })
-        TerminalControl.radarScreen.ui.addActor(background, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
+        TerminalControl.radarScreen?.ui?.addActor(background, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
 
         val labelStyle = LabelStyle()
         labelStyle.fontColor = Color.WHITE
         labelStyle.font = Fonts.defaultFont20
         airportLabel = Label("", labelStyle)
-        TerminalControl.radarScreen.ui.addActor(airportLabel, 0.45f, -1f, 3240 * 0.38f, airportLabel.height)
+        radarScreen.ui.addActor(airportLabel, 0.45f, -1f, 3240 * 0.38f, airportLabel.height)
 
         val scrollTable = Table()
         scrollPane = ScrollPane(scrollTable)
         scrollPane.style.background = TerminalControl.skin.getDrawable("ListBackground")
         scrollPane.isVisible = false
-        TerminalControl.radarScreen.ui.addActor(scrollPane, 0.11f, 0.78f, 3240 * 0.055f, 3240 * 0.175f)
+        radarScreen.ui.addActor(scrollPane, 0.11f, 0.78f, 3240 * 0.055f, 3240 * 0.175f)
 
         val labelStyle1 = LabelStyle()
         labelStyle1.fontColor = Color.BLACK
         labelStyle1.font = Fonts.defaultFont20
         newRunwaysLabel = Label("Loading...", labelStyle1)
         newRunwaysLabel.setWrap(true)
-        scrollTable.add(newRunwaysLabel).width(0.76f * TerminalControl.radarScreen.ui.paneWidth).height(300f).pad(10f, 0.01f * TerminalControl.radarScreen.ui.paneWidth, 10f, 0.11f * TerminalControl.radarScreen.ui.paneWidth)
+        scrollTable.add(newRunwaysLabel).width(0.76f * radarScreen.ui.paneWidth).height(300f).pad(10f, 0.01f * radarScreen.ui.paneWidth, 10f, 0.11f * radarScreen.ui.paneWidth)
 
         val textButtonStyle = TextButtonStyle()
         textButtonStyle.font = Fonts.defaultFont20
@@ -72,14 +73,14 @@ class RunwayChanger {
                     airport?.rwyChangeTimer = -1f
                     updateRunways()
                     hideAll()
-                    TerminalControl.radarScreen.utilityBox.setVisible(true)
-                    TerminalControl.radarScreen.ui.updateMetar()
+                    radarScreen.utilityBox.setVisible(true)
+                    radarScreen.ui.updateMetar()
                 }
                 event.handle()
             }
 
         })
-        TerminalControl.radarScreen.ui.addActor(confirmButton, 0.525f, 0.325f, 3240 * 0.25f, 3240 * 0.11f)
+        radarScreen.ui.addActor(confirmButton, 0.525f, 0.325f, 3240 * 0.25f, 3240 * 0.11f)
 
         changeButton = TextButton("Change runway configuration", textButtonStyle)
         changeButton.align(Align.center)
@@ -98,7 +99,7 @@ class RunwayChanger {
                 event.handle()
             }
         })
-        TerminalControl.radarScreen.ui.addActor(changeButton, 0.15f, 0.325f, 3240 * 0.25f, 3240 * 0.11f)
+        radarScreen.ui.addActor(changeButton, 0.15f, 0.325f, 3240 * 0.25f, 3240 * 0.11f)
 
         var inputListener: InputListener? = null
         for (eventListener in scrollPane.listeners) {
@@ -146,9 +147,9 @@ class RunwayChanger {
         confirmButton.isVisible = false
         scrollPane.isVisible = false
         airportLabel.setText(icao)
-        airport = TerminalControl.radarScreen.airports[icao]
+        airport = radarScreen.airports[icao]
         airport?.metar?.let {
-            val windHdg = if (it.isNull("windDirection")) 0 else it.getInt("windDirection")
+            val windHdg = it.optInt("windDirection", 0)
             var windSpd = it.getInt("windSpeed")
             if (windHdg == 0) windSpd = 0
             airport?.runwayManager?.getSuitableConfigs(windHdg, windSpd)?.let { configs ->

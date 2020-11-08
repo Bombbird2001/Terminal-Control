@@ -26,14 +26,15 @@ class DiscordRPCManager : DiscordManager {
     override fun updateRPC() {
         if (TerminalControl.useDiscord) {
             val discordRichPresence = DiscordRichPresence()
-            if (TerminalControl.radarScreen == null) {
+            val radarScreen = TerminalControl.radarScreen
+            if (radarScreen == null) {
                 //In menu
                 discordRichPresence.details = "In menu"
             } else {
                 //In game
-                discordRichPresence.details = "In game: " + if (TerminalControl.radarScreen.tutorial) "Tutorial" else TerminalControl.radarScreen.mainName
-                discordRichPresence.largeImageText = TerminalControl.radarScreen.mainName
-                val planes = TerminalControl.radarScreen.planesInControl
+                discordRichPresence.details = "In game: " + if (radarScreen.tutorial) "Tutorial" else radarScreen.mainName
+                discordRichPresence.largeImageText = radarScreen.mainName
+                val planes = radarScreen.planesInControl
                 discordRichPresence.state = planes.toString() + (if (planes == 1) " plane" else " planes") + " in control"
             }
             discordRichPresence.largeImageKey = "icon"

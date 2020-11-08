@@ -15,6 +15,7 @@ import org.json.JSONArray
 import kotlin.collections.HashMap
 
 class UtilityBox {
+    private val radarScreen = TerminalControl.radarScreen!!
     private val header: Label
 
     private val labelStyleStorage: HashMap<String, Label.LabelStyle> = HashMap()
@@ -33,8 +34,8 @@ class UtilityBox {
     init {
         header = Label("Communications", getLabelStyle(Color.WHITE))
         header.setAlignment(Align.center)
-        header.setPosition(TerminalControl.radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
-        TerminalControl.radarScreen.uiStage.addActor(header)
+        header.setPosition(radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
+        radarScreen.uiStage.addActor(header)
 
         commsManager = CommsManager(this)
         commsTable = Table()
@@ -48,7 +49,7 @@ class UtilityBox {
             }
         }
         if (inputListener != null) commsPane.removeListener(inputListener)
-        TerminalControl.radarScreen.ui.addActor(commsPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
+        radarScreen.ui.addActor(commsPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
 
         statusManager = StatusManager(this)
         statusTable = Table()
@@ -62,7 +63,7 @@ class UtilityBox {
         }
         if (inputListener != null) statusPane.removeListener(inputListener)
         statusPane.isVisible = false
-        TerminalControl.radarScreen.ui.addActor(statusPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
+        radarScreen.ui.addActor(statusPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
 
         statusLabel = Label("Loading statuses...", getLabelStyle(Color.WHITE))
         statusLabel.setWrap(true)
@@ -84,11 +85,11 @@ class UtilityBox {
                 event.handle()
             }
         })
-        TerminalControl.radarScreen.ui.addActor(toggleButton, 0.8f, 0.15f, 3240 * 0.42f - 25, 300f)
+        radarScreen.ui.addActor(toggleButton, 0.8f, 0.15f, 3240 * 0.42f - 25, 300f)
     }
 
     fun updateHeaderPosition() {
-        header.setPosition(TerminalControl.radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
+        header.setPosition(radarScreen.ui.paneWidth / 2f - header.width / 2f, 3240 * 0.42f)
     }
 
     fun loadSave(save: JSONArray) {

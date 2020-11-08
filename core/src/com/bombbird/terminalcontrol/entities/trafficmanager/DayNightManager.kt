@@ -12,33 +12,35 @@ object DayNightManager {
     }
 
     /** Checks if a SID/STAR is allowed depending on whether night mode is active */
-    @JvmStatic
+
     fun checkNoiseAllowed(night: Boolean): Boolean {
         return if (isNight) night else !night
     }
 
     /** Checks whether airport is utilising night operations */
-    @JvmStatic
+
     val isNight: Boolean
         get() {
-            if (!isNightAvailable || !TerminalControl.radarScreen.allowNight) return false
-            val radarScreen = TerminalControl.radarScreen
-            val calendar = Calendar.getInstance(TimeZone.getDefault())
-            val additional = if (calendar[Calendar.AM_PM] == Calendar.PM) 12 else 0
-            val time = (calendar[Calendar.HOUR] + additional) * 100 + calendar[Calendar.MINUTE]
-            return if (radarScreen.nightEnd <= radarScreen.nightStart) {
-                //Cross midnight
-                time >= radarScreen.nightStart || time < radarScreen.nightEnd
-            } else {
-                time >= radarScreen.nightStart && time < radarScreen.nightEnd
+            TerminalControl.radarScreen?.let {
+                if (!isNightAvailable || !it.allowNight) return false
+                val calendar = Calendar.getInstance(TimeZone.getDefault())
+                val additional = if (calendar[Calendar.AM_PM] == Calendar.PM) 12 else 0
+                val time = (calendar[Calendar.HOUR] + additional) * 100 + calendar[Calendar.MINUTE]
+                return if (it.nightEnd <= it.nightStart) {
+                    //Cross midnight
+                    time >= it.nightStart || time < it.nightEnd
+                } else {
+                    time >= it.nightStart && time < it.nightEnd
+                }
             }
+            return false
         }
 
     /** Check whether this airport has night operations available */
-    @JvmStatic
+
     val isNightAvailable: Boolean
         get() {
             if (NIGHT_AVAILABLE.size == 0) loadArray()
-            return if (TerminalControl.radarScreen == null) false else NIGHT_AVAILABLE.contains(TerminalControl.radarScreen.mainName, false)
+            return TerminalControl.radarScreen?.let { NIGHT_AVAILABLE.contains(it.mainName, false) } ?: false
         }
 }

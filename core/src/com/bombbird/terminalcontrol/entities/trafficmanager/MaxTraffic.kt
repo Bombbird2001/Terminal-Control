@@ -7,7 +7,7 @@ object MaxTraffic {
     private val maxTraffic = HashMap<String, Float>()
     private val nightMaxTraffic = HashMap<String, Float>()
 
-    @JvmStatic
+
     fun loadHashmaps() {
         maxTraffic["TCTP"] = 20f
         maxTraffic["TCWS"] = 16f
@@ -24,7 +24,7 @@ object MaxTraffic {
         nightMaxTraffic["TCMD"] = 14f
     }
 
-    @JvmStatic
+
     fun getMaxTraffic(icao: String): Float {
         return if (isNight && nightMaxTraffic.containsKey(icao)) nightMaxTraffic[icao] ?: 18f else maxTraffic[icao] ?: 18f
     }

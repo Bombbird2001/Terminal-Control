@@ -20,7 +20,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import java.util.*
 
 /** The screen to set custom weather */
-class WeatherScreen(game: TerminalControl?) : BasicScreen(game, 5760, 3240) {
+class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
     private var boxMap: HashMap<String, Array<SelectBox<Int>>> = HashMap()
     fun loadUI() {
         stage.clear()
@@ -31,7 +31,7 @@ class WeatherScreen(game: TerminalControl?) : BasicScreen(game, 5760, 3240) {
 
     /** Loads the wind options for each airport  */
     private fun loadOptions() {
-        val radarScreen = TerminalControl.radarScreen
+        val radarScreen = TerminalControl.radarScreen!!
         var currentY = (3240 * 0.65f).toInt()
         val labelStyle = LabelStyle()
         labelStyle.font = Fonts.defaultFont30
@@ -187,8 +187,8 @@ class WeatherScreen(game: TerminalControl?) : BasicScreen(game, 5760, 3240) {
                     val windSpd = value[3].selected * 10 + value[4].selected
                     newData[key] = intArrayOf(windHdg, windSpd)
                 }
-                TerminalControl.radarScreen.weatherSel = RadarScreen.Weather.STATIC
-                TerminalControl.radarScreen.metar.updateCustomWeather(newData)
+                TerminalControl.radarScreen?.weatherSel = RadarScreen.Weather.STATIC
+                TerminalControl.radarScreen?.metar?.updateCustomWeather(newData)
                 game.screen = OtherSettingsScreen(game, TerminalControl.radarScreen, null)
             }
         })

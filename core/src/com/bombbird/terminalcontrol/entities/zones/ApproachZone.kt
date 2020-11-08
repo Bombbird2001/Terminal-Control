@@ -17,7 +17,7 @@ open class ApproachZone(private val rwy1: String, private val rwy2: String, xMid
 
     //All dimensions in nautical miles
     init {
-        var angle = 90 - apchHdg + TerminalControl.radarScreen.magHdgDev
+        var angle = 90 - apchHdg + (TerminalControl.radarScreen?.magHdgDev ?: 0f)
         val ntzCoord = FloatArray(8)
         val ntzWidthPx = nmToPixel(ntzWidth)
         val nozLengthPx = nmToPixel(nozLength)
@@ -77,12 +77,12 @@ open class ApproachZone(private val rwy1: String, private val rwy2: String, xMid
 
     fun renderShape() {
         if (!active) return
-        val shapeRenderer = TerminalControl.radarScreen.shapeRenderer
-        shapeRenderer.color = Color.GREEN
-        shapeRenderer.polygon(noz1.vertices)
-        shapeRenderer.polygon(noz2.vertices)
-        shapeRenderer.color = Color.RED
-        shapeRenderer.polygon(ntz.vertices)
+        val shapeRenderer = TerminalControl.radarScreen?.shapeRenderer
+        shapeRenderer?.color = Color.GREEN
+        shapeRenderer?.polygon(noz1.vertices)
+        shapeRenderer?.polygon(noz2.vertices)
+        shapeRenderer?.color = Color.RED
+        shapeRenderer?.polygon(ntz.vertices)
     }
 
     fun updateStatus(ldgRwys: HashMap<String, Runway>) {
@@ -91,5 +91,9 @@ open class ApproachZone(private val rwy1: String, private val rwy2: String, xMid
 
     fun checkSeparation(plane1: Aircraft, plane2: Aircraft): Boolean {
         return noz1.contains(plane1.x, plane1.y) && noz2.contains(plane2.x, plane2.y) || noz1.contains(plane2.x, plane2.y) && noz2.contains(plane1.x, plane1.y)
+    }
+
+    fun isInNTZ(plane: Aircraft): Boolean {
+        return ntz.contains(plane.x, plane.y)
     }
 }

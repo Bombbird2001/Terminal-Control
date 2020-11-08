@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.entities.zones
 import com.badlogic.gdx.utils.Array
 
 object ZoneLoader {
-    @JvmStatic
+
     fun loadApchZones(icao: String): Array<ApproachZone> {
         return when (icao) {
             "TCWS" -> loadApchTCWS()
@@ -35,7 +35,7 @@ object ZoneLoader {
         return approachZones
     }
 
-    @JvmStatic
+
     fun loadDepZones(icao: String): Array<DepartureZone> {
         return when (icao) {
             "TCTT" -> loadDepTCTT()

@@ -1,0 +1,204 @@
+package com.bombbird.terminalcontrol
+
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Game
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
+import com.bombbird.terminalcontrol.screens.MainMenuScreen
+import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.sounds.TextToSpeech
+import com.bombbird.terminalcontrol.utilities.DiscordManager
+import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
+import com.bombbird.terminalcontrol.utilities.ToastManager
+import com.bombbird.terminalcontrol.utilities.saving.FileLoader
+import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+
+class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager) : Game() {
+    companion object {
+        //Get screen size
+        var WIDTH = 0
+        var HEIGHT = 0
+
+        //Use discord? (initialisation successful?)
+        var useDiscord = false
+
+        //Version info
+        var full = false
+        lateinit var versionName: String
+        var versionCode = 0
+
+        //Active gameScreen instance
+        var radarScreen: RadarScreen? = null
+
+        //Create texture stuff
+        private lateinit var buttonAtlas: TextureAtlas
+        lateinit var skin: Skin
+
+        //Text-to-speech (for Android only)
+        lateinit var tts: TextToSpeech
+
+        //Toast (for Android only)
+        lateinit var toastManager: ToastManager
+
+        //Discord RPC (for Desktop only)
+        var loadedDiscord = false
+        lateinit var discordManager: DiscordManager
+
+        //Default settings
+        var trajectorySel = 0
+        var pastTrajTime = 0
+        lateinit var weatherSel: RadarScreen.Weather
+        var soundSel = 0
+        lateinit var emerChance: Emergency.Chance
+        var sendAnonCrash = false
+        var increaseZoom = false
+        var saveInterval = 0
+        var radarSweep = 0f
+        var advTraj = 0
+        var areaWarning = 0
+        var collisionWarning = 0
+        var showMva = false
+        var showIlsDash = false
+        var compactData = false
+        var showUncontrolled = false
+        var alwaysShowBordersBackground = false
+        var rangeCircleDist = 0
+        var lineSpacingValue = 0
+        var colourStyle = 0
+        var realisticMetar = false
+        var defaultTabNo = 0
+        var revision = 0
+        const val LATEST_REVISION = 1
+
+        fun loadSettings() {
+            val settings = FileLoader.loadSettings()
+            if (settings == null) {
+                //Default settings if save unavailable
+                trajectorySel = 90
+                pastTrajTime = -1
+                weatherSel = RadarScreen.Weather.LIVE
+                soundSel = defaultSoundSetting
+                sendAnonCrash = true
+                increaseZoom = false
+                saveInterval = 60
+                radarSweep = 2f
+                advTraj = -1
+                areaWarning = -1
+                collisionWarning = -1
+                showMva = true
+                showIlsDash = false
+                compactData = false
+                showUncontrolled = false
+                alwaysShowBordersBackground = true
+                rangeCircleDist = 0
+                lineSpacingValue = 1
+                colourStyle = 0
+                realisticMetar = false
+                defaultTabNo = 0
+                emerChance = Emergency.Chance.MEDIUM
+                revision = 0
+            } else {
+                trajectorySel = settings.optInt("trajectory", 90)
+                pastTrajTime = settings.optInt("pastTrajTime", -1)
+                val weather = settings.optString("weather")
+                weatherSel = when (weather) {
+                    "true" -> RadarScreen.Weather.LIVE //Old format
+                    "false" -> RadarScreen.Weather.RANDOM //Old format
+                    else -> RadarScreen.Weather.valueOf(settings.getString("weather")) //New format
+                }
+                soundSel = settings.optInt("sound", soundSel)
+                sendAnonCrash = settings.optBoolean("sendCrash", true)
+                emerChance = if (settings.isNull("emerChance")) {
+                    Emergency.Chance.MEDIUM
+                } else {
+                    Emergency.Chance.valueOf(settings.getString("emerChance"))
+                }
+                increaseZoom = settings.optBoolean("increaseZoom", false)
+                saveInterval = settings.optInt("saveInterval", 60)
+                radarSweep = settings.optDouble("radarSweep", 2.0).toFloat()
+                advTraj = settings.optInt("advTraj", -1)
+                areaWarning = settings.optInt("areaWarning", -1)
+                defaultTabNo = settings.optInt("defaultTabNo", 0)
+                collisionWarning = settings.optInt("collisionWarning", -1)
+                showMva = settings.optBoolean("showMva", true)
+                showIlsDash = settings.optBoolean("showIlsDash", false)
+                compactData = settings.optBoolean("compactData", false)
+                showUncontrolled = settings.optBoolean("showUncontrolled", false)
+                alwaysShowBordersBackground = settings.optBoolean("alwaysShowBordersBackground", true)
+                rangeCircleDist = settings.optInt("rangeCircleDist", 0)
+                lineSpacingValue = settings.optInt("lineSpacingValue", 1)
+                colourStyle = settings.optInt("colourStyle", 0)
+                realisticMetar = settings.optBoolean("realisticMetar", false)
+                revision = settings.optInt("revision", 0)
+            }
+            GameSaver.saveSettings()
+        }
+
+        val defaultSoundSetting: Int
+            get() = if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1
+
+        fun loadVersionInfo() {
+            val info = Gdx.files.internal("game/type.type").readString().split(" ".toRegex()).toTypedArray()
+            full = "lite" != info[0]
+            versionName = info[1]
+            versionCode = info[2].toInt()
+            FileLoader.mainDir = if (full) "AppData/Roaming/TerminalControlFull" else "AppData/Roaming/TerminalControl"
+        }
+
+        fun revisionNeedsUpdate(): Boolean {
+            return revision < LATEST_REVISION
+        }
+
+        fun updateRevision() {
+            revision = LATEST_REVISION
+            GameSaver.saveSettings()
+        }
+    }
+
+    //The one and only spritebatch
+    lateinit var batch: SpriteBatch
+
+    init {
+        Companion.tts = tts
+        Companion.toastManager = toastManager
+        Companion.discordManager = discordManager
+        loadedDiscord = false
+        useDiscord = false
+    }
+
+    private fun loadDialogSkin() {
+        val ws = Window.WindowStyle()
+        ws.titleFont = Fonts.defaultFont20
+        ws.titleFontColor = Color.WHITE
+        ws.background = skin.getDrawable("ListBackground")
+        ws.stageBackground = skin.getDrawable("DarkBackground")
+        skin.add("defaultDialog", ws)
+    }
+
+    override fun create() {
+        WIDTH = Gdx.graphics.width
+        HEIGHT = Gdx.graphics.height
+        batch = SpriteBatch()
+        buttonAtlas = TextureAtlas(Gdx.files.internal("game/ui/terminal-control.atlas"))
+        skin = Skin()
+        skin.addRegions(buttonAtlas)
+        loadDialogSkin()
+        loadMaps()
+        Gdx.input.setCatchKey(Input.Keys.BACK, true)
+        setScreen(MainMenuScreen(this, null))
+    }
+
+    override fun dispose() {
+        batch.dispose()
+        Fonts.dispose()
+        buttonAtlas.dispose()
+        skin.dispose()
+    }
+}

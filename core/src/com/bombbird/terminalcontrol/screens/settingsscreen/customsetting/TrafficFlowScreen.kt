@@ -18,13 +18,14 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.categories.TrafficSet
 import com.bombbird.terminalcontrol.utilities.Fonts
 
 /** Screen for managing traffic flow into airports */
-class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240) {
+class TrafficFlowScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
     companion object {
         const val NORMAL = 0
         const val PLANES_IN_CONTROL = 1
         const val FLOW_RATE = 2
     }
 
+    private val radarScreen = TerminalControl.radarScreen!!
     var mode: Int = 0
     private val airportClosed: HashMap<String, SelectBox<String>> = HashMap()
 
@@ -53,7 +54,7 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
         valueLabel.setAlignment(Align.right)
 
         modeBox = createStandardBox()
-        modeBox.setItems("Normal", "Planes in control", "Flow rate")
+        modeBox.setItems("Normal", "Arrivals in control", "Flow rate")
         modeBox.addListener(object: ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 updateValueBoxChoices()
@@ -71,7 +72,7 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
         table.add(valueBox).width(1000f).height(300f).padRight(380f).padBottom(70f).row()
 
         var index = 0
-        for (airport: Airport in TerminalControl.radarScreen.airports.values) {
+        for (airport: Airport in radarScreen.airports.values) {
             val airportLabel = Label(airport.icao + ":", labelStyle)
             airportLabel.setAlignment(Align.right)
 
@@ -91,7 +92,7 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
 
         stage.addActor(table)
 
-        modeBox.selectedIndex = TerminalControl.radarScreen.trafficMode
+        modeBox.selectedIndex = radarScreen.trafficMode
         updateValueBoxChoices()
     }
 
@@ -104,13 +105,13 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
             PLANES_IN_CONTROL -> {
                 for (x in 0..60 step 5) array.add(x.toString())
                 valueBox.items = array
-                valueBox.selected = TerminalControl.radarScreen.maxPlanes.toString()
+                valueBox.selected = radarScreen.maxPlanes.toString()
                 valueLabel.setText("Planes:")
             }
             FLOW_RATE -> {
                 for (x in 0..120 step 10) array.add(x.toString())
                 valueBox.items = array
-                valueBox.selected = TerminalControl.radarScreen.flowRate.toString()
+                valueBox.selected = radarScreen.flowRate.toString()
                 valueLabel.setText("Flow rate:\n(Arrivals/hour)")
             }
         }
@@ -171,12 +172,12 @@ class TrafficFlowScreen(val game: TerminalControl): BasicScreen(game, 5760, 3240
         confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800f)
         confirmButton.addListener(object: ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                TerminalControl.radarScreen.trafficMode = modeBox.selectedIndex
-                TerminalControl.radarScreen.flowRate = if (modeBox.selectedIndex == 2) (valueBox.selected?.toInt() ?: -1) else -1
-                TerminalControl.radarScreen.maxPlanes = if (modeBox.selectedIndex == 1) (valueBox.selected?.toInt() ?: -1) else -1
-                if (modeBox.selectedIndex == PLANES_IN_CONTROL) TerminalControl.radarScreen.planesToControl = valueBox.selected?.toFloat() ?: -1f
+                radarScreen.trafficMode = modeBox.selectedIndex
+                radarScreen.flowRate = if (modeBox.selectedIndex == 2) (valueBox.selected?.toInt() ?: -1) else -1
+                radarScreen.maxPlanes = if (modeBox.selectedIndex == 1) (valueBox.selected?.toInt() ?: -1) else -1
+                if (modeBox.selectedIndex == PLANES_IN_CONTROL) radarScreen.planesToControl = valueBox.selected?.toFloat() ?: -1f
                 for (airport: Map.Entry<String, SelectBox<String>> in airportClosed) {
-                    TerminalControl.radarScreen.airports[airport.key]?.isClosed = airport.value.selectedIndex == 1
+                    radarScreen.airports[airport.key]?.isClosed = airport.value.selectedIndex == 1
                 }
                 returnToTrafficScreen()
             }

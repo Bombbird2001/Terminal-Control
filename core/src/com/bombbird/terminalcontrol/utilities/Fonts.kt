@@ -8,28 +8,28 @@ import com.bombbird.terminalcontrol.TerminalControl
 
 object Fonts {
     private var defaultFont: FreeTypeFontGenerator? = FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"))
-    @JvmField
+
     var defaultFont6: BitmapFont? = generateFont(defaultFont, 24, -1)
-    @JvmField
+
     var compressedFont6: BitmapFont? = generateFont(defaultFont, 24, 26)
-    @JvmField
+
     var expandedFont6: BitmapFont? = generateFont(defaultFont, 24, 40)
-    @JvmField
+
     var defaultFont8: BitmapFont? = generateFont(defaultFont, 32, -1)
-    @JvmField
+
     var defaultFont10: BitmapFont? = generateFont(defaultFont, 40, -1)
-    @JvmField
+
     var defaultFont12: BitmapFont? = generateFont(defaultFont, 48, -1)
-    @JvmField
+
     var defaultFont16: BitmapFont? = generateFont(defaultFont, 64, -1)
-    @JvmField
+
     var defaultFont20: BitmapFont? = generateFont(defaultFont, 80, -1)
-    @JvmField
+
     var defaultFont24: BitmapFont? = generateFont(defaultFont, 96, -1)
-    @JvmField
+
     var defaultFont30: BitmapFont? = generateFont(defaultFont, 120, -1)
 
-    @JvmStatic
+
     fun generateAllFonts() {
         defaultFont = FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"))
         defaultFont6 = generateFont(defaultFont, 24, -1)
@@ -57,7 +57,7 @@ object Fonts {
         return font
     }
 
-    @JvmStatic
+
     fun dispose() {
         defaultFont?.dispose()
         defaultFont6?.dispose()

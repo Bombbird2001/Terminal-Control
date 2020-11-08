@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.utilities.math
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.MathUtils
 import com.bombbird.terminalcontrol.TerminalControl
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
@@ -38,7 +37,6 @@ object RandomGenerator {
     private val excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n".toRegex()).toTypedArray()
 
     /** Generates a random plane (with callsign, aircraft type)  */
-    @JvmStatic
     fun randomPlane(airport: Airport, allAircraft: HashSet<String>): Array<String> {
         val size = airport.airlines.size
         var airline: String?
@@ -54,11 +52,12 @@ object RandomGenerator {
     }
 
     /** Generates a random airport given the RadarScreen mainName variable  */
-    @JvmStatic
+
     fun randomAirport(): Airport? {
+        val radarScreen = TerminalControl.radarScreen!!
         var total = 0
         val airportRange = HashMap<Airport, IntArray>()
-        for (airport in TerminalControl.radarScreen.airports.values) {
+        for (airport in radarScreen.airports.values) {
             if (airport.isClosed || airport.landingRunways.size == 0) continue  //Don't spawn arrivals in a closed airport or airport with no landing runways available
             total += airport.aircraftRatio
             airportRange[airport] = intArrayOf(total - airport.aircraftRatio, total)
@@ -66,7 +65,7 @@ object RandomGenerator {
         if (total < 1) return null //Return nothing if no airports available
         var airport: Airport? = null
         val index = MathUtils.random(1, total)
-        for (airport1 in TerminalControl.radarScreen.airports.values) {
+        for (airport1 in radarScreen.airports.values) {
             val lowerRange: Int? = airportRange[airport1]?.get(0)
             val upperRange: Int? = airportRange[airport1]?.get(1)
             if (lowerRange != null && upperRange != null && index > lowerRange && index <= upperRange) {
