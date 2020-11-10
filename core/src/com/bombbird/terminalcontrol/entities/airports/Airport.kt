@@ -155,9 +155,6 @@ class Airport {
         RandomSTAR.loadStarNoise(icao)
 
         //TerminalControl.tts.test(stars, sids);
-        for (missedApproach in missedApproaches.values) {
-            missedApproach.loadIls()
-        }
         takeoffManager = TakeoffManager(this)
         runwayManager = RunwayManager(this, save?.optBoolean("night", isNight) ?: isNight)
         loadZones()

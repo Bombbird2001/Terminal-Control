@@ -199,7 +199,7 @@ object FileLoader {
             val handle = Gdx.files.internal("game/" + it.mainName + "/" + it.airac + "/missedApch" + airport.icao + ".miss")
             val jo = JSONObject(handle.readString())
             for (missed in jo.keySet()) {
-                missedApproaches[missed] = MissedApproach(missed, airport, jo.getJSONObject(missed))
+                missedApproaches[missed] = MissedApproach(jo.getJSONObject(missed))
             }
         }
         return missedApproaches
