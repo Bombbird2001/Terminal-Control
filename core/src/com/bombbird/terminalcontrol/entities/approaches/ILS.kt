@@ -48,7 +48,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
         private set
     var rwy: Runway? = null
         private set
-    val missedApchProc: MissedApproach?
+    val missedApchProc: MissedApproach
     var isNpa = false
     private var gsRings = com.badlogic.gdx.utils.Array<Vector2>()
     var minAlt = 0
@@ -59,7 +59,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
         var missed = name
         if ("IMG" == name.substring(0, 3)) missed = "LDA" + name.substring(3)
         if ("TCHX" == airport.icao && "IMG13" == name) missed = "IGS13"
-        missedApchProc = airport.missedApproaches[missed]
+        missedApchProc = airport.missedApproaches[missed]!!
         calculateGsRings()
     }
 

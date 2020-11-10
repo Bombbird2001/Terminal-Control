@@ -875,6 +875,8 @@ class RadarScreen : GameScreen {
                     save?.put("errorSent", false)
                     save?.put("incompatible", false)
                     GameSaver.writeObjectToFile(save, save?.getInt("saveId") ?: -1)
+                    updateWaypointDisplay()
+                    TerminalControl.discordManager.updateRPC()
                     Thread.sleep(100)
                     uiLoaded = true
                     loadGameScreen = null
@@ -884,8 +886,6 @@ class RadarScreen : GameScreen {
             }
             newThread.start()
         }
-        TerminalControl.discordManager.updateRPC()
-        updateWaypointDisplay()
         setGameRunning(true)
     }
 
