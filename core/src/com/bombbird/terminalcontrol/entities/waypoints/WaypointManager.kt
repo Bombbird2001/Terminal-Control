@@ -20,13 +20,14 @@ class WaypointManager {
     private fun unselectAll() {
         for (waypoint in radarScreen.waypoints.values) {
             waypoint.isSelected = false
+            waypoint.distToGoVisible = false
         }
     }
 
     /** Updates the waypoints that are displayed when an aircraft is selected  */
     private fun updateSelected() {
         //Only one aircraft can be selected at a time
-        val aircraft = radarScreen.getSelectedAircraft()
+        val aircraft = radarScreen.selectedAircraft
         if (aircraft != null) {
             val latMode: Int = aircraft.navState.dispLatMode.last()
             if (aircraft.navState.containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG) || latMode == NavState.HOLD_AT && !aircraft.isHolding) {
@@ -44,7 +45,7 @@ class WaypointManager {
     /** Updates the waypoints displayed when aircraft is selected and changes have been made to latmode  */
     private fun updateChangeSelected() {
         //Only one aircraft selected at a time
-        val aircraft = radarScreen.getSelectedAircraft()
+        val aircraft = radarScreen.selectedAircraft
         if (aircraft != null && radarScreen.ui.latTab.tabChanged) {
             for (waypoint in aircraft.uiRemainingWaypoints) {
                 waypoint.isSelected = true

@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointShifter.loadData
 import com.bombbird.terminalcontrol.utilities.Fonts
 import java.util.*
+import kotlin.math.round
 
 class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor() {
     companion object {
@@ -18,7 +19,18 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
 
     private var restrVisible: Boolean
     private val restrLabel: Label
-    val label: Label
+    val nameLabel: Label
+    var distToGo = -1f
+        set(value) {
+            if (round(field * 10) / 10f != round(value * 10) / 10f) {
+                //Update label if distToGo has changed by 0.1 or more
+                distToGoLabel.setText(if (value >= 0) (round(value * 10) / 10f).toString() else "")
+                distToGoLabel.x = posX - distToGoLabel.width / 2
+            }
+            field = value
+        }
+    var distToGoVisible = false
+    private var distToGoLabel: Label
     var isSelected = false
     private var flyOver = false
     private val radarScreen = TerminalControl.radarScreen!!
@@ -29,25 +41,32 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
         val labelStyle = LabelStyle()
         labelStyle.font = Fonts.defaultFont6
         labelStyle.fontColor = Color.GRAY
-        label = Label(name, labelStyle)
-        label.setPosition(posX - label.width / 2, posY + 16.toFloat())
-        label.setAlignment(Align.bottom)
+        nameLabel = Label(name, labelStyle)
+        nameLabel.setPosition(posX - nameLabel.width / 2, posY + 16.toFloat())
+        nameLabel.setAlignment(Align.bottom)
 
         //Set restriction label
-        val labelStyle1 = LabelStyle()
-        labelStyle1.font = Fonts.defaultFont6
-        labelStyle1.fontColor = Color.GRAY
-        restrLabel = Label("This should not be visible", labelStyle1)
+        restrLabel = Label("This should not be visible", labelStyle)
         restrLabel.setPosition(posX - restrLabel.width / 2, posY + 48.toFloat())
         restrLabel.setAlignment(Align.bottom)
         restrVisible = false
         adjustPositions()
+
+        //Set dist to go label
+        distToGoLabel = Label("", labelStyle)
+        distToGoLabel.setPosition(posX.toFloat(), posY - 44.toFloat())
+        distToGoLabel.setAlignment(Align.bottom)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         if (isSelected && isInsideRadar) {
-            label.draw(batch, 1f)
-            if (restrVisible) restrLabel.draw(batch, 1f)
+            nameLabel.draw(batch, 1f)
+            if (restrVisible) {
+                restrLabel.draw(batch, 1f)
+            }
+            if (distToGoVisible && radarScreen.selectedAircraft?.eligibleDisplayDistToGo() == true) {
+                distToGoLabel.draw(batch, 1f)
+            }
         }
     }
 
@@ -55,8 +74,9 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
     private fun adjustPositions() {
         loadData()
         if ("ITRF14.1" == name) {
-            label.moveBy(-80f, -16f)
+            nameLabel.moveBy(-80f, -16f)
             restrLabel.moveBy(-80f, -16f)
+            distToGoLabel.moveBy(-80f, -16f)
             return
         }
         val icao = radarScreen.mainName
@@ -93,7 +113,7 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
 
     /** Checks whether the waypoint is marked as a flyover waypoint for correct rendering  */
     fun isFlyOver(): Boolean {
-        val selectedAircraft = radarScreen.getSelectedAircraft()
+        val selectedAircraft = radarScreen.selectedAircraft
         return if (selectedAircraft != null && selectedAircraft.remainingWaypoints.contains(this, true)) {
             //If there is aircraft selected, and remaining waypoints contains this waypoint, return whether this waypoint is flyover
             selectedAircraft.route.getWptFlyOver(name)

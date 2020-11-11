@@ -21,6 +21,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     lateinit var rangeCircle: SelectBox<String>
     lateinit var colour: SelectBox<String>
     lateinit var metar: SelectBox<String>
+    lateinit var distToGo: SelectBox<String>
     lateinit var trajectoryLabel: Label
     var trajectorySel = 0
     private lateinit var pastTrajLabel: Label
@@ -37,6 +38,8 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     var colourStyle = 0
     private lateinit var metarLabel: Label
     var realisticMetar = false
+    private lateinit var distToGoLabel: Label
+    var distToGoVisible = 0
 
     init {
         infoString = "Set the game display settings below."
@@ -137,6 +140,14 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
                 realisticMetar = "Realistic" == metar.selected
             }
         })
+
+        distToGo = createStandardSelectBox()
+        distToGo.setItems("Off", "Arrivals only", "Departures only", "All aircraft")
+        distToGo.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                distToGoVisible = distToGo.selectedIndex
+            }
+        })
     }
 
     /** Loads labels for display settings  */
@@ -150,6 +161,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         rangeCircleLabel = Label("Range rings:", labelStyle)
         colourLabel = Label("Colour style:", labelStyle)
         metarLabel = Label("Metar display:", labelStyle)
+        distToGoLabel = Label("Show distance to waypoint:\nwhen selected", labelStyle)
     }
 
     /** Loads actors for display settings into tabs  */
@@ -164,6 +176,9 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         tab1.addActors(colour, colourLabel)
         tab1.addActors(metar, metarLabel)
         settingsTabs.add(tab1)
+        val tab2 = SettingsTab(this, 2)
+        tab2.addActors(distToGo, distToGoLabel)
+        settingsTabs.add(tab2)
     }
 
     /** Sets relevant options into select boxes  */
@@ -178,6 +193,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             rangeCircleDist = TerminalControl.rangeCircleDist
             colourStyle = TerminalControl.colourStyle
             realisticMetar = TerminalControl.realisticMetar
+            distToGoVisible = TerminalControl.distToGoVisible
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine
@@ -188,6 +204,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             rangeCircleDist = radarScreen.rangeCircleDist
             colourStyle = radarScreen.colourStyle
             realisticMetar = radarScreen.realisticMetar
+            distToGoVisible = radarScreen.distToGoVisible
         }
         trajectoryLine.selected = if (trajectorySel == 0) "Off" else "$trajectorySel sec"
         when (pastTrajTime) {
@@ -201,6 +218,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         rangeCircle.selected = if (rangeCircleDist == 0) "Off" else rangeCircleDist.toString() + "nm"
         colour.selectedIndex = colourStyle
         metar.selected = if (realisticMetar) "Realistic" else "Simple"
+        distToGo.selectedIndex = distToGoVisible
     }
 
     /** Confirms and applies the changes set  */
@@ -217,6 +235,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             radarScreen.colourStyle = colourStyle
             val metarChanged = radarScreen.realisticMetar != realisticMetar
             radarScreen.realisticMetar = realisticMetar
+            radarScreen.distToGoVisible = distToGoVisible
             Gdx.app.postRunnable {
                 if (rangeDistChanged) radarScreen.loadRange() //Reload the range circles in case of any changes
                 if (colourChanged) radarScreen.updateColourStyle() //Update the label colours
@@ -231,6 +250,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             TerminalControl.rangeCircleDist = rangeCircleDist
             TerminalControl.colourStyle = colourStyle
             TerminalControl.realisticMetar = realisticMetar
+            TerminalControl.distToGoVisible = distToGoVisible
             GameSaver.saveSettings()
         }
     }

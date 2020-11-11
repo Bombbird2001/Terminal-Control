@@ -100,6 +100,7 @@ class RadarScreen : GameScreen {
     var lineSpacingValue = 0
     var colourStyle = 0
     var realisticMetar = false
+    var distToGoVisible = 0
 
     //Advanced traffic settings
     var trafficMode: Int
@@ -116,8 +117,9 @@ class RadarScreen : GameScreen {
             field = if (trafficMode == TrafficFlowScreen.PLANES_IN_CONTROL) maxPlanes.toFloat() else MathUtils.clamp(value, 4f, getMaxTraffic(mainName))
         }
 
-    private var score //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
+    var score //Score of the player; equal to the number of planes landed without a separation incident (with other traffic or terrain)
             : Int
+        private set
     var highScore //High score of player
             : Int
         private set
@@ -183,7 +185,8 @@ class RadarScreen : GameScreen {
         private set
 
     //The selected aircraft
-    private var selectedAircraft: Aircraft? = null
+    var selectedAircraft: Aircraft? = null
+        private set
 
     //Simultaneous landing achievement storage
     private val simultaneousLanding: LinkedHashMap<String, Float>
@@ -245,6 +248,7 @@ class RadarScreen : GameScreen {
             emerChance = Emergency.Chance.OFF
             soundSel = TerminalControl.defaultSoundSetting
             weatherSel = Weather.STATIC
+            distToGoVisible = 0
         } else {
             trajectoryLine = TerminalControl.trajectorySel
             pastTrajTime = TerminalControl.pastTrajTime
@@ -264,6 +268,7 @@ class RadarScreen : GameScreen {
             weatherSel = TerminalControl.weatherSel
             soundSel = TerminalControl.soundSel
             emerChance = TerminalControl.emerChance
+            distToGoVisible = TerminalControl.distToGoVisible
         }
         tfcMode = TfcMode.NORMAL
         allowNight = true
@@ -343,6 +348,7 @@ class RadarScreen : GameScreen {
         trafficMode = save.optInt("trafficMode", 0)
         maxPlanes = save.optInt("maxPlanes", -1)
         flowRate = save.optInt("flowRate", -1)
+        distToGoVisible = save.optInt("distToGoVisible", 0)
         wakeManager = if (save.isNull("wakeManager")) WakeManager() else WakeManager(save.getJSONObject("wakeManager"))
         loadEasterEggQueue()
         simultaneousLanding = LinkedHashMap()
@@ -923,14 +929,6 @@ class RadarScreen : GameScreen {
             utilityBox.setVisible(true)
         }
         selectedAircraft = aircraft
-    }
-
-    fun getSelectedAircraft(): Aircraft? {
-        return selectedAircraft
-    }
-
-    fun getScore(): Int {
-        return score
     }
 
     fun setScore(score: Int) {
