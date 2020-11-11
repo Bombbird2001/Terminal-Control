@@ -267,6 +267,7 @@ class Arrival : Aircraft {
             navState.clearedAftWpt.last()?.let { it2 ->
                 route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, navState.clearedAftWptHdg.last())
                 radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1)
+                calculateAndSetDistToGo(it, it2)
             }
         }
     }
@@ -275,8 +276,11 @@ class Arrival : Aircraft {
     override fun uiDrawAftWpt() {
         super.uiDrawAftWpt()
         navState.clearedDirect.last()?.let {
-            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(Tab.afterWpt) + 1, Tab.afterWptHdg)
-            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.afterWpt) + 1)
+            radarScreen.waypoints[Tab.afterWpt]?.let { it2 ->
+                route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, Tab.afterWptHdg)
+                radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.afterWpt) + 1)
+                calculateAndSetDistToGo(it, it2)
+            }
         }
     }
 
@@ -288,6 +292,7 @@ class Arrival : Aircraft {
             navState.clearedHold.last()?.let { it2 ->
                 route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, -1)
                 radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1)
+                if (!isHolding) calculateAndSetDistToGo(it, it2)
             }
         }
     }
@@ -297,8 +302,11 @@ class Arrival : Aircraft {
         super.uiDrawHoldPattern()
         radarScreen.shapeRenderer.color = Color.YELLOW
         navState.clearedDirect.last()?.let {
-            route.joinLines(route.findWptIndex(it.name), route.findWptIndex(Tab.holdWpt) + 1, -1)
-            radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.holdWpt) + 1)
+            radarScreen.waypoints[Tab.holdWpt]?.let {  it2 ->
+                route.joinLines(route.findWptIndex(it.name), route.findWptIndex(it2.name) + 1, -1)
+                radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.findWptIndex(Tab.holdWpt) + 1)
+                calculateAndSetDistToGo(it, it2)
+            }
         }
     }
 
@@ -434,7 +442,7 @@ class Arrival : Aircraft {
                 divertToAltn()
             } else {
                 radarScreen.utilityBox.commsManager.warningMsg("Mayday, mayday, mayday, $callsign is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.")
-                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f))
+                radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
                 TerminalControl.tts.lowFuel(this, 1)
             }
             isDeclareEmergency = true
@@ -446,7 +454,7 @@ class Arrival : Aircraft {
             radarScreen.utilityBox.commsManager.warningMsg("$callsign is diverting to the alternate airport.")
             TerminalControl.tts.lowFuel(this, 2)
             divertToAltn()
-            radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.9f))
+            radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
         }
     }
 
@@ -756,7 +764,7 @@ class Arrival : Aircraft {
                 incrementEmergency()
                 radarScreen.emergenciesLanded = radarScreen.emergenciesLanded + 1
             }
-            radarScreen.setScore(radarScreen.getScore() + score)
+            radarScreen.setScore(radarScreen.score + score)
             airport.landings = airport.landings + 1
             removeAircraft()
             ils?.rwy?.removeFromArray(this)

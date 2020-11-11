@@ -11,7 +11,6 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
-import com.bombbird.terminalcontrol.ui.tabs.LatTab
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToNm
@@ -98,7 +97,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     /** Draws ILS line using shapeRenderer  */
     fun renderShape() {
         val landing = rwy?.isLanding == true
-        val aircraft = radarScreen.getSelectedAircraft()
+        val aircraft = radarScreen.selectedAircraft
         val selectedIls = aircraft is Arrival && aircraft.airport == airport && (aircraft.controlState == Aircraft.ControlState.ARRIVAL && Tab.clearedILS == name || aircraft.controlState == Aircraft.ControlState.UNCONTROLLED && this == aircraft.ils)
         val rwyChange = radarScreen.runwayChanger.containsLandingRunway(airport.icao, rwy?.name ?: "")
         if ((landing || selectedIls || rwyChange) && rwy?.isEmergencyClosed == false) {

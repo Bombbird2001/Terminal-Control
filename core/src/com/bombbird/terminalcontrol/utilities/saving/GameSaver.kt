@@ -45,7 +45,7 @@ object GameSaver {
         jsonObject.put("saveId", radarScreen.saveId)
         jsonObject.put("MAIN_NAME", radarScreen.mainName)
         jsonObject.put("AIRAC", radarScreen.airac)
-        jsonObject.put("score", radarScreen.getScore())
+        jsonObject.put("score", radarScreen.score)
         jsonObject.put("highScore", radarScreen.highScore)
         jsonObject.put("planesToControl", radarScreen.planesToControl.toDouble())
         jsonObject.put("arrivals", radarScreen.arrivals)
@@ -88,6 +88,7 @@ object GameSaver {
         jsonObject.put("trafficMode", radarScreen.trafficMode)
         jsonObject.put("maxPlanes", radarScreen.maxPlanes)
         jsonObject.put("flowRate", radarScreen.flowRate)
+        jsonObject.put("distToGoVisible", radarScreen.distToGoVisible)
         jsonObject.put("revision", Revision.CURRENT_REVISION)
         val jsonArray = JSONArray()
         for (aircraft in radarScreen.allAircraft) {

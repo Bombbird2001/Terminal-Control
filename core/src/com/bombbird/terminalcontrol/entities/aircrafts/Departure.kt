@@ -389,7 +389,7 @@ class Departure : Aircraft {
         super.updateSpd()
         isHandedOver = true
         isExpedite = false
-        if (expediteTime <= 120 && altitude > 10000.coerceAtMost(radarScreen.maxAlt - 6000)) radarScreen.setScore(radarScreen.getScore() + 1)
+        if (expediteTime <= 120 && altitude > 10000.coerceAtMost(radarScreen.maxAlt - 6000)) radarScreen.setScore(radarScreen.score + 1)
         radarScreen.utilityBox.commsManager.contactFreq(this, sid.centre[0], sid.centre[1])
     }
 

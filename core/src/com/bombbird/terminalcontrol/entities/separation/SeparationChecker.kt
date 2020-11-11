@@ -95,7 +95,7 @@ class SeparationChecker : Actor() {
             checkRestrSep()
             var tmpActive = allConflicts.size
             while (tmpActive > lastNumber) {
-                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f))
+                radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.95f))
                 radarScreen.separationIncidents = radarScreen.separationIncidents + 1
                 incrementConflicts()
                 tmpActive--
@@ -114,7 +114,7 @@ class SeparationChecker : Actor() {
         }
         if (time <= 0) {
             time += 3f
-            radarScreen.setScore(radarScreen.getScore() - allConflicts.size)
+            radarScreen.setScore(radarScreen.score - allConflicts.size)
         }
         for (aircraft in radarScreen.aircrafts.values) {
             if ((aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isWakeInfringe) && !aircraft.isSilenced) {

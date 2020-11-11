@@ -73,6 +73,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         var lineSpacingValue = 0
         var colourStyle = 0
         var realisticMetar = false
+        var distToGoVisible = 0
         var defaultTabNo = 0
         var revision = 0
         const val LATEST_REVISION = 1
@@ -101,6 +102,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                 lineSpacingValue = 1
                 colourStyle = 0
                 realisticMetar = false
+                distToGoVisible = 0
                 defaultTabNo = 0
                 emerChance = Emergency.Chance.MEDIUM
                 revision = 0
@@ -136,6 +138,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                 lineSpacingValue = settings.optInt("lineSpacingValue", 1)
                 colourStyle = settings.optInt("colourStyle", 0)
                 realisticMetar = settings.optBoolean("realisticMetar", false)
+                distToGoVisible = settings.optInt("distToGoVisible", 0)
                 revision = settings.optInt("revision", 0)
             }
             GameSaver.saveSettings()

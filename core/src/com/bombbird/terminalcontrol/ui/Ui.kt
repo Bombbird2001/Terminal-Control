@@ -162,7 +162,7 @@ class Ui {
             while (!success) {
                 try {
                     label.setText(StringUtils.join(metarText, "\n"))
-                    label.setWrap(true)
+                    label.wrap = true
                     metarPane.layout()
                     metarPane.layout()
                     success = true
@@ -225,7 +225,7 @@ class Ui {
         labelStyle2.font = Fonts.defaultFont30
         labelStyle2.fontColor = Color.WHITE
         scoreLabel = Label("""
-    Score: ${radarScreen.getScore()}
+    Score: ${radarScreen.score}
     High score: ${radarScreen.highScore}
     """.trimIndent(), labelStyle2)
         addActor(scoreLabel, 1 / 19.2f, -1f, 2875f, scoreLabel.height)
@@ -675,7 +675,7 @@ class Ui {
 
     fun updateScoreLabels() {
         scoreLabel.setText("""
-        Score: ${radarScreen.getScore()}
+        Score: ${radarScreen.score}
         High score: ${radarScreen.highScore}
         """.trimIndent())
     }

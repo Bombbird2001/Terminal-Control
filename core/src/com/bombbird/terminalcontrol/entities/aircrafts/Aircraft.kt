@@ -514,6 +514,7 @@ abstract class Aircraft : Actor {
         navState.clearedDirect.last()?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
             route.joinLines(route.findWptIndex(it.name), route.waypoints.size, -1)
+            calculateAndSetDistToGo(it, route.waypoints[route.waypoints.size - 1])
         }
         //route.drawPolygons();
     }
@@ -523,6 +524,7 @@ abstract class Aircraft : Actor {
         shapeRenderer.color = Color.YELLOW
         radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+            calculateAndSetDistToGo(it, route.waypoints[route.waypoints.size - 1])
         }
         route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
     }
@@ -530,7 +532,9 @@ abstract class Aircraft : Actor {
     /** Draws the cleared after waypoint + cleared outbound heading when selected  */
     open fun drawAftWpt() {
         shapeRenderer.color = radarScreen.defaultColour
-        navState.clearedDirect.last()?.let { shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat()) }
+        navState.clearedDirect.last()?.let {
+            shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
+        }
     }
 
     /** Draws the after waypoint + outbound heading for UI  */
@@ -571,6 +575,32 @@ abstract class Aircraft : Actor {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
         }
         radarScreen.waypoints[Tab.holdWpt]?.let { route.holdProcedure.renderShape(it) }
+    }
+
+    /** Returns whether the dist to go should be calculated and displayed */
+    fun eligibleDisplayDistToGo(): Boolean {
+        return isSelected && ((radarScreen.distToGoVisible == 1 && this is Arrival) ||
+                (radarScreen.distToGoVisible == 2 && this is Departure) ||
+                radarScreen.distToGoVisible == 3)
+    }
+
+    /** Calculates the distance to go for each waypoint, sets the distToGo variable for those waypoints */
+    fun calculateAndSetDistToGo(nextWpt: Waypoint, lastWpt: Waypoint) {
+        if (!eligibleDisplayDistToGo()) return
+        var currentIndex = route.findWptIndex(nextWpt.name)
+        val lastIndex = route.findWptIndex(lastWpt.name)
+        if (currentIndex == -1 || lastIndex == -1) return
+        var cumulativeDist = pixelToNm(distanceBetween(radarX, radarY, nextWpt.posX.toFloat(), nextWpt.posY.toFloat()))
+        nextWpt.distToGo = cumulativeDist
+        nextWpt.distToGoVisible = true
+        while (currentIndex < lastIndex) {
+            cumulativeDist += route.distBetween(currentIndex, currentIndex + 1)
+            route.getWaypoint(currentIndex + 1)?.let {
+                it.distToGo = cumulativeDist
+                it.distToGoVisible = true
+            }
+            currentIndex++
+        }
     }
 
     /** The main update function  */
@@ -1004,7 +1034,7 @@ abstract class Aircraft : Actor {
         }
         if (x < 1260 || x > 4500 || y < 0 || y > 3240) {
             if (this is Arrival) {
-                radarScreen.setScore(MathUtils.ceil(radarScreen.getScore() * 0.95f))
+                radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.95f))
                 radarScreen.utilityBox.commsManager.warningMsg("$callsign has left the airspace!")
             } else if (this is Departure && navState.dispLatMode.last() == NavState.SID_STAR && navState.clearedAlt.last() == radarScreen.maxAlt) {
                 //Contact centre if departure is on SID, is not high enough but is cleared to highest altitude
