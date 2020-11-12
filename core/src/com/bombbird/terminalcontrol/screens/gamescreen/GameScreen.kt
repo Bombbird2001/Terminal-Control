@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.input.GestureDetector.GestureListener
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
@@ -421,11 +422,18 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             zooming = true
             return true
         }
-        //Shows approximate position of mouse pointer click in game world - Debug use only
-        //val vector3 = Vector3(x, y, 0f)
-        //val vector3New = stage.camera.unproject(vector3)
-        //Gdx.app.log("Coordinates", vector3New.toString())
+        //printWorldCoord(x, y) //For debug use
         return false
+    }
+
+    /** Shows position of mouse click in game world */
+    private fun printWorldCoord(x: Float, y: Float) {
+        val screenHeightRatio = 3240f / Gdx.graphics.height
+        val screenWidthRatio = 5760f / Gdx.graphics.width
+        val vector3 = Vector3(x, y, 0f)
+        val vector3New = stage.camera.unproject(vector3, 0f, 0f, Gdx.graphics.height * 5760f / 3240f, Gdx.graphics.height.toFloat())
+        vector3New.x -= camera.zoom * (screenHeightRatio - screenWidthRatio) * Gdx.graphics.width / 2
+        Gdx.app.log("Coordinates", "$vector3New")
     }
 
     /** Implements longPress method of gestureListener  */
