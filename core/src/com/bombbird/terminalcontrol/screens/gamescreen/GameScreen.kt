@@ -99,6 +99,11 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     var running = false
     var speed = 1
 
+    //Stores variables for right click drag measuring of distance
+    var dragging = false
+    var firstPoint = Vector2()
+    var secondPoint = Vector2()
+
     init {
         //Initiate range circles
         loadLabels()
@@ -154,6 +159,18 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         }
         moderateZoom()
         moderateCamPos()
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && Gdx.app.type == Application.ApplicationType.Desktop) {
+            if (!dragging) {
+                firstPoint = getWorldCoordFromScreenCoord(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
+            }
+            secondPoint = getWorldCoordFromScreenCoord(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
+            dragging = true
+        } else {
+            dragging = false
+            firstPoint.setZero()
+            secondPoint.setZero()
+        }
     }
 
     /** Prevents user from over or under zooming  */
@@ -202,10 +219,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         } else if (camera.position.y > upLimit) {
             camera.position.y = upLimit
         }
-
-        //System.out.println(camera.zoom);
-        //System.out.println(camera.position.x);
-        //System.out.println(camera.position.y);
     }
 
     /** Implements show method of screen; overridden in radarScreen class  */
@@ -422,18 +435,18 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             zooming = true
             return true
         }
-        //printWorldCoord(x, y) //For debug use
+        Gdx.app.log("Coordinates", "${getWorldCoordFromScreenCoord(x, y)}") //For debug use
         return false
     }
 
-    /** Shows position of mouse click in game world */
-    private fun printWorldCoord(x: Float, y: Float) {
+    /** Calculates and returns position of mouse click in game world */
+    private fun getWorldCoordFromScreenCoord(x: Float, y: Float): Vector2 {
         val screenHeightRatio = 3240f / Gdx.graphics.height
         val screenWidthRatio = 5760f / Gdx.graphics.width
         val vector3 = Vector3(x, y, 0f)
         val vector3New = stage.camera.unproject(vector3, 0f, 0f, Gdx.graphics.height * 5760f / 3240f, Gdx.graphics.height.toFloat())
         vector3New.x -= camera.zoom * (screenHeightRatio - screenWidthRatio) * Gdx.graphics.width / 2
-        Gdx.app.log("Coordinates", "$vector3New")
+        return Vector2(vector3New.x, vector3New.y)
     }
 
     /** Implements longPress method of gestureListener  */
@@ -448,7 +461,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements pan method of gestureListener, tests for panning to shift radar screen around  */
     override fun pan(x: Float, y: Float, deltaX: Float, deltaY: Float): Boolean {
-        if (!finishedLoading) {
+        if (!finishedLoading || Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
             return false
         }
         val screenHeightRatio = 3240f / Gdx.graphics.height

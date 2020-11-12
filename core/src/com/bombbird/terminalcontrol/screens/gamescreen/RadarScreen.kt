@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.badlogic.gdx.utils.Scaling
@@ -48,8 +49,10 @@ import com.bombbird.terminalcontrol.ui.*
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager
 import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox
+import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.Revision
+import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.RandomGenerator
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader
@@ -58,6 +61,7 @@ import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.HashSet
+import kotlin.math.round
 
 class RadarScreen : GameScreen {
     enum class Weather {
@@ -196,6 +200,9 @@ class RadarScreen : GameScreen {
     private val save: JSONObject?
     val revision //Revision for indicating if save parser needs to do anything special
             : Int
+
+    //Distance measuring tool distance display
+    private lateinit var distLabel: Label
 
     //Stores aircraft generators
     private val generatorList = Array<RandomGenerator.MultiThreadGenerator>()
@@ -563,6 +570,13 @@ class RadarScreen : GameScreen {
         //Load request flasher
         requestFlasher = RequestFlasher(this)
 
+        //Load didtance label
+        val labelStyle = Label.LabelStyle()
+        labelStyle.fontColor = Color.WHITE
+        labelStyle.font = Fonts.defaultFont10
+        distLabel = Label("", labelStyle)
+        stage.addActor(distLabel)
+
         //Initialise tutorial manager if is tutorial
         if (tutorial) tutorialManager?.init()
 
@@ -787,7 +801,22 @@ class RadarScreen : GameScreen {
             wakeManager.renderWake(it)
         }
         wakeManager.renderIlsWake()
+        drawDistPoints()
         shapeRenderer.end()
+    }
+
+    private fun drawDistPoints() {
+        if (!dragging) {
+            distLabel.isVisible = false
+            return
+        }
+        shapeRenderer.color = Color.WHITE
+        shapeRenderer.circle(firstPoint.x, firstPoint.y, 10f)
+        shapeRenderer.circle(secondPoint.x, secondPoint.y, 10f)
+        shapeRenderer.line(firstPoint, secondPoint)
+        distLabel.isVisible = true
+        distLabel.setText((round(MathTools.pixelToNm(MathTools.distanceBetween(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)) * 10) / 10).toString())
+        distLabel.setPosition((firstPoint.x + secondPoint.x - distLabel.prefWidth) / 2, (firstPoint.y + secondPoint.y - distLabel.prefHeight) / 2)
     }
 
     fun addToEasterEggQueue(aircraft: Aircraft) {
