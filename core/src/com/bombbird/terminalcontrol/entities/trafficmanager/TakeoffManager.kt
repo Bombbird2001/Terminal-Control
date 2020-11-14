@@ -11,9 +11,9 @@ import com.bombbird.terminalcontrol.entities.waketurbulence.SeparationMatrix
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
-import com.bombbird.terminalcontrol.utilities.math.RandomGenerator.randomPlane
+import com.bombbird.terminalcontrol.utilities.math.random.DepartureGenerator
 import org.json.JSONObject
-import java.util.*
+import kotlin.collections.HashMap
 
 class TakeoffManager {
     private val airport: Airport
@@ -22,14 +22,19 @@ class TakeoffManager {
     val timers: HashMap<String, Float>
     private val radarScreen = TerminalControl.radarScreen!!
 
+    //Stores aircraft generators
+    private val generatorMap = HashMap<String, DepartureGenerator>()
+
     constructor(airport: Airport) {
         this.airport = airport
         nextAircraft = HashMap()
         prevAircraft = HashMap()
         timers = HashMap()
-        for (runway in airport.runways.values) {
-            timers[runway.name] = 180f
-            prevAircraft[runway.name] = null
+        for ((index, runway) in airport.runways.keys.withIndex()) {
+            timers[runway] = 180f
+            prevAircraft[runway] = null
+            nextAircraft[runway] = null
+            generateNewDeparture(runway, index)
         }
     }
 
@@ -38,12 +43,15 @@ class TakeoffManager {
         nextAircraft = HashMap()
         prevAircraft = HashMap()
         timers = HashMap()
+        var index = 0
         for (runway in airport.runways.values) {
             val info = save.getJSONObject("nextAircraft").getJSONArray(runway.name)
             if (info.length() == 2) {
                 nextAircraft[runway.name] = arrayOf(info.getString(0), info.getString(1))
             } else {
                 nextAircraft[runway.name] = null
+                generateNewDeparture(runway.name, index)
+                index++
             }
             timers[runway.name] = save.getJSONObject("timers").getDouble(runway.name).toFloat()
         }
@@ -56,18 +64,46 @@ class TakeoffManager {
         }
     }
 
-    /** Update loop  */
-    fun update() {
-        //Request takeoffs if takeoffs are less than 5 more than landings
-        //Update the timers & next aircrafts to take off
-        for (rwy in timers.keys) {
-            timers[rwy] = timers[rwy]?.plus(Gdx.graphics.deltaTime) ?: 0f
-            if (nextAircraft[rwy] == null) {
-                val aircraftInfo = randomPlane(airport, radarScreen.allAircraft)
-                nextAircraft[rwy] = aircraftInfo
+    /** Checks the list of multi threaded generators, creates new arrival if done */
+    private fun checkGenerators() {
+        val toBeUpdated = com.badlogic.gdx.utils.Array<String>()
+        val generatorIterator = generatorMap.iterator()
+        while (generatorIterator.hasNext()) {
+            val generator = generatorIterator.next()
+            if (generator.value.done) {
+                //If generator is done generating, copy info to local variables and create a new arrival from them
+                generatorIterator.remove() //Remove the generator since it's no longer needed
+                val aircraftInfo = generator.value.aircraftInfo ?: continue
+                if (radarScreen.allAircraft.contains(aircraftInfo[0])) {
+                    toBeUpdated.add(generator.key)
+                    continue
+                }
+
+                nextAircraft[generator.key] = aircraftInfo
+                radarScreen.allAircraft.add(aircraftInfo[0]) //Add to all aircraft list
             }
         }
+        for ((index, rwy) in toBeUpdated.withIndex()) {
+            generateNewDeparture(rwy, index + 10)
+        }
+    }
+
+    /** Creates a new departure queued for takeoff */
+    private fun generateNewDeparture(rwy: String, delay: Int) {
+        val multiThreadGenerator = DepartureGenerator(radarScreen, airport, radarScreen.allAircraft, delay)
+        generatorMap[rwy] = multiThreadGenerator
+        Thread(multiThreadGenerator).start()
+    }
+
+    /** Update loop  */
+    fun update() {
+        //Update the timers
+        for (rwy in timers.keys) {
+            timers[rwy] = timers[rwy]?.plus(Gdx.graphics.deltaTime) ?: 0f
+        }
+        checkGenerators()
         if (airport.airborne - airport.landings < 5) {
+            //Departure is checked and requested if takeoffs are less than 5 more than landings
             when (airport.icao) {
                 "TCTP" -> updateTCTP()
                 "TCSS" -> updateTCSS()
@@ -468,6 +504,7 @@ class TakeoffManager {
             radarScreen.newDeparture(callsign, nextAcft[1], airport, runway)
             prevAircraft[runway.name] = radarScreen.aircrafts[callsign]
             nextAircraft[runway.name] = null
+            generateNewDeparture(runway.name, 0)
             timers[runway.name] = 0f
         }
     }

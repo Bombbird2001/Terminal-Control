@@ -53,7 +53,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.Revision
 import com.bombbird.terminalcontrol.utilities.math.MathTools
-import com.bombbird.terminalcontrol.utilities.math.RandomGenerator
+import com.bombbird.terminalcontrol.utilities.math.random.ArrivalGenerator
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameLoader
 import com.bombbird.terminalcontrol.utilities.saving.GameSaver
@@ -205,7 +205,7 @@ class RadarScreen : GameScreen {
     private lateinit var distLabel: Label
 
     //Stores aircraft generators
-    private val generatorList = Array<RandomGenerator.MultiThreadGenerator>()
+    private val generatorList = Array<ArrivalGenerator>()
 
     //Temporary storage of loadGameScreen for exception handling
     private var loadGameScreen: LoadGameScreen? = null
@@ -449,7 +449,7 @@ class RadarScreen : GameScreen {
         for (icao in airports1.keySet()) {
             val airport1 = airports1.getJSONObject(icao)
             val airport = Airport(icao, airport1.getInt("elevation"), airport1.getInt("ratio"))
-            airport.loadOthers()
+            if (save == null) airport.loadOthers()
             airports[icao] = airport
             AirportName.airportNames[icao] = airport1.getString("name")
         }
@@ -508,7 +508,7 @@ class RadarScreen : GameScreen {
         }
 
         //Start a new thread for generating arrivals to prevent lag in main game loop
-        val multiThreadGenerator = RandomGenerator.MultiThreadGenerator(this, allAircraft)
+        val multiThreadGenerator = ArrivalGenerator(this, allAircraft)
         generatorList.add(multiThreadGenerator)
         Thread(multiThreadGenerator).start()
     }
@@ -570,7 +570,7 @@ class RadarScreen : GameScreen {
         //Load request flasher
         requestFlasher = RequestFlasher(this)
 
-        //Load didtance label
+        //Load distance label
         val labelStyle = Label.LabelStyle()
         labelStyle.fontColor = Color.WHITE
         labelStyle.font = Fonts.defaultFont10
@@ -655,7 +655,11 @@ class RadarScreen : GameScreen {
         val generatorIterator = generatorList.iterator()
         while (generatorIterator.hasNext()) {
             val generator = generatorIterator.next()
-            if (generator?.done == true) {
+            if (generator == null) {
+                generatorIterator.remove()
+                continue
+            }
+            if (generator.done) {
                 //If generator is done generating, copy info to local variables and create a new arrival from them
                 generatorIterator.remove() //Remove the generator since it's no longer needed
                 val aircraftInfo = generator.aircraftInfo ?: continue
@@ -664,10 +668,15 @@ class RadarScreen : GameScreen {
                     spawnTimer = 5f //If by coincidence 2 generators somehow give the same result before either was added, don't add, instead generate another arrival in 5 seconds
                     continue
                 }
+
                 val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport)
-                allAircraft.add(aircraftInfo[0])
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
+            } else {
+                if (generator.cycles >= 100) {
+                    generatorIterator.remove()
+                    continue
+                }
             }
         }
     }

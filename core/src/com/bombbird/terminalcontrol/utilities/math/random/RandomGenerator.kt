@@ -1,58 +1,52 @@
-package com.bombbird.terminalcontrol.utilities.math
+package com.bombbird.terminalcontrol.utilities.math.random
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.MathUtils
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.airports.Airport
-import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import org.apache.commons.lang3.ArrayUtils
 import java.util.*
 import kotlin.collections.HashSet
 
-object RandomGenerator {
-    class MultiThreadGenerator(val radarScreen: RadarScreen, val allAircraft: HashSet<String>): Runnable {
-        var done = false
-        var finalAirport: Airport? = null
-        var aircraftInfo: Array<String>? = null
-
-        override fun run() {
-            val airport = randomAirport()
-            if (airport == null) {
-                //If airports not available, set planes to control equal to current arrival number
-                //so there won't be a sudden wave of new arrivals once airport is available again
-                Gdx.app.postRunnable { radarScreen.planesToControl = radarScreen.arrivals.toFloat() }
-                return
-            }
-            if (!RandomSTAR.starAvailable(airport)) {
-                Gdx.app.postRunnable { radarScreen.spawnTimer = 10f } //Wait for another 10 seconds if no spawn points available
-                return
-            }
-            finalAirport = airport
-            aircraftInfo = randomPlane(airport, allAircraft)
-            done = true
-        }
+open class RandomGenerator: Runnable {
+    companion object {
+        var id = 0
     }
-
     private val excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n".toRegex()).toTypedArray()
 
+    val thisId = id
+    var done = false
+    var aircraftInfo: Array<String>? = null
+    var cycles = 0
+
+    init {
+        id++
+    }
+
+    override fun run() {}
+
     /** Generates a random plane (with callsign, aircraft type)  */
-    fun randomPlane(airport: Airport, allAircraft: HashSet<String>): Array<String> {
+    fun randomPlane(airport: Airport, allAircraft: HashSet<String>): Array<String>? {
         val size = airport.airlines.size
         var airline: String?
         var number: Int
         var aircraft = "A320"
         do {
+            if (cycles >= 100) return null
             airline = airport.airlines[MathUtils.random(size - 1)]
             number = MathUtils.random(1, 999)
-            val aircrafts = airport.aircrafts[airline]?.split(">".toRegex())?.toTypedArray() ?: continue
+            val aircrafts = airport.aircrafts[airline]?.split(">".toRegex())?.toTypedArray()
+            if (aircrafts == null) {
+                cycles = 100
+                break
+            }
             aircraft = aircrafts[MathUtils.random(aircrafts.size - 1)]
+            cycles++
         } while (ArrayUtils.contains(excluded, airline + number) || allAircraft.contains(airline + number))
         return arrayOf(airline + number, aircraft)
     }
 
-    /** Generates a random airport given the RadarScreen mainName variable  */
-
+    /** Generates a random airport */
     fun randomAirport(): Airport? {
         val radarScreen = TerminalControl.radarScreen!!
         var total = 0

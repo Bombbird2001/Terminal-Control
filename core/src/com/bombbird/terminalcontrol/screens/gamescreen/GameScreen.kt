@@ -101,6 +101,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     //Stores variables for right click drag measuring of distance
     var dragging = false
+    var doubleDragTime = 0f
     var firstPoint = Vector2()
     var secondPoint = Vector2()
 
@@ -166,8 +167,20 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             }
             secondPoint = getWorldCoordFromScreenCoord(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
             dragging = true
+        } else if (Gdx.input.isTouched(0) && Gdx.input.isTouched(1) && Gdx.app.type == Application.ApplicationType.Android) {
+            doubleDragTime += Gdx.graphics.deltaTime
+            if (doubleDragTime > 1) {
+                dragging = true
+                firstPoint = getWorldCoordFromScreenCoord(Gdx.input.getX(0).toFloat(), Gdx.input.getY(0).toFloat())
+                secondPoint = getWorldCoordFromScreenCoord(Gdx.input.getX(1).toFloat(), Gdx.input.getY(1).toFloat())
+            } else {
+                dragging = false
+                firstPoint.setZero()
+                secondPoint.setZero()
+            }
         } else {
             dragging = false
+            doubleDragTime = 0f
             firstPoint.setZero()
             secondPoint.setZero()
         }
@@ -435,7 +448,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             zooming = true
             return true
         }
-        Gdx.app.log("Coordinates", "${getWorldCoordFromScreenCoord(x, y)}") //For debug use
+        //Gdx.app.log("Coordinates", "${getWorldCoordFromScreenCoord(x, y)}") //For debug use
         return false
     }
 
@@ -461,7 +474,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements pan method of gestureListener, tests for panning to shift radar screen around  */
     override fun pan(x: Float, y: Float, deltaX: Float, deltaY: Float): Boolean {
-        if (!finishedLoading || Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (!finishedLoading || dragging) {
             return false
         }
         val screenHeightRatio = 3240f / Gdx.graphics.height
@@ -478,7 +491,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     /** Implements zoom method of gestureListener, tests for pinch zooming to adjust radar screen zoom level  */
     override fun zoom(initialDistance: Float, distance: Float): Boolean {
-        if (!finishedLoading) {
+        if (!finishedLoading || dragging) {
             return true
         }
         if (initialDistance != lastInitialDist) {

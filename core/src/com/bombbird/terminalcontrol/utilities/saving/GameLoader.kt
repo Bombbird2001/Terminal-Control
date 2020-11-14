@@ -16,12 +16,21 @@ object GameLoader {
     fun loadSaveData(save: JSONObject?) {
         val radarScreen = TerminalControl.radarScreen!!
         if (save == null) return
+
         val airports = save.getJSONArray("airports")
         for (airport in radarScreen.airports.values) {
             for (runway in airport.runways.values) {
                 runway.label.remove()
             }
         }
+
+        val jsonArray = save.getJSONArray("allAircraft")
+        val allAircrafts = HashSet<String>()
+        for (i in 0 until jsonArray.length()) {
+            allAircrafts.add(jsonArray.getString(i))
+        }
+        radarScreen.allAircraft = allAircrafts
+
         loadAirportData(airports)
         radarScreen.metar.updateMetar(false)
         loadAircraft(save.getJSONArray("aircrafts"))
@@ -30,12 +39,6 @@ object GameLoader {
             airport?.takeoffManager?.updatePrevAcft(airports.getJSONObject(i).getJSONObject("takeoffManager"))
             airport?.updateOtherRunwayInfo(airports.getJSONObject(i))
         }
-        val jsonArray = save.getJSONArray("allAircraft")
-        val allAircrafts = HashSet<String>()
-        for (i in 0 until jsonArray.length()) {
-            allAircrafts.add(jsonArray.getString(i))
-        }
-        radarScreen.allAircraft = allAircrafts
         radarScreen.utilityBox.loadSave(save.getJSONArray("commBox"))
         radarScreen.separationChecker.lastNumber = save.getInt("lastNumber")
         radarScreen.separationChecker.time = save.optDouble("sepTime", 3.0).toFloat()

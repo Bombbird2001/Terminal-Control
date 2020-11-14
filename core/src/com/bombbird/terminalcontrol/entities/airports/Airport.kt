@@ -156,7 +156,7 @@ class Airport {
 
         //TerminalControl.tts.test(stars, sids);
         takeoffManager = TakeoffManager(this)
-        runwayManager = RunwayManager(this, save?.optBoolean("night", isNight) ?: isNight)
+        runwayManager = RunwayManager(this, isNight)
         loadZones()
         updateZoneStatus()
         RandomSTAR.loadEntryTiming(this)
@@ -181,19 +181,25 @@ class Airport {
 
     /** loadOthers from JSON save  */
     fun loadOthers(save: JSONObject) {
-        loadOthers()
+        holdingPoints = loadHoldingPoints(this)
+        loadBackupHoldingPts()
+        missedApproaches = loadMissedInfo(this)
+        approaches = loadILS(this)
         for (runway in runways.values) {
-            val queueArray = Array<Aircraft>()
-            val queue = save.getJSONObject("runwayQueues").getJSONArray(runway.name)
-            for (i in 0 until queue.length()) {
-                val aircraft = radarScreen.aircrafts[queue.getString(i)]
-                if (aircraft != null) queueArray.add(aircraft)
-            }
+            approaches[runway.name]?.let { runway.ils = it }
         }
+        setOppRwys()
+        stars = loadStars(this)
+        sids = loadSids(this)
+        RandomSID.loadSidNoise(icao)
+        RandomSTAR.loadStarNoise(icao)
+
         takeoffManager = TakeoffManager(this, save.getJSONObject("takeoffManager"))
-        if (save.isNull("starTimers")) {
-            RandomSTAR.loadEntryTiming(this)
-        } else {
+        runwayManager = RunwayManager(this, save.optBoolean("night", isNight))
+        loadZones()
+        updateZoneStatus()
+        RandomSTAR.loadEntryTiming(this)
+        if (!save.isNull("starTimers")) {
             RandomSTAR.loadEntryTiming(this, save.getJSONObject("starTimers"))
         }
     }
