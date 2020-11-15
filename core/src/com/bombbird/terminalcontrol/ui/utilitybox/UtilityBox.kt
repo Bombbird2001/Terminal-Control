@@ -66,7 +66,7 @@ class UtilityBox {
         radarScreen.ui.addActor(statusPane, 0.1f, 0.8f, 3240 * 0.05f, 3240 * 0.35f)
 
         statusLabel = Label("Loading statuses...", getLabelStyle(Color.WHITE))
-        statusLabel.setWrap(true)
+        statusLabel.wrap = true
         statusTable.add(statusLabel).width(commsPane.width - 20).pad(15f, 10f, 15f, 10f).actor.invalidate()
 
         val textButtonStyle = TextButton.TextButtonStyle()

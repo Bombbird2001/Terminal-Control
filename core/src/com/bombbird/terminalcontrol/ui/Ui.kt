@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.ui
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -82,6 +83,9 @@ class Ui {
 
     //TextButton that pauses the game
     private lateinit var pauseButton: TextButton
+
+    //Changes between zoom and distance measuring mode (for Android only)
+    private lateinit var zoomDistButton: TextButton
 
     //Array for METAR info on default pane
     private lateinit var metarPane: ScrollPane
@@ -303,6 +307,7 @@ class Ui {
         scoreLabel.isVisible = show
         infoLabel.isVisible = show && infoLabel.text.isNotEmpty()
         pauseButton.isVisible = show
+        zoomDistButton.isVisible = show
         if (radarScreen.isUtilityBoxInitialized()) radarScreen.utilityBox.setVisible(show)
     }
 
@@ -527,6 +532,24 @@ class Ui {
     private fun loadButtons() {
         loadChangeButtons()
         loadTabButtons()
+
+        val buttonStyle = TextButton.TextButtonStyle()
+        buttonStyle.font = Fonts.defaultFont20
+        buttonStyle.checkedFontColor = Color.WHITE
+        buttonStyle.fontColor = Color.BLACK
+        buttonStyle.checked = TerminalControl.skin.getDrawable("Button_down")
+        buttonStyle.up = TerminalControl.skin.getDrawable("ListBackground")
+
+        zoomDistButton = TextButton("Zoom\nmode", buttonStyle)
+        zoomDistButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                zoomDistButton.setText(if (zoomDistButton.isChecked) "Dist\nmode" else "Pan\nmode")
+                radarScreen.distMode = zoomDistButton.isChecked
+            }
+        })
+
+        if (Gdx.app.type != Application.ApplicationType.Android) return
+        addActor(zoomDistButton, 0.8f, 0.15f, 0.52f * 3240, 300f)
     }
 
     fun updateState() {

@@ -825,7 +825,7 @@ class RadarScreen : GameScreen {
         shapeRenderer.line(firstPoint, secondPoint)
         distLabel.isVisible = true
         distLabel.setText((round(MathTools.pixelToNm(MathTools.distanceBetween(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)) * 10) / 10).toString())
-        distLabel.setPosition((firstPoint.x + secondPoint.x - distLabel.prefWidth) / 2, (firstPoint.y + secondPoint.y - distLabel.prefHeight) / 2)
+        distLabel.setPosition((firstPoint.x + secondPoint.x - distLabel.prefWidth) / 2, (firstPoint.y + secondPoint.y) / 2)
     }
 
     fun addToEasterEggQueue(aircraft: Aircraft) {
