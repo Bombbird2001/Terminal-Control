@@ -94,7 +94,7 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
 
     /** Updates the runway configuration based on the winds, if required */
     fun updateRunways(windHdg: Int, windSpd: Int) {
-        val arrayToUse = if (DayNightManager.isNight && !nightConfigs.isEmpty) nightConfigs else dayConfigs
+        val arrayToUse = if (DayNightManager.isNight && !nightConfigs.isEmpty) Array(nightConfigs) else Array(dayConfigs)
         if (arrayToUse.isEmpty) {
             Gdx.app.log("RunwayManager", "No runway configurations available for ${airport.icao}")
             return
@@ -120,7 +120,7 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         }
     }
 
-    /** Check if the current runway configuration needs to be changed due to winds */
+    /** Check if the current runway configuration needs to be changed due to winds or change in night mode */
     private fun requiresChange(windHdg: Int, windSpd: Int): Boolean {
         if (airport.takeoffRunways.isEmpty() && airport.landingRunways.isEmpty()) return true
         for (runway: Runway in airport.takeoffRunways.values) {
@@ -132,14 +132,18 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         return prevNight != DayNightManager.isNight //Even if current config works, if config time no longer applies, needs to be changed also
     }
 
-    /** Returns a list of suitable configurations with all runway tailwind < 5 knots AND is not a "blank configuration" */
+    /** Returns a list of suitable configurations with all runway tailwind < 5 knots, will exclude the "blank configuration" if at least 1 other config is available */
     fun getSuitableConfigs(windHdg: Int, windSpd: Int): Array<RunwayConfig> {
         val suitableConfigs = Array<RunwayConfig>()
-        val arrayToUse = if (DayNightManager.isNight && !nightConfigs.isEmpty) nightConfigs else dayConfigs
+        val arrayToUse = if (DayNightManager.isNight && !nightConfigs.isEmpty) Array(nightConfigs) else Array(dayConfigs)
         for (config: RunwayConfig in arrayToUse) {
-            if (config.isEmpty()) continue
+            if (config.isEmpty() && !suitableConfigs.isEmpty) continue //If there is already at least 1 suitable configuration, don't add empty configs
             config.calculateScores(windHdg, windSpd)
             if (config.allRunwaysEligible) suitableConfigs.add(config)
+        }
+
+        if (suitableConfigs.size > 1 && suitableConfigs.first().isEmpty()) {
+            suitableConfigs.removeIndex(0) //If first config is empty and there are other configs, remove it
         }
 
         return suitableConfigs
