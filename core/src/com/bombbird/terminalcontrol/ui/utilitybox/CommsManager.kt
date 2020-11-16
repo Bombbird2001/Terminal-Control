@@ -287,7 +287,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
     private fun updateLabelQueue(label: Label) {
         labels.addLast(label)
         label.width = utilityBox.commsPane.width - 20
-        label.setWrap(true)
+        label.wrap = true
         while (labels.size > 15) {
             labels.removeFirst()
         }

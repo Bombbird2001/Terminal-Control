@@ -543,7 +543,7 @@ class Ui {
         zoomDistButton = TextButton("Zoom\nmode", buttonStyle)
         zoomDistButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                zoomDistButton.setText(if (zoomDistButton.isChecked) "Dist\nmode" else "Pan\nmode")
+                zoomDistButton.setText(if (zoomDistButton.isChecked) "Dist\nmode" else "Zoom\nmode")
                 radarScreen.distMode = zoomDistButton.isChecked
             }
         })

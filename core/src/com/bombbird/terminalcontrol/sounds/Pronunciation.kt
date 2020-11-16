@@ -1,13 +1,13 @@
 package com.bombbird.terminalcontrol.sounds
 
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
-import org.apache.commons.lang3.ArrayUtils
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import kotlin.collections.HashMap
 
 object Pronunciation {
     val waypointPronunciations = HashMap<String, String>()
     val alphabetPronunciations = HashMap<Char, String>()
+    val numberPronunciations = HashMap<Char, String>()
     lateinit var callsigns: HashMap<String, String>
 
     /** Loads the pronunciations  */
@@ -49,28 +49,37 @@ object Pronunciation {
         alphabetPronunciations['X'] = "x-ray"
         alphabetPronunciations['Y'] = "yankee"
         alphabetPronunciations['Z'] = "zulu"
+        numberPronunciations['0'] = "zero"
+        numberPronunciations['1'] = "one"
+        numberPronunciations['2'] = "two"
+        numberPronunciations['3'] = "three"
+        numberPronunciations['4'] = "four"
+        numberPronunciations['5'] = "five"
+        numberPronunciations['6'] = "six"
+        numberPronunciations['7'] = "seven"
+        numberPronunciations['8'] = "eight"
+        numberPronunciations['9'] = "niner"
+        numberPronunciations['.'] = "decimal"
         callsigns = FileLoader.loadIcaoCallsigns()
     }
 
     /** Checks whether direct contains a number  */
     fun checkNumber(direct: String): String {
-        val numbers = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
-        val directList = direct.split("".toRegex()).toTypedArray()
-        for (i in directList.indices.reversed()) {
-            if (ArrayUtils.contains(numbers, directList[i])) return StringUtils.join(directList, " ")
+        val directList = direct.toCharArray()
+        for (i in directList) {
+            if (numberPronunciations.containsKey(i)) return StringUtils.join(directList, " ")
         }
         return direct
     }
 
     /** Converts any number into text due to special pronunciation requirements for 0, 9 and .  */
     fun convertNoToText(number: String): String {
-        val list = number.split("".toRegex()).toTypedArray()
-        for (i in list.indices) {
-            if (list[i] == "0") list[i] = "zero"
-            if (list[i] == "9") list[i] = "niner"
-            if (list[i] == ".") list[i] = "decimal"
+        val list = number.toCharArray()
+        val newList = ArrayList<String>()
+        for (i in list) {
+            newList.add(numberPronunciations[i] ?: i.toString())
         }
-        return StringUtils.join(list, " ")
+        return StringUtils.join(newList, " ")
     }
 
     /** Converts any FLXXX in text to flight level X X X, returns joined text  */
@@ -79,7 +88,7 @@ object Pronunciation {
         for (i in actionList.indices) {
             if (actionList[i].contains("FL")) {
                 val altitude = convertNoToText(actionList[i].substring(2))
-                val phrase = "flight level$altitude"
+                val phrase = "flight level $altitude"
                 actionList[i] = phrase
             }
         }

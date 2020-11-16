@@ -109,7 +109,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (info.length >= 2) {
             newInfo = info.split("information ".toRegex()).toTypedArray()[0] + "information " + Pronunciation.alphabetPronunciations[info[info.length - 1]]
         }
-        val text = apchCallsign + greeting + ", " + icao + " " + newFlightNo + aircraft.wakeString + " with you, " + newAction + starString + directString + newInfo
+        val text = "$apchCallsign$greeting, $icao $newFlightNo ${aircraft.wakeString} with you, $newAction$starString$directString$newInfo"
         sayText(text, aircraft.voice)
     }
 
@@ -120,7 +120,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         val newAction = Pronunciation.convertToFlightLevel(action)
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
         val newHeading = StringUtils.join(heading.split("".toRegex()).toTypedArray(), " ")
-        val text = apchCallsign + ", " + icao + newFlightNo + aircraft.wakeString + " with you, " + newAction + ", heading " + newHeading
+        val text = "$apchCallsign, $icao $newFlightNo ${aircraft.wakeString} with you, $newAction, heading $newHeading"
         sayText(text, aircraft.voice)
     }
 
@@ -128,7 +128,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + ", " + goArdText + " due to " + reason
+        val text = "$icao $newFlightNo ${aircraft.wakeString}, $goArdText due to $reason"
         sayText(text, aircraft.voice)
     }
 
@@ -143,7 +143,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (sidSaid) {
             sidString = ", $sid departure"
         }
-        val text = depCallsign + greeting + ", " + icao + newFlightNo + aircraft.wakeString + " with you, " + outbound + airborne + newAction + sidString
+        val text = "$depCallsign$greeting, $icao $newFlightNo ${aircraft.wakeString} with you, $outbound$airborne$newAction$sidString"
         sayText(text, aircraft.voice)
     }
 
@@ -151,7 +151,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        var text = icao + newFlightNo + aircraft.wakeString
+        var text = "$icao $newFlightNo ${aircraft.wakeString}"
         val newWpt: String? = if (Pronunciation.waypointPronunciations.containsKey(wpt)) {
             Pronunciation.waypointPronunciations[wpt]
         } else {
@@ -171,7 +171,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         val newFreq = Pronunciation.convertNoToText(frequency)
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = newFreq + ", good day, " + icao + newFlightNo + aircraft.wakeString
+        val text = "$newFreq, good day, $icao $newFlightNo ${aircraft.wakeString}"
         sayText(text, aircraft.voice)
     }
 
@@ -183,11 +183,11 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         val wake = aircraft.wakeString
         var text = ""
         when (status) {
-            0 -> text = "Pan-pan, pan-pan, pan-pan, $icao$newFlightNo$wake is low on fuel and requests priority landing."
-            1 -> text = "Mayday, mayday, mayday, $icao$newFlightNo$wake is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert."
-            2 -> text = "$icao$newFlightNo$wake, we are diverting to the alternate airport."
-            3 -> text = "Pan-pan, pan-pan, pan-pan, $icao$newFlightNo$wake is low on fuel and will divert in 10 minutes if no landing runway is available."
-            4 -> text = "Mayday, mayday, mayday, $icao$newFlightNo$wake is declaring a fuel emergency and is diverting immediately."
+            0 -> text = "Pan-pan, pan-pan, pan-pan, $icao $newFlightNo $wake is low on fuel and requests priority landing"
+            1 -> text = "Mayday, mayday, mayday, $icao $newFlightNo $wake is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert"
+            2 -> text = "$icao $newFlightNo $wake, we are diverting to the alternate airport"
+            3 -> text = "Pan-pan, pan-pan, pan-pan, $icao $newFlightNo $wake is low on fuel and will divert in 10 minutes if no landing runway is available"
+            4 -> text = "Mayday, mayday, mayday, $icao $newFlightNo $wake is declaring a fuel emergency and is diverting immediately"
         }
         sayText(text, aircraft.voice)
     }
@@ -197,7 +197,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
         val newIntent = Pronunciation.convertToFlightLevel(intent)
-        val text = "Mayday, mayday, mayday, " + icao + newFlightNo + aircraft.wakeString + " is declaring " + emergency + " and would like to return to the airport" + newIntent
+        val text = "Mayday, mayday, mayday, $icao $newFlightNo ${aircraft.wakeString} is declaring $emergency and would like to return to the airport$newIntent"
         sayText(text, aircraft.voice)
     }
 
@@ -205,7 +205,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + ", we'll need a few more minutes to run checklists" + if (dumpFuel) " before dumping fuel" else ""
+        val text = "$icao $newFlightNo ${aircraft.wakeString}, we'll need a few more minutes to run checklists${if (dumpFuel) " before dumping fuel" else ""}"
         sayText(text, aircraft.voice)
     }
 
@@ -213,7 +213,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + ", we are ready to dump fuel"
+        val text = "$icao $newFlightNo ${aircraft.wakeString}, we are ready to dump fuel"
         sayText(text, aircraft.voice)
     }
 
@@ -221,7 +221,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + " is now dumping fuel"
+        val text = "$icao $newFlightNo ${aircraft.wakeString} is now dumping fuel"
         sayText(text, aircraft.voice)
     }
 
@@ -229,7 +229,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + ", we'll need about " + min + " more minutes"
+        val text = "$icao $newFlightNo ${aircraft.wakeString}, we'll need about $min more minutes"
         sayText(text, aircraft.voice)
     }
 
@@ -237,7 +237,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + " is ready for approach" + if (stayOnRwy) ", we will stay on the runway after landing" else ""
+        val text = "$icao $newFlightNo ${aircraft.wakeString} is ready for approach${if (stayOnRwy) ", we will stay on the runway after landing" else ""}"
         sayText(text, aircraft.voice)
     }
 
@@ -245,7 +245,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
-        val text = icao + newFlightNo + aircraft.wakeString + request
+        val text = "$icao $newFlightNo ${aircraft.wakeString}$request"
         sayText(text, aircraft.voice)
     }
 

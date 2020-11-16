@@ -686,6 +686,7 @@ object GameSaver {
             settings.put("realisticMetar", TerminalControl.realisticMetar)
             settings.put("defaultTabNo", TerminalControl.defaultTabNo)
             settings.put("emerChance", TerminalControl.emerChance.toString())
+            settings.put("distToGoVisible", TerminalControl.distToGoVisible)
             settings.put("revision", TerminalControl.revision)
             handle.writeString(settings.toString(4), false)
         }
