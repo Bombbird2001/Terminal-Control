@@ -14,9 +14,6 @@ class Metar(private val radarScreen: RadarScreen) {
     var metarObject: JSONObject? = null
     var isQuit = false
 
-    //Thread lock
-    private val lock = Object()
-
     constructor(radarScreen: RadarScreen, save: JSONObject?) : this(radarScreen) {
         prevMetar = save
         metarObject = save
@@ -173,15 +170,17 @@ class Metar(private val radarScreen: RadarScreen) {
         if (radarScreen.loadingTime < 4.5) {
             val deltaTime = ((4.5 - radarScreen.loadingTime) * 1000).toLong()
             try {
-                synchronized(lock) { lock.wait(deltaTime) }
+                Thread.sleep(deltaTime)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
         }
-        updateAirports()
-        prevMetar = metarObject
-        Gdx.app.postRunnable { radarScreen.ui.updateMetar() }
-        radarScreen.metarLoading = false
+        Gdx.app.postRunnable {
+            updateAirports()
+            prevMetar = metarObject
+            radarScreen.ui.updateMetar()
+            radarScreen.metarLoading = false
+        }
     }
 
     /** Updates the METAR object and in game weather given custom weather data for airports  */
