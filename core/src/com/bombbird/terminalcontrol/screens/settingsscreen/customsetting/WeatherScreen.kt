@@ -146,8 +146,8 @@ class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
         labelStyle.font = Fonts.defaultFont30
         labelStyle.fontColor = Color.WHITE
         val headerLabel = Label("Custom Weather", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(5760 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 3240 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)

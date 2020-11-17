@@ -132,19 +132,19 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("05L" == runway1.name && checkPreceding("05R") && checkOppLanding(airport.runways["05R"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("05L" == runway1.name && checkPreceding("05R") && checkOppLanding("05R")) {
                     runway = runway1
                     dist = distance
-                } else if ("05R" == runway1.name && checkPreceding("05L") && checkOppLanding(airport.runways["05L"])) {
-                    runway = runway1
-                    if (distance > 24.9) break
-                    dist = distance
-                } else if ("23L" == runway1.name && checkPreceding("23R") && checkOppLanding(airport.runways["23R"])) {
+                } else if ("05R" == runway1.name && checkPreceding("05L") && checkOppLanding("05L")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("23R" == runway1.name && checkPreceding("23L") && checkOppLanding(airport.runways["23L"])) {
+                } else if ("23L" == runway1.name && checkPreceding("23R") && checkOppLanding("23R")) {
+                    runway = runway1
+                    if (distance > 24.9) break
+                    dist = distance
+                } else if ("23R" == runway1.name && checkPreceding("23L") && checkOppLanding("23L")) {
                     runway = runway1
                     dist = distance
                 }
@@ -159,7 +159,7 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+            if (!runway1.isEmergencyClosed && checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1.name) && distance > dist) {
                 runway = runway1
                 dist = distance
             }
@@ -173,19 +173,19 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("02L" == runway1.name && checkPreceding("02C") && checkOppLanding(airport.runways["02C"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("02L" == runway1.name && checkPreceding("02C") && checkOppLanding("02C")) {
                     runway = runway1
                     dist = distance
-                } else if ("02C" == runway1.name && checkPreceding("02L") && checkOppLanding(airport.runways["02L"])) {
-                    runway = runway1
-                    if (distance > 24.9) break
-                    dist = distance
-                } else if ("20C" == runway1.name && checkPreceding("20R") && checkOppLanding(airport.runways["20R"])) {
+                } else if ("02C" == runway1.name && checkPreceding("02L") && checkOppLanding("02L")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("20R" == runway1.name && checkPreceding("20C") && checkOppLanding(airport.runways["20C"])) {
+                } else if ("20C" == runway1.name && checkPreceding("20R") && checkOppLanding("20R")) {
+                    runway = runway1
+                    if (distance > 24.9) break
+                    dist = distance
+                } else if ("20R" == runway1.name && checkPreceding("20C") && checkOppLanding("20C")) {
                     runway = runway1
                     dist = distance
                 }
@@ -200,13 +200,13 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if (airport.allowSimultDep() && timers["05"] ?: 0f >= 60 && "34R" == runway1.name && checkOppLanding(airport.runways["04"]) && checkOppLanding(airport.runways["05"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if (airport.allowSimultDep() && timers["05"] ?: 0f >= 60 && "34R" == runway1.name && checkOppLanding("04") && checkOppLanding("05")) {
                     //Additional check for runway 05 departure - 60 seconds apart
                     //Don't use 34R if departure volume is low
                     runway = runway1
                     dist = distance
-                } else if ((!airport.allowSimultDep() || timers["34R"] ?: 0f >= 60) && "05" == runway1.name && checkOppLanding(airport.runways["04"]) && checkPreceding("16L") && checkPreceding("16R")) {
+                } else if ((!airport.allowSimultDep() || timers["34R"] ?: 0f >= 60) && "05" == runway1.name && checkOppLanding("04") && checkPreceding("16L") && checkPreceding("16R")) {
                     //Additional check for runway 34R departure - 60 seconds apart
                     //Additional check if aircraft landing on 34R has touched down; is no longer in conflict with 05
                     var tkof = false
@@ -231,11 +231,11 @@ class TakeoffManager {
                         if (distance > 24.9) break
                         dist = distance
                     }
-                } else if ("16L" == runway1.name && checkLandingTCTT23() && checkOppLanding(airport.runways["16R"]) && checkPreceding("05")) {
+                } else if ("16L" == runway1.name && checkLandingTCTT23() && checkOppLanding("16R") && checkPreceding("05")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ((airport.takeoffRunways.containsKey("22") || airport.allowSimultDep()) && "16R" == runway1.name && checkLandingTCTT23() && checkOppLanding(airport.runways["16L"]) && checkPreceding("05")) {
+                } else if ((airport.takeoffRunways.containsKey("22") || airport.allowSimultDep()) && "16R" == runway1.name && checkLandingTCTT23() && checkOppLanding("16L") && checkPreceding("05")) {
                     //Use 16R only if departure volume is low, or if other departure runway in use is 22
                     runway = runway1
                     if (airport.takeoffRunways.containsKey("22") && distance > 24.9) break
@@ -256,20 +256,20 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("16L" == runway1.name && checkOppLanding(airport.runways["16R"]) && (checkPreceding("16R") || airport.allowSimultDep())) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("16L" == runway1.name && checkOppLanding("16R") && (checkPreceding("16R") || airport.allowSimultDep())) {
                     //Prefer 16R if departure volume is low
                     runway = runway1
                     dist = distance
-                } else if ("16R" == runway1.name && checkOppLanding(airport.runways["16L"]) && (checkPreceding("16L") || airport.allowSimultDep())) {
+                } else if ("16R" == runway1.name && checkOppLanding("16L") && (checkPreceding("16L") || airport.allowSimultDep())) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("34L" == runway1.name && checkOppLanding(airport.runways["34R"]) && (checkPreceding("34R") || airport.allowSimultDep())) {
+                } else if ("34L" == runway1.name && checkOppLanding("34R") && (checkPreceding("34R") || airport.allowSimultDep())) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("34R" == runway1.name && checkOppLanding(airport.runways["34L"]) && (checkPreceding("34L") || airport.allowSimultDep())) {
+                } else if ("34R" == runway1.name && checkOppLanding("34L") && (checkPreceding("34L") || airport.allowSimultDep())) {
                     //Prefer 34L if departure volume is low
                     runway = runway1
                     dist = distance
@@ -285,19 +285,19 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("06L" == runway1.name && checkPreceding("06R") && checkOppLanding(airport.runways["06R"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("06L" == runway1.name && checkPreceding("06R") && checkOppLanding("06R")) {
                     runway = runway1
                     dist = distance
-                } else if ("06R" == runway1.name && checkPreceding("06L") && checkOppLanding(airport.runways["06L"])) {
-                    runway = runway1
-                    if (distance > 24.9) break
-                    dist = distance
-                } else if ("24L" == runway1.name && checkPreceding("24R") && checkOppLanding(airport.runways["24R"])) {
+                } else if ("06R" == runway1.name && checkPreceding("06L") && checkOppLanding("06L")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("24R" == runway1.name && checkPreceding("24L") && checkOppLanding(airport.runways["24L"])) {
+                } else if ("24L" == runway1.name && checkPreceding("24R") && checkOppLanding("24R")) {
+                    runway = runway1
+                    if (distance > 24.9) break
+                    dist = distance
+                } else if ("24R" == runway1.name && checkPreceding("24L") && checkOppLanding("24L")) {
                     runway = runway1
                     dist = distance
                 }
@@ -328,19 +328,19 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("07L" == runway1.name && checkPreceding("07R") && checkOppLanding(airport.runways["07R"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("07L" == runway1.name && checkPreceding("07R") && checkOppLanding("07R")) {
                     runway = runway1
                     dist = distance
-                } else if ("07R" == runway1.name && checkPreceding("07L") && checkOppLanding(airport.runways["07L"])) {
-                    runway = runway1
-                    if (distance > 24.9) break
-                    dist = distance
-                } else if ("25L" == runway1.name && checkPreceding("25R") && checkOppLanding(airport.runways["25R"])) {
+                } else if ("07R" == runway1.name && checkPreceding("07L") && checkOppLanding("07L")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("25R" == runway1.name && checkPreceding("25L") && checkOppLanding(airport.runways["25L"])) {
+                } else if ("25L" == runway1.name && checkPreceding("25R") && checkOppLanding("25R")) {
+                    runway = runway1
+                    if (distance > 24.9) break
+                    dist = distance
+                } else if ("25R" == runway1.name && checkPreceding("25L") && checkOppLanding("25L")) {
                     runway = runway1
                     dist = distance
                 }
@@ -355,7 +355,7 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+            if (!runway1.isEmergencyClosed && checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1.name) && distance > dist) {
                 runway = runway1
                 dist = distance
             }
@@ -369,11 +369,11 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && distance > dist) {
-                if ("03R" == runway1.name && checkOppLanding(airport.runways["03L"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && distance > dist) {
+                if ("03R" == runway1.name && checkOppLanding("03L")) {
                     runway = runway1
                     dist = distance
-                } else if ("21L" == runway1.name && checkOppLanding(airport.runways["21R"])) {
+                } else if ("21L" == runway1.name && checkOppLanding("21R")) {
                     runway = runway1
                     dist = distance
                 }
@@ -388,18 +388,18 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("01L" == runway1.name && checkPreceding("01R") && checkOppLanding(airport.runways["01R"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("01L" == runway1.name && checkPreceding("01R") && checkOppLanding("01R")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("01R" == runway1.name && checkPreceding("01L") && checkOppLanding(airport.runways["01L"])) {
+                } else if ("01R" == runway1.name && checkPreceding("01L") && checkOppLanding("01L")) {
                     runway = runway1
                     dist = distance
-                } else if ("19L" == runway1.name && checkPreceding("19R") && checkOppLanding(airport.runways["19R"])) {
+                } else if ("19L" == runway1.name && checkPreceding("19R") && checkOppLanding("19R")) {
                     runway = runway1
                     dist = distance
-                } else if ("19R" == runway1.name && checkPreceding("19L") && checkOppLanding(airport.runways["19L"])) {
+                } else if ("19R" == runway1.name && checkPreceding("19L") && checkOppLanding("19L")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
@@ -415,18 +415,18 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("36L" == runway1.name && checkOppLanding(airport.runways["36R"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("36L" == runway1.name && checkOppLanding("36R")) {
                     runway = runway1
                     dist = distance
-                } else if (airport.allowSimultDep() && "36R" == runway1.name && checkOppLanding(airport.runways["36L"])) {
+                } else if (airport.allowSimultDep() && "36R" == runway1.name && checkOppLanding("36L")) {
                     //Use only 36L if departure volume is low
                     runway = runway1
                     dist = distance
-                } else if ("14L" == runway1.name && checkOppLanding(airport.runways["14R"])) {
+                } else if ("14L" == runway1.name && checkOppLanding("14R")) {
                     runway = runway1
                     dist = distance
-                } else if (airport.allowSimultDep() && "14R" == runway1.name && checkOppLanding(airport.runways["14L"])) {
+                } else if (airport.allowSimultDep() && "14R" == runway1.name && checkOppLanding("14L")) {
                     //Use only 14L if departure volume is low
                     runway = runway1
                     dist = distance
@@ -442,18 +442,18 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("26R" == runway1.name && checkOppLanding(airport.runways["26L"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("26R" == runway1.name && checkOppLanding("26L")) {
                     runway = runway1
                     dist = distance
-                } else if (airport.allowSimultDep() && "27L" == runway1.name && checkOppLanding(airport.runways["27R"])) {
+                } else if (airport.allowSimultDep() && "27L" == runway1.name && checkOppLanding("27R")) {
                     //Use only 26R if departure volume is low
                     runway = runway1
                     dist = distance
-                } else if ("08L" == runway1.name && checkOppLanding(airport.runways["08R"])) {
+                } else if ("08L" == runway1.name && checkOppLanding("08R")) {
                     runway = runway1
                     dist = distance
-                } else if (airport.allowSimultDep() && "09R" == runway1.name && checkOppLanding(airport.runways["09L"])) {
+                } else if (airport.allowSimultDep() && "09R" == runway1.name && checkOppLanding("09L")) {
                     //Use only 08L if departure volume is low
                     runway = runway1
                     dist = distance
@@ -469,11 +469,11 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
-                if ("07" == runway1.name && checkOppLanding(airport.runways["06"])) {
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && (distance > dist || distance > 24.9)) {
+                if ("07" == runway1.name && checkOppLanding("06")) {
                     runway = runway1
                     dist = distance
-                } else if ("24" == runway1.name && checkOppLanding(airport.runways["25"])) {
+                } else if ("24" == runway1.name && checkOppLanding("25")) {
                     runway = runway1
                     dist = distance
                 }
@@ -488,7 +488,7 @@ class TakeoffManager {
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("13") && checkPreceding("31") && checkLanding(runway1) && checkOppLanding(runway1) && distance > dist) {
+            if (!runway1.isEmergencyClosed && checkPreceding("13") && checkPreceding("31") && checkLanding(runway1) && checkOppLanding(runway1.name) && distance > dist) {
                 runway = runway1
                 dist = distance
             }
@@ -580,8 +580,8 @@ class TakeoffManager {
     }
 
     /** Check that no aircraft is landing on opposite runway  */
-    private fun checkOppLanding(runway: Runway?): Boolean {
-        if (runway == null) return true
+    private fun checkOppLanding(rwy: String): Boolean {
+        val runway = airport.runways[rwy] ?: return true
         return runway.oppRwy.aircraftsOnAppr.size == 0
     }
 }

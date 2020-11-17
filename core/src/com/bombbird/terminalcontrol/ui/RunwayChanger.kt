@@ -154,7 +154,7 @@ class RunwayChanger {
             if (windHdg == 0) windSpd = 0
             airport?.runwayManager?.getSuitableConfigs(windHdg, windSpd)?.let { configs ->
                 for (config in configs) {
-                    if (config.landingRunways.keys == airport?.landingRunways?.keys && config.takeoffRunways.keys == airport?.takeoffRunways?.keys) continue
+                    if (config.landingRunwayMap.keys == airport?.landingRunways?.keys && config.takeoffRunwayMap.keys == airport?.takeoffRunways?.keys) continue
                     possibleConfigs.add(config)
                 }
             }
@@ -176,16 +176,16 @@ class RunwayChanger {
         }
         val stringBuilder = StringBuilder()
         val rwySet = HashSet<String>()
-        runwayConfig?.landingRunways?.keys?.let {
+        runwayConfig?.landingRunwayMap?.keys?.let {
             rwySet.addAll(it)
         }
-        runwayConfig?.takeoffRunways?.keys?.let {
+        runwayConfig?.takeoffRunwayMap?.keys?.let {
             rwySet.addAll(it)
         }
         for (rwy in rwySet) {
             if (airport?.runways?.get(rwy)?.isEmergencyClosed == false && airport?.runways?.get(rwy)?.oppRwy?.isEmergencyClosed == false) {
-                val tkof = runwayConfig?.takeoffRunways?.containsKey(rwy)
-                val ldg = runwayConfig?.landingRunways?.containsKey(rwy)
+                val tkof = runwayConfig?.takeoffRunwayMap?.containsKey(rwy)
+                val ldg = runwayConfig?.landingRunwayMap?.containsKey(rwy)
                 val tmp: String = if (tkof == true && ldg == true) {
                     "takeoffs and landings."
                 } else if (tkof == true) {
@@ -221,6 +221,6 @@ class RunwayChanger {
     }
 
     fun containsLandingRunway(icao: String, rwy: String): Boolean {
-        return icao == airport?.icao && runwayConfig?.landingRunways?.containsKey(rwy) == true && confirmButton.isVisible
+        return icao == airport?.icao && runwayConfig?.landingRunwayMap?.containsKey(rwy) == true && confirmButton.isVisible
     }
 }

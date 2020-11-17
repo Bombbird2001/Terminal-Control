@@ -6,8 +6,8 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools
 
 /** Stores individual runway configuration info and comparison logic */
 class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, takeoffRunways: Array<String>): Comparable<RunwayConfig> {
-    val landingRunways = HashMap<String, Runway>()
-    val takeoffRunways = HashMap<String, Runway>()
+    val landingRunwayMap = HashMap<String, Runway>()
+    val takeoffRunwayMap = HashMap<String, Runway>()
     var allRunwaysEligible = false
     private var tailwindTotal = 0f
     private var windScore = 0f
@@ -17,14 +17,14 @@ class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, 
             val rwy = airport.runways[runway]
             if (rwy == null) {
                 Gdx.app.log("RunwayConfig", "Landing rwy $runway unavailable for ${airport.icao}")
-            } else this.landingRunways[rwy.name] = rwy
+            } else this.landingRunwayMap[rwy.name] = rwy
         }
 
         for (runway in takeoffRunways) {
             val rwy = airport.runways[runway]
             if (rwy == null) {
                 Gdx.app.log("RunwayConfig", "Takeoff rwy $runway unavailable for ${airport.icao}")
-            } else this.takeoffRunways[rwy.name] = rwy
+            } else this.takeoffRunwayMap[rwy.name] = rwy
         }
     }
 
@@ -41,13 +41,13 @@ class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, 
         windScore = 0f
 
         allRunwaysEligible = true
-        for (runway in landingRunways.values) {
+        for (runway in landingRunwayMap.values) {
             val component = MathTools.componentInDirection(windSpd, windHdg, runway.heading)
             if (component < -5) allRunwaysEligible = false
             windScore += component
             tailwindTotal += (-component).coerceAtLeast(0f) //Add to tailwindTotal if component < 0, if headwind set 0
         }
-        for (runway in takeoffRunways.values) {
+        for (runway in takeoffRunwayMap.values) {
             val component = MathTools.componentInDirection(windSpd, windHdg, runway.heading)
             if (component < -5) allRunwaysEligible = false
             windScore += component * 2 //Takeoff wind more important, gives twice the score
@@ -59,13 +59,13 @@ class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, 
     fun applyConfig(): Boolean {
         val changeSet = HashSet<Runway>()
         val ldgCopy = HashMap(airport.landingRunways)
-        for (runway: Runway in landingRunways.values) {
+        for (runway: Runway in landingRunwayMap.values) {
             if (ldgCopy.remove(runway.name) == null) {
                 changeSet.add(runway)
             }
         }
         val takeoffCopy = HashMap(airport.takeoffRunways)
-        for (runway: Runway in takeoffRunways.values) {
+        for (runway: Runway in takeoffRunwayMap.values) {
             if (takeoffCopy.remove(runway.name) == null) {
                 changeSet.add(runway)
             }
@@ -76,7 +76,7 @@ class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, 
         if (airport.rwyChangeTimer <= 0 && airport.isPendingRwyChange) {
             //Update only if timer is up
             for (runway: Runway in changeSet) {
-                airport.setActive(runway.name, landingRunways.containsKey(runway.name), takeoffRunways.containsKey(runway.name))
+                airport.setActive(runway.name, landingRunwayMap.containsKey(runway.name), takeoffRunwayMap.containsKey(runway.name))
             }
         }
 
@@ -85,7 +85,7 @@ class RunwayConfig(private val airport: Airport, landingRunways: Array<String>, 
 
     /** Returns whether this configuration is an empty placeholder configuration */
     fun isEmpty(): Boolean {
-        return landingRunways.isEmpty() && takeoffRunways.isEmpty()
+        return landingRunwayMap.isEmpty() && takeoffRunwayMap.isEmpty()
     }
 
     /** Implements comparison operator; returns -1 if configuration is preferred over other, else 1 */
