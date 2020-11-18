@@ -28,6 +28,9 @@ class Runway(toParse: String) {
     //The opposite runway
     lateinit var oppRwy: Runway
 
+    //The previous go around
+    var goAround: Aircraft? = null
+
     //Set landing/takeoff status
     var isLanding = false
         private set

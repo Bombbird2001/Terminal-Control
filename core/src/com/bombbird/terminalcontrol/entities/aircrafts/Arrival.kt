@@ -527,7 +527,7 @@ class Arrival : Aircraft {
                     nonPrecAlts = null
                 }
             } else {
-                if (isLocCap && clearedAltitude != it.missedApchProc?.climbAlt && navState.dispLatMode.first() == NavState.VECTORS) {
+                if (isLocCap && clearedAltitude != it.missedApchProc.climbAlt && navState.dispLatMode.first() == NavState.VECTORS) {
                     setMissedAlt()
                 }
                 if (nonPrecAlts == null) {
@@ -792,6 +792,7 @@ class Arrival : Aircraft {
 
     /** Overrides initializeGoAround method in Aircraft, called to initialize go around mode of aircraft  */
     private fun initializeGoAround() {
+        runway?.goAround = this
         isGoAround = true
         isGoAroundWindow = true
         val missedApproach = ils?.missedApchProc

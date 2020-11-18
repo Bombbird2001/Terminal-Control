@@ -528,6 +528,14 @@ object GameSaver {
                 runwayClosed.put(runway.name, runway.isEmergencyClosed)
             }
             airportInfo.put("emergencyClosed", runwayClosed)
+
+            //Previous go around
+            val prevGoAround = JSONObject()
+            for (runway in airport.runways.values) {
+                prevGoAround.put(runway.name, runway.goAround?.callsign ?: JSONObject.NULL) //If no previous go around, put JSONObject.NULL
+            }
+            airportInfo.put("goAround", prevGoAround)
+
             airportInfo.put("landings", airport.landings) //Landings
             airportInfo.put("airborne", airport.airborne) //Airborne
             airportInfo.put("congestion", airport.isCongested) //Congestion

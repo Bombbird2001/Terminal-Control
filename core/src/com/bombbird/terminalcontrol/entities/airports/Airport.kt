@@ -135,7 +135,8 @@ class Airport {
                 aircraftsOnAppr.add(radarScreen.aircrafts[queue.getString(i)])
             }
             runway.aircraftsOnAppr = aircraftsOnAppr
-            runway.isEmergencyClosed = !save.isNull("emergencyClosed") && save.getJSONObject("emergencyClosed").optBoolean(runway.name)
+            runway.isEmergencyClosed = save.optJSONObject("emergencyClosed")?.optBoolean(runway.name) ?: false
+            runway.goAround = radarScreen.aircrafts[save.optJSONObject("goAround")?.optString(runway.name, null)]
         }
     }
 
