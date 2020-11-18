@@ -83,7 +83,6 @@ object UnlockManager {
     }
 
     /** Function called on game launch to load achievements, milestones and stats  */
-
     fun loadStats() {
         loadUnlockList()
         val stats = FileLoader.loadStats()
@@ -113,12 +112,11 @@ object UnlockManager {
         }
         checkNewUnlocks()
         setAchievementStatus()
-        checkAllAchievements()
+        checkQuantifiableAchievements()
         GameSaver.saveStats()
     }
 
     /** Called when an aircraft has landed; further checks whether any new milestone or achievement has been unlocked  */
-
     fun incrementLanded() {
         planesLanded++
         if (checkNewUnlocks() && TerminalControl.full) {
@@ -129,7 +127,6 @@ object UnlockManager {
     }
 
     /** Called when an emergency has landed; further checks whether any new milestone or achievement has been unlocked  */
-
     fun incrementEmergency() {
         emergenciesLanded++
         checkAchievement(Achievement.EMERGENCIES_LANDED)
@@ -137,7 +134,6 @@ object UnlockManager {
     }
 
     /** Called when a new conflict has occurred; further checks whether any new milestone or achievement has been unlocked  */
-
     fun incrementConflicts() {
         conflicts++
         checkAchievement(Achievement.CONFLICTS)
@@ -145,7 +141,6 @@ object UnlockManager {
     }
 
     /** Called when wake separation infringement time is increased by the specified time; further checks whether any new milestone or achievement has been unlocked  */
-
     fun incrementWakeConflictTime(time: Float) {
         wakeConflictTime += time
         if (wakeConflictTime > prevWakeConflictTime + 2) { //Save & check every 2 seconds of wake time to reduce File I/O load
@@ -156,7 +151,6 @@ object UnlockManager {
     }
 
     /** Called to unlock a new achievement that cannot be unlocked using planesLanded, emergenciesLanded, conflicts or wakeConflictTime  */
-
     fun completeAchievement(name: String) {
         if (!achievementList.containsKey(name)) {
             Gdx.app.log("UnlockManager", "Unknown achievement $name")
@@ -164,6 +158,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
+        setAchievementStatus()
         TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
     }
@@ -193,7 +188,7 @@ object UnlockManager {
     }
 
     /** Called in loadStats to check if the quantifiable achievements are completed  */
-    private fun checkAllAchievements() {
+    private fun checkQuantifiableAchievements() {
         checkAchievement(Achievement.PLANES_LANDED)
         checkAchievement(Achievement.EMERGENCIES_LANDED)
         checkAchievement(Achievement.CONFLICTS)
@@ -208,7 +203,6 @@ object UnlockManager {
     }
 
     /** Called to unlock an easter egg with the given name  */
-
     fun unlockEgg(name: String) {
         if (easterEggList.containsKey(name)) unlocks.add(name)
         GameSaver.saveStats()
