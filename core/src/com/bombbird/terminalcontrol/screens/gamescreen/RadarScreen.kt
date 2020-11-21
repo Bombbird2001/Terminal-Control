@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
@@ -52,6 +51,7 @@ import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.Revision
+import com.bombbird.terminalcontrol.utilities.SafeStage
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.random.ArrivalGenerator
 import com.bombbird.terminalcontrol.utilities.saving.FileLoader
@@ -394,7 +394,7 @@ class RadarScreen : GameScreen {
 
     private fun loadStageCamTimer() {
         //Set stage params
-        stage = Stage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
+        stage = SafeStage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
         stage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
 
         //Set camera params
@@ -406,7 +406,7 @@ class RadarScreen : GameScreen {
         if (Gdx.app.type == Application.ApplicationType.Android) {
             camera.position[2286f, 1620f] = 0f
         }
-        labelStage = Stage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
+        labelStage = SafeStage(ScalingViewport(Scaling.fillY, 5760f, 3240f), game.batch)
         labelStage.viewport.camera = camera
         labelStage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
     }
@@ -423,7 +423,7 @@ class RadarScreen : GameScreen {
 
     private fun loadPanel() {
         //Set 2nd stage, camera for UI
-        uiStage = Stage(ExtendViewport(1920f, 3240f), game.batch)
+        uiStage = SafeStage(ExtendViewport(1920f, 3240f), game.batch)
         uiStage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
         ui = Ui()
         ui.loadTabs()

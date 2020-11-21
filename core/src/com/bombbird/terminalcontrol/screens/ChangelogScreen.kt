@@ -62,7 +62,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
                 content.append(change).append("\n")
             }
             label.setText(content.toString())
-            label.setWrap(true)
+            label.wrap = true
             label.width = MainMenuScreen.BUTTON_WIDTH * 2f - 20
             scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 2f - 40).pad(15f, 30f, 15f, 0f)
             scrollTable.row()
@@ -71,6 +71,14 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
 
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
+
+        //Version 1.4.2012.2
+        val content16 = Array<String>()
+        if (Gdx.app.type == Application.ApplicationType.Android) content16.add("-UI: Added distance measuring tool - switch to \"Dist mode\" and measure the distance between 2 points with 2 fingers")
+        if (Gdx.app.type == Application.ApplicationType.Desktop) content16.add("-UI: Added distance measuring tool - right click and drag to measure distance between 2 points")
+        content16.add("-Mechanics: Departures will now take into account any landing aircraft or go arounds on dependent parallel runways to prevent possible conflicts")
+        content16.add("-Bug fixes, optimisations")
+        changeLogContent["1.4.2012.2"] = content16
 
         //Version 1.4.2012.1
         val content15 = Array<String>()

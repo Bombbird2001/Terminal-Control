@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementWakeConflictTime
 import com.bombbird.terminalcontrol.entities.airports.Airport
@@ -22,6 +21,7 @@ import com.bombbird.terminalcontrol.ui.DataTag
 import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
+import com.bombbird.terminalcontrol.utilities.SafeStage
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.iasToTas
 import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
@@ -1346,7 +1346,7 @@ abstract class Aircraft : Actor {
         this.y = y
     }
 
-    override fun getStage(): Stage {
+    override fun getStage(): SafeStage {
         return stage
     }
 

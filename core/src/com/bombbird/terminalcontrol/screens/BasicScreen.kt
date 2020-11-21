@@ -4,13 +4,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.utilities.SafeStage
 
 open class BasicScreen(val game: TerminalControl, width: Int, height: Int) : Screen {
-    val stage: Stage
+    val stage: SafeStage
     val camera: OrthographicCamera = OrthographicCamera()
     private val viewport: Viewport
 
@@ -21,7 +21,7 @@ open class BasicScreen(val game: TerminalControl, width: Int, height: Int) : Scr
         viewport.apply()
 
         //Set stage params
-        stage = Stage(FitViewport(width.toFloat(), height.toFloat()), game.batch)
+        stage = SafeStage(FitViewport(width.toFloat(), height.toFloat()), game.batch)
         stage.viewport.update(TerminalControl.WIDTH, TerminalControl.HEIGHT, true)
         Gdx.input.inputProcessor = stage
     }

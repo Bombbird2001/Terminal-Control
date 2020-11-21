@@ -131,12 +131,23 @@ class Metar(private val radarScreen: RadarScreen) {
 
     /** Generates and applies a randomised weather  */
     fun randomWeather() {
-        if (metarObject == null) {
-            metarObject = generateRandomWeather()
-        } else if (radarScreen.weatherSel === RadarScreen.Weather.RANDOM) {
-            metarObject = randomBasedOnCurrent()
+        if (radarScreen.metarLoading) {
+            if (metarObject == null) {
+                metarObject = generateRandomWeather()
+            } else if (radarScreen.weatherSel === RadarScreen.Weather.RANDOM) {
+                metarObject = randomBasedOnCurrent()
+            }
+            updateRadarScreenState()
+        } else {
+            Gdx.app.postRunnable {
+                if (metarObject == null) {
+                    metarObject = generateRandomWeather()
+                } else if (radarScreen.weatherSel === RadarScreen.Weather.RANDOM) {
+                    metarObject = randomBasedOnCurrent()
+                }
+                updateRadarScreenState()
+            }
         }
-        updateRadarScreenState()
     }
 
     /** Generates a basic raw metar for randomised weather  */
@@ -167,7 +178,7 @@ class Metar(private val radarScreen: RadarScreen) {
         if (prevMetar == null || metarObject.toString() != prevMetar.toString()) {
             Gdx.app.postRunnable { radarScreen.updateInformation() }
         }
-        if (radarScreen.loadingTime < 4.5) {
+        if (radarScreen.loadingTime < 4.5 && Thread.currentThread().name != "main") {
             val deltaTime = ((4.5 - radarScreen.loadingTime) * 1000).toLong()
             try {
                 Thread.sleep(deltaTime)

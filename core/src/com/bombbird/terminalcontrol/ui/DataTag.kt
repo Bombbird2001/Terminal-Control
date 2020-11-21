@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
 import com.badlogic.gdx.utils.Queue
 import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
@@ -199,7 +198,7 @@ class DataTag(aircraft: Aircraft) {
         }
     }
 
-    /** Sets the ninepatchdrawable into all aspects of the clickspot style  */
+    /** Sets the ninePatchDrawable into all aspects of the clickSpot style  */
     private fun setAllNinepatch(ninePatchDrawable: NinePatchDrawable?) {
         clickSpot.style.up = ninePatchDrawable
         clickSpot.style.down = ninePatchDrawable

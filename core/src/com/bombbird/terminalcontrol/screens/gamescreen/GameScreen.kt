@@ -9,7 +9,6 @@ import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.input.GestureDetector.GestureListener
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Array
@@ -31,11 +30,12 @@ import com.bombbird.terminalcontrol.ui.RequestFlasher
 import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.SafeStage
 import kotlin.collections.HashMap
 
 open class GameScreen(val game: TerminalControl) : Screen, GestureListener, InputProcessor {
-    lateinit var stage: Stage
-    lateinit var labelStage: Stage
+    lateinit var stage: SafeStage
+    lateinit var labelStage: SafeStage
     var uiLoaded = false
     var metarLoading = false
     var loadingTime = 0f
@@ -68,7 +68,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
 
     //Create 2nd camera for UI
     lateinit var ui: Ui
-    lateinit var uiStage: Stage
+    lateinit var uiStage: SafeStage
     lateinit var uiCam: OrthographicCamera
     lateinit var uiViewport: Viewport
 

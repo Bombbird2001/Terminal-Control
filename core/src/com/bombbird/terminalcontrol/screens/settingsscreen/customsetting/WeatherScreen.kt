@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen.customsetting
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -188,7 +189,7 @@ class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
                     newData[key] = intArrayOf(windHdg, windSpd)
                 }
                 TerminalControl.radarScreen?.weatherSel = RadarScreen.Weather.STATIC
-                TerminalControl.radarScreen?.metar?.updateCustomWeather(newData)
+                Gdx.app.postRunnable { TerminalControl.radarScreen?.metar?.updateCustomWeather(newData) }
                 game.screen = OtherSettingsScreen(game, TerminalControl.radarScreen, null)
             }
         })

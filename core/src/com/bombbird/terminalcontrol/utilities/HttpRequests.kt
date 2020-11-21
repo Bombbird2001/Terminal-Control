@@ -120,8 +120,16 @@ object HttpRequests {
                     }
 
                     //METAR JSON text has been received
-                    metar.metarObject = JSONObject(responseText)
-                    metar.updateRadarScreenState()
+                    if (!radarScreen.metarLoading) {
+                        Gdx.app.postRunnable {
+                            metar.metarObject = JSONObject(responseText)
+                            metar.updateRadarScreenState()
+                        }
+                    } else {
+                        //If not finished loading yet, game has just been loaded so don't run on main thread
+                        metar.metarObject = JSONObject(responseText)
+                        metar.updateRadarScreenState()
+                    }
                 }
             }
         })
