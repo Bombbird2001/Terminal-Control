@@ -10,7 +10,7 @@ class SafeStage(viewport: Viewport, batch: SpriteBatch): Stage(viewport, batch) 
 
     /** Overrides addActor method to ensure thread safety when adding actors in other threads */
     override fun addActor(actor: Actor?) {
-        if (Thread.currentThread().name == "main") {
+        if (Thread.currentThread().name == "main" || Thread.currentThread().name.contains("GLThread")) {
             super.addActor(actor)
         } else Gdx.app.postRunnable { super.addActor(actor) }
     }
