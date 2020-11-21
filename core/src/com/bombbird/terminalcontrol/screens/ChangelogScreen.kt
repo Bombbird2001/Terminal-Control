@@ -76,7 +76,8 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         val content16 = Array<String>()
         if (Gdx.app.type == Application.ApplicationType.Android) content16.add("-UI: Added distance measuring tool - switch to \"Dist mode\" and measure the distance between 2 points with 2 fingers")
         if (Gdx.app.type == Application.ApplicationType.Desktop) content16.add("-UI: Added distance measuring tool - right click and drag to measure distance between 2 points")
-        content16.add("-Mechanics: Departures will now take into account any landing aircraft or go arounds on dependent parallel runways to prevent possible conflicts")
+        content16.add("-UI: Added options to enable display of distance remaining to each waypoint on an aircraft's route")
+        content16.add("-Mechanics: Departures will now take into account any landing aircraft or go arounds on dependent parallel runways to prevent potential conflicts")
         content16.add("-Bug fixes, optimisations")
         changeLogContent["1.4.2012.2"] = content16
 
