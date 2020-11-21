@@ -534,14 +534,14 @@ class TakeoffManager {
     private fun checkLandingTCTT23(): Boolean {
         if ("TCTT" != airport.icao) return false
         val runway: Runway = airport.runways["23"] ?: return false
-        return checkLanding(runway) && checkAircraftLanded("23")
+        return checkLanding(runway) && checkAircraftLanded("23", 5f)
     }
 
     /** Checks specific case for TCTT's runway 16R, same as above function but will also return true if aircraft has landed  */
     private fun checkLandingTCTT16R(): Boolean {
         if ("TCTT" != airport.icao) return false
         val runway: Runway = airport.runways["16R"] ?: return false
-        return checkLanding(runway) && checkAircraftLanded("16R")
+        return checkLanding(runway) && checkAircraftLanded("16R", 5f)
     }
 
     /** Check that no aircraft is landing on opposite runway  */
@@ -560,14 +560,14 @@ class TakeoffManager {
     }
 
     /** Checks that 1st aircraft has landed on runway, and 2nd aircraft (if any) is more than 5 miles away */
-    private fun checkAircraftLanded(rwy: String): Boolean {
+    private fun checkAircraftLanded(rwy: String, dist: Float = 3f): Boolean {
         val runway = airport.runways[rwy] ?: return true
         if (runway.aircraftsOnAppr.size == 0) return true
         val aircraft1 = runway.aircraftsOnAppr.first()
-        if (pixelToNm(distanceBetween(aircraft1.x, aircraft1.y, runway.x, runway.y)) < 5 && !aircraft1.isOnGround) return false //If aircraft is <5 miles and has not landed, return false
+        if (pixelToNm(distanceBetween(aircraft1.x, aircraft1.y, runway.x, runway.y)) < dist && !aircraft1.isOnGround) return false //If aircraft is <5 miles and has not landed, return false
         if (runway.aircraftsOnAppr.size == 1) return true //If only 1 aircraft which is more than 5 miles, return true
         //More than 1 aircraft - check 2nd aircraft as well
         val aircraft2 = runway.aircraftsOnAppr[1]
-        return pixelToNm(distanceBetween(aircraft2.x, aircraft2.y, runway.x, runway.y)) >= 5 && !aircraft2.isOnGround //Return true if 2nd aircraft is >5 miles and has not landed, else false
+        return pixelToNm(distanceBetween(aircraft2.x, aircraft2.y, runway.x, runway.y)) >= dist && !aircraft2.isOnGround //Return true if 2nd aircraft is >5 miles and has not landed, else false
     }
 }
