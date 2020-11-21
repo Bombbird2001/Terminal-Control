@@ -20,8 +20,8 @@ class AchievementScreen(game: TerminalControl, background: Image?) : UpgradeScre
 
         //Set title label
         val headerLabel = Label("Achievements", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -51,7 +51,7 @@ class AchievementScreen(game: TerminalControl, background: Image?) : UpgradeScre
 [ ${value1.title} ]
 ${value1.description}
 """, labelStyle)
-            label.setWrap(true)
+            label.wrap = true
             label.setAlignment(Align.center)
             scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f)
             //Layout twice to set correct width & height
@@ -73,7 +73,7 @@ ${value1.description}
 [ $key ]
 ${if (unlocked) value else "?????"}
 """, labelStyle)
-            label.setWrap(true)
+            label.wrap = true
             label.setAlignment(Align.center)
             scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f)
             //Layout twice to set correct width & height
