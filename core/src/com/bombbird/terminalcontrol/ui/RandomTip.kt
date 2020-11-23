@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.ui
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
 
 object RandomTip {
     private val tips = Array<String>()
@@ -29,12 +30,14 @@ object RandomTip {
         tips.add("Tap on the METAR label of an airport (top left of screen) to change its runway configuration")
         tips.add("Wake turbulence can cause an aircraft to go around")
         tips.add("Check out the help manual for more detailed descriptions of airports, game mechanics")
-        tips.add("ILS display style can be changed in the game settings, under the display section")
-        tips.add("Aircraft data tag display style can be changed in the game settings, under the data tag section")
-        tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in the game settings")
+        tips.add("ILS display style can be changed in Settings => Display")
+        tips.add("Aircraft data tag display style can be changed in Settings => Datatag")
+        tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in Settings => Display")
         tips.add("Airspace too congested? Go to Settings => Traffic => Arrival traffic settings to adjust the traffic")
-        tips.add("Colour scheme can be changed in the game settings, under the display section")
-        tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
+        tips.add("Colour scheme can be changed in Settings => Display")
+        tips.add("Choose whether to display remaining distance to each waypoint on aircraft routes, in Settings => Display")
+        tips.add("Measure distance on the radar screen by ${if (Gdx.app.type == Application.ApplicationType.Android) "changing to \"Dist mode\" and tapping with 2 fingers" else "dragging with the right mouse button"}")
+        if (TerminalControl.full) tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
         if (Gdx.app.type == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!")
     }
 

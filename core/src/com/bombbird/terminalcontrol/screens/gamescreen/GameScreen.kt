@@ -330,9 +330,10 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     game.batch.begin()
                     loadingLabel.draw(game.batch, 1f)
                     if (!tipsLoaded()) loadTips()
-                    if ("" == tipLabel.text.toString()) tipLabel.setText(randomTip())
-                    tipLabel.setPosition(1920 - tipLabel.prefWidth / 2, 960f)
-                    tipLabel.draw(game.batch, 1f)
+                    if ("" == tipLabel.text.toString()) {
+                        tipLabel.setText(randomTip())
+                        tipLabel.setPosition(1920 - tipLabel.prefWidth / 2, 960f)
+                    } else tipLabel.draw(game.batch, 1f)
                     game.batch.end()
                 } else {
                     stage.draw()
