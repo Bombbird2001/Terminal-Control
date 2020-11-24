@@ -14,6 +14,6 @@ object DesktopLauncher {
         config.setWindowedMode(1440, 810)
         config.setMaximized(true)
         config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 0)
-        Lwjgl3Application(TerminalControl(TextToSpeechManager(), object : ToastManager {}, DiscordRPCManager()), config)
+        Lwjgl3Application(TerminalControl(TextToSpeechManager(), object : ToastManager {}, DiscordRPCManager(), DesktopFileChooser()), config)
     }
 }
