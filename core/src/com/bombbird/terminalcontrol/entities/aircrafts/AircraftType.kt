@@ -1,6 +1,6 @@
 package com.bombbird.terminalcontrol.entities.aircrafts
 
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader.loadAircraftData
+import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadAircraftData
 
 object AircraftType {
     private val aircraftTypes = loadAircraftData()

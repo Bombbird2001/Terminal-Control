@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.weather.Metar
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.RenameManager.reverseNameAirportICAO
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody

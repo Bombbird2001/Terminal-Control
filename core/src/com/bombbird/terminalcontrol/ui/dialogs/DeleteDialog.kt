@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.utilities.Fonts
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 600) {
     var saveId = -1

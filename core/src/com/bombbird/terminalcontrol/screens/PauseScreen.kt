@@ -13,7 +13,7 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.categories.OtherSetti
 import com.bombbird.terminalcontrol.screens.upgradescreen.AchievementScreen
 import com.bombbird.terminalcontrol.screens.upgradescreen.UpgradeScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) : BasicScreen(game, 5760, 3240) {
     /** Loads the buttons for screen  */

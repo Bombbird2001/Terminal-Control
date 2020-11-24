@@ -22,7 +22,7 @@ import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.Fonts.defaultFont20
 import com.bombbird.terminalcontrol.utilities.Fonts.generateAllFonts
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 class MainMenuScreen(game: TerminalControl, private var background: Image?) : BasicScreen(game, 2880, 1620) {
     companion object {

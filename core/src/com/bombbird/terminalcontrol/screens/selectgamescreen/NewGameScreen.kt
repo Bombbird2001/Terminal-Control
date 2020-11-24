@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.isTCHXAv
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     init {
@@ -82,7 +82,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
         for (airport in airports) {
             val airportButton = TextButton(airport, buttonStyle)
             airportButton.name = airport.substring(0, 4)
-            airportButton.label.setWrap(true)
+            airportButton.label.wrap = true
             airportButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     val name = actor.name

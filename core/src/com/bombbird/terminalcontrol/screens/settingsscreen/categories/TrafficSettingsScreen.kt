@@ -16,7 +16,7 @@ import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import java.util.*
 
 class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, background: Image?) : SettingsTemplateScreen(game, radarScreen, background) {

@@ -15,8 +15,8 @@ import com.bombbird.terminalcontrol.ui.dialogs.DeleteDialog
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import org.json.JSONArray
 import org.json.JSONObject
 

@@ -3,8 +3,8 @@ package com.bombbird.terminalcontrol.entities.achievements
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import java.util.*
 
 object UnlockManager {

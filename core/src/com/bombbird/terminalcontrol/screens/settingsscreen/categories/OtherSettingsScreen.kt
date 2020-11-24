@@ -14,7 +14,7 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.WeatherScreen
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.*

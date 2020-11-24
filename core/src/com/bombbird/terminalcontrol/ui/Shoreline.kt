@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.math.MathTools.withinRange
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 object Shoreline {
     private var landmasses = Array<Array<Int>>()

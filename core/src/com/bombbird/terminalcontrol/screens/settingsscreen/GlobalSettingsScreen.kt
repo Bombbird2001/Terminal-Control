@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.Fonts
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class GlobalSettingsScreen(game: TerminalControl, background: Image?) : SettingsTemplateScreen(game, null, background) {
     private var sendCrash = false

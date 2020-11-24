@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.utilities.saving
+package com.bombbird.terminalcontrol.utilities.files
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -22,7 +22,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Revision
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader.getExtDir
+import com.bombbird.terminalcontrol.utilities.files.FileLoader.getExtDir
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.collections.HashMap

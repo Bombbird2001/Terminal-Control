@@ -17,8 +17,8 @@ import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
 import com.bombbird.terminalcontrol.utilities.ToastManager
-import com.bombbird.terminalcontrol.utilities.saving.FileLoader
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager) : Game() {
     companion object {

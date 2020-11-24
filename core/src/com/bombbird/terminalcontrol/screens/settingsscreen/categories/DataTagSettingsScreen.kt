@@ -12,7 +12,7 @@ import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
-import com.bombbird.terminalcontrol.utilities.saving.GameSaver
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, background: Image?) : SettingsTemplateScreen(game, radarScreen, background) {
     lateinit var dataTag: SelectBox<String>
