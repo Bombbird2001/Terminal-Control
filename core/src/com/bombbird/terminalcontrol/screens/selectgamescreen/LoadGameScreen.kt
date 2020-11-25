@@ -42,6 +42,22 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         stage.addActor(headerLabel)
     }
 
+    /** Overrides loadButton method in SelectGameScreen to load button for importing saves */
+    override fun loadButtons() {
+        super.loadButtons()
+
+        val importButton = TextButton("Import Save", buttonStyle)
+        importButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL)
+        importButton.setPosition(2880 - 350f, 1620 * 0.6f)
+        importButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                if (loadingLabel.isVisible) return
+                TerminalControl.externalFileChooser.openFileChooser(this@LoadGameScreen)
+            }
+        })
+        stage.addActor(importButton)
+    }
+
     /** Overrides loadScroll method in SelectGameScreen to load save info into scrollPane  */
     override fun loadScroll() {
         loadingLabel = Label("", labelStyle)
@@ -148,12 +164,12 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                     jsonObject.put("incompatible", true)
                     GameSaver.writeObjectToFile(jsonObject, jsonObject.getInt("saveId"))
                     //Show incompatible dialog
-                    object : CustomDialog("Game load error", "Sorry, this save is no longer\ncompatible with the game.", "", "Oh...") {}.show(newScreen.stage)
+                    CustomDialog("Game load error", "Sorry, this save is no longer\ncompatible with the game.", "", "Oh...").show(newScreen.stage)
                 } else {
                     //Load error, show error
                     if (jsonObject.optBoolean("errorSent", false)) {
                         //Error already sent
-                        object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!") {}.show(newScreen.stage)
+                        CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nYou have already sent the save file. Thank you!", "", "Ok!").show(newScreen.stage)
                     } else {
                         //Send save dialog
                         object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send", height = 600) {
@@ -215,6 +231,17 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         Gdx.app.postRunnable {
             loadingLabel.isVisible = false
             timer.clear()
+        }
+    }
+
+    /** Import save from input string */
+    fun importSave(string: String) {
+        Gdx.app.postRunnable {
+            if (string.isEmpty()) {
+                CustomDialog("Import failed", "Could not import save file", "", "Ok").show(stage)
+            } else {
+                CustomDialog("Import success", "Save has been imported", "", "Ok").show(stage)
+            }
         }
     }
 }

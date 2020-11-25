@@ -132,7 +132,6 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go to info screen
                 game.screen = InfoScreen(game, background)
-                TerminalControl.externalFileChooser.openFileChooser()
             }
         })
         stage.addActor(infoButton)
