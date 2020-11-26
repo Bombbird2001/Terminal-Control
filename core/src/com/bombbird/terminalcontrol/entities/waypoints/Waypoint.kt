@@ -50,12 +50,13 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
         restrLabel.setPosition(posX - restrLabel.width / 2, posY + 48.toFloat())
         restrLabel.setAlignment(Align.bottom)
         restrVisible = false
-        adjustPositions()
 
         //Set dist to go label
         distToGoLabel = Label("", labelStyle)
         distToGoLabel.setPosition(posX.toFloat(), posY - 44.toFloat())
         distToGoLabel.setAlignment(Align.bottom)
+
+        adjustPositions()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
