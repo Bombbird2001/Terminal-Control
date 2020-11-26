@@ -128,6 +128,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
 
     /** Called after file I/O is complete to display the loaded saves  */
     private fun loadSavedGamesUI(saves: JSONArray) {
+        scrollTable.clear()
         val label = Label("No saves found!", labelStyle)
         label.setPosition(2880 / 2.0f - label.width / 2.0f, 1620 * 0.5f)
         label.isVisible = false

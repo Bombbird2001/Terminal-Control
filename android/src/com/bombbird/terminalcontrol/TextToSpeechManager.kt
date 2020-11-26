@@ -31,7 +31,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
     }
 
     /** Performs relevant actions after receiving status for TTS data check   */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         try {
             if (requestCode == ACT_CHECK_TTS_DATA) {
                 if (resultCode == android.speech.tts.TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
