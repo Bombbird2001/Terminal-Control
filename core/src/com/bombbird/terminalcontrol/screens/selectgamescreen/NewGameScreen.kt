@@ -102,24 +102,8 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
                             break
                         }
                     }
-                    val handle1: FileHandle
-                    when (Gdx.app.type) {
-                        Application.ApplicationType.Android -> handle1 = Gdx.files.local("saves/saves.saves")
-                        Application.ApplicationType.Desktop -> handle1 = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves")
-                        else -> {
-                            handle1 = Gdx.files.local("saves/saves.saves")
-                            Gdx.app.log("File load error", "Unknown platform " + Gdx.app.type.name + " used!")
-                        }
-                    }
-                    var slot = 0
-                    if (handle1.exists()) {
-                        val saves = Array(handle1.readString().split(",".toRegex()).toTypedArray())
-                        while (saves.contains(slot.toString(), false)) {
-                            slot++
-                        }
-                    }
                     if (found && airac > -1) {
-                        val radarScreen = RadarScreen(game, name, airac, slot, false)
+                        val radarScreen = RadarScreen(game, name, airac, getNextAvailableSaveSlot(), false)
                         TerminalControl.radarScreen = radarScreen
                         game.screen = radarScreen
                     } else {

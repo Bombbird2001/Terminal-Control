@@ -1,7 +1,9 @@
 package com.bombbird.terminalcontrol.screens.selectgamescreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -9,10 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 open class SelectGameScreen(game: TerminalControl, val background: Image?) : BasicScreen(game, 2880, 1620) {
     val scrollTable: Table = Table()
@@ -80,5 +84,27 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
             //On android, emulate backButton is pressed
             backButton.toggle()
         }
+    }
+
+    /** Gets the next saveID that is available for a new game save, returns -1 if an error occurs */
+    fun getNextAvailableSaveSlot(): Int {
+        val handle1: FileHandle
+        when (Gdx.app.type) {
+            Application.ApplicationType.Android -> handle1 = Gdx.files.local("saves/saves.saves")
+            Application.ApplicationType.Desktop -> handle1 = Gdx.files.external(FileLoader.mainDir + "/saves/saves.saves")
+            else -> {
+                handle1 = Gdx.files.local("saves/saves.saves")
+                Gdx.app.log("File load error", "Unknown platform " + Gdx.app.type.name + " used!")
+            }
+        }
+        var slot = -1
+        if (handle1.exists()) {
+            slot = 0
+            val saves = Array(handle1.readString().split(",".toRegex()).toTypedArray())
+            while (saves.contains(slot.toString(), false)) {
+                slot++
+            }
+        }
+        return slot
     }
 }

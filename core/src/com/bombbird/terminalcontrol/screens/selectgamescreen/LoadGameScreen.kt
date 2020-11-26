@@ -1,26 +1,33 @@
 package com.bombbird.terminalcontrol.screens.selectgamescreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Base64Coder
 import com.badlogic.gdx.utils.Timer
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.ui.dialogs.DeleteDialog
+import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
+    private var mode = 0
+
     private val timer: Timer = Timer()
     private lateinit var loadingLabel: Label
 
@@ -52,10 +59,42 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         importButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (loadingLabel.isVisible) return
-                TerminalControl.externalFileChooser.openFileChooser(this@LoadGameScreen)
+                TerminalControl.externalFileHandler.openFileChooser(this@LoadGameScreen)
             }
         })
         stage.addActor(importButton)
+
+        val newButtonStyle = TextButton.TextButtonStyle()
+        newButtonStyle.font = Fonts.defaultFont12
+        newButtonStyle.fontColor = Color.WHITE
+        newButtonStyle.checked = TerminalControl.skin.getDrawable("Button_down")
+        newButtonStyle.up = TerminalControl.skin.getDrawable("Button_up")
+
+        val deleteButton = TextButton("Delete Save", newButtonStyle)
+        val exportButton = TextButton("Export Save", newButtonStyle)
+        exportButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL)
+        exportButton.setPosition(2880 - 350f, 1620 * 0.45f)
+        exportButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                mode = if (exportButton.isChecked) {
+                    deleteButton.isChecked = false
+                    1
+                } else 0
+            }
+        })
+        stage.addActor(exportButton)
+
+        deleteButton.setSize(350f, MainMenuScreen.BUTTON_HEIGHT_SMALL)
+        deleteButton.setPosition(2880 - 350f, 1620 * 0.3f)
+        deleteButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                mode = if (deleteButton.isChecked) {
+                    exportButton.isChecked = false
+                    2
+                } else 0
+            }
+        })
+        stage.addActor(deleteButton)
     }
 
     /** Overrides loadScroll method in SelectGameScreen to load save info into scrollPane  */
@@ -120,33 +159,38 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
             }
             saveButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
-                    var radarScreen: RadarScreen? = null
-                    try {
-                        radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
-                        TerminalControl.radarScreen = radarScreen
-                        game.screen = radarScreen
-                    } catch (e: Exception) {
-                        Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
+                    when (mode) {
+                        0 -> {
+                            var radarScreen: RadarScreen? = null
+                            try {
+                                radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
+                                TerminalControl.radarScreen = radarScreen
+                                game.screen = radarScreen
+                            } catch (e: Exception) {
+                                Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
+                            }
+                        }
+                        1 -> {
+                            //Export game
+                            TerminalControl.externalFileHandler.openFileSaver(jsonObject, this@LoadGameScreen)
+                        }
+                        2 -> {
+                            //Delete game - show dialog
+                            deleteDialog.show(stage, toDisplay, jsonObject.getInt("saveId"), scrollTable, saveButton, label)
+                        }
                     }
                     event.handle()
                 }
             })
             scrollTable.add(saveButton).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier)
-            val deleteButton = TextButton("Delete", buttonStyle)
-            deleteButton.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent, actor: Actor) {
-                    deleteDialog.show(stage, toDisplay, jsonObject.getInt("saveId"), scrollTable, deleteButton, saveButton, label)
-                }
-            })
-            scrollTable.add(deleteButton).width(MainMenuScreen.BUTTON_WIDTH * 0.4f).height(MainMenuScreen.BUTTON_HEIGHT * multiplier)
             scrollTable.row()
         }
         val scrollPane = ScrollPane(scrollTable)
         scrollPane.fadeScrollBars = true
         scrollPane.setupFadeScrollBars(1f, 1.5f)
-        scrollPane.x = 2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.8f
+        scrollPane.x = 2880 / 2f - MainMenuScreen.BUTTON_WIDTH * 0.6f
         scrollPane.y = 1620 * 0.2f
-        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 1.6f
+        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 1.2f
         scrollPane.height = 1620 * 0.6f
         stage.addActor(scrollPane)
     }
@@ -157,7 +201,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         val newScreen = MainMenuScreen(game, background)
         game.screen = newScreen
         radarScreen?.dispose()
-        Timer.schedule(object : Timer.Task() {
+        timer.scheduleTask(object : Timer.Task() {
             override fun run() {
                 if (e is IncompatibleSaveException) {
                     //Old save, set incompatible flag to true
@@ -237,11 +281,78 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
     /** Import save from input string */
     fun importSave(string: String) {
         Gdx.app.postRunnable {
-            if (string.isEmpty()) {
-                CustomDialog("Import failed", "Could not import save file", "", "Ok").show(stage)
-            } else {
-                CustomDialog("Import success", "Save has been imported", "", "Ok").show(stage)
+            var success = false
+            var save: JSONObject? = null
+            if (string.isNotEmpty()) {
+                try {
+                    val saveString = Base64Coder.decodeString(string)
+                    save = JSONObject(saveString)
+                    success = true
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    //ErrorHandler.sendSaveErrorNoThrow(e, saveString);
+                    TerminalControl.toastManager.jsonParseFail()
+                    Gdx.app.log("Corrupted save", "JSON parse failure")
+                } catch (e: IllegalArgumentException) {
+                    e.printStackTrace()
+                    //ErrorHandler.sendSaveErrorNoThrow(e, saveString);
+                    TerminalControl.toastManager.jsonParseFail()
+                    Gdx.app.log("Corrupted save", "Base64 decode failure")
+                }
             }
+            if (!success || save == null) {
+                CustomDialog("Import failed", "Could not import save - file may be corrupted", "", "Ok").show(stage)
+                return@postRunnable
+            }
+
+            //Now check the airport is valid
+            val icao = save.optString("MAIN_NAME", null)
+            if (!checkAirportAvailable(icao)) {
+                if (icao == "TCHX") CustomDialog("Import failed", "Airport TCHX has not been unlocked yet", "", "Ok").show(stage)
+                else CustomDialog("Import failed", "Airport $icao is available only in the full version", "", "Ok").show(stage)
+                return@postRunnable
+            }
+
+            //Get a save ID slot, update the JSONObject
+            val id = getNextAvailableSaveSlot()
+            if (id == -1) {
+                CustomDialog("Import failed", "Could not copy save", "", "Ok").show(stage)
+                return@postRunnable
+            }
+            save.put("saveId", id)
+
+            //Save the game
+            GameSaver.writeObjectToFile(save, id)
+
+            //Display success dialog
+            object : CustomDialog("Import success", "Save was imported successfully", "", "Ok") {
+                override fun result(resObj: Any?) {
+                    super.result(resObj)
+                    if (resObj == DIALOG_POSITIVE) {
+                        timer.scheduleTask(object : Timer.Task() {
+                            override fun run() {
+                                Gdx.app.postRunnable {
+                                    //And now request a reload of the page
+                                    loadUI()
+                                }
+                            }
+                        }, 0.45f)
+                    }
+                }
+            }.show(stage)
         }
+    }
+
+    /** Checks whether airport is available for the player */
+    private fun checkAirportAvailable(icao: String?): Boolean {
+        if (icao == "TCHX") return UnlockManager.isTCHXAvailable
+        if (TerminalControl.full) return arrayOf("TCTP", "TCWS", "TCTT", "TCHH", "TCBB", "TCBD", "TCMD", "TCPG").contains(icao)
+        return icao == "TCTP" || icao == "TCWS"
+    }
+
+    /** Shows dialog to notify user whether export was successful */
+    fun showExportMsg(success: Boolean) {
+        if (success) CustomDialog("Export success", "Save has been exported", "", "Ok").show(stage)
+        else CustomDialog("Export failed", "Save could not be exported", "", "Ok").show(stage)
     }
 }

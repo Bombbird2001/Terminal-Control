@@ -667,7 +667,6 @@ object GameSaver {
     }
 
     /** Saves the default settings  */
-
     fun saveSettings() {
         val handle = getExtDir("settings.json")
         if (handle != null) {

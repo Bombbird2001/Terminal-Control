@@ -7,13 +7,14 @@ import android.speech.tts.TextToSpeech
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.utilities.DiscordManager
-import com.bombbird.terminalcontrol.utilities.files.ExternalFileChooser
+import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 const val OPEN_SAVE_FILE = 9
 
-class AndroidLauncher : TextToSpeechManager(), ExternalFileChooser {
+class AndroidLauncher : TextToSpeechManager(), ExternalFileHandler {
     private var loadGameScreen: LoadGameScreen? = null
     //private PlayGamesManager playGamesManager;
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,12 +47,16 @@ class AndroidLauncher : TextToSpeechManager(), ExternalFileChooser {
         startActivityForResult(intent, OPEN_SAVE_FILE)
     }
 
+    override fun openFileSaver(save: JSONObject, loadGameScreen: LoadGameScreen) {
+        TODO("Not yet implemented")
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == OPEN_SAVE_FILE) {
             val uri = data.data
             if (uri == null) {
-                notifyGame("", loadGameScreen)
+                notifyLoaded("", loadGameScreen)
                 return
             }
             val inputStream = contentResolver.openInputStream(uri)
@@ -68,7 +73,7 @@ class AndroidLauncher : TextToSpeechManager(), ExternalFileChooser {
                 e.printStackTrace()
             }
             val strData = byteArrayOutputStream.toString()
-            notifyGame(strData, loadGameScreen)
+            notifyLoaded(strData, loadGameScreen)
             loadGameScreen = null
         }
     }

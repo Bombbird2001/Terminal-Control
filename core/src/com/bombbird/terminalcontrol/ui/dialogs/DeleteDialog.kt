@@ -13,7 +13,6 @@ import com.bombbird.terminalcontrol.utilities.files.GameSaver
 class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 600) {
     var saveId = -1
     var scrollTable: Table? = null
-    var deleteButton: TextButton? = null
     var saveButton: TextButton? = null
     var label: Label? = null
 
@@ -23,14 +22,11 @@ class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 
             //Delete save
             Gdx.app.postRunnable {
                 GameSaver.deleteSave(saveId)
-                val cell = scrollTable?.getCell(deleteButton)
-                val cell1 = scrollTable?.getCell(saveButton)
-                scrollTable?.removeActor(deleteButton)
+                val cell = scrollTable?.getCell(saveButton)
                 scrollTable?.removeActor(saveButton)
 
                 //Fix UI bug that may happen after deleting cells - set cell size to 0 rather than deleting them
                 cell?.size(cell.prefWidth, 0f)
-                cell1?.size(cell1.prefWidth, 0f)
                 scrollTable?.invalidate()
 
                 if (scrollTable?.hasChildren() != true) {
@@ -40,7 +36,7 @@ class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 
         }
     }
 
-    fun show(stage: Stage, saveInfo: String, saveId: Int, scrollTable: Table, deleteButton: TextButton, saveButton: TextButton, label: Label) {
+    fun show(stage: Stage, saveInfo: String, saveId: Int, scrollTable: Table, saveButton: TextButton, label: Label) {
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont12
         val display = Label("$saveInfo\nThis cannot be undone!", labelStyle)
@@ -49,7 +45,6 @@ class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 
 
         this.saveId = saveId
         this.scrollTable = scrollTable
-        this.deleteButton = deleteButton
         this.saveButton = saveButton
         this.label = label
 
@@ -64,7 +59,6 @@ class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 
                 Gdx.app.postRunnable {
                     saveId = -1
                     scrollTable = null
-                    deleteButton = null
                     saveButton = null
                     label = null
                     contentTable.clearChildren()

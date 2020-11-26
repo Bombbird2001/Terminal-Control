@@ -17,11 +17,11 @@ import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
 import com.bombbird.terminalcontrol.utilities.ToastManager
-import com.bombbird.terminalcontrol.utilities.files.ExternalFileChooser
+import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager, externalFileChooser: ExternalFileChooser) : Game() {
+class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -53,7 +53,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         lateinit var discordManager: DiscordManager
 
         //External file loader
-        lateinit var externalFileChooser: ExternalFileChooser
+        lateinit var externalFileHandler: ExternalFileHandler
 
         //Default settings
         var trajectorySel = 0
@@ -176,7 +176,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         Companion.tts = tts
         Companion.toastManager = toastManager
         Companion.discordManager = discordManager
-        Companion.externalFileChooser = externalFileChooser
+        Companion.externalFileHandler = externalFileHandler
         loadedDiscord = false
         useDiscord = false
     }
