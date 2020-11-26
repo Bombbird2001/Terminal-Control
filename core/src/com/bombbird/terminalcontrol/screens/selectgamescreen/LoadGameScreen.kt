@@ -27,8 +27,21 @@ import org.json.JSONObject
 
 class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     private var mode = 0
+        set(value) {
+            field = value
+            Gdx.app.postRunnable {
+                headerLabel.setText("Choose save to " +
+                when (value) {
+                    0 -> "load"
+                    1 -> "export"
+                    2 -> "delete"
+                    else -> "???"
+                } + ":")
+            }
+        }
 
     private val timer: Timer = Timer()
+    private lateinit var headerLabel: Label
     private lateinit var loadingLabel: Label
 
     val deleteDialog = DeleteDialog()
@@ -41,7 +54,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
     override fun loadLabel() {
         //Set label params
         super.loadLabel()
-        val headerLabel = Label("Choose save to load:", labelStyle)
+        headerLabel = Label("Choose save to load:", labelStyle)
         headerLabel.width = MainMenuScreen.BUTTON_WIDTH
         headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
