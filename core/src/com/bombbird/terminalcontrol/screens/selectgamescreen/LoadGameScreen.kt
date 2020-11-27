@@ -303,13 +303,9 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                     save = JSONObject(saveString)
                     success = true
                 } catch (e: JSONException) {
-                    e.printStackTrace()
-                    //ErrorHandler.sendSaveErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail()
                     Gdx.app.log("Corrupted save", "JSON parse failure")
                 } catch (e: IllegalArgumentException) {
-                    e.printStackTrace()
-                    //ErrorHandler.sendSaveErrorNoThrow(e, saveString);
                     TerminalControl.toastManager.jsonParseFail()
                     Gdx.app.log("Corrupted save", "Base64 decode failure")
                 }

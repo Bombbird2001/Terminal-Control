@@ -29,7 +29,7 @@ class DesktopFileHandler: ExternalFileHandler {
             }
             val fileChooser = JFileChooser()
             fileChooser.addChoosableFileFilter(FileNameExtensionFilter("Terminal Control saves (*.tcsav)", "tcsav"))
-            fileChooser.isAcceptAllFileFilterUsed = true
+            fileChooser.isAcceptAllFileFilterUsed = false
             jFrame = JFrame()
             jFrame?.isUndecorated = true
             jFrame?.isVisible = true
@@ -37,13 +37,17 @@ class DesktopFileHandler: ExternalFileHandler {
             val returnValue = fileChooser.showOpenDialog(jFrame)
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 val file = fileChooser.selectedFile
-                var strData = ""
-                try {
-                    strData = Gdx.files.absolute(file.absolutePath).readString()
-                } catch (e: GdxRuntimeException) {
-                    e.printStackTrace()
+                if (!file.absolutePath.endsWith(".tcsav")) {
+                    notifyFormat(loadGameScreen)
+                } else {
+                    var strData = ""
+                    try {
+                        strData = Gdx.files.absolute(file.absolutePath).readString()
+                    } catch (e: GdxRuntimeException) {
+                        e.printStackTrace()
+                    }
+                    notifyLoaded(strData, loadGameScreen)
                 }
-                notifyLoaded(strData, loadGameScreen)
             }
             jFrame?.dispatchEvent(WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING))
             jFrame = null
@@ -75,7 +79,7 @@ class DesktopFileHandler: ExternalFileHandler {
                 }
             }
             fileChooser.addChoosableFileFilter(FileNameExtensionFilter("Terminal Control saves (*.tcsav)", "tcsav"))
-            fileChooser.isAcceptAllFileFilterUsed = true
+            fileChooser.isAcceptAllFileFilterUsed = false
             jFrame = JFrame()
             jFrame?.isUndecorated = true
             jFrame?.isVisible = true
@@ -84,7 +88,9 @@ class DesktopFileHandler: ExternalFileHandler {
                 JFileChooser.APPROVE_OPTION -> {
                     try {
                         val encode = Base64Coder.encodeString(save.toString())
-                        Gdx.files.absolute(fileChooser.selectedFile.absolutePath).writeString(encode, false)
+                        var path = fileChooser.selectedFile.absolutePath
+                        if (!path.endsWith(".tcsav")) path += ".tcsav"
+                        Gdx.files.absolute(path).writeString(encode, false)
                         notifySaved(true, loadGameScreen)
                     } catch (e: GdxRuntimeException) {
                         notifySaved(false, loadGameScreen)
