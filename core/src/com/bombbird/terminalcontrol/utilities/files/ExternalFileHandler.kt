@@ -15,4 +15,8 @@ interface ExternalFileHandler {
     fun notifySaved(success: Boolean, loadGameScreen: LoadGameScreen?) {
         loadGameScreen?.showExportMsg(success)
     }
+
+    fun notifyFormat(loadGameScreen: LoadGameScreen?) {
+        loadGameScreen?.showFileTypeMsg()
+    }
 }

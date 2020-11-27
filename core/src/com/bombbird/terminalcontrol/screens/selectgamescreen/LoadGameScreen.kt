@@ -369,4 +369,9 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
         if (success) CustomDialog("Export success", "Save has been exported", "", "Ok").show(stage)
         else CustomDialog("Export failed", "Save could not be exported", "", "Ok").show(stage)
     }
+
+    /** Show dialog to notify user of incorrect file type */
+    fun showFileTypeMsg() {
+        CustomDialog("Invalid file type", "File must end with .tcsav", "", "Ok").show(stage)
+    }
 }

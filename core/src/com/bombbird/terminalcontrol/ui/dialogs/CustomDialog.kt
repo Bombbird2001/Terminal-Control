@@ -17,6 +17,7 @@ open class CustomDialog(title: String, val text: String, var negative: String, v
     init {
         titleLabel.setAlignment(Align.top)
         buttonTable.defaults().width(500f).height(160f).padLeft(30f).padRight(30f)
+        isMovable = false
         initialize()
     }
 

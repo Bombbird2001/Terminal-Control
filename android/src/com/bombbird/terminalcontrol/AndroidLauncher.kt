@@ -69,6 +69,11 @@ class AndroidLauncher : TextToSpeechManager(), ExternalFileHandler {
             val uri = data.data
             if (uri == null) {
                 notifyLoaded("", loadGameScreen)
+                loadGameScreen = null
+                return
+            } else if (uri.path?.endsWith(".tcsav") != true) {
+                notifyFormat(loadGameScreen)
+                loadGameScreen = null
                 return
             }
             val inputStream = contentResolver.openInputStream(uri)
@@ -92,6 +97,13 @@ class AndroidLauncher : TextToSpeechManager(), ExternalFileHandler {
             val uri = data.data
             if (uri == null) {
                 notifySaved(false, loadGameScreen)
+                loadGameScreen = null
+                save = null
+                return
+            } else if (uri.path?.endsWith(".tcsav") != true) {
+                notifyFormat(loadGameScreen)
+                loadGameScreen = null
+                save = null
                 return
             }
             uri.path?.let {
