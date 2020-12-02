@@ -21,7 +21,7 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         val displayButton = TextButton("Display", buttonStyle)
-        displayButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        displayButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         displayButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH - 100, 1620 * 0.65f)
         displayButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -31,7 +31,7 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
 
         if (radarScreen == null || !radarScreen.tutorial) stage.addActor(displayButton)
         val dataTagButton = TextButton("Data tag", buttonStyle)
-        dataTagButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        dataTagButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         dataTagButton.setPosition(2880 / 2.0f + 100, 1620 * 0.65f)
         dataTagButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -41,7 +41,7 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
 
         if (radarScreen == null || !radarScreen.tutorial) stage.addActor(dataTagButton)
         val trafficButton = TextButton("Traffic", buttonStyle)
-        trafficButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        trafficButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         trafficButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH - 100, 1620 * 0.5f)
         trafficButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -51,7 +51,7 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
 
         if (radarScreen == null || !radarScreen.tutorial) stage.addActor(trafficButton)
         val othersButton = TextButton("Others", buttonStyle)
-        othersButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        othersButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         othersButton.setPosition(2880 / 2.0f + 100, 1620 * 0.5f)
         othersButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -61,7 +61,7 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
 
         stage.addActor(othersButton)
         val alertsButton = TextButton("Alerts", buttonStyle)
-        alertsButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        alertsButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         alertsButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH - 100, 1620 * 0.35f)
         alertsButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -79,8 +79,8 @@ class CategorySelectScreen(game: TerminalControl, background: Image?, val radarS
 
         //Set back button params
         backButton = TextButton("<= Back", buttonStyle1)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        backButton.width = MainMenuScreen.BUTTON_WIDTH
+        backButton.height = MainMenuScreen.BUTTON_HEIGHT
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {

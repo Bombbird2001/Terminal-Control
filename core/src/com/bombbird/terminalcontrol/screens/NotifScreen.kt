@@ -59,17 +59,7 @@ class NotifScreen(game: TerminalControl, background: Image?) : StandardUIScreen(
 
     /** Loads the default button styles and back button  */
     override fun loadButtons() {
-        //Set button textures
-        val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.font = Fonts.defaultFont12
-        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
-        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
-
-        //Set back button params
-        backButton = TextButton("Ok!", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
-        backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
+        removeDefaultBackButtonChangeListener()
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go back to main menu
@@ -78,7 +68,6 @@ class NotifScreen(game: TerminalControl, background: Image?) : StandardUIScreen(
             }
         })
         backButton.isVisible = false
-        stage.addActor(backButton)
         timer.scheduleTask(object : Timer.Task() {
             override fun run() {
                 Gdx.app.postRunnable { backButton.isVisible = true }

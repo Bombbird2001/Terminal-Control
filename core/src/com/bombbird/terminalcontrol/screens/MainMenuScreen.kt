@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.loadStats
+import com.bombbird.terminalcontrol.screens.informationscreen.InfoScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen

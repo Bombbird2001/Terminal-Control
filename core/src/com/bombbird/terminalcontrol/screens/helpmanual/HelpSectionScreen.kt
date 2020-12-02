@@ -40,17 +40,8 @@ class HelpSectionScreen(game: TerminalControl, background: Image?, private val p
 
     /** Loads the default button styles and back button  */
     override fun loadButtons() {
-        //Set button textures
-        val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.font = Fonts.defaultFont12
-        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
-        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
-
-        //Set back button params
-        backButton = TextButton("<= Back", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
-        backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
+        super.loadButtons()
+        removeDefaultBackButtonChangeListener()
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go back to main menu
@@ -61,6 +52,5 @@ class HelpSectionScreen(game: TerminalControl, background: Image?, private val p
                 }
             }
         })
-        stage.addActor(backButton)
     }
 }

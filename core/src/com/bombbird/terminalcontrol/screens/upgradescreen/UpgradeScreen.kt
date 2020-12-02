@@ -28,17 +28,7 @@ open class UpgradeScreen(game: TerminalControl, background: Image?) : StandardUI
 
     /** Loads back button  */
     override fun loadButtons() {
-        //Set button textures
-        val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.font = Fonts.defaultFont12
-        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
-        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
-
-        //Set back button params
-        backButton = TextButton("<= Back", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
-        backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
+        removeDefaultBackButtonChangeListener()
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go back to main menu
@@ -50,7 +40,6 @@ open class UpgradeScreen(game: TerminalControl, background: Image?) : StandardUI
                 }
             }
         })
-        stage.addActor(backButton)
     }
 
     /** Loads the appropriate title for label  */

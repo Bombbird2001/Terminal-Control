@@ -29,8 +29,8 @@ open class StandardUIScreen(game: TerminalControl, val background: Image?) : Bas
         labelStyle.font = Fonts.defaultFont20
         labelStyle.fontColor = Color.WHITE
         val headerLabel = Label(header, labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -46,8 +46,8 @@ open class StandardUIScreen(game: TerminalControl, val background: Image?) : Bas
 
         //Set back button params
         backButton = TextButton("<= Back", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        backButton.width = MainMenuScreen.BUTTON_WIDTH
+        backButton.height = MainMenuScreen.BUTTON_HEIGHT
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -56,6 +56,13 @@ open class StandardUIScreen(game: TerminalControl, val background: Image?) : Bas
             }
         })
         stage.addActor(backButton)
+    }
+
+    /** Removes the default change listener added for going back to main menu screen */
+    fun removeDefaultBackButtonChangeListener() {
+        for (listener in backButton.listeners) {
+            if (listener is ChangeListener) backButton.removeListener(listener)
+        }
     }
 
     /** Overrides render method to include detection of back button on android  */
