@@ -145,7 +145,7 @@ object HelpManager {
         labelStyle.fontColor = Color.WHITE
         labelStyle.font = Fonts.defaultFont12
         val label = Label(msg, labelStyle)
-        label.setWrap(true)
+        label.wrap = true
         label.width = MainMenuScreen.BUTTON_WIDTH * 2f - 20
         table.add(label).width(MainMenuScreen.BUTTON_WIDTH * 2f - 20).pad(15f, 10f, 15f, 0f)
         table.row()
