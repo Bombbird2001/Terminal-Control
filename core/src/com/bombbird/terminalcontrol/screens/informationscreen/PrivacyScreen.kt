@@ -35,13 +35,14 @@ class PrivacyScreen(game: TerminalControl, background: Image?) : StandardUIScree
             Date, time of error occurrence
             Crash logs
             
-            The following data are sent to our server for diagnosis:
+            The following data are sent to our server for diagnosis, if you enable sending of anonymous crash reports:
             Game version
             Date, time of error occurrence
             Crash logs
+            Game save data (if you choose to send it)
             """.trimIndent(), labelStyle)
         privacy.setAlignment(Align.center)
-        privacy.setPosition(1440f - privacy.width / 2, 450f)
+        privacy.setPosition(1440f - privacy.width / 2, 1400f - privacy.height)
         stage.addActor(privacy)
     }
 
