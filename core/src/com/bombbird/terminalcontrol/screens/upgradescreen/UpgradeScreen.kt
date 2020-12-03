@@ -28,6 +28,7 @@ open class UpgradeScreen(game: TerminalControl, background: Image?) : StandardUI
 
     /** Loads back button  */
     override fun loadButtons() {
+        super.loadButtons()
         removeDefaultBackButtonChangeListener()
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -86,7 +87,7 @@ open class UpgradeScreen(game: TerminalControl, background: Image?) : StandardUI
                 ${UnlockManager.unlockDescription[key]}
                 
                 """.trimIndent(), labelStyle)
-            label.setWrap(true)
+            label.wrap = true
             label.setAlignment(Align.center)
             scrollTable.add(label).width(MainMenuScreen.BUTTON_WIDTH * 1.1f)
             //Layout twice to set correct width & height

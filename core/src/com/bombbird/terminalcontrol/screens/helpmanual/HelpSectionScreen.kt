@@ -4,14 +4,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.StandardUIScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.AirportHelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
-import com.bombbird.terminalcontrol.utilities.Fonts
 
 class HelpSectionScreen(game: TerminalControl, background: Image?, private val page: String) : StandardUIScreen(game, background) {
     private val scrollTable: Table = Table()

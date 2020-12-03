@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Timer
@@ -51,7 +50,7 @@ class NotifScreen(game: TerminalControl, background: Image?) : StandardUIScreen(
             
             ${notifArray[TerminalControl.LATEST_REVISION - 1]}
             """.trimIndent(), labelStyle)
-        notif.setWrap(true)
+        notif.wrap = true
         notif.width = 2000f
         notif.setPosition(1465 - notif.width / 2f, 800f)
         stage.addActor(notif)
@@ -59,6 +58,7 @@ class NotifScreen(game: TerminalControl, background: Image?) : StandardUIScreen(
 
     /** Loads the default button styles and back button  */
     override fun loadButtons() {
+        super.loadButtons()
         removeDefaultBackButtonChangeListener()
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {

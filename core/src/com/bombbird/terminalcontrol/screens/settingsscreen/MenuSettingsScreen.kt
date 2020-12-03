@@ -20,7 +20,7 @@ class MenuSettingsScreen(game: TerminalControl, background: Image?) : StandardUI
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         val gameSettingsButton = TextButton("Default game settings", buttonStyle)
-        gameSettingsButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        gameSettingsButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         gameSettingsButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.65f)
         gameSettingsButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -29,7 +29,7 @@ class MenuSettingsScreen(game: TerminalControl, background: Image?) : StandardUI
         })
         stage.addActor(gameSettingsButton)
         val globalSettingsButton = TextButton("Global settings", buttonStyle)
-        globalSettingsButton.setSize(MainMenuScreen.BUTTON_WIDTH.toFloat(), MainMenuScreen.BUTTON_HEIGHT.toFloat())
+        globalSettingsButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
         globalSettingsButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.5f)
         globalSettingsButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
