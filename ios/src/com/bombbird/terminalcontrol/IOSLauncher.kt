@@ -10,7 +10,8 @@ import org.robovm.apple.uikit.UIApplication
 class IOSLauncher : IOSApplication.Delegate() {
     override fun createApplication(): IOSApplication {
         val config = IOSApplicationConfiguration()
-        return IOSApplication(TerminalControl(TextToSpeechManager(), object : ToastManager {}, object : DiscordManager {}), config)
+        return IOSApplication(TerminalControl(
+            TextToSpeechManager(), object : ToastManager {}, object : DiscordManager {}, IOSFileHandler()), config)
     }
 
     companion object {
