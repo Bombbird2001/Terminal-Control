@@ -72,6 +72,12 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.4.2013.1
+        val content17 = Array<String>()
+        content17.add("-UI: Added importing, exporting of game saves to allow transfer of game progress across devices")
+        content17.add("-Bug fixes, optimisations")
+        changeLogContent["1.4.2013.1"] = content17
+
         //Version 1.4.2012.2
         val content16 = Array<String>()
         if (Gdx.app.type == Application.ApplicationType.Android) content16.add("-UI: Added distance measuring tool - switch to \"Dist mode\" and measure the distance between 2 points with 2 fingers")
