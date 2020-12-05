@@ -31,7 +31,7 @@ class OpenSourceScreen(game: TerminalControl, background: Image?) : StandardUISc
             Open Sans font - Apache License 2.0
             JSON In Java - JSON License
             """.trimIndent(), labelStyle)
-        licenses.setPosition(1440 - licenses.width / 2f, 1100f)
+        licenses.setPosition(1440 - licenses.width / 2f, 700f)
         stage.addActor(licenses)
     }
 
