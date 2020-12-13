@@ -28,6 +28,7 @@ import com.bombbird.terminalcontrol.entities.obstacles.Obstacle
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.separation.AreaPenetrationChecker
 import com.bombbird.terminalcontrol.entities.separation.CollisionChecker
+import com.bombbird.terminalcontrol.entities.separation.HandoverController
 import com.bombbird.terminalcontrol.entities.separation.SeparationChecker
 import com.bombbird.terminalcontrol.entities.separation.trajectory.TrajectoryStorage
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
@@ -94,8 +95,8 @@ class RadarScreen : GameScreen {
     var nightEnd: Int
     var radarSweepDelay = 0f
     var advTraj = 0
-    var areaWarning = 0
-    var collisionWarning = 0
+    var areaWarning = -1
+    var collisionWarning = -1
     var showMva = false
     var showIlsDash = false
     var compactData = false
@@ -173,6 +174,7 @@ class RadarScreen : GameScreen {
     lateinit var trajectoryStorage: TrajectoryStorage
     lateinit var areaPenetrationChecker: AreaPenetrationChecker
     lateinit var collisionChecker: CollisionChecker
+    lateinit var handoverController: HandoverController
 
     //Wake turbulence checker
     var wakeManager: WakeManager
@@ -549,6 +551,7 @@ class RadarScreen : GameScreen {
         trajectoryStorage = TrajectoryStorage()
         areaPenetrationChecker = AreaPenetrationChecker()
         collisionChecker = CollisionChecker()
+        handoverController = HandoverController()
 
         //Load waypoint manager
         waypointManager = WaypointManager()

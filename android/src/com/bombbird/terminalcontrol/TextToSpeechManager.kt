@@ -291,7 +291,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
     override fun getRandomVoice(): String {
         try {
             if (tts?.voices?.isEmpty() != false) return ""
-        } catch (e: NullPointerException) {
+        } catch (e: Exception) {
             return ""
         }
         val voices = Array<String>()

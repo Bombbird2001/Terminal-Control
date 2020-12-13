@@ -20,12 +20,11 @@ class Trajectory(private val aircraft: Aircraft) {
     val positionPoints: Array<PositionPoint> = Array()
     val radarScreen = TerminalControl.radarScreen!!
 
-    /** Calculates trajectory of aircraft, adds points to array  */
-    fun calculateTrajectory() {
+    /** Calculates trajectory of aircraft */
+    fun getTrajectory(customTargetAlt: Int = -1): Array<PositionPoint> {
         //Calculate simple linear trajectory, plus arc if aircraft is turning > 5 degrees
-        var requiredTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning)
-        requiredTime = requiredTime.coerceAtLeast(radarScreen.advTraj)
-        positionPoints.clear()
+        val pointList = Array<PositionPoint>()
+        val requiredTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(60)
         val targetHeading = aircraft.heading.toFloat() + deltaHeading
         var windSpd: Int = aircraft.winds[1]
         val windHdg: Int = aircraft.winds[0]
@@ -86,7 +85,7 @@ class Trajectory(private val aircraft: Aircraft) {
                     straightVector.rotateDeg(-prevTargetTrack)
                     prevPos.add(straightVector)
                 }
-                positionPoints.add(PositionPoint(aircraft, prevPos.x, prevPos.y, 0))
+                pointList.add(PositionPoint(aircraft, prevPos.x, prevPos.y, 0))
                 i += INTERVAL
             }
         } else {
@@ -94,14 +93,14 @@ class Trajectory(private val aircraft: Aircraft) {
             while (i <= requiredTime) {
                 val trackVector = Vector2(0f, nmToPixel(i * aircraft.gs / 3600))
                 trackVector.rotateDeg(if (aircraft.isOnGround) -(aircraft.runway?.heading ?: 0) + radarScreen.magHdgDev else -targetTrack)
-                positionPoints.add(PositionPoint(aircraft, aircraft.x + trackVector.x, aircraft.y + trackVector.y, 0))
+                pointList.add(PositionPoint(aircraft, aircraft.x + trackVector.x, aircraft.y + trackVector.y, 0))
                 i += INTERVAL
             }
         }
         var index = 1
-        for (positionPoint in positionPoints) {
+        for (positionPoint in pointList) {
             val time = index * INTERVAL //Time from now in seconds
-            var targetAlt: Float = aircraft.targetAltitude.toFloat()
+            var targetAlt: Float = if (customTargetAlt == -1) aircraft.targetAltitude.toFloat() else customTargetAlt.toFloat()
             if (aircraft.isGsCap) targetAlt = -100f
             if (aircraft.altitude > targetAlt) {
                 //Descending
@@ -112,8 +111,16 @@ class Trajectory(private val aircraft: Aircraft) {
             }
             index++
         }
+        return pointList
     }
 
+    /** Calculates and then stores the new trajectory point list */
+    fun updateTrajectory() {
+        positionPoints.clear()
+        positionPoints.addAll(getTrajectory())
+    }
+
+    /** Draws the orange trajectory points on the screen when aircraft is selected */
     fun renderPoints() {
         if (!aircraft.isSelected) return
         radarScreen.shapeRenderer.color = Color.ORANGE

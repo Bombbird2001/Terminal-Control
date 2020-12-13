@@ -14,8 +14,10 @@ import kotlin.math.abs
 
 class CollisionChecker {
     private val radarScreen = TerminalControl.radarScreen!!
-    private val aircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
-    private val pointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
+    val aircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
+    val handoverAircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
+    val pointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
+    val handoverPointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
 
     /** Checks separation between trajectory points of same timing  */
     fun checkSeparation() {
@@ -23,9 +25,11 @@ class CollisionChecker {
             aircraft.isTrajectoryConflict = false
         }
         aircraftStorage.clear()
+        handoverAircraftStorage.clear()
         pointStorage.clear()
+        handoverPointStorage.clear()
         var a = Trajectory.INTERVAL
-        while (a <= radarScreen.collisionWarning) {
+        while (a <= radarScreen.collisionWarning.coerceAtLeast(60)) {
             val altitudePositionMatrix = radarScreen.trajectoryStorage.points[a / 5 - 1]
             //Check for each separate timing
             for (i in 0 until altitudePositionMatrix.size) {
@@ -98,7 +102,7 @@ class CollisionChecker {
                             //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm (using 1.85 so effective is 2.05)
                             minima = 1.85f
                         }
-                        if (abs(point1.altitude - point2.altitude) < 990 && dist < minima + 0.2f) {
+                        if (a <= radarScreen.collisionWarning && abs(point1.altitude - point2.altitude) < 990 && dist < minima + 0.2f) {
                             //Possible conflict, add to save arrays
                             aircraftStorage.add(arrayOf(aircraft1, aircraft2))
                             pointStorage.add(arrayOf(point1, point2))
@@ -106,6 +110,11 @@ class CollisionChecker {
                             aircraft2.isTrajectoryConflict = true
                             aircraft1.dataTag.startFlash()
                             aircraft2.dataTag.startFlash()
+                        }
+                        if (abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f) {
+                            //Conflict to handle, add to handover save arrays
+                            handoverAircraftStorage.add(arrayOf(aircraft1, aircraft2))
+                            handoverPointStorage.add(arrayOf(point1, point2))
                         }
                     }
                 }

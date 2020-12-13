@@ -45,6 +45,8 @@ object GameLoader {
 
         radarScreen.playTime = save.optDouble("playTime", estimatePlayTime(radarScreen).toDouble()).toFloat()
 
+        radarScreen.handoverController.loadSaveData(save.optJSONObject("handoverController"))
+
         //GameSaver.saveGame();
     }
 

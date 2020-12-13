@@ -9,11 +9,17 @@ class TrajectoryStorage {
     private val radarScreen = TerminalControl.radarScreen!!
     private var timer: Float
 
+    init {
+        val requiredSize = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(60) / Trajectory.INTERVAL
+        points = Array(true, requiredSize)
+        resetStorage()
+        timer = 2.5f
+    }
+
     /** Clears the storage before updating with new points  */
     private fun resetStorage() {
         points.clear()
-        var maxTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning)
-        maxTime = maxTime.coerceAtLeast(radarScreen.advTraj)
+        val maxTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(60)
         for (j in 0 until maxTime / Trajectory.INTERVAL) {
             val altitudePositionMatrix = Array<Array<PositionPoint>>()
             for (i in 0 until radarScreen.maxAlt / 1000) {
@@ -31,25 +37,22 @@ class TrajectoryStorage {
         updateTrajPoints()
         radarScreen.areaPenetrationChecker.checkSeparation()
         radarScreen.collisionChecker.checkSeparation()
+
+        //AI controller to prevent conflict between aircraft handed over to centre
+        radarScreen.handoverController.checkExistingConflicts()
+        radarScreen.handoverController.resolveExistingConflict()
     }
 
     /** Calculates trajectory for all aircraft, updates points array with new trajectory points  */
     private fun updateTrajPoints() {
         resetStorage()
         for (aircraft in radarScreen.aircrafts.values) {
-            aircraft.trajectory.calculateTrajectory()
+            aircraft.trajectory.updateTrajectory()
             for ((timeIndex, positionPoint) in aircraft.trajectory.positionPoints.withIndex()) {
                 if (positionPoint.altitude / 1000 < radarScreen.maxAlt / 1000) {
                     points[timeIndex][positionPoint.altitude / 1000].add(positionPoint)
                 }
             }
         }
-    }
-
-    init {
-        val requiredSize = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj) / Trajectory.INTERVAL
-        points = Array(true, requiredSize)
-        resetStorage()
-        timer = 2.5f
     }
 }

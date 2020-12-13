@@ -616,7 +616,7 @@ abstract class Aircraft : Actor {
             targetHeading = info[0]
             updateHeading(targetHeading)
             updatePosition(info[1])
-            updateAltitude(holdAlt = false, fixedVs = false)
+            updateAltitude()
             updateSpd()
             if (isGoAround) {
                 updateGoAround()
@@ -700,7 +700,7 @@ abstract class Aircraft : Actor {
             return if (!isExpedite) floatArrayOf(-typDes * multiplier, typClimb * multiplier) else floatArrayOf(-maxDes * multiplier, maxClimb * multiplier)
         }
 
-    open fun updateAltitude(holdAlt: Boolean, fixedVs: Boolean) {
+    open fun updateAltitude(holdAlt: Boolean = false, fixedVs: Boolean = false) {
         var targetVertSpd = 0f
         if (!holdAlt) targetVertSpd = (targetAltitude - altitude) / 0.1f
         if (fixedVs) targetVertSpd = verticalSpeed

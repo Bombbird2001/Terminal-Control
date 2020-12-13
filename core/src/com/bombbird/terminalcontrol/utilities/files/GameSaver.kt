@@ -562,6 +562,28 @@ object GameSaver {
                 }
             }
             airportInfo.put("backupPts", backupPts)
+
+            //HandoverController
+            val handover = JSONObject()
+            val aircraftArray = JSONArray()
+            for (aircraftList in radarScreen.handoverController.aircraftList) {
+                val list = JSONArray()
+                list.put(aircraftList[0].callsign)
+                list.put(aircraftList[1].callsign)
+                aircraftArray.put(list)
+            }
+            handover.put("aircraftList", aircraftArray)
+
+            val targetAltArray = JSONArray()
+            for (targetList in radarScreen.handoverController.targetAltitudeList) {
+                val list = JSONArray()
+                list.put(targetList[0])
+                list.put(targetList[1])
+                targetAltArray.put(list)
+            }
+            handover.put("targetAltitudeList", targetAltArray)
+            airportInfo.put("handoverController", handover)
+
             airports.put(airportInfo)
         }
         return airports
