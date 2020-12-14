@@ -5,6 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
+import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 import org.json.JSONObject
 import kotlin.math.abs
@@ -14,7 +15,7 @@ import kotlin.math.floor
 class HandoverController {
     private val radarScreen = TerminalControl.radarScreen!!
     val aircraftList = Array<kotlin.Array<Aircraft>>()
-    val targetAltitudeList = Array<kotlin.Array<Int>>()
+    val targetAltitudeList = HashMap<String, Int>()
 
     /** Re-clear altitude for conflicts that has not been resolved */
     fun resolveExistingConflict() {
@@ -40,11 +41,11 @@ class HandoverController {
 
             //Store aircraft's cleared altitude prior to modification
             aircraftList.add(arrayOf(acft1, acft2))
-            targetAltitudeList.add(arrayOf(acft1.clearedAltitude, acft2.clearedAltitude))
+            targetAltitudeList[acft1.callsign] = acft1.clearedAltitude
+            targetAltitudeList[acft2.callsign] = acft2.clearedAltitude
 
             //Only modify cleared altitude if aircraft is not under your control, and is under centre control (not tower)
-            //when ((acft1.controlState == Aircraft.ControlState.UNCONTROLLED && acft1.altitude > radarScreen.maxAlt - 4000) || (acft2.controlState == Aircraft.ControlState.UNCONTROLLED && acft2.altitude > radarScreen.maxAlt - 4000)) { TODO remove
-            when (acft1.callsign == "AHK11" || acft2.callsign == "AHK11") {
+            when ((acft1.controlState == Aircraft.ControlState.UNCONTROLLED && acft1.altitude > radarScreen.maxAlt - 4000) || (acft2.controlState == Aircraft.ControlState.UNCONTROLLED && acft2.altitude > radarScreen.maxAlt - 4000)) {
                 acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude -> {
                     //Case 1: 1st aircraft is descending from above, 2nd aircraft climbing from below
                     updateAIAltitude(acft1, ceil(avgAlt / 1000).toInt() * 1000)
@@ -81,52 +82,99 @@ class HandoverController {
 
     /** Check whether existing conflicts that are already handled can be cleared back to their target altitude */
     fun checkExistingConflicts() {
-        val toRemove = Array<kotlin.Array<Aircraft>>()
-        val toRemove2 = Array<kotlin.Array<Int>>()
-        for (iterableIndex in aircraftList.withIndex()) {
-            val index = iterableIndex.index
+        for (iterableIndex in Array(aircraftList).withIndex()) {
             val aircraftArray = iterableIndex.value
-            val altArray = targetAltitudeList[index]
             val acft1 = aircraftArray[0]
             val acft2 = aircraftArray[1]
-            val acft1Target = altArray[0]
-            val acft2Target = altArray[1]
-            //if (acft1.isArrivalDeparture && acft2.isArrivalDeparture) continue TODO remove
+            val acft1Target = targetAltitudeList[acft1.callsign] ?: acft1.targetAltitude
+            val acft2Target = targetAltitudeList[acft2.callsign] ?: acft2.targetAltitude
+            if (acft1.isArrivalDeparture && acft2.isArrivalDeparture) continue
             val traj1 = acft1.trajectory.getTrajectory(if (acft1.isArrivalDeparture) -1 else acft1Target)
             val traj2 = acft2.trajectory.getTrajectory(if (acft2.isArrivalDeparture) -1 else acft2Target)
 
             //Test if the 2 aircraft will be in conflict if re-cleared to original target altitude
-            var stillConflict = false
-            for (i in 0 until 12.coerceAtMost(traj1.size).coerceAtMost(traj2.size)) {
-                val point1 = traj1[i]
-                val point2 = traj2[i]
-                val dist = MathTools.pixelToNm(MathTools.distanceBetween(point1.x, point1.y, point2.x, point2.y))
-                val minima = radarScreen.separationMinima.toFloat()
-                if (abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f) {
-                    //Possible conflict, don't change cleared altitude for now
-                    stillConflict = true
+            if (checkTrajectoryConflict(traj1, traj2) != -1) continue
+
+            //If no more conflict between these 2, check for further clearance
+            checkClearToTarget(acft1, acft1Target)
+            checkClearToTarget(acft2, acft2Target)
+            aircraftList.removeValue(aircraftArray, false)
+        }
+    }
+
+    /** Checks and clears the aircraft to a further altitude */
+    private fun checkClearToTarget(aircraft: Aircraft, targetAlt: Int) {
+        val newTarget = checkOtherConflict(aircraft, targetAlt)
+        updateAIAltitude(aircraft, newTarget)
+    }
+
+    /** Checks and clears all aircraft still in the targetAltitudeList */
+    fun checkClearAllTargets() {
+        val copy = HashMap(targetAltitudeList)
+        for ((callsign, alt) in copy) {
+            val aircraft = radarScreen.aircrafts[callsign] ?: continue
+            var found = false
+            for (list in aircraftList) {
+                if (list.contains(aircraft)) {
+                    found = true
                     break
                 }
             }
-            if (stillConflict) continue
-
-            //If no conflict, can clear to original target altitude
-            updateAIAltitude(acft1, acft1Target)
-            updateAIAltitude(acft2, acft2Target)
-
-            toRemove.add(aircraftArray)
-            toRemove2.add(altArray)
+            if (found) continue
+            checkClearToTarget(aircraft, alt)
         }
-
-        for (item in toRemove) aircraftList.removeValue(item, false)
-        for (item in toRemove2) targetAltitudeList.removeValue(item, false)
     }
 
     /** Updates the cleared altitude after checking that aircraft is being controlled by centre */
     private fun updateAIAltitude(aircraft: Aircraft, newAlt: Int) {
-        //if (aircraft.isArrivalDeparture || aircraft.altitude < radarScreen.maxAlt - 4000) return TODO remove
+        if (aircraft.isArrivalDeparture || aircraft.altitude < radarScreen.maxAlt - 4000) return
         aircraft.updateClearedAltitude(newAlt)
         aircraft.navState.replaceAllClearedAlt()
+
+        //Remove from targetAltitudeList if cleared to the target altitude
+        if (newAlt == targetAltitudeList[aircraft.callsign]) targetAltitudeList.remove(aircraft.callsign)
+    }
+
+    /** Returns the most suitable altitude to be cleared to */
+    private fun checkOtherConflict(aircraft: Aircraft, targetAlt: Int): Int {
+        val climbing = targetAlt > aircraft.altitude
+        if (climbing) {
+            for (alt in targetAlt downTo radarScreen.minAlt step 1000) {
+                if (!checkConflictToAlt(aircraft, alt)) return alt
+            }
+        } else {
+            for (alt in targetAlt..radarScreen.maxAlt step 1000) {
+                if (!checkConflictToAlt(aircraft, alt)) return alt
+            }
+        }
+        return targetAlt
+    }
+
+    /** Checks whether there will be any conflict encountered on the way to the required altitude, returns true if there will be conflict else false */
+    private fun checkConflictToAlt(aircraft: Aircraft, newAlt: Int): Boolean {
+        val newTrajectory = aircraft.trajectory.getTrajectory(newAlt)
+        for (otherPlane in radarScreen.aircrafts.values) {
+            if (otherPlane.callsign == aircraft.callsign) {
+                continue
+            }
+            if (checkTrajectoryConflict(newTrajectory, otherPlane.trajectory.positionPoints) != -1) return true
+        }
+        return false
+    }
+
+    /** Checks whether there is conflict between the 2 supplied trajectories, returns avgAlt if conflict will occur, else -1 */
+    private fun checkTrajectoryConflict(traj1: Array<PositionPoint>, traj2: Array<PositionPoint>): Int {
+        for (i in 0 until 12.coerceAtMost(traj1.size).coerceAtMost(traj2.size)) {
+            val point1 = traj1[i]
+            val point2 = traj2[i]
+            val dist = MathTools.pixelToNm(MathTools.distanceBetween(point1.x, point1.y, point2.x, point2.y))
+            val minima = radarScreen.separationMinima.toFloat()
+            if (abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f) {
+                //Possible conflict, don't change cleared altitude for now
+                return (point1.altitude + point2.altitude) / 2
+            }
+        }
+        return -1
     }
 
     /** Loads the save data for existing conflicts */
@@ -142,11 +190,9 @@ class HandoverController {
             aircraftList.add(arrayOf(acft1, acft2))
         }
 
-        val altArray = save.getJSONArray("targetAltitudeList")
-        for (i in 0 until altArray.length()) {
-            val alt1 = altArray.getJSONArray(i).getInt(0)
-            val alt2 = altArray.getJSONArray(i).getInt(1)
-            targetAltitudeList.add(arrayOf(alt1, alt2))
+        val altArray = save.getJSONObject("targetAltitudeList")
+        for (key in altArray.keySet()) {
+            targetAltitudeList[key] = altArray.getInt(key)
         }
     }
 }

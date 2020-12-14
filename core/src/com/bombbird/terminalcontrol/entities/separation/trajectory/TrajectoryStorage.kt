@@ -41,6 +41,7 @@ class TrajectoryStorage {
         //AI controller to prevent conflict between aircraft handed over to centre
         radarScreen.handoverController.checkExistingConflicts()
         radarScreen.handoverController.resolveExistingConflict()
+        radarScreen.handoverController.checkClearAllTargets()
     }
 
     /** Calculates trajectory for all aircraft, updates points array with new trajectory points  */

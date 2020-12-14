@@ -574,14 +574,11 @@ object GameSaver {
             }
             handover.put("aircraftList", aircraftArray)
 
-            val targetAltArray = JSONArray()
-            for (targetList in radarScreen.handoverController.targetAltitudeList) {
-                val list = JSONArray()
-                list.put(targetList[0])
-                list.put(targetList[1])
-                targetAltArray.put(list)
+            val targetAltMap = JSONObject()
+            for ((callsign, alt) in radarScreen.handoverController.targetAltitudeList) {
+                targetAltMap.put(callsign, alt)
             }
-            handover.put("targetAltitudeList", targetAltArray)
+            handover.put("targetAltitudeList", targetAltMap)
             airportInfo.put("handoverController", handover)
 
             airports.put(airportInfo)
