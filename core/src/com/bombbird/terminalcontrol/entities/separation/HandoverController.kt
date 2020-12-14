@@ -143,7 +143,7 @@ class HandoverController {
                 if (!checkConflictToAlt(aircraft, alt)) return alt
             }
         } else {
-            for (alt in targetAlt..radarScreen.maxAlt step 1000) {
+            for (alt in targetAlt..(radarScreen.maxAlt + 5000) step 1000) {
                 if (!checkConflictToAlt(aircraft, alt)) return alt
             }
         }
