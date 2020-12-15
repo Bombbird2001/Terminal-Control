@@ -730,12 +730,12 @@ class RadarScreen : GameScreen {
     }
 
     override fun renderShape() {
-        //Updates aircraft separation status
+        //Updates trajectory, aircraft separation status
         separationChecker.update()
+        trajectoryStorage.update()
 
-        //Update trajectory stuff (full version only)
+        //Shows the info if any (full version only)
         if (TerminalControl.full) {
-            trajectoryStorage.update()
             areaPenetrationChecker.renderShape()
             collisionChecker.renderShape()
         }

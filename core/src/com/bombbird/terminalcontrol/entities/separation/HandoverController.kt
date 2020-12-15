@@ -41,11 +41,11 @@ class HandoverController {
 
             //Store aircraft's cleared altitude prior to modification
             aircraftList.add(arrayOf(acft1, acft2))
-            targetAltitudeList[acft1.callsign] = acft1.clearedAltitude
-            targetAltitudeList[acft2.callsign] = acft2.clearedAltitude
+            if (!targetAltitudeList.containsKey(acft1.callsign)) targetAltitudeList[acft1.callsign] = acft1.clearedAltitude
+            if (!targetAltitudeList.containsKey(acft2.callsign)) targetAltitudeList[acft2.callsign] = acft2.clearedAltitude
 
             //Only modify cleared altitude if aircraft is not under your control, and is under centre control (not tower)
-            when ((acft1.controlState == Aircraft.ControlState.UNCONTROLLED && acft1.altitude > radarScreen.maxAlt - 4000) || (acft2.controlState == Aircraft.ControlState.UNCONTROLLED && acft2.altitude > radarScreen.maxAlt - 4000)) {
+            when (acft1.isEligibleForHandoverCheck || acft2.isEligibleForHandoverCheck) {
                 acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude -> {
                     //Case 1: 1st aircraft is descending from above, 2nd aircraft climbing from below
                     updateAIAltitude(acft1, ceil(avgAlt / 1000).toInt() * 1000)
@@ -88,9 +88,9 @@ class HandoverController {
             val acft2 = aircraftArray[1]
             val acft1Target = targetAltitudeList[acft1.callsign] ?: acft1.targetAltitude
             val acft2Target = targetAltitudeList[acft2.callsign] ?: acft2.targetAltitude
-            if (acft1.isArrivalDeparture && acft2.isArrivalDeparture) continue
-            val traj1 = acft1.trajectory.getTrajectory(if (acft1.isArrivalDeparture) -1 else acft1Target)
-            val traj2 = acft2.trajectory.getTrajectory(if (acft2.isArrivalDeparture) -1 else acft2Target)
+            if (!acft1.isEligibleForHandoverCheck && !acft2.isEligibleForHandoverCheck) continue
+            val traj1 = acft1.trajectory.getTrajectory(if (!acft1.isEligibleForHandoverCheck) -1 else acft1Target)
+            val traj2 = acft2.trajectory.getTrajectory(if (!acft2.isEligibleForHandoverCheck) -1 else acft2Target)
 
             //Test if the 2 aircraft will be in conflict if re-cleared to original target altitude
             if (checkTrajectoryConflict(traj1, traj2) != -1) continue
@@ -98,7 +98,7 @@ class HandoverController {
             //If no more conflict between these 2, check for further clearance
             checkClearToTarget(acft1, acft1Target)
             checkClearToTarget(acft2, acft2Target)
-            aircraftList.removeValue(aircraftArray, false)
+            if (aircraftList.removeValue(aircraftArray, false)) println("${acft1.callsign} ${acft2.callsign} removed")
         }
     }
 
@@ -113,6 +113,18 @@ class HandoverController {
         val copy = HashMap(targetAltitudeList)
         for ((callsign, alt) in copy) {
             val aircraft = radarScreen.aircrafts[callsign] ?: continue
+            var stillInConflict = false
+            for (list in aircraftList) {
+                if (list.contains(aircraft)) {
+                    stillInConflict = true
+                    break
+                }
+            }
+            if (stillInConflict) continue
+            if (!aircraft.isEligibleForHandoverCheck || aircraft.clearedAltitude == targetAltitudeList[aircraft.callsign]) {
+                targetAltitudeList.remove(callsign)
+                continue
+            }
             var found = false
             for (list in aircraftList) {
                 if (list.contains(aircraft)) {
@@ -127,7 +139,7 @@ class HandoverController {
 
     /** Updates the cleared altitude after checking that aircraft is being controlled by centre */
     private fun updateAIAltitude(aircraft: Aircraft, newAlt: Int) {
-        if (aircraft.isArrivalDeparture || aircraft.altitude < radarScreen.maxAlt - 4000) return
+        if (!aircraft.isEligibleForHandoverCheck) return
         aircraft.updateClearedAltitude(newAlt)
         aircraft.navState.replaceAllClearedAlt()
 
@@ -143,14 +155,14 @@ class HandoverController {
                 if (!checkConflictToAlt(aircraft, alt)) return alt
             }
         } else {
-            for (alt in targetAlt..(radarScreen.maxAlt + 5000) step 1000) {
+            for (alt in targetAlt..(radarScreen.maxAlt + 10000) step 1000) {
                 if (!checkConflictToAlt(aircraft, alt)) return alt
             }
         }
         return targetAlt
     }
 
-    /** Checks whether there will be any conflict encountered on the way to the required altitude, returns true if there will be conflict else false */
+    /** Checks whether there will be any conflict encountered on the way to or at the required altitude, returns true if there will be conflict else false */
     private fun checkConflictToAlt(aircraft: Aircraft, newAlt: Int): Boolean {
         val newTrajectory = aircraft.trajectory.getTrajectory(newAlt)
         for (otherPlane in radarScreen.aircrafts.values) {

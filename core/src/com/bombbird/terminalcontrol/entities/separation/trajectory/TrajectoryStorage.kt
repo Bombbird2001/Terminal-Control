@@ -10,7 +10,7 @@ class TrajectoryStorage {
     private var timer: Float
 
     init {
-        val requiredSize = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(60) / Trajectory.INTERVAL
+        val requiredSize = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(Trajectory.HANDOVER_PREDICT_TIMING) / Trajectory.UPDATE_INTERVAL
         points = Array(true, requiredSize)
         resetStorage()
         timer = 2.5f
@@ -19,10 +19,10 @@ class TrajectoryStorage {
     /** Clears the storage before updating with new points  */
     private fun resetStorage() {
         points.clear()
-        val maxTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(60)
-        for (j in 0 until maxTime / Trajectory.INTERVAL) {
+        val maxTime = radarScreen.areaWarning.coerceAtLeast(radarScreen.collisionWarning).coerceAtLeast(radarScreen.advTraj).coerceAtLeast(Trajectory.HANDOVER_PREDICT_TIMING)
+        for (j in 0 until maxTime / Trajectory.UPDATE_INTERVAL) {
             val altitudePositionMatrix = Array<Array<PositionPoint>>()
-            for (i in 0 until radarScreen.maxAlt / 1000) {
+            for (i in 0 until Trajectory.MAX_ALT / 1000) {
                 altitudePositionMatrix.add(Array())
             }
             points.add(altitudePositionMatrix)
@@ -33,7 +33,7 @@ class TrajectoryStorage {
     fun update() {
         timer -= Gdx.graphics.deltaTime * radarScreen.speed
         if (timer > 0) return
-        timer += Trajectory.INTERVAL / 2.0f
+        timer += Trajectory.UPDATE_INTERVAL / 2.0f
         updateTrajPoints()
         radarScreen.areaPenetrationChecker.checkSeparation()
         radarScreen.collisionChecker.checkSeparation()
@@ -50,7 +50,7 @@ class TrajectoryStorage {
         for (aircraft in radarScreen.aircrafts.values) {
             aircraft.trajectory.updateTrajectory()
             for ((timeIndex, positionPoint) in aircraft.trajectory.positionPoints.withIndex()) {
-                if (positionPoint.altitude / 1000 < radarScreen.maxAlt / 1000) {
+                if (positionPoint.altitude / 1000 < Trajectory.MAX_ALT / 1000) {
                     points[timeIndex][positionPoint.altitude / 1000].add(positionPoint)
                 }
             }

@@ -28,7 +28,7 @@ class CollisionChecker {
         handoverAircraftStorage.clear()
         pointStorage.clear()
         handoverPointStorage.clear()
-        var a = Trajectory.INTERVAL
+        var a = Trajectory.UPDATE_INTERVAL
         while (a <= radarScreen.collisionWarning.coerceAtLeast(60)) {
             val altitudePositionMatrix = radarScreen.trajectoryStorage.points[a / 5 - 1]
             //Check for each separate timing
@@ -66,8 +66,8 @@ class CollisionChecker {
                             //If either aircraft is on the ground
                             continue
                         }
-                        if (point1.altitude < aircraft1.airport.elevation + 1400 || point2.altitude < aircraft2.airport.elevation + 1400 || aircraft1.altitude > radarScreen.maxAlt && aircraft2.altitude > radarScreen.maxAlt) {
-                            //If either point is below 1400 feet or both above max alt
+                        if (point1.altitude < aircraft1.airport.elevation + 1400 || point2.altitude < aircraft2.airport.elevation + 1400) {
+                            //If either point is below 1400 feet
                             continue
                         }
                         if (aircraft1 is Arrival && aircraft2 is Arrival && aircraft1.airport.icao == aircraft2.airport.icao && aircraft1.altitude < aircraft1.airport.elevation + 6000 && aircraft2.altitude < aircraft2.airport.elevation + 6000) {
@@ -111,7 +111,7 @@ class CollisionChecker {
                             aircraft1.dataTag.startFlash()
                             aircraft2.dataTag.startFlash()
                         }
-                        if (abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f) {
+                        if (a <= 60 && abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f && (aircraft1.isEligibleForHandoverCheck || aircraft2.isEligibleForHandoverCheck)) {
                             //Conflict to handle, add to handover save arrays
                             handoverAircraftStorage.add(arrayOf(aircraft1, aircraft2))
                             handoverPointStorage.add(arrayOf(point1, point2))
@@ -119,7 +119,7 @@ class CollisionChecker {
                     }
                 }
             }
-            a += Trajectory.INTERVAL
+            a += Trajectory.UPDATE_INTERVAL
         }
     }
 

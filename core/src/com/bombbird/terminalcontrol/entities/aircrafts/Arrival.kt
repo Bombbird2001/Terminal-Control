@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incremen
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.approaches.ILS
 import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.Route
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar
@@ -372,9 +373,8 @@ class Arrival : Aircraft {
                 highestAlt = route.getWptMaxAlt(it.name).coerceAtLeast(altitude.toInt() / 1000 * 1000)
                 lowestAlt = route.getWptMinAlt(it.name)
             }
-            if (highestAlt == -1) highestAlt = radarScreen.maxAlt
+            if (highestAlt == -1) highestAlt = Trajectory.MAX_ALT
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-            if (highestAlt > radarScreen.maxAlt) highestAlt = radarScreen.maxAlt
             if (highestAlt < radarScreen.minAlt) highestAlt = radarScreen.minAlt
             if (highestAlt < lowestAlt) highestAlt = lowestAlt
             val tmpArray = ui.altTab.createAltArray(lowestAlt, highestAlt)
@@ -394,7 +394,7 @@ class Arrival : Aircraft {
                 val altRestr: IntArray = route.holdProcedure.getAltRestAtWpt(it)
                 val highestAlt = altRestr[1]
                 val lowestAlt = altRestr[0]
-                this.highestAlt = if (highestAlt > -1) highestAlt else radarScreen.maxAlt
+                this.highestAlt = if (highestAlt > -1) highestAlt else Trajectory.MAX_ALT
                 this.lowestAlt = if (lowestAlt > -1) lowestAlt else radarScreen.minAlt
             }
         }

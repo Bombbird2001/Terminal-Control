@@ -23,7 +23,7 @@ class AreaPenetrationChecker {
         }
         aircraftStorage.clear()
         pointStorage.clear()
-        var i = Trajectory.INTERVAL
+        var i = Trajectory.UPDATE_INTERVAL
         while (i <= radarScreen.areaWarning) {
 
             //For each trajectory timing
@@ -66,7 +66,7 @@ class AreaPenetrationChecker {
                     }
                 }
             }
-            i += Trajectory.INTERVAL
+            i += Trajectory.UPDATE_INTERVAL
         }
     }
 

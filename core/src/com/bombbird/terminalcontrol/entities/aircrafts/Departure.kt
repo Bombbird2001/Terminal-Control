@@ -240,6 +240,7 @@ class Departure : Aircraft {
             if (cruiseAltTime <= 0) {
                 updateClearedAltitude(cruiseAlt)
                 navState.replaceAllClearedAlt()
+                if (radarScreen.handoverController.targetAltitudeList.containsKey(callsign)) radarScreen.handoverController.targetAltitudeList[callsign] = cruiseAlt
             }
         }
         if (checkHigherClimb()) {

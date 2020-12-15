@@ -13,7 +13,9 @@ import kotlin.math.*
 
 class Trajectory(private val aircraft: Aircraft) {
     companion object {
-        const val INTERVAL = 5
+        const val UPDATE_INTERVAL = 5
+        const val HANDOVER_PREDICT_TIMING = 60
+        const val MAX_ALT = 44000
     }
 
     private var deltaHeading = 0f
@@ -58,11 +60,11 @@ class Trajectory(private val aircraft: Aircraft) {
             var prevPos = Vector2()
             val sidStarMode = (aircraft.navState.containsCode(aircraft.navState.dispLatMode.first(), NavState.SID_STAR, NavState.AFTER_WPT_HDG) || aircraft.navState.dispLatMode.first() == NavState.HOLD_AT && !aircraft.isHolding)
             var prevTargetTrack = targetTrack
-            var i = INTERVAL
+            var i = UPDATE_INTERVAL
             while (i <= requiredTime) {
-                if (remainingAngle / turnRate > INTERVAL) {
-                    remainingAngle -= turnRate * INTERVAL
-                    centerToCircum.rotateDeg(-turnRate * INTERVAL)
+                if (remainingAngle / turnRate > UPDATE_INTERVAL) {
+                    remainingAngle -= turnRate * UPDATE_INTERVAL
+                    centerToCircum.rotateDeg(-turnRate * UPDATE_INTERVAL)
                     val newVector = Vector2(turnCenter)
                     prevPos = newVector.add(centerToCircum)
                     if (sidStarMode && aircraft.direct != null) {
@@ -76,7 +78,7 @@ class Trajectory(private val aircraft: Aircraft) {
                         }
                     }
                 } else {
-                    val remainingTime = INTERVAL - remainingAngle / turnRate
+                    val remainingTime = UPDATE_INTERVAL - remainingAngle / turnRate
                     centerToCircum.rotateDeg(-remainingAngle)
                     val newVector = Vector2(turnCenter)
                     if (abs(remainingAngle) > 0.1) prevPos = newVector.add(centerToCircum)
@@ -86,20 +88,20 @@ class Trajectory(private val aircraft: Aircraft) {
                     prevPos.add(straightVector)
                 }
                 pointList.add(PositionPoint(aircraft, prevPos.x, prevPos.y, 0))
-                i += INTERVAL
+                i += UPDATE_INTERVAL
             }
         } else {
-            var i = INTERVAL
+            var i = UPDATE_INTERVAL
             while (i <= requiredTime) {
                 val trackVector = Vector2(0f, nmToPixel(i * aircraft.gs / 3600))
                 trackVector.rotateDeg(if (aircraft.isOnGround) -(aircraft.runway?.heading ?: 0) + radarScreen.magHdgDev else -targetTrack)
                 pointList.add(PositionPoint(aircraft, aircraft.x + trackVector.x, aircraft.y + trackVector.y, 0))
-                i += INTERVAL
+                i += UPDATE_INTERVAL
             }
         }
         var index = 1
         for (positionPoint in pointList) {
-            val time = index * INTERVAL //Time from now in seconds
+            val time = index * UPDATE_INTERVAL //Time from now in seconds
             var targetAlt: Float = if (customTargetAlt == -1) aircraft.targetAltitude.toFloat() else customTargetAlt.toFloat()
             if (aircraft.isGsCap) targetAlt = -100f
             if (aircraft.altitude > targetAlt) {

@@ -1325,6 +1325,9 @@ abstract class Aircraft : Actor {
     val isVectored: Boolean
         get() = navState.dispLatMode.last() == NavState.VECTORS
 
+    val isEligibleForHandoverCheck: Boolean
+        get() = !isArrivalDeparture && altitude >= radarScreen.maxAlt - 4000
+
     /** Checks if aircraft has a sort of emergency (fuel or active emergency)  */
     fun hasEmergency(): Boolean {
         return isFuelEmergency || emergency.isActive
