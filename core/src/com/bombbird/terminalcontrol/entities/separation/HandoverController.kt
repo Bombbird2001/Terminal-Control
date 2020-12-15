@@ -98,7 +98,7 @@ class HandoverController {
             //If no more conflict between these 2, check for further clearance
             checkClearToTarget(acft1, acft1Target)
             checkClearToTarget(acft2, acft2Target)
-            if (aircraftList.removeValue(aircraftArray, false)) println("${acft1.callsign} ${acft2.callsign} removed")
+            aircraftList.removeValue(aircraftArray, false)
         }
     }
 
@@ -181,7 +181,7 @@ class HandoverController {
             val point2 = traj2[i]
             val dist = MathTools.pixelToNm(MathTools.distanceBetween(point1.x, point1.y, point2.x, point2.y))
             val minima = radarScreen.separationMinima.toFloat()
-            if (abs(point1.altitude - point2.altitude) < 1200 && dist < minima + 0.2f) {
+            if (abs(point1.altitude - point2.altitude) < 950 && dist < minima + 0.2f) {
                 //Possible conflict, don't change cleared altitude for now
                 return (point1.altitude + point2.altitude) / 2
             }
