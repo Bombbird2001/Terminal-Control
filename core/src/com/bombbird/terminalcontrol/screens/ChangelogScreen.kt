@@ -72,6 +72,12 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.4.2013.2
+        val content18 = Array<String>()
+        content18.add("-Mechanics: Centre/control will now prevent aircraft under their control from coming into conflict")
+        content18.add("-A couple of bug fixes, optimisations")
+        changeLogContent["1.4.2013.2"] = content18
+
         //Version 1.4.2013.1
         val content17 = Array<String>()
         content17.add("-UI: Added importing, exporting of game saves to allow transfer of game progress across devices")
@@ -83,7 +89,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         if (Gdx.app.type == Application.ApplicationType.Android) content16.add("-UI: Added distance measuring tool - switch to \"Dist mode\" and measure the distance between 2 points with 2 fingers")
         if (Gdx.app.type == Application.ApplicationType.Desktop) content16.add("-UI: Added distance measuring tool - right click and drag to measure distance between 2 points")
         content16.add("-UI: Added options to enable display of distance remaining to each waypoint on an aircraft's route")
-        content16.add("-Mechanics: Departures will now take into account any landing aircraft or go arounds on dependent parallel runways to prevent potential conflicts")
+        content16.add("-Mechanics: Departures will now take into account any landing aircraft or go-arounds on dependent parallel runways to prevent potential conflicts")
         content16.add("-Bug fixes, optimisations")
         changeLogContent["1.4.2012.2"] = content16
 
