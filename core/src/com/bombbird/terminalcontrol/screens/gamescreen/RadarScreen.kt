@@ -322,9 +322,9 @@ class RadarScreen : GameScreen {
         trajectoryLine = save.optInt("trajectoryLine", 90)
         pastTrajTime = save.optInt("pastTrajTime", -1)
         radarSweepDelay = save.optDouble("radarSweep", 2.0).toFloat()
-        advTraj = save.optInt("advTraj", -1)
-        areaWarning = save.optInt("areaWarning", -1)
-        collisionWarning = save.optInt("collisionWarning", -1)
+        advTraj = if (TerminalControl.full) save.optInt("advTraj", -1) else -1
+        areaWarning = if (TerminalControl.full) save.optInt("areaWarning", -1) else -1
+        collisionWarning = if (TerminalControl.full) save.optInt("collisionWarning", -1) else -1
         showMva = save.optBoolean("showMva", true)
         showIlsDash = save.optBoolean("showIlsDash", false)
         compactData = save.optBoolean("compactData", false)
