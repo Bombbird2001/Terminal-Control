@@ -106,7 +106,6 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
                 slot++
             }
         }
-        print(slot)
         return slot
     }
 }
