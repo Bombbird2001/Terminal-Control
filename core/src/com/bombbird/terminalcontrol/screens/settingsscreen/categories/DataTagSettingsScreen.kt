@@ -71,7 +71,7 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         super.loadLabel()
         dataTagLabel = Label("Data tag style: ", labelStyle)
         bordersBackgroundLabel = Label("Show data tag border\nand background: ", labelStyle)
-        lineSpacingLabel = Label("Row spacing", labelStyle)
+        lineSpacingLabel = Label("Row spacing: ", labelStyle)
     }
 
     /** Loads actors for display settings into tabs  */
