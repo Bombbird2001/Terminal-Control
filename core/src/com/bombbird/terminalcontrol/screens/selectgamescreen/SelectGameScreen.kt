@@ -98,6 +98,7 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
             }
         }
         var slot = -1
+        if (!handle1.exists()) handle1.writeString("", false)
         if (handle1.exists()) {
             slot = 0
             val saves = Array(handle1.readString().split(",".toRegex()).toTypedArray())
@@ -105,6 +106,7 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
                 slot++
             }
         }
+        print(slot)
         return slot
     }
 }
