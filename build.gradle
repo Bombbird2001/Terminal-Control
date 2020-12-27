@@ -21,12 +21,12 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '1.4.2013.2'
+    version = '1.5.2014.1'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.12'
         roboVMVersion = '2.3.11'
-        versionCode = 68
+        versionCode = 69
     }
 
     repositories {
