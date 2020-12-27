@@ -38,10 +38,7 @@ import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager
 import com.bombbird.terminalcontrol.entities.waypoints.BackupWaypoints
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager
-import com.bombbird.terminalcontrol.entities.weather.Metar
-import com.bombbird.terminalcontrol.entities.weather.WindDirChance
-import com.bombbird.terminalcontrol.entities.weather.WindshearChance
-import com.bombbird.terminalcontrol.entities.weather.WindspeedChance
+import com.bombbird.terminalcontrol.entities.weather.*
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
@@ -154,7 +151,7 @@ class RadarScreen : GameScreen {
     lateinit var metar: Metar
         private set
 
-    //Timer for updating aircraft radar returns, trails, save and discord RPC every given amount of time
+    //Timer for updating aircraft radar returns, trails, save, discord RPC every given amount of time
     var radarTime: Float
     var trailTime: Float
         private set
@@ -212,6 +209,10 @@ class RadarScreen : GameScreen {
     //Temporary storage of loadGameScreen for exception handling
     private var loadGameScreen: LoadGameScreen? = null
 
+    //Weather cells
+    private var thunderCellTime: Float
+    private val thunderCellArray = Array<ThunderCell>()
+
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
         save = null
@@ -237,6 +238,7 @@ class RadarScreen : GameScreen {
         trailTime = 10f
         saveTime = TerminalControl.saveInterval.toFloat()
         rpcTime = 60f
+        thunderCellTime = 10f
         simultaneousLanding = LinkedHashMap()
         if (tutorial) {
             trajectoryLine = 90
@@ -319,6 +321,7 @@ class RadarScreen : GameScreen {
         trailTime = save.optDouble("trailTime", 10.0).toFloat()
         saveTime = TerminalControl.saveInterval.toFloat()
         rpcTime = 60f
+        thunderCellTime = 10f
         trajectoryLine = save.optInt("trajectoryLine", 90)
         pastTrajTime = save.optInt("pastTrajTime", -1)
         radarSweepDelay = save.optDouble("radarSweep", 2.0).toFloat()
@@ -622,6 +625,15 @@ class RadarScreen : GameScreen {
             TerminalControl.discordManager.updateRPC()
             rpcTime += 60f
         }
+        thunderCellTime -= deltaTime
+        if (thunderCellTime <= 0) {
+            if (thunderCellArray.isEmpty) thunderCellArray.add(ThunderCell())
+            for ((index, cell) in Array(thunderCellArray).withIndex()) {
+                cell.update()
+                if (cell.canBeDeleted()) thunderCellArray.removeIndex(index)
+            }
+            thunderCellTime += 10
+        }
         if (!tutorial) {
             if (TerminalControl.saveInterval > 0) {
                 //If autosave enabled
@@ -730,6 +742,14 @@ class RadarScreen : GameScreen {
     }
 
     override fun renderShape() {
+        //Draws the weather cells
+        for (cell in thunderCellArray) {
+            cell.renderShape()
+        }
+
+        shapeRenderer.end()
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+
         //Updates trajectory, aircraft separation status
         separationChecker.update()
         trajectoryStorage.update()
@@ -794,6 +814,7 @@ class RadarScreen : GameScreen {
         for (waypoint in flyOver) {
             waypoint.renderShape()
         }
+
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
 

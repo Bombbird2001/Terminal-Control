@@ -304,7 +304,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     //Update playtime counter
                     playTime += delta
                     //Render shapes only if METAR has finished loading
-                    shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+                    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                     renderShape()
                     shapeRenderer.end()
                 }
