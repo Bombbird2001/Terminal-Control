@@ -59,6 +59,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         var trajectorySel = 0
         var pastTrajTime = 0
         lateinit var weatherSel: RadarScreen.Weather
+        var stormNumber = 0
         var soundSel = 0
         lateinit var emerChance: Emergency.Chance
         var sendAnonCrash = false
@@ -89,6 +90,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                 trajectorySel = 90
                 pastTrajTime = -1
                 weatherSel = RadarScreen.Weather.LIVE
+                stormNumber = 0
                 soundSel = defaultSoundSetting
                 sendAnonCrash = true
                 increaseZoom = false
@@ -120,6 +122,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                     else -> RadarScreen.Weather.valueOf(settings.getString("weather")) //New format
                 }
                 soundSel = settings.optInt("sound", soundSel)
+                stormNumber = settings.optInt("stormNumber", 0)
                 sendAnonCrash = settings.optBoolean("sendCrash", true)
                 emerChance = if (settings.isNull("emerChance")) {
                     Emergency.Chance.MEDIUM

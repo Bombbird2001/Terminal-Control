@@ -73,6 +73,7 @@ object GameSaver {
         jsonObject.put("lineSpacingValue", radarScreen.lineSpacingValue)
         jsonObject.put("colourStyle", radarScreen.colourStyle)
         jsonObject.put("liveWeather", radarScreen.weatherSel)
+        jsonObject.put("stormNumber", radarScreen.stormNumber)
         jsonObject.put("sounds", radarScreen.soundSel)
         jsonObject.put("realisticMetar", radarScreen.realisticMetar)
         jsonObject.put("emerChance", radarScreen.emerChance.toString())
@@ -112,6 +113,7 @@ object GameSaver {
         }
         jsonObject.put("backupWpts", backup)
         jsonObject.put("thunderCells", getWeatherCells(radarScreen))
+        jsonObject.put("stormSpawnTime", radarScreen.stormSpawnTime.toDouble())
         writeObjectToFile(jsonObject, radarScreen.saveId)
     }
 
@@ -715,6 +717,7 @@ object GameSaver {
             settings.put("trajectory", TerminalControl.trajectorySel)
             settings.put("pastTrajTime", TerminalControl.pastTrajTime)
             settings.put("weather", TerminalControl.weatherSel.toString())
+            settings.put("stormNumber", TerminalControl.stormNumber)
             settings.put("sound", TerminalControl.soundSel)
             settings.put("sendCrash", TerminalControl.sendAnonCrash)
             settings.put("increaseZoom", TerminalControl.increaseZoom)

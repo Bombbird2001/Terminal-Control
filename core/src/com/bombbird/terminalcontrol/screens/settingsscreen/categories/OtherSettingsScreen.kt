@@ -23,12 +23,15 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
     lateinit var weather: SelectBox<String>
     lateinit var sound: SelectBox<String>
     lateinit var sweep: SelectBox<String>
+    lateinit var storms: SelectBox<String>
     lateinit var weatherLabel: Label
     lateinit var weatherSel: RadarScreen.Weather
     lateinit var soundLabel: Label
     var soundSel = 0
     lateinit var sweepLabel: Label
     var radarSweep = 0f
+    lateinit var stormLabel: Label
+    var stormNumber = 0
 
     //In game only
     private lateinit var speed: SelectBox<String>
@@ -55,6 +58,24 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
                     game.screen = WeatherScreen(game)
                 } else {
                     weatherSel = RadarScreen.Weather.valueOf(weather.selected.split(" ".toRegex()).toTypedArray()[0].toUpperCase(Locale.ROOT))
+                }
+            }
+        })
+        storms = createStandardSelectBox()
+        val stormOptions = Array<String>()
+        stormOptions.add("Off", "Low", "Medium", "High")
+        storms.items = stormOptions
+        storms.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                stormNumber = when (storms.selected) {
+                    "Off" -> 0
+                    "Low" -> 2
+                    "Medium" -> 4
+                    "High" -> 8
+                    else -> {
+                        Gdx.app.log(className, "Unknown storm amount setting " + storms.selected)
+                        0
+                    }
                 }
             }
         })
@@ -99,6 +120,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
     override fun loadLabel() {
         super.loadLabel()
         weatherLabel = Label("Weather: ", labelStyle)
+        stormLabel = Label("Storms: ", labelStyle)
         soundLabel = Label("Sounds: ", labelStyle)
         sweepLabel = Label("Radar sweep: ", labelStyle)
         if (radarScreen != null) {
@@ -118,6 +140,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
         }
         val tab1 = SettingsTab(this, 2)
         tab1.addActors(weather, weatherLabel)
+        tab1.addActors(storms, stormLabel)
         tab1.addActors(sound, soundLabel)
         tab1.addActors(sweep, sweepLabel)
         if (radarScreen != null) {
@@ -132,15 +155,24 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             speedSel = radarScreen.speed
             speed.selected = speedSel.toString() + "x"
             weatherSel = radarScreen.weatherSel
+            stormNumber = radarScreen.stormNumber
             soundSel = radarScreen.soundSel
             radarSweep = radarScreen.radarSweepDelay
             if (radarScreen.tutorial) return
         } else {
             radarSweep = TerminalControl.radarSweep
             weatherSel = TerminalControl.weatherSel
+            stormNumber = TerminalControl.stormNumber
             soundSel = TerminalControl.soundSel
         }
         weather.selected = weatherSel.toString()[0].toString() + weatherSel.toString().substring(1).toLowerCase(Locale.ROOT) + " weather"
+        storms.selected = when (stormNumber) {
+            0 -> "Off"
+            2 -> "Low"
+            4 -> "Medium"
+            8 -> "High"
+            else -> "Off"
+        }
         var soundIndex = (if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1) - soundSel
         if (soundIndex < 0) soundIndex = 0
         sound.selectedIndex = soundIndex
@@ -154,6 +186,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
         if (radarScreen != null) {
             val changedToLive = weatherSel === RadarScreen.Weather.LIVE && radarScreen.weatherSel !== RadarScreen.Weather.LIVE
             radarScreen.weatherSel = weatherSel
+            radarScreen.stormNumber = stormNumber
             radarScreen.soundSel = soundSel
             radarScreen.speed = speedSel
             radarScreen.radarSweepDelay = radarSweep
@@ -162,6 +195,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             Gdx.app.postRunnable { radarScreen.ui.updateInfoLabel() }
         } else {
             TerminalControl.weatherSel = weatherSel
+            TerminalControl.stormNumber = stormNumber
             TerminalControl.soundSel = soundSel
             TerminalControl.radarSweep = radarSweep
             GameSaver.saveSettings()

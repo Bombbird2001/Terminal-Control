@@ -211,6 +211,8 @@ class RadarScreen : GameScreen {
 
     //Weather cells
     private var thunderCellTime: Float
+    var stormSpawnTime: Float
+    var stormNumber: Int
     val thunderCellArray = Array<ThunderCell>()
 
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
@@ -239,6 +241,8 @@ class RadarScreen : GameScreen {
         saveTime = TerminalControl.saveInterval.toFloat()
         rpcTime = 60f
         thunderCellTime = 10f
+        stormSpawnTime = 10f
+        stormNumber = 0
         simultaneousLanding = LinkedHashMap()
         if (tutorial) {
             trajectoryLine = 90
@@ -322,6 +326,8 @@ class RadarScreen : GameScreen {
         saveTime = TerminalControl.saveInterval.toFloat()
         rpcTime = 60f
         thunderCellTime = 10f
+        stormSpawnTime = save.optDouble("stormSpawnTime", 0.0).toFloat()
+        stormNumber = save.optInt("stormNumber", 0)
         trajectoryLine = save.optInt("trajectoryLine", 90)
         pastTrajTime = save.optInt("pastTrajTime", -1)
         radarSweepDelay = save.optDouble("radarSweep", 2.0).toFloat()
@@ -627,12 +633,17 @@ class RadarScreen : GameScreen {
         }
         thunderCellTime -= deltaTime
         if (thunderCellTime <= 0) {
-            if (thunderCellArray.isEmpty) thunderCellArray.add(ThunderCell(null))
+            while (thunderCellArray.size > stormNumber) thunderCellArray.pop()
             for ((index, cell) in Array(thunderCellArray).withIndex()) {
                 cell.update()
                 if (cell.canBeDeleted()) thunderCellArray.removeIndex(index)
             }
             thunderCellTime += 1
+        }
+        stormSpawnTime -= deltaTime
+        if (stormSpawnTime <= 0) {
+            if (thunderCellArray.size < stormNumber) thunderCellArray.add(ThunderCell(null))
+            stormSpawnTime += 12
         }
         if (!tutorial) {
             if (TerminalControl.saveInterval > 0) {
