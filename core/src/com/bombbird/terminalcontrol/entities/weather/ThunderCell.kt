@@ -5,17 +5,18 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.math.MathTools
+import org.json.JSONObject
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class ThunderCell {
-    private var duration: Int = 0 //Time since formation, in seconds
-    private var matureDuration: Int = 0 //Time that storm spends in mature stage, in seconds
-    private var topAltitude: Int = 0
-    private val borderSet: HashSet<String> = HashSet() //Set of points that are borders (not all 8 bordering spots have been generated)
-    private val intensityMap: HashMap<String, Int> = HashMap() //10 levels of intensity from 1 to 10, 0 means spot can be deleted
-    private var centreX: Float = 0f
-    private var centreY: Float = 0f
+class ThunderCell(save: JSONObject?) {
+    var duration: Int = 0 //Time since formation, in seconds
+    var matureDuration: Int = 0 //Time that storm spends in mature stage, in seconds
+    var topAltitude: Int = 0
+    val borderSet: HashSet<String> = HashSet() //Set of points that are borders (not all 8 bordering spots have been generated)
+    val intensityMap: HashMap<String, Int> = HashMap() //10 levels of intensity from 1 to 10, 0 means spot can be deleted
+    var centreX: Float = 0f
+    var centreY: Float = 0f
 
     private val radarScreen = TerminalControl.radarScreen!!
 
@@ -34,6 +35,32 @@ class ThunderCell {
         topAltitude = radarScreen.minAlt + MathUtils.random(1000, 3000)
     }
 
+    init {
+        if (save != null) {
+            duration = save.optInt("duration", duration)
+            matureDuration = save.optInt("matureDuration", matureDuration)
+            topAltitude = save.optInt("topAltitude", topAltitude)
+            centreX = save.optDouble("centreX", centreX.toDouble()).toFloat()
+            centreY = save.optDouble("centreY", centreY.toDouble()).toFloat()
+
+            val borderArray = save.optJSONArray("borderSet")
+            if (borderArray != null) {
+                borderSet.clear()
+                for (i in 0 until borderArray.length()) {
+                    borderSet.add(borderArray.optString(i, "0 0"))
+                }
+            }
+
+            val intensityObject = save.optJSONObject("intensityMap")
+            if (intensityObject != null) {
+                intensityMap.clear()
+                for (key in intensityObject.keys()) {
+                    intensityMap[key] = intensityObject.optInt(key, 1)
+                }
+            }
+        }
+    }
+
     /** Updates the storm status, run every 10s */
     fun update() {
         duration += 10
@@ -41,18 +68,18 @@ class ThunderCell {
             duration < 1800 -> {
                 //Developing stage
                 //Start generating spots in the intensity map
-                generateSpots(0.02f)
+                generateSpots(0.01f)
 
                 //Increase the intensity of spots
-                increaseIntensity(0.04f)
+                increaseIntensity(0.03f)
 
                 //Start increasing top altitude
                 if (topAltitude < 43000) topAltitude += MathUtils.random(160, 230)
             }
             duration < 1800 + matureDuration -> {
                 //Mature stage - do small random changes on spots in intensity map
-                generateSpots(0.005f)
-                increaseIntensity(0.01f)
+                generateSpots(0.0025f)
+                increaseIntensity(0.005f)
             }
             else -> {
                 //Dissipating stage - reduce intensity in spots, delete once intensity is 0
@@ -107,8 +134,8 @@ class ThunderCell {
                     if (i == 0 && j == 0) continue
                     val intensity = intensityMap["$i $j"] ?: continue
                     probability *= when (intensity >= 4) {
-                        intensity <= 6 -> 1.35f
-                        else -> 1.15f
+                        intensity <= 6 -> 1.2f
+                        else -> 1.125f
                     }
                 }
             }
@@ -122,8 +149,8 @@ class ThunderCell {
             val x = spot.key.split(" ")[0].toInt()
             val y = spot.key.split(" ")[1].toInt()
             val dist = sqrt((x * x + y * y).toDouble()).toFloat()
-            var probability = 0.08f * (30 - dist) / 30 * (if (spot.value >= 7) 1.5f else 1f)
-            if (intensityMap.size <= 100) probability = 0.2f
+            var probability = 0.05f * (30 - dist) / 30 * (if (spot.value >= 7) 1.5f else 1f)
+            if (intensityMap.size <= 100) probability = 0.16f
             if (spot.value > 0 && MathUtils.randomBoolean(probability)) {
                 intensityMap[spot.key] = spot.value - 1
                 spot.setValue(spot.value - 1)

@@ -111,6 +111,7 @@ object GameSaver {
             backup.put(key, wpt)
         }
         jsonObject.put("backupWpts", backup)
+        jsonObject.put("thunderCells", getWeatherCells(radarScreen))
         writeObjectToFile(jsonObject, radarScreen.saveId)
     }
 
@@ -661,8 +662,29 @@ object GameSaver {
         return jsonArray
     }
 
-    /** Deletes a save given input game ID, returns true if success, false if fail  */
+    /** Gets an array of thunder storms */
+    private fun getWeatherCells(radarScreen: RadarScreen): JSONArray {
+        val stormArray = JSONArray()
+        for (storm in radarScreen.thunderCellArray) {
+            val stormObject = JSONObject()
+            stormObject.put("duration", storm.duration)
+            stormObject.put("matureDuration", storm.matureDuration)
+            stormObject.put("topAltitude", storm.topAltitude)
+            stormObject.put("centreX", storm.centreX.toDouble())
+            stormObject.put("centreY", storm.centreY.toDouble())
+            stormObject.put("borderSet", JSONArray(storm.borderSet))
 
+            val intensityObject = JSONObject()
+            for (intensity in storm.intensityMap) {
+                intensityObject.put(intensity.key, intensity.value)
+            }
+            stormObject.put("intensityMap", intensityObject)
+            stormArray.put(stormObject)
+        }
+        return stormArray
+    }
+
+    /** Deletes a save given input game ID, returns true if success, false if fail  */
     fun deleteSave(id: Int): Boolean {
         var handle = getExtDir("saves/saves.saves")
         if (handle != null && handle.exists()) {

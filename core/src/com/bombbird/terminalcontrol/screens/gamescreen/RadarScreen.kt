@@ -211,7 +211,7 @@ class RadarScreen : GameScreen {
 
     //Weather cells
     private var thunderCellTime: Float
-    private val thunderCellArray = Array<ThunderCell>()
+    val thunderCellArray = Array<ThunderCell>()
 
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
@@ -627,12 +627,12 @@ class RadarScreen : GameScreen {
         }
         thunderCellTime -= deltaTime
         if (thunderCellTime <= 0) {
-            if (thunderCellArray.isEmpty) thunderCellArray.add(ThunderCell())
+            if (thunderCellArray.isEmpty) thunderCellArray.add(ThunderCell(null))
             for ((index, cell) in Array(thunderCellArray).withIndex()) {
                 cell.update()
                 if (cell.canBeDeleted()) thunderCellArray.removeIndex(index)
             }
-            thunderCellTime += 10
+            thunderCellTime += 1
         }
         if (!tutorial) {
             if (TerminalControl.saveInterval > 0) {

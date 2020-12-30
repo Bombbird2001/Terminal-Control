@@ -5,6 +5,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.weather.ThunderCell
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import org.json.JSONArray
@@ -46,6 +47,13 @@ object GameLoader {
         radarScreen.playTime = save.optDouble("playTime", estimatePlayTime(radarScreen).toDouble()).toFloat()
 
         radarScreen.handoverController.loadSaveData(save.optJSONObject("handoverController"))
+
+        val array = save.optJSONArray("thunderCells")
+        if (array != null) {
+            for (i in 0 until array.length()) {
+                radarScreen.thunderCellArray.add(ThunderCell(array.optJSONObject(i)))
+            }
+        }
 
         //GameSaver.saveGame();
     }
