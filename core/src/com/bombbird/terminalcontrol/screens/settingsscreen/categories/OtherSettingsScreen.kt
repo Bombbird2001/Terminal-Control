@@ -64,6 +64,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
         storms = createStandardSelectBox()
         val stormOptions = Array<String>()
         stormOptions.add("Off", "Low", "Medium", "High")
+        stormOptions.add("Nightmare")
         storms.items = stormOptions
         storms.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -72,6 +73,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
                     "Low" -> 2
                     "Medium" -> 4
                     "High" -> 8
+                    "Nightmare" -> 12
                     else -> {
                         Gdx.app.log(className, "Unknown storm amount setting " + storms.selected)
                         0
@@ -171,6 +173,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             2 -> "Low"
             4 -> "Medium"
             8 -> "High"
+            12 -> "Nightmare"
             else -> "Off"
         }
         var soundIndex = (if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1) - soundSel

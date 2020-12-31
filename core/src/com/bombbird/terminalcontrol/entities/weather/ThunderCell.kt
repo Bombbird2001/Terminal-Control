@@ -23,6 +23,22 @@ class ThunderCell(save: JSONObject?) {
     init {
         centreX = MathUtils.random(1560, 4200).toFloat()
         centreY = MathUtils.random(300, 2940).toFloat()
+        if (save == null) {
+            //If generating new storm, check for distance from other current storms
+            while (true) {
+                var distEnsured = true
+                for (storm in radarScreen.thunderCellArray) {
+                    val distPx = MathTools.distanceBetween(centreX, centreY, storm.centreX, storm.centreY)
+                    if (MathTools.pixelToNm(distPx) < 12) { //Minimum 12nm from centre of other storms
+                        distEnsured = false
+                        break
+                    }
+                }
+                if (distEnsured) break
+                centreX = MathUtils.random(1560, 4200).toFloat()
+                centreY = MathUtils.random(300, 2940).toFloat()
+            }
+        }
         matureDuration = MathUtils.random(1200, 3600) //Mature duration from 20 minutes to 1h
         borderSet.add("0 0")
         borderSet.add("-1 0")
