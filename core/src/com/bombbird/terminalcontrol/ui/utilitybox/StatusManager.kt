@@ -49,6 +49,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
                     SeparationChecker.SID_STAR_MVA -> "MVA sector infringement - aircraft deviates from SID/STAR route or is below minimum waypoint altitude"
                     SeparationChecker.RESTRICTED -> "Restricted area infringement"
                     SeparationChecker.WAKE_INFRINGE -> "Wake separation infringement"
+                    SeparationChecker.STORM -> "Flying in thunder storm"
                     else -> "???"
                 }
             }

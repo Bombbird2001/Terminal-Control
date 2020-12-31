@@ -96,6 +96,7 @@ abstract class Aircraft : Actor {
     var isConflict: Boolean
     var isWarning: Boolean
     var isTerrainConflict = false
+    var isStormConflict = false
     var isPrevConflict: Boolean
     var isSilenced = false
     val emergency: Emergency
@@ -238,6 +239,7 @@ abstract class Aircraft : Actor {
         isConflict = false
         isWarning = false
         isTerrainConflict = false
+        isStormConflict = false
         isPrevConflict = false
         isSilenced = false
         emergency = Emergency(this, radarScreen.emerChance)
@@ -294,6 +296,7 @@ abstract class Aircraft : Actor {
         isConflict = aircraft.isConflict
         isWarning = aircraft.isWarning
         isTerrainConflict = aircraft.isTerrainConflict
+        isStormConflict = aircraft.isStormConflict
         isPrevConflict = aircraft.isPrevConflict
         isSilenced = aircraft.isSilenced
         emergency = aircraft.emergency
@@ -346,6 +349,7 @@ abstract class Aircraft : Actor {
         isConflict = save.getBoolean("conflict")
         isWarning = save.getBoolean("warning")
         isTerrainConflict = save.optBoolean("terrainConflict", false)
+        isStormConflict = save.optBoolean("stormConflict", false)
         isPrevConflict = isConflict
         emergency = if (save.optJSONObject("emergency") == null) Emergency(this, false) else Emergency(this, save.getJSONObject("emergency"))
         request = save.optInt("request", NO_REQUEST)

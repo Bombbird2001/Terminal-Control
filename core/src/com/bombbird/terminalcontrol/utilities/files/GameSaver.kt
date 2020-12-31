@@ -166,6 +166,7 @@ object GameSaver {
             aircraftInfo.put("conflict", aircraft.isConflict) //Aircraft is in conflict
             aircraftInfo.put("warning", aircraft.isWarning) //Aircraft is in warning state
             aircraftInfo.put("terrainConflict", aircraft.isTerrainConflict) //Aircraft in conflict with terrain
+            aircraftInfo.put("stormConflict", aircraft.isStormConflict) //Aircraft in conflict with storm
             aircraftInfo.put("emergency", getEmergency(aircraft)) //Emergency status
             aircraftInfo.put("request", aircraft.request) //Type of request aircraft has
             aircraftInfo.put("requested", aircraft.isRequested) //Whether aircraft has requested it

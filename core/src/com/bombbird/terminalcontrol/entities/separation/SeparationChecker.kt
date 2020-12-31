@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 class SeparationChecker : Actor() {
@@ -34,6 +35,7 @@ class SeparationChecker : Actor() {
         const val SID_STAR_MVA = 5
         const val RESTRICTED = 6
         const val WAKE_INFRINGE = 7
+        const val STORM = 8
     }
 
     private val flightLevels: Array<Array<Aircraft>>
@@ -81,6 +83,7 @@ class SeparationChecker : Actor() {
                 aircraft.isWarning = false
                 aircraft.isConflict = false
                 aircraft.isTerrainConflict = false
+                aircraft.isStormConflict = false
             }
             for (label in labels) {
                 label.setText("")
@@ -89,10 +92,17 @@ class SeparationChecker : Actor() {
             for (obstacle in radarScreen.obsArray) {
                 obstacle.isConflict = false
             }
+
+            //Reset all the stored conflict data
             allConflicts.clear()
             allConflictCallsigns.clear()
+
+            //Check for conflicts
             checkAircraftSep()
             checkRestrSep()
+            checkStormSep()
+
+            //Subtract 5% of score for every new conflict
             var tmpActive = allConflicts.size
             while (tmpActive > lastNumber) {
                 radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.95f))
@@ -100,6 +110,7 @@ class SeparationChecker : Actor() {
                 incrementConflicts()
                 tmpActive--
             }
+
             //Subtract wake separately (don't include 5% penalty)
             for (aircraft in radarScreen.aircrafts.values) {
                 if (aircraft.isWakeInfringe && aircraft.isArrivalDeparture) {
@@ -112,6 +123,8 @@ class SeparationChecker : Actor() {
             }
             lastNumber = allConflicts.size
         }
+
+        //Subtract 1 point every 3 seconds for each conflict
         if (time <= 0) {
             time += 3f
             radarScreen.setScore(radarScreen.score - allConflicts.size)
@@ -325,11 +338,47 @@ class SeparationChecker : Actor() {
         }
     }
 
+    /** Checks that each aircraft is separated from storm cells */
+    private fun checkStormSep() {
+        for (aircraft in radarScreen.aircrafts.values) {
+            var conflict = false
+            for (storm in radarScreen.thunderCellArray) {
+                if (aircraft.altitude >= storm.topAltitude) continue
+                val coordX = floor((aircraft.x - storm.centreX) / 10).toInt()
+                val coordY = floor((aircraft.y - storm.centreY) / 10).toInt()
+                var redZones = 0
+                //Check all 9 squares
+                for (i in coordX - 1..coordX + 1) {
+                    for (j in coordY - 1..coordY + 1) {
+                        val coord = "$i $j"
+                        storm.intensityMap[coord]?.let {
+                            if (it > 8) {
+                                redZones++
+                            }
+                        }
+                    }
+                }
+                //If more than 5 out of 9 squares are red, conflict is true
+                if (redZones >= 5) conflict = true
+                if (conflict) {
+                    allConflicts.add(STORM)
+                    allConflictCallsigns.add(aircraft.callsign)
+                    break
+                }
+            }
+            if (conflict && !aircraft.isStormConflict) {
+                aircraft.isStormConflict = true
+                aircraft.isConflict = true
+                if (!aircraft.isPrevConflict) aircraft.isSilenced = false
+            }
+        }
+    }
+
     /** Renders the separation rings if aircraft is in conflict  */
     fun renderShape() {
         val radius = (nmToPixel(radarScreen.separationMinima.toFloat()) / 2).toInt()
         for (aircraft in radarScreen.aircrafts.values) {
-            if (aircraft.isConflict || aircraft.isTerrainConflict) {
+            if (aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isStormConflict) {
                 radarScreen.shapeRenderer.color = Color.RED
                 radarScreen.shapeRenderer.circle(aircraft.radarX, aircraft.radarY, radius.toFloat())
                 radarScreen.planesToControl = radarScreen.planesToControl - Gdx.graphics.deltaTime * 0.025f
