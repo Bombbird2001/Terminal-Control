@@ -86,7 +86,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
                 }
                 if (aircraft.stormWarningTime < 0) {
                     default = false
-                    text = "${aircraft.callsign}: Request different heading for weather"
+                    text = "${aircraft.callsign}: ${if (aircraft.isLocCap) "Request to cancel approach due to weather" else "Request different heading for weather"}"
                     requests.add("[#$colorStr]$text")
                 }
 

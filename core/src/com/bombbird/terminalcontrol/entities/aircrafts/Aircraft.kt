@@ -643,7 +643,7 @@ abstract class Aircraft : Actor {
                     isActionRequired = true
                     dataTag.startFlash()
                     ui.updateAckHandButton(this)
-                    radarScreen.utilityBox.commsManager.requestHeadingForWeather(this)
+                    radarScreen.utilityBox.commsManager.requestHeadingForWeather(this, isLocCap)
                 }
             }
             emergency.update()

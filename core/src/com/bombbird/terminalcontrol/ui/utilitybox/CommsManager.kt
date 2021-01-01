@@ -224,13 +224,19 @@ class CommsManager(private val utilityBox: UtilityBox) {
     }
 
     /** Requests heading to avoid weather */
-    fun requestHeadingForWeather(aircraft: Aircraft) {
+    fun requestHeadingForWeather(aircraft: Aircraft, onIls: Boolean) {
         val wake = aircraft.wakeString
         val text = aircraft.callsign + wake
-        val requestText: String = if (MathUtils.randomBoolean()) {
-            ", requesting heading due to weather"
+        val requestText: String = if (!onIls) {
+            if (MathUtils.randomBoolean()) {
+                ", requesting heading due to weather"
+            } else {
+                ", requesting heading to avoid weather"
+            }
+        } else if (MathUtils.randomBoolean()) {
+            " would like to cancel the approach due to weather on final"
         } else {
-            ", requesting heading to avoid weather"
+            ", we would like to cancel the approach due to weather"
         }
         TerminalControl.tts.sayRequest(aircraft, requestText)
         val finalText = text + requestText

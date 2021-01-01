@@ -32,6 +32,7 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
 import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
 import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.tan
 
 class Arrival : Aircraft {
@@ -678,6 +679,11 @@ class Arrival : Aircraft {
             //If aircraft has reached wake limits
             radarScreen.utilityBox.commsManager.goAround(this, "wake turbulence", controlState)
             return true
+        }
+        if (isStormConflict) {
+            //If aircraft is flying in thunderstorm
+            //0.04% chance per frame (assuming 60 fps) - if frames are skipped then will ensure the frame has equal chance as the equivalent number of frames at 60fps
+            return MathUtils.randomBoolean(1 - 0.9996.pow(Gdx.graphics.deltaTime * 60.0).toFloat())
         }
         ils?.let {
             it.rwy?.let { it2 ->
