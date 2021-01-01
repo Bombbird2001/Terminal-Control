@@ -251,6 +251,7 @@ object GameSaver {
             aircraftInfo.put("radarAlt", aircraft.radarAlt.toDouble()) //Radar altitude
             aircraftInfo.put("radarVs", aircraft.radarVs.toDouble()) //Radar vertical speed
             aircraftInfo.put("voice", aircraft.voice) //Text to speech voice
+            aircraftInfo.put("stormWarningTime", aircraft.stormWarningTime.toDouble()) //Time before aircraft warns of storm
             val labelPos = JSONArray() //Aircraft label position
             labelPos.put(aircraft.dataTag.labelPosition[0].toDouble())
             labelPos.put(aircraft.dataTag.labelPosition[1].toDouble())

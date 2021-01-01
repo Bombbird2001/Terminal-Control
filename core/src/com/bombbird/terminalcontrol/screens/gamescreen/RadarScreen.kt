@@ -612,6 +612,8 @@ class RadarScreen : GameScreen {
     /** Updates the time values for each timer & runs tasks when time is reached  */
     private fun updateTimers() {
         val deltaTime = Gdx.graphics.deltaTime
+
+        //Timer for updating radar info
         radarTime -= deltaTime
         if (radarTime <= 0) {
             updateRadarInfo()
@@ -621,16 +623,22 @@ class RadarScreen : GameScreen {
                 radarSweepDelay
             }
         }
+
+        //Timer for drawing new trail dots
         trailTime -= deltaTime
         if (trailTime <= 0) {
             addTrailDot()
             trailTime += 10f
         }
+
+        //Timer for updating discord RPC
         rpcTime -= deltaTime
         if (rpcTime <= 0) {
             TerminalControl.discordManager.updateRPC()
             rpcTime += 60f
         }
+
+        //Timer for updating thunder cell states
         thunderCellTime -= deltaTime
         if (thunderCellTime <= 0) {
             while (thunderCellArray.size > stormNumber) thunderCellArray.pop()
@@ -640,12 +648,16 @@ class RadarScreen : GameScreen {
             }
             thunderCellTime += 1
         }
+
+        //Timer for spawning new storms
         stormSpawnTime -= deltaTime
         if (stormSpawnTime <= 0) {
             if (thunderCellArray.size < stormNumber) thunderCellArray.add(ThunderCell(null))
             stormSpawnTime += 12
         }
+
         if (!tutorial) {
+            //Timer for autosaving
             if (TerminalControl.saveInterval > 0) {
                 //If autosave enabled
                 saveTime -= deltaTime
@@ -654,6 +666,8 @@ class RadarScreen : GameScreen {
                     saveTime += TerminalControl.saveInterval.toFloat()
                 }
             }
+
+            //Timer for spawning new arrivals
             arrivals = 0
             for (aircraft in aircrafts.values) {
                 if (aircraft is Arrival && aircraft.controlState == Aircraft.ControlState.ARRIVAL) arrivals++
@@ -665,8 +679,10 @@ class RadarScreen : GameScreen {
             }
             checkGenerators()
         }
+
+        //Checking parallel landing achievement
         if (!UnlockManager.unlocks.contains("parallelLanding")) {
-            //Update simultaneous landing linkedhashmap
+            //Update simultaneous landing linkedHashMap
             val iterator = simultaneousLanding.entries.iterator()
             while (iterator.hasNext()) {
                 val entry = iterator.next()

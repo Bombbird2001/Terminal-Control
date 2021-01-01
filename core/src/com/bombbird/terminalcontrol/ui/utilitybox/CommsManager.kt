@@ -223,6 +223,24 @@ class CommsManager(private val utilityBox: UtilityBox) {
         radarScreen.soundManager.playInitialContact()
     }
 
+    /** Requests heading to avoid weather */
+    fun requestHeadingForWeather(aircraft: Aircraft) {
+        val wake = aircraft.wakeString
+        val text = aircraft.callsign + wake
+        val requestText: String = if (MathUtils.randomBoolean()) {
+            ", requesting heading due to weather"
+        } else {
+            ", requesting heading to avoid weather"
+        }
+        TerminalControl.tts.sayRequest(aircraft, requestText)
+        val finalText = text + requestText
+        Gdx.app.postRunnable {
+            val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
+            updateLabelQueue(label)
+        }
+        radarScreen.soundManager.playInitialContact()
+    }
+
     /** Adds a message for an aircraft established in hold over a waypoint  */
     fun holdEstablishMsg(aircraft: Aircraft, wpt: String) {
         val wake = aircraft.wakeString

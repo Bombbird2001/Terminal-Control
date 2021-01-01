@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol.entities.separation.trajectory
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.separation.StormChecker
 
 class TrajectoryStorage {
     val points: Array<Array<Array<PositionPoint>>>
@@ -29,7 +30,7 @@ class TrajectoryStorage {
         }
     }
 
-    /** Main update function, updates every 5 seconds  */
+    /** Main update function, updates every 2.5 seconds  */
     fun update() {
         timer -= Gdx.graphics.deltaTime * radarScreen.speed
         if (timer > 0) return
@@ -37,6 +38,7 @@ class TrajectoryStorage {
         updateTrajPoints()
         radarScreen.areaPenetrationChecker.checkSeparation()
         radarScreen.collisionChecker.checkSeparation()
+        checkStorms()
 
         //AI controller to prevent conflict between aircraft handed over to centre
         radarScreen.handoverController.checkExistingConflicts()
@@ -54,6 +56,13 @@ class TrajectoryStorage {
                     points[timeIndex][positionPoint.altitude / 1000].add(positionPoint)
                 }
             }
+        }
+    }
+
+    /** Check if any aircraft may penetrate storm */
+    private fun checkStorms() {
+        for (aircraft in radarScreen.aircrafts.values) {
+            StormChecker.checkStorm(aircraft)
         }
     }
 }

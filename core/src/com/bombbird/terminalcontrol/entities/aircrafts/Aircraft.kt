@@ -65,6 +65,7 @@ abstract class Aircraft : Actor {
     val trajectory: Trajectory
     var isTrajectoryConflict: Boolean
     var isTrajectoryTerrainConflict: Boolean
+    var stormWarningTime: Float
 
     //Aircraft characteristics
     var callsign: String
@@ -248,6 +249,7 @@ abstract class Aircraft : Actor {
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
+        stormWarningTime = 65f
     }
 
     /** Constructs aircraft from another aircraft  */
@@ -319,6 +321,7 @@ abstract class Aircraft : Actor {
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
+        stormWarningTime = aircraft.stormWarningTime
         request = NO_REQUEST
         isRequested = false
         requestAlt = -1
@@ -427,6 +430,7 @@ abstract class Aircraft : Actor {
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
+        stormWarningTime = save.optDouble("stormWarningTime", 65.0).toFloat()
 
         loadLabel()
         updateControlState(when (val control = save.optString("controlState")) {
@@ -630,6 +634,16 @@ abstract class Aircraft : Actor {
                 if (goAroundTime < 0) {
                     isGoAroundWindow = false
                     goAroundTime = 0f
+                }
+            }
+            if (stormWarningTime >= 0 && stormWarningTime < 61) {
+                //Storm warning is active
+                stormWarningTime -= Gdx.graphics.deltaTime
+                if (stormWarningTime < 0) {
+                    isActionRequired = true
+                    dataTag.startFlash()
+                    ui.updateAckHandButton(this)
+                    radarScreen.utilityBox.commsManager.requestHeadingForWeather(this)
                 }
             }
             emergency.update()

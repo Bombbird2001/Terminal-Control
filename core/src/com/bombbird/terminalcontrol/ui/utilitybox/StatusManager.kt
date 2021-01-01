@@ -76,31 +76,37 @@ class StatusManager(private val utilityBox: UtilityBox) {
                 emergency.add("[RED]$text")
             }
 
-            text = "${aircraft.callsign}: "
             val colorStr = aircraft.color.toString()
             if (aircraft.isActionRequired) {
+                var default = true
                 if (aircraft is Departure && aircraft.isAskedForHigher) {
-                    text += "Request higher"
+                    default = false
+                    text = "${aircraft.callsign}: Request higher"
                     requests.add("[#$colorStr]$text")
-                } else if (aircraft.isRequested) {
-                    when (aircraft.request) {
-                        Aircraft.HIGH_SPEED_REQUEST -> {
-                            text += "Request high speed"
-                            requests.add("[#$colorStr]$text")
-                        }
-                        Aircraft.SHORTCUT_REQUEST -> {
-                            text += "Request direct"
-                            requests.add("[#$colorStr]$text")
-                        }
-                        else -> {
-                            text += "Unknown request"
-                            initialContact.add("[#$colorStr]$text")
-                        }
+                }
+                if (aircraft.stormWarningTime < 0) {
+                    default = false
+                    text = "${aircraft.callsign}: Request different heading for weather"
+                    requests.add("[#$colorStr]$text")
+                }
+
+                text = "${aircraft.callsign}: "
+                if (aircraft.isRequested) {
+                    default = false
+                    text += when (aircraft.request) {
+                        Aircraft.HIGH_SPEED_REQUEST -> "Request high speed"
+                        Aircraft.SHORTCUT_REQUEST -> "Request direct"
+                        else -> "Unknown request"
                     }
-                } else if (aircraft is Arrival && aircraft.isGoAroundWindow) {
-                    text += "Missed approach"
+                    requests.add("[#$colorStr]$text")
+                }
+                if (aircraft is Arrival && aircraft.isGoAroundWindow) {
+                    default = false
+                    text = "${aircraft.callsign}: Missed approach"
                     goAround.add("[YELLOW]$text")
-                } else {
+                }
+
+                if (default) {
                     text += "Initial contact"
                     initialContact.add("[#$colorStr]$text")
                 }
