@@ -68,11 +68,11 @@ class Runway(toParse: String) {
     //Set the ILS
     lateinit var ils: ILS
 
-    //Set windshear properties
-    var isWindshear = false
+    //Whether storm is in departure path
+    var isStormInPath = false
 
     //Array of aircraft on approach
-    var aircraftsOnAppr: Array<Aircraft>
+    var aircraftOnApp: Array<Aircraft>
 
     //Whether emergency aircraft is staying on it
     var isEmergencyClosed: Boolean
@@ -82,7 +82,7 @@ class Runway(toParse: String) {
     init {
         shapeRenderer = radarScreen.shapeRenderer
         parseInfo(toParse)
-        aircraftsOnAppr = Array()
+        aircraftOnApp = Array()
         isEmergencyClosed = false
 
         //Calculate the position offsets that are not dependent on zoom
@@ -151,25 +151,25 @@ class Runway(toParse: String) {
 
     /** Called to remove aircraft from the array of aircraft on approach, should be called during go arounds/cancelling approaches  */
     fun removeFromArray(aircraft: Aircraft) {
-        aircraftsOnAppr.removeValue(aircraft, false)
+        aircraftOnApp.removeValue(aircraft, false)
     }
 
     /** Called to add the aircraft to the array, automatically determines the position of the aircraft in the array, should be called during initial aircraft LOC capture  */
     fun addToArray(aircraft: Aircraft) {
-        aircraftsOnAppr.add(aircraft)
-        if (aircraftsOnAppr.size > 1) {
-            var thisIndex = aircraftsOnAppr.size - 1
-            while (thisIndex > 0 && distanceBetween(aircraft.x, aircraft.y, x, y) < distanceBetween(aircraftsOnAppr[thisIndex - 1].x, aircraftsOnAppr[thisIndex - 1].y, x, y) && !aircraftsOnAppr[thisIndex - 1].isOnGround) {
-                aircraftsOnAppr.swap(thisIndex - 1, thisIndex)
+        aircraftOnApp.add(aircraft)
+        if (aircraftOnApp.size > 1) {
+            var thisIndex = aircraftOnApp.size - 1
+            while (thisIndex > 0 && distanceBetween(aircraft.x, aircraft.y, x, y) < distanceBetween(aircraftOnApp[thisIndex - 1].x, aircraftOnApp[thisIndex - 1].y, x, y) && !aircraftOnApp[thisIndex - 1].isOnGround) {
+                aircraftOnApp.swap(thisIndex - 1, thisIndex)
                 thisIndex -= 1
             }
         }
     }
 
     /** Called during an (unlikely) event that for some reason the current aircraft overtakes the aircraft in front of it  */
-    fun swapAircrafts(aircraft: Aircraft) {
-        val thisIndex = aircraftsOnAppr.indexOf(aircraft, false)
-        aircraftsOnAppr.swap(thisIndex, thisIndex - 1)
+    fun swapAircraft(aircraft: Aircraft) {
+        val thisIndex = aircraftOnApp.indexOf(aircraft, false)
+        aircraftOnApp.swap(thisIndex, thisIndex - 1)
     }
 
     /** Changes the color of the runway label  */

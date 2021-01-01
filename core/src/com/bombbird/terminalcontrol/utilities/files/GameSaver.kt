@@ -520,7 +520,7 @@ object GameSaver {
             val runwayQueues = JSONObject()
             for (runway in airport.runways.values) {
                 val queue = JSONArray()
-                for (aircraft in runway.aircraftsOnAppr) {
+                for (aircraft in runway.aircraftOnApp) {
                     queue.put(aircraft.callsign)
                 }
                 runwayQueues.put(runway.name, queue)
@@ -533,6 +533,13 @@ object GameSaver {
                 runwayClosed.put(runway.name, runway.isEmergencyClosed)
             }
             airportInfo.put("emergencyClosed", runwayClosed)
+
+            //Storm in path?
+            val stormInPath = JSONObject()
+            for (runway in airport.runways.values) {
+                stormInPath.put(runway.name, runway.isStormInPath)
+            }
+            airportInfo.put("stormInPath", stormInPath)
 
             //Previous go around
             val prevGoAround = JSONObject()

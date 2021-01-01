@@ -39,6 +39,7 @@ class TrajectoryStorage {
         radarScreen.areaPenetrationChecker.checkSeparation()
         radarScreen.collisionChecker.checkSeparation()
         checkStorms()
+        checkRunwayStorms()
 
         //AI controller to prevent conflict between aircraft handed over to centre
         radarScreen.handoverController.checkExistingConflicts()
@@ -63,6 +64,15 @@ class TrajectoryStorage {
     private fun checkStorms() {
         for (aircraft in radarScreen.aircrafts.values) {
             StormChecker.checkStorm(aircraft)
+        }
+    }
+
+    /** Check if storm is in departure path of runways */
+    private fun checkRunwayStorms() {
+        for (airport in radarScreen.airports.values) {
+            for (rwy in airport.runways.values) {
+                StormChecker.checkRunwayStorm(rwy)
+            }
         }
     }
 }

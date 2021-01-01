@@ -129,12 +129,12 @@ class WakeManager() {
             val ils = aircraft.ils ?: continue
             val rwy = ils.rwy ?: continue
             var aircraft1: Aircraft? = null
-            var index: Int = rwy.aircraftsOnAppr.size - 1
+            var index: Int = rwy.aircraftOnApp.size - 1
             while (true) {
                 if (index < 0) break
-                val nextAircraft: Aircraft = rwy.aircraftsOnAppr.get(index)
+                val nextAircraft: Aircraft = rwy.aircraftOnApp.get(index)
                 if (nextAircraft.callsign == aircraft.callsign) break
-                aircraft1 = rwy.aircraftsOnAppr.get(index)
+                aircraft1 = rwy.aircraftOnApp.get(index)
                 index--
             }
             if (aircraft1 == null) continue

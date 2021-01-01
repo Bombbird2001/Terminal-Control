@@ -132,8 +132,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("05L" == runway1.name && checkPreceding("05R") && checkOppLanding("05R") && checkGoAround("05R") && checkAircraftLanded("05R")) {
                     runway = runway1
                     dist = distance
@@ -159,8 +159,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("10") && distance > dist) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding("10") && checkPreceding("28") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("10") && distance > dist && !runway1.isStormInPath) {
                 runway = runway1
                 dist = distance
             }
@@ -173,8 +173,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("02L" == runway1.name && checkPreceding("02C") && checkOppLanding("02C") && checkGoAround("02C")) {
                     runway = runway1
                     dist = distance
@@ -200,8 +200,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if (airport.allowSimultDep() && timers["05"] ?: 0f >= 60 && "34R" == runway1.name && checkOppLanding("04") && checkOppLanding("05") && checkGoAround("34L") && checkGoAround("22") && checkGoAround("23")) {
                     //Additional check for runway 05 departure - 60 seconds apart
                     //Don't use 34R if departure volume is low
@@ -212,12 +212,12 @@ class TakeoffManager {
                     //Additional check if aircraft landing on 34R has touched down; is no longer in conflict with 05
                     var tkof = false
                     val r34r = airport.runways["34R"] ?: continue
-                    if (r34r.aircraftsOnAppr.size == 0) {
+                    if (r34r.aircraftOnApp.size == 0) {
                         tkof = true
                     } else {
                         var index = 0
-                        while (index < r34r.aircraftsOnAppr.size) {
-                            val aircraft: Aircraft = r34r.aircraftsOnAppr.get(index)
+                        while (index < r34r.aircraftOnApp.size) {
+                            val aircraft: Aircraft = r34r.aircraftOnApp.get(index)
                             if (aircraft.isOnGround) {
                                 tkof = true
                             } else {
@@ -256,8 +256,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("16L" == runway1.name && checkOppLanding("16R") && (checkPreceding("16R") || airport.allowSimultDep()) && checkGoAround("16R")) {
                     //Prefer 16R if departure volume is low
                     runway = runway1
@@ -285,8 +285,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("06L" == runway1.name && checkPreceding("06R") && checkOppLanding("06R") && checkGoAround("06R") && checkAircraftLanded("06R")) {
                     runway = runway1
                     dist = distance
@@ -310,7 +310,7 @@ class TakeoffManager {
     /** Checks takeoff status for Osaka Itami  */
     private fun updateTCOO() {
         val runway = airport.runways["32L"] ?: return
-        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("32L") && checkLanding(runway) && checkGoAround("32L")) {
+        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("32L") && checkLanding(runway) && checkGoAround("32L") && !runway.isStormInPath) {
             updateRunway(runway)
         }
     }
@@ -318,7 +318,7 @@ class TakeoffManager {
     /** Checks takeoff status for Kobe  */
     private fun updateTCBE() {
         val runway = airport.runways["09"] ?: return
-        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("09") && checkLanding(runway) && checkGoAround("09")) {
+        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("09") && checkLanding(runway) && checkGoAround("09") && !runway.isStormInPath) {
             updateRunway(runway)
         }
     }
@@ -328,8 +328,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("07L" == runway1.name && checkPreceding("07R") && checkOppLanding("07R") && checkGoAround("07R") && checkAircraftLanded("07R")) {
                     runway = runway1
                     dist = distance
@@ -355,8 +355,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("34") && distance > dist) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding("16") && checkPreceding("34") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("34") && distance > dist && !runway1.isStormInPath) {
                 runway = runway1
                 dist = distance
             }
@@ -369,8 +369,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && distance > dist) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && distance > dist && !runway1.isStormInPath) {
                 if ("03R" == runway1.name && checkOppLanding("03L") && checkGoAround("03L")) {
                     runway = runway1
                     dist = distance
@@ -388,8 +388,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("01L" == runway1.name && checkPreceding("01R") && checkOppLanding("01R") && checkGoAround("01R")  && checkAircraftLanded("01R")) {
                     runway = runway1
                     if (distance > 24.9) break
@@ -415,8 +415,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("36L" == runway1.name && checkOppLanding("36R") && checkGoAround("36R") && checkGoAround("32L") && checkGoAround("32R")) {
                     runway = runway1
                     dist = distance
@@ -442,8 +442,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("26R" == runway1.name && checkOppLanding("26L") && checkAircraftLanded("26L")) {
                     runway = runway1
                     dist = distance
@@ -469,8 +469,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9)) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
                 if ("07" == runway1.name && checkOppLanding("06") && checkGoAround("06")) {
                     runway = runway1
                     dist = distance
@@ -488,8 +488,8 @@ class TakeoffManager {
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
-            val distance: Float = if (runway1.aircraftsOnAppr.size > 0) pixelToNm(distanceBetween(runway1.aircraftsOnAppr.first().x, runway1.aircraftsOnAppr.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("13") && checkPreceding("31") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("13") && distance > dist) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding("13") && checkPreceding("31") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("13") && distance > dist && !runway1.isStormInPath) {
                 runway = runway1
                 dist = distance
             }
@@ -521,12 +521,12 @@ class TakeoffManager {
 
     /** Check for any landing aircraft */
     private fun checkLanding(runway: Runway): Boolean {
-        return if (runway.aircraftsOnAppr.size == 0) {
+        return if (runway.aircraftOnApp.size == 0) {
             //No aircraft on approach
             true
         } else {
-            val aircraft: Aircraft = runway.aircraftsOnAppr.first()
-            pixelToNm(distanceBetween(aircraft.x, aircraft.y, runway.x, runway.y)) >= 5 && !aircraft.isOnGround && runway.oppRwy.aircraftsOnAppr.size == 0
+            val aircraft: Aircraft = runway.aircraftOnApp.first()
+            pixelToNm(distanceBetween(aircraft.x, aircraft.y, runway.x, runway.y)) >= 5 && !aircraft.isOnGround && runway.oppRwy.aircraftOnApp.size == 0
         }
     }
 
@@ -547,7 +547,7 @@ class TakeoffManager {
     /** Check that no aircraft is landing on opposite runway  */
     private fun checkOppLanding(rwy: String): Boolean {
         val runway = airport.runways[rwy] ?: return true
-        return runway.oppRwy.aircraftsOnAppr.size == 0
+        return runway.oppRwy.aircraftOnApp.size == 0
     }
 
     /** Check that there are no recent go arounds, or the previous go around is sufficiently far from runway */
@@ -562,12 +562,12 @@ class TakeoffManager {
     /** Checks that 1st aircraft has landed on runway, and 2nd aircraft (if any) is more than 5 miles away */
     private fun checkAircraftLanded(rwy: String, dist: Float = 3f): Boolean {
         val runway = airport.runways[rwy] ?: return true
-        if (runway.aircraftsOnAppr.size == 0) return true
-        val aircraft1 = runway.aircraftsOnAppr.first()
+        if (runway.aircraftOnApp.size == 0) return true
+        val aircraft1 = runway.aircraftOnApp.first()
         if (pixelToNm(distanceBetween(aircraft1.x, aircraft1.y, runway.x, runway.y)) < dist && !aircraft1.isOnGround) return false //If aircraft is <5 miles and has not landed, return false
-        if (runway.aircraftsOnAppr.size == 1) return true //If only 1 aircraft which is more than 5 miles, return true
+        if (runway.aircraftOnApp.size == 1) return true //If only 1 aircraft which is more than 5 miles, return true
         //More than 1 aircraft - check 2nd aircraft as well
-        val aircraft2 = runway.aircraftsOnAppr[1]
+        val aircraft2 = runway.aircraftOnApp[1]
         return pixelToNm(distanceBetween(aircraft2.x, aircraft2.y, runway.x, runway.y)) >= dist && !aircraft2.isOnGround //Return true if 2nd aircraft is >5 miles and has not landed, else false
     }
 }

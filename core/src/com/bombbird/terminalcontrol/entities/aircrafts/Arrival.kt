@@ -632,9 +632,9 @@ class Arrival : Aircraft {
     private fun checkAircraftInFront() {
         ils?.let {
             it.rwy?.let { it2 ->
-                val approachPosition: Int = it2.aircraftsOnAppr.indexOf(this, false)
+                val approachPosition: Int = it2.aircraftOnApp.indexOf(this, false)
                 if (approachPosition > 0) {
-                    val aircraftInFront: Aircraft = it2.aircraftsOnAppr.get(approachPosition - 1)
+                    val aircraftInFront: Aircraft = it2.aircraftOnApp.get(approachPosition - 1)
                     var targetX: Float = it.x
                     var targetY: Float = it.y
                     if (it is LDA) {
@@ -643,7 +643,7 @@ class Arrival : Aircraft {
                     }
                     if (distanceBetween(aircraftInFront.x, aircraftInFront.y, targetX, targetY) > distanceBetween(x, y, targetX, targetY)) {
                         //If this aircraft overtakes the one in front of it
-                        it2.swapAircrafts(this)
+                        it2.swapAircraft(this)
                     }
                 }
             }
@@ -692,7 +692,7 @@ class Arrival : Aircraft {
                     radarScreen.utilityBox.commsManager.goAround(this, "windshear", controlState)
                     return true
                 }
-                val firstAircraft: Aircraft? = if (it2.aircraftsOnAppr.size > 0) it2.aircraftsOnAppr.get(0) else null
+                val firstAircraft: Aircraft? = if (it2.aircraftOnApp.size > 0) it2.aircraftOnApp.get(0) else null
                 if (pixelToNm(distanceBetween(x, y, it2.x, it2.y)) <= 3) {
                     //If distance from runway is less than 3nm
                     if (firstAircraft != null && firstAircraft.callsign != callsign && firstAircraft.emergency.isActive && firstAircraft.emergency.isStayOnRwy) {

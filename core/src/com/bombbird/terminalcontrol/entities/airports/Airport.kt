@@ -33,7 +33,6 @@ import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadMissedInfo
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadRunways
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadSids
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadStars
-import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
 import java.util.*
 
@@ -134,8 +133,9 @@ class Airport {
             for (i in 0 until queue.length()) {
                 aircraftsOnAppr.add(radarScreen.aircrafts[queue.getString(i)])
             }
-            runway.aircraftsOnAppr = aircraftsOnAppr
-            runway.isEmergencyClosed = save.optJSONObject("emergencyClosed")?.optBoolean(runway.name) ?: false
+            runway.aircraftOnApp = aircraftsOnAppr
+            runway.isEmergencyClosed = save.optJSONObject("emergencyClosed")?.optBoolean(runway.name, false) ?: false
+            runway.isStormInPath = save.optJSONObject("stormInPath")?.optBoolean(runway.name, false) ?: false
             runway.goAround = radarScreen.aircrafts[save.optJSONObject("goAround")?.optString(runway.name, null)]
         }
     }
@@ -367,9 +367,6 @@ class Airport {
         windshear = metar.optString("windshear", "None")
         if (windshear == "null") windshear = "None"
         runwayManager.updateRunways(windHdg, metar.getInt("windSpeed"))
-        for (runway in runways.values) {
-            runway.isWindshear = runway.isLanding && ("ALL RWY" == windshear || ArrayUtils.contains(windshear.split(" ".toRegex()).toTypedArray(), "R" + runway.name))
-        }
         updateZoneStatus()
     }
 
