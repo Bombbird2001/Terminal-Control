@@ -352,8 +352,13 @@ class SeparationChecker : Actor() {
                     for (j in coordY - 1..coordY + 1) {
                         val coord = "$i $j"
                         storm.intensityMap[coord]?.let {
-                            if (it > 8) {
-                                redZones++
+                            when {
+                                it > 8 -> {
+                                    redZones++
+                                    aircraft.verticalSpeed = aircraft.verticalSpeed + MathUtils.randomSign() * MathUtils.random(400, 800).toFloat()
+                                }
+                                it > 6 -> aircraft.verticalSpeed = aircraft.verticalSpeed + MathUtils.randomSign() * MathUtils.random(100, 400).toFloat()
+                                it > 4 -> aircraft.verticalSpeed = aircraft.verticalSpeed + MathUtils.random(-100, 100).toFloat()
                             }
                         }
                     }
