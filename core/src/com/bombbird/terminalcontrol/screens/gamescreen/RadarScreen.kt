@@ -653,7 +653,8 @@ class RadarScreen : GameScreen {
         stormSpawnTime -= deltaTime
         if (stormSpawnTime <= 0) {
             if (thunderCellArray.size < stormNumber) thunderCellArray.add(ThunderCell(null))
-            stormSpawnTime += 120
+            //Minimum 30s, maximum 120s spawn time
+            stormSpawnTime += (15 - (stormNumber - thunderCellArray.size)).coerceAtLeast(3).coerceAtMost(12) * 10
         }
 
         if (!tutorial) {

@@ -195,6 +195,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             radarScreen.radarSweepDelay = radarSweep
             if (radarSweep < radarScreen.radarTime) radarScreen.radarTime = radarSweep
             if (changedToLive) radarScreen.metar.updateMetar(false) //If previous weather mode was not live, but now is changed to live, get live weather immediately
+            if (stormNumber > 0 && radarScreen.thunderCellArray.isEmpty && radarScreen.stormSpawnTime > 10) radarScreen.stormSpawnTime = 10f //If setting was just turned on, set spawn time to 10
             Gdx.app.postRunnable { radarScreen.ui.updateInfoLabel() }
         } else {
             TerminalControl.weatherSel = weatherSel
