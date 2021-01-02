@@ -72,6 +72,14 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2014.1
+        val content19 = Array<String>()
+        content19.add("-Mechanics: Added thunder storm cells")
+        content19.add("-You may change the number of storm cells from the game settings")
+        content19.add("-Please note that enabling storms may affect game performance")
+        content19.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2014.1"] = content19
+
         //Version 1.4.2013.2
         val content18 = Array<String>()
         content18.add("-Mechanics: Centre/control will now prevent aircraft under their control from coming into conflict")
