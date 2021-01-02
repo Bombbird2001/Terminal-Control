@@ -639,7 +639,7 @@ abstract class Aircraft : Actor {
             if (stormWarningTime >= 0 && stormWarningTime < 61) {
                 //Storm warning is active
                 stormWarningTime -= Gdx.graphics.deltaTime
-                if (stormWarningTime < 0) {
+                if (stormWarningTime < 0 && isArrivalDeparture) {
                     isActionRequired = true
                     dataTag.startFlash()
                     ui.updateAckHandButton(this)

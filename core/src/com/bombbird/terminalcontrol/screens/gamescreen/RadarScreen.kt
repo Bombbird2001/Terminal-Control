@@ -646,14 +646,14 @@ class RadarScreen : GameScreen {
                 cell.update()
                 if (cell.canBeDeleted()) thunderCellArray.removeIndex(index)
             }
-            thunderCellTime += 1
+            thunderCellTime += 10
         }
 
         //Timer for spawning new storms
         stormSpawnTime -= deltaTime
         if (stormSpawnTime <= 0) {
             if (thunderCellArray.size < stormNumber) thunderCellArray.add(ThunderCell(null))
-            stormSpawnTime += 12
+            stormSpawnTime += 120
         }
 
         if (!tutorial) {

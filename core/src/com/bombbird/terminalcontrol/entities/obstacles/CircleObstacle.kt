@@ -2,7 +2,6 @@ package com.bombbird.terminalcontrol.entities.obstacles
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.bombbird.terminalcontrol.utilities.Fonts
@@ -47,12 +46,6 @@ class CircleObstacle(toParse: String) : Obstacle() {
 
     /** Renders the circle for restricted areas on screen  */
     override fun renderShape() {
-        shapeRenderer.end()
-        shapeRenderer.begin(if ("TCWS" == radarScreen.mainName && minAlt == 30000) ShapeRenderer.ShapeType.Filled else ShapeRenderer.ShapeType.Line)
-        shapeRenderer.color = Color.BLACK
-        shapeRenderer.circle(circle.x, circle.y, circle.radius)
-        shapeRenderer.end()
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
         if (isConflict) {
             shapeRenderer.color = Color.RED
         } else if (!isEnforced) {

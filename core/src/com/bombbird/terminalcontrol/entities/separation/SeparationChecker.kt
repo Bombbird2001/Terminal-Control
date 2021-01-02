@@ -343,7 +343,7 @@ class SeparationChecker : Actor() {
         for (aircraft in radarScreen.aircrafts.values) {
             var conflict = false
             for (storm in radarScreen.thunderCellArray) {
-                if (aircraft.altitude < radarScreen.minAlt || aircraft.altitude > radarScreen.maxAlt || aircraft.altitude >= storm.topAltitude) continue
+                if (aircraft.altitude > radarScreen.maxAlt || aircraft.altitude >= storm.topAltitude) continue
                 val coordX = floor((aircraft.x - storm.centreX) / 10).toInt()
                 val coordY = floor((aircraft.y - storm.centreY) / 10).toInt()
                 var redZones = 0
