@@ -12,6 +12,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.complete
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementEmergency
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementLanded
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.ILS
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
@@ -51,9 +52,9 @@ class Arrival : Aircraft {
 
     //For circling approaches
     var phase = 0
-    var breakoutAlt = 0
+    var breakoutAlt = -1
     var phase1Timer = 30f
-    var phase3Timer = 30f
+    var phase3Timer = 20f
 
     //For fuel
     var fuel: Float
@@ -206,6 +207,10 @@ class Arrival : Aircraft {
                 nonPrecAlts?.addLast(floatArrayOf(data.getDouble(0).toFloat(), data.getDouble(1).toFloat()))
             }
         }
+        phase = save.optInt("phase", 0)
+        breakoutAlt = save.optInt("breakoutAlt", -1)
+        phase1Timer = save.optDouble("phase1Timer", 30.0).toFloat()
+        phase3Timer = save.optDouble("phase3Timer", 20.0).toFloat()
         isLowerSpdSet = save.getBoolean("lowerSpdSet")
         isIlsSpdSet = save.getBoolean("ilsSpdSet")
         isFinalSpdSet = save.getBoolean("finalSpdSet")
@@ -501,6 +506,16 @@ class Arrival : Aircraft {
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach  */
     override fun updateAltitude(holdAlt: Boolean, fixedVs: Boolean) {
         ils?.let {
+            if (it is Circling && !isGsCap) {
+                //If in the transition phase of circle approach
+                when (phase) {
+                    1, 2 -> super.updateAltitude(holdAlt = true, fixedVs = false)
+                    3 -> {
+                        targetAltitude = it.getGSAlt(this).toInt()
+                        super.updateAltitude(holdAlt = false, fixedVs = false)
+                    }
+                }
+            }
             if (!it.isNpa) {
                 if (!isGsCap) {
                     super.updateAltitude(altitude < it.getGSAlt(this) && it.name.contains("IMG"), false)
@@ -582,6 +597,12 @@ class Arrival : Aircraft {
                     it.rwy?.addToArray(this)
                     isGoAroundSet = true
                     wakeTolerance = MathUtils.clamp(wakeTolerance, 0f, 20f)
+                    if (it is Circling) {
+                        breakoutAlt = MathUtils.random(it.minBreakAlt, it.maxBreakAlt + 100)
+                        phase = 0
+                        phase1Timer = 30f
+                        phase3Timer = 20f
+                    }
                 }
                 checkAircraftInFront()
             }

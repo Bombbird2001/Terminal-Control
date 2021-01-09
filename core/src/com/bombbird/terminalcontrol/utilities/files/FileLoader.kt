@@ -174,7 +174,7 @@ object FileLoader {
                 } else if (s.contains("LDA") || s.contains("IGS")) {
                     val lda = OffsetILS(airport, s)
                     lda.rwy?.let { it2 -> approaches[it2.name] = lda }
-                } else if (s.contains("CIRCLE")) {
+                } else if (s.contains("CIR")) {
                     val circle = Circling(airport, s)
                     circle.rwy?.let { it2 -> approaches[it2.name] = circle }
                 } else {

@@ -1,15 +1,18 @@
 package com.bombbird.terminalcontrol.entities.approaches
 
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import org.apache.commons.lang3.StringUtils
 
 class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
     var minBreakAlt = 0
     var maxBreakAlt = 0
     var isLeft = false
-    lateinit var dependentILS: ILS
+    lateinit var ilsString: String
+    lateinit var imaginaryIls: ILS
 
     init {
         parseLDAInfo(toParse)
+        loadImaginaryIls()
     }
 
     /** Overrides method in ILS to load additional circling approach data */
@@ -19,6 +22,12 @@ class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
         minBreakAlt = info[9].toInt()
         maxBreakAlt = info[10].toInt()
         isLeft = info[11] == "LEFT"
-        dependentILS = airport.approaches[info[12]]!!
+        ilsString = info[12]
+    }
+
+    /** Loads the imaginary ILS from runway center line  */
+    private fun loadImaginaryIls() {
+        val text = "IMG" + rwy?.name + "," + rwy?.name + "," + rwy?.heading + "," + rwy?.oppRwy?.x + "," + rwy?.oppRwy?.y + "," + gsOffsetNm + "," + minima + ",4000," + StringUtils.join(towerFreq, ">")
+        imaginaryIls = ILS(airport, text)
     }
 }

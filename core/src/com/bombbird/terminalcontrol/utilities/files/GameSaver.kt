@@ -274,6 +274,10 @@ object GameSaver {
                     } ?: run {
                         aircraftInfo.put("nonPrecAlts", JSONObject.NULL)
                     }
+                    aircraftInfo.put("phase", aircraft.phase)
+                    aircraftInfo.put("breakoutAlt", aircraft.breakoutAlt)
+                    aircraftInfo.put("phase1Timer", aircraft.phase1Timer.toDouble())
+                    aircraftInfo.put("phase3Timer", aircraft.phase3Timer.toDouble())
                     aircraftInfo.put("lowerSpdSet", aircraft.isLowerSpdSet)
                     aircraftInfo.put("ilsSpdSet", aircraft.isIlsSpdSet)
                     aircraftInfo.put("finalSpdSet", aircraft.isFinalSpdSet)
