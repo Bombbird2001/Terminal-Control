@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
@@ -51,7 +51,7 @@ class AreaPenetrationChecker {
                             //If aircraft is cleared for ILS approach, inhibit to prevent nuisance warnings
                             continue
                         }
-                        if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is LDA && aircraft.isLocCap || aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
+                        if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is OffsetILS && aircraft.isLocCap || aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
                                 aircraft.isGoAroundWindow) {
                             //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
                             continue

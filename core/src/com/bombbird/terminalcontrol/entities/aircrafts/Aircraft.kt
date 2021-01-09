@@ -10,7 +10,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementWakeConflictTime
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.approaches.ILS
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.Route
@@ -817,8 +817,8 @@ abstract class Aircraft : Actor {
                     if (it.rwy != runway) {
                         runway = ils?.rwy
                     }
-                    if (ils is LDA && pixelToNm(distanceBetween(x, y, runway?.x ?: 0f, runway?.y ?: 0f) - 15) <= (ils as LDA).lineUpDist) {
-                        ils = (ils as LDA).imaginaryIls
+                    if (ils is OffsetILS && pixelToNm(distanceBetween(x, y, runway?.x ?: 0f, runway?.y ?: 0f) - 15) <= (ils as OffsetILS).lineUpDist) {
+                        ils = (ils as OffsetILS).imaginaryIls
                         isGsCap = ils?.isNpa == false
                         return updateTargetHeading()
                     } else {
@@ -1478,7 +1478,7 @@ abstract class Aircraft : Actor {
         if (this.ils !== ils) {
             if (this is Arrival) this.nonPrecAlts = null
             if (isLocCap) {
-                if (this.ils !is LDA || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
+                if (this.ils !is OffsetILS || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
                 if (isSelected && isArrivalDeparture) ui.updateState()
             }
             isGsCap = false

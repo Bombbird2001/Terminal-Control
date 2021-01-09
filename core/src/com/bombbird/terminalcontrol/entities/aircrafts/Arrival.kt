@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.entities.aircrafts
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
@@ -14,7 +13,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incremen
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementLanded
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.approaches.ILS
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.Route
@@ -40,13 +39,21 @@ class Arrival : Aircraft {
     var contactAlt: Int
         private set
     private var star: Star
-    var nonPrecAlts: Queue<FloatArray>? = null
     var isLowerSpdSet: Boolean
         private set
     var isIlsSpdSet: Boolean
         private set
     var isFinalSpdSet: Boolean
         private set
+
+    //For NPA
+    var nonPrecAlts: Queue<FloatArray>? = null
+
+    //For circling approaches
+    var phase = 0
+    var breakoutAlt = 0
+    var phase1Timer = 30f
+    var phase3Timer = 30f
 
     //For fuel
     var fuel: Float
@@ -402,7 +409,7 @@ class Arrival : Aircraft {
     }
 
     /** Adds the odd altitudes if they are in range of the supplied lowest and highest altitudes */
-    fun checkAndAddOddAltitudes(allAlts: Array<Int>, lowestAlt: Int, highestAlt: Int, altToAdd: Int) {
+    private fun checkAndAddOddAltitudes(allAlts: Array<Int>, lowestAlt: Int, highestAlt: Int, altToAdd: Int) {
         if (altToAdd in lowestAlt..highestAlt) {
             allAlts.add(altToAdd)
         }
@@ -533,7 +540,7 @@ class Arrival : Aircraft {
                 }
                 if (nonPrecAlts == null) {
                     nonPrecAlts = Queue()
-                    val copy = (it as LDA).nonPrecAlts
+                    val copy = (it as OffsetILS).nonPrecAlts
                     if (copy != null) {
                         for (data in copy) {
                             nonPrecAlts?.addLast(data)
@@ -553,15 +560,14 @@ class Arrival : Aircraft {
                     } else {
                         //Set final descent towards runway
                         targetAltitude = it.rwy?.elevation ?: airport.elevation
-                        val lineUpDist: Float = (ils as LDA).lineUpDist
+                        val lineUpDist = (ils as OffsetILS).lineUpDist
                         val tmpAlt: Float
-                        var actlTargetAlt: Float
-                        actlTargetAlt = (ils as LDA).imaginaryIls.getGSAltAtDist(lineUpDist)
+                        var actlTargetAlt = (ils as OffsetILS).imaginaryIls.getGSAltAtDist(lineUpDist)
                         tmpAlt = actlTargetAlt
                         actlTargetAlt -= 200f
                         actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + (it.rwy?.elevation ?: airport.elevation)) / 2, tmpAlt)
-                        val remainingAlt: Float = altitude - actlTargetAlt
-                        val actlTargetPos: Vector2 = (ils as LDA).imaginaryIls.getPointAtDist(lineUpDist)
+                        val remainingAlt = altitude - actlTargetAlt
+                        val actlTargetPos = (ils as OffsetILS).imaginaryIls.getPointAtDist(lineUpDist)
                         val distFromRwy = pixelToNm(distanceBetween(x, y, actlTargetPos.x, actlTargetPos.y))
                         verticalSpeed = -remainingAlt / (distFromRwy / gs * 60)
                         super.updateAltitude(remainingAlt < 0, true)
@@ -637,7 +643,7 @@ class Arrival : Aircraft {
                     val aircraftInFront: Aircraft = it2.aircraftOnApp.get(approachPosition - 1)
                     var targetX: Float = it.x
                     var targetY: Float = it.y
-                    if (it is LDA) {
+                    if (it is OffsetILS) {
                         targetX = it2.oppRwy.x
                         targetY = it2.oppRwy.y
                     }
@@ -700,7 +706,7 @@ class Arrival : Aircraft {
                         radarScreen.utilityBox.commsManager.goAround(this, "runway closed", controlState)
                         return true
                     }
-                    if (it !is LDA && !it.name.contains("IMG") && !isGsCap) {
+                    if (it !is OffsetILS && !it.name.contains("IMG") && !isGsCap) {
                         //If ILS GS has not been captured
                         radarScreen.utilityBox.commsManager.goAround(this, "being too high", controlState)
                         return true
@@ -708,7 +714,7 @@ class Arrival : Aircraft {
                         //If airspeed is more than 10 knots higher than approach speed
                         radarScreen.utilityBox.commsManager.goAround(this, "being too fast", controlState)
                         return true
-                    } else if (ils !is LDA && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
+                    } else if (ils !is OffsetILS && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
                         //If aircraft is not fully stabilised on LOC course
                         radarScreen.utilityBox.commsManager.goAround(this, "unstable approach", controlState)
                         return true
@@ -847,7 +853,7 @@ class Arrival : Aircraft {
     }
 
     override fun updateILS(ils: ILS?) {
-        if (this.ils !== ils && (this.ils !is LDA || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
+        if (this.ils !== ils && (this.ils !is OffsetILS || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
         super.updateILS(ils)
     }
 

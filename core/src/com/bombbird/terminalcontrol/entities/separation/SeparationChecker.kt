@@ -13,7 +13,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incremen
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone
 import com.bombbird.terminalcontrol.entities.zones.DepartureZone
@@ -298,7 +298,7 @@ class SeparationChecker : Actor() {
     /** Checks that each aircraft is separated from each obstacles/restricted area  */
     private fun checkRestrSep() {
         for (aircraft in radarScreen.aircrafts.values) {
-            if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is LDA && aircraft.isLocCap ||
+            if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is OffsetILS && aircraft.isLocCap ||
                     aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
                     aircraft.isGoAroundWindow) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around

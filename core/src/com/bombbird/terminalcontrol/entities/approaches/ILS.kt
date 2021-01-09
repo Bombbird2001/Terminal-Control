@@ -76,7 +76,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
                 6 -> minima = s1.toInt()
                 7 -> gsAlt = s1.toInt()
                 8 -> towerFreq = s1.split(">".toRegex()).toTypedArray()
-                else -> if (this !is LDA) {
+                else -> if (this !is OffsetILS) {
                     Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/ils" + airport.icao + ".ils")
                 }
             }
