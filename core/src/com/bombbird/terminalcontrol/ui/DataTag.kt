@@ -18,6 +18,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.getRequiredTrack
@@ -382,7 +383,9 @@ class DataTag(aircraft: Aircraft) {
         labelText[0] = aircraft.callsign
         labelText[1] = aircraft.icaoType + "/" + aircraft.wakeCat + "/" + aircraft.recat
         labelText[2] = MathUtils.round(aircraft.radarAlt / 100).toString()
-        labelText[3] = if (aircraft.isGsCap) "GS" else (aircraft.targetAltitude / 100).toString()
+        labelText[3] = if (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
+            if (aircraft.ils?.name?.contains("IMG") == true || (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0)) "VIS" else "GS"
+        } else if (aircraft.isLocCap && aircraft.ils?.isNpa == true) "NPA" else (aircraft.targetAltitude / 100).toString()
         labelText[10] = (aircraft.navState.clearedAlt.last() / 100).toString()
         if (aircraft.isSelected && aircraft.isArrivalDeparture) {
             labelText[10] = (Tab.clearedAlt / 100).toString()
@@ -519,7 +522,9 @@ ${labelText[6]} ${labelText[7]} ${labelText[9]}"""
 ${labelText[2]}  ${labelText[6]}"""
                 } else {
                     var clearedAltStr = labelText[10]
-                    if (aircraft.isGsCap) {
+                    if (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0) {
+                        clearedAltStr = "VIS"
+                    } else if (aircraft.isGsCap) {
                         clearedAltStr = if (aircraft.ils?.name?.contains("IMG") == true) "VIS" else "GS"
                     } else if (aircraft.isLocCap && aircraft.ils?.isNpa == true) {
                         clearedAltStr = "NPA"

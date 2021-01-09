@@ -7,7 +7,6 @@ class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
     var minBreakAlt = 0
     var maxBreakAlt = 0
     var isLeft = false
-    lateinit var ilsString: String
     lateinit var imaginaryIls: ILS
 
     init {
@@ -22,7 +21,6 @@ class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
         minBreakAlt = info[9].toInt()
         maxBreakAlt = info[10].toInt()
         isLeft = info[11] == "LEFT"
-        ilsString = info[12]
     }
 
     /** Loads the imaginary ILS from runway center line  */

@@ -49,12 +49,11 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
             }
             "TCOO" -> {
                 dayConfigs.add(RunwayConfig(airport, arrayOf("32L"), arrayOf("32L")))
-                dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf())) //Empty runway configuration to represent unavailable runway configuration
+                dayConfigs.add(RunwayConfig(airport, arrayOf("14R"), arrayOf("14R")))
             }
             "TCBE" -> {
                 dayConfigs.add(RunwayConfig(airport, arrayOf("09"), arrayOf("09")))
                 dayConfigs.add(RunwayConfig(airport, arrayOf("27"), arrayOf("27")))
-                //dayConfigs.add(RunwayConfig(airport, arrayOf(), arrayOf())) //Empty runway configuration to represent unavailable runway configuration
             }
             "TCHH" -> {
                 dayConfigs.add(RunwayConfig(airport, arrayOf("07L", "07R"), arrayOf("07L", "07R")))

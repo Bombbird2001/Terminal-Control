@@ -309,10 +309,16 @@ class TakeoffManager {
 
     /** Checks takeoff status for Osaka Itami  */
     private fun updateTCOO() {
-        val runway = airport.runways["32L"] ?: return
-        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("32L") && checkLanding(runway) && checkGoAround("32L") && !runway.isStormInPath) {
-            updateRunway(runway)
+        var runway: Runway? = null
+        var dist = -1f
+        for (runway1 in airport.takeoffRunways.values) {
+            val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
+            if (!runway1.isEmergencyClosed && checkPreceding("32L") && checkPreceding("14R") && checkLanding(runway1, if (runway1.name == "14R") 20 else 5) && checkOppLanding(runway1.name) && checkGoAround("32L") && distance > dist && !runway1.isStormInPath) {
+                runway = runway1
+                dist = distance
+            }
         }
+        updateRunway(runway)
     }
 
     /** Checks takeoff status for Kobe  */

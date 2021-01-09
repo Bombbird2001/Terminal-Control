@@ -636,7 +636,7 @@ class Arrival : Aircraft {
             isGoAroundSet = false
             super.updateAltitude(holdAlt, fixedVs)
         }
-        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > 15000 && !isDivert && !isLocCap) {
+        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 2000 && !isDivert && !isLocCap) {
             updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true
@@ -734,7 +734,7 @@ class Arrival : Aircraft {
                         radarScreen.utilityBox.commsManager.goAround(this, "runway closed", controlState)
                         return true
                     }
-                    if (it !is OffsetILS && it !is Circling && !it.name.contains("IMG") && !isGsCap) {
+                    if (it !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && !isGsCap) {
                         //If ILS GS has not been captured
                         radarScreen.utilityBox.commsManager.goAround(this, "being too high", controlState)
                         return true
@@ -742,7 +742,7 @@ class Arrival : Aircraft {
                         //If airspeed is more than 10 knots higher than approach speed
                         radarScreen.utilityBox.commsManager.goAround(this, "being too fast", controlState)
                         return true
-                    } else if (ils !is OffsetILS && it !is Circling && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
+                    } else if (ils !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
                         //If aircraft is not fully stabilised on LOC course
                         radarScreen.utilityBox.commsManager.goAround(this, "unstable approach", controlState)
                         return true
