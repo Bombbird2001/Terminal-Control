@@ -6,6 +6,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
@@ -52,8 +53,8 @@ class AreaPenetrationChecker {
                             continue
                         }
                         if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is OffsetILS && aircraft.isLocCap || aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
-                                aircraft.isGoAroundWindow) {
-                            //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around
+                                aircraft.isGoAroundWindow || (aircraft is Arrival && aircraft.ils is Circling && aircraft.phase > 0)) {
+                            //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around, or is on the visual segment of circling approach
                             continue
                         }
                         if (positionPoint.altitude < obstacle.minAlt - 50 && obstacle.isIn(positionPoint.x, positionPoint.y)) {

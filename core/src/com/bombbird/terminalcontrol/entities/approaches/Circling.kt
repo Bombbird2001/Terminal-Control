@@ -27,7 +27,7 @@ class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
 
     /** Loads the imaginary ILS from runway center line  */
     private fun loadImaginaryIls() {
-        val text = "IMG" + rwy?.name + "," + rwy?.name + "," + rwy?.heading + "," + rwy?.oppRwy?.x + "," + rwy?.oppRwy?.y + "," + gsOffsetNm + "," + minima + ",4000," + StringUtils.join(towerFreq, ">")
+        val text = "IMG" + rwy?.name + "," + rwy?.name + "," + rwy?.heading + "," + rwy?.x + "," + rwy?.y + ",0," + minima + ",4000," + StringUtils.join(towerFreq, ">")
         imaginaryIls = ILS(airport, text)
     }
 }

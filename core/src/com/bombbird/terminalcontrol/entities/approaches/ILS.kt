@@ -56,7 +56,10 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     init {
         parseInfo(toParse)
         var missed = name
-        if ("IMG" == name.substring(0, 3)) missed = "LDA" + name.substring(3)
+        if ("IMG" == name.substring(0, 3)) {
+            missed = "LDA" + name.substring(3)
+            if (!airport.missedApproaches.containsKey(missed)) missed = "CIR" + name.substring(3)
+        }
         if ("TCHX" == airport.icao && "IMG13" == name) missed = "IGS13"
         missedApchProc = airport.missedApproaches[missed]!!
         calculateGsRings()

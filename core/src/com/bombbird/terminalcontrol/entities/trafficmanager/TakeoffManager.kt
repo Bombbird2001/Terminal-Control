@@ -317,18 +317,11 @@ class TakeoffManager {
 
     /** Checks takeoff status for Kobe  */
     private fun updateTCBE() {
-        /*
-        val runway = airport.runways["09"] ?: return
-        if (!runway.isEmergencyClosed && runway.isTakeoff && checkPreceding("09") && checkLanding(runway) && checkGoAround("09") && !runway.isStormInPath) {
-            updateRunway(runway)
-        }
-        */
-
         var runway: Runway? = null
         var dist = -1f
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
-            if (!runway1.isEmergencyClosed && checkPreceding("09") && checkPreceding("27") && checkLanding(runway1) && checkOppLanding(runway1.name) && checkGoAround("09") && distance > dist && !runway1.isStormInPath) {
+            if (!runway1.isEmergencyClosed && checkPreceding("09") && checkPreceding("27") && checkLanding(runway1, if (runway1.name == "27") 20 else 5) && checkOppLanding(runway1.name) && checkGoAround("09") && distance > dist && !runway1.isStormInPath) {
                 runway = runway1
                 dist = distance
             }
@@ -533,13 +526,13 @@ class TakeoffManager {
     }
 
     /** Check for any landing aircraft */
-    private fun checkLanding(runway: Runway): Boolean {
+    private fun checkLanding(runway: Runway, dist: Int = 5): Boolean {
         return if (runway.aircraftOnApp.size == 0) {
             //No aircraft on approach
             true
         } else {
             val aircraft: Aircraft = runway.aircraftOnApp.first()
-            pixelToNm(distanceBetween(aircraft.x, aircraft.y, runway.x, runway.y)) >= 5 && !aircraft.isOnGround && runway.oppRwy.aircraftOnApp.size == 0
+            pixelToNm(distanceBetween(aircraft.x, aircraft.y, runway.x, runway.y)) >= dist && !aircraft.isOnGround && runway.oppRwy.aircraftOnApp.size == 0
         }
     }
 

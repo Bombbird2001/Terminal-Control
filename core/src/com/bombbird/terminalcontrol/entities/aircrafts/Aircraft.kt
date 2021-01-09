@@ -815,33 +815,35 @@ abstract class Aircraft : Actor {
             } else {
                 ils?.let {
                     if (it.rwy != runway) runway = it.rwy
-                    val effectiveILS = if (it is Circling && this is Arrival && phase > 0) {
-                        it.imaginaryIls
-                    } else it
+                    val effectiveILS = if (it is Circling && this is Arrival && phase > 0) it.imaginaryIls else it
                     if (it is Circling && this is Arrival) {
                         when (phase) {
                             0 -> if (altitude < breakoutAlt) phase = 1
                             1 -> {
-                                targetHeading = it.imaginaryIls.heading.toDouble() + if (it.isLeft) -45 else 45
+                                targetHeading = it.heading.toDouble() + if (it.isLeft) -45 else 45
                                 isLocCap = false
                                 isGsCap = false
                                 phase1Timer -= Gdx.graphics.deltaTime
                                 if (phase1Timer < 0) phase = 2
                             }
                             2 -> {
-                                targetHeading = it.imaginaryIls.heading.toDouble()
+                                targetHeading = it.heading.toDouble()
                                 val toRwy = Vector2((it.rwy?.x ?: 0f) - x, (it.rwy?.y ?: 0f) - y)
-                                val acftVector = Vector2.Y
+                                val acftVector = Vector2(0f, 1f)
                                 acftVector.rotateDeg(-(targetHeading.toFloat() - radarScreen.magHdgDev))
-                                if (toRwy.dot(acftVector) < 0) { //Wow for once dot product is being useful
+                                val dotProduct = toRwy.dot(acftVector)
+                                if (dotProduct < 0) { //Wow for once dot product is being useful
                                     //If has passed abeam runway, start 20 seconds timer in phase 3
                                     phase = 3
                                 }
                             }
                             3 -> {
+                                targetHeading = it.heading.toDouble()
                                 phase3Timer -= Gdx.graphics.deltaTime
-                                if (phase3Timer < 0) isLocCap = true
-                                if (it.isInsideILS(x, y)) isGsCap = true
+                                if (phase3Timer < 0) {
+                                    isLocCap = true
+                                    if (effectiveILS.isInsideILS(x, y)) isGsCap = true
+                                }
                             }
                         }
                     }
@@ -868,8 +870,7 @@ abstract class Aircraft : Actor {
                                 else -> 0.25f
                             }
                             val position = effectiveILS.getPointAhead(this, distAhead)
-                            targetHeading =
-                                calculatePointTargetHdg(floatArrayOf(position.x, position.y), windHdg, windSpd)
+                            targetHeading = calculatePointTargetHdg(floatArrayOf(position.x, position.y), windHdg, windSpd)
                         }
                     }
                 }
