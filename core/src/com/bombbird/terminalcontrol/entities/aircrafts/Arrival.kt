@@ -26,6 +26,7 @@ import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToMetre
+import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
@@ -613,7 +614,7 @@ class Arrival : Aircraft {
                 }
                 checkAircraftInFront()
             }
-            if (ils != null && controlState == ControlState.ARRIVAL && (altitude <= airport.elevation + 1300)) {
+            if (ils != null && controlState == ControlState.ARRIVAL && (altitude <= (if (ils is Circling) breakoutAlt + 100 else airport.elevation + 1300))) {
                 contactOther()
             }
             if (altitude <= (it.rwy?.elevation ?: airport.elevation) + 10 && ils != null) {
@@ -636,7 +637,7 @@ class Arrival : Aircraft {
             isGoAroundSet = false
             super.updateAltitude(holdAlt, fixedVs)
         }
-        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 2000 && !isDivert && !isLocCap) {
+        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap) {
             updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true
@@ -835,15 +836,25 @@ class Arrival : Aircraft {
         runway?.goAround = this
         isGoAround = true
         isGoAroundWindow = true
-        val missedApproach = ils?.missedApchProc
-        clearedHeading = ils?.heading ?: 360
+        val finalIls = ils ?: return
+        val missedApproach = finalIls.missedApchProc
+        clearedHeading = when (finalIls) {
+            is Circling -> {
+                when (phase) {
+                    0, 1, 2 -> finalIls.heading //If on phase 0, 1 or 2, fly approach heading
+                    3 -> modulateHeading((finalIls.rwy?.heading ?: 360) + if (finalIls.isLeft) -90 else 90) //If on phase 3, fly 90 degrees left/right of runway heading depending on circling direction
+                    else -> 360
+                }
+            }
+            else -> finalIls.heading
+        }
         navState.clearedHdg.removeFirst()
         navState.clearedHdg.addFirst(clearedHeading)
-        updateClearedSpd(missedApproach?.climbSpd ?: 220)
+        updateClearedSpd(missedApproach.climbSpd)
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
-        if (clearedAltitude <= missedApproach?.climbAlt ?: 4000) {
-            updateClearedAltitude(missedApproach?.climbAlt ?: 4000)
+        if (clearedAltitude <= missedApproach.climbAlt) {
+            updateClearedAltitude(missedApproach.climbAlt)
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
         }
