@@ -38,7 +38,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     private var y = 0f
     var heading = 0
         private set
-    private var gsOffsetNm = 0f
+    var gsOffsetNm = 0f
     var minima = 0
         private set
     var gsAlt = 0
@@ -56,7 +56,10 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
     init {
         parseInfo(toParse)
         var missed = name
-        if ("IMG" == name.substring(0, 3)) missed = "LDA" + name.substring(3)
+        if ("IMG" == name.substring(0, 3)) {
+            missed = "LDA" + name.substring(3)
+            if (!airport.missedApproaches.containsKey(missed)) missed = "CIR" + name.substring(3)
+        }
         if ("TCHX" == airport.icao && "IMG13" == name) missed = "IGS13"
         missedApchProc = airport.missedApproaches[missed]!!
         calculateGsRings()
@@ -76,7 +79,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
                 6 -> minima = s1.toInt()
                 7 -> gsAlt = s1.toInt()
                 8 -> towerFreq = s1.split(">".toRegex()).toTypedArray()
-                else -> if (this !is LDA) {
+                else -> if (this !is OffsetILS && this !is Circling) {
                     Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/ils" + airport.icao + ".ils")
                 }
             }

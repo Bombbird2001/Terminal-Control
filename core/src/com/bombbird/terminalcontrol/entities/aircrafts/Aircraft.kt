@@ -9,8 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementWakeConflictTime
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.ILS
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.Route
@@ -809,29 +810,68 @@ abstract class Aircraft : Actor {
             }
         }
         if (vector) {
-            if (!isLocCap) {
+            if (!isLocCap && ils !is Circling) {
                 targetHeading = clearedHeading.toDouble()
             } else {
                 ils?.let {
-                    clearedHeading = it.heading
-                    if (it.rwy != runway) {
-                        runway = ils?.rwy
-                    }
-                    if (ils is LDA && pixelToNm(distanceBetween(x, y, runway?.x ?: 0f, runway?.y ?: 0f) - 15) <= (ils as LDA).lineUpDist) {
-                        ils = (ils as LDA).imaginaryIls
-                        isGsCap = ils?.isNpa == false
-                        return updateTargetHeading()
-                    } else {
-                        //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
-                        val distAhead: Float
-                        val distFromIls = it.getDistFrom(x, y)
-                        distAhead = when {
-                            distFromIls > 10 -> 1.5f
-                            distFromIls > 2 -> 0.75f
-                            else -> 0.25f
+                    if (it.rwy != runway) runway = it.rwy
+                    val effectiveILS = if (it is Circling && this is Arrival && phase > 0) it.imaginaryIls else it
+                    if (it is Circling && this is Arrival) {
+                        when (phase) {
+                            0 -> if (altitude < breakoutAlt) phase = 1
+                            1 -> {
+                                targetHeading = it.heading.toDouble() + if (it.isLeft) -45 else 45
+                                isLocCap = false
+                                isGsCap = false
+                                phase1Timer -= Gdx.graphics.deltaTime
+                                if (phase1Timer < 0) phase = 2
+                            }
+                            2 -> {
+                                targetHeading = it.heading.toDouble()
+                                val toRwy = Vector2((it.rwy?.x ?: 0f) - x, (it.rwy?.y ?: 0f) - y)
+                                val acftVector = Vector2(0f, 1f)
+                                acftVector.rotateDeg(-(targetHeading.toFloat() - radarScreen.magHdgDev))
+                                val dotProduct = toRwy.dot(acftVector)
+                                if (dotProduct < 0) { //Wow for once dot product is being useful
+                                    //If has passed abeam runway, start 20 seconds timer in phase 3
+                                    phase = 3
+                                }
+                            }
+                            3 -> {
+                                targetHeading = it.heading.toDouble()
+                                phase3Timer -= Gdx.graphics.deltaTime
+                                if (phase3Timer < 0) {
+                                    isLocCap = true
+                                    if (effectiveILS.isInsideILS(x, y)) isGsCap = true
+                                }
+                            }
                         }
-                        val position = it.getPointAhead(this, distAhead)
-                        targetHeading = calculatePointTargetHdg(floatArrayOf(position.x, position.y), windHdg, windSpd)
+                    }
+                    if (isLocCap) {
+                        clearedHeading = effectiveILS.heading
+                        if (effectiveILS is OffsetILS && pixelToNm(
+                                distanceBetween(
+                                    x,
+                                    y,
+                                    runway?.x ?: 0f,
+                                    runway?.y ?: 0f
+                                ) - 15
+                            ) <= effectiveILS.lineUpDist
+                        ) {
+                            ils = effectiveILS.imaginaryIls
+                            isGsCap = effectiveILS.isNpa == false
+                            return updateTargetHeading()
+                        } else {
+                            //Calculates x, y of point 0.75nm or 1.5nm ahead of plane depending on distance from runway
+                            val distFromIls = effectiveILS.getDistFrom(x, y)
+                            val distAhead = when {
+                                distFromIls > 10 -> 1.5f
+                                distFromIls > 2 -> 0.75f
+                                else -> 0.25f
+                            }
+                            val position = effectiveILS.getPointAhead(this, distAhead)
+                            targetHeading = calculatePointTargetHdg(floatArrayOf(position.x, position.y), windHdg, windSpd)
+                        }
                     }
                 }
             }
@@ -1478,7 +1518,7 @@ abstract class Aircraft : Actor {
         if (this.ils !== ils) {
             if (this is Arrival) this.nonPrecAlts = null
             if (isLocCap) {
-                if (this.ils !is LDA || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
+                if (this.ils !is OffsetILS || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
                 if (isSelected && isArrivalDeparture) ui.updateState()
             }
             isGsCap = false

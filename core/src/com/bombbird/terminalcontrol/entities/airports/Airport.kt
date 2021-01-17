@@ -321,7 +321,7 @@ class Airport {
     }
 
     /** Loads the departure/approach/exclusion zones for this airport  */
-    fun loadZones() {
+    private fun loadZones() {
         approachZones = loadApchZones(icao)
         departureZones = loadDepZones(icao)
     }

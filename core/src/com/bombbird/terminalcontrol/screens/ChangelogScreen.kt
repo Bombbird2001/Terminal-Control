@@ -72,6 +72,12 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2014.2
+        val content20 = Array<String>()
+        if (TerminalControl.full) content20.add("-Mechanics: Added circling approaches for rwy 14R at TCOO and rwy 27 at TCBE")
+        content20.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2014.2"] = content20
+
         //Version 1.5.2014.1
         val content19 = Array<String>()
         content19.add("-Mechanics: Added thunder storm cells")

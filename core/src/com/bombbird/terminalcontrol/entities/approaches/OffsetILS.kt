@@ -9,7 +9,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import org.apache.commons.lang3.StringUtils
 
-class LDA(airport: Airport, toParse: String) : ILS(airport, toParse) {
+class OffsetILS(airport: Airport, toParse: String): ILS(airport, toParse) {
     var nonPrecAlts: Queue<FloatArray>? = null
         private set
     var lineUpDist = 0f

@@ -52,7 +52,7 @@ class StormChecker {
         /** Checks if the departure path of runway is in storm, sets stormInPath variable to true if so */
         fun checkRunwayStorm(runway: Runway) {
             val radarScreen = TerminalControl.radarScreen!!
-            val vector2 = Vector2.Y
+            val vector2 = Vector2(0f, 1f)
             vector2.rotateDeg(-runway.trueHdg)
             var found = false
             for (i in 0..MathTools.feetToPixel(runway.feetLength.toFloat()).roundToInt() + 5) {

@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
+import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.separation.trajectory.PositionPoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
@@ -127,6 +129,7 @@ class WakeManager() {
             if (!aircraft.isLocCap) continue
             if (aircraft.isOnGround) continue
             val ils = aircraft.ils ?: continue
+            if (ils is Circling && aircraft is Arrival && aircraft.phase > 0) continue //Don't draw if aircraft is already on visual segment of circling approach
             val rwy = ils.rwy ?: continue
             var aircraft1: Aircraft? = null
             var index: Int = rwy.aircraftOnApp.size - 1

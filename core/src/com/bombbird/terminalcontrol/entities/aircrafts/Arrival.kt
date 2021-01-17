@@ -3,7 +3,6 @@ package com.bombbird.terminalcontrol.entities.aircrafts
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
@@ -13,8 +12,9 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.complete
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementEmergency
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementLanded
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.ILS
-import com.bombbird.terminalcontrol.entities.approaches.LDA
+import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.Route
@@ -26,6 +26,7 @@ import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.errors.IncompatibleSaveException
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToMetre
+import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pointsAtBorder
@@ -40,13 +41,21 @@ class Arrival : Aircraft {
     var contactAlt: Int
         private set
     private var star: Star
-    var nonPrecAlts: Queue<FloatArray>? = null
     var isLowerSpdSet: Boolean
         private set
     var isIlsSpdSet: Boolean
         private set
     var isFinalSpdSet: Boolean
         private set
+
+    //For NPA
+    var nonPrecAlts: Queue<FloatArray>? = null
+
+    //For circling approaches
+    var phase = 0
+    var breakoutAlt = -1
+    var phase1Timer = 70f
+    var phase3Timer = 50f
 
     //For fuel
     var fuel: Float
@@ -199,6 +208,10 @@ class Arrival : Aircraft {
                 nonPrecAlts?.addLast(floatArrayOf(data.getDouble(0).toFloat(), data.getDouble(1).toFloat()))
             }
         }
+        phase = save.optInt("phase", 0)
+        breakoutAlt = save.optInt("breakoutAlt", -1)
+        phase1Timer = save.optDouble("phase1Timer", 70.0).toFloat()
+        phase3Timer = save.optDouble("phase3Timer", 50.0).toFloat()
         isLowerSpdSet = save.getBoolean("lowerSpdSet")
         isIlsSpdSet = save.getBoolean("ilsSpdSet")
         isFinalSpdSet = save.getBoolean("finalSpdSet")
@@ -402,7 +415,7 @@ class Arrival : Aircraft {
     }
 
     /** Adds the odd altitudes if they are in range of the supplied lowest and highest altitudes */
-    fun checkAndAddOddAltitudes(allAlts: Array<Int>, lowestAlt: Int, highestAlt: Int, altToAdd: Int) {
+    private fun checkAndAddOddAltitudes(allAlts: Array<Int>, lowestAlt: Int, highestAlt: Int, altToAdd: Int) {
         if (altToAdd in lowestAlt..highestAlt) {
             allAlts.add(altToAdd)
         }
@@ -494,35 +507,52 @@ class Arrival : Aircraft {
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach  */
     override fun updateAltitude(holdAlt: Boolean, fixedVs: Boolean) {
         ils?.let {
+            if (it is Circling && !isGsCap) {
+                //If in the transition phase of circle approach
+                when (phase) {
+                    1 -> super.updateAltitude(holdAlt = true, fixedVs = false)
+                    2 -> {
+                        targetAltitude = 1500 + (it.rwy?.elevation ?: 0)
+                        super.updateAltitude(holdAlt = false, fixedVs = false)
+                    }
+                    3 -> {
+                        targetAltitude = if (!isLocCap) 1500 + (it.rwy?.elevation ?: 0) else it.imaginaryIls.getGSAlt(this).toInt()
+                        super.updateAltitude(holdAlt = false, fixedVs = false)
+                    }
+                }
+            }
             if (!it.isNpa) {
+                val effectiveILS = if (it is Circling && phase == 3) it.imaginaryIls else it
                 if (!isGsCap) {
-                    super.updateAltitude(altitude < it.getGSAlt(this) && it.name.contains("IMG"), false)
-                    if (canCaptureILS() && isLocCap && abs(altitude - it.getGSAlt(this)) <= 50 && altitude <= it.gsAlt + 50) {
-                        if (navState.dispLatMode.first() == NavState.SID_STAR) {
-                            //Change to vector mode upon GS capture
-                            val prevDirect = direct
-                            direct = null
-                            navState.dispLatMode.removeFirst()
-                            navState.dispLatMode.addFirst(NavState.VECTORS)
-                            navState.replaceAllClearedAltMode()
-                            navState.replaceAllClearedSpdMode()
-                            setAfterLastWpt()
-                            navState.replaceAllOutdatedDirects(null)
-                            updateAltRestrictions()
-                            updateTargetAltitude()
-                            updateClearedSpd(clearedIas)
-                            prevDirect?.updateFlyOverStatus()
-                            if (isSelected && isArrivalDeparture) {
-                                updateUISelections()
-                                ui.updateState()
+                    if (it !is Circling || phase == 0) {
+                        super.updateAltitude(altitude < it.getGSAlt(this) && it.name.contains("IMG"), false)
+                        if (canCaptureILS() && isLocCap && abs(altitude - it.getGSAlt(this)) <= 50 && altitude <= it.gsAlt + 50) {
+                            if (navState.dispLatMode.first() == NavState.SID_STAR) {
+                                //Change to vector mode upon GS capture
+                                val prevDirect = direct
+                                direct = null
+                                navState.dispLatMode.removeFirst()
+                                navState.dispLatMode.addFirst(NavState.VECTORS)
+                                navState.replaceAllClearedAltMode()
+                                navState.replaceAllClearedSpdMode()
+                                setAfterLastWpt()
+                                navState.replaceAllOutdatedDirects(null)
+                                updateAltRestrictions()
+                                updateTargetAltitude()
+                                updateClearedSpd(clearedIas)
+                                prevDirect?.updateFlyOverStatus()
+                                if (isSelected && isArrivalDeparture) {
+                                    updateUISelections()
+                                    ui.updateState()
+                                }
                             }
+                            isGsCap = true
+                            setMissedAlt()
                         }
-                        isGsCap = true
-                        setMissedAlt()
                     }
                 } else {
                     verticalSpeed = -nmToFeet(tan(Math.toRadians(3.0)).toFloat() * 140f / 60f)
-                    altitude = it.getGSAlt(this)
+                    altitude = effectiveILS.getGSAlt(this)
                 }
                 if (nonPrecAlts != null) {
                     nonPrecAlts = null
@@ -533,7 +563,7 @@ class Arrival : Aircraft {
                 }
                 if (nonPrecAlts == null) {
                     nonPrecAlts = Queue()
-                    val copy = (it as LDA).nonPrecAlts
+                    val copy = (it as OffsetILS).nonPrecAlts
                     if (copy != null) {
                         for (data in copy) {
                             nonPrecAlts?.addLast(data)
@@ -553,15 +583,14 @@ class Arrival : Aircraft {
                     } else {
                         //Set final descent towards runway
                         targetAltitude = it.rwy?.elevation ?: airport.elevation
-                        val lineUpDist: Float = (ils as LDA).lineUpDist
+                        val lineUpDist = (ils as OffsetILS).lineUpDist
                         val tmpAlt: Float
-                        var actlTargetAlt: Float
-                        actlTargetAlt = (ils as LDA).imaginaryIls.getGSAltAtDist(lineUpDist)
+                        var actlTargetAlt = (ils as OffsetILS).imaginaryIls.getGSAltAtDist(lineUpDist)
                         tmpAlt = actlTargetAlt
                         actlTargetAlt -= 200f
                         actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + (it.rwy?.elevation ?: airport.elevation)) / 2, tmpAlt)
-                        val remainingAlt: Float = altitude - actlTargetAlt
-                        val actlTargetPos: Vector2 = (ils as LDA).imaginaryIls.getPointAtDist(lineUpDist)
+                        val remainingAlt = altitude - actlTargetAlt
+                        val actlTargetPos = (ils as OffsetILS).imaginaryIls.getPointAtDist(lineUpDist)
                         val distFromRwy = pixelToNm(distanceBetween(x, y, actlTargetPos.x, actlTargetPos.y))
                         verticalSpeed = -remainingAlt / (distFromRwy / gs * 60)
                         super.updateAltitude(remainingAlt < 0, true)
@@ -576,10 +605,16 @@ class Arrival : Aircraft {
                     it.rwy?.addToArray(this)
                     isGoAroundSet = true
                     wakeTolerance = MathUtils.clamp(wakeTolerance, 0f, 20f)
+                    if (it is Circling) {
+                        breakoutAlt = MathUtils.random(it.minBreakAlt, it.maxBreakAlt + 100)
+                        phase = 0
+                        phase1Timer = 70f
+                        phase3Timer = 50f
+                    }
                 }
                 checkAircraftInFront()
             }
-            if (ils != null && controlState == ControlState.ARRIVAL && altitude <= airport.elevation + 1300) {
+            if (ils != null && controlState == ControlState.ARRIVAL && (altitude <= (if (ils is Circling) breakoutAlt + 100 else airport.elevation + 1300))) {
                 contactOther()
             }
             if (altitude <= (it.rwy?.elevation ?: airport.elevation) + 10 && ils != null) {
@@ -602,7 +637,7 @@ class Arrival : Aircraft {
             isGoAroundSet = false
             super.updateAltitude(holdAlt, fixedVs)
         }
-        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 1300 && !isDivert && !isLocCap) {
+        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap) {
             updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true
@@ -637,7 +672,7 @@ class Arrival : Aircraft {
                     val aircraftInFront: Aircraft = it2.aircraftOnApp.get(approachPosition - 1)
                     var targetX: Float = it.x
                     var targetY: Float = it.y
-                    if (it is LDA) {
+                    if (it is OffsetILS) {
                         targetX = it2.oppRwy.x
                         targetY = it2.oppRwy.y
                     }
@@ -700,7 +735,7 @@ class Arrival : Aircraft {
                         radarScreen.utilityBox.commsManager.goAround(this, "runway closed", controlState)
                         return true
                     }
-                    if (it !is LDA && !it.name.contains("IMG") && !isGsCap) {
+                    if (it !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && !isGsCap) {
                         //If ILS GS has not been captured
                         radarScreen.utilityBox.commsManager.goAround(this, "being too high", controlState)
                         return true
@@ -708,7 +743,7 @@ class Arrival : Aircraft {
                         //If airspeed is more than 10 knots higher than approach speed
                         radarScreen.utilityBox.commsManager.goAround(this, "being too fast", controlState)
                         return true
-                    } else if (ils !is LDA && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
+                    } else if (ils !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
                         //If aircraft is not fully stabilised on LOC course
                         radarScreen.utilityBox.commsManager.goAround(this, "unstable approach", controlState)
                         return true
@@ -801,15 +836,25 @@ class Arrival : Aircraft {
         runway?.goAround = this
         isGoAround = true
         isGoAroundWindow = true
-        val missedApproach = ils?.missedApchProc
-        clearedHeading = ils?.heading ?: 360
+        val finalIls = ils ?: return
+        val missedApproach = finalIls.missedApchProc
+        clearedHeading = when (finalIls) {
+            is Circling -> {
+                when (phase) {
+                    0, 1, 2 -> finalIls.heading //If on phase 0, 1 or 2, fly approach heading
+                    3 -> modulateHeading((finalIls.rwy?.heading ?: 360) + if (finalIls.isLeft) -90 else 90) //If on phase 3, fly 90 degrees left/right of runway heading depending on circling direction
+                    else -> 360
+                }
+            }
+            else -> finalIls.heading
+        }
         navState.clearedHdg.removeFirst()
         navState.clearedHdg.addFirst(clearedHeading)
-        updateClearedSpd(missedApproach?.climbSpd ?: 220)
+        updateClearedSpd(missedApproach.climbSpd)
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
-        if (clearedAltitude <= missedApproach?.climbAlt ?: 4000) {
-            updateClearedAltitude(missedApproach?.climbAlt ?: 4000)
+        if (clearedAltitude <= missedApproach.climbAlt) {
+            updateClearedAltitude(missedApproach.climbAlt)
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
         }
@@ -847,7 +892,7 @@ class Arrival : Aircraft {
     }
 
     override fun updateILS(ils: ILS?) {
-        if (this.ils !== ils && (this.ils !is LDA || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
+        if (this.ils !== ils && (this.ils !is OffsetILS || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
         super.updateILS(ils)
     }
 
