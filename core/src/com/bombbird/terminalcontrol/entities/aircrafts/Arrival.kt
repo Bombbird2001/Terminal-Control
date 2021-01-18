@@ -438,10 +438,10 @@ class Arrival : Aircraft {
             if (airport.landingRunways.size == 0) {
                 //Airport has no landing runways available, different msg
                 radarScreen.utilityBox.commsManager.warningMsg("Pan-pan, pan-pan, pan-pan, $callsign is low on fuel and will divert in 10 minutes if no landing runway is available.")
-                TerminalControl.tts.lowFuel(this, 3)
+                TerminalControl.ttsManager.lowFuel(this, 3)
             } else {
                 radarScreen.utilityBox.commsManager.warningMsg("Pan-pan, pan-pan, pan-pan, $callsign is low on fuel and requests priority landing.")
-                TerminalControl.tts.lowFuel(this, 0)
+                TerminalControl.ttsManager.lowFuel(this, 0)
             }
             isRequestPriority = true
             isActionRequired = true
@@ -452,12 +452,12 @@ class Arrival : Aircraft {
             if (airport.landingRunways.size == 0) {
                 //Airport has no landing runways available, divert directly
                 radarScreen.utilityBox.commsManager.warningMsg("Mayday, mayday, mayday, $callsign is declaring a fuel emergency and is diverting immediately.")
-                TerminalControl.tts.lowFuel(this, 4)
+                TerminalControl.ttsManager.lowFuel(this, 4)
                 divertToAltn()
             } else {
                 radarScreen.utilityBox.commsManager.warningMsg("Mayday, mayday, mayday, $callsign is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.")
                 radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
-                TerminalControl.tts.lowFuel(this, 1)
+                TerminalControl.ttsManager.lowFuel(this, 1)
             }
             isDeclareEmergency = true
             if (!isFuelEmergency) isFuelEmergency = true
@@ -466,7 +466,7 @@ class Arrival : Aircraft {
         if (fuel < 1500 && !isDivert && !isLocCap && controlState == ControlState.ARRIVAL) {
             //Diverting to alternate
             radarScreen.utilityBox.commsManager.warningMsg("$callsign is diverting to the alternate airport.")
-            TerminalControl.tts.lowFuel(this, 2)
+            TerminalControl.ttsManager.lowFuel(this, 2)
             divertToAltn()
             radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
         }

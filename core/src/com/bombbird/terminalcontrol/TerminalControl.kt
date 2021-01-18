@@ -12,7 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
-import com.bombbird.terminalcontrol.sounds.TextToSpeech
+import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
+import com.bombbird.terminalcontrol.sounds.TextToSpeechManager
 import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
@@ -21,7 +22,7 @@ import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler) : Game() {
+class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -42,8 +43,9 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         private lateinit var buttonAtlas: TextureAtlas
         lateinit var skin: Skin
 
-        //Text-to-speech (for Android only)
-        lateinit var tts: TextToSpeech
+        //Text-to-speech
+        lateinit var ttsManager: TextToSpeechManager
+        lateinit var tts: TextToSpeechInterface
 
         //Toast (for Android only)
         lateinit var toastManager: ToastManager
@@ -182,6 +184,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         Companion.externalFileHandler = externalFileHandler
         loadedDiscord = false
         useDiscord = false
+        ttsManager = TextToSpeechManager()
     }
 
     private fun loadDialogSkin() {

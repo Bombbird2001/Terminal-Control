@@ -90,7 +90,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
                 1 -> goArdText = "we're going around"
                 2 -> goArdText = "performing a missed approach"
             }
-            TerminalControl.tts.goAroundMsg(aircraft, goArdText, reason)
+            TerminalControl.ttsManager.goAroundMsg(aircraft, goArdText, reason)
             msg = aircraft.callsign + aircraft.wakeString + ", " + goArdText + " due to " + reason
         }
         alertMsg(msg)
@@ -151,11 +151,11 @@ class CommsManager(private val utilityBox: UtilityBox) {
         if (aircraft is Arrival) {
             if (!aircraft.isGoAroundWindow && aircraft.direct != null) {
                 text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + action + starString + inboundString + infoString
-                TerminalControl.tts.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct?.name ?: "somewhere", inboundSaid, infoString)
+                TerminalControl.ttsManager.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct?.name ?: "somewhere", inboundSaid, infoString)
             } else {
                 action = (if (MathUtils.randomBoolean()) "going around, " else "missed approach, ") + action //Go around message
                 text = apchCallsign + ", " + aircraft.callsign + wake + " with you, " + action + ", heading " + aircraft.clearedHeading
-                TerminalControl.tts.goAroundContact(aircraft, apchCallsign, action, aircraft.clearedHeading.toString())
+                TerminalControl.ttsManager.goAroundContact(aircraft, apchCallsign, action, aircraft.clearedHeading.toString())
             }
         } else if (aircraft is Departure) {
             var outboundText = ""
@@ -167,7 +167,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             }
             val airborne = if (MathUtils.randomBoolean()) "" else "airborne "
             text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + outboundText + airborne + action + sidString
-            TerminalControl.tts.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), sidSaid)
+            TerminalControl.ttsManager.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), sidSaid)
         }
         val finalText = text
         Gdx.app.postRunnable {
@@ -196,7 +196,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             }
             else -> Gdx.app.log("CommBox", "Unknown request code " + aircraft.request)
         }
-        TerminalControl.tts.sayRequest(aircraft, requestText)
+        TerminalControl.ttsManager.sayRequest(aircraft, requestText)
         val finalText = text + requestText
         Gdx.app.postRunnable {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
@@ -214,7 +214,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
         } else {
             ", we would like to climb higher"
         }
-        TerminalControl.tts.sayRequest(departure, requestText)
+        TerminalControl.ttsManager.sayRequest(departure, requestText)
         val finalText = text + requestText
         Gdx.app.postRunnable {
             val label = Label(finalText, utilityBox.getLabelStyle(departure.color))
@@ -238,7 +238,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
         } else {
             ", we would like to cancel the approach due to weather"
         }
-        TerminalControl.tts.sayRequest(aircraft, requestText)
+        TerminalControl.ttsManager.sayRequest(aircraft, requestText)
         val finalText = text + requestText
         Gdx.app.postRunnable {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))
@@ -258,7 +258,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             2 -> ", we're holding at $wpt"
             else -> ""
         }
-        TerminalControl.tts.holdEstablishMsg(aircraft, wpt, random)
+        TerminalControl.ttsManager.holdEstablishMsg(aircraft, wpt, random)
         val finalText = text
         Gdx.app.postRunnable {
             val label = Label(finalText, utilityBox.getLabelStyle(aircraft.color))

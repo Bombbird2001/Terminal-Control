@@ -1,77 +1,43 @@
 package com.bombbird.terminalcontrol.desktop
 
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
-import com.bombbird.terminalcontrol.entities.sidstar.Sid
-import com.bombbird.terminalcontrol.entities.sidstar.Star
-import com.bombbird.terminalcontrol.sounds.TextToSpeech
-import java.util.*
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
+import com.bombbird.terminalcontrol.utilities.files.FileLoader
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-class TextToSpeechManager : TextToSpeech {
-    override fun initArrContact(aircraft: Aircraft, apchCallsign: String, greeting: String, action: String, star: String, starSaid: Boolean, direct: String, inboundSaid: Boolean, info: String) {
+class TextToSpeechManager : TextToSpeechInterface {
+    private val voices = Array<String>()
+
+    /** Says the text */
+    override fun sayText(text: String, voice: String) {
         //No default implementation
     }
 
-    override fun goAroundContact(aircraft: Aircraft, apchCallsign: String, action: String, heading: String) {
-        //No default implementation
-    }
-
-    override fun goAroundMsg(aircraft: Aircraft, goArdText: String, reason: String) {
-        //No default implementation
-    }
-
-    override fun initDepContact(aircraft: Aircraft, depCallsign: String, greeting: String, outbound: String, airborne: String, action: String, sid: String, sidSaid: Boolean) {
-        //No default implementation
-    }
-
-    override fun holdEstablishMsg(aircraft: Aircraft, wpt: String, type: Int) {
-        //No default implementation
-    }
-
-    override fun contactOther(aircraft: Aircraft, frequency: String) {
-        //No default implementation
-    }
-
-    override fun lowFuel(aircraft: Aircraft, status: Int) {
-        //No default implementation
-    }
-
-    override fun sayEmergency(aircraft: Aircraft, emergency: String, intent: String) {
-        //No default implementation
-    }
-
-    override fun sayRemainingChecklists(aircraft: Aircraft, dumpFuel: Boolean) {
-        //No default implementation
-    }
-
-    override fun sayReadyForDump(aircraft: Aircraft) {
-        //No default implementation
-    }
-
-    override fun sayDumping(aircraft: Aircraft) {
-        //No default implementation
-    }
-
-    override fun sayRemainingDumpTime(aircraft: Aircraft, min: Int) {
-        //No default implementation
-    }
-
-    override fun sayReadyForApproach(aircraft: Aircraft, stayOnRwy: Boolean) {
-        //No default implementation
-    }
-
-    override fun sayRequest(aircraft: Aircraft, request: String) {
-        //No default implementation
-    }
-
+    /** Stops all current and subsequent speeches */
     override fun cancel() {
         //No default implementation
     }
 
-    override fun test(stars: HashMap<String, Star>, sids: HashMap<String, Sid>) {
-        //No default implementation
+    /** Checks if the voice is available, returns original voice if it is, else returns a random voice from all available voices */
+    override fun checkAndUpdateVoice(voice: String): String {
+        if (voices.contains(voice)) return voice
+        return voices.random() ?: voice
     }
 
-    override fun getRandomVoice(): String {
-        return ""
+    /** First ensures that balcon is available on the device, then gets the names of all the applicable voices available on the device */
+    override fun loadVoices() {
+        val version = Gdx.files.internal("tts/version.txt")
+        val currentVersion = Gdx.files.external(FileLoader.mainDir + "/tts/version.txt")
+        if (!currentVersion.exists() || version.readString() != currentVersion.readString()) Gdx.files.internal("tts").copyTo(Gdx.files.external(FileLoader.mainDir))
+
+        val process = Runtime.getRuntime().exec("${Gdx.files.external(FileLoader.mainDir + "/tts/balcon.exe").file().absolutePath} -l")
+        val reader = BufferedReader(InputStreamReader(process.inputStream))
+        process.waitFor()
+        reader.forEachLine {
+            if (it.isNotBlank() && !it.contains("SAPI")) voices.add(it.trim())
+        }
+        println(voices)
     }
 }

@@ -1,65 +1,9 @@
 package com.bombbird.terminalcontrol
 
-import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
-import com.bombbird.terminalcontrol.entities.sidstar.Sid
-import com.bombbird.terminalcontrol.entities.sidstar.Star
-import com.bombbird.terminalcontrol.sounds.TextToSpeech
-import java.util.*
+import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
 
-class TextToSpeechManager : TextToSpeech {
-    override fun initArrContact(aircraft: Aircraft, apchCallsign: String, greeting: String, action: String, star: String, starSaid: Boolean, direct: String, inboundSaid: Boolean, info: String) {
-        //No default implementation
-    }
-
-    override fun goAroundContact(aircraft: Aircraft, apchCallsign: String, action: String, heading: String) {
-        //No default implementation
-    }
-
-    override fun goAroundMsg(aircraft: Aircraft, goArdText: String, reason: String) {
-        //No default implementation
-    }
-
-    override fun initDepContact(aircraft: Aircraft, depCallsign: String, greeting: String, outbound: String, airborne: String, action: String, sid: String, sidSaid: Boolean) {
-        //No default implementation
-    }
-
-    override fun holdEstablishMsg(aircraft: Aircraft, wpt: String, type: Int) {
-        //No default implementation
-    }
-
-    override fun contactOther(aircraft: Aircraft, frequency: String) {
-        //No default implementation
-    }
-
-    override fun lowFuel(aircraft: Aircraft, status: Int) {
-        //No default implementation
-    }
-
-    override fun sayEmergency(aircraft: Aircraft, emergency: String, intent: String) {
-        //No default implementation
-    }
-
-    override fun sayRemainingChecklists(aircraft: Aircraft, dumpFuel: Boolean) {
-        //No default implementation
-    }
-
-    override fun sayReadyForDump(aircraft: Aircraft) {
-        //No default implementation
-    }
-
-    override fun sayDumping(aircraft: Aircraft) {
-        //No default implementation
-    }
-
-    override fun sayRemainingDumpTime(aircraft: Aircraft, min: Int) {
-        //No default implementation
-    }
-
-    override fun sayReadyForApproach(aircraft: Aircraft, stayOnRwy: Boolean) {
-        //No default implementation
-    }
-
-    override fun sayRequest(aircraft: Aircraft, request: String) {
+class TextToSpeechManager : TextToSpeechInterface {
+    override fun sayText(text: String, voice: String) {
         //No default implementation
     }
 
@@ -67,11 +11,12 @@ class TextToSpeechManager : TextToSpeech {
         //No default implementation
     }
 
-    override fun test(stars: HashMap<String, Star>, sids: HashMap<String, Sid>) {
+    override fun checkAndUpdateVoice(voice: String): String {
         //No default implementation
+        return ""
     }
 
-    override fun getRandomVoice(): String {
-        return ""
+    override fun loadVoices() {
+        //No default implementation
     }
 }

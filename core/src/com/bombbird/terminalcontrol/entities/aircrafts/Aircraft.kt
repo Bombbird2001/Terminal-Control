@@ -246,7 +246,7 @@ abstract class Aircraft : Actor {
         isSilenced = false
         emergency = Emergency(this, radarScreen.emerChance)
         radarScreen.wakeManager.addAircraft(callsign)
-        voice = TerminalControl.tts.getRandomVoice()
+        voice = TerminalControl.tts.checkAndUpdateVoice("")
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false
@@ -427,7 +427,7 @@ abstract class Aircraft : Actor {
         radarGs = save.getDouble("radarGs").toFloat()
         radarAlt = save.getDouble("radarAlt").toFloat()
         radarVs = save.getDouble("radarVs").toFloat()
-        voice = save.optString("voice", TerminalControl.tts.getRandomVoice())
+        voice = TerminalControl.tts.checkAndUpdateVoice(save.optString("voice", ""))
         trajectory = Trajectory(this)
         isTrajectoryConflict = false
         isTrajectoryTerrainConflict = false

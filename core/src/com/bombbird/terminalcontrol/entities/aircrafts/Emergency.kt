@@ -318,8 +318,7 @@ class Emergency {
         if (type == Type.MEDICAL) emergency = "a medical emergency"
         if (type == Type.PRESSURE_LOSS) emergency = "an emergency due to loss of cabin pressure"
         if (type == Type.FUEL_LEAK) emergency = "an emergency due to fuel leak"
-        val intent: String
-        intent = if (type == Type.PRESSURE_LOSS) {
+        val intent: String = if (type == Type.PRESSURE_LOSS) {
             ", we are initiating an emergency descent to 9000 feet"
         } else {
             val altitude = if (aircraft.clearedAltitude >= radarScreen.transLvl * 100) "FL" + aircraft.clearedAltitude / 100 else aircraft.clearedAltitude.toString() + " feet"
@@ -327,13 +326,13 @@ class Emergency {
         }
         val text = "Mayday, mayday, mayday, " + aircraft.callsign + aircraft.wakeString + " is declaring " + emergency + " and would like to return to the airport" + intent
         radarScreen.utilityBox.commsManager.warningMsg(text)
-        TerminalControl.tts.sayEmergency(aircraft, emergency, intent)
+        TerminalControl.ttsManager.sayEmergency(aircraft, emergency, intent)
     }
 
     /** Adds comm box message, TTS to notify controller of intentions, whether fuel dump is required  */
     private fun sayRunChecklists() {
         radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " will need a few more minutes to run checklists" + if (isFuelDumpRequired) " before dumping fuel" else "")
-        TerminalControl.tts.sayRemainingChecklists(aircraft, isFuelDumpRequired)
+        TerminalControl.ttsManager.sayRemainingChecklists(aircraft, isFuelDumpRequired)
     }
 
     /** Adds comm box message, TTS when aircraft is ready to dump fuel  */
@@ -353,24 +352,24 @@ class Emergency {
         if (withinRange(bearing, 300f, 330f)) dir = "north-west"
         val alt = if (aircraft.altitude >= radarScreen.transLvl) ((aircraft.altitude / 100).toInt() * 100).toString() + " feet" else "FL" + (aircraft.altitude / 100).toInt()
         radarScreen.utilityBox.commsManager.normalMsg("Attention all aircraft, fuel dumping in progress " + dist + " miles " + dir + " of " + radarScreen.mainName + ", " + alt)
-        TerminalControl.tts.sayReadyForDump(aircraft)
+        TerminalControl.ttsManager.sayReadyForDump(aircraft)
     }
 
     /** Adds comm box message, TTS when aircraft starts dumping fuel  */
     private fun sayDumping() {
         radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is now dumping fuel")
-        TerminalControl.tts.sayDumping(aircraft)
+        TerminalControl.ttsManager.sayDumping(aircraft)
     }
 
     /** Adds comm box message, TTS when aircraft is halfway through fuel dump  */
     private fun sayRemainingDumpTime() {
         radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + ", we'll need about " + sayRemainingTime + " more minutes")
-        TerminalControl.tts.sayRemainingDumpTime(aircraft, sayRemainingTime)
+        TerminalControl.ttsManager.sayRemainingDumpTime(aircraft, sayRemainingTime)
     }
 
     /** Adds comm box message, TTS when aircraft has finished dumping fuel, is ready for approach  */
     private fun sayReadyForApproach() {
         radarScreen.utilityBox.commsManager.warningMsg(aircraft.callsign + aircraft.wakeString + " is ready for approach" + if (isStayOnRwy) ", we will stay on the runway after landing" else "")
-        TerminalControl.tts.sayReadyForApproach(aircraft, isStayOnRwy)
+        TerminalControl.ttsManager.sayReadyForApproach(aircraft, isStayOnRwy)
     }
 }
