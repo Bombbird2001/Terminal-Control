@@ -261,7 +261,7 @@ class RadarScreen : GameScreen {
             colourStyle = 0
             realisticMetar = false
             emerChance = Emergency.Chance.OFF
-            soundSel = TerminalControl.defaultSoundSetting
+            soundSel = 2
             weatherSel = Weather.STATIC
             distToGoVisible = 0
         } else {
@@ -349,7 +349,7 @@ class RadarScreen : GameScreen {
             "false" -> Weather.RANDOM
             else -> Weather.valueOf(save.getString("liveWeather"))
         }
-        soundSel = save.optInt("sounds", TerminalControl.defaultSoundSetting)
+        soundSel = save.optInt("sounds", 2)
         emerChance = if (save.isNull("emerChance")) {
             Emergency.Chance.MEDIUM
         } else {

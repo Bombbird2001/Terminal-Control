@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.30-M1'
+    ext.kotlin_version = '1.4.30-RC'
 
     repositories {
         mavenLocal()
@@ -21,12 +21,12 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '1.5.2014.2'
+    version = '1.5.2101.1'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.12'
         roboVMVersion = '2.3.11'
-        versionCode = 70
+        versionCode = 71
     }
 
     repositories {
@@ -51,6 +51,7 @@ project(":desktop") {
         implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         implementation "club.minnced:java-discord-rpc:2.0.2"
         implementation "club.minnced:discord-rpc-release:v3.4.0"
+        implementation group: 'de.dfki.mary', name: 'marytts', version: '5.2', ext: 'pom'
     }
 }
 

@@ -5,7 +5,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 
-class ArrivalGenerator(val radarScreen: RadarScreen, val allAircraft: HashSet<String>): RandomGenerator() {
+class ArrivalGenerator(val radarScreen: RadarScreen, private val allAircraft: HashSet<String>): RandomGenerator() {
     var finalAirport: Airport? = null
 
     override fun run() {

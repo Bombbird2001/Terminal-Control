@@ -93,7 +93,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 pastTrajTime = -1
                 weatherSel = RadarScreen.Weather.LIVE
                 stormNumber = 0
-                soundSel = defaultSoundSetting
+                soundSel = 2
                 sendAnonCrash = true
                 increaseZoom = false
                 saveInterval = 60
@@ -123,7 +123,8 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                     "false" -> RadarScreen.Weather.RANDOM //Old format
                     else -> RadarScreen.Weather.valueOf(settings.getString("weather")) //New format
                 }
-                soundSel = settings.optInt("sound", soundSel)
+                soundSel = settings.optInt("sound", 2)
+                if (Gdx.app.type == Application.ApplicationType.Desktop && soundSel == 1) soundSel = 2
                 stormNumber = settings.optInt("stormNumber", 0)
                 sendAnonCrash = settings.optBoolean("sendCrash", true)
                 emerChance = if (settings.isNull("emerChance")) {
@@ -152,9 +153,6 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
             }
             GameSaver.saveSettings()
         }
-
-        val defaultSoundSetting: Int
-            get() = if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1
 
         fun loadVersionInfo() {
             val info = Gdx.files.internal("game/type.type").readString().split(" ".toRegex()).toTypedArray()
