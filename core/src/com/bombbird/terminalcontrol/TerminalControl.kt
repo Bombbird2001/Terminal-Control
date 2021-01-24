@@ -13,6 +13,7 @@ import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
 import com.bombbird.terminalcontrol.sounds.TextToSpeechManager
+import com.bombbird.terminalcontrol.utilities.BrowserInterface
 import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
@@ -21,7 +22,7 @@ import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler) : Game() {
+class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -55,6 +56,9 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
 
         //External file loader
         lateinit var externalFileHandler: ExternalFileHandler
+
+        //Browser interface
+        lateinit var browserInterface: BrowserInterface
 
         //Default settings
         var trajectorySel = 0
@@ -178,6 +182,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         Companion.toastManager = toastManager
         Companion.discordManager = discordManager
         Companion.externalFileHandler = externalFileHandler
+        Companion.browserInterface = browserInterface
         loadedDiscord = false
         useDiscord = false
         ttsManager = TextToSpeechManager()

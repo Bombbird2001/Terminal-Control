@@ -11,20 +11,20 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
 import java.util.*
 
-open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpeechInterface {
+open class AndroidTextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpeechInterface {
     companion object {
         const val ACT_CHECK_TTS_DATA = 1000
         const val ACT_INSTALL_TTS_DATA = 1001
     }
 
     private var tts: android.speech.tts.TextToSpeech? = null
-    lateinit var toastManager: ToastManager
+    lateinit var toastManager: AndroidToastManager
 
     private val voiceArray = Array<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toastManager = ToastManager(this as AndroidLauncher)
+        toastManager = AndroidToastManager(this as AndroidLauncher)
     }
 
     /** Performs relevant actions after receiving status for TTS data check   */

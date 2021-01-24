@@ -16,7 +16,7 @@ import java.io.IOException
 const val OPEN_SAVE_FILE = 9
 const val CREATE_SAVE_FILE = 10
 
-class AndroidLauncher : TextToSpeechManager(), ExternalFileHandler {
+class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
     //private PlayGamesManager playGamesManager;
@@ -26,7 +26,7 @@ class AndroidLauncher : TextToSpeechManager(), ExternalFileHandler {
         config.numSamples = 0
         config.useAccelerometer = false
         config.useCompass = false
-        initialize(TerminalControl(this, toastManager, object : DiscordManager {}, this), config)
+        initialize(TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this)), config)
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         try {

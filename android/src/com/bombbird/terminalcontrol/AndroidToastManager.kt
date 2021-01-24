@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException
 import com.bombbird.terminalcontrol.utilities.ToastManager
 import java.io.IOException
 
-class ToastManager(private val androidLauncher: AndroidLauncher) : ToastManager {
+class AndroidToastManager(private val androidLauncher: AndroidLauncher) : ToastManager {
     override fun saveFail(e: GdxRuntimeException) {
         var error = androidLauncher.resources.getString(R.string.Save_fail)
         val nextE = e.cause
