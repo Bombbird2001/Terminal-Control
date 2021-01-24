@@ -217,6 +217,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         quitButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Quit game
+                TerminalControl.tts.quit()
                 dispose()
                 Gdx.app.exit()
             }

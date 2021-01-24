@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -124,7 +123,6 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                     else -> RadarScreen.Weather.valueOf(settings.getString("weather")) //New format
                 }
                 soundSel = settings.optInt("sound", 2)
-                if (Gdx.app.type == Application.ApplicationType.Desktop && soundSel == 1) soundSel = 2
                 stormNumber = settings.optInt("stormNumber", 0)
                 sendAnonCrash = settings.optBoolean("sendCrash", true)
                 emerChance = if (settings.isNull("emerChance")) {

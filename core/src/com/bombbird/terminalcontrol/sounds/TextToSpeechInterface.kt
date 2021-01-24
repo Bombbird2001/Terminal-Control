@@ -5,4 +5,7 @@ interface TextToSpeechInterface {
     fun cancel()
     fun checkAndUpdateVoice(voice: String): String
     fun loadVoices()
+    fun quit() {
+        //No default implementation
+    }
 }

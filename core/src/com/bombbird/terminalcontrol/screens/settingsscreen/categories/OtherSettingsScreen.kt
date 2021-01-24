@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen.categories
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -174,7 +173,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             12 -> "Nightmare"
             else -> "Off"
         }
-        var soundIndex = (if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1) - soundSel
+        var soundIndex = 2 - soundSel
         if (soundIndex < 0) soundIndex = 0
         sound.selectedIndex = soundIndex
         val df = DecimalFormat("#.#")

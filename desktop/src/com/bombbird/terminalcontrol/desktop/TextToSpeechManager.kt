@@ -6,19 +6,22 @@ import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import marytts.LocalMaryInterface
 import marytts.modules.synthesis.Voice
-import marytts.util.data.audio.AppendableSequenceAudioInputStream
 import marytts.util.data.audio.AudioPlayer
 import org.apache.commons.lang3.SystemUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
 class TextToSpeechManager : TextToSpeechInterface {
     private var supportsSAPI = false
     private val voices = Array<String>()
     private var maryInterface: LocalMaryInterface? = null
-    private var audioPlayer: AudioPlayer? = null
-    private var maryAudioSequence: AppendableSequenceAudioInputStream? = null
+    private var blockingQueue: LinkedBlockingQueue<Runnable>? = null
+    private var running = false
+    private var currentAudioPlayer: AudioPlayer? = null
+    private var maryThread: Thread? = null
 
     /** Says the text */
     override fun sayText(text: String, voice: String) {
@@ -31,16 +34,19 @@ class TextToSpeechManager : TextToSpeechInterface {
                 )
             }.start()
         } else {
-            try {
-                maryInterface?.voice = voice
-                val audio = maryInterface?.generateAudio(text)
-                if (audio != null) {
-                    maryAudioSequence?.append(audio)
-                    if (audioPlayer?.isAlive == false) audioPlayer?.start()
+             blockingQueue?.offer(Runnable {
+                try {
+                    maryInterface?.voice = voice
+                    maryInterface?.audioEffects = "Volume(amount:1.0)+Rate(durScale:1.5)"
+                    val audio = maryInterface?.generateAudio(text)
+                    if (audio != null) {
+                        currentAudioPlayer = AudioPlayer(audio)
+                        currentAudioPlayer?.run() //Run on the same maryTTS thread, so next voice output will be generated after current speech is complete
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            }, 3, TimeUnit.SECONDS)
         }
     }
 
@@ -51,7 +57,8 @@ class TextToSpeechManager : TextToSpeechInterface {
                 Runtime.getRuntime().exec("${Gdx.files.external(FileLoader.mainDir + "/tts/balcon.exe").file().absolutePath} -k")
             }.start()
         } else {
-            audioPlayer?.cancel()
+            blockingQueue?.clear()
+            currentAudioPlayer?.cancel()
         }
     }
 
@@ -65,7 +72,7 @@ class TextToSpeechManager : TextToSpeechInterface {
     override fun loadVoices() {
         if (!voices.isEmpty) return
 
-        if (SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_8 || SystemUtils.IS_OS_WINDOWS_7 || SystemUtils.IS_OS_WINDOWS_VISTA || SystemUtils.IS_OS_WINDOWS_XP) {
+        if (false && (SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_8 || SystemUtils.IS_OS_WINDOWS_7 || SystemUtils.IS_OS_WINDOWS_VISTA || SystemUtils.IS_OS_WINDOWS_XP)) {
             val enVoices = Array<String>()
             enVoices.add("James", "Catherine", "Richard", "Linda")
             enVoices.add("George", "Hazel", "Susan", "Ravi")
@@ -96,15 +103,32 @@ class TextToSpeechManager : TextToSpeechInterface {
         }
     }
 
+    /** Ends the maryTTS thread if it exists */
+    override fun quit() {
+        running = false
+        maryThread?.interrupt()
+    }
+
+    /** Initialize maryTTS */
     private fun loadMary() {
         supportsSAPI = false
+        if (!voices.isEmpty) return
+        maryInterface = LocalMaryInterface()
         for (voice in Voice.getAvailableVoices()) {
             voices.add(voice.name)
         }
-        println(voices)
-        if (voices.isEmpty) return
-        maryInterface = LocalMaryInterface()
-        maryAudioSequence = AppendableSequenceAudioInputStream(Voice.AF22050, null)
-        audioPlayer = AudioPlayer(maryAudioSequence)
+        running = true
+        blockingQueue = LinkedBlockingQueue(10)
+        maryThread = Thread {
+            //Start maryTTS thread to deal with sayText requests
+            while (running) {
+                try {
+                    blockingQueue?.take()?.run()
+                } catch (e: InterruptedException) {
+                    break
+                }
+            }
+        }
+        maryThread?.start()
     }
 }
