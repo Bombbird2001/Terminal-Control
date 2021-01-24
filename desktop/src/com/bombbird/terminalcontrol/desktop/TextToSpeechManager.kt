@@ -72,7 +72,7 @@ class TextToSpeechManager : TextToSpeechInterface {
     override fun loadVoices() {
         if (!voices.isEmpty) return
 
-        if (false && (SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_8 || SystemUtils.IS_OS_WINDOWS_7 || SystemUtils.IS_OS_WINDOWS_VISTA || SystemUtils.IS_OS_WINDOWS_XP)) {
+        if (SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_8 || SystemUtils.IS_OS_WINDOWS_7 || SystemUtils.IS_OS_WINDOWS_VISTA || SystemUtils.IS_OS_WINDOWS_XP) {
             val enVoices = Array<String>()
             enVoices.add("James", "Catherine", "Richard", "Linda")
             enVoices.add("George", "Hazel", "Susan", "Ravi")

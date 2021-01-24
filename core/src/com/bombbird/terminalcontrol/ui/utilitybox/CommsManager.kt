@@ -117,7 +117,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
         } else if (deltaAlt > 400) {
             action = "climbing through $altitude for $clearedAltitude"
         } else {
-            action = "levelling off at $clearedAltitude"
+            action = "leveling off at $clearedAltitude"
             if (abs(deltaAlt) <= 50) {
                 action = "at $clearedAltitude"
             }

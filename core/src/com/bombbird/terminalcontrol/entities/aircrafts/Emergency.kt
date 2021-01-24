@@ -322,7 +322,7 @@ class Emergency {
             ", we are initiating an emergency descent to 9000 feet"
         } else {
             val altitude = if (aircraft.clearedAltitude >= radarScreen.transLvl * 100) "FL" + aircraft.clearedAltitude / 100 else aircraft.clearedAltitude.toString() + " feet"
-            ", levelling off at $altitude"
+            ", leveling off at $altitude"
         }
         val text = "Mayday, mayday, mayday, " + aircraft.callsign + aircraft.wakeString + " is declaring " + emergency + " and would like to return to the airport" + intent
         radarScreen.utilityBox.commsManager.warningMsg(text)
