@@ -65,7 +65,7 @@ open class SettingsTemplateScreen(game: TerminalControl, val radarScreen: RadarS
     }
 
     /** Loads the styles for the selectBox  */
-    fun loadStyles() {
+    private fun loadStyles() {
         val paneStyle = ScrollPane.ScrollPaneStyle()
         paneStyle.background = TerminalControl.skin.getDrawable("ListBackground")
         val listStyle = List.ListStyle()
@@ -93,15 +93,15 @@ open class SettingsTemplateScreen(game: TerminalControl, val radarScreen: RadarS
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         cancelButton = TextButton("Cancel", textButtonStyle)
         cancelButton.setSize(1200f, 300f)
-        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800.toFloat())
+        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800f)
         stage.addActor(cancelButton)
         confirmButton = TextButton("Confirm", textButtonStyle)
         confirmButton.setSize(1200f, 300f)
-        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800.toFloat())
+        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800f)
         stage.addActor(confirmButton)
         backButton = TextButton("<", textButtonStyle)
         backButton.setSize(400f, 400f)
-        backButton.setPosition(5760 / 2f - 2500, 3240 - 2800.toFloat())
+        backButton.setPosition(5760 / 2f - 2500, 3240 - 2800f)
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (tab <= 0) return
@@ -112,7 +112,7 @@ open class SettingsTemplateScreen(game: TerminalControl, val radarScreen: RadarS
         stage.addActor(backButton)
         nextButton = TextButton(">", textButtonStyle)
         nextButton.setSize(400f, 400f)
-        nextButton.setPosition(5760 / 2f + 2000, 3240 - 2800.toFloat())
+        nextButton.setPosition(5760 / 2f + 2000, 3240 - 2800f)
         nextButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (tab >= settingsTabs.size - 1) return
@@ -200,7 +200,7 @@ open class SettingsTemplateScreen(game: TerminalControl, val radarScreen: RadarS
         labelStyle.fontColor = Color.WHITE
         if (radarScreen == null && this !is GlobalSettingsScreen) infoString += " These are default settings, you can still change them for individual games."
         val infoLabel = Label(infoString, labelStyle)
-        infoLabel.setPosition(5760 / 2f - infoLabel.width / 2f, 3240 - 300.toFloat())
+        infoLabel.setPosition(5760 / 2f - infoLabel.width / 2f, 3240 - 300f)
         stage.addActor(infoLabel)
     }
 

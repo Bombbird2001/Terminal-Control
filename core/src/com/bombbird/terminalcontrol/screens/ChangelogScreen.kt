@@ -32,7 +32,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         val scrollPane = ScrollPane(scrollTable)
         scrollPane.x = 2880 / 2f - MainMenuScreen.BUTTON_WIDTH
         scrollPane.y = 1620 * 0.2f
-        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 2.toFloat()
+        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 2f
         scrollPane.height = 1620 * 0.6f
         scrollPane.style.background = TerminalControl.skin.getDrawable("ListBackground")
         stage.addActor(scrollPane)

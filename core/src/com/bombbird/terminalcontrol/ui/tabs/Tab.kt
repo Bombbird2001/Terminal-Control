@@ -111,7 +111,7 @@ open class Tab(ui: Ui) {
                 event.handle()
             }
         })
-        addActor(valueBox, 0.1f, 0.8f, 3240 - 1670.toFloat(), boxHeight)
+        addActor(valueBox, 0.1f, 0.8f, 3240 - 1670f, boxHeight)
     }
 
     fun addActor(actor: Actor, xRatio: Float, widthRatio: Float, y: Float, height: Float) {

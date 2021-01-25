@@ -75,7 +75,7 @@ class Arrival : Aircraft {
     var isGoAroundSet = false
         private set
 
-    constructor(callsign: String, icaoType: String, arrival: Airport) : super(callsign, icaoType, arrival) {
+    constructor(callsign: String, icaoType: String, arrival: Airport, newStar: String?) : super(callsign, icaoType, arrival) {
         isOnGround = false
         isLowerSpdSet = false
         isIlsSpdSet = false
@@ -85,9 +85,8 @@ class Arrival : Aircraft {
         contactAlt = MathUtils.random(2000) + 22000
 
         //Gets a STAR for active runways
-        star = RandomSTAR.randomSTAR(arrival)
+        star = arrival.stars[newStar] ?: RandomSTAR.randomSTAR(arrival)
         if ("EVA226" == callsign && radarScreen.tutorial) {
-            star = arrival.stars["NTN1A"]!!
             emergency.isEmergency = false
             typDes = 2900
             contactAlt = 22000
@@ -130,7 +129,7 @@ class Arrival : Aircraft {
             if (initAlt > 28000) {
                 initAlt = 28000f
             } else if (initAlt < airport.elevation + 6000) {
-                initAlt = MathUtils.round(airport.elevation / 1000f) * 1000 + 6000.toFloat()
+                initAlt = MathUtils.round(airport.elevation / 1000f) * 1000 + 6000f
             }
             if (minAltWpt != null && initAlt < route.getWptMinAlt(minAltWpt.name)) {
                 initAlt = route.getWptMinAlt(minAltWpt.name).toFloat()

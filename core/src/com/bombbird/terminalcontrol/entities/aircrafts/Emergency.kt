@@ -78,7 +78,7 @@ class Emergency {
         fuelDumpLag = MathUtils.random(30, 60).toFloat() //Between half to one minute of time between ready for dump and actual dump start
         isDumpingFuel = false
         isFuelDumpRequired = randomFuelDump()
-        fuelDumpTime = if (isFuelDumpRequired) MathUtils.random(600, 900).toFloat() else 0.toFloat()
+        fuelDumpTime = if (isFuelDumpRequired) MathUtils.random(600, 900).toFloat() else 0f
         isRemainingTimeSaid = false
         sayRemainingTime = (0.5f * fuelDumpTime / 60).toInt()
         isReadyForApproach = false
@@ -99,7 +99,7 @@ class Emergency {
         fuelDumpLag = MathUtils.random(30, 60).toFloat() //Between half to one minute of time between ready for dump and actual dump start
         isDumpingFuel = false
         isFuelDumpRequired = randomFuelDump()
-        fuelDumpTime = if (isFuelDumpRequired) MathUtils.random(600, 900).toFloat() else 0.toFloat()
+        fuelDumpTime = if (isFuelDumpRequired) MathUtils.random(600, 900).toFloat() else 0f
         isRemainingTimeSaid = false
         sayRemainingTime = (0.5f * fuelDumpTime / 60).toInt()
         isReadyForApproach = false

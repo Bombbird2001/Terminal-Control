@@ -54,7 +54,7 @@ class AltTab(ui: Ui) : Tab(ui) {
                 event.handle()
             }
         })
-        addActor(expediteButton, 0.1f, 0.25f, 3240 - 1325.toFloat(), 300f)
+        addActor(expediteButton, 0.1f, 0.25f, 3240 - 1325f, 300f)
     }
 
     fun updateModeButtons() {

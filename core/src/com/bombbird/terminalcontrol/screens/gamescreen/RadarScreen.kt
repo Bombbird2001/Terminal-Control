@@ -712,7 +712,7 @@ class RadarScreen : GameScreen {
                     continue
                 }
 
-                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport)
+                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport, null)
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
             } else {
