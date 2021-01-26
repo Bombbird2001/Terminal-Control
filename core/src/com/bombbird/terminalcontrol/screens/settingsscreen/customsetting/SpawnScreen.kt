@@ -128,23 +128,25 @@ class SpawnScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
 
     /** Updates the available airlines at the airport */
     private fun updateAirlineOptions() {
-        airlineBox.items = Array(
-            radarScreen.airports[airportBox.selected]?.airlines?.values?.distinct()?.toTypedArray() ?: arrayOf("???"))
-        airlineBox.items.sort()
+        val array = Array(radarScreen.airports[airportBox.selected]?.airlines?.values?.distinct()?.toTypedArray() ?: arrayOf("???"))
+        array.sort()
+        airlineBox.items = array
     }
 
     /** Updates the available aircraft types for airline */
     private fun updateAircraftTypeOptions() {
-        typeBox.items = Array(radarScreen.airports[airportBox.selected]?.aircrafts?.get(airlineBox.selected)?.split(">".toRegex())?.toTypedArray() ?: arrayOf("???"))
-        typeBox.items.sort()
+        val array = Array(radarScreen.airports[airportBox.selected]?.aircrafts?.get(airlineBox.selected)?.split(">".toRegex())?.toTypedArray() ?: arrayOf("???"))
+        array.sort()
+        typeBox.items = array
     }
 
     /** Updates the available STARs */
     private fun updateStarOptions() {
-        starBox.items = Array(radarScreen.airports[airportBox.selected].let { airport ->
+        val array = Array(radarScreen.airports[airportBox.selected].let { airport ->
             airport?.stars?.values?.filter { it.runways.containsAny(Array(airport.landingRunways.keys.toTypedArray()), false) }?.map { it.name }?.toTypedArray()
         } ?: arrayOf("???"))
-        starBox.items.sort()
+        array.sort()
+        starBox.items = array
     }
 
     /** Makes the standard selectBox for the UI */
