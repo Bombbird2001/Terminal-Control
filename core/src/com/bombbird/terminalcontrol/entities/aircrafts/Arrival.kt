@@ -636,7 +636,7 @@ class Arrival : Aircraft {
             isGoAroundSet = false
             super.updateAltitude(holdAlt, fixedVs)
         }
-        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap) {
+        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap && radarScreen.running) {
             updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true

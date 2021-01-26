@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 
 
 class SpawnScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
@@ -178,8 +179,15 @@ class SpawnScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
         confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800f)
         confirmButton.addListener(object: ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
+                val callsign = airlineBox.selected + callsignField.text
+                if (callsignField.text.isBlank()) {
+                    CustomDialog("Invalid callsign", "Callsign number cannot be empty", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                    return
+                } else if (radarScreen.allAircraft.contains(callsign)) {
+                    CustomDialog("Invalid callsign", "Callsign already exists in game", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                    return
+                }
                 Gdx.app.postRunnable {
-                    val callsign = airlineBox.selected + callsignField.text
                     val arrival = Arrival(callsign, typeBox.selected, radarScreen.airports[airportBox.selected]!!, starBox.selected)
                     radarScreen.aircrafts[callsign] = arrival
                     radarScreen.arrivals++

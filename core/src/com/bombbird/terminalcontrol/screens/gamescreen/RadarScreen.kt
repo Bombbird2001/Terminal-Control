@@ -715,6 +715,7 @@ class RadarScreen : GameScreen {
                 val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport, null)
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
+                allAircraft.add(aircraftInfo[0])
             } else {
                 if (generator.cycles >= 100) {
                     generatorIterator.remove()

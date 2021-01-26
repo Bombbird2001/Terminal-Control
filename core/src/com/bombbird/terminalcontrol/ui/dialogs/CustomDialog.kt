@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.Fonts
 
-open class CustomDialog(title: String, val text: String, var negative: String, var positive: String, val height: Int = 500, val width: Int = 1200): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
+open class CustomDialog(title: String, val text: String, private var negative: String, var positive: String, val height: Int = 500, val width: Int = 1200, private val fontScale: Float = 1f): Dialog(title, TerminalControl.skin.get("defaultDialog", WindowStyle::class.java)) {
     companion object {
         //Dialog constants
         const val DIALOG_NEGATIVE = 0
@@ -16,14 +16,16 @@ open class CustomDialog(title: String, val text: String, var negative: String, v
 
     init {
         titleLabel.setAlignment(Align.top)
-        buttonTable.defaults().width(500f).height(160f).padLeft(30f).padRight(30f)
+        titleLabel.setFontScale(fontScale)
+        titleLabel.setScale(fontScale)
+        buttonTable.defaults().width(5f / 12 * width).height(0.32f * height).padLeft(0.025f * width).padRight(0.025f * width)
         isMovable = false
         initialize()
     }
 
     private fun initialize() {
-        padTop(140f)
-        padBottom(20f)
+        padTop(0.28f * height)
+        padBottom(0.04f * height)
 
         updateText(text)
         generateButtons()
@@ -36,6 +38,8 @@ open class CustomDialog(title: String, val text: String, var negative: String, v
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont12
         val label = Label(newText, labelStyle)
+        label.setScale(fontScale)
+        label.setFontScale(fontScale)
         label.setAlignment(Align.center)
         text(label)
     }
@@ -56,10 +60,14 @@ open class CustomDialog(title: String, val text: String, var negative: String, v
 
         if (negative.isNotEmpty()) {
             val negativeButton = TextButton(negative, buttonStyle)
+            negativeButton.label.setScale(fontScale)
+            negativeButton.label.setFontScale(fontScale)
             button(negativeButton, DIALOG_NEGATIVE)
         }
         if (positive.isNotEmpty()) {
             val positiveButton = TextButton(positive, buttonStyle)
+            positiveButton.label.setScale(fontScale)
+            positiveButton.label.setFontScale(fontScale)
             button(positiveButton, DIALOG_POSITIVE)
         }
     }

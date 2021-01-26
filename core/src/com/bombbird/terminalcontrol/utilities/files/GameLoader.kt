@@ -81,6 +81,7 @@ object GameLoader {
                     //Load arrival
                     val arrival = Arrival(aircrafts.getJSONObject(i))
                     radarScreen.aircrafts[arrival.callsign] = arrival
+                    if (TerminalControl.versionCode <= 71) radarScreen.allAircraft.add(arrival.callsign) //To fix arrivals not being added to allAircraft set before version 71
                 }
                 "Departure" -> {
                     //Load departure
