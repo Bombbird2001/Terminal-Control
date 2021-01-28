@@ -19,9 +19,11 @@ object GameLoader {
         if (save == null) return
 
         val airports = save.getJSONArray("airports")
-        for (airport in radarScreen.airports.values) {
-            for (runway in airport.runways.values) {
-                runway.label.remove()
+        Gdx.app.postRunnable {
+            for (airport in radarScreen.airports.values) {
+                for (runway in airport.runways.values) {
+                    runway.label.remove()
+                }
             }
         }
 
