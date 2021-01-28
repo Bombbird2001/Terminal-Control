@@ -974,7 +974,7 @@ class RadarScreen : GameScreen {
                     GameSaver.writeObjectToFile(save, save?.getInt("saveId") ?: -1)
                     updateWaypointDisplay()
                     TerminalControl.discordManager.updateRPC()
-                    Thread.sleep(100)
+                    //Thread.sleep(100)
                     uiLoaded = true
                     loadGameScreen = null
                 } catch (e: Exception) {
