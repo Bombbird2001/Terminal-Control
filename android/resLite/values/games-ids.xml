@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Google Play game services IDs. Save this file as res/values/games-ids.xml in your project.-->
+<resources>
+    <!--app_id-->
+    <string name="app_id" translatable="false">985712144347</string>
+    <!--package_name-->
+    <string name="package_name" translatable="false">com.bombbird.terminalcontrollite</string>
+    <!--achievement Getting Started-->
+    <string name="achievement_getting_started" translatable="false">CgkI29-WiNgcEAIQAQ</string>
+    <!--achievement Novice-->
+    <string name="achievement_novice" translatable="false">CgkI29-WiNgcEAIQAg</string>
+    <!--achievement Experienced-->
+    <string name="achievement_experienced" translatable="false">CgkI29-WiNgcEAIQAw</string>
+    <!--achievement Expert-->
+    <string name="achievement_expert" translatable="false">CgkI29-WiNgcEAIQBA</string>
+    <!--achievement Veteran-->
+    <string name="achievement_veteran" translatable="false">CgkI29-WiNgcEAIQBQ</string>
+    <!--achievement Godly-->
+    <string name="achievement_godly" translatable="false">CgkI29-WiNgcEAIQBg</string>
+    <!--achievement That was close-->
+    <string name="achievement_that_was_close" translatable="false">CgkI29-WiNgcEAIQBw</string>
+    <!--achievement Typhoon-->
+    <string name="achievement_typhoon" translatable="false">CgkI29-WiNgcEAIQDA</string>
+    <!--achievement Haze-->
+    <string name="achievement_haze" translatable="false">CgkI29-WiNgcEAIQDQ</string>
+    <!--achievement Mayday-->
+    <string name="achievement_mayday" translatable="false">CgkI29-WiNgcEAIQDg</string>
+    <!--achievement Mayday, Mayday-->
+    <string name="achievement_mayday_mayday" translatable="false">CgkI29-WiNgcEAIQDw</string>
+    <!--achievement Master of Conflicts-->
+    <string name="achievement_master_of_conflicts" translatable="false">CgkI29-WiNgcEAIQEA</string>
+    <!--achievement Wake Up!-->
+    <string name="achievement_wake_up" translatable="false">CgkI29-WiNgcEAIQEw</string>
+    <!--achievement HX-->
+    <string name="achievement_hx" translatable="false">CgkI29-WiNgcEAIQFA</string>
+</resources>

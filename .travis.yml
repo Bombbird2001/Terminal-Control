@@ -29,6 +29,4 @@ before_script:
   - chmod +x gradlew
 script:
   - ./gradlew desktop:buildLite
-  - ./gradlew desktop:buildFull
   - ./gradlew android:assembleLiteRelease
-  - ./gradlew android:assembleFullRelease
