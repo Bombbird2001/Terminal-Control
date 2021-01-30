@@ -32,7 +32,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         var useDiscord = false
 
         //Version info
-        var full = false
+        const val full = true
         lateinit var versionName: String
         var versionCode = 0
 
@@ -158,7 +158,6 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
 
         fun loadVersionInfo() {
             val info = Gdx.files.internal("game/type.type").readString().split(" ".toRegex()).toTypedArray()
-            full = "lite" != info[0]
             versionName = info[1]
             versionCode = info[2].toInt()
             FileLoader.mainDir = if (full) "AppData/Roaming/TerminalControlFull" else "AppData/Roaming/TerminalControl"
