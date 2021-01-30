@@ -4,13 +4,17 @@ import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import org.json.JSONObject
 
 interface ExternalFileHandler {
-    fun openFileChooser(loadGameScreen: LoadGameScreen)
+    fun openFileChooser(loadGameScreen: LoadGameScreen) {
+        //No default implementation
+    }
 
     fun notifyLoaded(strData: String, loadGameScreen: LoadGameScreen?) {
         loadGameScreen?.importSave(strData)
     }
 
-    fun openFileSaver(save: JSONObject, loadGameScreen: LoadGameScreen)
+    fun openFileSaver(save: JSONObject, loadGameScreen: LoadGameScreen) {
+        //No default implementation
+    }
 
     fun notifySaved(success: Boolean, loadGameScreen: LoadGameScreen?) {
         loadGameScreen?.showExportMsg(success)

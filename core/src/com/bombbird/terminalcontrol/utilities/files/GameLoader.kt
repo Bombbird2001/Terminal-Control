@@ -19,9 +19,11 @@ object GameLoader {
         if (save == null) return
 
         val airports = save.getJSONArray("airports")
-        for (airport in radarScreen.airports.values) {
-            for (runway in airport.runways.values) {
-                runway.label.remove()
+        Gdx.app.postRunnable {
+            for (airport in radarScreen.airports.values) {
+                for (runway in airport.runways.values) {
+                    runway.label.remove()
+                }
             }
         }
 
@@ -81,6 +83,7 @@ object GameLoader {
                     //Load arrival
                     val arrival = Arrival(aircrafts.getJSONObject(i))
                     radarScreen.aircrafts[arrival.callsign] = arrival
+                    if (TerminalControl.versionCode <= 71) radarScreen.allAircraft.add(arrival.callsign) //To fix arrivals not being added to allAircraft set before version 71
                 }
                 "Departure" -> {
                     //Load departure

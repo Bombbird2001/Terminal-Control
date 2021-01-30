@@ -24,7 +24,7 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         val resumeButton = TextButton("Resume", textButtonStyle)
         resumeButton.setSize(1200f, 300f)
-        resumeButton.setPosition((5760 - 1200) / 2f, 3240 - 1200.toFloat())
+        resumeButton.setPosition((5760 - 1200) / 2f, 3240 - 1200f)
         resumeButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Un-pause the game
@@ -35,7 +35,7 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
         stage.addActor(resumeButton)
         val settingsButton = TextButton("Settings", textButtonStyle)
         settingsButton.setSize(1200f, 300f)
-        settingsButton.setPosition((5760 - 1200) / 2f, 3240 - 1600.toFloat())
+        settingsButton.setPosition((5760 - 1200) / 2f, 3240 - 1600f)
         settingsButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Change to settings state
@@ -49,7 +49,7 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
         stage.addActor(settingsButton)
         val quitButton = TextButton(if (radarScreen.tutorial) "Quit" else "Save & Quit", textButtonStyle)
         quitButton.setSize(1200f, 300f)
-        quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000.toFloat())
+        quitButton.setPosition((5760 - 1200) / 2f, 3240 - 2000f)
         quitButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Go back to main menu screen
@@ -74,7 +74,7 @@ class PauseScreen(game: TerminalControl, private val radarScreen: RadarScreen) :
             imageButtonStyle3.imageDown.minWidth = buttonWidthSmall
             imageButtonStyle3.imageDown.minHeight = buttonHeightSmall
             val upgradeButton = ImageButton(imageButtonStyle3)
-            upgradeButton.setPosition(5760 - buttonWidthSmall, 1790 + 50.toFloat())
+            upgradeButton.setPosition(5760 - buttonWidthSmall, 1790 + 50f)
             upgradeButton.setSize(buttonWidthSmall, buttonHeightSmall)
             upgradeButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {

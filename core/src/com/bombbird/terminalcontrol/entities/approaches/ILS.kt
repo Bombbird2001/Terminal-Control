@@ -91,7 +91,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
         minAlt = -1
         for (i in 2..gsAlt / 1000) {
             if (i * 1000 > airport.elevation + 1000) {
-                gsRings.add(Vector2(x + nmToPixel(getDistAtGsAlt(i * 1000.toFloat())) * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat(), y + nmToPixel(getDistAtGsAlt(i * 1000.toFloat())) * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()))
+                gsRings.add(Vector2(x + nmToPixel(getDistAtGsAlt(i * 1000f)) * cos(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat(), y + nmToPixel(getDistAtGsAlt(i * 1000f)) * sin(Math.toRadians(270 - heading + radarScreen.magHdgDev.toDouble())).toFloat()))
                 if (minAlt == -1) minAlt = i
             }
         }

@@ -169,7 +169,7 @@ class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         val cancelButton = TextButton("Cancel", textButtonStyle)
         cancelButton.setSize(1200f, 300f)
-        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800.toFloat())
+        cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800f)
         cancelButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 game.screen = OtherSettingsScreen(game, TerminalControl.radarScreen, null)
@@ -179,7 +179,7 @@ class WeatherScreen(game: TerminalControl) : BasicScreen(game, 5760, 3240) {
 
         val confirmButton = TextButton("Confirm", textButtonStyle)
         confirmButton.setSize(1200f, 300f)
-        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800.toFloat())
+        confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800f)
         confirmButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 val newData = HashMap<String, IntArray>()

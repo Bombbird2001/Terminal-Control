@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen.categories
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -24,13 +23,13 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
     lateinit var sound: SelectBox<String>
     lateinit var sweep: SelectBox<String>
     lateinit var storms: SelectBox<String>
-    lateinit var weatherLabel: Label
+    private lateinit var weatherLabel: Label
     lateinit var weatherSel: RadarScreen.Weather
-    lateinit var soundLabel: Label
+    private lateinit var soundLabel: Label
     var soundSel = 0
-    lateinit var sweepLabel: Label
+    private lateinit var sweepLabel: Label
     var radarSweep = 0f
-    lateinit var stormLabel: Label
+    private lateinit var stormLabel: Label
     var stormNumber = 0
 
     //In game only
@@ -82,21 +81,19 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             }
         })
         sound = createStandardSelectBox()
-        val options = Array<String>(2)
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            options.add("Pilot voices + sound effects", "Sound effects only", "Off")
-        } else if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            options.add("Sound effects", "Off")
-        }
+        val options = Array<String>()
+        options.add("Pilot voices + sound effects", "Sound effects only", "Off")
         sound.items = options
         sound.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                if ("Pilot voices + sound effects" == sound.selected) {
-                    soundSel = 2
-                } else if ("Sound effects" == sound.selected || "Sound effects only" == sound.selected) {
-                    soundSel = 1
-                } else if ("Off" == sound.selected) {
-                    soundSel = 0
+                soundSel = when (sound.selected) {
+                    "Pilot voices + sound effects" -> 2
+                    "Sound effects only" -> 1
+                    "Off" -> 0
+                    else -> {
+                        Gdx.app.log(className, "Unknown sound setting " + sound.selected)
+                        1
+                    }
                 }
             }
         })
@@ -176,7 +173,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             12 -> "Nightmare"
             else -> "Off"
         }
-        var soundIndex = (if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1) - soundSel
+        var soundIndex = 2 - soundSel
         if (soundIndex < 0) soundIndex = 0
         sound.selectedIndex = soundIndex
         val df = DecimalFormat("#.#")

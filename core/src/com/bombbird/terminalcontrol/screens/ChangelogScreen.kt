@@ -32,7 +32,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         val scrollPane = ScrollPane(scrollTable)
         scrollPane.x = 2880 / 2f - MainMenuScreen.BUTTON_WIDTH
         scrollPane.y = 1620 * 0.2f
-        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 2.toFloat()
+        scrollPane.width = MainMenuScreen.BUTTON_WIDTH * 2f
         scrollPane.height = 1620 * 0.6f
         scrollPane.style.background = TerminalControl.skin.getDrawable("ListBackground")
         stage.addActor(scrollPane)
@@ -71,6 +71,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
 
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
+
+        //Version 1.5.2101.1
+        val content21 = Array<String>()
+        content21.add("-Feature: Allow to user to spawn custom arrivals under Settings => Traffic => Spawn custom arrival")
+        if (Gdx.app.type == Application.ApplicationType.Desktop) content21.add("-TTS: Added TTS for desktop (Linux, Windows XP and later); if you are using Windows, you can install more voices from Microsoft")
+        content21.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2101.1"] = content21
 
         //Version 1.5.2014.2
         val content20 = Array<String>()

@@ -42,18 +42,18 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
         labelStyle.font = Fonts.defaultFont6
         labelStyle.fontColor = Color.GRAY
         nameLabel = Label(name, labelStyle)
-        nameLabel.setPosition(posX - nameLabel.width / 2, posY + 16.toFloat())
+        nameLabel.setPosition(posX - nameLabel.width / 2, posY + 16f)
         nameLabel.setAlignment(Align.bottom)
 
         //Set restriction label
         restrLabel = Label("This should not be visible", labelStyle)
-        restrLabel.setPosition(posX - restrLabel.width / 2, posY + 48.toFloat())
+        restrLabel.setPosition(posX - restrLabel.width / 2, posY + 48f)
         restrLabel.setAlignment(Align.bottom)
         restrVisible = false
 
         //Set dist to go label
         distToGoLabel = Label("", labelStyle)
-        distToGoLabel.setPosition(posX.toFloat(), posY - 44.toFloat())
+        distToGoLabel.setPosition(posX.toFloat(), posY - 44f)
         distToGoLabel.setAlignment(Align.bottom)
 
         adjustPositions()

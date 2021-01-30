@@ -261,7 +261,7 @@ class RadarScreen : GameScreen {
             colourStyle = 0
             realisticMetar = false
             emerChance = Emergency.Chance.OFF
-            soundSel = TerminalControl.defaultSoundSetting
+            soundSel = 2
             weatherSel = Weather.STATIC
             distToGoVisible = 0
         } else {
@@ -349,7 +349,7 @@ class RadarScreen : GameScreen {
             "false" -> Weather.RANDOM
             else -> Weather.valueOf(save.getString("liveWeather"))
         }
-        soundSel = save.optInt("sounds", TerminalControl.defaultSoundSetting)
+        soundSel = save.optInt("sounds", 2)
         emerChance = if (save.isNull("emerChance")) {
             Emergency.Chance.MEDIUM
         } else {
@@ -712,9 +712,10 @@ class RadarScreen : GameScreen {
                     continue
                 }
 
-                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport)
+                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport, null)
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
+                allAircraft.add(aircraftInfo[0])
             } else {
                 if (generator.cycles >= 100) {
                     generatorIterator.remove()
@@ -973,7 +974,7 @@ class RadarScreen : GameScreen {
                     GameSaver.writeObjectToFile(save, save?.getInt("saveId") ?: -1)
                     updateWaypointDisplay()
                     TerminalControl.discordManager.updateRPC()
-                    Thread.sleep(100)
+                    //Thread.sleep(100)
                     uiLoaded = true
                     loadGameScreen = null
                 } catch (e: Exception) {

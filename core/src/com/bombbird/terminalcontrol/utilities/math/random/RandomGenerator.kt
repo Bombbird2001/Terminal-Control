@@ -9,19 +9,11 @@ import java.util.*
 import kotlin.collections.HashSet
 
 open class RandomGenerator: Runnable {
-    companion object {
-        var id = 0
-    }
     private val excluded = Gdx.files.internal("game/aircrafts/exclude.air").readString().split("\\r?\\n".toRegex()).toTypedArray()
 
-    val thisId = id
     var done = false
     var aircraftInfo: Array<String>? = null
     var cycles = 0
-
-    init {
-        id++
-    }
 
     override fun run() {}
 

@@ -91,7 +91,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 event.handle()
             }
         })
-        addActor(ilsBox, 0.65f, 0.25f, 3240 - 1325.toFloat(), 300f)
+        addActor(ilsBox, 0.65f, 0.25f, 3240 - 1325f, 300f)
     }
 
     private fun loadHdgElements() {
@@ -102,7 +102,7 @@ class LatTab(ui: Ui) : Tab(ui) {
         labelStyle.background = Ui.hdgBoxBackgroundDrawable
         hdgBox = Label("360", labelStyle)
         hdgBox.setAlignment(Align.center)
-        addActor(hdgBox, 1.1f / 3, 0.8f / 3, 3240 - 2600.toFloat(), 900f)
+        addActor(hdgBox, 1.1f / 3, 0.8f / 3, 3240 - 2600f, 900f)
 
         //Button for click spot below heading label, fixes annoying "click-through" bug
         val buttonStyle = Button.ButtonStyle()
@@ -114,7 +114,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 event.handle()
             }
         })
-        addActor(hdgBoxClick, 1.1f / 3, 0.8f / 3, 3240 - 2600.toFloat(), 900f)
+        addActor(hdgBoxClick, 1.1f / 3, 0.8f / 3, 3240 - 2600f, 900f)
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.fontColor = Color.WHITE
         textButtonStyle.down = Ui.lightBoxBackground
@@ -162,7 +162,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 event.handle()
             }
         })
-        addActor(leftButton, 0.1f, 0.4f, 3240 - 1700.toFloat(), 300f)
+        addActor(leftButton, 0.1f, 0.4f, 3240 - 1700f, 300f)
 
         //Right button
         rightButton = TextButton("Right", TextButton.TextButtonStyle(textButtonStyle2))
@@ -176,7 +176,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 event.handle()
             }
         })
-        addActor(rightButton, 0.5f, 0.4f, 3240 - 1700.toFloat(), 300f)
+        addActor(rightButton, 0.5f, 0.4f, 3240 - 1700f, 300f)
     }
 
     private fun newHdgButton(value: Int, buttonStyle: TextButton.TextButtonStyle): TextButton {

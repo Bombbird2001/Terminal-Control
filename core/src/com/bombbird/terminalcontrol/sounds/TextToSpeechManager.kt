@@ -1,93 +1,14 @@
-package com.bombbird.terminalcontrol
+package com.bombbird.terminalcontrol.sounds
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.os.Bundle
-import android.speech.tts.TextToSpeech.OnInitListener
-import android.speech.tts.Voice
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.backends.android.AndroidApplication
-import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
-import com.bombbird.terminalcontrol.entities.sidstar.Sid
-import com.bombbird.terminalcontrol.entities.sidstar.Star
-import com.bombbird.terminalcontrol.sounds.Pronunciation
-import com.bombbird.terminalcontrol.sounds.TextToSpeech
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
-open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpeech {
-    companion object {
-        const val ACT_CHECK_TTS_DATA = 1000
-        const val ACT_INSTALL_TTS_DATA = 1001
-    }
-
-    private var tts: android.speech.tts.TextToSpeech? = null
-    lateinit var toastManager: ToastManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toastManager = ToastManager(this as AndroidLauncher)
-    }
-
-    /** Performs relevant actions after receiving status for TTS data check   */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        try {
-            if (requestCode == ACT_CHECK_TTS_DATA) {
-                if (resultCode == android.speech.tts.TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                    //Data exists, so we instantiate the TTS engine
-                    tts = android.speech.tts.TextToSpeech(this, this)
-                } else {
-                    //Data is missing, so we start the TTS installation process
-                    val installIntent = Intent()
-                    installIntent.action = android.speech.tts.TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-                    startActivityForResult(installIntent, ACT_INSTALL_TTS_DATA)
-                }
-            } else if (requestCode == ACT_INSTALL_TTS_DATA) {
-                val ttsIntent = Intent()
-                ttsIntent.action = android.speech.tts.TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
-                startActivityForResult(ttsIntent, ACT_CHECK_TTS_DATA)
-            }
-        } catch (e: ActivityNotFoundException) {
-            toastManager.initTTSFail()
-        }
-    }
-
-    /** Sets initial properties after initialisation of TTS is complete  */
-    override fun onInit(status: Int) {
-        if (status == android.speech.tts.TextToSpeech.SUCCESS) {
-            if (tts != null) {
-                val result = tts?.setLanguage(Locale.ENGLISH)
-                if (result == android.speech.tts.TextToSpeech.LANG_MISSING_DATA || result == android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED) {
-                    toastManager.ttsLangNotSupported()
-                } else {
-                    Gdx.app.log("Text to Speech", "TTS initialized successfully")
-                    tts?.setSpeechRate(1.7f)
-                }
-            }
-        } else {
-            toastManager.initTTSFail()
-            Gdx.app.log("Text to Speech", "TTS initialization failed")
-        }
-    }
-
-    /** Stops, destroys TTS instance  */
-    override fun onDestroy() {
-        tts?.stop()
-        tts?.shutdown()
-        super.onDestroy()
-    }
-
-    /** Says the text depending on API level  */
-    private fun sayText(text: String, voice: String) {
-        if (voiceDisabled()) return
-        if (tts == null) return
-        tts?.voice = Voice(voice, Locale.ENGLISH, Voice.QUALITY_HIGH, Voice.LATENCY_NORMAL, false, null)
-        tts?.speak(text, android.speech.tts.TextToSpeech.QUEUE_ADD, null, null)
-    }
-
+class TextToSpeechManager {
     /** Speaks the initial contact for arrivals  */
-    override fun initArrContact(aircraft: Aircraft, apchCallsign: String, greeting: String, action: String, star: String, starSaid: Boolean, direct: String, inboundSaid: Boolean, info: String) {
+    fun initArrContact(aircraft: Aircraft, apchCallsign: String, greeting: String, action: String, star: String, starSaid: Boolean, direct: String, inboundSaid: Boolean, info: String) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -114,7 +35,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
     }
 
     /** Speaks the contact from arrivals after going around  */
-    override fun goAroundContact(aircraft: Aircraft, apchCallsign: String, action: String, heading: String) {
+    fun goAroundContact(aircraft: Aircraft, apchCallsign: String, action: String, heading: String) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newAction = Pronunciation.convertToFlightLevel(action)
@@ -124,7 +45,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun goAroundMsg(aircraft: Aircraft, goArdText: String, reason: String) {
+    fun goAroundMsg(aircraft: Aircraft, goArdText: String, reason: String) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -133,7 +54,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
     }
 
     /** Speaks the initial contact for departures  */
-    override fun initDepContact(aircraft: Aircraft, depCallsign: String, greeting: String, outbound: String, airborne: String, action: String, sid: String, sidSaid: Boolean) {
+    fun initDepContact(aircraft: Aircraft, depCallsign: String, greeting: String, outbound: String, airborne: String, action: String, sid: String, sidSaid: Boolean) {
         if (voiceDisabled()) return
         var newAction = action
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
@@ -147,7 +68,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun holdEstablishMsg(aircraft: Aircraft, wpt: String, type: Int) {
+    fun holdEstablishMsg(aircraft: Aircraft, wpt: String, type: Int) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -165,8 +86,8 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    /** Speaks handover of aircraft to other frequencies  */
-    override fun contactOther(aircraft: Aircraft, frequency: String) {
+    /* Speaks handover of aircraft to other frequencies -- NOT USED
+    fun contactOther(aircraft: Aircraft, frequency: String) {
         if (voiceDisabled()) return
         val newFreq = Pronunciation.convertNoToText(frequency)
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
@@ -174,9 +95,10 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         val text = "$newFreq, good day, $icao $newFlightNo ${aircraft.wakeString}"
         sayText(text, aircraft.voice)
     }
+     */
 
     /** Speaks aircraft's low fuel call  */
-    override fun lowFuel(aircraft: Aircraft, status: Int) {
+    fun lowFuel(aircraft: Aircraft, status: Int) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -192,7 +114,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayEmergency(aircraft: Aircraft, emergency: String, intent: String) {
+    fun sayEmergency(aircraft: Aircraft, emergency: String, intent: String) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -201,7 +123,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayRemainingChecklists(aircraft: Aircraft, dumpFuel: Boolean) {
+    fun sayRemainingChecklists(aircraft: Aircraft, dumpFuel: Boolean) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -209,7 +131,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayReadyForDump(aircraft: Aircraft) {
+    fun sayReadyForDump(aircraft: Aircraft) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -217,7 +139,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayDumping(aircraft: Aircraft) {
+    fun sayDumping(aircraft: Aircraft) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -225,7 +147,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayRemainingDumpTime(aircraft: Aircraft, min: Int) {
+    fun sayRemainingDumpTime(aircraft: Aircraft, min: Int) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -233,7 +155,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayReadyForApproach(aircraft: Aircraft, stayOnRwy: Boolean) {
+    fun sayReadyForApproach(aircraft: Aircraft, stayOnRwy: Boolean) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -241,7 +163,7 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         sayText(text, aircraft.voice)
     }
 
-    override fun sayRequest(aircraft: Aircraft, request: String) {
+    fun sayRequest(aircraft: Aircraft, request: String) {
         if (voiceDisabled()) return
         val icao = Pronunciation.callsigns[getIcaoCode(aircraft.callsign)]
         val newFlightNo = Pronunciation.convertNoToText(getFlightNo(aircraft.callsign))
@@ -250,8 +172,13 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
     }
 
     /** Stops all current and subsequent speeches  */
-    override fun cancel() {
-        tts?.stop()
+    fun cancel() {
+        TerminalControl.tts.cancel()
+    }
+
+    /** Says the text - will be called through interface */
+    private fun sayText(text: String, voice: String) {
+        TerminalControl.tts.sayText(text, voice)
     }
 
     /** Gets the 3 letter ICAO code from callsign  */
@@ -270,41 +197,6 @@ open class TextToSpeechManager : AndroidApplication(), OnInitListener, TextToSpe
         return flightNo
     }
 
-    /** Test function  */
-    override fun test(stars: HashMap<String, Star>, sids: HashMap<String, Sid>) {
-        //Not implemented
-        /*
-        if (checkVoiceDisabled()) return;
-        for (Star star: stars.values()) {
-            System.out.println(star.getPronunciation());
-            tts.speak(star.getPronunciation(), TextToSpeech.QUEUE_ADD, null, null);
-        }
-
-        for (Sid sid: sids.values()) {
-            System.out.println(sid.getPronunciation());
-            tts.speak(sid.getPronunciation(), TextToSpeech.QUEUE_ADD, null, null);
-        }
-        */
-    }
-
-    /** Gets a random voice from all available voices  */
-    override fun getRandomVoice(): String {
-        try {
-            if (tts?.voices?.isEmpty() != false) return ""
-        } catch (e: Exception) {
-            return ""
-        }
-        val voices = Array<String>()
-        tts?.voices?.let {
-            for (voice in it) {
-                if ("en" == voice.name.substring(0, 2)) {
-                    voices.add(voice.name)
-                }
-            }
-        }
-        return voices.random() ?: ""
-    }
-    
     private fun voiceDisabled(): Boolean {
         return TerminalControl.radarScreen?.soundSel ?: -1 < 2
     }

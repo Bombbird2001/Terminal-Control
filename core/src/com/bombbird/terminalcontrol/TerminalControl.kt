@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -12,7 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
-import com.bombbird.terminalcontrol.sounds.TextToSpeech
+import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
+import com.bombbird.terminalcontrol.sounds.TextToSpeechManager
+import com.bombbird.terminalcontrol.utilities.BrowserInterface
 import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
@@ -21,7 +22,7 @@ import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler) : Game() {
+class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -42,8 +43,9 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         private lateinit var buttonAtlas: TextureAtlas
         lateinit var skin: Skin
 
-        //Text-to-speech (for Android only)
-        lateinit var tts: TextToSpeech
+        //Text-to-speech
+        lateinit var ttsManager: TextToSpeechManager
+        lateinit var tts: TextToSpeechInterface
 
         //Toast (for Android only)
         lateinit var toastManager: ToastManager
@@ -54,6 +56,9 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
 
         //External file loader
         lateinit var externalFileHandler: ExternalFileHandler
+
+        //Browser interface
+        lateinit var browserInterface: BrowserInterface
 
         //Default settings
         var trajectorySel = 0
@@ -91,7 +96,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                 pastTrajTime = -1
                 weatherSel = RadarScreen.Weather.LIVE
                 stormNumber = 0
-                soundSel = defaultSoundSetting
+                soundSel = 2
                 sendAnonCrash = true
                 increaseZoom = false
                 saveInterval = 60
@@ -121,7 +126,7 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
                     "false" -> RadarScreen.Weather.RANDOM //Old format
                     else -> RadarScreen.Weather.valueOf(settings.getString("weather")) //New format
                 }
-                soundSel = settings.optInt("sound", soundSel)
+                soundSel = settings.optInt("sound", 2)
                 stormNumber = settings.optInt("stormNumber", 0)
                 sendAnonCrash = settings.optBoolean("sendCrash", true)
                 emerChance = if (settings.isNull("emerChance")) {
@@ -151,9 +156,6 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
             GameSaver.saveSettings()
         }
 
-        val defaultSoundSetting: Int
-            get() = if (Gdx.app.type == Application.ApplicationType.Android) 2 else 1
-
         fun loadVersionInfo() {
             val info = Gdx.files.internal("game/type.type").readString().split(" ".toRegex()).toTypedArray()
             full = "lite" != info[0]
@@ -180,8 +182,10 @@ class TerminalControl(tts: TextToSpeech, toastManager: ToastManager, discordMana
         Companion.toastManager = toastManager
         Companion.discordManager = discordManager
         Companion.externalFileHandler = externalFileHandler
+        Companion.browserInterface = browserInterface
         loadedDiscord = false
         useDiscord = false
+        ttsManager = TextToSpeechManager()
     }
 
     private fun loadDialogSkin() {

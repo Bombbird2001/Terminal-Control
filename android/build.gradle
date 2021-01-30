@@ -17,6 +17,7 @@ android {
             assets.srcDirs = ['assetsFull']
             res.srcDirs = ['resFull']
         }
+        main.assets.filter.exclude '**/tts/*.*'
     }
 
     compileOptions {

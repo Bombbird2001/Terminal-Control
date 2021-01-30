@@ -26,15 +26,16 @@ class InfoScreen(game: TerminalControl, background: Image?) : StandardUIScreen(g
         labelStyle.fontColor = Color.WHITE
         val copyright = Label("""
             Terminal Control${if (TerminalControl.full) "" else ": Lite"}
-            Copyright © 2018-2020, Bombbird
+            Copyright © 2018-2021, Bombbird
+            All rights reserved
             Version ${TerminalControl.versionName}, build ${TerminalControl.versionCode}
             """.trimIndent(), labelStyle)
-        copyright.setPosition(918f, 1375f)
+        copyright.setPosition(918f, 1300f)
         stage.addActor(copyright)
         val disclaimer = Label("While we make effort to ensure that this game is as realistic as possible, " +
             "please note that this game is not a completely accurate representation of real life air traffic control " +
-            "and should not be used for purposes such as real life training. SID, STAR and other navigation data are fictitious " +
-            "and should never be used for real life navigation. Names used are fictional, any resemblance to real world entities " +
+            "and must not be used for purposes such as real life training. SID, STAR and other navigation data are fictitious " +
+            "and must never be used for real life navigation. Names used are fictional, any resemblance to real world entities " +
             "is purely coincidental.", labelStyle)
         disclaimer.wrap = true
         disclaimer.width = 2400f
@@ -52,7 +53,7 @@ class InfoScreen(game: TerminalControl, background: Image?) : StandardUIScreen(g
         buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
 
-        val openLicense = TextButton("Open Source Libraries", buttonStyle)
+        val openLicense = TextButton("Software & Licenses", buttonStyle)
         openLicense.setSize(MainMenuScreen.BUTTON_WIDTH / 1.5f, MainMenuScreen.BUTTON_HEIGHT)
         openLicense.setPosition(1440f - openLicense.width / 2, 1010f)
         openLicense.addListener(object : ChangeListener() {

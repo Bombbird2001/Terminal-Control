@@ -75,7 +75,7 @@ class Arrival : Aircraft {
     var isGoAroundSet = false
         private set
 
-    constructor(callsign: String, icaoType: String, arrival: Airport) : super(callsign, icaoType, arrival) {
+    constructor(callsign: String, icaoType: String, arrival: Airport, newStar: String?) : super(callsign, icaoType, arrival) {
         isOnGround = false
         isLowerSpdSet = false
         isIlsSpdSet = false
@@ -85,9 +85,8 @@ class Arrival : Aircraft {
         contactAlt = MathUtils.random(2000) + 22000
 
         //Gets a STAR for active runways
-        star = RandomSTAR.randomSTAR(arrival)
+        star = arrival.stars[newStar] ?: RandomSTAR.randomSTAR(arrival)
         if ("EVA226" == callsign && radarScreen.tutorial) {
-            star = arrival.stars["NTN1A"]!!
             emergency.isEmergency = false
             typDes = 2900
             contactAlt = 22000
@@ -130,7 +129,7 @@ class Arrival : Aircraft {
             if (initAlt > 28000) {
                 initAlt = 28000f
             } else if (initAlt < airport.elevation + 6000) {
-                initAlt = MathUtils.round(airport.elevation / 1000f) * 1000 + 6000.toFloat()
+                initAlt = MathUtils.round(airport.elevation / 1000f) * 1000 + 6000f
             }
             if (minAltWpt != null && initAlt < route.getWptMinAlt(minAltWpt.name)) {
                 initAlt = route.getWptMinAlt(minAltWpt.name).toFloat()
@@ -438,10 +437,10 @@ class Arrival : Aircraft {
             if (airport.landingRunways.size == 0) {
                 //Airport has no landing runways available, different msg
                 radarScreen.utilityBox.commsManager.warningMsg("Pan-pan, pan-pan, pan-pan, $callsign is low on fuel and will divert in 10 minutes if no landing runway is available.")
-                TerminalControl.tts.lowFuel(this, 3)
+                TerminalControl.ttsManager.lowFuel(this, 3)
             } else {
                 radarScreen.utilityBox.commsManager.warningMsg("Pan-pan, pan-pan, pan-pan, $callsign is low on fuel and requests priority landing.")
-                TerminalControl.tts.lowFuel(this, 0)
+                TerminalControl.ttsManager.lowFuel(this, 0)
             }
             isRequestPriority = true
             isActionRequired = true
@@ -452,12 +451,12 @@ class Arrival : Aircraft {
             if (airport.landingRunways.size == 0) {
                 //Airport has no landing runways available, divert directly
                 radarScreen.utilityBox.commsManager.warningMsg("Mayday, mayday, mayday, $callsign is declaring a fuel emergency and is diverting immediately.")
-                TerminalControl.tts.lowFuel(this, 4)
+                TerminalControl.ttsManager.lowFuel(this, 4)
                 divertToAltn()
             } else {
                 radarScreen.utilityBox.commsManager.warningMsg("Mayday, mayday, mayday, $callsign is declaring a fuel emergency and requests immediate landing within 10 minutes or will divert.")
                 radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
-                TerminalControl.tts.lowFuel(this, 1)
+                TerminalControl.ttsManager.lowFuel(this, 1)
             }
             isDeclareEmergency = true
             if (!isFuelEmergency) isFuelEmergency = true
@@ -466,7 +465,7 @@ class Arrival : Aircraft {
         if (fuel < 1500 && !isDivert && !isLocCap && controlState == ControlState.ARRIVAL) {
             //Diverting to alternate
             radarScreen.utilityBox.commsManager.warningMsg("$callsign is diverting to the alternate airport.")
-            TerminalControl.tts.lowFuel(this, 2)
+            TerminalControl.ttsManager.lowFuel(this, 2)
             divertToAltn()
             radarScreen.setScore(MathUtils.ceil(radarScreen.score * 0.9f))
         }
@@ -637,7 +636,7 @@ class Arrival : Aircraft {
             isGoAroundSet = false
             super.updateAltitude(holdAlt, fixedVs)
         }
-        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap) {
+        if (controlState != ControlState.ARRIVAL && altitude <= contactAlt && altitude > airport.elevation + 3000 && !isDivert && !isLocCap && radarScreen.running) {
             updateControlState(ControlState.ARRIVAL)
             radarScreen.utilityBox.commsManager.initialContact(this)
             isActionRequired = true

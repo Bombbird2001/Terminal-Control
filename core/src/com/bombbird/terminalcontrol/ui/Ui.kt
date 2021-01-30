@@ -189,7 +189,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(labelButton, 0.1f, 0.6f, 3240 - 695.toFloat(), 270f)
+        addActor(labelButton, 0.1f, 0.6f, 3240 - 695f, 270f)
         val buttonStyle1 = TextButton.TextButtonStyle()
         buttonStyle1.font = Fonts.defaultFont24
         buttonStyle1.fontColor = Color.BLACK
@@ -205,7 +205,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(moreInfoButton, 0.7f, 0.2f, 3240 - 645.toFloat(), 170f)
+        addActor(moreInfoButton, 0.7f, 0.2f, 3240 - 645f, 170f)
     }
 
     private fun loadNormalPane() {
@@ -388,7 +388,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(cfmChange, 0.1f, 0.25f, 3240 - 3070.toFloat(), 370f)
+        addActor(cfmChange, 0.1f, 0.25f, 3240 - 3070f, 370f)
 
         //Handover/acknowledge button
         val ackStyle = TextButton.TextButtonStyle(textButtonStyle)
@@ -414,7 +414,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(handoverAck, 0.375f, 0.25f, 3240 - 3070.toFloat(), 370f)
+        addActor(handoverAck, 0.375f, 0.25f, 3240 - 3070f, 370f)
 
         //Undo all changes button
         resetAll = TextButton("Undo all\nchanges", textButtonStyle)
@@ -424,7 +424,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(resetAll, 0.65f, 0.25f, 3240 - 3070.toFloat(), 370f)
+        addActor(resetAll, 0.65f, 0.25f, 3240 - 3070f, 370f)
     }
 
     private fun loadTabButtons() {
@@ -449,7 +449,7 @@ class Ui {
             }
         })
         setTabColours(latButton, true)
-        addActor(latButton, 0.1f, 0.25f, 3240 - 400.toFloat(), 300f)
+        addActor(latButton, 0.1f, 0.25f, 3240 - 400f, 300f)
 
         //Alt mode
         val textButtonStyle2 = TextButton.TextButtonStyle()
@@ -471,7 +471,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(altButton, 0.375f, 0.25f, 3240 - 400.toFloat(), 300f)
+        addActor(altButton, 0.375f, 0.25f, 3240 - 400f, 300f)
 
         //Spd mode
         val textButtonStyle3 = TextButton.TextButtonStyle()
@@ -493,7 +493,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(spdButton, 0.65f, 0.25f, 3240 - 400.toFloat(), 300f)
+        addActor(spdButton, 0.65f, 0.25f, 3240 - 400f, 300f)
     }
 
     private fun updateTabButtons() {

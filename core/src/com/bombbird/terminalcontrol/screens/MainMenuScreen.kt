@@ -43,6 +43,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         loadStats()
         if (!TerminalControl.loadedDiscord) TerminalControl.discordManager.initializeDiscord()
         TerminalControl.discordManager.updateRPC()
+        if (Gdx.app.type == Application.ApplicationType.Desktop) TerminalControl.tts.loadVoices()
     }
 
     /** Loads the UI elements to be rendered on screen  */
@@ -216,6 +217,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         quitButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //Quit game
+                TerminalControl.tts.quit()
                 dispose()
                 Gdx.app.exit()
             }

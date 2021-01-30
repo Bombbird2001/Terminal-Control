@@ -24,14 +24,13 @@ class Metar(private val radarScreen: RadarScreen) {
         if (radarScreen.weatherSel === RadarScreen.Weather.LIVE && !tutorial) {
             HttpRequests.getMetar(this, true)
         } else {
-            val threadRunner = Runnable {
+            Thread {
                 if (tutorial) {
                     updateTutorialMetar()
                 } else {
                     randomWeather()
                 }
-            }
-            Thread(threadRunner).start()
+            }.start()
         }
     }
 

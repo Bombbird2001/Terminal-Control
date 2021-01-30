@@ -14,6 +14,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
+import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.SpawnScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
@@ -32,6 +33,7 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     private lateinit var nightEndHour: SelectBox<String>
     private lateinit var nightEndMin: SelectBox<String>
     private lateinit var flowButton: TextButton
+    private lateinit var spawnButton: TextButton
     private lateinit var tfcLabel: Label
     private lateinit var tfcSel: RadarScreen.TfcMode
     private lateinit var nightLabel: Label
@@ -156,12 +158,23 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         textButtonStyle.fontColor = Color.WHITE
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
+
         flowButton = TextButton("Arrival traffic settings", textButtonStyle)
         flowButton.setSize(1200f, 300f)
         flowButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 //New traffic page
                 game.screen = TrafficFlowScreen(game)
+                event.handle()
+            }
+        })
+
+        spawnButton = TextButton("Spawn custom arrival", textButtonStyle)
+        spawnButton.setSize(1200f, 300f)
+        spawnButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                //New spawn plane page
+                game.screen = SpawnScreen(game)
                 event.handle()
             }
         })
@@ -176,6 +189,7 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             tab1.addActors(night, nightLabel)
             tab1.addActors(nightStartHour, timeLabel, nightStartMin, nightEndHour, nightEndMin, timeLabel2)
             tab1.addButton(flowButton)
+            tab1.addButton(spawnButton)
         }
         settingsTabs.add(tab1)
     }

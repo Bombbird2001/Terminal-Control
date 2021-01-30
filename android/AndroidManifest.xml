@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.bombbird.terminalcontrol.TextToSpeechManager"
+            android:name="com.bombbird.terminalcontrol.AndroidTextToSpeechManager"
             android:label="@string/app_name" 
             android:screenOrientation="sensorLandscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize">
