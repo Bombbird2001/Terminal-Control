@@ -4,22 +4,31 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.util.Log
+import android.widget.Toast
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.utils.Base64Coder
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.ConnectionResult
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-const val OPEN_SAVE_FILE = 9
-const val CREATE_SAVE_FILE = 10
-
 class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
+    companion object {
+        const val OPEN_SAVE_FILE = 9
+        const val CREATE_SAVE_FILE = 10
+        const val PLAY_SIGN_IN = 11
+    }
+
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
-    //private PlayGamesManager playGamesManager;
+    private lateinit var playGamesManager: PlayGamesManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val config = AndroidApplicationConfiguration()
@@ -36,8 +45,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
             toastManager.initTTSFail()
         }
 
-        //playGamesManager = new PlayGamesManager();
-        //playGamesManager.gameSignIn(this);
+        playGamesManager = PlayGamesManager()
+        playGamesManager.gameSignIn(this)
     }
 
     override fun openFileChooser(loadGameScreen: LoadGameScreen) {
@@ -112,6 +121,25 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
             }
             loadGameScreen = null
             save = null
+        } else if (requestCode == PLAY_SIGN_IN) {
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+            if (result?.isSuccess == true) {
+                // The signed in account is stored in the result.
+                val signedInAccount = result.signInAccount
+                val toast = Toast.makeText(this, "Login successful", Toast.LENGTH_LONG)
+                toast.show()
+            } else {
+                val message = result?.status?.statusMessage
+                Log.e("Play Sign-in", message ?: "")
+                if (result?.status?.statusCode == ConnectionResult.SIGN_IN_REQUIRED) {
+                    this.startActivityForResult(
+                        GoogleSignIn.getClient(
+                            this,
+                            GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
+                        ).signInIntent, PLAY_SIGN_IN
+                    )
+                }
+            }
         }
     }
 }

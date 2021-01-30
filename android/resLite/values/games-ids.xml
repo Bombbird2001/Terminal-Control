@@ -2,35 +2,37 @@
 <!--Google Play game services IDs. Save this file as res/values/games-ids.xml in your project.-->
 <resources>
     <!--app_id-->
-    <string name="app_id" translatable="false">985712144347</string>
+    <string name="app_id" translatable="false">1008397765970</string>
     <!--package_name-->
     <string name="package_name" translatable="false">com.bombbird.terminalcontrollite</string>
     <!--achievement Getting Started-->
-    <string name="achievement_getting_started" translatable="false">CgkI29-WiNgcEAIQAQ</string>
+    <string name="achievement_getting_started" translatable="false">CgkI0prDyawdEAIQAQ</string>
     <!--achievement Novice-->
-    <string name="achievement_novice" translatable="false">CgkI29-WiNgcEAIQAg</string>
+    <string name="achievement_novice" translatable="false">CgkI0prDyawdEAIQAg</string>
     <!--achievement Experienced-->
-    <string name="achievement_experienced" translatable="false">CgkI29-WiNgcEAIQAw</string>
+    <string name="achievement_experienced" translatable="false">CgkI0prDyawdEAIQAw</string>
     <!--achievement Expert-->
-    <string name="achievement_expert" translatable="false">CgkI29-WiNgcEAIQBA</string>
+    <string name="achievement_expert" translatable="false">CgkI0prDyawdEAIQBA</string>
     <!--achievement Veteran-->
-    <string name="achievement_veteran" translatable="false">CgkI29-WiNgcEAIQBQ</string>
+    <string name="achievement_veteran" translatable="false">CgkI0prDyawdEAIQBQ</string>
     <!--achievement Godly-->
-    <string name="achievement_godly" translatable="false">CgkI29-WiNgcEAIQBg</string>
+    <string name="achievement_godly" translatable="false">CgkI0prDyawdEAIQBg</string>
     <!--achievement That was close-->
-    <string name="achievement_that_was_close" translatable="false">CgkI29-WiNgcEAIQBw</string>
+    <string name="achievement_that_was_close" translatable="false">CgkI0prDyawdEAIQBw</string>
     <!--achievement Typhoon-->
-    <string name="achievement_typhoon" translatable="false">CgkI29-WiNgcEAIQDA</string>
+    <string name="achievement_typhoon" translatable="false">CgkI0prDyawdEAIQCA</string>
     <!--achievement Haze-->
-    <string name="achievement_haze" translatable="false">CgkI29-WiNgcEAIQDQ</string>
+    <string name="achievement_haze" translatable="false">CgkI0prDyawdEAIQCQ</string>
     <!--achievement Mayday-->
-    <string name="achievement_mayday" translatable="false">CgkI29-WiNgcEAIQDg</string>
+    <string name="achievement_mayday" translatable="false">CgkI0prDyawdEAIQCg</string>
     <!--achievement Mayday, Mayday-->
-    <string name="achievement_mayday_mayday" translatable="false">CgkI29-WiNgcEAIQDw</string>
+    <string name="achievement_mayday_mayday" translatable="false">CgkI0prDyawdEAIQCw</string>
     <!--achievement Master of Conflicts-->
-    <string name="achievement_master_of_conflicts" translatable="false">CgkI29-WiNgcEAIQEA</string>
+    <string name="achievement_master_of_conflicts" translatable="false">CgkI0prDyawdEAIQDA</string>
     <!--achievement Wake Up!-->
-    <string name="achievement_wake_up" translatable="false">CgkI29-WiNgcEAIQEw</string>
+    <string name="achievement_wake_up" translatable="false">CgkI0prDyawdEAIQDQ</string>
+    <!--achievement Parallel Landing-->
+    <string name="achievement_parallel_landing" translatable="false">CgkI0prDyawdEAIQDg</string>
     <!--achievement HX-->
-    <string name="achievement_hx" translatable="false">CgkI29-WiNgcEAIQFA</string>
+    <string name="achievement_hx" translatable="false">CgkI0prDyawdEAIQDw</string>
 </resources>
