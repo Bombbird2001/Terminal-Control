@@ -118,10 +118,8 @@ Thumbs.db
 /ios-moe/xcode/native/
 
 /android/assetsFull
-!/android/assetsFull/.keep
 !/android/assetsFull/game/type.type
 /android/assetsLite
-!/android/assetsLite/.keep
 !/android/assetsLite/game/type.type
 /android/lite/
 /android/full/
