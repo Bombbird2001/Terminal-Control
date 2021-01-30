@@ -169,7 +169,7 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             }
         })
 
-        spawnButton = TextButton("Spawn custom plane", textButtonStyle)
+        spawnButton = TextButton("Spawn custom arrival", textButtonStyle)
         spawnButton.setSize(1200f, 300f)
         spawnButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {

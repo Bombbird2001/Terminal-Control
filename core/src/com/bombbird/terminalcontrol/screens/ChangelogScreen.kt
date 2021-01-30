@@ -72,6 +72,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2101.1
+        val content21 = Array<String>()
+        content21.add("-Feature: Allow to user to spawn custom arrivals under Settings => Traffic => Spawn custom arrival")
+        if (Gdx.app.type == Application.ApplicationType.Desktop) content21.add("-TTS: Added TTS for desktop (Linux, Windows XP and later); if you are using Windows, you can install more voices from Microsoft")
+        content21.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2101.1"] = content21
+
         //Version 1.5.2014.2
         val content20 = Array<String>()
         if (TerminalControl.full) content20.add("-Mechanics: Added circling approaches for rwy 14R at TCOO and rwy 27 at TCBE")
