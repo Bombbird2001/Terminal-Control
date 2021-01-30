@@ -28,5 +28,5 @@ cache:
 before_script:
   - chmod +x gradlew
 script:
-  - ./gradlew desktop:buildLite
-  - ./gradlew android:assembleLiteRelease
+  - ./gradlew desktop:buildFull
+  - ./gradlew android:assembleFullRelease

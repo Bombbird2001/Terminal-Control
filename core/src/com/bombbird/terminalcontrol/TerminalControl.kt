@@ -158,8 +158,8 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
 
         fun loadVersionInfo() {
             val info = Gdx.files.internal("game/type.type").readString().split(" ".toRegex()).toTypedArray()
-            versionName = info[1]
-            versionCode = info[2].toInt()
+            versionName = info[0]
+            versionCode = info[1].toInt()
             FileLoader.mainDir = if (full) "AppData/Roaming/TerminalControlFull" else "AppData/Roaming/TerminalControl"
         }
 
