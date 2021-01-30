@@ -101,7 +101,14 @@ nb-configuration.xml
 /local.properties
 .gradle/
 gradle-app.setting
-/android/assetsFull/
+/android/assetsFull/fonts
+/android/assetsFull/game
+/android/assetsFull/tts
+/android/assetsFull/log
+/android/assetsLite/fonts
+/android/assetsLite/game
+/android/assetsLite/tts
+/android/assetsLite/log
 /android/lite/
 /android/full/
 
@@ -119,4 +126,3 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
-/android/assetsLite/log/
