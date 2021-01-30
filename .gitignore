@@ -125,7 +125,3 @@ Thumbs.db
 !/android/assetsLite/game/type.type
 /android/lite/
 /android/full/
-/android/resFull/
-!/android/resFull/.keep
-/android/resLite/
-!/android/resLite/.keep
