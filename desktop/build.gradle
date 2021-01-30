@@ -31,55 +31,15 @@ task checkVersionFull() {
 
         def text = project.file("../android/assetsFull/game/type.type").text
         def values = text.split(' ')
-        if (values[0] != "full") {
-            throw new GradleException("Incorrect type for full version: " + values[0])
+        if (values.size() < 2) {
+            throw new GradleException("Full version: Type string length is " + values.size() + ", needs 2")
         }
-        if (values.size() < 3) {
-            throw new GradleException("Full version: Type string length is " + values.size() + ", needs 3")
-        }
-        if ((values[1] != gradleVersion) || (values[2] != gradleVersionCode)) {
-            throw new GradleException("Full version: " + values[0] + " " + values[1] + " code " + values[2] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
+        if ((values[0] != gradleVersion) || (values[1] != gradleVersionCode)) {
+            throw new GradleException("Full version: " + values[0] + " code " + values[1] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
         }
         println "Full version check successful"
     }
 }
-
-task checkVersionLite() {
-    doLast {
-        String gradleVersion = project.version
-        String gradleVersionCode = project.versionCode
-
-        def text2 = project.file("../android/assetsLite/game/type.type").text
-        def values2 = text2.split(' ')
-        if (values2[0] != "lite") {
-            throw new GradleException("Incorrect type for lite version: " + values2[0])
-        }
-        if (values2.size() < 3) {
-            throw new GradleException("Lite version: Type string length is " + values2.size() + ", needs 3")
-        }
-        if ((values2[1] != gradleVersion) || (values2[2] != gradleVersionCode)) {
-            throw new GradleException("Lite version: " + values2[0] + " " + values2[1] + " code " + values2[2] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
-        }
-        println "Lite version check successful"
-    }
-}
-
-task buildLite(type: Jar) {
-    project.ext.assetsDir = new File("../android/assetsLite")
-    from files(sourceSets.main.output.classesDirs)
-    from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compileClasspath.collect {zipTree(it)}}
-    from files(project.assetsDir)
- 
-    manifest {
-        attributes 'Main-Class': project.mainClassName
-    }
-    doLast {
-        println("Lite version JAR successfully built")
-    }
-}
-
-buildLite.dependsOn classes, checkVersionLite
 
 task buildFull(type: Jar) {
     project.ext.assetsDir = new File("../android/assetsFull")
@@ -98,100 +58,3 @@ task buildFull(type: Jar) {
 }
 
 buildFull.dependsOn classes, checkVersionFull
-
-task copyJar(type: Copy) {
-    from buildLite
-    into "C:\\My Apps\\Terminal Control\\Lite"
-    doLast {
-        println "JAR file successfully copied"
-    }
-}
-
-task updateFileVersion() {
-    doLast {
-        copy {
-            from("C:\\My Apps\\Terminal Control") {
-                include "mac-lite.json"
-                include "windows32-lite.json"
-                include "windows64-lite.json"
-            }
-            into("C:\\My Apps\\Terminal Control\\old")
-        }
-        copy {
-            from("C:\\My Apps\\Terminal Control\\old") {
-                include "mac-lite.json"
-                include "windows32-lite.json"
-                include "windows64-lite.json"
-            }
-            into("C:\\My Apps\\Terminal Control")
-
-            filter {
-                String line -> line.replaceAll(/\d\.\d\.\d{4}\.\d/, version.toString())
-            }
-            println "JSON files successfully updated"
-        }
-
-        new File("C:\\My Apps\\Terminal Control\\latest.txt").text = version.toString()
-        println("latest.txt successfully updated")
-    }
-}
-
-task packrJar() {
-    doLast {
-        exec {
-            println "\nPacking Mac version..."
-            workingDir "C:\\My Apps\\Terminal Control"
-            commandLine 'java', '-jar', 'packr.jar', 'mac-lite.json'
-        }
-        exec {
-            println "\nPacking Windows-32 version..."
-            workingDir "C:\\My Apps\\Terminal Control"
-            commandLine 'java', '-jar', 'packr.jar', 'windows32-lite.json'
-        }
-        exec {
-            println "\nPacking Windows-64 version..."
-            workingDir "C:\\My Apps\\Terminal Control"
-            commandLine 'java', '-jar', 'packr.jar', 'windows64-lite.json'
-        }
-        println("JAR successfully packr-ed")
-    }
-}
-
-task compressFolder() {
-    doLast {
-        file("C:\\My Apps\\Terminal Control\\Lite\\" + version + "\\Terminal-control-lite-" + version + "-mac").renameTo(file("C:\\My Apps\\Terminal Control\\Lite\\" + version + "\\Terminal Control Lite.app"))
-        println "Mac folder successfully renamed"
-        exec {
-            println "Compressing Mac folder"
-            workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Mac-' + version + '.zip', '\"Terminal Control Lite.app\"'
-        }
-        exec {
-            println "Compressing Windows-32 folder"
-            workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Windows-32-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_32'
-        }
-        exec {
-            println "Compressing Windows-64 folder"
-            workingDir "C:\\My Apps\\Terminal Control\\Lite\\" + version
-            commandLine 'C:\\Programs\\7-Zip\\7z.exe', 'a', 'Windows-64-' + version + '.zip', 'Terminal-control-lite-' + version + '-windows_64'
-        }
-        println("Folders successfully compressed")
-    }
-}
-
-task packageLite() {
-    doLast {
-        new File("C:\\My Apps\\Terminal Control\\Lite\\" + version + "\\info.txt").text = "Autogenerated build\nVersion " + version + ", build " + versionCode
-        println "Packaging successful"
-    }
-    dependsOn(buildLite)
-    dependsOn(copyJar)
-    dependsOn(updateFileVersion)
-    dependsOn(packrJar)
-    dependsOn(compressFolder)
-    tasks.findByName('copyJar').mustRunAfter 'buildLite'
-    tasks.findByName('updateFileVersion').mustRunAfter 'copyJar'
-    tasks.findByName('packrJar').mustRunAfter 'updateFileVersion'
-    tasks.findByName('compressFolder').mustRunAfter 'packrJar'
-}
