@@ -84,6 +84,8 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        implementation "com.google.android.gms:play-services-games:21.0.0"
+        implementation "com.google.android.gms:play-services-auth:19.0.0"
     }
 }
 
