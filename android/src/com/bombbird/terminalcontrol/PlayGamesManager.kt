@@ -24,9 +24,9 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
     private var driveManager: DriveManager? = null
     var signedInAccount: GoogleSignInAccount? = null
         set(value) {
-            //var driveSignIn = false
+            var driveSignIn = false
             if (field == null && value != null) {
-                //driveSignIn = true
+                driveSignIn = true
                 val client = Games.getGamesClient(activity, value)
                 client.setViewForPopups(activity.view)
                 client.setGravityForPopups(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
@@ -38,7 +38,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             }
             field = value
             if (value != null && UnlockManager.achievementList.size > 0) UnlockManager.checkGooglePlayAchievements()
-            //if (driveSignIn) checkDriveSignIn()
+            if (driveSignIn) checkDriveSignIn()
         }
 
     override fun gameSignIn() {
@@ -124,7 +124,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
         } else driveSignIn()
     }
 
-    private fun driveSignIn() {
+    fun driveSignIn() {
         val credential = GoogleAccountCredential.usingOAuth2(
             activity.applicationContext, Collections.singleton(Scopes.DRIVE_APPFOLDER)
         )

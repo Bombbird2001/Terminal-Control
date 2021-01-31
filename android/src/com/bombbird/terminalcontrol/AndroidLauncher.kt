@@ -169,8 +169,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                     )
                 }
             }
-        } //else if (requestCode == DRIVE_PERMISSION) {
-            //playGamesManager.driveSignIn()
-        //}
+        } else if (requestCode == DRIVE_PERMISSION) {
+            playGamesManager.driveSignIn()
+        }
     }
 }
