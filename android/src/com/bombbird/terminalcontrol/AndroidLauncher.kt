@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.widget.Toast
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.utils.Base64Coder
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
@@ -18,24 +20,30 @@ import com.google.android.gms.common.ConnectionResult
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.lang.Exception
 
 class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     companion object {
         const val OPEN_SAVE_FILE = 9
         const val CREATE_SAVE_FILE = 10
         const val PLAY_SIGN_IN = 11
+        const val PLAY_SHOW_ACHIEVEMENTS = 12
     }
 
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
     private lateinit var playGamesManager: PlayGamesManager
+    lateinit var view: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val config = AndroidApplicationConfiguration()
         config.numSamples = 0
         config.useAccelerometer = false
         config.useCompass = false
-        initialize(TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this)), config)
+        playGamesManager = PlayGamesManager(this)
+        view = initializeForView(TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager), config)
+        setAndroidView(view)
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         try {
@@ -45,8 +53,19 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
             toastManager.initTTSFail()
         }
 
-        playGamesManager = PlayGamesManager()
-        playGamesManager.gameSignIn(this)
+        playGamesManager.gameSignIn()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun setAndroidView(view: View) {
+        try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+        } catch (ex: Exception) {
+            log("Terminal Control", "Content already displayed, cannot request FEATURE_NO_TITLE", ex)
+        }
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
+        setContentView(view, createLayoutParams())
     }
 
     override fun openFileChooser(loadGameScreen: LoadGameScreen) {
@@ -125,9 +144,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result?.isSuccess == true) {
                 // The signed in account is stored in the result.
-                val signedInAccount = result.signInAccount
-                val toast = Toast.makeText(this, "Login successful", Toast.LENGTH_LONG)
-                toast.show()
+                playGamesManager.signedInAccount = result.signInAccount
             } else {
                 val message = result?.status?.statusMessage
                 Log.e("Play Sign-in", message ?: "")

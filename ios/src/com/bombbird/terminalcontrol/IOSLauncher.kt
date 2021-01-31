@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.iosrobovm.IOSApplication
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration
 import com.bombbird.terminalcontrol.utilities.BrowserInterface
 import com.bombbird.terminalcontrol.utilities.DiscordManager
+import com.bombbird.terminalcontrol.utilities.PlayGamesInterface
 import com.bombbird.terminalcontrol.utilities.ToastManager
 import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import org.robovm.apple.foundation.NSAutoreleasePool
@@ -13,7 +14,7 @@ class IOSLauncher : IOSApplication.Delegate() {
     override fun createApplication(): IOSApplication {
         val config = IOSApplicationConfiguration()
         return IOSApplication(TerminalControl(
-            TextToSpeechManager(), object : ToastManager {}, object : DiscordManager {}, object : ExternalFileHandler {}, object : BrowserInterface {}), config)
+            TextToSpeechManager(), object : ToastManager {}, object : DiscordManager {}, object : ExternalFileHandler {}, object : BrowserInterface {}, object : PlayGamesInterface {}), config)
     }
 
     companion object {

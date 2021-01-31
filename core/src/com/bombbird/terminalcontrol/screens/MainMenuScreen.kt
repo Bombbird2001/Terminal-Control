@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
-import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.loadStats
+import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
 import com.bombbird.terminalcontrol.screens.informationscreen.InfoScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
@@ -40,7 +40,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
     init {
         TerminalControl.loadVersionInfo()
         TerminalControl.loadSettings()
-        loadStats()
+        UnlockManager.loadStats()
         if (!TerminalControl.loadedDiscord) TerminalControl.discordManager.initializeDiscord()
         TerminalControl.discordManager.updateRPC()
         if (Gdx.app.type == Application.ApplicationType.Desktop) TerminalControl.tts.loadVoices()
@@ -186,6 +186,39 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         })
         stage.addActor(achievementButton)
 
+        //Set Google Play Games button (if Android)
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            val imageButtonStyle5 = ImageButton.ImageButtonStyle()
+            imageButtonStyle5.imageUp = TerminalControl.skin.getDrawable("Play_game_up")
+            imageButtonStyle5.imageDown = TerminalControl.skin.getDrawable("Play_game_down")
+
+            val playGameButton = ImageButton(imageButtonStyle5)
+            playGameButton.setPosition(1440 + 1200 - BUTTON_WIDTH_SMALL / 2.0f, 1620 - BUTTON_HEIGHT_SMALL)
+            playGameButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
+            playGameButton.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    //If not signed in, sign in
+                    //If signed in, display dialog - Open Play Games or sign out
+                    if (TerminalControl.playGamesInterface.isSignedIn()) {
+                        object : CustomDialog("Google Play Games", "Open Google Play Games, or sign out?", "Sign out", "Open") {
+                            override fun result(resObj: Any?) {
+                                super.result(resObj)
+                                if (resObj == DIALOG_POSITIVE) {
+                                    //Open Google Play Games
+                                    TerminalControl.playGamesInterface.showAchievements()
+                                } else if (resObj == DIALOG_NEGATIVE) {
+                                    //Sign out
+                                    TerminalControl.playGamesInterface.gameSignOut()
+                                }
+                                dialogVisible = false
+                            }
+                        }.show(stage)
+                    } else TerminalControl.playGamesInterface.gameSignIn()
+                }
+            })
+            stage.addActor(playGameButton)
+        }
+
         //Changelog button
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = Fonts.defaultFont12
@@ -225,7 +258,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         stage.addActor(quitButton)
     }
 
-    /** Loads the exit dialog for Android */
+    /** Loads the exit dialog */
     private fun loadDialog() {
         endDialog = object : CustomDialog("Quit Game?", "", "Cancel", "Quit") {
             override fun result(resObj: Any?) {

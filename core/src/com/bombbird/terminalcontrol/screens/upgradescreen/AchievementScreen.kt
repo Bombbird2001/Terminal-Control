@@ -71,7 +71,7 @@ ${value1.description}
             val unlocked = UnlockManager.unlocks.contains(key)
             val label = Label("""
 [ $key ]
-${if (unlocked) value else "?????"}
+${if (unlocked) value[0] else "?????"}
 """, labelStyle)
             label.wrap = true
             label.setAlignment(Align.center)
