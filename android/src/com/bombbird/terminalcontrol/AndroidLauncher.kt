@@ -1,6 +1,7 @@
 package com.bombbird.terminalcontrol
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -53,7 +54,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
             toastManager.initTTSFail()
         }
 
-        playGamesManager.gameSignIn()
+        val pref = getPreferences(Context.MODE_PRIVATE)
+        if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
     }
 
     @Suppress("DEPRECATION")
@@ -91,7 +93,17 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == RESULT_CANCELED || data == null) return
+        Log.e("Request codes", "$requestCode $resultCode")
+        if (resultCode == RESULT_CANCELED || data == null) {
+            if (requestCode == PLAY_SIGN_IN) {
+                val pref = getPreferences(Context.MODE_PRIVATE)
+                with (pref.edit()) {
+                    putBoolean("declinePlaySignIn", true)
+                    apply()
+                }
+            }
+            return
+        }
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == OPEN_SAVE_FILE) {
             val uri = data.data
