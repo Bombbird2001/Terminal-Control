@@ -13,16 +13,13 @@ import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.sounds.TextToSpeechInterface
 import com.bombbird.terminalcontrol.sounds.TextToSpeechManager
-import com.bombbird.terminalcontrol.utilities.BrowserInterface
-import com.bombbird.terminalcontrol.utilities.DiscordManager
-import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.*
 import com.bombbird.terminalcontrol.utilities.RenameManager.loadMaps
-import com.bombbird.terminalcontrol.utilities.ToastManager
 import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface) : Game() {
+class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface, playGamesInterface: PlayGamesInterface) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -59,6 +56,9 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
 
         //Browser interface
         lateinit var browserInterface: BrowserInterface
+
+        //Play Games interface
+        lateinit var playGamesInterface: PlayGamesInterface
 
         //Default settings
         var trajectorySel = 0
@@ -182,6 +182,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         Companion.discordManager = discordManager
         Companion.externalFileHandler = externalFileHandler
         Companion.browserInterface = browserInterface
+        Companion.playGamesInterface = playGamesInterface
         loadedDiscord = false
         useDiscord = false
         ttsManager = TextToSpeechManager()

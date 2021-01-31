@@ -6,7 +6,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.emergenc
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.planesLanded
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.wakeConflictTime
 
-class Achievement(private val name: String, val title: String, val description: String, val valueNeeded: Int, private val type: Int) {
+class Achievement(private val name: String, val title: String, val description: String, val valueNeeded: Int, val type: Int, val id: String) {
     companion object {
         var NONE = -1
         var PLANES_LANDED = 0

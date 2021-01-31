@@ -8,7 +8,6 @@ import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import java.util.*
 
 object UnlockManager {
-
     var planesLanded = 0
         private set
 
@@ -30,7 +29,9 @@ object UnlockManager {
 
     val achievementList = LinkedHashMap<String, Achievement>()
 
-    val easterEggList = LinkedHashMap<String, String>()
+    val easterEggList = LinkedHashMap<String, kotlin.Array<String>>()
+
+    var loaded = false
 
     /** Loads all the milestones, achievements and easter eggs  */
     private fun loadUnlockList() {
@@ -51,23 +52,23 @@ object UnlockManager {
             addUnlock("collision2m", 1300, "Unlock short term collision alert 2 minutes look-ahead")
         }
         if (achievementList.size == 0) {
-            addAchievement("gettingStarted", "Getting Started", "Land your first plane", 1, Achievement.PLANES_LANDED)
-            addAchievement("novice", "Novice", "Land 50 planes", 50, Achievement.PLANES_LANDED)
-            addAchievement("experienced", "Experienced", "Land 200 planes", 200, Achievement.PLANES_LANDED)
-            addAchievement("expert", "Expert", "Land 500 planes", 500, Achievement.PLANES_LANDED)
-            addAchievement("veteran", "Veteran", "Land 1000 planes", 1000, Achievement.PLANES_LANDED)
-            addAchievement("godly", "Godly", "Land 5000 planes", 5000, Achievement.PLANES_LANDED)
-            addAchievement("thatWasClose", "That was close", "Have two planes come within 200 feet and 0.5nm of each other", -1, Achievement.NONE)
-            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS" + (if (TerminalControl.full) "/TCTT/TCAA/TCHH/TCMC" else "") + " with at least 40-knot winds", -1, Achievement.NONE)
-            addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2500 metres", -1, Achievement.NONE)
-            addAchievement("mayday", "Mayday", "Land your first emergency", 1, Achievement.EMERGENCIES_LANDED)
-            addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED)
-            addAchievement("masterOfConflicts", "Master of Conflicts", "Have a total of 500 separation incidents, excluding wake conflicts", 500, Achievement.CONFLICTS)
-            addAchievement("wakeUp", "Wake Up!", "Have over 600 seconds of wake separation infringement", 600, Achievement.WAKE_CONFLICT_TIME)
-            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS" + if (TerminalControl.full) "/TCTT/TCAA/TCPG" else "", -1, Achievement.NONE)
+            addAchievement("gettingStarted", "Getting Started", "Land your first plane", 1, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQAQ")
+            addAchievement("novice", "Novice", "Land 50 planes", 50, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQAg")
+            addAchievement("experienced", "Experienced", "Land 200 planes", 200, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQAw")
+            addAchievement("expert", "Expert", "Land 500 planes", 500, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQBA")
+            addAchievement("veteran", "Veteran", "Land 1000 planes", 1000, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQBQ")
+            addAchievement("godly", "Godly", "Land 5000 planes", 5000, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQBg")
+            addAchievement("thatWasClose", "That was close", "Have two planes come within 200 feet and 0.5nm of each other", -1, Achievement.NONE, "CgkI0prDyawdEAIQBw")
+            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS" + (if (TerminalControl.full) "/TCTT/TCAA/TCHH/TCMC" else "") + " with at least 40-knot winds", -1, Achievement.NONE, "CgkI0prDyawdEAIQCA")
+            addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2500 metres", -1, Achievement.NONE, "CgkI0prDyawdEAIQCQ")
+            addAchievement("mayday", "Mayday", "Land your first emergency", 1, Achievement.EMERGENCIES_LANDED, "CgkI0prDyawdEAIQCg")
+            addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED, "CgkI0prDyawdEAIQCw")
+            addAchievement("masterOfConflicts", "Master of Conflicts", "Have a total of 500 separation incidents, excluding wake conflicts", 500, Achievement.CONFLICTS, "CgkI0prDyawdEAIQDA")
+            addAchievement("wakeUp", "Wake Up!", "Have over 600 seconds of wake separation infringement", 600, Achievement.WAKE_CONFLICT_TIME, "CgkI0prDyawdEAIQDQ")
+            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS" + if (TerminalControl.full) "/TCTT/TCAA/TCPG" else "", -1, Achievement.NONE, "CgkI0prDyawdEAIQDg")
         }
         if (easterEggList.size == 0) {
-            easterEggList["HX"] = "Unlock Tai Kek International Airport, TCHX"
+            easterEggList["HX"] = arrayOf("Unlock Tai Kek International Airport, TCHX", "CgkI0prDyawdEAIQDw")
         }
     }
 
@@ -78,8 +79,8 @@ object UnlockManager {
     }
 
     /** Helper function to add a new achievement  */
-    private fun addAchievement(name: String, title: String, description: String, value: Int, type: Int) {
-        achievementList[name] = Achievement(name, title, description, value, type)
+    private fun addAchievement(name: String, title: String, description: String, value: Int, type: Int, id: String) {
+        achievementList[name] = Achievement(name, title, description, value, type, id)
     }
 
     /** Function called on game launch to load achievements, milestones and stats  */
@@ -114,6 +115,31 @@ object UnlockManager {
         setAchievementStatus()
         checkQuantifiableAchievements()
         GameSaver.saveStats()
+        loaded = true
+        checkGooglePlayAchievements()
+    }
+
+    /** Function called after Google Play Games sign in to update achievements */
+    fun checkGooglePlayAchievements() {
+        if (!TerminalControl.playGamesInterface.isSignedIn()) return
+        for ((key, value) in achievementList) {
+            if (value.type == Achievement.NONE || key == "gettingStarted" || key == "mayday") {
+                if (!value.isUnlocked) continue
+                TerminalControl.playGamesInterface.unlockAchievement(value.id)
+            } else TerminalControl.playGamesInterface.incrementAchievement(value.id, value.currentValue, true)
+        }
+        for ((key, value) in easterEggList) {
+            if (unlocks.contains(key)) TerminalControl.playGamesInterface.unlockAchievement(value[1])
+        }
+    }
+
+    private fun incrementGooglePlayAchievement(type: Int, steps: Int) {
+        for ((key, value) in achievementList) {
+            if (value.type != type || value.isUnlocked) continue
+            if (key != "gettingStarted" && key != "mayday") {
+                TerminalControl.playGamesInterface.incrementAchievement(value.id, steps, false)
+            } else TerminalControl.playGamesInterface.unlockAchievement(value.id)
+        }
     }
 
     /** Called when an aircraft has landed; further checks whether any new milestone or achievement has been unlocked  */
@@ -122,6 +148,7 @@ object UnlockManager {
         if (checkNewUnlocks() && TerminalControl.full) {
             TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have reached a milestone! A new option has been unlocked in the milestone/unlock page. Check it out!")
         }
+        incrementGooglePlayAchievement(Achievement.PLANES_LANDED, 1)
         checkAchievement(Achievement.PLANES_LANDED)
         GameSaver.saveStats()
     }
@@ -129,6 +156,7 @@ object UnlockManager {
     /** Called when an emergency has landed; further checks whether any new milestone or achievement has been unlocked  */
     fun incrementEmergency() {
         emergenciesLanded++
+        incrementGooglePlayAchievement(Achievement.EMERGENCIES_LANDED, 1)
         checkAchievement(Achievement.EMERGENCIES_LANDED)
         GameSaver.saveStats()
     }
@@ -136,6 +164,7 @@ object UnlockManager {
     /** Called when a new conflict has occurred; further checks whether any new milestone or achievement has been unlocked  */
     fun incrementConflicts() {
         conflicts++
+        incrementGooglePlayAchievement(Achievement.CONFLICTS, 1)
         checkAchievement(Achievement.CONFLICTS)
         GameSaver.saveStats()
     }
@@ -144,6 +173,7 @@ object UnlockManager {
     fun incrementWakeConflictTime(time: Float) {
         wakeConflictTime += time
         if (wakeConflictTime > prevWakeConflictTime + 2) { //Save & check every 2 seconds of wake time to reduce File I/O load
+            incrementGooglePlayAchievement(Achievement.WAKE_CONFLICT_TIME, 2)
             checkAchievement(Achievement.WAKE_CONFLICT_TIME)
             GameSaver.saveStats()
             prevWakeConflictTime = wakeConflictTime
@@ -158,6 +188,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
+        achievementList[name]?.let { TerminalControl.playGamesInterface.unlockAchievement(it.id) }
         setAchievementStatus()
         TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
@@ -204,7 +235,10 @@ object UnlockManager {
 
     /** Called to unlock an easter egg with the given name  */
     fun unlockEgg(name: String) {
-        if (easterEggList.containsKey(name)) unlocks.add(name)
+        if (easterEggList.containsKey(name)) {
+            unlocks.add(name)
+            easterEggList[name]?.let { TerminalControl.playGamesInterface.unlockAchievement(it[1]) }
+        }
         GameSaver.saveStats()
     }
 
