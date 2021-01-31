@@ -29,6 +29,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         const val CREATE_SAVE_FILE = 10
         const val PLAY_SIGN_IN = 11
         const val PLAY_SHOW_ACHIEVEMENTS = 12
+        const val DRIVE_PERMISSION = 13
     }
 
     private var loadGameScreen: LoadGameScreen? = null
@@ -93,7 +94,6 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.e("Request codes", "$requestCode $resultCode")
         if (resultCode == RESULT_CANCELED || data == null) {
             if (requestCode == PLAY_SIGN_IN) {
                 val pref = getPreferences(Context.MODE_PRIVATE)
@@ -169,6 +169,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                     )
                 }
             }
-        }
+        } //else if (requestCode == DRIVE_PERMISSION) {
+            //playGamesManager.driveSignIn()
+        //}
     }
 }
