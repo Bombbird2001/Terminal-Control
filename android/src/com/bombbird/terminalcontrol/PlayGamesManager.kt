@@ -10,13 +10,23 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.Scopes
+import com.google.android.gms.common.api.Scope
 import com.google.android.gms.games.Games
 import com.google.android.gms.tasks.Task
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import java.util.*
 
 class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterface {
+    private var driveManager: DriveManager? = null
     var signedInAccount: GoogleSignInAccount? = null
         set(value) {
+            //var driveSignIn = false
             if (field == null && value != null) {
+                //driveSignIn = true
                 val client = Games.getGamesClient(activity, value)
                 client.setViewForPopups(activity.view)
                 client.setGravityForPopups(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
@@ -28,6 +38,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             }
             field = value
             if (value != null && UnlockManager.achievementList.size > 0) UnlockManager.checkGooglePlayAchievements()
+            //if (driveSignIn) checkDriveSignIn()
         }
 
     override fun gameSignIn() {
@@ -41,7 +52,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
                 toast.show()
             }
         }
-        val signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
+        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build()
         val account = GoogleSignIn.getLastSignedInAccount(activity)
         if (GoogleSignIn.hasPermissions(account, *signInOptions.scopeArray)) {
             //Already signed in
@@ -78,6 +89,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
         signInClient.signOut().addOnCompleteListener(activity) {
             //User is signed out
             signedInAccount = null
+            driveManager = null
         }
     }
 
@@ -104,5 +116,26 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             if (set) Games.getAchievementsClient(activity, it).setSteps(id, steps)
             else Games.getAchievementsClient(activity, it).increment(id, steps)
         }
+    }
+
+    private fun checkDriveSignIn() {
+        if (!GoogleSignIn.hasPermissions(signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))) {
+            GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
+        } else driveSignIn()
+    }
+
+    private fun driveSignIn() {
+        val credential = GoogleAccountCredential.usingOAuth2(
+            activity.applicationContext, Collections.singleton(Scopes.DRIVE_APPFOLDER)
+        )
+        signedInAccount?.account?.let { credential.selectedAccount = it }
+        val googleDriveService = Drive.Builder(
+            NetHttpTransport(),
+            GsonFactory(),
+            credential
+        ).setApplicationName("Terminal Control").build()
+        driveManager = DriveManager(googleDriveService)
+        driveManager?.createFile()
+        driveManager?.listFiles()
     }
 }
