@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol
 
+import android.content.Context
 import android.view.Gravity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import android.widget.Toast
@@ -19,6 +20,11 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
                 val client = Games.getGamesClient(activity, value)
                 client.setViewForPopups(activity.view)
                 client.setGravityForPopups(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
+                val pref = activity.getPreferences(Context.MODE_PRIVATE)
+                if (pref.getBoolean("declinePlaySignIn", false)) with (pref.edit()) {
+                    putBoolean("declinePlaySignIn", false)
+                    apply()
+                }
             }
             field = value
             if (value != null && UnlockManager.achievementList.size > 0) UnlockManager.checkGooglePlayAchievements()
