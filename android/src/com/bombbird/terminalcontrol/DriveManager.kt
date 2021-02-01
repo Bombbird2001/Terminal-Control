@@ -8,6 +8,8 @@ import com.google.api.services.drive.model.FileList
 
 class DriveManager(private val drive: Drive) {
     fun createFile() {
+        println("Create file stub")
+        /*
         val fileMetadata = File()
         fileMetadata.name = "config.json"
         fileMetadata.parents = Collections.singletonList("appDataFolder")
@@ -17,9 +19,12 @@ class DriveManager(private val drive: Drive) {
             .setFields("id")
             .execute()
         println("Created file ID: " + file.id)
+         */
     }
 
     fun listFiles() {
+        println("List files stub")
+        /*
         val files: FileList = drive.files().list()
             .setSpaces("appDataFolder")
             .setFields("nextPageToken, files(id, name)")
@@ -28,5 +33,6 @@ class DriveManager(private val drive: Drive) {
         for (file in files.files) {
             println("Found file: ${file.name}, ${file.id}")
         }
+         */
     }
 }

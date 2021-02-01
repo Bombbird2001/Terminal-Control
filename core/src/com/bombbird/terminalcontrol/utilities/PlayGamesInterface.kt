@@ -25,4 +25,8 @@ interface PlayGamesInterface {
     fun incrementAchievement(id: String, steps: Int, set: Boolean) {
         //No default implementation
     }
+
+    fun startDriveSignIn() {
+        //No default implementation
+    }
 }

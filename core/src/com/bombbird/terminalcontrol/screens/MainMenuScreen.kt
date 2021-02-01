@@ -197,23 +197,8 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
             playGameButton.setSize(BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL)
             playGameButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    //If not signed in, sign in
-                    //If signed in, display dialog - Open Play Games or sign out
-                    if (TerminalControl.playGamesInterface.isSignedIn()) {
-                        object : CustomDialog("Google Play Games", "Open Google Play Games, or sign out?", "Sign out", "Open") {
-                            override fun result(resObj: Any?) {
-                                super.result(resObj)
-                                if (resObj == DIALOG_POSITIVE) {
-                                    //Open Google Play Games
-                                    TerminalControl.playGamesInterface.showAchievements()
-                                } else if (resObj == DIALOG_NEGATIVE) {
-                                    //Sign out
-                                    TerminalControl.playGamesInterface.gameSignOut()
-                                }
-                                dialogVisible = false
-                            }
-                        }.show(stage)
-                    } else TerminalControl.playGamesInterface.gameSignIn()
+                    //Go to Play Games screen
+                    game.screen = PlayGamesScreen(game, background)
                 }
             })
             stage.addActor(playGameButton)

@@ -4,7 +4,10 @@ import android.content.Context
 import android.view.Gravity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import android.widget.Toast
+import com.badlogic.gdx.Game
+import com.badlogic.gdx.Gdx
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
+import com.bombbird.terminalcontrol.screens.PlayGamesScreen
 import com.bombbird.terminalcontrol.utilities.PlayGamesInterface
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -21,12 +24,11 @@ import com.google.api.services.drive.Drive
 import java.util.*
 
 class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterface {
+    lateinit var game: Game
     private var driveManager: DriveManager? = null
     var signedInAccount: GoogleSignInAccount? = null
         set(value) {
-            var driveSignIn = false
             if (field == null && value != null) {
-                driveSignIn = true
                 val client = Games.getGamesClient(activity, value)
                 client.setViewForPopups(activity.view)
                 client.setGravityForPopups(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
@@ -38,7 +40,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             }
             field = value
             if (value != null && UnlockManager.achievementList.size > 0) UnlockManager.checkGooglePlayAchievements()
-            if (driveSignIn) checkDriveSignIn()
+            Gdx.app.postRunnable { (game.screen as? PlayGamesScreen)?.updateSignInStatus() }
         }
 
     override fun gameSignIn() {
@@ -118,7 +120,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
         }
     }
 
-    private fun checkDriveSignIn() {
+    override fun startDriveSignIn() {
         if (!GoogleSignIn.hasPermissions(signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))) {
             GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
         } else driveSignIn()
