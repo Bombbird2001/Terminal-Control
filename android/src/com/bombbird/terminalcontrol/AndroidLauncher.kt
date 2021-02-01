@@ -44,7 +44,9 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         config.useAccelerometer = false
         config.useCompass = false
         playGamesManager = PlayGamesManager(this)
-        view = initializeForView(TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager), config)
+        val game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
+        playGamesManager.game = game
+        view = initializeForView(game, config)
         setAndroidView(view)
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
