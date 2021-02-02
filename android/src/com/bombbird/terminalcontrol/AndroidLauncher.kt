@@ -3,6 +3,7 @@ package com.bombbird.terminalcontrol
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -35,6 +36,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
     private lateinit var playGamesManager: PlayGamesManager
+    private lateinit var pollfishManager: PollfishManager
     lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         playGamesManager.game = game
         view = initializeForView(game, config)
         setAndroidView(view)
+        pollfishManager = PollfishManager(this, game)
+        pollfishManager.initPollfish()
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         try {
@@ -174,5 +178,10 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         } else if (requestCode == DRIVE_PERMISSION) {
             playGamesManager.driveSignIn()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        pollfishManager.initPollfish()
     }
 }
