@@ -10,7 +10,7 @@ import com.google.api.services.drive.model.FileList
 class DriveManager(private val drive: Drive) {
     fun createFile() {
         val fileMetadata = File()
-        fileMetadata.name = "config.json"
+        fileMetadata.name = "settings.json"
         fileMetadata.parents = Collections.singletonList("appDataFolder")
         val filePath = FileLoader.getExtDir("settings.json")?.file()
         val mediaContent = FileContent("application/json", filePath)
