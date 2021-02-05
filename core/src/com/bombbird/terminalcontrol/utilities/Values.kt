@@ -7,4 +7,5 @@ object Values {
     var SEND_ERROR_PASSWORD = ""
     var DISCORD_ID_LITE = ""
     var DISCORD_ID_FULL = ""
+    var POLLFISH_KEY = ""
 }
