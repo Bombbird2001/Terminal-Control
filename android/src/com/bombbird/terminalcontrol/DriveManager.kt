@@ -11,7 +11,7 @@ class DriveManager(private val drive: Drive) {
         println("Create file stub")
         /*
         val fileMetadata = File()
-        fileMetadata.name = "config.json"
+        fileMetadata.name = "settings.json"
         fileMetadata.parents = Collections.singletonList("appDataFolder")
         val filePath = java.io.File("files/config.json")
         val mediaContent = FileContent("application/json", filePath)

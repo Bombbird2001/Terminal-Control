@@ -14,7 +14,8 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private lateinit var signedIn: Label
     private lateinit var signInOutButton: TextButton
     private lateinit var openAchievementButton: TextButton
-    private lateinit var syncGameButton: TextButton
+    private lateinit var uploadGameButton: TextButton
+    private lateinit var downloadGameButton: TextButton
 
     /** Loads the full UI of this screen  */
     override fun loadUI() {
@@ -80,16 +81,45 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         openAchievementButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
         stage.addActor(openAchievementButton)
 
-        syncGameButton = TextButton("Sync game saves", buttonStyle)
-        syncGameButton.setSize(MainMenuScreen.BUTTON_WIDTH, MainMenuScreen.BUTTON_HEIGHT)
-        syncGameButton.setPosition(x, 500f)
-        syncGameButton.addListener(object : ChangeListener() {
+        uploadGameButton = TextButton("Save progress to cloud", buttonStyle)
+        uploadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT)
+        uploadGameButton.setPosition(x, 500f)
+        uploadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                if (TerminalControl.playGamesInterface.isSignedIn()) TerminalControl.playGamesInterface.startDriveSignIn()
+                if (TerminalControl.playGamesInterface.isSignedIn()) {
+                    object : CustomDialog("Save to cloud", "Save game progress to cloud? Caution: All current game data saved in the cloud will be overwritten!", "Don't save", "Save") {
+                        override fun result(resObj: Any?) {
+                            super.result(resObj)
+                            if (resObj == DIALOG_POSITIVE) {
+                                //Save progress TODO
+                            }
+                        }
+                    }
+                }
             }
         })
-        syncGameButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
-        stage.addActor(syncGameButton)
+        uploadGameButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
+        stage.addActor(uploadGameButton)
+
+        downloadGameButton = TextButton("Load progress from cloud", buttonStyle)
+        downloadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT)
+        downloadGameButton.setPosition(x + MainMenuScreen.BUTTON_WIDTH / 2f + 25, 500f)
+        downloadGameButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                if (TerminalControl.playGamesInterface.isSignedIn()) {
+                    object : CustomDialog("Load from cloud", "Load game progress from cloud? Caution: All current game data saved on this device will be overwritten!", "Don't load", "Load") {
+                        override fun result(resObj: Any?) {
+                            super.result(resObj)
+                            if (resObj == DIALOG_POSITIVE) {
+                                //Load progress TODO
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        downloadGameButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
+        stage.addActor(downloadGameButton)
     }
 
     fun updateSignInStatus() {
@@ -97,12 +127,12 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
             signedIn.setText("Signed in to Google Play Games")
             signInOutButton.setText("Sign Out")
             openAchievementButton.isVisible = true
-            syncGameButton.isVisible = true
+            uploadGameButton.isVisible = true
         } else {
             signInOutButton.setText("Sign In")
             signedIn.setText("Not signed in to Google Play Games")
             openAchievementButton.isVisible = false
-            syncGameButton.isVisible = false
+            uploadGameButton.isVisible = false
         }
     }
 }
