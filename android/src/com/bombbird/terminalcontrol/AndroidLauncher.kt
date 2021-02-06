@@ -34,7 +34,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
-    private lateinit var playGamesManager: PlayGamesManager
+    lateinit var playGamesManager: PlayGamesManager
     lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,7 +172,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                 }
             }
         } else if (requestCode == DRIVE_PERMISSION) {
-            playGamesManager.driveSignIn()
+            if (playGamesManager.save) playGamesManager.driveSaveGame() else playGamesManager.driveLoadGame()
         }
     }
 }

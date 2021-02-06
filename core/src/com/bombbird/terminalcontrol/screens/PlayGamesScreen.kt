@@ -55,7 +55,6 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
                     object : CustomDialog("Sign Out", "Sign out of Google Play Games?", "Stay signed in", "Sign out") {
                         override fun result(resObj: Any?) {
-                            super.result(resObj)
                             if (resObj == DIALOG_POSITIVE) {
                                 //Open Google Play Games
                                 TerminalControl.playGamesInterface.gameSignOut()
@@ -81,40 +80,40 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         openAchievementButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
         stage.addActor(openAchievementButton)
 
-        uploadGameButton = TextButton("Save progress to cloud", buttonStyle)
-        uploadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT)
-        uploadGameButton.setPosition(x, 500f)
+        uploadGameButton = TextButton("Save progress\nto cloud", buttonStyle)
+        uploadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT * 1.25f)
+        uploadGameButton.setPosition(x, 450f)
         uploadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
-                    object : CustomDialog("Save to cloud", "Save game progress to cloud? Caution: All current game data saved in the cloud will be overwritten!", "Don't save", "Save") {
+                    object : CustomDialog("Save to cloud", "Save game progress to cloud?\nCaution: All current game data saved in the\ncloud will be overwritten!", "Don't save", "Save") {
                         override fun result(resObj: Any?) {
-                            super.result(resObj)
                             if (resObj == DIALOG_POSITIVE) {
-                                //Save progress TODO
+                                //Save progress
+                                TerminalControl.playGamesInterface.driveSaveGame()
                             }
                         }
-                    }
+                    }.show(stage)
                 }
             }
         })
         uploadGameButton.isVisible = TerminalControl.playGamesInterface.isSignedIn()
         stage.addActor(uploadGameButton)
 
-        downloadGameButton = TextButton("Load progress from cloud", buttonStyle)
-        downloadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT)
-        downloadGameButton.setPosition(x + MainMenuScreen.BUTTON_WIDTH / 2f + 25, 500f)
+        downloadGameButton = TextButton("Load progress\nfrom cloud", buttonStyle)
+        downloadGameButton.setSize(MainMenuScreen.BUTTON_WIDTH / 2f - 25, MainMenuScreen.BUTTON_HEIGHT * 1.25f)
+        downloadGameButton.setPosition(x + MainMenuScreen.BUTTON_WIDTH / 2f + 25, 450f)
         downloadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
-                    object : CustomDialog("Load from cloud", "Load game progress from cloud? Caution: All current game data saved on this device will be overwritten!", "Don't load", "Load") {
+                    object : CustomDialog("Load from cloud", "Load game progress from cloud?\nCaution: All current game data saved on\nthis device will be overwritten!", "Don't load", "Load") {
                         override fun result(resObj: Any?) {
-                            super.result(resObj)
                             if (resObj == DIALOG_POSITIVE) {
-                                //Load progress TODO
+                                //Load progress
+                                TerminalControl.playGamesInterface.driveLoadGame()
                             }
                         }
-                    }
+                    }.show(stage)
                 }
             }
         })
@@ -128,11 +127,13 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
             signInOutButton.setText("Sign Out")
             openAchievementButton.isVisible = true
             uploadGameButton.isVisible = true
+            downloadGameButton.isVisible = true
         } else {
             signInOutButton.setText("Sign In")
             signedIn.setText("Not signed in to Google Play Games")
             openAchievementButton.isVisible = false
             uploadGameButton.isVisible = false
+            downloadGameButton.isVisible = false
         }
     }
 }

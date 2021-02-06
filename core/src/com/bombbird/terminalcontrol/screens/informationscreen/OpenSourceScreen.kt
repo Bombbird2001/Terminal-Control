@@ -75,7 +75,6 @@ class OpenSourceScreen(game: TerminalControl, background: Image?) : StandardUISc
                     //Display open browser dialog
                     object : CustomDialog("Open Link?", "Open link to the license in browser?", "Cancel", "Open") {
                         override fun result(resObj: Any?) {
-                            super.result(resObj)
                             if (resObj == DIALOG_POSITIVE) {
                                 //Open browser
                                 TerminalControl.browserInterface.openBrowser(link[1])

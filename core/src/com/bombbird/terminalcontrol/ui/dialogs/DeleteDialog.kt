@@ -17,7 +17,6 @@ class DeleteDialog: CustomDialog("Delete save?", "", "Keep", "Delete", height = 
     var label: Label? = null
 
     override fun result(resObj: Any?) {
-        super.result(resObj)
         if (resObj == DIALOG_POSITIVE) {
             //Delete save
             Gdx.app.postRunnable {
