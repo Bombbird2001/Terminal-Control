@@ -35,7 +35,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
-    private lateinit var playGamesManager: PlayGamesManager
+    lateinit var playGamesManager: PlayGamesManager
     private lateinit var pollfishManager: PollfishManager
     lateinit var view: View
 
