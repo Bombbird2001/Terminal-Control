@@ -232,7 +232,6 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                         //Send save dialog
                         object : CustomDialog("Game load error", "Sorry, there was a problem loading this save.\nSending the save file to us will allow\nus to better diagnose and fix the problem.\nSend the save file?", "Don't send", "Send", height = 600) {
                             override fun result(resObj: Any?) {
-                                super.result(resObj)
                                 if (resObj == DIALOG_POSITIVE) {
                                     when (positive) {
                                         "Sending..." -> {
@@ -337,7 +336,6 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
             //Display success dialog
             object : CustomDialog("Import success", "Save was imported successfully", "", "Ok") {
                 override fun result(resObj: Any?) {
-                    super.result(resObj)
                     if (resObj == DIALOG_POSITIVE) {
                         timer.scheduleTask(object : Timer.Task() {
                             override fun run() {

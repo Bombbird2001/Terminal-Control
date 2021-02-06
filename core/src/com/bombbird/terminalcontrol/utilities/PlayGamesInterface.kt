@@ -26,7 +26,11 @@ interface PlayGamesInterface {
         //No default implementation
     }
 
-    fun startDriveSignIn() {
+    fun driveSaveGame() {
+        //No default implementation
+    }
+
+    fun driveLoadGame() {
         //No default implementation
     }
 }

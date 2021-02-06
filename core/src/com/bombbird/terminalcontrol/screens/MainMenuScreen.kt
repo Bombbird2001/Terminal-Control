@@ -247,7 +247,6 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
     private fun loadDialog() {
         endDialog = object : CustomDialog("Quit Game?", "", "Cancel", "Quit") {
             override fun result(resObj: Any?) {
-                super.result(resObj)
                 if (resObj == DIALOG_POSITIVE) {
                     //Quit game
                     dispose()

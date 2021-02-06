@@ -70,8 +70,10 @@ object HttpRequests {
                     println(response.body?.string())
                     save.put("errorSent", true)
                     GameSaver.writeObjectToFile(save, save.getInt("saveId"))
-                    dialog.updateText("Save has been sent. Thank you!")
-                    dialog.updateButtons("", "Ok!")
+                    Gdx.app.postRunnable {
+                        dialog.updateText("Save has been sent. Thank you!")
+                        dialog.updateButtons("", "Ok!")
+                    }
                 }
                 response.close()
             }

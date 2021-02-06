@@ -43,6 +43,8 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             Gdx.app.postRunnable { (game.screen as? PlayGamesScreen)?.updateSignInStatus() }
         }
 
+    var save = true
+
     override fun gameSignIn() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) != ConnectionResult.SUCCESS) {
             activity.runOnUiThread {
@@ -120,13 +122,30 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
         }
     }
 
-    override fun startDriveSignIn() {
+    override fun driveSaveGame() {
+        save = true
+        startDriveSignIn()
+        driveManager?.saveGame()
+    }
+
+    override fun driveLoadGame() {
+        save = false
+        startDriveSignIn()
+        driveManager?.loadGame()
+    }
+
+    private fun startDriveSignIn() {
+        if (driveManager != null) return
         if (!GoogleSignIn.hasPermissions(signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))) {
-            GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
+            requestPermissions()
         } else driveSignIn()
     }
 
-    fun driveSignIn() {
+    fun requestPermissions() {
+        GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
+    }
+
+    private fun driveSignIn() {
         val credential = GoogleAccountCredential.usingOAuth2(
             activity.applicationContext, Collections.singleton(Scopes.DRIVE_APPFOLDER)
         )
@@ -136,8 +155,6 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             GsonFactory(),
             credential
         ).setApplicationName("Terminal Control").build()
-        driveManager = DriveManager(googleDriveService)
-        driveManager?.createFile()
-        driveManager?.listFiles()
+        driveManager = DriveManager(googleDriveService, activity)
     }
 }
