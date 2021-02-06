@@ -18,7 +18,7 @@ open class CustomDialog(title: String, val text: String, private var negative: S
         titleLabel.setAlignment(Align.top)
         titleLabel.setFontScale(fontScale)
         titleLabel.setScale(fontScale)
-        buttonTable.defaults().width(5f / 12 * width).height(0.32f * height).padLeft(0.025f * width).padRight(0.025f * width)
+        buttonTable.defaults().width(5f / 12 * width).height(160f * fontScale).padLeft(0.025f * width).padRight(0.025f * width)
         isMovable = false
         initialize()
     }
