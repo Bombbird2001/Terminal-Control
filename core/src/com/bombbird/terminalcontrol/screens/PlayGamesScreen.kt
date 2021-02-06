@@ -86,7 +86,7 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         uploadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
-                    object : CustomDialog("Save to cloud", "Save game progress to cloud?\nCaution: All current game data saved in the\ncloud will be overwritten!", "Don't save", "Save") {
+                    object : CustomDialog("Save to cloud", "Save game progress to cloud?\nCaution: All current game data saved in the\ncloud will be overwritten!", "Don't save", "Save", height = 600) {
                         override fun result(resObj: Any?) {
                             if (resObj == DIALOG_POSITIVE) {
                                 //Save progress
@@ -106,7 +106,7 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         downloadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
-                    object : CustomDialog("Load from cloud", "Load game progress from cloud?\nCaution: All current game data saved on\nthis device will be overwritten!", "Don't load", "Load") {
+                    object : CustomDialog("Load from cloud", "Load game progress from cloud?\nCaution: All current game data saved on\nthis device will be overwritten!", "Don't load", "Load", height = 600) {
                         override fun result(resObj: Any?) {
                             if (resObj == DIALOG_POSITIVE) {
                                 //Load progress
