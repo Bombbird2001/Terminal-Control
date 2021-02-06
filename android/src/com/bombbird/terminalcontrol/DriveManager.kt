@@ -17,6 +17,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
 class DriveManager(private val drive: Drive, private val activity: AndroidLauncher) {
@@ -37,22 +38,30 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
         val settingsMeta = File()
         settingsMeta.name = "settings.json"
         settingsMeta.parents = Collections.singletonList("appDataFolder")
+        settingsMeta.appProperties = HashMap<String, String>()
+        settingsMeta.appProperties["type"] = if (TerminalControl.full) "full" else "lite"
         val settingsMedia = FileContent("application/json", FileLoader.getExtDir("settings.json")?.file())
 
         val statsMeta = File()
         statsMeta.name = "stats.json"
         statsMeta.parents = Collections.singletonList("appDataFolder")
+        statsMeta.appProperties = HashMap<String, String>()
+        statsMeta.appProperties["type"] = if (TerminalControl.full) "full" else "lite"
         val statsMedia = FileContent("application/json", FileLoader.getExtDir("stats.json")?.file())
 
         val saveMeta = File()
         saveMeta.name = "saves"
         saveMeta.parents = Collections.singletonList("appDataFolder")
         saveMeta.mimeType = "application/vnd.google-apps.folder"
+        saveMeta.appProperties = HashMap<String, String>()
+        saveMeta.appProperties["type"] = if (TerminalControl.full) "full" else "lite"
 
         FileLoader.getExtDir("saves")?.list()?.let {
             for (file in it) {
                 val fileMeta = File()
                 fileMeta.name = file.name()
+                fileMeta.appProperties = HashMap<String, String>()
+                fileMeta.appProperties["type"] = if (TerminalControl.full) "full" else "lite"
                 val fileMedia = FileContent("*/*", file.file())
                 files.add(fileMeta)
                 media.add(fileMedia)
@@ -69,27 +78,23 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             try {
                 if (settingsID == null || statsID == null) {
                     //If settings, stats don't exist yet, create new files with ID
-                    val settings = drive.files().create(settingsMeta, settingsMedia).execute()
+                    val settings = drive.files().create(settingsMeta, settingsMedia).setFields("id").execute()
                     incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                    val stats = drive.files().create(statsMeta, statsMedia).execute()
+                    val stats = drive.files().create(statsMeta, statsMedia).setFields("id").execute()
                     incrementCounterDialog(atomicCounter, totalCount, dialog, true)
                     with(pref.edit()) {
                         putString("settingsId", settings.id)
                         putString("statsId", stats.id)
                         apply()
                     }
-                    println("Created settings ${settings.name} ${settings.id}")
-                    println("Created stats ${stats.name} ${stats.id}")
                 } else {
                     //Update changes to existing files
                     settingsMeta.parents = null
                     statsMeta.parents = null
-                    val settings = drive.files().update(settingsID, settingsMeta, settingsMedia).execute()
+                    drive.files().update(settingsID, settingsMeta, settingsMedia).execute()
                     incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                    val stats = drive.files().update(statsID, statsMeta, statsMedia).execute()
+                    drive.files().update(statsID, statsMeta, statsMedia).execute()
                     incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                    println("Updated settings ${settings.name} ${settings.id}")
-                    println("Updated stats ${stats.name} ${stats.id}")
                 }
             } catch (e: UserRecoverableAuthIOException) {
                 activity.playGamesManager.requestPermissions()
@@ -100,8 +105,9 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             if (savesID != null) drive.files().delete(savesID).execute() //Delete existing saves folder
             incrementCounterDialog(atomicCounter, totalCount, dialog, true)
 
-            val folder = drive.files().create(saveMeta).setFields("id, parents").execute() //Create new save folder
+            val folder = drive.files().create(saveMeta).setFields("id").execute() //Create new save folder
             pref.edit().putString("savesId", folder.id).apply() //Save the new folder ID
+            incrementCounterDialog(atomicCounter, totalCount, dialog, true)
 
             val executor = Executors.newFixedThreadPool(5)
             for ((index, fileMetadata) in files.withIndex()) {
@@ -109,7 +115,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 fileMetadata.parents = Collections.singletonList(folder.id)
                 executor.submit {
                     val file: File = drive.files().create(fileMetadata, media[index])
-                        .setFields("id, parents")
+                        .setFields("id, name")
                         .execute()
                     println("Created save ${file.name} ${file.id}")
                     incrementCounterDialog(atomicCounter, totalCount, dialog, true)
@@ -139,7 +145,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
         Thread {
             val fileList: List<File>
             try {
-                fileList = listFiles()
+                fileList = filterList()
             } catch (e: UserRecoverableAuthIOException) {
                 activity.playGamesManager.requestPermissions()
                 dialog?.hide()
@@ -151,12 +157,11 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 folderHandle.deleteDirectory() //Delete existing local saves
             }
 
-            val totalCount = fileList.size - 2
+            val totalCount = fileList.size
             val atomicCounter = AtomicInteger(0)
             if (totalCount > 0) {
                 val executor = Executors.newFixedThreadPool(5)
                 for (fileMeta in fileList) {
-                    if (fileMeta.name == "saves" || fileMeta.name == "play_games") continue
                     executor.submit {
                         val outputStream = ByteArrayOutputStream()
                         drive.files().get(fileMeta.id).executeMediaAndDownloadTo(outputStream)
@@ -176,7 +181,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             }
             dialog?.hide()
             (activity.playGamesManager.game.screen as? BasicScreen)?.let {
-                CustomDialog("Load from cloud", if (atomicCounter.get() < totalCount) "Failed to load from cloud - please try again" else if (totalCount <= 0) "No data saved in cloud - data on\nthis device remain unchanged" else "Data has been loaded from cloud", "", "Ok").show(it.stage)
+                CustomDialog("Load from cloud", if (totalCount <= 0) "No data saved in cloud - data on\nthis device remain unchanged" else "Data has been loaded from cloud", "", "Ok").show(it.stage)
             }
         }.start()
     }
@@ -184,12 +189,32 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
     private fun listFiles(): List<File> {
         println("List files")
         val files: FileList = drive.files().list()
-            .setSpaces("appDataFolder")
+            .setSpaces("appDataFolder").setFields("files(id,name,appProperties)")
             .execute()
         for (file in files.files) {
-            println("Found file: ${file.name}, ${file.id}")
+            println(file.toString())
         }
         return files.files
+    }
+
+    private fun filterList(): ArrayList<File> {
+        println("Filter files")
+        val fileList = ArrayList<File>()
+        val files: FileList = drive.files().list()
+            .setSpaces("appDataFolder").setFields("files(id,name,appProperties)")
+            .execute()
+        for (fileMeta in files.files) {
+            println(fileMeta.toString())
+            if (fileMeta.name == "saves" || fileMeta.name == "play_games") continue
+            var skip = false
+            fileMeta.appProperties?.let {
+                if (it["type"] != "full" && TerminalControl.full) skip = true
+                if (it["type"] != "lite" && !TerminalControl.full) skip = true
+            } ?: continue
+            if (skip) continue
+            fileList.add(fileMeta)
+        }
+        return fileList
     }
 
     private fun incrementCounterDialog(atomicCounter: AtomicInteger, total: Int, dialog: CustomDialog?, saving: Boolean) {
