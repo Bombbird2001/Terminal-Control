@@ -52,6 +52,7 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         signInOutButton.setPosition(x, 1000f)
         signInOutButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                disableBackButton = true
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
                     object : CustomDialog("Sign Out", "Sign out of Google Play Games?", "Stay signed in", "Sign out") {
                         override fun result(resObj: Any?) {
@@ -60,10 +61,12 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
                                 TerminalControl.playGamesInterface.gameSignOut()
                                 updateSignInStatus()
                             }
+                            disableBackButton = false
                         }
                     }.show(stage)
                 } else {
                     TerminalControl.playGamesInterface.gameSignIn()
+                    disableBackButton = false
                 }
             }
         })
@@ -86,6 +89,7 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         uploadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
+                    disableBackButton = true
                     object : CustomDialog("Save to cloud", "Save game progress to cloud?\nCaution: All current game data saved in the\ncloud will be overwritten!", "Don't save", "Save", height = 600) {
                         override fun result(resObj: Any?) {
                             if (resObj == DIALOG_POSITIVE) {
@@ -106,6 +110,7 @@ class PlayGamesScreen(game: TerminalControl, background: Image?) : StandardUIScr
         downloadGameButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 if (TerminalControl.playGamesInterface.isSignedIn()) {
+                    disableBackButton = true
                     object : CustomDialog("Load from cloud", "Load game progress from cloud?\nCaution: All current game data saved on\nthis device will be overwritten!", "Don't load", "Load", height = 600) {
                         override fun result(resObj: Any?) {
                             if (resObj == DIALOG_POSITIVE) {

@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol
 import android.content.Context
 import android.util.Log
 import com.badlogic.gdx.Gdx
-import com.bombbird.terminalcontrol.screens.BasicScreen
+import com.bombbird.terminalcontrol.screens.StandardUIScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 class DriveManager(private val drive: Drive, private val activity: AndroidLauncher) {
     fun saveGame() {
         var dialog: CustomDialog? = null
-        (activity.game.screen as? BasicScreen)?.let {
+        (activity.game.screen as? StandardUIScreen)?.let {
             dialog = object : CustomDialog("Save to cloud", "Saving game data to cloud...", "", "") {
                 override fun result(resObj: Any?) {
                     cancel()
@@ -131,15 +131,19 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             } else Log.e("Cloud save", "Null account or account ID")
             listFiles()
             dialog?.hide()
-            (activity.game.screen as? BasicScreen)?.let {
-                CustomDialog("Save to cloud", if (atomicCounter.get() < totalCount) "Failed to save to cloud - please try again" else "Data has been saved to cloud", "", "Ok").show(it.stage)
+            (activity.game.screen as? StandardUIScreen)?.let {
+                object : CustomDialog("Save to cloud", if (atomicCounter.get() < totalCount) "Failed to save to cloud - please try again" else "Data has been saved to cloud", "", "Ok") {
+                    override fun result(resObj: Any?) {
+                        it.disableBackButton = false
+                    }
+                }.show(it.stage)
             }
         }.start()
     }
 
     fun loadGame() {
         var dialog: CustomDialog? = null
-        (activity.game.screen as? BasicScreen)?.let {
+        (activity.game.screen as? StandardUIScreen)?.let {
             dialog = object : CustomDialog("Load from cloud", "Loading game data from cloud...", "", "") {
                 override fun result(resObj: Any?) {
                     cancel()
@@ -187,8 +191,12 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 executor.awaitTermination(60, TimeUnit.SECONDS)
             }
             dialog?.hide()
-            (activity.game.screen as? BasicScreen)?.let {
-                CustomDialog("Load from cloud", if (totalCount <= 0) "No data saved in cloud - data on\nthis device remain unchanged" else "Data has been loaded from cloud", "", "Ok").show(it.stage)
+            (activity.game.screen as? StandardUIScreen)?.let {
+                object : CustomDialog("Load from cloud", if (totalCount <= 0) "No data saved in cloud - data on\nthis device remain unchanged" else "Data has been loaded from cloud", "", "Ok") {
+                    override fun result(resObj: Any?) {
+                        it.disableBackButton = false
+                    }
+                }.show(it.stage)
             }
         }.start()
     }
