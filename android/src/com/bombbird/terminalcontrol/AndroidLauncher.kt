@@ -64,7 +64,6 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
         val pref = getPreferences(Context.MODE_PRIVATE)
         if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
-        pref.edit().remove("settingsId").remove("statsId").remove("savesId").apply()
     }
 
     @Suppress("DEPRECATION")
