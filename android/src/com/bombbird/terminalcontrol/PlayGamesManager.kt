@@ -4,10 +4,11 @@ import android.content.Context
 import android.view.Gravity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import android.widget.Toast
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
+import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.PlayGamesScreen
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.PlayGamesInterface
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,8 +25,8 @@ import com.google.api.services.drive.Drive
 import java.util.*
 
 class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterface {
-    lateinit var game: Game
     private var driveManager: DriveManager? = null
+    var drivePermissionGranted = false
     var signedInAccount: GoogleSignInAccount? = null
         set(value) {
             if (field == null && value != null) {
@@ -40,7 +41,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             }
             field = value
             if (value != null && UnlockManager.achievementList.size > 0) UnlockManager.checkGooglePlayAchievements()
-            Gdx.app.postRunnable { (game.screen as? PlayGamesScreen)?.updateSignInStatus() }
+            Gdx.app.postRunnable { (activity.game.screen as? PlayGamesScreen)?.updateSignInStatus() }
         }
 
     var save = true
@@ -94,6 +95,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             //User is signed out
             signedInAccount = null
             driveManager = null
+            drivePermissionGranted = false
         }
     }
 
@@ -136,13 +138,26 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
 
     private fun startDriveSignIn() {
         if (driveManager != null) return
-        if (!GoogleSignIn.hasPermissions(signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))) {
+        if (!GoogleSignIn.hasPermissions(signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL)) && !drivePermissionGranted) {
+            //If google sign in claims has no permission, and the permission granted flag agrees, request permission
             requestPermissions()
-        } else driveSignIn()
+        } else {
+            //If google sign in has permission, or permission granted flag is true, sign in to drive
+            drivePermissionGranted = true
+            driveSignIn()
+        }
     }
 
     fun requestPermissions() {
-        GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
+        (activity.game.screen as? BasicScreen)?.let {
+            object : CustomDialog("Google Drive access", "Terminal Control will request access to your\nGoogle Drive account in order to store game\ndata on the cloud. The app will have access only\nto the game data files, and will not have\naccess to other files on your Drive.", "", "Ok", height = 750) {
+                override fun result(resObj: Any?) {
+                    if (resObj == DIALOG_POSITIVE) {
+                        GoogleSignIn.requestPermissions(activity, AndroidLauncher.DRIVE_PERMISSION, signedInAccount, Scope(Scopes.DRIVE_APPFOLDER), Scope(Scopes.EMAIL))
+                    }
+                }
+            }.show(it.stage)
+        }
     }
 
     private fun driveSignIn() {

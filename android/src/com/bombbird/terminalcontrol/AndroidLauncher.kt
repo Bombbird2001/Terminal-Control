@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.utils.Base64Coder
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
@@ -36,6 +37,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     private var save: JSONObject? = null
     lateinit var playGamesManager: PlayGamesManager
     lateinit var view: View
+    lateinit var game: Game
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +46,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         config.useAccelerometer = false
         config.useCompass = false
         playGamesManager = PlayGamesManager(this)
-        val game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
-        playGamesManager.game = game
+        game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
         view = initializeForView(game, config)
         setAndroidView(view)
         val ttsIntent = Intent()
@@ -59,6 +60,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
         val pref = getPreferences(Context.MODE_PRIVATE)
         if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
+        pref.edit().remove("settingsId").remove("statsId").remove("savesId").apply()
     }
 
     @Suppress("DEPRECATION")
@@ -103,6 +105,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                     putBoolean("declinePlaySignIn", true)
                     apply()
                 }
+            } else if (requestCode == DRIVE_PERMISSION) {
+                playGamesManager.drivePermissionGranted = false
             }
             return
         }
@@ -172,6 +176,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                 }
             }
         } else if (requestCode == DRIVE_PERMISSION) {
+            playGamesManager.drivePermissionGranted = true
             if (playGamesManager.save) playGamesManager.driveSaveGame() else playGamesManager.driveLoadGame()
         }
     }
