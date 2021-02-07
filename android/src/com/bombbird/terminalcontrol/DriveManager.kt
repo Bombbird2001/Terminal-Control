@@ -105,6 +105,9 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                     activity.playGamesManager.requestPermissions()
                     dialog?.hide()
                     return@Thread
+                } catch (e: IllegalArgumentException) {
+                    dialog?.hide()
+                    return@Thread
                 }
 
                 if (savesID != null) drive.files().delete(savesID).execute() //Delete existing saves folder
@@ -158,6 +161,9 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 fileList = filterList()
             } catch (e: UserRecoverableAuthIOException) {
                 activity.playGamesManager.requestPermissions()
+                dialog?.hide()
+                return@Thread
+            } catch (e: IllegalArgumentException) {
                 dialog?.hide()
                 return@Thread
             }
