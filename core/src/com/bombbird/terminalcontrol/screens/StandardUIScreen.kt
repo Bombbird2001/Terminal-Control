@@ -14,6 +14,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 
 open class StandardUIScreen(game: TerminalControl, val background: Image?) : BasicScreen(game, 2880, 1620) {
     lateinit var backButton: TextButton
+    var disableBackButton = false
 
     /** Loads screen UI, to be overridden in each screen  */
     open fun loadUI() {
@@ -68,7 +69,7 @@ open class StandardUIScreen(game: TerminalControl, val background: Image?) : Bas
     /** Overrides render method to include detection of back button on android  */
     override fun render(delta: Float) {
         super.render(delta)
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+        if (!disableBackButton && Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
             //On android, emulate backButton is pressed
             backButton.toggle()
         }
