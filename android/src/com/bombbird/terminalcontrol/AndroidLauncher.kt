@@ -17,7 +17,6 @@ import com.bombbird.terminalcontrol.utilities.DiscordManager
 import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -167,10 +166,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
                 Log.e("Play Sign-in", message ?: "")
                 if (result?.status?.statusCode == ConnectionResult.SIGN_IN_REQUIRED) {
                     this.startActivityForResult(
-                        GoogleSignIn.getClient(
-                            this,
-                            GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
-                        ).signInIntent, PLAY_SIGN_IN
+                        GoogleSignIn.getClient(this, playGamesManager.getSignInOptions()).signInIntent, PLAY_SIGN_IN
                     )
                 }
             }
