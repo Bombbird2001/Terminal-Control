@@ -42,7 +42,6 @@ task checkVersionFull() {
 }
 
 task buildFull(type: Jar) {
-    project.ext.assetsDir = new File("../android/assetsFull")
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compileClasspath.collect {zipTree(it)}}
