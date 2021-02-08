@@ -4,7 +4,7 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.bombbird.terminalcontrol.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assetsFull")
+project.ext.assetsDir = new File("../android/assetsLite")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -42,7 +42,6 @@ task checkVersionLite() {
 }
 
 task buildLite(type: Jar) {
-    project.ext.assetsDir = new File("../android/assetsLite")
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compileClasspath.collect {zipTree(it)}}

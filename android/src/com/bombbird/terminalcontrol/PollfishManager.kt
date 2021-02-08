@@ -11,9 +11,12 @@ import com.bombbird.terminalcontrol.utilities.Values
 import com.pollfish.main.PollFish
 
 class PollfishManager(private val activity: Activity, private val game: Game) {
+    var surveyAvailable = false
+
     fun initPollfish() {
         val paramsBuilder = PollFish.ParamsBuilder(Values.POLLFISH_KEY).releaseMode(true).rewardMode(true)
             .pollfishReceivedSurveyListener {
+                surveyAvailable = true
                 game.screen?.let {
                     if (it is MainMenuScreen || it is LoadGameScreen || it is NewGameScreen) {
                         object : CustomDialog("Survey", "A survey is available. Take it?", "No", "Sure") {

@@ -10,7 +10,7 @@ android {
             jniLibs.srcDirs = ['libs']
         }
         lite {
-            assets.srcDirs = ['assetsLite']
+            assets.srcDirs = ['assetsFull']
             res.srcDirs = ['resLite']
         }
         main.assets.filter.exclude '**/tts/*.*'
@@ -65,28 +65,26 @@ android {
 tasks.whenTaskAdded { task ->
     if (task.name.contains('assemble') || task.name.contains('bundle')) {
         if (task.name.contains('Lite')) {
-            task.dependsOn checkVersionLite
-        } else if (task.name.contains('Full')) {
-            task.dependsOn checkVersionFull
+            task.dependsOn checkVersionLiteFullAssets
         }
     }
 }
 
 //Called before build to check that version information in internal game files are correct for each version
-task checkVersionLite() {
+task checkVersionLiteFullAssets() {
     doLast {
         String gradleVersion = android.defaultConfig.versionName
         String gradleVersionCode = android.defaultConfig.versionCode
 
-        def text2 = project.file("../android/assetsLite/game/type.type").text
+        def text2 = project.file("../android/assetsFull/game/type.type").text
         def values2 = text2.split(' ')
         if (values2.size() < 2) {
-            throw new GradleException("Lite version: Type string length is " + values2.size() + ", needs 2")
+            throw new GradleException("Lite version (full assets): Type string length is " + values2.size() + ", needs 2")
         }
         if ((values2[0] != gradleVersion) || (values2[1] != gradleVersionCode)) {
-            throw new GradleException("Lite version: " + values2[0] + " code " + values2[1] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
+            throw new GradleException("Lite version (full assets): " + values2[0] + " code " + values2[1] + " not equal to Gradle's " + gradleVersion + " code " + gradleVersionCode)
         }
-        println "Lite version check successful"
+        println "Lite version (full assets) check successful"
     }
 }
 
