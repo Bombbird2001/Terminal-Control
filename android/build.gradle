@@ -10,7 +10,7 @@ android {
             jniLibs.srcDirs = ['libs']
         }
         lite {
-            assets.srcDirs = ['assetsFull']
+            assets.srcDirs = ['assetsLiteFull']
             res.srcDirs = ['resLite']
         }
         main.assets.filter.exclude '**/tts/*.*'
@@ -76,7 +76,7 @@ task checkVersionLiteFullAssets() {
         String gradleVersion = android.defaultConfig.versionName
         String gradleVersionCode = android.defaultConfig.versionCode
 
-        def text2 = project.file("../android/assetsFull/game/type.type").text
+        def text2 = project.file("../android/assetsLiteFull/game/type.type").text
         def values2 = text2.split(' ')
         if (values2.size() < 2) {
             throw new GradleException("Lite version (full assets): Type string length is " + values2.size() + ", needs 2")
