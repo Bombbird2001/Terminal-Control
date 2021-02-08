@@ -47,6 +47,8 @@ task buildFull(type: Jar) {
     from {configurations.compileClasspath.collect {zipTree(it)}}
     from files(project.assetsDir)
 
+    archiveFileName = "desktop-${project.version}-full.jar"
+
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
