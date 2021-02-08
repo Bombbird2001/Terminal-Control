@@ -22,7 +22,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
-import java.util.*
 
 class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterface {
     private var driveManager: DriveManager? = null
@@ -57,7 +56,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
                 toast.show()
             }
         }
-        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build()
+        val signInOptions = getSignInOptions()
         val account = GoogleSignIn.getLastSignedInAccount(activity)
         if (GoogleSignIn.hasPermissions(account, *signInOptions.scopeArray)) {
             //Already signed in
@@ -81,16 +80,12 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
     }
 
     private fun startSignInIntent() {
-        val signInClient = GoogleSignIn.getClient(activity, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-        val intent = signInClient.signInIntent
-        activity.startActivityForResult(intent, AndroidLauncher.PLAY_SIGN_IN)
+        val signInClient = GoogleSignIn.getClient(activity, getSignInOptions())
+        activity.startActivityForResult(signInClient.signInIntent, AndroidLauncher.PLAY_SIGN_IN)
     }
 
     override fun gameSignOut() {
-        val signInClient = GoogleSignIn.getClient(
-            activity,
-            GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
-        )
+        val signInClient = GoogleSignIn.getClient(activity, getSignInOptions())
         signInClient.signOut().addOnCompleteListener(activity) {
             //User is signed out
             signedInAccount = null
@@ -162,7 +157,7 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
 
     private fun driveSignIn() {
         val credential = GoogleAccountCredential.usingOAuth2(
-            activity.applicationContext, Collections.singleton(Scopes.DRIVE_APPFOLDER)
+            activity.applicationContext, arrayListOf(Scopes.DRIVE_APPFOLDER, Scopes.EMAIL)
         )
         signedInAccount?.account?.let { credential.selectedAccount = it }
         val googleDriveService = Drive.Builder(
@@ -171,5 +166,9 @@ class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterfac
             credential
         ).setApplicationName("Terminal Control").build()
         driveManager = DriveManager(googleDriveService, activity)
+    }
+
+    fun getSignInOptions(): GoogleSignInOptions {
+        return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestEmail().build()
     }
 }

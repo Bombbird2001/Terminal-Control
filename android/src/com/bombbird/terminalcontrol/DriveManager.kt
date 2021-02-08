@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.screens.StandardUIScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.services.drive.Drive
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.model.File
@@ -79,7 +80,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             if (pref != null) {
                 val settingsID = pref.getString("settingsId", null)
                 val statsID = pref.getString("statsId", null)
-                val savesID = pref.getString("savesId", null)
+                var savesID = pref.getString("savesId", null)
                 try {
                     if (settingsID == null || statsID == null) {
                         //If settings, stats don't exist yet, create new files with ID
@@ -107,7 +108,31 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                     return@Thread
                 } catch (e: IllegalArgumentException) {
                     dialog?.hide()
+                    (activity.game.screen as? StandardUIScreen)?.let {
+                        object : CustomDialog("Save to cloud","An error occurred while saving -\nplease restart the app and try again","","Ok") {
+                            override fun result(resObj: Any?) {
+                                it.disableBackButton = false
+                            }
+                        }.show(it.stage)
+                    }
                     return@Thread
+                } catch (e: GoogleJsonResponseException) {
+                    if (e.statusCode == 404) {
+                        //User cleared app drive data, create new files instead
+                        settingsMeta.parents = Collections.singletonList("appDataFolder")
+                        statsMeta.parents = Collections.singletonList("appDataFolder")
+                        val settings = drive.files().create(settingsMeta, settingsMedia).setFields("id").execute()
+                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
+                        val stats = drive.files().create(statsMeta, statsMedia).setFields("id").execute()
+                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
+                        with(pref.edit()) {
+                            putString("settingsId", settings.id)
+                            putString("statsId", stats.id)
+                            remove("savesId")
+                            apply()
+                        }
+                        savesID = null
+                    } else throw e
                 }
 
                 if (savesID != null) drive.files().delete(savesID).execute() //Delete existing saves folder
@@ -130,7 +155,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                     }
                 }
                 executor.shutdown()
-                executor.awaitTermination(60, TimeUnit.SECONDS)
+                executor.awaitTermination(totalCount * 10L, TimeUnit.SECONDS)
             } else Log.e("Cloud save", "Null account or account ID")
             listFiles()
             dialog?.hide()
@@ -165,6 +190,13 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 return@Thread
             } catch (e: IllegalArgumentException) {
                 dialog?.hide()
+                (activity.game.screen as? StandardUIScreen)?.let {
+                    object : CustomDialog("Load from cloud","An error occurred while loading -\nplease restart the app and try again","","Ok") {
+                        override fun result(resObj: Any?) {
+                            it.disableBackButton = false
+                        }
+                    }.show(it.stage)
+                }
                 return@Thread
             }
 
@@ -194,7 +226,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                     }
                 }
                 executor.shutdown()
-                executor.awaitTermination(60, TimeUnit.SECONDS)
+                executor.awaitTermination(totalCount * 10L, TimeUnit.SECONDS)
             }
             dialog?.hide()
             (activity.game.screen as? StandardUIScreen)?.let {

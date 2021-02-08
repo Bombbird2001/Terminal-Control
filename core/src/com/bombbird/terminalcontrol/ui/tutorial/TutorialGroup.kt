@@ -17,26 +17,29 @@ class TutorialGroup(private val tutorialManager: TutorialManager) {
     /** Updates the individual timer for this tutorial group  */
     fun update() {
         if (!isActive) return
-        if (times.isEmpty || texts.isEmpty) return
+        if (times.isEmpty) {
+            isActive = false
+            return
+        }
         timer += Gdx.graphics.deltaTime
         if (timer >= times.first()) {
             //First message can be posted and removed from queue
-            tutorialManager.tutorialMsg(texts.removeFirst())
+            if (!texts.isEmpty) tutorialManager.tutorialMsg(texts.removeFirst())
 
             //Check for other tasks
             checkAdditionalTasks(times.removeFirst())
         }
-        if (times.isEmpty || texts.isEmpty) isActive = false
     }
 
     /** Adds a new message and its posting time to the end of the respective queues  */
     fun addMessage(time: Int, text: String) {
-        times.addLast(time)
+        if (!times.contains(time)) times.addLast(time)
         texts.addLast(text)
     }
 
     /** Adds a new task and its execution time  */
     fun addTask(time: Int, key: String) {
+        if (!times.contains(time)) times.addLast(time)
         tasks[time] = key
     }
 
