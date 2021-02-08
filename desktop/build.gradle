@@ -46,6 +46,8 @@ task buildLite(type: Jar) {
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compileClasspath.collect {zipTree(it)}}
     from files(project.assetsDir)
+
+    archiveFileName = "desktop-${project.version}-lite.jar"
  
     manifest {
         attributes 'Main-Class': project.mainClassName
