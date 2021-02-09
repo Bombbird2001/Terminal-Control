@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.screens.selectgamescreen
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -20,8 +22,8 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
         //Set label params
         super.loadLabel()
         val headerLabel = Label("Airports", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -37,8 +39,8 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
 
         //Set back button params
         backButton = TextButton("<= Back", buttonStyle)
-        backButton.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        backButton.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        backButton.width = MainMenuScreen.BUTTON_WIDTH
+        backButton.height = MainMenuScreen.BUTTON_HEIGHT
         backButton.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.05f)
         backButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
@@ -54,7 +56,7 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
         //Load help sections
         val airports = Array<String>()
         airports.add("TCTP", "TCWS")
-        if (TerminalControl.full) {
+        if (TerminalControl.full || Gdx.app.type == Application.ApplicationType.Android) {
             airports.add("TCTT", "TCHH", "TCBB", "TCBD")
             airports.add("TCMD", "TCPG")
         }
@@ -67,7 +69,7 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
                     game.screen = HelpSectionScreen(game, background, button.name)
                 }
             })
-            scrollTable.add(button).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT.toFloat())
+            scrollTable.add(button).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT)
             scrollTable.row()
         }
         val scrollPane = ScrollPane(scrollTable)
