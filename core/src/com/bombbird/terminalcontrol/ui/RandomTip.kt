@@ -37,7 +37,7 @@ object RandomTip {
         tips.add("Colour scheme can be changed in Settings => Display")
         tips.add("Choose whether to display remaining distance to each waypoint on aircraft routes, in Settings => Display")
         tips.add("Measure distance on the radar screen by ${if (Gdx.app.type == Application.ApplicationType.Android) "changing to \"Dist mode\" and tapping with 2 fingers" else "dragging with the right mouse button"}")
-        tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
+        if (TerminalControl.full || Gdx.app.type == Application.ApplicationType.Android) tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
         if (Gdx.app.type == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!")
     }
 

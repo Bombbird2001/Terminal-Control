@@ -59,13 +59,13 @@ object UnlockManager {
             addAchievement("veteran", "Veteran", "Land 1000 planes", 1000, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQBQ")
             addAchievement("godly", "Godly", "Land 5000 planes", 5000, Achievement.PLANES_LANDED, "CgkI0prDyawdEAIQBg")
             addAchievement("thatWasClose", "That was close", "Have two planes come within 200 feet and 0.5nm of each other", -1, Achievement.NONE, "CgkI0prDyawdEAIQBw")
-            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS" + (if (TerminalControl.full) "/TCTT/TCAA/TCHH/TCMC" else "") + " with at least 40-knot winds", -1, Achievement.NONE, "CgkI0prDyawdEAIQCA")
+            addAchievement("typhoon", "Typhoon", "Land a plane in TCTP/TCSS/TCTT/TCAA/TCHH/TCMC with at least 40-knot winds", -1, Achievement.NONE, "CgkI0prDyawdEAIQCA")
             addAchievement("haze", "Haze", "Land a plane in TCWS with visibility at or below 2500 metres", -1, Achievement.NONE, "CgkI0prDyawdEAIQCQ")
             addAchievement("mayday", "Mayday", "Land your first emergency", 1, Achievement.EMERGENCIES_LANDED, "CgkI0prDyawdEAIQCg")
             addAchievement("maydayMayday", "Mayday, Mayday", "Land 30 emergencies", 30, Achievement.EMERGENCIES_LANDED, "CgkI0prDyawdEAIQCw")
             addAchievement("masterOfConflicts", "Master of Conflicts", "Have a total of 500 separation incidents, excluding wake conflicts", 500, Achievement.CONFLICTS, "CgkI0prDyawdEAIQDA")
             addAchievement("wakeUp", "Wake Up!", "Have over 600 seconds of wake separation infringement", 600, Achievement.WAKE_CONFLICT_TIME, "CgkI0prDyawdEAIQDQ")
-            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS" + if (TerminalControl.full) "/TCTT/TCAA/TCPG" else "", -1, Achievement.NONE, "CgkI0prDyawdEAIQDg")
+            addAchievement("parallelLanding", "Parallel Landing", "Land two planes on parallel runways within 5 seconds at TCWS/TCTT/TCAA/TCPG", -1, Achievement.NONE, "CgkI0prDyawdEAIQDg")
         }
         if (easterEggList.size == 0) {
             easterEggList["HX"] = arrayOf("Unlock Tai Kek International Airport, TCHX", "CgkI0prDyawdEAIQDw")
