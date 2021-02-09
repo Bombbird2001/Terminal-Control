@@ -1,13 +1,11 @@
 package com.bombbird.terminalcontrol
 
 import android.content.Context
-import android.util.Log
 import com.badlogic.gdx.Gdx
 import com.bombbird.terminalcontrol.screens.StandardUIScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.services.drive.Drive
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.model.File
@@ -34,7 +32,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             dialog?.show(it.stage)
         }
 
-        val files = ArrayList<File>()
+        val saveFiles = ArrayList<File>()
         val media = ArrayList<FileContent>()
 
         val settingsMeta = File()
@@ -65,48 +63,66 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                 fileMeta.appProperties = HashMap<String, String>()
                 fileMeta.appProperties["type"] = if (TerminalControl.full) "full" else "lite"
                 val fileMedia = FileContent("*/*", file.file())
-                files.add(fileMeta)
+                saveFiles.add(fileMeta)
                 media.add(fileMedia)
             }
         }
 
-        val totalCount = 4 + files.size
+        val totalCount = 4 + saveFiles.size
         val atomicCounter = AtomicInteger(0)
         Thread {
             val pref = activity.playGamesManager.signedInAccount?.let {
                 val prefName = "${activity.getString(R.string.package_name)}_${it.id}"
                 activity.getSharedPreferences(prefName, Context.MODE_PRIVATE)
             }
-            if (pref != null) {
-                val settingsID = pref.getString("settingsId", null)
-                val statsID = pref.getString("statsId", null)
-                var savesID = pref.getString("savesId", null)
+            pref?.edit()?.clear()?.apply() //Clear existing preferences TODO remove
+
                 try {
-                    if (settingsID == null || statsID == null) {
-                        //If settings, stats don't exist yet, create new files with ID
-                        val settings = drive.files().create(settingsMeta, settingsMedia).setFields("id").execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                        val stats = drive.files().create(statsMeta, statsMedia).setFields("id").execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                        with(pref.edit()) {
-                            putString("settingsId", settings.id)
-                            putString("statsId", stats.id)
-                            apply()
+                    val allFiles: FileList = drive.files().list()
+                        .setSpaces("appDataFolder").setFields("files(id,name,appProperties)")
+                        .execute()
+                    var settingsId: String? = null
+                    var statsId: String? = null
+                    var savesId: String? = null
+                    for (fileMeta in allFiles.files) {
+                        println(fileMeta.toString())
+                        if (fileMeta.name == "play_games") continue
+                        var skip = false
+                        fileMeta.appProperties?.let {
+                            if (it["type"] != "full" && TerminalControl.full) skip = true
+                            if (it["type"] != "lite" && !TerminalControl.full) skip = true
+                        } ?: continue
+                        if (skip) continue
+                        //The file is confirmed to be used for the app
+                        when (fileMeta.name) {
+                            "settings.json" -> settingsId = fileMeta.id
+                            "stats.json" -> statsId = fileMeta.id
+                            "saves" -> savesId = fileMeta.id
                         }
-                    } else {
-                        //Update changes to existing files
-                        settingsMeta.parents = null
-                        statsMeta.parents = null
-                        drive.files().update(settingsID, settingsMeta, settingsMedia).execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                        drive.files().update(statsID, statsMeta, statsMedia).execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
+                        if (settingsId != null && statsId != null && savesId != null) break //All 3 files found, exit loop
                     }
+
+                    if (settingsId != null) {
+                        settingsMeta.parents = null
+                        drive.files().update(settingsId, settingsMeta, settingsMedia).execute()
+                    } else drive.files().create(settingsMeta, settingsMedia).setFields("").execute()
+                    incrementCounterDialog(atomicCounter, totalCount, dialog, true)
+
+                    if (statsId != null) {
+                        statsMeta.parents = null
+                        drive.files().update(statsId, statsMeta, statsMedia).execute()
+                    } else drive.files().create(statsMeta, statsMedia).setFields("").execute()
+                    incrementCounterDialog(atomicCounter, totalCount, dialog, true)
+
+                    if (savesId != null) drive.files().delete(savesId).setFields("").execute() //Delete existing saves folder
+                    incrementCounterDialog(atomicCounter, totalCount, dialog, true)
                 } catch (e: UserRecoverableAuthIOException) {
+                    //User disconnected game from Google Drive
                     activity.playGamesManager.requestPermissions()
                     dialog?.hide()
                     return@Thread
                 } catch (e: IllegalArgumentException) {
+                    //Old error that would occur because .requestEmail() wasn't called
                     dialog?.hide()
                     (activity.game.screen as? StandardUIScreen)?.let {
                         object : CustomDialog("Save to cloud","An error occurred while saving -\nplease restart the app and try again","","Ok") {
@@ -116,47 +132,22 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                         }.show(it.stage)
                     }
                     return@Thread
-                } catch (e: GoogleJsonResponseException) {
-                    if (e.statusCode == 404) {
-                        //User cleared app drive data, create new files instead
-                        settingsMeta.parents = Collections.singletonList("appDataFolder")
-                        statsMeta.parents = Collections.singletonList("appDataFolder")
-                        val settings = drive.files().create(settingsMeta, settingsMedia).setFields("id").execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                        val stats = drive.files().create(statsMeta, statsMedia).setFields("id").execute()
-                        incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-                        with(pref.edit()) {
-                            putString("settingsId", settings.id)
-                            putString("statsId", stats.id)
-                            remove("savesId")
-                            apply()
-                        }
-                        savesID = null
-                    } else throw e
                 }
 
-                if (savesID != null) drive.files().delete(savesID).execute() //Delete existing saves folder
-                incrementCounterDialog(atomicCounter, totalCount, dialog, true)
-
                 val folder = drive.files().create(saveMeta).setFields("id").execute() //Create new save folder
-                pref.edit().putString("savesId", folder.id).apply() //Save the new folder ID
                 incrementCounterDialog(atomicCounter, totalCount, dialog, true)
 
-                val executor = Executors.newFixedThreadPool(5)
-                for ((index, fileMetadata) in files.withIndex()) {
+                val executor = Executors.newFixedThreadPool(saveFiles.size.coerceAtMost(5))
+                for ((index, fileMetadata) in saveFiles.withIndex()) {
                     //Save all game data into folder
                     fileMetadata.parents = Collections.singletonList(folder.id)
                     executor.submit {
-                        drive.files().create(fileMetadata, media[index])
-                            .setFields("id, name")
-                            .execute()
-                        //println("Created save ${file.name} ${file.id}")
+                        drive.files().create(fileMetadata, media[index]).setFields("").execute()
                         incrementCounterDialog(atomicCounter, totalCount, dialog, true)
                     }
                 }
                 executor.shutdown()
                 executor.awaitTermination(totalCount * 10L, TimeUnit.SECONDS)
-            } else Log.e("Cloud save", "Null account or account ID")
             listFiles()
             dialog?.hide()
             (activity.game.screen as? StandardUIScreen)?.let {
@@ -185,10 +176,12 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
             try {
                 fileList = filterList()
             } catch (e: UserRecoverableAuthIOException) {
+                //User disconnected game from Google Drive
                 activity.playGamesManager.requestPermissions()
                 dialog?.hide()
                 return@Thread
             } catch (e: IllegalArgumentException) {
+                //Old error that would occur because .requestEmail() wasn't called
                 dialog?.hide()
                 (activity.game.screen as? StandardUIScreen)?.let {
                     object : CustomDialog("Load from cloud","An error occurred while loading -\nplease restart the app and try again","","Ok") {
@@ -209,7 +202,7 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
                     folderHandle.deleteDirectory()
                 }
 
-                val executor = Executors.newFixedThreadPool(5)
+                val executor = Executors.newFixedThreadPool(fileList.size.coerceAtMost(5))
                 for (fileMeta in fileList) {
                     executor.submit {
                         val outputStream = ByteArrayOutputStream()
