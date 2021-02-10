@@ -37,6 +37,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     private var save: JSONObject? = null
     lateinit var playGamesManager: PlayGamesManager
     private lateinit var pollfishManager: PollfishManager
+    private lateinit var appodealManager: AppodealManager
     lateinit var view: View
     lateinit var game: Game
 
@@ -63,6 +64,9 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
         val pref = getPreferences(Context.MODE_PRIVATE)
         if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
+
+        appodealManager = AppodealManager(this)
+        //appodealManager.initAppodeal()
     }
 
     @Suppress("DEPRECATION")

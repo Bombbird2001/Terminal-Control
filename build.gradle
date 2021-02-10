@@ -37,6 +37,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "https://artifactory.appodeal.com/appodeal" }
     }
 }
 
@@ -90,8 +91,11 @@ project(":android") {
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         implementation "com.google.http-client:google-http-client-gson:1.38.1"
         implementation "com.google.android.gms:play-services-ads-identifier:17.0.0"
-        implementation "com.google.android.gms:play-services-base:17.5.0"
+        implementation "com.google.android.gms:play-services-base:17.6.0"
         implementation "com.pollfish:pollfish:5.6.0:googleplayRelease@aar"
+        //implementation "com.appodeal.ads:sdk:2.9.0.0"
+        //implementation "com.explorestack:consent:1.0.4"
+        //implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
     }
 }
 
