@@ -8,4 +8,5 @@ object Values {
     var DISCORD_ID_LITE = ""
     var DISCORD_ID_FULL = ""
     var POLLFISH_KEY = ""
+    var APPODEAL_KEY = ""
 }
