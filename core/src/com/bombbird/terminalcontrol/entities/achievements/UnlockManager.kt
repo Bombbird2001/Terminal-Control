@@ -121,15 +121,15 @@ object UnlockManager {
 
     /** Function called after Google Play Games sign in to update achievements */
     fun checkGooglePlayAchievements() {
-        if (!TerminalControl.playGamesInterface.isSignedIn()) return
+        if (!TerminalControl.playServicesInterface.isSignedIn()) return
         for ((key, value) in achievementList) {
             if (value.type == Achievement.NONE || key == "gettingStarted" || key == "mayday") {
                 if (!value.isUnlocked) continue
-                TerminalControl.playGamesInterface.unlockAchievement(value.id)
-            } else TerminalControl.playGamesInterface.incrementAchievement(value.id, value.currentValue, true)
+                TerminalControl.playServicesInterface.unlockAchievement(value.id)
+            } else TerminalControl.playServicesInterface.incrementAchievement(value.id, value.currentValue, true)
         }
         for ((key, value) in easterEggList) {
-            if (unlocks.contains(key)) TerminalControl.playGamesInterface.unlockAchievement(value[1])
+            if (unlocks.contains(key)) TerminalControl.playServicesInterface.unlockAchievement(value[1])
         }
     }
 
@@ -137,8 +137,8 @@ object UnlockManager {
         for ((key, value) in achievementList) {
             if (value.type != type || value.isUnlocked) continue
             if (key != "gettingStarted" && key != "mayday") {
-                TerminalControl.playGamesInterface.incrementAchievement(value.id, steps, false)
-            } else TerminalControl.playGamesInterface.unlockAchievement(value.id)
+                TerminalControl.playServicesInterface.incrementAchievement(value.id, steps, false)
+            } else TerminalControl.playServicesInterface.unlockAchievement(value.id)
         }
     }
 
@@ -188,7 +188,7 @@ object UnlockManager {
         }
         if (unlocks.contains(name)) return
         unlocks.add(name)
-        achievementList[name]?.let { TerminalControl.playGamesInterface.unlockAchievement(it.id) }
+        achievementList[name]?.let { TerminalControl.playServicesInterface.unlockAchievement(it.id) }
         setAchievementStatus()
         TerminalControl.radarScreen?.utilityBox?.commsManager?.alertMsg("Congratulations, you have unlocked an achievement: " + (achievementList[name]?.title ?: ""))
         GameSaver.saveStats()
@@ -237,7 +237,7 @@ object UnlockManager {
     fun unlockEgg(name: String) {
         if (easterEggList.containsKey(name)) {
             unlocks.add(name)
-            easterEggList[name]?.let { TerminalControl.playGamesInterface.unlockAchievement(it[1]) }
+            easterEggList[name]?.let { TerminalControl.playServicesInterface.unlockAchievement(it[1]) }
         }
         GameSaver.saveStats()
     }

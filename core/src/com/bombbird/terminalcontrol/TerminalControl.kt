@@ -19,7 +19,7 @@ import com.bombbird.terminalcontrol.utilities.files.ExternalFileHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
-class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface, playGamesInterface: PlayGamesInterface) : Game() {
+class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, discordManager: DiscordManager, externalFileHandler: ExternalFileHandler, browserInterface: BrowserInterface, playServicesInterface: PlayServicesInterface) : Game() {
     companion object {
         //Get screen size
         var WIDTH = 0
@@ -58,7 +58,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         lateinit var browserInterface: BrowserInterface
 
         //Play Games interface
-        lateinit var playGamesInterface: PlayGamesInterface
+        lateinit var playServicesInterface: PlayServicesInterface
 
         //Default settings
         var trajectorySel = 0
@@ -182,7 +182,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         Companion.discordManager = discordManager
         Companion.externalFileHandler = externalFileHandler
         Companion.browserInterface = browserInterface
-        Companion.playGamesInterface = playGamesInterface
+        Companion.playServicesInterface = playServicesInterface
         loadedDiscord = false
         useDiscord = false
         ttsManager = TextToSpeechManager()

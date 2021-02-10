@@ -34,7 +34,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
-    lateinit var playGamesManager: PlayGamesManager
+    lateinit var playGamesManager: PlayServicesManager
     lateinit var view: View
     lateinit var game: Game
 
@@ -44,7 +44,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         config.numSamples = 0
         config.useAccelerometer = false
         config.useCompass = false
-        playGamesManager = PlayGamesManager(this)
+        playGamesManager = PlayServicesManager(this)
         game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
         view = initializeForView(game, config)
         setAndroidView(view)

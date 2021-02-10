@@ -3,7 +3,7 @@ package com.bombbird.terminalcontrol.desktop
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.bombbird.terminalcontrol.TerminalControl
-import com.bombbird.terminalcontrol.utilities.PlayGamesInterface
+import com.bombbird.terminalcontrol.utilities.PlayServicesInterface
 import com.bombbird.terminalcontrol.utilities.ToastManager
 
 object DesktopLauncher {
@@ -15,6 +15,6 @@ object DesktopLauncher {
         config.setWindowedMode(1440, 810)
         config.setMaximized(true)
         config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 0)
-        Lwjgl3Application(TerminalControl(TextToSpeechManager(), object : ToastManager {}, DiscordRPCManager(), DesktopFileHandler(), DesktopBrowserOpener(), object : PlayGamesInterface {}), config)
+        Lwjgl3Application(TerminalControl(TextToSpeechManager(), object : ToastManager {}, DiscordRPCManager(), DesktopFileHandler(), DesktopBrowserOpener(), object : PlayServicesInterface {}), config)
     }
 }
