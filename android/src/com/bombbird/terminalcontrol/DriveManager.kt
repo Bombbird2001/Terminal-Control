@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol
 
-import android.content.Context
 import com.badlogic.gdx.Gdx
 import com.bombbird.terminalcontrol.screens.StandardUIScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
@@ -71,12 +70,6 @@ class DriveManager(private val drive: Drive, private val activity: AndroidLaunch
         val totalCount = 4 + saveFiles.size
         val atomicCounter = AtomicInteger(0)
         Thread {
-            val pref = activity.playGamesManager.signedInAccount?.let {
-                val prefName = "${activity.getString(R.string.package_name)}_${it.id}"
-                activity.getSharedPreferences(prefName, Context.MODE_PRIVATE)
-            }
-            pref?.edit()?.clear()?.apply() //Clear existing preferences TODO remove
-
                 try {
                     val allFiles: FileList = drive.files().list()
                         .setSpaces("appDataFolder").setFields("files(id,name,appProperties)")
