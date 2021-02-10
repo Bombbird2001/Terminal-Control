@@ -9,7 +9,7 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
 import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.PlayGamesScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
-import com.bombbird.terminalcontrol.utilities.PlayGamesInterface
+import com.bombbird.terminalcontrol.utilities.PlayServicesInterface
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -23,7 +23,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 
-class PlayGamesManager(private val activity: AndroidLauncher): PlayGamesInterface {
+class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesInterface {
     private var driveManager: DriveManager? = null
     var drivePermissionGranted = false
     var signedInAccount: GoogleSignInAccount? = null

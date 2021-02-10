@@ -1,6 +1,6 @@
 package com.bombbird.terminalcontrol.utilities
 
-interface PlayGamesInterface {
+interface PlayServicesInterface {
     fun gameSignIn() {
         //No default implementation
     }

@@ -35,7 +35,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
 
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
-    lateinit var playGamesManager: PlayGamesManager
+    lateinit var playGamesManager: PlayServicesManager
     private lateinit var pollfishManager: PollfishManager
     private lateinit var appodealManager: AppodealManager
     lateinit var view: View
@@ -47,7 +47,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         config.numSamples = 0
         config.useAccelerometer = false
         config.useCompass = false
-        playGamesManager = PlayGamesManager(this)
+        playGamesManager = PlayServicesManager(this)
         game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
         view = initializeForView(game, config)
         setAndroidView(view)
@@ -66,7 +66,7 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
 
         appodealManager = AppodealManager(this)
-        //appodealManager.initAppodeal()
+        appodealManager.initAppodeal()
     }
 
     @Suppress("DEPRECATION")
