@@ -9,6 +9,7 @@ import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
 import com.badlogic.gdx.Game
 import com.bombbird.terminalcontrol.screens.BasicScreen
+import com.bombbird.terminalcontrol.screens.PauseScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.NewGameScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
@@ -105,7 +106,9 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
                     game.screen?.let { it2 ->
                         if (it2 is LoadGameScreen || it2 is NewGameScreen) {
                             CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!").show((it2 as BasicScreen).stage)
-                        }
+                        } else if (it2 is PauseScreen) {
+                            CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!", height = 1000, width = 2400, fontScale = 2f).show((it2 as BasicScreen).stage)
+                        } else Unit
                     }
                 }
 
@@ -121,10 +124,14 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
         }
     }
 
-    fun showAd(airport: String) {
+    fun showAd(airport: String): Boolean {
         currentAirport = airport
         val pref = activity.getPreferences(Context.MODE_PRIVATE)
-        if (!pref.getBoolean("appodealConsentShown", false)) showConsentForm()
-        else if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) Appodeal.show(activity, Appodeal.REWARDED_VIDEO)
+        if (!pref.getBoolean("appodealConsentShown", false)) {
+            showConsentForm()
+            return true
+        }
+        else if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) return Appodeal.show(activity, Appodeal.REWARDED_VIDEO)
+        return false
     }
 }

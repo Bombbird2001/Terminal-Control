@@ -45,8 +45,9 @@ interface PlayServicesInterface {
         //No default implementation
     }
 
-    fun showAd(airport: String) {
+    fun showAd(airport: String): Boolean {
         //No default implementation
+        return false
     }
 
     fun getAirportRewardTiming(): HashMap<String, String> {

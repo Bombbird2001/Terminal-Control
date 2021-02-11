@@ -19,7 +19,6 @@ import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.SurveyAdsManager
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
-import java.util.*
 
 open class SelectGameScreen(game: TerminalControl, val background: Image?) : BasicScreen(game, 2880, 1620) {
     val scrollTable: Table = Table()
@@ -112,24 +111,18 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
         return slot
     }
 
-    /** Checks whether the airport is locked and requires ad/survey to unlock */
+    /** Checks whether the airport is locked and requires ad/survey to unlock, returns false if no dialog needs to be shown, else true */
     fun showAdsSurvey(airport: String): Boolean {
         if (TerminalControl.full || Gdx.app.type != Application.ApplicationType.Android) return false //If is full version, or is not Android, return false
         if (!SurveyAdsManager.unlockableAirports.contains(airport)) return false //If airport does not need to be unlocked, or is not unlockable, return false
-        SurveyAdsManager.airportTimings[airport]?.let {
-            val dateData = it.split("-").map { it2 -> it2.toInt() }
-            val expiryDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            expiryDate.clear()
-            expiryDate.set(dateData[0], dateData[1], dateData[2], dateData[3], dateData[4])
-            return if (expiryDate.before(Calendar.getInstance(TimeZone.getTimeZone("UTC")))) {
-                //If expired already, display dialogs and return true
-                showSurveyAdDialog(airport)
-                true
-            } else false
-        } ?: showSurveyAdDialog(airport)
-        return true
+        if (SurveyAdsManager.remainingTime(airport) <= 0) {
+            showSurveyAdDialog(airport)
+            return true
+        }
+        return false
     }
 
+    /** Shows the dialog that prompts the user to complete a survey (if available) or watch an ad */
     private fun showSurveyAdDialog(airport: String) {
         if (TerminalControl.playServicesInterface.isSurveyAvailable()) {
             object : CustomDialog("Unlock airport", "Complete a quick survey to unlock all airports for 3 hours?", "No", "Sure") {
@@ -137,15 +130,20 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
                     if (resObj == DIALOG_POSITIVE) TerminalControl.playServicesInterface.showSurvey()
                     else if (resObj == DIALOG_NEGATIVE) object : CustomDialog("Unlock airport", "Watch an ad to unlock $airport for 1 hour?", "No", "Sure") {
                         override fun result(resObj: Any?) {
-                            if (resObj == DIALOG_POSITIVE) TerminalControl.playServicesInterface.showAd(airport)
+                            if (resObj == DIALOG_POSITIVE) showAdOrDialogOnFail(airport)
                         }
                     }.show(stage)
                 }
             }.show(stage)
         } else object : CustomDialog("Unlock airport", "Watch an ad to unlock $airport for 1 hour?", "No", "Sure") {
             override fun result(resObj: Any?) {
-                if (resObj == DIALOG_POSITIVE) TerminalControl.playServicesInterface.showAd(airport)
+                if (resObj == DIALOG_POSITIVE) showAdOrDialogOnFail(airport)
             }
         }.show(stage)
+    }
+
+    /** Launches an ad, or displays a dialog if the ad fails to show */
+    private fun showAdOrDialogOnFail(airport: String) {
+        if (!TerminalControl.playServicesInterface.showAd(airport)) CustomDialog("Ad", "Failed to load ad", "", "Ok").show(stage)
     }
 }

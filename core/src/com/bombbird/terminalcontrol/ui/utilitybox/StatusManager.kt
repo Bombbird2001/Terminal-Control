@@ -134,6 +134,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
         }
 
         if (radarScreen.tfcMode == RadarScreen.TfcMode.ARRIVALS_ONLY) info.add("[BLACK]Arrivals only")
+        if (radarScreen.remainingTime > 0) info.add("[BLACK]${radarScreen.remainingTime} mins of play time remaining")
 
         val finalArray = Array<String>()
         finalArray.addAll(conflicts)

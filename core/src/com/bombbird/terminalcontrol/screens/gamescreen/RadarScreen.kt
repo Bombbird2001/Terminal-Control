@@ -39,10 +39,13 @@ import com.bombbird.terminalcontrol.entities.waypoints.BackupWaypoints
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointManager
 import com.bombbird.terminalcontrol.entities.weather.*
+import com.bombbird.terminalcontrol.screens.MainMenuScreen
+import com.bombbird.terminalcontrol.screens.PauseScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
 import com.bombbird.terminalcontrol.ui.*
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager
 import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox
@@ -50,6 +53,7 @@ import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.Revision
 import com.bombbird.terminalcontrol.utilities.SafeStage
+import com.bombbird.terminalcontrol.utilities.SurveyAdsManager
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.random.ArrivalGenerator
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
@@ -214,6 +218,10 @@ class RadarScreen : GameScreen {
     var stormSpawnTime: Float
     var stormNumber: Int
     val thunderCellArray = Array<ThunderCell>()
+
+    //Timer for checking whether time is up for airport
+    private var lockTime = 5f
+    var remainingTime = -1
 
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
@@ -691,6 +699,51 @@ class RadarScreen : GameScreen {
                 if (entry.value > 5) iterator.remove()
             }
         }
+
+        lockTime -= deltaTime
+        if (lockTime < 0) {
+            //Check if airport has expired
+            lockTime += 60
+            if (!TerminalControl.full && Gdx.app.type == Application.ApplicationType.Android && SurveyAdsManager.unlockableAirports.contains(mainName)) {
+                //If is Android lite and is an unlockable airport
+                remainingTime = SurveyAdsManager.remainingTime(mainName)
+                if (remainingTime <= 0) pauseGameAndShowAdDialog()
+                else if (remainingTime <= 3) {
+                    if (remainingTime == 3) utilityBox.commsManager.alertMsg("You have 3 minutes of play time left for this airport.")
+                }
+            }
+        }
+    }
+
+    /** Pauses, saves the game and shows the dialog informing user that unlock period has ended, and prompts them to watch another ad to continue */
+    private fun pauseGameAndShowAdDialog() {
+        Gdx.app.postRunnable {
+            setGameRunning(false)
+            if (!tutorial) GameSaver.saveGame() //Save the game
+            object : CustomDialog("Time's up", "The unlock period for this airport is over -\nthe game has been saved\nWatch an ad to continue?", "No", "Sure", height = 1100, width = 2400, fontScale = 2f) {
+                override fun result(resObj: Any?) {
+                    if (resObj == DIALOG_POSITIVE) {
+                        //Launch ad
+                        if (!TerminalControl.playServicesInterface.showAd(mainName)) object : CustomDialog("Ad", "Failed to load ad -\nthe game will now quit", "", "Ok", height = 1000, width = 2400, fontScale = 2f) {
+                            override fun result(resObj: Any?) {
+                                quitToMainMenu()
+                            }
+                        }.show((game.screen as? PauseScreen)?.stage)
+                    } else {
+                        //Go back to main menu screen
+                        quitToMainMenu()
+                    }
+                }
+            }.show((game.screen as? PauseScreen)?.stage)
+        }
+    }
+
+    /** Quit to the main menu directly from radarScreen */
+    private fun quitToMainMenu() {
+        metar.isQuit = true
+        TerminalControl.radarScreen = null
+        game.screen = MainMenuScreen(game, null)
+        dispose()
     }
 
     /** Checks the list of multi threaded generators, creates new arrival if done */

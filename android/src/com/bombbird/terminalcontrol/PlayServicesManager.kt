@@ -183,8 +183,8 @@ class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesIn
         activity.pollfishManager.showSurvey()
     }
 
-    override fun showAd(airport: String) {
-        activity.appodealManager.showAd(airport)
+    override fun showAd(airport: String): Boolean {
+        return activity.appodealManager.showAd(airport)
     }
 
     override fun getAirportRewardTiming(): HashMap<String, String> {
