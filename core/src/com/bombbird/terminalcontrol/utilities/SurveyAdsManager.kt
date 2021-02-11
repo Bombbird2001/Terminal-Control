@@ -10,18 +10,19 @@ import kotlin.math.roundToInt
 class SurveyAdsManager {
     companion object {
         val unlockableAirports = HashSet<String>()
-        val airportTimings = HashMap<String, String>()
+        private val airportTimings = HashMap<String, String>()
 
         fun loadData() {
-            airportTimings.putAll(TerminalControl.playServicesInterface.getAirportRewardTiming())
+            if (unlockableAirports.isEmpty()) {
+                unlockableAirports.add("TCTT")
+                unlockableAirports.add("TCHH")
+                unlockableAirports.add("TCBB")
+                unlockableAirports.add("TCBD")
+                unlockableAirports.add("TCMD")
+                unlockableAirports.add("TCPG")
+            }
 
-            if (unlockableAirports.isNotEmpty()) return
-            unlockableAirports.add("TCTT")
-            unlockableAirports.add("TCHH")
-            unlockableAirports.add("TCBB")
-            unlockableAirports.add("TCBD")
-            unlockableAirports.add("TCMD")
-            unlockableAirports.add("TCPG")
+            airportTimings.putAll(TerminalControl.playServicesInterface.getAirportRewardTiming())
         }
 
         fun getExpiryDateTime(hours: Int): String {

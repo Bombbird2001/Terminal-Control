@@ -5,6 +5,7 @@ import android.content.Context
 import android.widget.Toast
 import com.adcolony.sdk.AdColony
 import com.adcolony.sdk.AdColonyAppOptions
+import com.applovin.sdk.AppLovinPrivacySettings
 import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
 import com.badlogic.gdx.Game
@@ -85,6 +86,8 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
             Appodeal.disableLocationPermissionCheck()
             Appodeal.initialize(activity, Values.APPODEAL_KEY, Appodeal.REWARDED_VIDEO, it)
             AdColony.setAppOptions(adColonyAppOptions)
+            AppLovinPrivacySettings.setHasUserConsent(it.status == Consent.Status.PERSONALIZED, activity)
+            AppLovinPrivacySettings.setDoNotSell(false, activity)
             Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
                 override fun onRewardedVideoLoaded(p0: Boolean) {
                 }
