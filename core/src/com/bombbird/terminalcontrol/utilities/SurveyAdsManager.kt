@@ -26,7 +26,7 @@ class SurveyAdsManager {
 
         fun getExpiryDateTime(hours: Int): String {
             val expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            expiry.add(Calendar.MINUTE, 4) //TODO change
+            expiry.add(Calendar.HOUR, hours)
             return "${expiry.get(Calendar.YEAR)}-${expiry.get(Calendar.MONTH)}-${expiry.get(Calendar.DATE)}-${expiry.get(Calendar.HOUR_OF_DAY)}-${expiry.get(Calendar.MINUTE)}"
         }
 

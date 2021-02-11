@@ -108,6 +108,7 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
                             CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!").show((it2 as BasicScreen).stage)
                         } else if (it2 is PauseScreen) {
                             CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!", height = 1000, width = 2400, fontScale = 2f).show((it2 as BasicScreen).stage)
+                            TerminalControl.radarScreen?.remainingTime = 60
                         } else Unit
                     }
                 }
