@@ -2,7 +2,6 @@ package com.bombbird.terminalcontrol.screens.selectgamescreen
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -16,7 +15,6 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.isTCHXAv
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
-import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScreen(game, background) {
     init {
@@ -74,7 +72,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
         //Load airports
         val airports = Array<String>()
         airports.add("TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport")
-        if (TerminalControl.full) {
+        if (TerminalControl.full || Gdx.app.type == Application.ApplicationType.Android) {
             airports.add("TCTT\nNaheda Airport", "TCHH\nTang Gong International Airport", "TCBB\nSaikan International Airport", "TCBD\nLon Man International Airport")
             airports.add("TCMD\nHadrise Airport", "TCPG\nShartes o' Dickens Airport")
         }
@@ -90,27 +88,31 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
                         CustomDialog("????", "Hmmm... there may or may not\nbe a free airport somewhere?", "", "Oh cool").show(stage)
                         return
                     }
-                    val handle = Gdx.files.internal("game/available.arpt")
-                    val airportArray = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
-                    var found = false
-                    var airac = -1
-                    for (arptData in airportArray) {
-                        val arpt = arptData.split(":".toRegex()).toTypedArray()[0]
-                        if (arpt == name) {
-                            found = true
-                            airac = arptData.split(":".toRegex()).toTypedArray()[1].split(",".toRegex()).toTypedArray()[0].split("-".toRegex()).toTypedArray()[1].toInt()
-                            break
+                    if (!showAdsSurvey(name)) {
+                        //If no need to show ad/survey, load the game
+                        val handle = Gdx.files.internal("game/available.arpt")
+                        val airportArray = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
+                        var found = false
+                        var airac = -1
+                        for (arptData in airportArray) {
+                            val arpt = arptData.split(":".toRegex()).toTypedArray()[0]
+                            if (arpt == name) {
+                                found = true
+                                airac = arptData.split(":".toRegex()).toTypedArray()[1].split(",".toRegex())
+                                    .toTypedArray()[0].split("-".toRegex()).toTypedArray()[1].toInt()
+                                break
+                            }
                         }
-                    }
-                    if (found && airac > -1) {
-                        val radarScreen = RadarScreen(game, name, airac, getNextAvailableSaveSlot(), false)
-                        TerminalControl.radarScreen = radarScreen
-                        game.screen = radarScreen
-                    } else {
-                        if (!found) {
-                            Gdx.app.log("Directory not found", "Directory not found for $name")
+                        if (found && airac > -1) {
+                            val radarScreen = RadarScreen(game, name, airac, getNextAvailableSaveSlot(), false)
+                            TerminalControl.radarScreen = radarScreen
+                            game.screen = radarScreen
                         } else {
-                            Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle $airac")
+                            if (!found) {
+                                Gdx.app.log("Directory not found", "Directory not found for $name")
+                            } else {
+                                Gdx.app.log("Invalid AIRAC cycle", "Invalid AIRAC cycle $airac")
+                            }
                         }
                     }
                     event.handle()

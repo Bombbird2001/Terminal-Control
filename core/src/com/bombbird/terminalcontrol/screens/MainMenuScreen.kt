@@ -23,6 +23,7 @@ import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.Fonts.defaultFont20
 import com.bombbird.terminalcontrol.utilities.Fonts.generateAllFonts
+import com.bombbird.terminalcontrol.utilities.SurveyAdsManager
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 
 class MainMenuScreen(game: TerminalControl, private var background: Image?) : BasicScreen(game, 2880, 1620) {
@@ -44,6 +45,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         if (!TerminalControl.loadedDiscord) TerminalControl.discordManager.initializeDiscord()
         TerminalControl.discordManager.updateRPC()
         if (Gdx.app.type == Application.ApplicationType.Desktop) TerminalControl.tts.loadVoices()
+        SurveyAdsManager.loadData()
     }
 
     /** Loads the UI elements to be rendered on screen  */

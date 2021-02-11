@@ -1,5 +1,7 @@
 package com.bombbird.terminalcontrol.utilities
 
+import kotlin.collections.HashMap
+
 interface PlayServicesInterface {
     fun gameSignIn() {
         //No default implementation
@@ -32,5 +34,23 @@ interface PlayServicesInterface {
 
     fun driveLoadGame() {
         //No default implementation
+    }
+
+    fun isSurveyAvailable(): Boolean {
+        //No default implementation
+        return false
+    }
+
+    fun showSurvey() {
+        //No default implementation
+    }
+
+    fun showAd(airport: String) {
+        //No default implementation
+    }
+
+    fun getAirportRewardTiming(): HashMap<String, String> {
+        //No default implementation
+        return HashMap()
     }
 }

@@ -36,8 +36,8 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
     private var loadGameScreen: LoadGameScreen? = null
     private var save: JSONObject? = null
     lateinit var playGamesManager: PlayServicesManager
-    private lateinit var pollfishManager: PollfishManager
-    private lateinit var appodealManager: AppodealManager
+    lateinit var pollfishManager: PollfishManager
+    lateinit var appodealManager: AppodealManager
     lateinit var view: View
     lateinit var game: Game
 
@@ -50,9 +50,6 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         playGamesManager = PlayServicesManager(this)
         game = TerminalControl(this, toastManager, object : DiscordManager {}, this, AndroidBrowserOpener(this), playGamesManager)
         view = initializeForView(game, config)
-        setAndroidView(view)
-        pollfishManager = PollfishManager(this, game)
-        pollfishManager.initPollfish()
         val ttsIntent = Intent()
         ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         try {
@@ -65,8 +62,13 @@ class AndroidLauncher : AndroidTextToSpeechManager(), ExternalFileHandler {
         val pref = getPreferences(Context.MODE_PRIVATE)
         if (!pref.getBoolean("declinePlaySignIn", false)) playGamesManager.gameSignIn()
 
-        appodealManager = AppodealManager(this)
+        pollfishManager = PollfishManager(this, game)
+        pollfishManager.initPollfish()
+
+        appodealManager = AppodealManager(this, game)
         appodealManager.initAppodeal()
+
+        setAndroidView(view)
     }
 
     @Suppress("DEPRECATION")

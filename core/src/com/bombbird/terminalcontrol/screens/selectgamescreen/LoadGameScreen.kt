@@ -146,7 +146,8 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                     """.trimIndent()
             if (jsonObject.optBoolean("incompatible", false)) toDisplay += "\nIncompatible save"
             val saveButton = TextButton(toDisplay, buttonStyle)
-            saveButton.name = toDisplay.substring(0, 4)
+            val name = toDisplay.substring(0, 4)
+            saveButton.name = name
             val handle = Gdx.files.internal("game/available.arpt")
             val airacs = Array<IntArray>()
             val airports = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
@@ -175,13 +176,15 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                 override fun changed(event: ChangeEvent, actor: Actor) {
                     when (mode) {
                         0 -> {
-                            var radarScreen: RadarScreen? = null
-                            try {
-                                radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
-                                TerminalControl.radarScreen = radarScreen
-                                game.screen = radarScreen
-                            } catch (e: Exception) {
-                                Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
+                            if (!showAdsSurvey(name)) {
+                                var radarScreen: RadarScreen? = null
+                                try {
+                                    radarScreen = RadarScreen(game, jsonObject, this@LoadGameScreen)
+                                    TerminalControl.radarScreen = radarScreen
+                                    game.screen = radarScreen
+                                } catch (e: Exception) {
+                                    Gdx.app.postRunnable { handleSaveLoadError(radarScreen, jsonObject, e) }
+                                }
                             }
                         }
                         1 -> {

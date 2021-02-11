@@ -10,6 +10,7 @@ import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.PlayGamesScreen
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.PlayServicesInterface
+import com.bombbird.terminalcontrol.utilities.SurveyAdsManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,6 +23,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
+import com.pollfish.main.PollFish
+import kotlin.collections.HashMap
 
 class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesInterface {
     private var driveManager: DriveManager? = null
@@ -170,5 +173,27 @@ class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesIn
 
     fun getSignInOptions(): GoogleSignInOptions {
         return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestEmail().build()
+    }
+
+    override fun isSurveyAvailable(): Boolean {
+        return PollFish.isPollfishPresent()
+    }
+
+    override fun showSurvey() {
+        activity.pollfishManager.showSurvey()
+    }
+
+    override fun showAd(airport: String) {
+        activity.appodealManager.showAd(airport)
+    }
+
+    override fun getAirportRewardTiming(): HashMap<String, String> {
+        val map = HashMap<String, String>()
+        val pref = activity.getPreferences(Context.MODE_PRIVATE)
+        for (airport in SurveyAdsManager.unlockableAirports) {
+            val dateTime = pref.getString(airport, null) ?: continue
+            map[airport] = dateTime
+        }
+        return map
     }
 }
