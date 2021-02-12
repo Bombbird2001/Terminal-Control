@@ -53,15 +53,22 @@ class PrivacyScreen(game: TerminalControl, background: Image?) : StandardUIScree
             - Date, time of error occurrence
             - Crash logs
             - Game save data (if game load error occurs)
+        """.trimIndent()
 
+        if (Gdx.app.type == Application.ApplicationType.Android) text += """
+            
             The following data is also collected through Google LLC's Google Play Console when a crash occurs:
             - Device model, OS version
             - Game version
             - Date, time of occurrence
             - Crash logs
+        """.trimIndent()
 
-            The above data are used solely for the purpose of diagnosing and fixing errors, crashes, and bugs, and are not shared with any 3rd party entities.
+        text += "\n\nThe above data are used solely for the purpose of diagnosing and fixing errors, crashes, and bugs, and are not shared with any 3rd party entities."
 
+
+        if (Gdx.app.type == Application.ApplicationType.Android) text += """
+            
             If you sign in to Google Play Games, and/or use the cloud save feature, Google LLC may collect information used to identify you. See the privacy policy here: https://policies.google.com/privacy
         """.trimIndent()
 
