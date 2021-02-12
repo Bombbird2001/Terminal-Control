@@ -179,8 +179,8 @@ class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesIn
         return PollFish.isPollfishPresent()
     }
 
-    override fun showSurvey() {
-        activity.pollfishManager.showSurvey()
+    override fun showSurvey(airport: String) {
+        activity.pollfishManager.showSurvey(airport)
     }
 
     override fun showAd(airport: String): Boolean {

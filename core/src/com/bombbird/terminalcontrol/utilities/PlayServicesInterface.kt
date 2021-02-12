@@ -41,7 +41,7 @@ interface PlayServicesInterface {
         return false
     }
 
-    fun showSurvey() {
+    fun showSurvey(airport: String) {
         //No default implementation
     }
 
