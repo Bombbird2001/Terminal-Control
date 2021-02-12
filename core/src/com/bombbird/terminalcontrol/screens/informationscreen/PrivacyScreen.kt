@@ -57,6 +57,7 @@ class PrivacyScreen(game: TerminalControl, background: Image?) : StandardUIScree
 
         if (Gdx.app.type == Application.ApplicationType.Android) text += """
             
+            
             The following data is also collected through Google LLC's Google Play Console when a crash occurs:
             - Device model, OS version
             - Game version
@@ -73,6 +74,7 @@ class PrivacyScreen(game: TerminalControl, background: Image?) : StandardUIScree
         """.trimIndent()
 
         if (!TerminalControl.full && Gdx.app.type == Application.ApplicationType.Android) text += """
+            
             
             
             Survey Serving Technology
