@@ -1,5 +1,5 @@
 # Terminal Control
-[![Build Status](https://terminalcontrol.pythonanywhere.com/jenkinsBuildFull)]()
+![Build Status](https://terminalcontrol.pythonanywhere.com/jenkinsBuildFull)
 \
 \
 A realistic approach TRACON simulation game made with [LibGDX](https://libgdx.badlogicgames.com/).
