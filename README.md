@@ -1,5 +1,5 @@
 # Terminal Control
-[![Build Status](https://travis-ci.com/Bombbird2001/Terminal-Control.svg?branch=master)](https://travis-ci.com/Bombbird2001/Terminal-Control)
+![Build Status](https://terminalcontrol.pythonanywhere.com/jenkinsBuildLite)
 \
 \
 A realistic approach TRACON simulation game made with [LibGDX](https://libgdx.badlogicgames.com/).
