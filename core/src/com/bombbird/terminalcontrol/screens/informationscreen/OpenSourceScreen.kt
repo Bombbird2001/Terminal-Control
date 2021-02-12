@@ -52,7 +52,7 @@ class OpenSourceScreen(game: TerminalControl, background: Image?) : StandardUISc
         licenseLinks.add(arrayOf("JSON in Java", "https://www.json.org/license.html"))
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            licenseLinks.add(arrayOf("Balbolka", "http://www.cross-plus-a.com/bconsole.htm"))
+            licenseLinks.add(arrayOf("Balabolka", "http://www.cross-plus-a.com/bconsole.htm"))
             licenseLinks.add(arrayOf("MaryTTS", "https://github.com/marytts/marytts/blob/master/LICENSE.md"))
             licenseLinks.add(arrayOf("CMU voices for MaryTTS", "https://github.com/marytts/voice-cmu-slt-hsmm/blob/master/LICENSE.txt"))
             licenseLinks.add(arrayOf("DFKI voices for MaryTTS", "https://github.com/marytts/voice-dfki-prudence-hsmm/blob/master/LICENSE.md"))
