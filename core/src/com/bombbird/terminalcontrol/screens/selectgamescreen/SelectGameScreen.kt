@@ -125,7 +125,7 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
     /** Shows the dialog that prompts the user to complete a survey (if available) or watch an ad */
     private fun showSurveyAdDialog(airport: String) {
         if (TerminalControl.playServicesInterface.isSurveyAvailable()) {
-            object : CustomDialog("Unlock airport", "Complete a quick survey to unlock all airports for 3 hours?", "No", "Sure") {
+            object : CustomDialog("Unlock airport", "Complete a quick survey to\nunlock all airports for 6 hours?", "No", "Sure") {
                 override fun result(resObj: Any?) {
                     if (resObj == DIALOG_POSITIVE) TerminalControl.playServicesInterface.showSurvey(airport)
                     else if (resObj == DIALOG_NEGATIVE) object : CustomDialog("Unlock airport", "Watch an ad to unlock $airport for 1 hour?", "No", "Sure") {

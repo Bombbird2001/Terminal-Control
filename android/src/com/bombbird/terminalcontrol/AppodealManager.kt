@@ -40,7 +40,7 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
             })
     }
 
-    private fun showConsentForm() {
+    fun showConsentForm(showAdAfter: Boolean) {
         if (consentForm == null) {
             consentForm = ConsentForm.Builder(activity)
                 .withListener(object : ConsentFormListener {
@@ -63,9 +63,11 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
 
                     override fun onConsentFormClosed(consent: Consent) {
                         val pref = activity.getPreferences(Context.MODE_PRIVATE)
-                        pref.edit().putBoolean("appodealConsentShown", true).apply()
-                        initializeAds()
-                        showAd(currentAirport)
+                        pref.edit().putBoolean("appodealConsentShown", consent.status != Consent.Status.UNKNOWN).apply()
+                        if (consent.status != Consent.Status.UNKNOWN) {
+                            initializeAds()
+                            if (showAdAfter) showAd(currentAirport)
+                        }
                     }
                 }).build()
         }
@@ -129,10 +131,11 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
     }
 
     fun showAd(airport: String): Boolean {
+        if (airport.isEmpty()) return false
         currentAirport = airport
         val pref = activity.getPreferences(Context.MODE_PRIVATE)
         if (!pref.getBoolean("appodealConsentShown", false)) {
-            showConsentForm()
+            showConsentForm(true)
             return true
         }
         else if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) return Appodeal.show(activity, Appodeal.REWARDED_VIDEO)

@@ -3,11 +3,9 @@ package com.bombbird.terminalcontrol.screens.settingsscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
@@ -56,13 +54,14 @@ class GlobalSettingsScreen(game: TerminalControl, background: Image?) : Settings
         checkBoxStyle.font = Fonts.defaultFont20
         checkBoxStyle.fontColor = Color.WHITE
         sendCrashBox = CheckBox(" Send anonymous crash reports", checkBoxStyle)
-        sendCrashBox.setPosition(5760 / 2f + 400, 3240 * 0.7f - 200)
+        sendCrashBox.setPosition(5760 / 2f + 400, 3240 * 0.7f)
         sendCrashBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 sendCrash = sendCrashBox.isChecked
             }
         })
         stage.addActor(sendCrashBox)
+
         zoom = createStandardSelectBox()
         zoom.setItems("Off", "On")
         zoom.addListener(object : ChangeListener() {
@@ -97,6 +96,22 @@ class GlobalSettingsScreen(game: TerminalControl, background: Image?) : Settings
                 }
             }
         })
+
+        val buttonStyle = TextButton.TextButtonStyle()
+        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
+        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
+        buttonStyle.font = Fonts.defaultFont20
+        buttonStyle.fontColor = Color.WHITE
+        val consentButton = TextButton("Ad Consent", buttonStyle)
+        consentButton.setSize(1200f, 300f)
+        consentButton.setPosition(sendCrashBox.x, 3240 * (0.75f - 2 * 0.15f) + yOffset)
+        consentButton.label.setAlignment(Align.center)
+        consentButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                TerminalControl.playServicesInterface.showAdConsentForm(false)
+            }
+        })
+        stage.addActor(consentButton)
     }
 
     /** Loads labels for display settings  */

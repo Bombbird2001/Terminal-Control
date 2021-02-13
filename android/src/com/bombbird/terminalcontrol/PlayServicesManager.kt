@@ -187,6 +187,10 @@ class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesIn
         return activity.appodealManager.showAd(airport)
     }
 
+    override fun showAdConsentForm(showAdAfter: Boolean) {
+        activity.appodealManager.showConsentForm(showAdAfter)
+    }
+
     override fun getAirportRewardTiming(): HashMap<String, String> {
         val map = HashMap<String, String>()
         val pref = activity.getPreferences(Context.MODE_PRIVATE)

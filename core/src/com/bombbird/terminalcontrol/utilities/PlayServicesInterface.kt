@@ -50,6 +50,10 @@ interface PlayServicesInterface {
         return false
     }
 
+    fun showAdConsentForm(showAdAfter: Boolean) {
+        //No default implementation
+    }
+
     fun getAirportRewardTiming(): HashMap<String, String> {
         //No default implementation
         return HashMap()

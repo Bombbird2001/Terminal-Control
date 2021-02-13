@@ -31,6 +31,7 @@
 
 -keep class com.badlogic.gdx.controllers.android.AndroidControllers
 -keep class com.pollfish.** { *; }
+-keep class com.bombbird.terminalcontrol.AndroidLauncher
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);
