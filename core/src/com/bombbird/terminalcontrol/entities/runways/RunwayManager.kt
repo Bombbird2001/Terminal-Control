@@ -103,8 +103,10 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
             if (airport.isPendingRwyChange) {
                 airport.resetRwyChangeTimer()
             }
+            prevNight = DayNightManager.isNight
             return
         } //Return if no change needed
+        prevNight = DayNightManager.isNight
         for (config: RunwayConfig in arrayToUse) {
             config.calculateScores(windHdg, windSpd)
         }
