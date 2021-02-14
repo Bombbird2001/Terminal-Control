@@ -144,6 +144,6 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
 
     /** Launches an ad, or displays a dialog if the ad fails to show */
     fun showAdOrDialogOnFail(airport: String) {
-        if (!TerminalControl.playServicesInterface.showAd(airport)) CustomDialog("Ad", "Failed to load ad", "", "Ok").show(stage)
+        if (!TerminalControl.playServicesInterface.showAd(airport)) CustomDialog("Ad", "Failed to load ad - please\nwait a while and try again", "", "Ok").show(stage)
     }
 }
