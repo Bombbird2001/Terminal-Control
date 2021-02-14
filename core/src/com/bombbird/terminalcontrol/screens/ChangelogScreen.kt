@@ -72,6 +72,16 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2101.2
+        val content22 = Array<String>()
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            if (!TerminalControl.full) content22.add("-Airports: More airports have been made available - complete surveys or watch ads to unlock new airports for a set period of time!")
+            content22.add("-Google Play Games: Integrated Play Games functionality")
+            content22.add("-Cloud saves: Added cloud save functionality, accessible in the Play Games settings page - requires permission for data to be stored in your Google Drive")
+        }
+        content22.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2101.2"] = content22
+
         //Version 1.5.2101.1
         val content21 = Array<String>()
         content21.add("-Feature: Allow to user to spawn custom arrivals under Settings => Traffic => Spawn custom arrival")
