@@ -55,7 +55,7 @@ class RunwayChanger {
         labelStyle1.fontColor = Color.BLACK
         labelStyle1.font = Fonts.defaultFont20
         newRunwaysLabel = Label("Loading...", labelStyle1)
-        newRunwaysLabel.setWrap(true)
+        newRunwaysLabel.wrap = true
         scrollTable.add(newRunwaysLabel).width(0.76f * radarScreen.ui.paneWidth).height(300f).pad(10f, 0.01f * radarScreen.ui.paneWidth, 10f, 0.11f * radarScreen.ui.paneWidth)
 
         val textButtonStyle = TextButtonStyle()
@@ -65,7 +65,7 @@ class RunwayChanger {
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
         confirmButton = TextButton("Confirm runway change", textButtonStyle)
         confirmButton.align(Align.center)
-        confirmButton.label.setWrap(true)
+        confirmButton.label.wrap = true
         confirmButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (runwayConfig != null) {
@@ -84,7 +84,7 @@ class RunwayChanger {
 
         changeButton = TextButton("Change runway configuration", textButtonStyle)
         changeButton.align(Align.center)
-        changeButton.label.setWrap(true)
+        changeButton.label.wrap = true
         changeButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (airport?.isPendingRwyChange == false && possibleConfigs.size > 0) {
