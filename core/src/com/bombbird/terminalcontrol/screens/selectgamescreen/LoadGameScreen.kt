@@ -146,7 +146,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                         Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject.getInt("airborne")}
                     """.trimIndent()
             if (jsonObject.optBoolean("incompatible", false)) toDisplay += "\nIncompatible save"
-            val saveButton = TextButton(toDisplay, buttonStyle)
+            val saveButton = TextButton(toDisplay, listButtonStyle)
             saveButton.name = toDisplay.substring(0, 4)
             val handle = Gdx.files.internal("game/available.arpt")
             val airacs = Array<IntArray>()
