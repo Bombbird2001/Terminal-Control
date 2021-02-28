@@ -53,6 +53,7 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
 
     /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane  */
     override fun loadScroll() {
+        super.loadScroll()
         //Load help sections
         val airports = Array<String>()
         airports.add("TCTP", "TCWS")
@@ -62,7 +63,7 @@ class AirportHelpScreen(game: TerminalControl, background: Image?) : SelectGameS
         }
         if (isTCHXAvailable) airports.add("TCHX")
         for (arpt in airports) {
-            val button = TextButton(arpt, buttonStyle)
+            val button = TextButton(arpt, listButtonStyle)
             button.name = arpt
             button.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
