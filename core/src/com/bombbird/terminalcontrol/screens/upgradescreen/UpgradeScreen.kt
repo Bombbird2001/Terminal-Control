@@ -80,7 +80,7 @@ open class UpgradeScreen(game: TerminalControl, background: Image?) : StandardUI
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont12
         labelStyle.fontColor = Color.WHITE
-        labelStyle.background = TerminalControl.skin.getDrawable("Button_up")
+        labelStyle.background = TerminalControl.skin.getDrawable("Button_up_sharp")
         for ((key, required) in UnlockManager.unlockList) {
             val label = Label("""
                 
