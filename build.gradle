@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.30'
+    ext.kotlin_version = '1.4.31'
 
     repositories {
         mavenLocal()
@@ -21,12 +21,12 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '1.5.2101.2'
+    version = '1.5.2102.1'
     ext {
         appName = "Terminal Control"
         gdxVersion = '1.9.13'
         roboVMVersion = '2.3.12'
-        versionCode = 72
+        versionCode = 73
     }
 
     repositories {
