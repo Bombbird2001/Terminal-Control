@@ -28,6 +28,7 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
     lateinit var labelStyle: Label.LabelStyle
         private set
     lateinit var buttonStyle: TextButton.TextButtonStyle
+    lateinit var listButtonStyle: TextButton.TextButtonStyle
 
     /** Loads the full UI of this screen  */
     open fun loadUI() {
@@ -71,7 +72,11 @@ open class SelectGameScreen(game: TerminalControl, val background: Image?) : Bas
 
     /** Loads the contents of the scrollPane  */
     open fun loadScroll() {
-        //No default implementation
+        //Set the default scroll button style
+        listButtonStyle = TextButton.TextButtonStyle()
+        listButtonStyle.font = Fonts.defaultFont12
+        listButtonStyle.up = TerminalControl.skin.getDrawable("Button_up_sharp")
+        listButtonStyle.down = TerminalControl.skin.getDrawable("Button_down_sharp")
     }
 
     /** Implements show method of screen  */

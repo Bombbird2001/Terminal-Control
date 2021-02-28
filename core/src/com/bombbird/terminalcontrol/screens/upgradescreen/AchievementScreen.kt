@@ -45,7 +45,7 @@ class AchievementScreen(game: TerminalControl, background: Image?) : UpgradeScre
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont12
         labelStyle.fontColor = Color.WHITE
-        labelStyle.background = TerminalControl.skin.getDrawable("Button_up")
+        labelStyle.background = TerminalControl.skin.getDrawable("Button_up_sharp")
         for ((_, value1) in UnlockManager.achievementList) {
             val label = Label("""
 [ ${value1.title} ]

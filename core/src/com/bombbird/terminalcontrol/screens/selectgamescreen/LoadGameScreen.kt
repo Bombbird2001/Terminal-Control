@@ -112,6 +112,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
 
     /** Overrides loadScroll method in SelectGameScreen to load save info into scrollPane  */
     override fun loadScroll() {
+        super.loadScroll()
         loadingLabel = Label("", labelStyle)
         loadingLabel.setPosition(2880 / 2.0f - loadingLabel.width / 2.0f, 1620 * 0.5f)
         loadingLabel.isVisible = true
@@ -145,7 +146,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                         Planes landed: ${jsonObject.getInt("landings")}    Planes departed: ${jsonObject.getInt("airborne")}
                     """.trimIndent()
             if (jsonObject.optBoolean("incompatible", false)) toDisplay += "\nIncompatible save"
-            val saveButton = TextButton(toDisplay, buttonStyle)
+            val saveButton = TextButton(toDisplay, listButtonStyle)
             val name = toDisplay.substring(0, 4)
             saveButton.name = name
             val handle = Gdx.files.internal("game/available.arpt")

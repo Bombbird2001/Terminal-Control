@@ -17,8 +17,8 @@ class HelpScreen(game: TerminalControl, background: Image?) : SelectGameScreen(g
         //Set label params
         super.loadLabel()
         val headerLabel = Label("Help Manual", labelStyle)
-        headerLabel.width = MainMenuScreen.BUTTON_WIDTH.toFloat()
-        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT.toFloat()
+        headerLabel.width = MainMenuScreen.BUTTON_WIDTH
+        headerLabel.height = MainMenuScreen.BUTTON_HEIGHT
         headerLabel.setPosition(2880 / 2.0f - MainMenuScreen.BUTTON_WIDTH / 2.0f, 1620 * 0.85f)
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
@@ -26,10 +26,11 @@ class HelpScreen(game: TerminalControl, background: Image?) : SelectGameScreen(g
 
     /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane  */
     override fun loadScroll() {
+        super.loadScroll()
         //Load help sections
         val sections = arrayOf("Airports", "Aircraft instructions", "Scoring", "ILS, LDA", "Separation", "MVAs, restricted areas", "NTZ", "Wake turbulence", "Advanced trajectory", "Conflict prediction alerts")
         for (section in sections) {
-            val button = TextButton(section, buttonStyle)
+            val button = TextButton(section, listButtonStyle)
             button.name = section
             button.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
@@ -40,7 +41,7 @@ class HelpScreen(game: TerminalControl, background: Image?) : SelectGameScreen(g
                     }
                 }
             })
-            scrollTable.add(button).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT.toFloat())
+            scrollTable.add(button).width(MainMenuScreen.BUTTON_WIDTH * 1.2f).height(MainMenuScreen.BUTTON_HEIGHT)
             scrollTable.row()
         }
         val scrollPane = ScrollPane(scrollTable)

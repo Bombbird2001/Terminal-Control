@@ -69,6 +69,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
 
     /** Overrides loadScroll method in SelectGameScreen to load airport info into scrollPane  */
     override fun loadScroll() {
+        super.loadScroll()
         //Load airports
         val airports = Array<String>()
         airports.add("TCTP\nHaoyuan International Airport", "TCWS\nChangli International Airport")
@@ -78,7 +79,7 @@ class NewGameScreen(game: TerminalControl, background: Image?) : SelectGameScree
         }
         airports.add(if (isTCHXAvailable) "TCHX\nTai Kek International Airport" else "????")
         for (airport in airports) {
-            val airportButton = TextButton(airport, buttonStyle)
+            val airportButton = TextButton(airport, listButtonStyle)
             airportButton.name = airport.substring(0, 4)
             airportButton.label.wrap = true
             airportButton.addListener(object : ChangeListener() {
