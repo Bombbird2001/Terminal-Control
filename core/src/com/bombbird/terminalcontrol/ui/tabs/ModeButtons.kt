@@ -37,7 +37,7 @@ class ModeButtons(private val tab: Tab) {
         val column = buttons.size % 3
         val row = buttons.size / 3
         tab.addActor(button, 0.1f + column * 0.275f, 0.25f, 2240 - 325 * row.toFloat(), 300f)
-        button.label.setWrap(true)
+        button.label.wrap = true
         buttons[code] = button
     }
 
@@ -51,8 +51,8 @@ class ModeButtons(private val tab: Tab) {
     fun setButtonColour(modeChanged: Boolean) {
         for (textButton in buttons.values) {
             if (textButton.name == mode.toString()) {
-                textButton.style.down = TerminalControl.skin.getDrawable("Button_down")
-                textButton.style.up = TerminalControl.skin.getDrawable("Button_down")
+                textButton.style.down = TerminalControl.skin.getDrawable("Button_down_sharp")
+                textButton.style.up = TerminalControl.skin.getDrawable("Button_down_sharp")
                 textButton.style.fontColor = if (modeChanged) Color.YELLOW else Color.WHITE
             } else {
                 textButton.style.fontColor = Color.BLACK
@@ -77,14 +77,14 @@ class ModeButtons(private val tab: Tab) {
     }
 
     /** Sets the button with the code to be inactive (greyed out)  */
-    fun setInactive(button: Int) {
+    private fun setInactive(button: Int) {
         inactiveButtons.add(button)
         buttons[button]?.style?.down = TerminalControl.skin.getDrawable("ListBackground")
         buttons[button]?.style?.up = TerminalControl.skin.getDrawable("ListBackground")
     }
 
     /** Sets the button with the code to be active  */
-    fun setActive(button: Int) {
+    private fun setActive(button: Int) {
         inactiveButtons.remove(button)
         buttons[button]?.style?.down = Ui.lightBoxBackground
         buttons[button]?.style?.up = Ui.lightBoxBackground
