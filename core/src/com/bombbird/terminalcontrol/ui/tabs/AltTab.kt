@@ -44,8 +44,8 @@ class AltTab(ui: Ui) : Tab(ui) {
         textButtonStyle.font = Fonts.defaultFont20
         textButtonStyle.fontColor = Color.BLACK
         textButtonStyle.up = Ui.lightBoxBackground
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
-        textButtonStyle.checked = TerminalControl.skin.getDrawable("Button_down")
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down_sharp")
+        textButtonStyle.checked = TerminalControl.skin.getDrawable("Button_down_sharp")
         expediteButton = TextButton("Expedite", textButtonStyle)
         expediteButton.setProgrammaticChangeEvents(false)
         expediteButton.addListener(object : ChangeListener() {

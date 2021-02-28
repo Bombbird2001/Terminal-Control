@@ -375,7 +375,7 @@ class Ui {
         textButtonStyle.font = Fonts.defaultFont20
         textButtonStyle.fontColor = Color.BLACK
         textButtonStyle.up = lightBoxBackground
-        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
+        textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down_sharp")
 
         //Transmit button
         cfmChange = TextButton("Transmit", textButtonStyle)
@@ -519,8 +519,8 @@ class Ui {
 
     private fun setTabColours(textButton: TextButton, selected: Boolean) {
         if (selected) {
-            textButton.style.down = TerminalControl.skin.getDrawable("Button_down")
-            textButton.style.up = TerminalControl.skin.getDrawable("Button_down")
+            textButton.style.down = TerminalControl.skin.getDrawable("Button_down_sharp")
+            textButton.style.up = TerminalControl.skin.getDrawable("Button_down_sharp")
             textButton.style.fontColor = Color.WHITE
         } else {
             textButton.style.down = lightBoxBackground
@@ -537,7 +537,7 @@ class Ui {
         buttonStyle.font = Fonts.defaultFont20
         buttonStyle.checkedFontColor = Color.WHITE
         buttonStyle.fontColor = Color.BLACK
-        buttonStyle.checked = TerminalControl.skin.getDrawable("Button_down")
+        buttonStyle.checked = TerminalControl.skin.getDrawable("Button_down_sharp")
         buttonStyle.up = TerminalControl.skin.getDrawable("ListBackground")
 
         zoomDistButton = TextButton("Zoom\nmode", buttonStyle)

@@ -145,9 +145,9 @@ class LatTab(ui: Ui) : Tab(ui) {
         hdg5minus = newHdgButton(-5, textButtonStyle)
         val textButtonStyle2 = TextButton.TextButtonStyle()
         textButtonStyle2.fontColor = Color.WHITE
-        textButtonStyle2.down = TerminalControl.skin.getDrawable("Button_down")
+        textButtonStyle2.down = TerminalControl.skin.getDrawable("Button_down_sharp")
         textButtonStyle2.up = Ui.lightestBoxBackground
-        textButtonStyle2.checked = TerminalControl.skin.getDrawable("Button_down")
+        textButtonStyle2.checked = TerminalControl.skin.getDrawable("Button_down_sharp")
         textButtonStyle2.font = Fonts.defaultFont20
 
         //Left button
