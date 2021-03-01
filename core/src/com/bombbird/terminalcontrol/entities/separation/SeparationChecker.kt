@@ -353,7 +353,7 @@ class SeparationChecker : Actor() {
                 for (i in coordX - 1..coordX + 1) {
                     for (j in coordY - 1..coordY + 1) {
                         val coord = "$i $j"
-                        storm.intensityMap[coord]?.let {
+                        storm.intensityMap[coord]?.intensity?.let {
                             when {
                                 it > 8 -> {
                                     redZones++
