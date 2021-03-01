@@ -26,7 +26,7 @@ class StormChecker {
                     for (i in coordX - 1..coordX + 1) {
                         for (j in coordY - 1..coordY + 1) {
                             val coord = "$i $j"
-                            if (storm.intensityMap[coord] ?: 0 > 3) {
+                            if (storm.intensityMap[coord]?.intensity ?: 0 > 3) {
                                 found = true
                                 break
                             }
@@ -64,7 +64,7 @@ class StormChecker {
                     for (j in coordX - 1..coordX + 1) {
                         for (k in coordY - 1..coordY + 1) {
                             val coord = "$j $k"
-                            if (storm.intensityMap[coord] ?: 0 > 3) {
+                            if (storm.intensityMap[coord]?.intensity ?: 0 > 3) {
                                 found = true
                                 break
                             }

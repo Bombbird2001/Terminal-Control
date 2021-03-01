@@ -691,7 +691,7 @@ object GameSaver {
 
             val intensityObject = JSONObject()
             for (intensity in storm.intensityMap) {
-                intensityObject.put(intensity.key, intensity.value)
+                intensityObject.put(intensity.key, intensity.value.intensity)
             }
             stormObject.put("intensityMap", intensityObject)
             stormArray.put(stormObject)

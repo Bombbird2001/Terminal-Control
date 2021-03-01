@@ -236,6 +236,11 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         //No default implementation
     }
 
+    /** Draws weather cells with spriteBatch; overridden in radarScreen class */
+    open fun drawWeatherCells() {
+        //No default implementation
+    }
+
     /** Load radar screen range circles  */
     fun loadRange() {
         for (circle in rangeCircles) {
@@ -303,6 +308,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     }
                     //Update playtime counter
                     playTime += delta
+                    drawWeatherCells()
                     //Render shapes only if METAR has finished loading
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                     renderShape()
