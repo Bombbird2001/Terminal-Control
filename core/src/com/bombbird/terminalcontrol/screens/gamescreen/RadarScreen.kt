@@ -771,11 +771,6 @@ class RadarScreen : GameScreen {
     }
 
     override fun renderShape() {
-        //Draws the weather cells
-        for (cell in thunderCellArray) {
-            cell.renderShape()
-        }
-
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
 
@@ -865,6 +860,15 @@ class RadarScreen : GameScreen {
         wakeManager.renderIlsWake()
         drawDistPoints()
         shapeRenderer.end()
+    }
+
+    override fun drawWeatherCells() {
+        game.batch.begin()
+        //Draws the weather cells
+        for (cell in thunderCellArray) {
+            cell.renderShape()
+        }
+        game.batch.end()
     }
 
     private fun drawDistPoints() {
@@ -963,6 +967,7 @@ class RadarScreen : GameScreen {
         if (!uiLoaded) {
             Ui.generatePaneTextures()
             DataTag.LOADED_ICONS = false
+            StormIntensity.LOADED_ICONS = false
             Tab.LOADED_STYLES = false
             loadUI()
             val newThread = Thread {

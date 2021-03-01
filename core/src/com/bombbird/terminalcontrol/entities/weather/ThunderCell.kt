@@ -1,6 +1,5 @@
 package com.bombbird.terminalcontrol.entities.weather
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.bombbird.terminalcontrol.TerminalControl
@@ -14,7 +13,7 @@ class ThunderCell(save: JSONObject?) {
     var matureDuration: Int = 0 //Time that storm spends in mature stage, in seconds
     var topAltitude: Int = 0
     val borderSet: HashSet<String> = HashSet() //Set of points that are borders (not all 8 bordering spots have been generated)
-    val intensityMap: HashMap<String, Int> = HashMap() //10 levels of intensity from 1 to 10, 0 means spot can be deleted
+    val intensityMap: HashMap<String, StormIntensity> = HashMap() //10 levels of intensity from 1 to 10, 0 means spot can be deleted
     var centreX: Float = 0f
     var centreY: Float = 0f
 
@@ -44,10 +43,10 @@ class ThunderCell(save: JSONObject?) {
         borderSet.add("-1 0")
         borderSet.add("0 -1")
         borderSet.add("-1 -1")
-        intensityMap["0 0"] = 1
-        intensityMap["-1 0"] = 1
-        intensityMap["0 -1"] = 1
-        intensityMap["-1 -1"] = 1
+        intensityMap["0 0"] = StormIntensity(1, 0, 0, this)
+        intensityMap["-1 0"] = StormIntensity(1, -1, 0, this)
+        intensityMap["0 -1"] = StormIntensity(1, 0, -1, this)
+        intensityMap["-1 -1"] = StormIntensity(1, -1, -1, this)
         topAltitude = radarScreen.minAlt + MathUtils.random(1000, 3000)
     }
 
@@ -71,7 +70,7 @@ class ThunderCell(save: JSONObject?) {
             if (intensityObject != null) {
                 intensityMap.clear()
                 for (key in intensityObject.keys()) {
-                    intensityMap[key] = intensityObject.optInt(key, 1)
+                    intensityMap[key] = StormIntensity(intensityObject.optInt(key, 1), key.split(" ")[0].toInt(), key.split(" ")[1].toInt(), this)
                 }
             }
         }
@@ -121,13 +120,13 @@ class ThunderCell(save: JSONObject?) {
             val x = spot.split(" ")[0].toInt()
             val y = spot.split(" ")[1].toInt()
             val distSqr = x * x + y * y
-            val probability = (baseProbability * (15625 - distSqr.toFloat().pow(3 / 2f)).pow(1 / 3f) / 25 * if (intensityMap[spot] ?: continue >= 2) 2.5f else 1f).coerceAtLeast(0.002f)
+            val probability = (baseProbability * (15625 - distSqr.toFloat().pow(3 / 2f)).pow(1 / 3f) / 25 * if (intensityMap[spot]?.intensity ?: continue >= 2) 2.5f else 1f).coerceAtLeast(0.002f)
             var allBordersFilled = true
             for (i in x - 1..x + 1) {
                 for (j in y - 1..y + 1) {
                     if (i == 0 && j == 0) continue
                     if (!intensityMap.containsKey("$i $j") && MathUtils.randomBoolean(probability)) {
-                        intensityMap["$i $j"] = 1
+                        intensityMap["$i $j"] = StormIntensity(1, i, j, this)
                         borderSet.add("$i $j")
                     }
                     if (!intensityMap.containsKey("$i $j")) allBordersFilled = false
@@ -140,38 +139,37 @@ class ThunderCell(save: JSONObject?) {
     /** Increase the intensity of spots given a base probability */
     private fun increaseIntensity(baseProbability: Float) {
         for (spot in intensityMap) {
-            if (spot.value >= 10) continue
-            val x = spot.key.split(" ")[0].toInt()
-            val y = spot.key.split(" ")[1].toInt()
+            if (spot.value.intensity >= 10) continue
+            val x = spot.value.x
+            val y = spot.value.y
             val dist = sqrt((x * x + y * y).toDouble()).toFloat()
             var probability = baseProbability * (25 - dist) / 25
             for (i in x - 1..x + 1) {
                 for (j in y - 1..y + 1) {
                     if (i == 0 && j == 0) continue
-                    val intensity = intensityMap["$i $j"] ?: continue
+                    val intensity = intensityMap["$i $j"]?.intensity ?: continue
                     probability *= when (intensity >= 4) {
                         intensity <= 6 -> 1.2f
                         else -> 1.125f
                     }
                 }
             }
-            if (MathUtils.randomBoolean(probability)) spot.setValue(spot.value + 1)
+            if (MathUtils.randomBoolean(probability)) spot.value.updateIntensity(spot.value.intensity + 1)
         }
     }
 
     /** Decrease intensity of spots */
     private fun decreaseIntensity() {
         for (spot in HashMap(intensityMap)) {
-            val x = spot.key.split(" ")[0].toInt()
-            val y = spot.key.split(" ")[1].toInt()
+            val x = spot.value.x
+            val y = spot.value.y
             val dist = sqrt((x * x + y * y).toDouble()).toFloat()
-            var probability = 0.05f * (30 - dist) / 30 * (if (spot.value >= 7) 1.5f else 1f)
+            var probability = 0.05f * (30 - dist) / 30 * (if (spot.value.intensity >= 7) 1.5f else 1f)
             if (intensityMap.size <= 100) probability = 0.16f
-            if (spot.value > 0 && MathUtils.randomBoolean(probability)) {
-                intensityMap[spot.key] = spot.value - 1
-                spot.setValue(spot.value - 1)
+            if (spot.value.intensity > 0 && MathUtils.randomBoolean(probability)) {
+                spot.value.updateIntensity(spot.value.intensity - 1)
             }
-            if (spot.value <= 0) intensityMap.remove(spot.key)
+            if (spot.value.intensity <= 0) intensityMap.remove(spot.key)
         }
     }
 
@@ -183,18 +181,8 @@ class ThunderCell(save: JSONObject?) {
     /** Draws the thunder cell intensity spots */
     fun renderShape() {
         for (spot in intensityMap) {
-            if (spot.value <= 0) continue
-            //Each spot is 10 px by 10 px big
-            val x = spot.key.split(" ")[0].toInt()
-            val y = spot.key.split(" ")[1].toInt()
-            radarScreen.shapeRenderer.color = when {
-                spot.value <= 2 -> Color.BLUE
-                spot.value <= 4 -> Color.LIME
-                spot.value <= 6 -> Color.YELLOW
-                spot.value <= 8 -> Color.ORANGE
-                else -> Color.RED
-            }
-            radarScreen.shapeRenderer.rect(centreX + x * 10, centreY + y * 10, 10f, 10f)
+            if (spot.value.intensity <= 0) continue
+            spot.value.draw()
         }
     }
 }
