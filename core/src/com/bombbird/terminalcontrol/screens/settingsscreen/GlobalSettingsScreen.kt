@@ -1,5 +1,6 @@
 package com.bombbird.terminalcontrol.screens.settingsscreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -97,21 +98,23 @@ class GlobalSettingsScreen(game: TerminalControl, background: Image?) : Settings
             }
         })
 
-        val buttonStyle = TextButton.TextButtonStyle()
-        buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
-        buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
-        buttonStyle.font = Fonts.defaultFont20
-        buttonStyle.fontColor = Color.WHITE
-        val consentButton = TextButton("Ad Consent", buttonStyle)
-        consentButton.setSize(1200f, 300f)
-        consentButton.setPosition(sendCrashBox.x, 3240 * (0.75f - 2 * 0.15f) + yOffset)
-        consentButton.label.setAlignment(Align.center)
-        consentButton.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                TerminalControl.playServicesInterface.showAdConsentForm(false)
-            }
-        })
-        stage.addActor(consentButton)
+        if (!TerminalControl.full && Gdx.app.type == Application.ApplicationType.Android) {
+            val buttonStyle = TextButton.TextButtonStyle()
+            buttonStyle.up = TerminalControl.skin.getDrawable("Button_up")
+            buttonStyle.down = TerminalControl.skin.getDrawable("Button_down")
+            buttonStyle.font = Fonts.defaultFont20
+            buttonStyle.fontColor = Color.WHITE
+            val consentButton = TextButton("Ad Consent", buttonStyle)
+            consentButton.setSize(1200f, 300f)
+            consentButton.setPosition(sendCrashBox.x, 3240 * (0.75f - 2 * 0.15f) + yOffset)
+            consentButton.label.setAlignment(Align.center)
+            consentButton.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    TerminalControl.playServicesInterface.showAdConsentForm(false)
+                }
+            })
+            stage.addActor(consentButton)
+        }
     }
 
     /** Loads labels for display settings  */
