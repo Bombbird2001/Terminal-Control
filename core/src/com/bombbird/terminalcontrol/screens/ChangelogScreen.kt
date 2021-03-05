@@ -72,6 +72,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2102.1
+        val content23 = Array<String>()
+        content23.add("-Weather: Greatly improved game performance when storms are enabled")
+        content23.add("-UI: Some cosmetic changes")
+        content23.add("-Bug fixes, optimisations")
+        changeLogContent["1.5.2102.1"] = content23
+
         //Version 1.5.2101.2
         val content22 = Array<String>()
         if (Gdx.app.type == Application.ApplicationType.Android) {
