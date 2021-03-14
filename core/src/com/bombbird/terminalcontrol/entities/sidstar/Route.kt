@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Departure
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldProcedure
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
@@ -261,5 +262,21 @@ class Route private constructor() {
     fun getWptFlyOver(wptName: String?): Boolean {
         if (wptName == null) return false
         return flyOver[findWptIndex(wptName)]
+    }
+
+    fun removeApchWpts(apch: Approach) {
+        if (apch.wpts.isEmpty || waypoints.isEmpty) return //No points to remove
+        val firstIndex = waypoints.indexOf(apch.wpts.first(), false)
+        if (firstIndex == -1) return //Route does not contain points
+        waypoints.removeRange(firstIndex, waypoints.size - 1)
+        restrictions.removeRange(firstIndex, waypoints.size - 1)
+        flyOver.removeRange(firstIndex, waypoints.size - 1)
+    }
+
+    fun addApchWpts(apch: Approach) {
+        if (apch.wpts.isEmpty) return //No points to add
+        waypoints.addAll(apch.wpts)
+        restrictions.addAll(apch.restrictions)
+        flyOver.addAll(apch.flyOver)
     }
 }

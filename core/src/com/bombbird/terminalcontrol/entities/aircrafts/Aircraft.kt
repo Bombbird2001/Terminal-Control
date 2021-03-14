@@ -504,8 +504,9 @@ abstract class Aircraft : Actor {
 
             //Draws selected status (from UI)
             if (isArrivalDeparture) {
-                if (Tab.latMode == NavState.SID_STAR && (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged)) {
-                    uiDrawSidStar()
+                if (Tab.latMode == NavState.SID_STAR) {
+                    if (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged) uiDrawSidStar()
+                    if (ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) uiDrawApchWpt()
                 } else if (Tab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged || ui.latTab.isAfterWptHdgChanged || ui.latTab.isLatModeChanged)) {
                     uiDrawAftWpt()
                 } else if (Tab.latMode == NavState.VECTORS && (this is Departure || Ui.NOT_CLEARED_APCH == Tab.clearedILS || !isLocCap) && (ui.latTab.isHdgChanged || ui.latTab.isLatModeChanged)) {
@@ -536,6 +537,18 @@ abstract class Aircraft : Actor {
             calculateAndSetDistToGo(it, route.waypoints[route.waypoints.size - 1])
         }
         route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
+    }
+
+    /** Draws the approach waypoints when an approach is selected in UI */
+    private fun uiDrawApchWpt() {
+        shapeRenderer.color = Color.YELLOW
+        airport.approaches[Tab.clearedILS]?.let {
+            for (i in 1 until it.wpts.size) {
+                val pt1 = it.wpts[i - 1]
+                val pt2 = it.wpts[i]
+                shapeRenderer.line(pt1.posX.toFloat(), pt1.posY.toFloat(), pt2.posX.toFloat(), pt2.posY.toFloat())
+            }
+        }
     }
 
     /** Draws the cleared after waypoint + cleared outbound heading when selected  */
@@ -1515,10 +1528,10 @@ abstract class Aircraft : Actor {
     }
 
     open fun updateApch(ils: Approach?) {
-        if (this.apch !== ils) {
+        if (apch !== ils) {
             if (this is Arrival) this.nonPrecAlts = null
             if (isLocCap) {
-                if (this.apch !is OffsetILS || ils == null) this.apch?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
+                if (apch !is OffsetILS || ils == null) apch?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
                 if (isSelected && isArrivalDeparture) ui.updateState()
             }
             isGsCap = false
@@ -1527,6 +1540,15 @@ abstract class Aircraft : Actor {
             if (clearedIas < 160) {
                 clearedIas = 160
                 navState.replaceAllClearedSpdToHigher()
+            }
+
+            apch?.let {
+                //Remove all approach waypoints from route
+                route.removeApchWpts(it)
+            }
+            ils?.let {
+                //Add all approach waypoints into route
+                route.addApchWpts(it)
             }
         }
         this.apch = ils
