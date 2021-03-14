@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
-import com.bombbird.terminalcontrol.entities.approaches.ILS
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
@@ -66,7 +66,7 @@ class Runway(toParse: String) {
     private val polygon: Polygon
 
     //Set the ILS
-    lateinit var ils: ILS
+    lateinit var apch: Approach
 
     //Whether storm is in departure path
     var isStormInPath = false
@@ -77,10 +77,9 @@ class Runway(toParse: String) {
     //Whether emergency aircraft is staying on it
     var isEmergencyClosed: Boolean
     private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
-    private val shapeRenderer: ShapeRenderer
+    private val shapeRenderer: ShapeRenderer = radarScreen.shapeRenderer
 
     init {
-        shapeRenderer = radarScreen.shapeRenderer
         parseInfo(toParse)
         aircraftOnApp = Array()
         isEmergencyClosed = false

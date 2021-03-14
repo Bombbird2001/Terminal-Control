@@ -46,7 +46,7 @@ class OffsetILS(airport: Airport, name: String, jsonObject: JSONObject): ILS(air
                     gsRings.add(Vector2(x + nmToPixel(it[i][1]) * MathUtils.cosDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f)), y + nmToPixel(it[i][1]) * MathUtils.sinDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f))))
                 }
             }
-            setGsRings(gsRings)
+            this.gsRings = gsRings
         }
     }
 }

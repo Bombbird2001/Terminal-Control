@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
-import com.bombbird.terminalcontrol.entities.approaches.ILS
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach
 import com.bombbird.terminalcontrol.entities.procedures.holding.BackupHoldingPoints
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints
@@ -28,7 +28,7 @@ import com.bombbird.terminalcontrol.utilities.RenameManager.reverseNameAirportIC
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadAirlineAircrafts
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadAirlines
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadHoldingPoints
-import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadILS
+import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadApch
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadMissedInfo
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadRunways
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.loadSids
@@ -46,7 +46,7 @@ class Airport {
         private set
     lateinit var missedApproaches: HashMap<String, MissedApproach>
         private set
-    lateinit var approaches: HashMap<String, ILS>
+    lateinit var approaches: HashMap<String, Approach>
         private set
     val icao: String
     lateinit var metar: JSONObject
@@ -145,9 +145,9 @@ class Airport {
         holdingPoints = loadHoldingPoints(this)
         loadBackupHoldingPts()
         missedApproaches = loadMissedInfo(this)
-        approaches = loadILS(this)
+        approaches = loadApch(this)
         for (runway in runways.values) {
-            approaches[runway.name]?.let { runway.ils = it }
+            approaches[runway.name]?.let { runway.apch = it }
         }
         setOppRwys()
         stars = loadStars(this)
@@ -185,9 +185,9 @@ class Airport {
         holdingPoints = loadHoldingPoints(this)
         loadBackupHoldingPts()
         missedApproaches = loadMissedInfo(this)
-        approaches = loadILS(this)
+        approaches = loadApch(this)
         for (runway in runways.values) {
-            approaches[runway.name]?.let { runway.ils = it }
+            approaches[runway.name]?.let { runway.apch = it }
         }
         setOppRwys()
         stars = loadStars(this)

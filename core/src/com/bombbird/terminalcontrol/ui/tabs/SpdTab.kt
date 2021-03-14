@@ -57,7 +57,7 @@ class SpdTab(ui: Ui) : Tab(ui) {
                 lowestSpd = 200
             } else if (it is Arrival) {
                 lowestSpd = 160
-                if (it.ils != null && it.isLocCap) {
+                if (it.apch != null && it.isLocCap) {
                     lowestSpd = it.apchSpd
                 } else if (it.apchSpd > lowestSpd) {
                     while (it.apchSpd > lowestSpd) {

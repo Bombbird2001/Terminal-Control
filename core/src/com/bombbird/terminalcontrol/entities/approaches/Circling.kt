@@ -1,7 +1,6 @@
 package com.bombbird.terminalcontrol.entities.approaches
 
 import com.bombbird.terminalcontrol.entities.airports.Airport
-import org.apache.commons.lang3.StringUtils
 import org.json.JSONObject
 
 class Circling(airport: Airport, name: String, jsonObject: JSONObject): ILS(airport, name, jsonObject) {

@@ -383,9 +383,9 @@ class DataTag(aircraft: Aircraft) {
         labelText[0] = aircraft.callsign
         labelText[1] = aircraft.icaoType + "/" + aircraft.wakeCat + "/" + aircraft.recat
         labelText[2] = MathUtils.round(aircraft.radarAlt / 100).toString()
-        labelText[3] = if (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
-            if (aircraft.ils?.name?.contains("IMG") == true || (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0)) "VIS" else "GS"
-        } else if (aircraft.isLocCap && aircraft.ils?.isNpa == true) "NPA" else (aircraft.targetAltitude / 100).toString()
+        labelText[3] = if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
+            if (aircraft.apch?.name?.contains("IMG") == true || (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0)) "VIS" else "GS"
+        } else if (aircraft.isLocCap && aircraft.apch?.isNpa == true) "NPA" else (aircraft.targetAltitude / 100).toString()
         labelText[10] = (aircraft.navState.clearedAlt.last() / 100).toString()
         if (aircraft.isSelected && aircraft.isArrivalDeparture) {
             labelText[10] = (Tab.clearedAlt / 100).toString()
@@ -494,18 +494,18 @@ class DataTag(aircraft: Aircraft) {
                 }
                 if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]"
             } else {
-                if (aircraft.isVectored && aircraft.navState.clearedIls.last() != null) {
-                    labelText[8] = aircraft.navState.clearedIls.last()?.name ?: ""
+                if (aircraft.isVectored && aircraft.navState.clearedApch.last() != null) {
+                    labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
                 } else {
                     if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
                         labelText[8] = ""
                     } else {
                         labelText[8] = aircraft.sidStar.name
-                        if (aircraft.navState.clearedIls.last() != null) {
+                        if (aircraft.navState.clearedApch.last() != null) {
                             if (aircraft.isLocCap) {
-                                labelText[8] = aircraft.navState.clearedIls.last()?.name ?: ""
+                                labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
                             } else {
-                                labelText[8] += " " + (aircraft.navState.clearedIls.last()?.name ?: "")
+                                labelText[8] += " " + (aircraft.navState.clearedApch.last()?.name ?: "")
                             }
                         }
                     }
@@ -522,11 +522,11 @@ ${labelText[6]} ${labelText[7]} ${labelText[9]}"""
 ${labelText[2]}  ${labelText[6]}"""
                 } else {
                     var clearedAltStr = labelText[10]
-                    if (aircraft.ils is Circling && aircraft is Arrival && aircraft.phase > 0) {
+                    if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) {
                         clearedAltStr = "VIS"
                     } else if (aircraft.isGsCap) {
-                        clearedAltStr = if (aircraft.ils?.name?.contains("IMG") == true) "VIS" else "GS"
-                    } else if (aircraft.isLocCap && aircraft.ils?.isNpa == true) {
+                        clearedAltStr = if (aircraft.apch?.name?.contains("IMG") == true) "VIS" else "GS"
+                    } else if (aircraft.isLocCap && aircraft.apch?.isNpa == true) {
                         clearedAltStr = "NPA"
                     }
                     updatedText = """${labelText[0]}/${aircraft.recat}
@@ -620,12 +620,12 @@ $clearedAltStr  ${aircraft.icaoType}"""
                 } else {
                     labelText[8] = aircraft.sidStar.name
                     if (aircraft.isLocCap) {
-                        if (aircraft.navState.clearedIls.last() != null) {
-                            labelText[8] = aircraft.navState.clearedIls.last()?.name ?: ""
+                        if (aircraft.navState.clearedApch.last() != null) {
+                            labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
                         }
                     } else {
-                        if (aircraft.navState.clearedIls.last() != null) {
-                            labelText[8] += " " + (aircraft.navState.clearedIls.last()?.name ?: "")
+                        if (aircraft.navState.clearedApch.last() != null) {
+                            labelText[8] += " " + (aircraft.navState.clearedApch.last()?.name ?: "")
                         }
                     }
                 }

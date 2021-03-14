@@ -111,8 +111,8 @@ class AltTab(ui: Ui) : Tab(ui) {
                         highestAlt = 10000 //Cannot climb above 10000 feet due to pressure loss
                     }
                     if (highestAlt < lowestAlt) highestAlt = lowestAlt
-                    if (it.isGsCap || it.ils != null && it.ils?.isNpa == true && it.isLocCap && it.navState.dispLatMode.first() == NavState.VECTORS) {
-                        lowestAlt = it.ils?.missedApchProc?.climbAlt ?: radarScreen.minAlt
+                    if (it.isGsCap || it.apch != null && it.apch?.isNpa == true && it.isLocCap && it.navState.dispLatMode.first() == NavState.VECTORS) {
+                        lowestAlt = it.apch?.missedApchProc?.climbAlt ?: radarScreen.minAlt
                         highestAlt = lowestAlt
                     }
                     allAlts = createAltArray(lowestAlt, highestAlt)

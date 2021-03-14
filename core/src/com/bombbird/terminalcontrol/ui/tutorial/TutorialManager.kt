@@ -77,7 +77,7 @@ class TutorialManager(private val radarScreen: RadarScreen) {
         labelStyle.font = Fonts.defaultFont20
         val label = Label(finalMsg, labelStyle)
         label.width = scrollPane.width
-        label.setWrap(true)
+        label.wrap = true
         scrollTable.add(label).width(scrollPane.width).pad(15f, 10f, 15f, 0f).actor.invalidate()
         scrollTable.row()
         scrollPane.layout()
@@ -210,7 +210,7 @@ class TutorialManager(private val radarScreen: RadarScreen) {
                 tutorialMsg("Ok, the aircraft has reached HAMMY and will now fly a heading of 90. Now, select the aircraft, go to the [YELLOW]lateral tab[], tap \"Approach\" and select [YELLOW]ILS05L[].")
                 prompt4 = true
             }
-            if (prompt4 && aircraft.airport.approaches["05L"] == aircraft.navState.clearedIls.first()) {
+            if (prompt4 && aircraft.airport.approaches["05L"] == aircraft.navState.clearedApch.first()) {
                 prompt4 = false
                 tutorialMsg("Great job, the aircraft will now automatically capture the localizer and glide slope. Once the plane is close to landing it will contact the tower, but you can also hand it over to the tower once it is established on the localizer by pressing the [YELLOW]\"Handover\"[] button.")
                 prompt5 = true

@@ -205,12 +205,12 @@ class Emergency {
             }
             if (aircraft.isTkOfLdg && isStayOnRwy && stayOnRwyTime > 0) {
                 //Aircraft has touched down and needs to stay on runway
-                if (aircraft.ils == null) {
+                if (aircraft.apch == null) {
                     isStayOnRwy = false
                     stayOnRwyTime = -1f
                 } else {
                     stayOnRwyTime -= dt
-                    val rwy = aircraft.airport.runways[aircraft.ils?.name?.substring(3)] ?: return
+                    val rwy = aircraft.airport.runways[aircraft.apch?.name?.substring(3)] ?: return
                     if (!rwy.isEmergencyClosed) {
                         rwy.isEmergencyClosed = true
                         rwy.oppRwy.isEmergencyClosed = true
@@ -251,8 +251,8 @@ class Emergency {
         aircraft.navState.clearedAftWptHdg.addFirst(aircraft.heading.toInt())
         aircraft.navState.clearedHold.clear()
         aircraft.navState.clearedHold.addFirst(null)
-        aircraft.navState.clearedIls.clear()
-        aircraft.navState.clearedIls.addFirst(null)
+        aircraft.navState.clearedApch.clear()
+        aircraft.navState.clearedApch.addFirst(null)
         aircraft.navState.clearedAlt.clear()
         aircraft.navState.clearedAlt.addFirst(getClearedAltitudeAfterEmergency(aircraft.altitude))
         aircraft.navState.clearedExpedite.clear()

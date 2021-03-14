@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.bombbird.terminalcontrol.TerminalControl
-import com.bombbird.terminalcontrol.entities.approaches.ILS
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.sidstar.Route
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.ui.Ui
@@ -100,7 +100,7 @@ class NavState {
     val clearedAftWpt: Queue<Waypoint?>
     val clearedAftWptHdg: Queue<Int>
     val clearedHold: Queue<Waypoint?>
-    val clearedIls: Queue<ILS?>
+    val clearedApch: Queue<Approach?>
     val clearedNewStar: Queue<String?>
     val clearedTurnDir: Queue<Int>
     val clearedAlt: Queue<Int>
@@ -157,8 +157,8 @@ class NavState {
         clearedAftWptHdg.addLast(aircraft.afterWptHdg)
         clearedHold = Queue()
         clearedHold.addFirst(null)
-        clearedIls = Queue()
-        clearedIls.addLast(null)
+        clearedApch = Queue()
+        clearedApch.addLast(null)
         clearedNewStar = Queue()
         clearedNewStar.addLast(null)
         clearedTurnDir = Queue()
@@ -191,7 +191,7 @@ class NavState {
         clearedAftWpt = Queue()
         clearedAftWptHdg = Queue()
         clearedHold = Queue()
-        clearedIls = Queue()
+        clearedApch = Queue()
         clearedNewStar = Queue()
         clearedTurnDir = Queue()
         clearedAlt = Queue()
@@ -240,7 +240,7 @@ class NavState {
         addToQueueWpt(save.getJSONArray("clearedHold"), clearedHold)
         val array4 = save.getJSONArray("clearedIls")
         for (i in 0 until array4.length()) {
-            clearedIls.addLast(if (array4.isNull(i)) null else aircraft.airport.approaches[array4.getString(i).substring(3)])
+            clearedApch.addLast(if (array4.isNull(i)) null else aircraft.airport.approaches[array4.getString(i).substring(3)])
         }
         if (save.isNull("newStar")) {
             clearedNewStar.addLast(null)
@@ -322,7 +322,7 @@ class NavState {
             clearedAftWpt.removeIndex(1)
             clearedAftWptHdg.removeIndex(1)
             clearedHold.removeIndex(1)
-            clearedIls.removeIndex(1)
+            clearedApch.removeIndex(1)
             clearedNewStar.removeIndex(1)
             clearedTurnDir.removeIndex(1)
             clearedAlt.removeIndex(1)
@@ -339,7 +339,7 @@ class NavState {
             if (clearedAftWpt.size > 1) clearedAftWpt.removeFirst()
             if (clearedAftWptHdg.size > 1) clearedAftWptHdg.removeFirst()
             if (clearedHold.size > 1) clearedHold.removeFirst()
-            if (clearedIls.size > 1) clearedIls.removeFirst()
+            if (clearedApch.size > 1) clearedApch.removeFirst()
             if (clearedNewStar.size > 1) clearedNewStar.removeFirst()
             if (clearedTurnDir.size > 1) clearedTurnDir.removeFirst()
             if (clearedAlt.size > 1) clearedAlt.removeFirst()
@@ -361,8 +361,8 @@ class NavState {
         aircraft.afterWaypoint = clearedAftWpt.first()
         aircraft.afterWptHdg = clearedAftWptHdg.first()
         aircraft.holdWpt = clearedHold.first()
-        aircraft.updateILS(clearedIls.first())
-        if (clearedIls.first() != null && dispLatMode.first() == SID_STAR) {
+        aircraft.updateApch(clearedApch.first())
+        if (clearedApch.first() != null && dispLatMode.first() == SID_STAR) {
             var lowestAlt = aircraft.route.getWptMinAlt(aircraft.route.waypoints.size - 1)
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
             aircraft.updateClearedAltitude(lowestAlt)
@@ -433,16 +433,16 @@ class NavState {
             //Set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg(aircraft.clearedHeading)
             replaceAllClearedAltMode()
-        } else if (aircraft.isLocCap && clearedHdg[1] != aircraft.ils?.heading) {
+        } else if (aircraft.isLocCap && clearedHdg[1] != aircraft.apch?.heading) {
             //Case 4: Aircraft captured LOC during delay: Replace all set headings to ILS heading
-            replaceAllClearedHdg(aircraft.ils?.heading ?: 360)
-            if (aircraft.ils?.isNpa == true) {
+            replaceAllClearedHdg(aircraft.apch?.heading ?: 360)
+            if (aircraft.apch?.isNpa == true) {
                 //Case 4b: Aircraft on LDA has captured LOC and is performing non precision approach: Replace all set altitude to missed approach altitude
                 replaceAllClearedAltMode()
                 replaceAllClearedAlt()
             }
         }
-        if (aircraft.isGsCap || (aircraft.ils?.isNpa == true && aircraft.isLocCap)) {
+        if (aircraft.isGsCap || (aircraft.apch?.isNpa == true && aircraft.isLocCap)) {
             //Case 5: Aircraft captured GS during delay: Replace all set altitude to missed approach altitude
             replaceAllClearedAltMode()
             replaceAllClearedAlt()
@@ -569,10 +569,10 @@ class NavState {
 
     /** Removes all ILS clearances  */
     fun voidAllIls() {
-        val size = clearedIls.size
-        clearedIls.clear()
+        val size = clearedApch.size
+        clearedApch.clear()
         for (i in 0 until size) {
-            clearedIls.addLast(null)
+            clearedApch.addLast(null)
         }
     }
 
@@ -614,9 +614,9 @@ class NavState {
             clearedTurnDir.addLast(turnDir)
         }
         if (aircraft is Arrival) {
-            clearedIls.addLast(aircraft.airport.approaches[clearedApch?.substring(3)])
+            this.clearedApch.addLast(aircraft.airport.approaches[clearedApch?.substring(3)])
             if (latMode == SID_STAR) {
-                if (clearedIls.last() != null) {
+                if (this.clearedApch.last() != null) {
                     updateLatModes(REMOVE_AFTERHDG_HOLD, false)
                 } else {
                     updateLatModes(ADD_ALL_SIDSTAR, false)
@@ -631,7 +631,7 @@ class NavState {
         fillUpWpt(clearedAftWpt)
         fillUpInt(clearedAftWptHdg)
         fillUpWpt(clearedHold)
-        fillUpILS(clearedIls)
+        fillUpApch(this.clearedApch)
         fillUpString(clearedNewStar)
         fillUpInt(clearedTurnDir)
     }
@@ -673,7 +673,7 @@ class NavState {
         }
     }
 
-    private fun fillUpILS(queue: Queue<ILS?>) {
+    private fun fillUpApch(queue: Queue<Approach?>) {
         while (queue.size < length) {
             queue.addLast(queue.last())
         }
