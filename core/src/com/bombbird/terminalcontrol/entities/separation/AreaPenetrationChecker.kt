@@ -44,16 +44,16 @@ class AreaPenetrationChecker {
                             //If aircraft is already predicted to conflict with terrain
                             continue
                         }
-                        if ((aircraft.navState.dispLatMode.first() == NavState.SID_STAR || aircraft.ils != null && aircraft.ils?.isInsideILS(positionPoint.x, positionPoint.y) == true) && !obstacle.isEnforced && (aircraft.route.inSidStarZone(positionPoint.x, positionPoint.y, aircraft.altitude) || (aircraft.isHolding && aircraft.holdWpt?.let { aircraft.altitude > aircraft.route.holdProcedure.getAltRestAtWpt(it)[0] - 100 } == true))) {
+                        if ((aircraft.navState.dispLatMode.first() == NavState.SID_STAR || aircraft.apch != null && aircraft.apch?.isInsideILS(positionPoint.x, positionPoint.y) == true) && !obstacle.isEnforced && (aircraft.route.inSidStarZone(positionPoint.x, positionPoint.y, aircraft.altitude) || (aircraft.isHolding && aircraft.holdWpt?.let { aircraft.altitude > aircraft.route.holdProcedure.getAltRestAtWpt(it)[0] - 100 } == true))) {
                             //If latMode is STAR/SID or point is within localizer range, is within sidStarZone and obstacle is not a restricted area, ignore
                             continue
                         }
-                        if (aircraft.navState.clearedIls.first() != null) {
+                        if (aircraft.navState.clearedApch.first() != null) {
                             //If aircraft is cleared for ILS approach, inhibit to prevent nuisance warnings
                             continue
                         }
-                        if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is OffsetILS && aircraft.isLocCap || aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
-                                aircraft.isGoAroundWindow || (aircraft is Arrival && aircraft.ils is Circling && aircraft.phase > 0)) {
+                        if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap || aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true ||
+                                aircraft.isGoAroundWindow || (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0)) {
                             //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around, or is on the visual segment of circling approach
                             continue
                         }

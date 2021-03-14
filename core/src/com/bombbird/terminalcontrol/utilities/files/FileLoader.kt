@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Base64Coder
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.ILS
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
@@ -161,8 +162,8 @@ object FileLoader {
         return aircrafts
     }
 
-    fun loadILS(airport: Airport): HashMap<String, ILS> {
-        val approaches = HashMap<String, ILS>()
+    fun loadApch(airport: Airport): HashMap<String, Approach> {
+        val approaches = HashMap<String, Approach>()
         TerminalControl.radarScreen?.let {
             val handle = Gdx.files.internal("game/" + it.mainName + "/" + it.airac + "/apch" + airport.icao + ".apch")
             val jo = JSONObject(handle.readString())

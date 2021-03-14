@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementWakeConflictTime
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.approaches.Circling
-import com.bombbird.terminalcontrol.entities.approaches.ILS
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
@@ -123,7 +123,7 @@ abstract class Aircraft : Actor {
     var direct: Waypoint? = null
     var afterWaypoint: Waypoint? = null
     var afterWptHdg: Int
-    var ils: ILS? = null
+    var apch: Approach? = null
         private set
     var isLocCap: Boolean
         private set
@@ -371,7 +371,7 @@ abstract class Aircraft : Actor {
         direct = if (save.isNull("direct")) null else radarScreen.waypoints[save.getString("direct")]
         afterWaypoint = if (save.isNull("afterWaypoint")) null else radarScreen.waypoints[save.getString("afterWaypoint")]
         afterWptHdg = save.getInt("afterWptHdg")
-        ils = if (save.isNull("ils")) null else airport.approaches[save.getString("ils").substring(3)]
+        apch = if (save.isNull("ils")) null else airport.approaches[save.getString("ils").substring(3)]
         isLocCap = save.getBoolean("locCap")
         holdWpt = if (save.isNull("holdWpt")) null else radarScreen.waypoints[save.getString("holdWpt")]
         isHolding = save.getBoolean("holding")
@@ -496,7 +496,7 @@ abstract class Aircraft : Actor {
                 drawSidStar()
             } else if (navState.dispLatMode.last() == NavState.AFTER_WPT_HDG && navState.clearedDirect.last() != null && navState.clearedAftWpt.last() != null) {
                 drawAftWpt()
-            } else if (navState.containsCode(navState.dispLatMode.last(), NavState.VECTORS) && (!isLocCap || navState.clearedIls.last() == null)) {
+            } else if (navState.containsCode(navState.dispLatMode.last(), NavState.VECTORS) && (!isLocCap || navState.clearedApch.last() == null)) {
                 drawHdgLine()
             } else if (navState.dispLatMode.last() == NavState.HOLD_AT) {
                 drawHoldPattern()
@@ -763,9 +763,9 @@ abstract class Aircraft : Actor {
 
     /** Returns whether aircraft is eligible for capturing ILS - either be in heading mode and locCap is true or be in STAR mode, locCap true and direct is inside ILS arc  */
     fun canCaptureILS(): Boolean {
-        if (ils == null) return false
+        if (apch == null) return false
         if (navState.dispLatMode.first() == NavState.VECTORS) return true
-        ils?.let {
+        apch?.let {
             direct?.let { it2 ->
                 return navState.dispLatMode.first() == NavState.SID_STAR && it.isInsideILS(it2.posX.toFloat(), it2.posY.toFloat())
             }
@@ -810,10 +810,10 @@ abstract class Aircraft : Actor {
             }
         }
         if (vector) {
-            if (!isLocCap && ils !is Circling) {
+            if (!isLocCap && apch !is Circling) {
                 targetHeading = clearedHeading.toDouble()
             } else {
-                ils?.let {
+                apch?.let {
                     if (it.rwy != runway) runway = it.rwy
                     val effectiveILS = if (it is Circling && this is Arrival && phase > 0) it.imaginaryIls else it
                     if (it is Circling && this is Arrival) {
@@ -828,7 +828,7 @@ abstract class Aircraft : Actor {
                             }
                             2 -> {
                                 targetHeading = it.heading.toDouble()
-                                val toRwy = Vector2((it.rwy?.x ?: 0f) - x, (it.rwy?.y ?: 0f) - y)
+                                val toRwy = Vector2(it.rwy.x - x, it.rwy.y - y)
                                 val acftVector = Vector2(0f, 1f)
                                 acftVector.rotateDeg(-(targetHeading.toFloat() - radarScreen.magHdgDev))
                                 val dotProduct = toRwy.dot(acftVector)
@@ -858,7 +858,7 @@ abstract class Aircraft : Actor {
                                 ) - 15
                             ) <= effectiveILS.lineUpDist
                         ) {
-                            ils = effectiveILS.imaginaryIls
+                            apch = effectiveILS.imaginaryIls
                             isGsCap = effectiveILS.isNpa == false
                             return updateTargetHeading()
                         } else {
@@ -1083,7 +1083,7 @@ abstract class Aircraft : Actor {
             radarScreen.wakeInfringeTime = radarScreen.wakeInfringeTime + Gdx.graphics.deltaTime
         }
         if (wakeTolerance < 0) wakeTolerance = 0f
-        if (!isLocCap && ils != null && ils?.isInsideILS(x, y) == true && (navState.dispLatMode.first() == NavState.VECTORS || navState.dispLatMode.first() == NavState.SID_STAR && direct != null && ils?.isInsideILS(direct?.posX?.toFloat() ?: 0f, direct?.posY?.toFloat() ?: 0f) == true)) {
+        if (!isLocCap && apch != null && apch?.isInsideILS(x, y) == true && (navState.dispLatMode.first() == NavState.VECTORS || navState.dispLatMode.first() == NavState.SID_STAR && direct != null && apch?.isInsideILS(direct?.posX?.toFloat() ?: 0f, direct?.posY?.toFloat() ?: 0f) == true)) {
             isLocCap = true
             navState.replaceAllTurnDirections()
             ui.updateAckHandButton(this)
@@ -1514,11 +1514,11 @@ abstract class Aircraft : Actor {
         return route.getWptMaxSpd(wpt)
     }
 
-    open fun updateILS(ils: ILS?) {
-        if (this.ils !== ils) {
+    open fun updateApch(ils: Approach?) {
+        if (this.apch !== ils) {
             if (this is Arrival) this.nonPrecAlts = null
             if (isLocCap) {
-                if (this.ils !is OffsetILS || ils == null) this.ils?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
+                if (this.apch !is OffsetILS || ils == null) this.apch?.rwy?.removeFromArray(this) //Remove from runway array only if is not LDA or is LDA but new ILS is null
                 if (isSelected && isArrivalDeparture) ui.updateState()
             }
             isGsCap = false
@@ -1529,6 +1529,6 @@ abstract class Aircraft : Actor {
                 navState.replaceAllClearedSpdToHigher()
             }
         }
-        this.ils = ils
+        this.apch = ils
     }
 }

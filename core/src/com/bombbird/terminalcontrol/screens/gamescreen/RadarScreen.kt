@@ -905,10 +905,10 @@ class RadarScreen : GameScreen {
             val aircraft = aircrafts[callsign]
             if (arrival.airport != aircraft?.airport) continue
             val airportIcao = arrival.airport.icao
-            if (arrival.ils == null) return false
-            val rwy1 = arrival.ils?.rwy?.name
-            if (aircraft.ils == null) continue
-            val rwy2 = aircraft.ils?.rwy?.name
+            if (arrival.apch == null) return false
+            val rwy1 = arrival.apch?.rwy?.name
+            if (aircraft.apch == null) continue
+            val rwy2 = aircraft.apch?.rwy?.name
             val rwys = arrayOf(rwy1, rwy2)
             if ("TCWS" == airportIcao) {
                 if (ArrayUtils.contains(rwys, "02L") && ArrayUtils.contains(rwys, "02C") || ArrayUtils.contains(rwys, "20R") && ArrayUtils.contains(rwys, "20C")) return true

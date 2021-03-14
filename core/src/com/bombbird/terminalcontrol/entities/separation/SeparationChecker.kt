@@ -209,12 +209,12 @@ class SeparationChecker : Actor() {
                     }
                     val dist = pixelToNm(distanceBetween(plane1.x, plane1.y, plane2.x, plane2.y))
                     var minima = radarScreen.separationMinima.toFloat()
-                    if (plane1.ils != null && plane2.ils != null && plane1.ils != plane2.ils && plane1.ils?.isInsideILS(plane1.x, plane1.y) == true && plane2.ils?.isInsideILS(plane2.x, plane2.y) == true) {
+                    if (plane1.apch != null && plane2.apch != null && plane1.apch != plane2.apch && plane1.apch?.isInsideILS(plane1.x, plane1.y) == true && plane2.apch?.isInsideILS(plane2.x, plane2.y) == true) {
                         //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce separation to 2nm (staggered separation)
                         minima = 2f
                     }
-                    if (plane1.ils != null && plane1.ils == plane2.ils) {
-                        val runway: Runway = plane1.ils?.rwy ?: continue
+                    if (plane1.apch != null && plane1.apch == plane2.apch) {
+                        val runway: Runway = plane1.apch?.rwy ?: continue
                         if (pixelToNm(distanceBetween(plane1.x, plane1.y, runway.x, runway.y)) < 10 &&
                                 pixelToNm(distanceBetween(plane2.x, plane2.y, runway.x, runway.y)) < 10) {
                             //If both planes on the same LOC but are both less than 10nm from runway threshold, separation minima is reduced to 2.5nm
@@ -299,15 +299,15 @@ class SeparationChecker : Actor() {
     /** Checks that each aircraft is separated from each obstacles/restricted area  */
     private fun checkRestrSep() {
         for (aircraft in radarScreen.aircrafts.values) {
-            if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.ils is OffsetILS && aircraft.isLocCap ||
-                    aircraft is Arrival && aircraft.ils != null && aircraft.ils?.name?.contains("IMG") == true ||
+            if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap ||
+                    aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true ||
                     aircraft.isGoAroundWindow ||
-                    (aircraft is Arrival && aircraft.ils is Circling && aircraft.phase > 0)) {
+                    (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0)) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around, or is on the visual segment of circling approach
                 continue
             }
             var conflict = false
-            val isVectored = aircraft.isVectored && (aircraft.ils == null || aircraft.ils?.isInsideILS(aircraft.x, aircraft.y) == false) //Technically not being vectored if within localizer range
+            val isVectored = aircraft.isVectored && (aircraft.apch == null || aircraft.apch?.isInsideILS(aircraft.x, aircraft.y) == false) //Technically not being vectored if within localizer range
             val isInZone: Boolean = aircraft.route.inSidStarZone(aircraft.x, aircraft.y, aircraft.altitude) || (aircraft.isHolding && aircraft.holdWpt?.let { aircraft.altitude > aircraft.route.holdProcedure.getAltRestAtWpt(it)[0] - 100 } == true) //No need for belowMinAlt as this already takes into account
             for (obstacle in radarScreen.obsArray) {
                 //If aircraft is infringing obstacle

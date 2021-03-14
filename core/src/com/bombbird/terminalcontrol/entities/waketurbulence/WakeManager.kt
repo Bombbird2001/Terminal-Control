@@ -128,16 +128,15 @@ class WakeManager() {
             if (aircraft is Departure) continue
             if (!aircraft.isLocCap) continue
             if (aircraft.isOnGround) continue
-            val ils = aircraft.ils ?: continue
+            val ils = aircraft.apch ?: continue
             if (ils is Circling && aircraft is Arrival && aircraft.phase > 0) continue //Don't draw if aircraft is already on visual segment of circling approach
-            val rwy = ils.rwy ?: continue
             var aircraft1: Aircraft? = null
-            var index: Int = rwy.aircraftOnApp.size - 1
+            var index: Int = ils.rwy.aircraftOnApp.size - 1
             while (true) {
                 if (index < 0) break
-                val nextAircraft: Aircraft = rwy.aircraftOnApp.get(index)
+                val nextAircraft: Aircraft = ils.rwy.aircraftOnApp.get(index)
                 if (nextAircraft.callsign == aircraft.callsign) break
-                aircraft1 = rwy.aircraftOnApp.get(index)
+                aircraft1 = ils.rwy.aircraftOnApp.get(index)
                 index--
             }
             if (aircraft1 == null) continue

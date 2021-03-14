@@ -14,9 +14,9 @@ import kotlin.math.abs
 
 class CollisionChecker {
     private val radarScreen = TerminalControl.radarScreen!!
-    val aircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
+    private val aircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
     val handoverAircraftStorage: com.badlogic.gdx.utils.Array<Array<Aircraft>> = com.badlogic.gdx.utils.Array()
-    val pointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
+    private val pointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
     val handoverPointStorage: com.badlogic.gdx.utils.Array<Array<PositionPoint>> = com.badlogic.gdx.utils.Array()
 
     /** Checks separation between trajectory points of same timing  */
@@ -98,7 +98,7 @@ class CollisionChecker {
                         //Go around will not be considered as exceptions to the collision warning
                         val dist = pixelToNm(distanceBetween(point1.x, point1.y, point2.x, point2.y))
                         var minima = radarScreen.separationMinima.toFloat()
-                        if (aircraft1.ils != null && aircraft2.ils != null && aircraft1.ils?.isInsideILS(aircraft1.x, aircraft1.y) == true && aircraft2.ils?.isInsideILS(aircraft2.x, aircraft2.y) == true) {
+                        if (aircraft1.apch != null && aircraft2.apch != null && aircraft1.apch?.isInsideILS(aircraft1.x, aircraft1.y) == true && aircraft2.apch?.isInsideILS(aircraft2.x, aircraft2.y) == true) {
                             //If both planes have captured ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce minima to 2nm (using 1.85 so effective is 2.05)
                             minima = 1.85f
                         }

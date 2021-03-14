@@ -12,8 +12,8 @@ import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.complete
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementEmergency
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.incrementLanded
 import com.bombbird.terminalcontrol.entities.airports.Airport
+import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.approaches.Circling
-import com.bombbird.terminalcontrol.entities.approaches.ILS
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
@@ -353,7 +353,7 @@ class Arrival : Aircraft {
             }
             isIlsSpdSet = true
         }
-        if (!isFinalSpdSet && isLocCap && ils?.rwy?.let { pixelToNm(distanceBetween(x, y, it.x, it.y)) <= 7 } == true) {
+        if (!isFinalSpdSet && isLocCap && apch?.rwy?.let { pixelToNm(distanceBetween(x, y, it.x, it.y)) <= 7 } == true) {
             if (clearedIas > apchSpd) {
                 updateClearedSpd(apchSpd)
                 navState.replaceAllClearedSpdToLower()
@@ -489,8 +489,8 @@ class Arrival : Aircraft {
         navState.clearedAftWptHdg.addFirst(radarScreen.divertHdg)
         navState.clearedHold.clear()
         navState.clearedHold.addFirst(null)
-        navState.clearedIls.clear()
-        navState.clearedIls.addFirst(null)
+        navState.clearedApch.clear()
+        navState.clearedApch.addFirst(null)
         navState.clearedAlt.clear()
         navState.clearedAlt.addFirst(10000)
         navState.clearedExpedite.clear()
@@ -505,7 +505,7 @@ class Arrival : Aircraft {
 
     /** Overrides updateAltitude method in Aircraft for when arrival is on glide slope or non precision approach  */
     override fun updateAltitude(holdAlt: Boolean, fixedVs: Boolean) {
-        ils?.let {
+        apch?.let {
             if (it is Circling && !isGsCap) {
                 //If in the transition phase of circle approach
                 when (phase) {
@@ -582,14 +582,14 @@ class Arrival : Aircraft {
                     } else {
                         //Set final descent towards runway
                         targetAltitude = it.rwy.elevation
-                        val lineUpDist = (ils as OffsetILS).lineUpDist
+                        val lineUpDist = (apch as OffsetILS).lineUpDist
                         val tmpAlt: Float
-                        var actlTargetAlt = (ils as OffsetILS).imaginaryIls.getGSAltAtDist(lineUpDist)
+                        var actlTargetAlt = (apch as OffsetILS).imaginaryIls.getGSAltAtDist(lineUpDist)
                         tmpAlt = actlTargetAlt
                         actlTargetAlt -= 200f
                         actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + it.rwy.elevation) / 2, tmpAlt)
                         val remainingAlt = altitude - actlTargetAlt
-                        val actlTargetPos = (ils as OffsetILS).imaginaryIls.getPointAtDist(lineUpDist)
+                        val actlTargetPos = (apch as OffsetILS).imaginaryIls.getPointAtDist(lineUpDist)
                         val distFromRwy = pixelToNm(distanceBetween(x, y, actlTargetPos.x, actlTargetPos.y))
                         verticalSpeed = -remainingAlt / (distFromRwy / gs * 60)
                         super.updateAltitude(remainingAlt < 0, true)
@@ -613,10 +613,10 @@ class Arrival : Aircraft {
                 }
                 checkAircraftInFront()
             }
-            if (ils != null && controlState == ControlState.ARRIVAL && (altitude <= (if (ils is Circling) breakoutAlt + 100 else airport.elevation + 1300))) {
+            if (apch != null && controlState == ControlState.ARRIVAL && (altitude <= (if (apch is Circling) breakoutAlt + 100 else airport.elevation + 1300))) {
                 contactOther()
             }
-            if (altitude <= it.rwy.elevation + 10 && ils != null) {
+            if (altitude <= it.rwy.elevation + 10 && apch != null) {
                 isTkOfLdg = true
                 isOnGround = true
                 heading = it.rwy.heading.toDouble()
@@ -655,7 +655,7 @@ class Arrival : Aircraft {
         } else {
             radarScreen.planesToControl = radarScreen.planesToControl - 0.4f
         }
-        ils?.let { radarScreen.utilityBox.commsManager.contactFreq(this, it.towerFreq[0], it.towerFreq[1]) }
+        apch?.let { radarScreen.utilityBox.commsManager.contactFreq(this, it.towerFreq[0], it.towerFreq[1]) }
     }
 
     override fun canHandover(): Boolean {
@@ -664,7 +664,7 @@ class Arrival : Aircraft {
 
     /** Called to check the distance behind the aircraft ahead of current aircraft, calls swap in runway array if it somehow overtakes it  */
     private fun checkAircraftInFront() {
-        ils?.let {
+        apch?.let {
             it.rwy.let { it2 ->
                 val approachPosition: Int = it2.aircraftOnApp.indexOf(this, false)
                 if (approachPosition > 0) {
@@ -691,7 +691,7 @@ class Arrival : Aircraft {
             chance = 0.2f
         } else if ("None" != airport.windshear) {
             for (string in airport.windshear.split(" ".toRegex()).toTypedArray()) {
-                if (ils?.rwy?.name?.let { string.contains(it) } == true) {
+                if (apch?.rwy?.name?.let { string.contains(it) } == true) {
                     chance = 0.2f
                     break
                 }
@@ -719,7 +719,7 @@ class Arrival : Aircraft {
             //0.04% chance per frame (assuming 60 fps) - if frames are skipped then will ensure the frame has equal chance as the equivalent number of frames at 60fps
             return MathUtils.randomBoolean(1 - 0.9996.pow(Gdx.graphics.deltaTime * 60.0).toFloat())
         }
-        ils?.let {
+        apch?.let {
             it.rwy.let { it2 ->
                 if (isWillGoAround && altitude < goAroundAlt && (airport.windshear.contains(it2.name) || airport.windshear == "ALL RWY")) {
                     //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
@@ -742,7 +742,7 @@ class Arrival : Aircraft {
                         //If airspeed is more than 10 knots higher than approach speed
                         radarScreen.utilityBox.commsManager.goAround(this, "being too fast", controlState)
                         return true
-                    } else if (ils !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
+                    } else if (apch !is OffsetILS && (it !is Circling || phase == 0) && !it.name.contains("IMG") && MathUtils.cosDeg(it2.trueHdg - track.toFloat()) < MathUtils.cosDeg(10f)) {
                         //If aircraft is not fully stabilised on LOC course
                         radarScreen.utilityBox.commsManager.goAround(this, "unstable approach", controlState)
                         return true
@@ -782,7 +782,7 @@ class Arrival : Aircraft {
 
     /** Sets the cleared altitude for aircraft on approach, updates UI altitude selections if selected  */
     private fun setMissedAlt() {
-        updateClearedAltitude(ils?.missedApchProc?.climbAlt ?: 4000)
+        updateClearedAltitude(apch?.missedApchProc?.climbAlt ?: 4000)
         navState.replaceAllClearedAltMode()
         navState.replaceAllClearedAlt()
         if (isSelected && controlState == ControlState.ARRIVAL) {
@@ -792,7 +792,7 @@ class Arrival : Aircraft {
 
     /** Updates the aircraft status when aircraft's tkOfLdg mode is active  */
     override fun updateTkofLdg() {
-        altitude = ils?.rwy?.elevation?.toFloat() ?: airport.elevation.toFloat()
+        altitude = apch?.rwy?.elevation?.toFloat() ?: airport.elevation.toFloat()
         verticalSpeed = 0f
         updateClearedSpd(0)
         if (gs <= 35 && (!emergency.isActive || !emergency.isStayOnRwy)) {
@@ -807,7 +807,7 @@ class Arrival : Aircraft {
             radarScreen.setScore(radarScreen.score + score)
             airport.landings = airport.landings + 1
             removeAircraft()
-            ils?.rwy?.removeFromArray(this)
+            apch?.rwy?.removeFromArray(this)
             incrementLanded()
             val typhoonList = arrayOf("TCTP", "TCSS", "TCTT", "TCAA", "TCHH", "TCMC")
             if (ArrayUtils.contains(typhoonList, airport.icao) && airport.winds[1] >= 40) completeAchievement("typhoon")
@@ -835,7 +835,7 @@ class Arrival : Aircraft {
         runway?.goAround = this
         isGoAround = true
         isGoAroundWindow = true
-        val finalIls = ils ?: return
+        val finalIls = apch ?: return
         val missedApproach = finalIls.missedApchProc
         clearedHeading = when (finalIls) {
             is Circling -> {
@@ -857,7 +857,7 @@ class Arrival : Aircraft {
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
         }
-        updateILS(null)
+        updateApch(null)
         navState.voidAllIls()
         isIlsSpdSet = false
         isFinalSpdSet = false
@@ -890,9 +890,9 @@ class Arrival : Aircraft {
         }
     }
 
-    override fun updateILS(ils: ILS?) {
-        if (this.ils !== ils && (this.ils !is OffsetILS || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
-        super.updateILS(ils)
+    override fun updateApch(ils: Approach?) {
+        if (this.apch !== ils && (this.apch !is OffsetILS || ils == null)) isGoAroundSet = false //Reset only if ILS is not LDA or ILS is LDA but new ILS is null
+        super.updateApch(ils)
     }
 
     override val sidStar: SidStar

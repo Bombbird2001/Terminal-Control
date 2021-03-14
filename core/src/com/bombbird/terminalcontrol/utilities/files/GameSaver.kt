@@ -183,7 +183,7 @@ object GameSaver {
             aircraftInfo.put("direct", aircraft.direct?.name ?: JSONObject.NULL) //Direct waypoint
             aircraftInfo.put("afterWaypoint", aircraft.afterWaypoint?.name ?: JSONObject.NULL) //After direct waypoint
             aircraftInfo.put("afterWptHdg", aircraft.afterWptHdg) //After waypoint heading
-            aircraftInfo.put("ils", aircraft.ils?.name ?: JSONObject.NULL) //ILS
+            aircraftInfo.put("ils", aircraft.apch?.name ?: JSONObject.NULL) //ILS
             aircraftInfo.put("locCap", aircraft.isLocCap) //Localizer captured
             aircraftInfo.put("holdWpt", aircraft.holdWpt?.name ?: JSONObject.NULL) //Holding point
             aircraftInfo.put("holdingType", aircraft.holdingType) //Entry pattern
@@ -407,7 +407,7 @@ object GameSaver {
 
         //Add cleared ILS
         val clearedIls = JSONArray()
-        for (ils in aircraft.navState.clearedIls) {
+        for (ils in aircraft.navState.clearedApch) {
             clearedIls.put(ils?.name ?: JSONObject.NULL)
         }
         navState.put("clearedIls", clearedIls)

@@ -324,8 +324,8 @@ class LatTab(ui: Ui) : Tab(ui) {
             }
 
             //Show heading box if heading mode, otherwise hide it
-            showHdgBoxes((latMode == NavState.AFTER_WPT_HDG || latMode == NavState.VECTORS) && visible && (!it.isLocCap || clearedILS == null || Ui.NOT_CLEARED_APCH == clearedILS || clearedILS?.let { it2 -> it.airport.approaches[it2.substring(3)] } != it.navState.clearedIls.last()) && !(it.isLocCap && Ui.NOT_CLEARED_APCH == clearedILS))
-            showDirBoxes(latMode == NavState.VECTORS && visible && (!it.isLocCap || clearedILS == null || Ui.NOT_CLEARED_APCH == clearedILS || clearedILS?.let { it2 -> it.airport.approaches[it2.substring(3)] } != it.navState.clearedIls.last()) && !(it.isLocCap && Ui.NOT_CLEARED_APCH == clearedILS))
+            showHdgBoxes((latMode == NavState.AFTER_WPT_HDG || latMode == NavState.VECTORS) && visible && (!it.isLocCap || clearedILS == null || Ui.NOT_CLEARED_APCH == clearedILS || clearedILS?.let { it2 -> it.airport.approaches[it2.substring(3)] } != it.navState.clearedApch.last()) && !(it.isLocCap && Ui.NOT_CLEARED_APCH == clearedILS))
+            showDirBoxes(latMode == NavState.VECTORS && visible && (!it.isLocCap || clearedILS == null || Ui.NOT_CLEARED_APCH == clearedILS || clearedILS?.let { it2 -> it.airport.approaches[it2.substring(3)] } != it.navState.clearedApch.last()) && !(it.isLocCap && Ui.NOT_CLEARED_APCH == clearedILS))
             if (latMode == NavState.AFTER_WPT_HDG) {
                 hdgBox.setText(afterWptHdg.toString())
             } else if (latMode == NavState.VECTORS) {
@@ -370,7 +370,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 if (clearedILS == null) {
                     clearedILS = Ui.NOT_CLEARED_APCH
                 }
-                val lastILS = it.navState.clearedIls.last()
+                val lastILS = it.navState.clearedApch.last()
                 isIlsChanged = if (lastILS == null) {
                     //Not cleared approach yet
                     Ui.NOT_CLEARED_APCH != clearedILS
@@ -487,7 +487,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 afterWpt = it.navState.clearedAftWpt.last()?.name
                 afterWptHdg = it.navState.clearedAftWptHdg.last()
                 holdWpt = it.navState.clearedHold.last()?.name
-                clearedILS = it.navState.clearedIls.last()?.name ?: Ui.NOT_CLEARED_APCH
+                clearedILS = it.navState.clearedApch.last()?.name ?: Ui.NOT_CLEARED_APCH
                 if (it is Arrival) {
                     newStar = it.navState.clearedNewStar.last()
                 }
