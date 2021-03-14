@@ -4,6 +4,8 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
 import com.bombbird.terminalcontrol.entities.sidstar.Route
+import com.bombbird.terminalcontrol.ui.Ui
+import com.bombbird.terminalcontrol.ui.tabs.Tab
 
 class WaypointManager {
     private val radarScreen = TerminalControl.radarScreen!!
@@ -33,9 +35,7 @@ class WaypointManager {
             if (aircraft.navState.containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG) || latMode == NavState.HOLD_AT && !aircraft.isHolding) {
                 //Cleared is sidstar mode
                 val remaining: Array<Waypoint> = aircraft.remainingWaypoints
-                for (i in 0 until remaining.size) {
-                    remaining[i].isSelected = true
-                }
+                for (i in 0 until remaining.size) remaining[i].isSelected = true
             } else if (aircraft.isHolding && aircraft.holdWpt != null) {
                 aircraft.holdWpt?.isSelected = true
             }
@@ -47,8 +47,9 @@ class WaypointManager {
         //Only one aircraft selected at a time
         val aircraft = radarScreen.selectedAircraft
         if (aircraft != null && radarScreen.ui.latTab.tabChanged) {
-            for (waypoint in aircraft.uiRemainingWaypoints) {
-                waypoint.isSelected = true
+            for (waypoint in aircraft.uiRemainingWaypoints) waypoint.isSelected = true
+            if (radarScreen.ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) aircraft.airport.approaches[Tab.clearedILS]?.let {
+                for (wpt in it.wpts) wpt.isSelected = true
             }
         }
     }
