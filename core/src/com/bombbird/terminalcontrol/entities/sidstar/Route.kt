@@ -29,7 +29,7 @@ class Route private constructor() {
     lateinit var name: String
         private set
 
-    /** Basic constructor for Route, should only be called by other Route constructors  */
+    /** Initializes a default heading */
     init {
         heading = -1
     }

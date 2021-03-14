@@ -49,7 +49,6 @@ class Sid : SidStar {
                 restrictions.add(intArrayOf(data[1].toInt(), data[2].toInt(), data[3].toInt()))
                 val fo = data.size > 4 && data[4] == "FO"
                 flyOver.add(fo)
-                if (fo) Waypoint.flyOverPts[wptName] = true
             }
             initClimb[rwy] = intArrayOf(initClimbData[0].toInt(), initClimbData[1].toInt(), initClimbData[2].toInt())
             initWpts[rwy] = wpts

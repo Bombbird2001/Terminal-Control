@@ -2,30 +2,33 @@ package com.bombbird.terminalcontrol.entities.approaches
 
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import org.apache.commons.lang3.StringUtils
+import org.json.JSONObject
 
-class Circling(airport: Airport, toParse: String): ILS(airport, toParse) {
+class Circling(airport: Airport, name: String, jsonObject: JSONObject): ILS(airport, name, jsonObject) {
     var minBreakAlt = 0
     var maxBreakAlt = 0
     var isLeft = false
     lateinit var imaginaryIls: ILS
 
     init {
-        parseLDAInfo(toParse)
         loadImaginaryIls()
-    }
 
-    /** Overrides method in ILS to load additional circling approach data */
-    private fun parseLDAInfo(toParse: String) {
-        super.parseInfo(toParse)
-        val info = toParse.split(",".toRegex()).toTypedArray()
-        minBreakAlt = info[9].toInt()
-        maxBreakAlt = info[10].toInt()
-        isLeft = info[11] == "LEFT"
+        minBreakAlt = jsonObject.getInt("minBreakAlt")
+        maxBreakAlt = jsonObject.getInt("maxBreakAlt")
+        isLeft = jsonObject.getBoolean("left")
     }
 
     /** Loads the imaginary ILS from runway center line  */
     private fun loadImaginaryIls() {
-        val text = "IMG" + rwy?.name + "," + rwy?.name + "," + rwy?.heading + "," + rwy?.x + "," + rwy?.y + ",0," + minima + ",4000," + StringUtils.join(towerFreq, ">")
-        imaginaryIls = ILS(airport, text)
+        val jo = JSONObject()
+        jo.put("runway", rwy.name)
+        jo.put("heading", rwy.heading)
+        jo.put("x", rwy.x.toDouble())
+        jo.put("y", rwy.y.toDouble())
+        jo.put("gsOffset", 0.0)
+        jo.put("minima", minima)
+        jo.put("maxGS", 4000)
+        jo.put("tower", "${towerFreq[0]}>${towerFreq[1]}")
+        imaginaryIls = ILS(airport, "IMG" + rwy.name, jo)
     }
 }

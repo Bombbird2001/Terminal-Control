@@ -1,16 +1,11 @@
 package com.bombbird.terminalcontrol.entities.approaches
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.bombbird.terminalcontrol.TerminalControl
+import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.airports.Airport
-import com.bombbird.terminalcontrol.entities.procedures.MissedApproach
-import com.bombbird.terminalcontrol.entities.runways.Runway
-import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.feetToNm
@@ -18,75 +13,21 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToFeet
 import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 import com.bombbird.terminalcontrol.utilities.math.MathTools.pixelToNm
+import org.json.JSONObject
 import kotlin.math.atan
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
 
-open class ILS(val airport: Airport, toParse: String) : Actor() {
-    companion object {
-        private val distance1 = nmToPixel(10f)
-        private const val angle1 = 6
-        private const val ilsDistNm = 25f
-        private val distance2 = nmToPixel(ilsDistNm)
-        private const val angle2 = 3
-        private const val dashDistNm = 1f
-    }
-
-    private lateinit var name: String
-    private var x = 0f
-    private var y = 0f
-    var heading = 0
-        private set
-    var gsOffsetNm = 0f
-    var minima = 0
-        private set
-    var gsAlt = 0
-        private set
-    lateinit var towerFreq: Array<String>
-        private set
-    var rwy: Runway? = null
-        private set
-    val missedApchProc: MissedApproach
-    var isNpa = false
-    private var gsRings = com.badlogic.gdx.utils.Array<Vector2>()
-    var minAlt = 0
-    private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
+open class ILS(airport: Airport, name: String, jsonObject: JSONObject): Approach(airport, name, jsonObject) {
+    private var gsRings = Array<Vector2>()
 
     init {
-        parseInfo(toParse)
-        var missed = name
-        if ("IMG" == name.substring(0, 3)) {
-            missed = "LDA" + name.substring(3)
-            if (!airport.missedApproaches.containsKey(missed)) missed = "CIR" + name.substring(3)
-        }
-        if ("TCHX" == airport.icao && "IMG13" == name) missed = "IGS13"
-        missedApchProc = airport.missedApproaches[missed]!!
+        isNpa = false
         calculateGsRings()
     }
 
-    /** Parses the input string into info for the ILS  */
-    fun parseInfo(toParse: String) {
-        isNpa = false
-        for ((index, s1) in toParse.split(",".toRegex()).toTypedArray().withIndex()) {
-            when (index) {
-                0 -> name = s1
-                1 -> rwy = airport.runways[s1]
-                2 -> heading = s1.toInt()
-                3 -> x = s1.toFloat()
-                4 -> y = s1.toFloat()
-                5 -> gsOffsetNm = s1.toFloat()
-                6 -> minima = s1.toInt()
-                7 -> gsAlt = s1.toInt()
-                8 -> towerFreq = s1.split(">".toRegex()).toTypedArray()
-                else -> if (this !is OffsetILS && this !is Circling) {
-                    Gdx.app.log("Load error", "Unexpected additional parameter in game/" + radarScreen.mainName + "/ils" + airport.icao + ".ils")
-                }
-            }
-        }
-    }
-
-    /** Calculates positions of the GS rings; overridden for LDAs  */
+    /** Calculates positions of the GS rings */
     fun calculateGsRings() {
         minAlt = -1
         for (i in 2..gsAlt / 1000) {
@@ -99,11 +40,11 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
 
     /** Draws ILS line using shapeRenderer  */
     fun renderShape() {
-        val landing = rwy?.isLanding == true
+        val landing = rwy.isLanding
         val aircraft = radarScreen.selectedAircraft
         val selectedIls = aircraft is Arrival && aircraft.airport == airport && (aircraft.controlState == Aircraft.ControlState.ARRIVAL && Tab.clearedILS == name || aircraft.controlState == Aircraft.ControlState.UNCONTROLLED && this == aircraft.ils)
-        val rwyChange = radarScreen.runwayChanger.containsLandingRunway(airport.icao, rwy?.name ?: "")
-        if ((landing || selectedIls || rwyChange) && rwy?.isEmergencyClosed == false) {
+        val rwyChange = radarScreen.runwayChanger.containsLandingRunway(airport.icao, rwy.name)
+        if ((landing || selectedIls || rwyChange) && !rwy.isEmergencyClosed) {
             radarScreen.shapeRenderer.color = radarScreen.iLSColour
             if (selectedIls || rwyChange) radarScreen.shapeRenderer.color = Color.YELLOW
             if (radarScreen.showIlsDash) {
@@ -224,7 +165,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
 
     /** Gets the glide slope altitude (in feet) at distance away from ILS origin  */
     fun getGSAltAtDist(dist: Float): Float {
-        return nmToFeet(dist + gsOffsetNm) * tan(Math.toRadians(3.0)).toFloat() + (rwy?.elevation ?: 0)
+        return nmToFeet(dist + gsOffsetNm) * tan(Math.toRadians(3.0)).toFloat() + rwy.elevation
     }
 
     /** Gets the glide slope altitude (in feet) of aircraft  */
@@ -234,7 +175,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
 
     /** Gets the distance (in nautical miles) from GS origin for a specified altitude  */
     fun getDistAtGsAlt(altitude: Float): Float {
-        return feetToNm((altitude - (rwy?.elevation ?: 0)) / tan(Math.toRadians(3.0)).toFloat()) - gsOffsetNm
+        return feetToNm((altitude - rwy.elevation) / tan(Math.toRadians(3.0)).toFloat()) - gsOffsetNm
     }
 
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates  */
@@ -242,31 +183,7 @@ open class ILS(val airport: Airport, toParse: String) : Actor() {
         return pixelToNm(distanceBetween(x, y, planeX, planeY))
     }
 
-    override fun getName(): String {
-        return name
-    }
-
-    override fun setName(name: String) {
-        this.name = name
-    }
-
-    override fun getX(): Float {
-        return x
-    }
-
-    override fun setX(x: Float) {
-        this.x = x
-    }
-
-    override fun getY(): Float {
-        return y
-    }
-
-    override fun setY(y: Float) {
-        this.y = y
-    }
-
-    fun setGsRings(gsRings: com.badlogic.gdx.utils.Array<Vector2>) {
+    fun setGsRings(gsRings: Array<Vector2>) {
         this.gsRings = gsRings
     }
 }

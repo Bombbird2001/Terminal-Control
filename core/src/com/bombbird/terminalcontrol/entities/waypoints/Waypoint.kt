@@ -9,17 +9,12 @@ import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.waypoints.WaypointShifter.loadData
 import com.bombbird.terminalcontrol.utilities.Fonts
-import java.util.*
 import kotlin.math.round
 
 class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor() {
-    companion object {
-        val flyOverPts = HashMap<String, Boolean>()
-    }
-
     private var restrVisible: Boolean
     private val restrLabel: Label
-    val nameLabel: Label
+    private val nameLabel: Label
     var distToGo = -1f
         set(value) {
             if (round(field * 10) / 10f != round(value * 10) / 10f) {

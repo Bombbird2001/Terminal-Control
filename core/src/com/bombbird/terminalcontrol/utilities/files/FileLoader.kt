@@ -164,23 +164,48 @@ object FileLoader {
     fun loadILS(airport: Airport): HashMap<String, ILS> {
         val approaches = HashMap<String, ILS>()
         TerminalControl.radarScreen?.let {
+            val handle = Gdx.files.internal("game/" + it.mainName + "/" + it.airac + "/apch" + airport.icao + ".apch")
+            val jo = JSONObject(handle.readString())
+            for (name in jo.keySet()) {
+                //For each approach
+                val data = jo.getJSONObject(name)
+                when(val type = data.getString("type")) {
+                    "ILS" -> {
+                        val ils = ILS(airport, name, data)
+                        approaches[ils.rwy.name] = ils
+                    }
+                    "LDA" -> {
+                        val lda = OffsetILS(airport, name, data)
+                        approaches[lda.rwy.name] = lda
+                    }
+                    "CIRCLING" -> {
+                        val circle = Circling(airport, name, data)
+                        approaches[circle.rwy.name] = circle
+                    }
+                    "RNAV" -> {
+
+                    }
+                    else -> Gdx.app.log("ILS error", "Invalid approach type $type specified")
+                }
+            }
+            /*
             val handle = Gdx.files.internal("game/" + it.mainName + "/" + it.airac + "/ils" + airport.icao + ".ils")
             val indivApches = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
             for (s in indivApches) {
-                //For each approach
                 if (s.contains("ILS")) {
                     val ils = ILS(airport, s)
-                    ils.rwy?.let { it2 -> approaches[it2.name] = ils }
+                    ils.rwy.let { it2 -> approaches[it2.name] = ils }
                 } else if (s.contains("LDA") || s.contains("IGS")) {
                     val lda = OffsetILS(airport, s)
-                    lda.rwy?.let { it2 -> approaches[it2.name] = lda }
+                    lda.rwy.let { it2 -> approaches[it2.name] = lda }
                 } else if (s.contains("CIR")) {
                     val circle = Circling(airport, s)
-                    circle.rwy?.let { it2 -> approaches[it2.name] = circle }
+                    circle.rwy.let { it2 -> approaches[it2.name] = circle }
                 } else {
                     Gdx.app.log("ILS error", "Invalid approach type specified for $s")
                 }
             }
+            */
         }
         return approaches
     }

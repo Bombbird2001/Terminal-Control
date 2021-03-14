@@ -511,11 +511,11 @@ class Arrival : Aircraft {
                 when (phase) {
                     1 -> super.updateAltitude(holdAlt = true, fixedVs = false)
                     2 -> {
-                        targetAltitude = 1500 + (it.rwy?.elevation ?: 0)
+                        targetAltitude = 1500 + it.rwy.elevation
                         super.updateAltitude(holdAlt = false, fixedVs = false)
                     }
                     3 -> {
-                        targetAltitude = if (!isLocCap) 1500 + (it.rwy?.elevation ?: 0) else it.imaginaryIls.getGSAlt(this).toInt()
+                        targetAltitude = if (!isLocCap) 1500 + it.rwy.elevation else it.imaginaryIls.getGSAlt(this).toInt()
                         super.updateAltitude(holdAlt = false, fixedVs = false)
                     }
                 }
@@ -581,13 +581,13 @@ class Arrival : Aircraft {
                         super.updateAltitude(holdAlt = false, fixedVs = false)
                     } else {
                         //Set final descent towards runway
-                        targetAltitude = it.rwy?.elevation ?: airport.elevation
+                        targetAltitude = it.rwy.elevation
                         val lineUpDist = (ils as OffsetILS).lineUpDist
                         val tmpAlt: Float
                         var actlTargetAlt = (ils as OffsetILS).imaginaryIls.getGSAltAtDist(lineUpDist)
                         tmpAlt = actlTargetAlt
                         actlTargetAlt -= 200f
-                        actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + (it.rwy?.elevation ?: airport.elevation)) / 2, tmpAlt)
+                        actlTargetAlt = MathUtils.clamp(actlTargetAlt, (tmpAlt + it.rwy.elevation) / 2, tmpAlt)
                         val remainingAlt = altitude - actlTargetAlt
                         val actlTargetPos = (ils as OffsetILS).imaginaryIls.getPointAtDist(lineUpDist)
                         val distFromRwy = pixelToNm(distanceBetween(x, y, actlTargetPos.x, actlTargetPos.y))
@@ -601,7 +601,7 @@ class Arrival : Aircraft {
             if (isLocCap) {
                 if (!isGoAroundSet) {
                     generateGoAround()
-                    it.rwy?.addToArray(this)
+                    it.rwy.addToArray(this)
                     isGoAroundSet = true
                     wakeTolerance = MathUtils.clamp(wakeTolerance, 0f, 20f)
                     if (it is Circling) {
@@ -616,10 +616,10 @@ class Arrival : Aircraft {
             if (ils != null && controlState == ControlState.ARRIVAL && (altitude <= (if (ils is Circling) breakoutAlt + 100 else airport.elevation + 1300))) {
                 contactOther()
             }
-            if (altitude <= (it.rwy?.elevation ?: airport.elevation) + 10 && ils != null) {
+            if (altitude <= it.rwy.elevation + 10 && ils != null) {
                 isTkOfLdg = true
                 isOnGround = true
-                heading = it.rwy?.heading?.toDouble() ?: 360.0
+                heading = it.rwy.heading.toDouble()
                 if (!UnlockManager.unlocks.contains("parallelLanding") && radarScreen.addAndCheckSimultLanding(this)) {
                     //Parallel landing achieved!
                     completeAchievement("parallelLanding")
@@ -665,7 +665,7 @@ class Arrival : Aircraft {
     /** Called to check the distance behind the aircraft ahead of current aircraft, calls swap in runway array if it somehow overtakes it  */
     private fun checkAircraftInFront() {
         ils?.let {
-            it.rwy?.let { it2 ->
+            it.rwy.let { it2 ->
                 val approachPosition: Int = it2.aircraftOnApp.indexOf(this, false)
                 if (approachPosition > 0) {
                     val aircraftInFront: Aircraft = it2.aircraftOnApp.get(approachPosition - 1)
@@ -720,7 +720,7 @@ class Arrival : Aircraft {
             return MathUtils.randomBoolean(1 - 0.9996.pow(Gdx.graphics.deltaTime * 60.0).toFloat())
         }
         ils?.let {
-            it.rwy?.let { it2 ->
+            it.rwy.let { it2 ->
                 if (isWillGoAround && altitude < goAroundAlt && (airport.windshear.contains(it2.name) || airport.windshear == "ALL RWY")) {
                     //If go around is determined to happen due to windshear, and altitude is below go around alt, and windshear is still going on
                     radarScreen.utilityBox.commsManager.goAround(this, "windshear", controlState)
@@ -841,7 +841,7 @@ class Arrival : Aircraft {
             is Circling -> {
                 when (phase) {
                     0, 1, 2 -> finalIls.heading //If on phase 0, 1 or 2, fly approach heading
-                    3 -> modulateHeading((finalIls.rwy?.heading ?: 360) + if (finalIls.isLeft) -90 else 90) //If on phase 3, fly 90 degrees left/right of runway heading depending on circling direction
+                    3 -> modulateHeading(finalIls.rwy.heading + if (finalIls.isLeft) -90 else 90) //If on phase 3, fly 90 degrees left/right of runway heading depending on circling direction
                     else -> 360
                 }
             }
