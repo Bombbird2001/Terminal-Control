@@ -7,6 +7,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.AircraftType
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.runways.Runway
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
 import com.bombbird.terminalcontrol.entities.waketurbulence.SeparationMatrix
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
@@ -513,8 +514,9 @@ class TakeoffManager {
     private fun updateRunway(runway: Runway?) {
         if (runway != null && radarScreen.tfcMode == RadarScreen.TfcMode.NORMAL) {
             val nextAcft = nextAircraft[runway.name] ?: return
+            val sid = RandomSID.randomSID(airport, runway.name) ?: return
             val callsign = nextAcft[0]
-            radarScreen.newDeparture(callsign, nextAcft[1], airport, runway)
+            radarScreen.newDeparture(callsign, nextAcft[1], airport, runway, sid)
             prevAircraft[runway.name] = radarScreen.aircrafts[callsign]
             nextAircraft[runway.name] = null
             generateNewDeparture(runway.name, 0)

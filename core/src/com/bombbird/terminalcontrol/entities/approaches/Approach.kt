@@ -81,8 +81,8 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
         gsAlt = jo.getInt("maxGS")
         towerFreq = jo.getString("tower").split(">".toRegex()).toTypedArray()
 
-        val alts = jo.getJSONArray("npa")
-        if (alts.length() > 0) {
+        val alts = jo.optJSONArray("npa")
+        if (alts != null && alts.length() > 0) {
             isNpa = true
             nonPrecAlts = Queue()
             for (i in 0 until alts.length()) {

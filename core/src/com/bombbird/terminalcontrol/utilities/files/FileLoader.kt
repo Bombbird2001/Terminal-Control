@@ -7,10 +7,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Base64Coder
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.airports.Airport
-import com.bombbird.terminalcontrol.entities.approaches.Approach
-import com.bombbird.terminalcontrol.entities.approaches.Circling
-import com.bombbird.terminalcontrol.entities.approaches.ILS
-import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
+import com.bombbird.terminalcontrol.entities.approaches.*
 import com.bombbird.terminalcontrol.entities.obstacles.CircleObstacle
 import com.bombbird.terminalcontrol.entities.obstacles.Obstacle
 import com.bombbird.terminalcontrol.entities.obstacles.PolygonObstacle
@@ -184,7 +181,8 @@ object FileLoader {
                         approaches[circle.rwy.name] = circle
                     }
                     "RNAV" -> {
-
+                        val rnav = RNAV(airport, name, data)
+                        approaches[rnav.rwy.name] = rnav
                     }
                     else -> Gdx.app.log("ILS error", "Invalid approach type $type specified")
                 }

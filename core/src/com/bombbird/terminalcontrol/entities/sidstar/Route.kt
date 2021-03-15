@@ -264,13 +264,14 @@ class Route private constructor() {
         return flyOver[findWptIndex(wptName)]
     }
 
-    fun removeApchWpts(apch: Approach) {
-        if (apch.wpts.isEmpty || waypoints.isEmpty) return //No points to remove
+    fun removeApchWpts(apch: Approach, direct: Waypoint?): Boolean {
+        if (apch.wpts.isEmpty || waypoints.isEmpty) return false //No points to remove
         val firstIndex = waypoints.indexOf(apch.wpts.first(), false)
-        if (firstIndex == -1) return //Route does not contain points
+        if (firstIndex == -1) return false //Route does not contain points
         waypoints.removeRange(firstIndex, waypoints.size - 1)
-        restrictions.removeRange(firstIndex, waypoints.size - 1)
-        flyOver.removeRange(firstIndex, waypoints.size - 1)
+        restrictions.removeRange(firstIndex, restrictions.size - 1)
+        flyOver.removeRange(firstIndex, flyOver.size - 1)
+        return apch.wpts.contains(direct, false)
     }
 
     fun addApchWpts(apch: Approach) {

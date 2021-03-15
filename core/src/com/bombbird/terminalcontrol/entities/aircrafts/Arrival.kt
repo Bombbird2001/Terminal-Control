@@ -75,7 +75,7 @@ class Arrival : Aircraft {
     var isGoAroundSet = false
         private set
 
-    constructor(callsign: String, icaoType: String, arrival: Airport, newStar: String?) : super(callsign, icaoType, arrival) {
+    constructor(callsign: String, icaoType: String, arrival: Airport, newStar: Star) : super(callsign, icaoType, arrival) {
         isOnGround = false
         isLowerSpdSet = false
         isIlsSpdSet = false
@@ -85,7 +85,7 @@ class Arrival : Aircraft {
         contactAlt = MathUtils.random(2000) + 22000
 
         //Gets a STAR for active runways
-        star = arrival.stars[newStar] ?: RandomSTAR.randomSTAR(arrival)
+        star = newStar
         if ("EVA226" == callsign && radarScreen.tutorial) {
             emergency.isEmergency = false
             typDes = 2900
@@ -327,9 +327,7 @@ class Arrival : Aircraft {
     /** Overrides method in Aircraft class to set to current heading  */
     override fun setAfterLastWpt() {
         clearedHeading = heading.toInt()
-        navState.clearedHdg.removeFirst()
-        navState.clearedHdg.addFirst(clearedHeading)
-        updateVectorMode()
+        navState.replaceAllSidStarWithHdg(clearedHeading)
         removeSidStarMode()
     }
 

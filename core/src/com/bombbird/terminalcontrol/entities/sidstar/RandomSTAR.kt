@@ -5,8 +5,10 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager.checkNoiseAllowed
+import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import org.json.JSONObject
+import java.lang.IllegalStateException
 import java.util.*
 
 object RandomSTAR {
@@ -49,7 +51,7 @@ object RandomSTAR {
     }
 
     /** Gets a random STAR for the airport and runway  */
-    fun randomSTAR(airport: Airport): Star {
+    fun randomSTAR(airport: Airport): Star? {
         val rwys: HashMap<String, Runway> = airport.landingRunways
         val possibleStars = Array<Star>()
         for (star in airport.stars.values) {
@@ -68,7 +70,8 @@ object RandomSTAR {
                 runways.add(rwy)
             }
             Gdx.app.log("Random STAR", "No STARs found to match criteria for " + airport.icao + " " + runways.toString())
-            throw IllegalArgumentException("No STARs found to match criteria for " + airport.icao + " " + runways.toString())
+            ErrorHandler.sendGenericError(IllegalStateException("No STARs found to match criteria for " + airport.icao + " " + runways.toString()), false)
+            return null
         } else {
             possibleStars.random()
         }

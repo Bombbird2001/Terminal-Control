@@ -1262,8 +1262,6 @@ abstract class Aircraft : Actor {
         } else {
             direct = route.getWaypoint(sidStarIndex)
             if (direct == null) {
-                navState.dispLatMode.removeFirst()
-                navState.dispLatMode.addFirst(NavState.VECTORS)
                 navState.replaceAllClearedAltMode()
                 navState.replaceAllClearedSpdMode()
                 setAfterLastWpt()
@@ -1284,13 +1282,6 @@ abstract class Aircraft : Actor {
     /** Overridden method that sets aircraft heading after the last waypoint is reached  */
     open fun setAfterLastWpt() {
         //No default implementation
-    }
-
-    /** Switches aircraft latMode to vector, sets active nav state latMode to vector  */
-    fun updateVectorMode() {
-        //Switch aircraft latmode to vector mode
-        navState.dispLatMode.removeFirst()
-        navState.dispLatMode.addFirst(NavState.VECTORS)
     }
 
     /** Removes the SID/STAR options from aircraft UI after there are no waypoints left  */
@@ -1544,7 +1535,7 @@ abstract class Aircraft : Actor {
 
             apch?.let {
                 //Remove all approach waypoints from route
-                route.removeApchWpts(it)
+                if (route.removeApchWpts(it, direct)) updateDirect()
             }
             ils?.let {
                 //Add all approach waypoints into route
