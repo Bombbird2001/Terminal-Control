@@ -49,9 +49,12 @@ class TutorialGroup(private val tutorialManager: TutorialManager) {
             when (tasks[time]) {
                 "spawnDeparture" -> {
                     val airport = radarScreen.airports["TCTP"]!!
-                    radarScreen.newDeparture("CAL641", "A359", airport, airport.runways["05L"]!!)
+                    radarScreen.newDeparture("CAL641", "A359", airport, airport.runways["05L"]!!, airport.sids["HICAL1C"]!!)
                 }
-                "spawnArrival" -> radarScreen.aircrafts["EVA226"] = Arrival("EVA226", "B77W", radarScreen.airports["TCTP"]!!, "NTN1A")
+                "spawnArrival" -> {
+                    val airport = radarScreen.airports["TCTP"]!!
+                    radarScreen.aircrafts["EVA226"] = Arrival("EVA226", "B77W", airport, airport.stars["NTN1A"]!!)
+                }
                 "pauseTutorial" -> tutorialManager.setPause(true)
                 "continueTutorial" -> tutorialManager.setPause(false)
                 "setPrompt1" -> tutorialManager.prompt1 = true

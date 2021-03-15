@@ -31,7 +31,9 @@ import com.bombbird.terminalcontrol.entities.separation.CollisionChecker
 import com.bombbird.terminalcontrol.entities.separation.HandoverController
 import com.bombbird.terminalcontrol.entities.separation.SeparationChecker
 import com.bombbird.terminalcontrol.entities.separation.trajectory.TrajectoryStorage
+import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
+import com.bombbird.terminalcontrol.entities.sidstar.Sid
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic.getMaxTraffic
 import com.bombbird.terminalcontrol.entities.trafficmanager.MaxTraffic.loadHashmaps
 import com.bombbird.terminalcontrol.entities.waketurbulence.WakeManager
@@ -498,8 +500,9 @@ class RadarScreen : GameScreen {
     }
 
     /** Creates a new departure at the given airport  */
-    fun newDeparture(callsign: String, icaoType: String, airport: Airport, runway: Runway) {
-        aircrafts[callsign] = Departure(callsign, icaoType, airport, runway)
+    fun newDeparture(callsign: String, icaoType: String, airport: Airport, runway: Runway, sid: Sid?) {
+        val newSid = sid ?: RandomSID.randomSID(airport, runway.name) ?: return
+        aircrafts[callsign] = Departure(callsign, icaoType, airport, runway, newSid)
     }
 
     /** Creates a new arrival for random airport  */
@@ -712,7 +715,8 @@ class RadarScreen : GameScreen {
                     continue
                 }
 
-                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport, null)
+                val star = RandomSTAR.randomSTAR(finalAirport) ?: continue
+                val arrival = Arrival(aircraftInfo[0], aircraftInfo[1], finalAirport, star)
                 aircrafts[aircraftInfo[0]] = arrival
                 arrivals++
                 allAircraft.add(aircraftInfo[0])

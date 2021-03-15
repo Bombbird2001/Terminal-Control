@@ -190,7 +190,8 @@ class SpawnScreen(game: TerminalControl): BasicScreen(game, 5760, 3240) {
                     return
                 }
                 Gdx.app.postRunnable {
-                    val arrival = Arrival(callsign, typeBox.selected, radarScreen.airports[airportBox.selected]!!, starBox.selected)
+                    val airport = radarScreen.airports[airportBox.selected] ?: return@postRunnable
+                    val arrival = Arrival(callsign, typeBox.selected, airport, airport.stars[starBox.selected] ?: return@postRunnable)
                     radarScreen.aircrafts[callsign] = arrival
                     radarScreen.arrivals++
                 }

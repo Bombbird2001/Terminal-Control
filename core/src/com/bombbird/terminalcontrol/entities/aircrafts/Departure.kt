@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.runways.Runway
-import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
 import com.bombbird.terminalcontrol.entities.sidstar.Route
 import com.bombbird.terminalcontrol.entities.sidstar.Sid
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar
@@ -49,7 +48,7 @@ class Departure : Aircraft {
     var isAskedForHigher = false
         private set
 
-    constructor(callsign: String, icaoType: String, departure: Airport, runway: Runway) : super(callsign, icaoType, departure) {
+    constructor(callsign: String, icaoType: String, departure: Airport, runway: Runway, newSid: Sid) : super(callsign, icaoType, departure) {
         isOnGround = true
         contactAlt = airport.elevation + 2000 + MathUtils.random(-500, 200)
         handoverAlt = radarScreen.maxAlt + MathUtils.random(-800, -200)
@@ -79,9 +78,8 @@ class Departure : Aircraft {
         this.runway = runway
 
         //Gets a random SID
-        sid = RandomSID.randomSID(departure, runway.name)
+        sid = newSid
         if ("CAL641" == callsign && radarScreen.tutorial) {
-            sid = airport.sids["HICAL1C"]!!
             emergency.isEmergency = false
         }
         route = Route(this, sid, runway.name, typClimb)
@@ -286,11 +284,8 @@ class Departure : Aircraft {
 
     /** Overrides method in Aircraft class to set to outbound heading  */
     override fun setAfterLastWpt() {
-        navState.updateLatModes(NavState.REMOVE_SIDSTAR_ONLY, true)
         clearedHeading = outboundHdg
-        navState.clearedHdg.removeFirst()
-        navState.clearedHdg.addFirst(clearedHeading)
-        updateVectorMode()
+        navState.replaceAllSidStarWithHdg(clearedHeading)
         removeSidStarMode()
     }
 

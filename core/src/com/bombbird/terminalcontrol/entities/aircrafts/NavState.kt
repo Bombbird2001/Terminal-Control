@@ -449,6 +449,29 @@ class NavState {
         }
     }
 
+    /** Replaces all SID/STAR modes with fly heading, replaces cleared heading to input heading  */
+    fun replaceAllSidStarWithHdg(hdg: Int) {
+        val latSize = dispLatMode.size
+        for (i in 0 until latSize) {
+            var latMode = dispLatMode.removeFirst()
+            var altMode = dispAltMode.removeFirst()
+            var spdMode = dispSpdMode.removeFirst()
+            if (latMode == SID_STAR) {
+                latMode = VECTORS
+                altMode = NO_RESTR
+                spdMode = NO_RESTR
+            }
+            dispLatMode.addLast(latMode)
+            dispAltMode.addLast(altMode)
+            dispSpdMode.addLast(spdMode)
+        }
+        val size = clearedHdg.size
+        clearedHdg.clear()
+        for (i in 0 until size) {
+            clearedHdg.addLast(hdg)
+        }
+    }
+
     /** Replaces all after waypoint, fly heading modes with fly heading, replaces cleared heading to input heading  */
     fun replaceAllAfterWptModesWithHdg(hdg: Int) {
         val latSize = dispLatMode.size

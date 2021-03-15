@@ -48,22 +48,6 @@ object ErrorHandler {
         e.printStackTrace()
     }
 
-    fun sendSaveErrorNoThrow(e: Exception, str: String) {
-        var error =
-            """
-            $versionInfo
-            No crash
-            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
-        error =
-            """
-            $str
-            $error
-            """.trimIndent()
-        HttpRequests.sendError(error, 0)
-        e.printStackTrace()
-        //Don't throw runtime exception
-    }
-
     fun sendRepeatableError(original: String, e: Exception, attempt: Int) {
         val error =
             """
