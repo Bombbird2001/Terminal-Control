@@ -270,16 +270,16 @@ class Departure : Aircraft {
         //Draws line joining aircraft and sid/star track
         super.drawSidStar()
         navState.clearedDirect.last()?.let {
-            route.joinLines(route.findWptIndex(it.name), route.waypoints.size, outboundHdg)
-            radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(it.name), route.waypoints.size)
+            route.joinLines(route.findWptIndex(it.name), route.size, outboundHdg)
+            radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(it.name), route.size)
         }
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared SID waypoint  */
     override fun uiDrawSidStar() {
         super.uiDrawSidStar()
-        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
-        radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(Tab.clearedWpt), route.waypoints.size)
+        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.size, -1)
+        radarScreen.waypointManager.updateSidRestriction(route, route.findWptIndex(Tab.clearedWpt), route.size)
     }
 
     /** Overrides method in Aircraft class to set to outbound heading  */

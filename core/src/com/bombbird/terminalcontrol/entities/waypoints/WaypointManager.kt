@@ -48,8 +48,8 @@ class WaypointManager {
         val aircraft = radarScreen.selectedAircraft
         if (aircraft != null && radarScreen.ui.latTab.tabChanged) {
             for (waypoint in aircraft.uiRemainingWaypoints) waypoint.isSelected = true
-            if (radarScreen.ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) aircraft.airport.approaches[Tab.clearedILS]?.let {
-                for (wpt in it.wpts) wpt.isSelected = true
+            if (radarScreen.ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) aircraft.airport.approaches[Tab.clearedILS]?.routeDataMap?.get(aircraft.route.apchTrans)?.let {
+                for (wpt in it.waypoints) wpt.isSelected = true
             }
         }
     }

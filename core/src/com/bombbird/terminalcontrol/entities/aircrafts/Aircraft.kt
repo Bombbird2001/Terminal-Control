@@ -523,8 +523,8 @@ abstract class Aircraft : Actor {
         shapeRenderer.color = radarScreen.defaultColour
         navState.clearedDirect.last()?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
-            route.joinLines(route.findWptIndex(it.name), route.waypoints.size, -1)
-            calculateAndSetDistToGo(it, route.waypoints[route.waypoints.size - 1])
+            route.joinLines(route.findWptIndex(it.name), route.size, -1)
+            calculateAndSetDistToGo(it, route.waypoints[route.size - 1])
         }
         //route.drawPolygons();
     }
@@ -534,18 +534,19 @@ abstract class Aircraft : Actor {
         shapeRenderer.color = Color.YELLOW
         radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
-            calculateAndSetDistToGo(it, route.waypoints[route.waypoints.size - 1])
+            calculateAndSetDistToGo(it, route.waypoints[route.size - 1])
         }
-        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.waypoints.size, -1)
+        route.joinLines(route.findWptIndex(Tab.clearedWpt), route.size, -1)
     }
 
     /** Draws the approach waypoints when an approach is selected in UI */
     private fun uiDrawApchWpt() {
         shapeRenderer.color = Color.YELLOW
         airport.approaches[Tab.clearedILS]?.let {
-            for (i in 1 until it.wpts.size) {
-                val pt1 = it.wpts[i - 1]
-                val pt2 = it.wpts[i]
+            val wpts = it.getNextPossibleTransition(radarScreen.waypoints[Tab.clearedWpt], route).waypoints
+            for (i in 1 until wpts.size) {
+                val pt1 = wpts[i - 1]
+                val pt2 = wpts[i]
                 shapeRenderer.line(pt1.posX.toFloat(), pt1.posY.toFloat(), pt2.posX.toFloat(), pt2.posY.toFloat())
             }
         }
@@ -1362,7 +1363,7 @@ abstract class Aircraft : Actor {
         get() {
             navState.clearedDirect.last()?.let {
                 return when (navState.dispLatMode.last()) {
-                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(it.name), route.waypoints.size - 1)
+                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(it.name), route.size - 1)
                     NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(route.findWptIndex(it.name), navState.clearedAftWpt.last()?.let { it2 -> route.findWptIndex(it2.name) } ?: route.findWptIndex(it.name))
                     NavState.HOLD_AT -> return route.getRemainingWaypoints(route.findWptIndex(it.name), navState.clearedHold.last()?.let { it2 -> route.findWptIndex(it2.name) } ?: route.findWptIndex(it.name))
                     else -> com.badlogic.gdx.utils.Array()
@@ -1375,7 +1376,7 @@ abstract class Aircraft : Actor {
         get() {
             if (isSelected && isArrivalDeparture) {
                 when (Tab.latMode) {
-                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.waypoints.size - 1)
+                    NavState.SID_STAR -> return route.getRemainingWaypoints(route.findWptIndex(Tab.clearedWpt), route.size - 1)
                     NavState.AFTER_WPT_HDG -> return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.afterWpt))
                     NavState.HOLD_AT -> return route.getRemainingWaypoints(sidStarIndex, route.findWptIndex(Tab.holdWpt))
                 }
@@ -1539,7 +1540,7 @@ abstract class Aircraft : Actor {
             }
             ils?.let {
                 //Add all approach waypoints into route
-                route.addApchWpts(it)
+                route.addApchWpts(it, direct)
             }
         }
         this.apch = ils
