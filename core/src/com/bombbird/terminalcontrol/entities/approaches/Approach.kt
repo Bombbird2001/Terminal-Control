@@ -11,6 +11,8 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.procedures.MissedApproach
 import com.bombbird.terminalcontrol.entities.runways.Runway
+import com.bombbird.terminalcontrol.entities.sidstar.Route
+import com.bombbird.terminalcontrol.entities.sidstar.RouteData
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.ui.tabs.Tab
@@ -34,9 +36,7 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
 
     var gsRings = Array<Vector2>()
 
-    lateinit var wpts: Array<Waypoint>
-    lateinit var restrictions: Array<IntArray>
-    lateinit var flyOver: Array<Boolean>
+    val routeDataMap = HashMap<String, RouteData>()
 
     private var name: String
     private var x = 0f
@@ -94,17 +94,20 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
             }
         }
 
-        wpts = Array()
-        restrictions = Array()
-        flyOver = Array()
-        val joWpts = jo.getJSONArray("wpts")
-        for (i in 0 until joWpts.length()) {
-            val data = joWpts.getString(i).split(" ".toRegex()).toTypedArray()
-            val wptName = data[0]
-            wpts.add(radarScreen.waypoints[wptName])
-            restrictions.add(intArrayOf(data[1].toInt(), data[2].toInt(), data[3].toInt()))
-            val fo = data.size > 4 && data[4] == "FO"
-            flyOver.add(fo)
+        val joWpts = jo.getJSONObject("wpts")
+        for (key in joWpts.keySet()) {
+            val rData = RouteData()
+            val transWpt = joWpts.getJSONArray(key)
+            for (i in 0 until transWpt.length()) {
+                val data = transWpt.getString(i).split(" ".toRegex()).toTypedArray()
+                val wptName = data[0]
+                rData.add(
+                    radarScreen.waypoints[wptName]!!,
+                    intArrayOf(data[1].toInt(), data[2].toInt(), data[3].toInt()),
+                    data.size > 4 && data[4] == "FO"
+                )
+            }
+            routeDataMap[key] = rData
         }
     }
 
@@ -188,6 +191,17 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
     /** Gets distance (in nautical miles) from ILS origin, of the input coordinates  */
     fun getDistFrom(planeX: Float, planeY: Float): Float {
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY))
+    }
+
+    /** Returns the routeData for the next possible transition; if not available, an empty routeData is returned */
+    fun getNextPossibleTransition(direct: Waypoint?, route: Route): RouteData {
+        if (direct == null) return routeDataMap["default"] ?: RouteData() //If not flying to a direct currently, get the default transition route, or an empty routeData if unavailable
+        for (i in route.findWptIndex(direct.name) until route.size) {
+            routeDataMap[route.getWaypoint(i)?.name]?.let {
+                return it //If a transition found, return it (heh)
+            }
+        }
+        return routeDataMap["default"] ?: RouteData() //If no transitions found at all, return default route, or empty routeData if unavailable
     }
 
     /** Draws ILS line using shapeRenderer  */

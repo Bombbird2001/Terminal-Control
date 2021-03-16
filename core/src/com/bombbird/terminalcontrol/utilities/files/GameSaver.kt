@@ -320,8 +320,8 @@ object GameSaver {
             val wpts = JSONArray()
             val restrictions = JSONArray()
             val flyOver = JSONArray()
-            for (i in 0 until aircraft.route.waypoints.size) {
-                val wptName: String = aircraft.route.waypoints.get(i).name
+            for (i in 0 until aircraft.route.size) {
+                val wptName: String = aircraft.route.waypoints[i].name
                 //Add into used holding waypoints if applicable
                 if (aircraft is Arrival && aircraft.airport.holdingPoints.containsKey(wptName)) {
                     //Must be arrival, and holdingPoints map must contain the wpt
@@ -332,10 +332,10 @@ object GameSaver {
                 wpt?.let {
                     backupWpts[wptName] = intArrayOf(wpt.posX, wpt.posY)
                     wpts.put(wptName)
-                    val data: IntArray = aircraft.route.restrictions.get(i)
+                    val data: IntArray = aircraft.route.restrictions[i]
                     val stuff = data[0].toString() + " " + data[1] + " " + data[2]
                     restrictions.put(stuff)
-                    flyOver.put(aircraft.route.flyOver.get(i))
+                    flyOver.put(aircraft.route.flyOver[i])
                 }
             }
             route.put("waypoints", wpts)
@@ -343,6 +343,7 @@ object GameSaver {
             route.put("flyOver", flyOver)
             route.put("heading", aircraft.route.heading)
             route.put("name", aircraft.route.name)
+            route.put("apchTrans", aircraft.route.apchTrans)
             aircraftInfo.put("route", route)
             aircrafts.put(aircraftInfo)
         }

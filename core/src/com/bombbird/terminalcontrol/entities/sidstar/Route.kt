@@ -19,9 +19,7 @@ import org.json.JSONObject
 
 class Route private constructor() {
     private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
-    val waypoints: Array<Waypoint> = Array()
-    val restrictions: Array<IntArray> = Array()
-    val flyOver: Array<Boolean> = Array()
+    val routeData = RouteData()
     lateinit var holdProcedure: HoldProcedure
         private set
     var heading: Int
@@ -29,6 +27,15 @@ class Route private constructor() {
     private lateinit var sidStarZone: SidStarZone
     lateinit var name: String
         private set
+    val size
+        get() = routeData.size
+    val waypoints
+        get() = routeData.waypoints
+    val restrictions
+        get() = routeData.restrictions
+    val flyOver
+        get() = routeData.flyOver
+    var apchTrans = ""
 
     /** Initializes a default heading */
     init {
@@ -44,14 +51,15 @@ class Route private constructor() {
                 heading = aircraft.heading.toInt() + 180
             } else {
                 val data = inbound[i].split(" ".toRegex()).toTypedArray()
-                waypoints.add(radarScreen.waypoints[data[1]])
-                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
-                flyOver.add(data.size > 5 && data[5] == "FO")
+                routeData.add(
+                    radarScreen.waypoints[data[1]]!!,
+                    intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()),
+                    data.size > 5 && data[5] == "FO"
+
+                )
             }
         }
-        waypoints.addAll(star.waypoints)
-        restrictions.addAll(star.restrictions)
-        flyOver.addAll(star.flyOver)
+        routeData.addAll(star.routeData)
         var runway: String? = null
         for (i in 0 until star.runways.size) {
             val rwy = star.runways[i]
@@ -64,9 +72,7 @@ class Route private constructor() {
             runway = if (!star.runways.isEmpty) star.runways.first() else null
         }
         if (runway == null) throw RuntimeException("Runway selected is null")
-        waypoints.addAll(star.getRwyWpts(runway))
-        restrictions.addAll(star.getRwyRestrictions(runway))
-        flyOver.addAll(star.getRwyFlyOver(runway))
+        routeData.addAll(star.getRwyWpts(runway), star.getRwyRestrictions(runway), star.getRwyFlyOver(runway))
         holdProcedure = HoldProcedure(star)
         name = star.name
         loadStarZone()
@@ -74,14 +80,11 @@ class Route private constructor() {
 
     /** Create new Route based on newly assigned SID  */
     constructor(aircraft: Aircraft, sid: Sid, runway: String, climbRate: Int) : this() {
-        waypoints.addAll(sid.getInitWpts(runway))
-        restrictions.addAll(sid.getInitRestrictions(runway))
-        flyOver.addAll(sid.getInitFlyOver(runway))
-        waypoints.addAll(sid.waypoints)
-        restrictions.addAll(sid.restrictions)
-        flyOver.addAll(sid.flyOver)
+        routeData.addAll(sid.getInitWpts(runway)!!, sid.getInitRestrictions(runway)!!, sid.getInitFlyOver(runway)!!)
+        routeData.addAll(sid.routeData)
         val transition = sid.randomTransition
         if (transition == null) {
+            val waypoints = routeData.waypoints
             val calculatedTrack =  if (waypoints.size >= 2) {
                 val wpt1 = waypoints[waypoints.size - 2]
                 val wpt2 = waypoints[waypoints.size - 1]
@@ -93,9 +96,11 @@ class Route private constructor() {
             val data = transition[i].split(" ".toRegex()).toTypedArray()
             if (data[0] == "WPT") {
                 //Waypoint
-                waypoints.add(radarScreen.waypoints[data[1]])
-                restrictions.add(intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()))
-                flyOver.add(data.size > 5 && data[5] == "FO")
+                    routeData.add(
+                        radarScreen.waypoints[data[1]]!!,
+                        intArrayOf(data[2].toInt(), data[3].toInt(), data[4].toInt()),
+                        data.size > 5 && data[5] == "FO"
+                    )
             } else {
                 //Outbound heading
                 (aircraft as Departure).outboundHdg = data[MathUtils.random(1, data.size - 1)].toInt()
@@ -113,14 +118,17 @@ class Route private constructor() {
         val restr = jo.getJSONArray("restrictions")
         val fo = jo.getJSONArray("flyOver")
         for (i in 0 until waypoints.length()) {
-            this.waypoints.add(radarScreen.waypoints[waypoints.getString(i)])
             val data = restr.getString(i).split(" ".toRegex()).toTypedArray()
-            restrictions.add(intArrayOf(data[0].toInt(), data[1].toInt(), data[2].toInt()))
-            flyOver.add(fo.getBoolean(i))
+            routeData.add(
+                radarScreen.waypoints[waypoints.getString(i)]!!,
+                intArrayOf(data[0].toInt(), data[1].toInt(), data[2].toInt()),
+                fo.getBoolean(i)
+            )
         }
         holdProcedure = HoldProcedure()
         heading = jo.optInt("heading", -1)
         name = jo.optString("name", "null")
+        apchTrans = jo.optString("apchTrans", "")
     }
 
     /** Create new Route based on saved route and SID name  */
@@ -145,7 +153,7 @@ class Route private constructor() {
     /** Loads sidStarZone for SID routes  */
     private fun loadSidZone(runway: Runway?, sid: Sid?, climbRate: Int) {
         sidStarZone = SidStarZone(this, true)
-        sidStarZone.calculatePolygons(waypoints.size - 1)
+        sidStarZone.calculatePolygons(routeData.waypoints.size - 1)
         if (runway != null && sid != null && climbRate > -1) sidStarZone.calculateDepRwyPolygons(runway, sid, climbRate)
     }
 
@@ -188,16 +196,16 @@ class Route private constructor() {
     }
 
     fun getWaypoint(index: Int): Waypoint? {
-        return if (index >= waypoints.size) {
+        return if (index >= routeData.waypoints.size) {
             null
-        } else waypoints[index]
+        } else routeData.waypoints[index]
     }
 
     /** Calculates distance between remaining points, excluding distance between aircraft and current waypoint  */
     fun distBetRemainPts(nextWptIndex: Int): Float {
         var currentIndex = nextWptIndex
         var dist = 0f
-        while (currentIndex < waypoints.size - 1) {
+        while (currentIndex < routeData.waypoints.size - 1) {
             if (getWaypoint(currentIndex + 1)?.isInsideRadar != true) break
             dist += distBetween(currentIndex, currentIndex + 1)
             currentIndex++
@@ -215,7 +223,7 @@ class Route private constructor() {
     /** Returns an array of waypoints from start to end index inclusive  */
     fun getRemainingWaypoints(start: Int, end: Int): Array<Waypoint> {
         //Returns array of waypoints from index start to end
-        val newRange = Array(waypoints)
+        val newRange = Array(routeData.waypoints)
         if (end >= start) {
             if (start > 0) {
                 newRange.removeRange(0, start - 1)
@@ -229,55 +237,52 @@ class Route private constructor() {
     }
 
     fun findWptIndex(wptName: String?): Int {
-        return waypoints.indexOf(radarScreen.waypoints[wptName], false)
+        return routeData.waypoints.indexOf(radarScreen.waypoints[wptName], false)
     }
 
     fun getWptMinAlt(wptName: String?): Int {
         if (wptName == null) return -1
-        return restrictions[findWptIndex(wptName)][0]
+        return routeData.restrictions[findWptIndex(wptName)][0]
     }
 
     fun getWptMinAlt(index: Int): Int {
-        return restrictions[index][0]
+        return routeData.restrictions[index][0]
     }
 
     fun getWptMaxAlt(wptName: String?): Int {
         if (wptName == null) return -1
-        return restrictions[findWptIndex(wptName)][1]
+        return routeData.restrictions[findWptIndex(wptName)][1]
     }
 
     fun getWptMaxAlt(index: Int): Int {
-        return restrictions[index][1]
+        return routeData.restrictions[index][1]
     }
 
     fun getWptMaxSpd(wptName: String?): Int {
         if (wptName == null) return -1
-        return restrictions[findWptIndex(wptName)][2]
+        return routeData.restrictions[findWptIndex(wptName)][2]
     }
 
     fun getWptMaxSpd(index: Int): Int {
-        return restrictions[index][2]
+        return routeData.restrictions[index][2]
     }
 
     fun getWptFlyOver(wptName: String?): Boolean {
         if (wptName == null) return false
-        return flyOver[findWptIndex(wptName)]
+        return routeData.flyOver[findWptIndex(wptName)]
     }
 
     fun removeApchWpts(apch: Approach, direct: Waypoint?): Boolean {
-        if (apch.wpts.isEmpty || waypoints.isEmpty) return false //No points to remove
-        val firstIndex = waypoints.indexOf(apch.wpts.first(), false)
+        if (apch.routeDataMap.isEmpty() || routeData.waypoints.isEmpty) return false //No points to remove
+        val wpts = apch.routeDataMap[apchTrans]?.waypoints ?: return false //If approach transition is not found, return
+        val firstIndex = routeData.waypoints.lastIndexOf(wpts.first(), false)
         if (firstIndex == -1) return false //Route does not contain points
-        waypoints.removeRange(firstIndex, waypoints.size - 1)
-        restrictions.removeRange(firstIndex, restrictions.size - 1)
-        flyOver.removeRange(firstIndex, flyOver.size - 1)
-        return apch.wpts.contains(direct, false)
+        routeData.removeRange(firstIndex, routeData.size - 1) //TODO add back the points after transition point (if they exist)
+        return wpts.contains(direct, false)
     }
 
-    fun addApchWpts(apch: Approach) {
-        if (apch.wpts.isEmpty) return //No points to add
-        waypoints.addAll(apch.wpts)
-        restrictions.addAll(apch.restrictions)
-        flyOver.addAll(apch.flyOver)
+    fun addApchWpts(apch: Approach, direct: Waypoint?) {
+        if (apch.routeDataMap.isEmpty()) return //No points to add
+        routeData.addAll(apch.getNextPossibleTransition(direct, this)) //TODO remove all points after the transition
     }
 }

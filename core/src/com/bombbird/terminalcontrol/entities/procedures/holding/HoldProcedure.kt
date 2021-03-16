@@ -8,7 +8,7 @@ class HoldProcedure() {
     val holdingPoints: HashMap<String, HoldingPoints> = HashMap()
 
     constructor(star: Star) : this() {
-        val waypoints = star.waypoints
+        val waypoints = star.routeData.waypoints
         for (i in 0 until waypoints.size) {
             val wptName = waypoints[i].name
             val holdingPoint = star.airport.holdingPoints

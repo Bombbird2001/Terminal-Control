@@ -73,7 +73,7 @@ class Star : SidStar {
                     wpts.add(inboundPts[1].split(" ".toRegex()).toTypedArray()[1])
                 }
             }
-            wpts.add(waypoints.get(0).name)
+            wpts.add(routeData.waypoints.get(0).name)
             return wpts
         }
 
