@@ -542,8 +542,11 @@ abstract class Aircraft : Actor {
     /** Draws the approach waypoints when an approach is selected in UI */
     private fun uiDrawApchWpt() {
         shapeRenderer.color = Color.YELLOW
-        airport.approaches[Tab.clearedILS]?.let {
-            val wpts = it.getNextPossibleTransition(radarScreen.waypoints[Tab.clearedWpt], route).waypoints
+        airport.approaches[Tab.clearedILS?.substring(3)]?.let {
+            val trans = it.getNextPossibleTransition(radarScreen.waypoints[Tab.clearedWpt], route)
+            val transWpt = trans.third
+            val wpts = trans.first.waypoints
+            if (transWpt != null) shapeRenderer.line(transWpt.posX.toFloat(), transWpt.posY.toFloat(), wpts.first().posX.toFloat(), wpts.first().posY.toFloat())
             for (i in 1 until wpts.size) {
                 val pt1 = wpts[i - 1]
                 val pt2 = wpts[i]
