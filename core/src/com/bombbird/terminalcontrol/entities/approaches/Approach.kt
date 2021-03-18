@@ -193,15 +193,16 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY))
     }
 
-    /** Returns the routeData for the next possible transition; if not available, an empty routeData is returned */
-    fun getNextPossibleTransition(direct: Waypoint?, route: Route): RouteData {
-        if (direct == null) return routeDataMap["default"] ?: RouteData() //If not flying to a direct currently, get the default transition route, or an empty routeData if unavailable
-        for (i in route.findWptIndex(direct.name) until route.size) {
+    /** Returns the routeData for the next possible transition, as well as any additional waypoints to be removed after it; if not available, empty routeData are returned */
+    fun getNextPossibleTransition(direct: Waypoint?, route: Route): Triple<RouteData, RouteData, Waypoint?> {
+        if (direct == null) return Triple(RouteData(), RouteData(), null) //If not flying to a direct currently, return an empty routeData
+        val index = route.findWptIndex(direct.name)
+        for (i in index until route.size) {
             routeDataMap[route.getWaypoint(i)?.name]?.let {
-                return it //If a transition found, return it (heh)
+                return Triple(it, route.routeData.getRange(i + 1, route.size - 1), route.getWaypoint(i)) //If a transition found, return it (heh)
             }
         }
-        return routeDataMap["default"] ?: RouteData() //If no transitions found at all, return default route, or empty routeData if unavailable
+        return Triple(RouteData(), RouteData(), null) //If no transitions found at all, return empty routeData
     }
 
     /** Draws ILS line using shapeRenderer  */

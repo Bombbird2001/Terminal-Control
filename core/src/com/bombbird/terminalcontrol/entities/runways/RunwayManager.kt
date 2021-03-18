@@ -32,7 +32,7 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
                 dayConfigs.add(RunwayConfig(airport, arrayOf("02L", "02C"), arrayOf("02L", "02C")))
                 dayConfigs.add(RunwayConfig(airport, arrayOf("02L", "02R"), arrayOf("02L", "02R")))
                 dayConfigs.add(RunwayConfig(airport, arrayOf("20R", "20C"), arrayOf("20R", "20C")))
-                dayConfigs.add(RunwayConfig(airport, arrayOf("20L", "20C"), arrayOf("20L", "20C")))
+                dayConfigs.add(RunwayConfig(airport, arrayOf("20L", "20R"), arrayOf("20L", "20R")))
             }
             "TCTT" -> {
                 dayConfigs.add(RunwayConfig(airport, arrayOf("34L", "34R"), arrayOf("34R", "05")))

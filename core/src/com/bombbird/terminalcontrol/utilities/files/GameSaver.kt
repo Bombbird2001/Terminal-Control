@@ -19,6 +19,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
+import com.bombbird.terminalcontrol.entities.sidstar.RouteData
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.utilities.Revision
@@ -317,30 +318,16 @@ object GameSaver {
 
             //Save aircraft route
             val route = JSONObject()
-            val wpts = JSONArray()
-            val restrictions = JSONArray()
-            val flyOver = JSONArray()
-            for (i in 0 until aircraft.route.size) {
-                val wptName: String = aircraft.route.waypoints[i].name
-                //Add into used holding waypoints if applicable
-                if (aircraft is Arrival && aircraft.airport.holdingPoints.containsKey(wptName)) {
-                    //Must be arrival, and holdingPoints map must contain the wpt
-                    aircraft.airport.holdingPoints[wptName]?.let { backupHoldingPts[aircraft.airport.icao]?.set(wptName, it) }
-                }
-                //Add all used waypoints into the backup save hashMap
-                val wpt = radarScreen.waypoints[wptName]
-                wpt?.let {
-                    backupWpts[wptName] = intArrayOf(wpt.posX, wpt.posY)
-                    wpts.put(wptName)
-                    val data: IntArray = aircraft.route.restrictions[i]
-                    val stuff = data[0].toString() + " " + data[1] + " " + data[2]
-                    restrictions.put(stuff)
-                    flyOver.put(aircraft.route.flyOver[i])
-                }
-            }
-            route.put("waypoints", wpts)
-            route.put("restrictions", restrictions)
-            route.put("flyOver", flyOver)
+            val routeData = getRouteData(radarScreen, aircraft, aircraft.route.routeData)
+            route.put("waypoints", routeData[0])
+            route.put("restrictions", routeData[1])
+            route.put("flyOver", routeData[2])
+
+            val removedData = getRouteData(radarScreen, aircraft, aircraft.route.removedPoints)
+            route.put("removedWpts", removedData[0])
+            route.put("removedRestr", removedData[1])
+            route.put("removedFo", removedData[2])
+
             route.put("heading", aircraft.route.heading)
             route.put("name", aircraft.route.name)
             route.put("apchTrans", aircraft.route.apchTrans)
@@ -348,6 +335,32 @@ object GameSaver {
             aircrafts.put(aircraftInfo)
         }
         return aircrafts
+    }
+
+    private fun getRouteData(radarScreen: RadarScreen, aircraft: Aircraft, routeData: RouteData): kotlin.Array<JSONArray> {
+        val wpts = JSONArray()
+        val restrictions = JSONArray()
+        val flyOver = JSONArray()
+        for (i in 0 until routeData.size) {
+            val wptName: String = routeData.waypoints[i].name
+            //Add into used holding waypoints if applicable
+            if (aircraft is Arrival && aircraft.airport.holdingPoints.containsKey(wptName)) {
+                //Must be arrival, and holdingPoints map must contain the wpt
+                aircraft.airport.holdingPoints[wptName]?.let { backupHoldingPts[aircraft.airport.icao]?.set(wptName, it) }
+            }
+            //Add all used waypoints into the backup save hashMap
+            val wpt = radarScreen.waypoints[wptName]
+            wpt?.let {
+                backupWpts[wptName] = intArrayOf(wpt.posX, wpt.posY)
+                wpts.put(wptName)
+                val data: IntArray = routeData.restrictions[i]
+                val stuff = data[0].toString() + " " + data[1] + " " + data[2]
+                restrictions.put(stuff)
+                flyOver.put(routeData.flyOver[i])
+            }
+        }
+
+        return arrayOf(wpts, restrictions, flyOver)
     }
 
     /** Saves all navState information for input aircraft  */

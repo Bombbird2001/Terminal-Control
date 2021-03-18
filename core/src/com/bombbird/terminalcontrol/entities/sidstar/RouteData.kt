@@ -29,8 +29,25 @@ class RouteData {
     }
 
     fun removeRange(firstIndex: Int, lastIndex: Int) {
+        if (firstIndex > lastIndex) return
         waypoints.removeRange(firstIndex, lastIndex)
         restrictions.removeRange(firstIndex, lastIndex)
         flyOver.removeRange(firstIndex, lastIndex)
+    }
+
+    fun getRange(firstIndex: Int, lastIndex: Int): RouteData {
+        val data = RouteData()
+
+        for (i in firstIndex..lastIndex) {
+            data.add(waypoints[i], restrictions[i], flyOver[i])
+        }
+
+        return data
+    }
+
+    fun clear() {
+        waypoints.clear()
+        restrictions.clear()
+        flyOver.clear()
     }
 }

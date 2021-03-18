@@ -36,6 +36,7 @@ class Route private constructor() {
     val flyOver
         get() = routeData.flyOver
     var apchTrans = ""
+    val removedPoints = RouteData()
 
     /** Initializes a default heading */
     init {
@@ -125,6 +126,19 @@ class Route private constructor() {
                 fo.getBoolean(i)
             )
         }
+
+        val removedWpts = jo.optJSONArray("removedWpts")
+        val removedRestr = jo.optJSONArray("removedRestr")
+        val removedFo = jo.optJSONArray("removedFo")
+        if (removedWpts != null && removedRestr != null && removedFo != null) for (i in 0 until removedWpts.length()) {
+            val data = removedRestr.getString(i).split(" ".toRegex()).toTypedArray()
+            removedPoints.add(
+                radarScreen.waypoints[removedWpts.getString(i)]!!,
+                intArrayOf(data[0].toInt(), data[1].toInt(), data[2].toInt()),
+                removedFo.getBoolean(i)
+            )
+        }
+
         holdProcedure = HoldProcedure()
         heading = jo.optInt("heading", -1)
         name = jo.optString("name", "null")
@@ -277,12 +291,21 @@ class Route private constructor() {
         val wpts = apch.routeDataMap[apchTrans]?.waypoints ?: return false //If approach transition is not found, return
         val firstIndex = routeData.waypoints.lastIndexOf(wpts.first(), false)
         if (firstIndex == -1) return false //Route does not contain points
-        routeData.removeRange(firstIndex, routeData.size - 1) //TODO add back the points after transition point (if they exist)
+        routeData.removeRange(firstIndex, size - 1)
+        routeData.addAll(removedPoints)
+        removedPoints.clear()
+        apchTrans = ""
         return wpts.contains(direct, false)
     }
 
     fun addApchWpts(apch: Approach, direct: Waypoint?) {
         if (apch.routeDataMap.isEmpty()) return //No points to add
-        routeData.addAll(apch.getNextPossibleTransition(direct, this)) //TODO remove all points after the transition
+        val trip = apch.getNextPossibleTransition(direct, this)
+        val firstIndex = findWptIndex(trip.second.waypoints.first().name)
+        if (firstIndex > -1) routeData.removeRange(firstIndex, size - 1)
+        apchTrans = routeData.waypoints[size - 1].name
+        routeData.addAll(trip.first)
+        removedPoints.clear()
+        removedPoints.addAll(trip.second)
     }
 }
