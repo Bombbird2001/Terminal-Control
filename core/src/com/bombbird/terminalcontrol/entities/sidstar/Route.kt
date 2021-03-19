@@ -301,8 +301,11 @@ class Route private constructor() {
     fun addApchWpts(apch: Approach, direct: Waypoint?) {
         if (apch.routeDataMap.isEmpty()) return //No points to add
         val trip = apch.getNextPossibleTransition(direct, this)
-        val firstIndex = findWptIndex(trip.second.waypoints.first().name)
-        if (firstIndex > -1) routeData.removeRange(firstIndex, size - 1)
+        trip.second.waypoints.let {
+            if (it.isEmpty) return@let
+            val firstIndex = findWptIndex(it.first().name)
+            if (firstIndex > -1) routeData.removeRange(firstIndex, size - 1)
+        }
         apchTrans = routeData.waypoints[size - 1].name
         routeData.addAll(trip.first)
         removedPoints.clear()

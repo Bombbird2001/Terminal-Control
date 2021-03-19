@@ -195,14 +195,14 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
 
     /** Returns the routeData for the next possible transition, as well as any additional waypoints to be removed after it; if not available, empty routeData are returned */
     fun getNextPossibleTransition(direct: Waypoint?, route: Route): Triple<RouteData, RouteData, Waypoint?> {
-        if (direct == null) return Triple(RouteData(), RouteData(), null) //If not flying to a direct currently, return an empty routeData
+        if (direct == null) return Triple(routeDataMap["default"] ?: RouteData(), RouteData(), route.waypoints[route.size - 1]) //If not flying to a direct currently, return the default transition
         val index = route.findWptIndex(direct.name)
         for (i in index until route.size) {
             routeDataMap[route.getWaypoint(i)?.name]?.let {
                 return Triple(it, route.routeData.getRange(i + 1, route.size - 1), route.getWaypoint(i)) //If a transition found, return it (heh)
             }
         }
-        return Triple(RouteData(), RouteData(), null) //If no transitions found at all, return empty routeData
+        return Triple(routeDataMap["default"] ?: RouteData(), RouteData(), route.waypoints[route.size - 1]) //If no transitions found at all, return the default transition
     }
 
     /** Draws ILS line using shapeRenderer  */

@@ -546,6 +546,7 @@ abstract class Aircraft : Actor {
             val trans = it.getNextPossibleTransition(radarScreen.waypoints[Tab.clearedWpt], route)
             val transWpt = trans.third
             val wpts = trans.first.waypoints
+            if (wpts.isEmpty) return
             if (transWpt != null) shapeRenderer.line(transWpt.posX.toFloat(), transWpt.posY.toFloat(), wpts.first().posX.toFloat(), wpts.first().posY.toFloat())
             for (i in 1 until wpts.size) {
                 val pt1 = wpts[i - 1]
