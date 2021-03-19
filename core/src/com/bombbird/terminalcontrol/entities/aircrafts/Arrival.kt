@@ -15,6 +15,7 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.approaches.Approach
 import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
+import com.bombbird.terminalcontrol.entities.approaches.RNAV
 import com.bombbird.terminalcontrol.entities.separation.trajectory.Trajectory
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.Route
@@ -351,7 +352,7 @@ class Arrival : Aircraft {
             }
             isIlsSpdSet = true
         }
-        if (!isFinalSpdSet && isLocCap && apch?.rwy?.let { pixelToNm(distanceBetween(x, y, it.x, it.y)) <= 7 } == true) {
+        if (!isFinalSpdSet && ((isLocCap && apch?.rwy?.let { pixelToNm(distanceBetween(x, y, it.x, it.y)) <= 7 } == true) || (apch is RNAV && distToGo() + ((apch as? RNAV)?.fafDist ?: 0f) <= 6))) {
             if (clearedIas > apchSpd) {
                 updateClearedSpd(apchSpd)
                 navState.replaceAllClearedSpdToLower()
@@ -824,6 +825,9 @@ class Arrival : Aircraft {
     override fun updateGoAround() {
         if (altitude > airport.elevation + 1300 && isGoAround) {
             updateControlState(ControlState.ARRIVAL)
+            radarScreen.utilityBox.commsManager.initialContact(this)
+            isActionRequired = true
+            dataTag.startFlash()
             isGoAround = false
         }
     }
