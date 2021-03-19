@@ -28,6 +28,7 @@ class Circling(airport: Airport, name: String, jsonObject: JSONObject): ILS(airp
         jo.put("minima", minima)
         jo.put("maxGS", 4000)
         jo.put("tower", "${towerFreq[0]}>${towerFreq[1]}")
+        jo.put("wpts", JSONObject())
         imaginaryIls = ILS(airport, "IMG" + rwy.name, jo)
     }
 }

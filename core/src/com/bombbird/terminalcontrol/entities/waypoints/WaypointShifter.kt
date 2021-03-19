@@ -9,7 +9,9 @@ object WaypointShifter {
 
     fun loadData() {
         if (movementData.size > 0) return
-        //TCTP - No adjustments needed
+        //TCTP
+        putData("TCTP", -48, 0, "RAKAN", "SOLEE", "CRANK", "MILEY", "OMORI", "AUBRY")
+        putData("TCTP", 64, -96, "HOKOU", "PILUT", "SLASH", "KINDY", "HERRO", "KEELL")
         //TCWS - No adjustments needed
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON")

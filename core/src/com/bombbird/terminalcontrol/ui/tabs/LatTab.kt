@@ -578,9 +578,9 @@ class LatTab(ui: Ui) : Tab(ui) {
                 if (latMode == NavState.SID_STAR && clearedILS != Ui.NOT_CLEARED_APCH) {
                     altMode = NavState.SID_STAR_RESTR
                     it.navState.updateAltModes(NavState.REMOVE_UNRESTR, false)
-                    var lowestAlt: Int = it.route.getWptMinAlt(it.route.waypoints.size - 1)
+                    var lowestAlt = it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> it2[it2.size - 1][0] }
                     if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-                    clearedAlt = lowestAlt
+                    if (lowestAlt != null) clearedAlt = lowestAlt
                 } else if (clearedILS == Ui.NOT_CLEARED_APCH) {
                     if (it.navState.containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT)) {
                         it.navState.updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)

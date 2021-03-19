@@ -87,7 +87,7 @@ class AltTab(ui: Ui) : Tab(ui) {
                     var apchMode = false
                     if (latMode == NavState.SID_STAR && clearedILS != Ui.NOT_CLEARED_APCH) {
                         apchMode = true
-                        lowestAlt = it.route.getWptMinAlt(it.route.waypoints.size - 1)
+                        lowestAlt = it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> it2[it2.size - 1][0] } ?: -1
                         if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
                         highestAlt = lowestAlt
                     } else if (latMode == NavState.HOLD_AT) {

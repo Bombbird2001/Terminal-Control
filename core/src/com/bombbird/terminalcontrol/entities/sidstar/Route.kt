@@ -33,8 +33,6 @@ class Route private constructor() {
         get() = routeData.waypoints
     val restrictions
         get() = routeData.restrictions
-    val flyOver
-        get() = routeData.flyOver
     var apchTrans = ""
     val removedPoints = RouteData()
 
@@ -305,8 +303,9 @@ class Route private constructor() {
             if (it.isEmpty) return@let
             val firstIndex = findWptIndex(it.first().name)
             if (firstIndex > -1) routeData.removeRange(firstIndex, size - 1)
+            if (waypoints.contains(it.first(), false)) return //If waypoint already inside, don't add
+            apchTrans = if (trip.third != null) routeData.waypoints[size - 1].name else "vector"
         }
-        apchTrans = routeData.waypoints[size - 1].name
         routeData.addAll(trip.first)
         removedPoints.clear()
         removedPoints.addAll(trip.second)

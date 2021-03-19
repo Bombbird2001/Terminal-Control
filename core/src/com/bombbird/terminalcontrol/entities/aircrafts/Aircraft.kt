@@ -506,7 +506,6 @@ abstract class Aircraft : Actor {
             if (isArrivalDeparture) {
                 if (Tab.latMode == NavState.SID_STAR) {
                     if (ui.latTab.isWptChanged || ui.latTab.isLatModeChanged) uiDrawSidStar()
-                    if (ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) uiDrawApchWpt()
                 } else if (Tab.latMode == NavState.AFTER_WPT_HDG && (ui.latTab.isAfterWptChanged || ui.latTab.isAfterWptHdgChanged || ui.latTab.isLatModeChanged)) {
                     uiDrawAftWpt()
                 } else if (Tab.latMode == NavState.VECTORS && (this is Departure || Ui.NOT_CLEARED_APCH == Tab.clearedILS || !isLocCap) && (ui.latTab.isHdgChanged || ui.latTab.isLatModeChanged)) {
@@ -514,6 +513,7 @@ abstract class Aircraft : Actor {
                 } else if (Tab.latMode == NavState.HOLD_AT && (ui.latTab.isLatModeChanged || ui.latTab.isHoldWptChanged)) {
                     uiDrawHoldPattern()
                 }
+                if (ui.latTab.isIlsChanged && Tab.clearedILS != Ui.NOT_CLEARED_APCH) uiDrawApchWpt()
             }
         }
     }
