@@ -180,31 +180,13 @@ object FileLoader {
                         val circle = Circling(airport, name, data)
                         approaches[circle.rwy.name] = circle
                     }
-                    "RNAV" -> {
-                        val rnav = RNAV(airport, name, data)
-                        approaches[rnav.rwy.name] = rnav
+                    "RNP" -> {
+                        val rnp = RNP(airport, name, data)
+                        approaches[rnp.rwy.name] = rnp
                     }
                     else -> Gdx.app.log("ILS error", "Invalid approach type $type specified")
                 }
             }
-            /*
-            val handle = Gdx.files.internal("game/" + it.mainName + "/" + it.airac + "/ils" + airport.icao + ".ils")
-            val indivApches = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()
-            for (s in indivApches) {
-                if (s.contains("ILS")) {
-                    val ils = ILS(airport, s)
-                    ils.rwy.let { it2 -> approaches[it2.name] = ils }
-                } else if (s.contains("LDA") || s.contains("IGS")) {
-                    val lda = OffsetILS(airport, s)
-                    lda.rwy.let { it2 -> approaches[it2.name] = lda }
-                } else if (s.contains("CIR")) {
-                    val circle = Circling(airport, s)
-                    circle.rwy.let { it2 -> approaches[it2.name] = circle }
-                } else {
-                    Gdx.app.log("ILS error", "Invalid approach type specified for $s")
-                }
-            }
-            */
         }
         return approaches
     }

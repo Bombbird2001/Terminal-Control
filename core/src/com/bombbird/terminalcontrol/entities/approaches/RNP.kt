@@ -7,7 +7,7 @@ import org.json.JSONObject
 import kotlin.math.cos
 import kotlin.math.sin
 
-class RNAV(airport: Airport, name: String, jsonObject: JSONObject): Approach(airport, name, jsonObject) {
+class RNP(airport: Airport, name: String, jsonObject: JSONObject): Approach(airport, name, jsonObject) {
     val fafDist: Float
 
     init {
