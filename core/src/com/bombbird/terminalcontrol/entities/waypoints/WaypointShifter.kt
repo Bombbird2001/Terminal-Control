@@ -12,7 +12,8 @@ object WaypointShifter {
         //TCTP
         putData("TCTP", -48, 0, "RAKAN", "SOLEE", "CRANK", "MILEY", "OMORI", "AUBRY")
         putData("TCTP", 64, -96, "HOKOU", "PILUT", "SLASH", "KINDY", "HERRO", "KEELL")
-        //TCWS - No adjustments needed
+        //TCWS
+        putData("TCWS", 80, -72, "GOBIS", "VAMOV", "VULUV", "SOPMI")
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON")
         putData("TCTT", 20, 0, "SCODI")

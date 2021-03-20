@@ -276,7 +276,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
                     updateLabelQueue(label)
                     break
                 } catch (e: NullPointerException) {
-                    ErrorHandler.sendRepeatableError("Normal message error", e, i + 1)
+                    ErrorHandler.sendGenericError(e, false)
                 }
             }
         }
@@ -291,7 +291,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
                     updateLabelQueue(label)
                     break
                 } catch (e: NullPointerException) {
-                    ErrorHandler.sendRepeatableError("Alert message error", e, i + 1)
+                    ErrorHandler.sendGenericError(e, false)
                 }
             }
         }

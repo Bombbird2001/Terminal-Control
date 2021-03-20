@@ -193,17 +193,20 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
         return MathTools.pixelToNm(MathTools.distanceBetween(x, y, planeX, planeY))
     }
 
-    /** Returns the routeData for the next possible transition, as well as any additional waypoints to be removed after it; if not available, empty routeData are returned */
+    /** Returns the routeData for the next possible transition, as well as any additional waypoints to be removed after it;
+     *  First is the routeData of the transition to be added - empty if not available
+     *  Second is the routeData of the points to be removed from the route - empty if not available
+     *  Third is the waypoint on the original route from which the transition from the route to the approach occurs - null if not available or aircraft is being vectored */
     fun getNextPossibleTransition(direct: Waypoint?, route: Route): Triple<RouteData, RouteData, Waypoint?> {
         if (routeDataMap.isEmpty()) return Triple(RouteData(), RouteData(), null)
-        if (direct == null) return Triple(routeDataMap["vector"] ?: RouteData(), RouteData(), route.waypoints[route.size - 1]) //If not flying to a direct currently, return the default transition
+        if (direct == null) return Triple(routeDataMap["vector"] ?: RouteData(), RouteData(), null) //If not flying to a direct currently, return the default transition
         val index = route.findWptIndex(direct.name)
-        for (i in index until route.size) {
+        if (index > -1) for (i in index until route.size) {
             routeDataMap[route.getWaypoint(i)?.name]?.let {
                 return Triple(it, route.routeData.getRange(i + 1, route.size - 1), route.getWaypoint(i)) //If a transition found, return it (heh)
             }
         }
-        return Triple(RouteData(), RouteData(), null) //If no transitions found at all, return the default transition
+        return Triple(RouteData(), RouteData(), null) //If no transitions found at all, return empty routeData
     }
 
     /** Draws ILS line using shapeRenderer  */

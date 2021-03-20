@@ -254,7 +254,7 @@ class Arrival : Aircraft {
     private fun distFromStartToPoint(waypoint: Waypoint): Float {
         var dist = direct?. let { pixelToNm(distanceBetween(x, y, it.posX.toFloat(), it.posY.toFloat())) } ?: 0f
         var nextIndex = 1
-        if (route.waypoints.size > 1 && route.getWaypoint(0) != waypoint) {
+        if (route.size > 1 && route.getWaypoint(0) != waypoint) {
             while (route.getWaypoint(nextIndex) != waypoint) {
                 dist += route.distBetween(nextIndex - 1, nextIndex)
                 nextIndex += 1
@@ -266,13 +266,13 @@ class Arrival : Aircraft {
     /** Overrides method in Aircraft class to join the lines between each STAR waypoint  */
     override fun drawSidStar() {
         super.drawSidStar()
-        navState.clearedDirect.last()?.let { radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.waypoints.size) }
+        navState.clearedDirect.last()?.let { radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(it.name), route.size) }
     }
 
     /** Overrides method in Aircraft class to join lines between each cleared STAR waypoint  */
     override fun uiDrawSidStar() {
         super.uiDrawSidStar()
-        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(Tab.clearedWpt), route.waypoints.size)
+        radarScreen.waypointManager.updateStarRestriction(route, route.findWptIndex(Tab.clearedWpt), route.size)
     }
 
     /** Overrides method in Aircraft class to join lines between waypoints till afterWpt, then draws a heading line from there  */
