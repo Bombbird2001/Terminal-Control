@@ -25,9 +25,9 @@ class OffsetILS(airport: Airport, name: String, jsonObject: JSONObject): ILS(air
     private fun loadImaginaryIls() {
         val jo = JSONObject()
         jo.put("runway", rwy.name)
-        jo.put("heading", heading)
-        jo.put("x", x.toDouble())
-        jo.put("y", y.toDouble())
+        jo.put("heading", rwy.heading)
+        jo.put("x", rwy.x.toDouble())
+        jo.put("y", rwy.y.toDouble())
         jo.put("gsOffset", 0.0)
         jo.put("minima", 0)
         jo.put("maxGS", 4000)
