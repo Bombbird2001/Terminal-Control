@@ -30,10 +30,10 @@ class SidStarZone(private val route: Route, private val isSid: Boolean) {
 
     /** Calculates all route polygons  */
     fun calculatePolygons(lastWpt: Int) {
-        for (i in 0 until route.waypoints.size) {
+        for (i in 0 until route.size) {
             val wpt1 = route.getWaypoint(i) ?: continue
             if (!wpt1.isInsideRadar) continue
-            if (i + 1 < route.waypoints.size) {
+            if (i + 1 < route.size) {
                 route.getWaypoint(i + 1)?.let { wpt2 ->
                     val routeVector = Vector2((wpt2.posX - wpt1.posX).toFloat(), (wpt2.posY - wpt1.posY).toFloat())
                     polygons.add(calculatePolygon(wpt1.posX.toFloat(), wpt1.posY.toFloat(), routeVector.angleDeg(), routeVector.len(), 2f))

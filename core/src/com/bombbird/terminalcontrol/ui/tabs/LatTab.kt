@@ -234,7 +234,7 @@ class LatTab(ui: Ui) : Tab(ui) {
         selectedAircraft?.let {
             notListening = true
             modeButtons.updateButtonActivity(it.navState.latModes)
-            if (it.sidStarIndex >= it.route.waypoints.size) {
+            if (it.sidStarIndex >= it.route.size) {
                 if (it.navState.dispLatMode.last() == NavState.HOLD_AT) {
                     it.navState.updateLatModes(NavState.REMOVE_SIDSTAR_AFTERHDG, false) //Don't remove hold at if aircraft is gonna hold
                 } else {
@@ -271,7 +271,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 var startIndex: Int = it.sidStarIndex
                 val latestDirect = it.navState.clearedDirect.last()
                 if (latestDirect != null && it.route.waypoints.contains(latestDirect, false)) startIndex = it.route.findWptIndex(latestDirect.name)
-                for (waypoint in it.route.getRemainingWaypoints(startIndex, it.route.waypoints.size - 1)) {
+                for (waypoint in it.route.getRemainingWaypoints(startIndex, it.route.size - 1)) {
                     waypoints.add(waypoint.name)
                 }
                 valueBox.items = waypoints
@@ -578,7 +578,9 @@ class LatTab(ui: Ui) : Tab(ui) {
                 if (latMode == NavState.SID_STAR && clearedILS != Ui.NOT_CLEARED_APCH) {
                     altMode = NavState.SID_STAR_RESTR
                     it.navState.updateAltModes(NavState.REMOVE_UNRESTR, false)
-                    var lowestAlt = it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
+                    var lowestAlt = if (it.route.apchTrans == "")
+                        it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
+                    else it.route.getWptMinAlt(it.route.size - 1)
                     if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
                     if (lowestAlt != null) clearedAlt = lowestAlt
                 } else if (clearedILS == Ui.NOT_CLEARED_APCH) {
@@ -602,6 +604,19 @@ class LatTab(ui: Ui) : Tab(ui) {
                 if (!found) {
                     it.navState.updateLatModes(NavState.REMOVE_HOLD_ONLY, false)
                 }
+            }
+            if (it is Arrival) {
+                var clearedApp = false
+                for (apch in it.navState.clearedApch) {
+                    if (apch != null) {
+                        clearedApp = true
+                        break
+                    }
+                }
+                if (!it.navState.latModes.contains(Ui.CHANGE_STAR, false) && clearedILS == Ui.NOT_CLEARED_APCH && !clearedApp)
+                    it.navState.updateLatModes(NavState.ADD_CHANGE_STAR, false)
+                else if (it.navState.latModes.contains(Ui.CHANGE_STAR, false) && (clearedILS != Ui.NOT_CLEARED_APCH || clearedApp))
+                    it.navState.updateLatModes(NavState.REMOVE_CHANGE_STAR, false)
             }
             ui.updateElements()
             ui.compareWithAC()

@@ -26,6 +26,8 @@ class NavState {
         const val REMOVE_HOLD_ONLY = 4 //Removes only hold at
         const val REMOVE_AFTERHDG_ONLY = 5 //Removes only after waypoint fly heading
         const val ADD_ALL_SIDSTAR = 6 //Adds all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
+        const val REMOVE_CHANGE_STAR = 7 //Removes change STAR choice
+        const val ADD_CHANGE_STAR = 8 //Adds change STAR choice
         const val REMOVE_SIDSTAR_RESTR = 10 //Removes SID/STAR alt/speed restrictions
         const val ADD_SIDSTAR_RESTR_UNRESTR = 11 //Adds all modes
         const val REMOVE_UNRESTR = 12 //Removes unrestricted mode
@@ -203,9 +205,6 @@ class NavState {
         for (i in 0 until array.length()) {
             latModes.add(array.getString(i))
         }
-        if (aircraft is Arrival && !latModes.contains(Ui.CHANGE_STAR, false)) {
-            latModes.add(Ui.CHANGE_STAR)
-        }
         val array1 = save.getJSONArray("altModes")
         for (i in 0 until array1.length()) {
             val mode: String = array1.getString(i)
@@ -363,12 +362,10 @@ class NavState {
         aircraft.holdWpt = clearedHold.first()
         aircraft.updateApch(clearedApch.first())
         if (clearedApch.first() != null && dispLatMode.first() == SID_STAR) {
-            var lowestAlt = clearedApch.first()?.getNextPossibleTransition(clearedDirect.first(), aircraft.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
+            var lowestAlt = aircraft.route.getWptMinAlt(aircraft.route.size - 1)
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-            if (lowestAlt != null) {
-                aircraft.updateClearedAltitude(lowestAlt)
-                replaceAllClearedAlt()
-            }
+            aircraft.updateClearedAltitude(lowestAlt)
+            replaceAllClearedAlt()
         } else {
             aircraft.updateClearedAltitude(clearedAlt.first())
         }
@@ -377,7 +374,7 @@ class NavState {
             aircraft.updateClearedSpd(clearedSpd.first())
         }
         if (aircraft is Arrival && clearedNewStar.first() != null) {
-            if (!aircraft.isLocCap) {
+            if (!aircraft.isLocCap && aircraft.apch == null) {
                 val newStar = aircraft.airport.stars[clearedNewStar.first()?.split(" ".toRegex())?.toTypedArray()?.get(0)]
                 newStar?.let {
                     (aircraft as Arrival).setStar(newStar)
@@ -399,7 +396,7 @@ class NavState {
             } else {
                 clearedNewStar.removeFirst()
                 clearedNewStar.addFirst(null)
-                radarScreen.utilityBox.commsManager.alertMsg("The STAR for " + aircraft.callsign + " cannot be changed now.")
+                radarScreen.utilityBox.commsManager.alertMsg("The STAR for " + aircraft.callsign + " cannot be changed when cleared for approach.")
             }
         }
     }
@@ -430,7 +427,7 @@ class NavState {
             clearedDirect.removeFirst()
             clearedDirect.addFirst(currentDirect)
             clearedDirect.addFirst(currentDirect)
-        } else if (newDirect != null && !aircraft.route.getRemainingWaypoints(aircraft.sidStarIndex, aircraft.route.waypoints.size - 1).contains(newDirect, false) && currentDispLatMode == VECTORS && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WPT_HDG)) {
+        } else if (newDirect != null && !aircraft.route.getRemainingWaypoints(aircraft.sidStarIndex, aircraft.route.size - 1).contains(newDirect, false) && currentDispLatMode == VECTORS && containsCode(clearedDispLatMode, SID_STAR, HOLD_AT, AFTER_WPT_HDG)) {
             //Case 3: Aircraft has reached end of SID/STAR during delay: Replace latmode with "fly heading"
             //Set all the cleared heading to current aircraft cleared heading
             replaceAllClearedHdg(aircraft.clearedHeading)
@@ -755,6 +752,8 @@ class NavState {
                     latModes.add(aircraft.sidStar.name + " departure", Ui.FLY_HEADING)
                 }
             }
+            REMOVE_CHANGE_STAR -> latModes.removeValue(Ui.CHANGE_STAR, false)
+            ADD_CHANGE_STAR -> latModes.add(Ui.CHANGE_STAR)
             else -> Gdx.app.log("NavState", "Invalid latModes update mode: $mode")
         }
         if (updateUI && aircraft.isSelected && aircraft.isArrivalDeparture) aircraft.ui.updateState()

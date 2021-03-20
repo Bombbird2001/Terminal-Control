@@ -47,16 +47,4 @@ object ErrorHandler {
         HttpRequests.sendSaveError(saveError, 0, save, dialog)
         e.printStackTrace()
     }
-
-    fun sendRepeatableError(original: String, e: Exception, attempt: Int) {
-        val error =
-            """
-            $versionInfo
-            Try $attempt:
-            $original
-            """.trimIndent() + "\n${ExceptionUtils.getStackTrace(e)}"
-        HttpRequests.sendError(error, 0)
-        e.printStackTrace()
-        println(original)
-    }
 }
