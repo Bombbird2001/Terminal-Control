@@ -395,7 +395,7 @@ class Arrival : Aircraft {
             } else if ("TCHH" == airport.icao && sidStar.runways.contains("25R", false)) {
                 checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4300)
                 checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4500)
-            } else if ("TCHX" == airport.icao && sidStar.runways.contains("31", false)) {
+            } else if ("TCHX" == airport.icao) {
                 checkAndAddOddAltitudes(tmpArray, lowestAlt, highestAlt, 4500)
             }
             tmpArray.sort()

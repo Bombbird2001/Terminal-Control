@@ -122,7 +122,7 @@ class AltTab(ui: Ui) : Tab(ui) {
                     } else if ("TCHH" == icao && it.sidStar.runways.contains("25R", false)) {
                         checkAndAddIntermediate(allAlts, it.altitude, 4300)
                         checkAndAddIntermediate(allAlts, it.altitude, 4500)
-                    } else if ("TCHX" == icao && it.sidStar.runways.contains("31", false)) {
+                    } else if ("TCHX" == icao) {
                         checkAndAddIntermediate(allAlts, it.altitude, 4500)
                     }
                     allAlts.sort()
