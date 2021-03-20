@@ -195,6 +195,7 @@ open class Approach(val airport: Airport, name: String, jsonObject: JSONObject) 
 
     /** Returns the routeData for the next possible transition, as well as any additional waypoints to be removed after it; if not available, empty routeData are returned */
     fun getNextPossibleTransition(direct: Waypoint?, route: Route): Triple<RouteData, RouteData, Waypoint?> {
+        if (routeDataMap.isEmpty()) return Triple(RouteData(), RouteData(), null)
         if (direct == null) return Triple(routeDataMap["vector"] ?: RouteData(), RouteData(), route.waypoints[route.size - 1]) //If not flying to a direct currently, return the default transition
         val index = route.findWptIndex(direct.name)
         for (i in index until route.size) {

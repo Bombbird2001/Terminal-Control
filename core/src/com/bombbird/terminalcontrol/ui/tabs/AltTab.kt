@@ -87,9 +87,9 @@ class AltTab(ui: Ui) : Tab(ui) {
                     var apchMode = false
                     if (latMode == NavState.SID_STAR && clearedILS != Ui.NOT_CLEARED_APCH) {
                         apchMode = true
-                        lowestAlt = it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> it2[it2.size - 1][0] } ?: -1
-                        if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-                        highestAlt = lowestAlt
+                        val tmpLowestAlt = it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
+                        if (tmpLowestAlt == -1) lowestAlt = radarScreen.minAlt
+                        if (tmpLowestAlt != null) highestAlt = lowestAlt
                     } else if (latMode == NavState.HOLD_AT) {
                         val restr: IntArray = radarScreen.waypoints[holdWpt]?.let { it1 -> it.route.holdProcedure.getAltRestAtWpt(it1) } ?: intArrayOf(-1, -1)
                         lowestAlt = restr[0]
