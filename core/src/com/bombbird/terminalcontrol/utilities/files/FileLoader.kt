@@ -172,7 +172,7 @@ object FileLoader {
                         val ils = ILS(airport, name, data)
                         approaches[ils.rwy.name] = ils
                     }
-                    "LDA" -> {
+                    "LDA", "IGS" -> {
                         val lda = OffsetILS(airport, name, data)
                         approaches[lda.rwy.name] = lda
                     }

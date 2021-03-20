@@ -363,10 +363,12 @@ class NavState {
         aircraft.holdWpt = clearedHold.first()
         aircraft.updateApch(clearedApch.first())
         if (clearedApch.first() != null && dispLatMode.first() == SID_STAR) {
-            var lowestAlt = aircraft.route.getWptMinAlt(aircraft.route.waypoints.size - 1)
+            var lowestAlt = clearedApch.first()?.getNextPossibleTransition(clearedDirect.first(), aircraft.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
             if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
-            aircraft.updateClearedAltitude(lowestAlt)
-            replaceAllClearedAlt()
+            if (lowestAlt != null) {
+                aircraft.updateClearedAltitude(lowestAlt)
+                replaceAllClearedAlt()
+            }
         } else {
             aircraft.updateClearedAltitude(clearedAlt.first())
         }
