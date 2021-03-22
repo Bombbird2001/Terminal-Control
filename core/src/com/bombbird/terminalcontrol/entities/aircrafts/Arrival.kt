@@ -523,7 +523,7 @@ class Arrival : Aircraft {
                 val effectiveILS = if (it is Circling && phase == 3) it.imaginaryIls else it
                 if (!isGsCap) {
                     if (it !is Circling || phase == 0) {
-                        super.updateAltitude(altitude < it.getGSAlt(this) && it.name.contains("IMG"), false)
+                        super.updateAltitude(altitude < it.getGSAlt(this) && altitude <= it.gsAlt + 50 && (it.name.contains("IMG") || (navState.dispLatMode.first() == NavState.SID_STAR && isLocCap)), false)
                         if (canCaptureILS() && isLocCap && abs(altitude - it.getGSAlt(this)) <= 50 && altitude <= it.gsAlt + 50) {
                             if (navState.dispLatMode.first() == NavState.SID_STAR) {
                                 //Change to vector mode upon GS capture
@@ -855,9 +855,7 @@ class Arrival : Aircraft {
         navState.clearedSpd.removeFirst()
         navState.clearedSpd.addFirst(clearedIas)
         if (clearedAltitude <= missedApproach.climbAlt) {
-            updateClearedAltitude(missedApproach.climbAlt)
-            navState.clearedAlt.removeFirst()
-            navState.clearedAlt.addFirst(clearedAltitude)
+            setMissedAlt()
         }
         updateApch(null)
         navState.voidAllIls()
