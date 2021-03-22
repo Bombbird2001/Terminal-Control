@@ -28,6 +28,7 @@ class NavState {
         const val ADD_ALL_SIDSTAR = 6 //Adds all SID/STAR choices - SID, STAR, after waypoint fly heading, hold at
         const val REMOVE_CHANGE_STAR = 7 //Removes change STAR choice
         const val ADD_CHANGE_STAR = 8 //Adds change STAR choice
+        const val ADD_SIDSTAR_ONLY = 9 //Adds SID/STAR option only
         const val REMOVE_SIDSTAR_RESTR = 10 //Removes SID/STAR alt/speed restrictions
         const val ADD_SIDSTAR_RESTR_UNRESTR = 11 //Adds all modes
         const val REMOVE_UNRESTR = 12 //Removes unrestricted mode
@@ -367,7 +368,14 @@ class NavState {
             aircraft.updateClearedAltitude(lowestAlt)
             replaceAllClearedAlt()
         } else {
-            aircraft.updateClearedAltitude(clearedAlt.first())
+            var alt = clearedAlt.first()
+            var replace = false
+            if ((dispLatMode.first() == VECTORS || clearedApch.first() == null) && alt < radarScreen.minAlt) {
+                alt = radarScreen.minAlt
+                replace = true
+            }
+            aircraft.updateClearedAltitude(alt)
+            if (replace) replaceAllClearedAlt()
         }
         aircraft.isExpedite = clearedExpedite.first()
         if (aircraft is Arrival || aircraft is Departure && (aircraft as Departure).isSidSet) {
@@ -754,6 +762,7 @@ class NavState {
             }
             REMOVE_CHANGE_STAR -> latModes.removeValue(Ui.CHANGE_STAR, false)
             ADD_CHANGE_STAR -> latModes.add(Ui.CHANGE_STAR)
+            ADD_SIDSTAR_ONLY -> latModes.add(aircraft.sidStar.name + " ${if (aircraft is Arrival) "arrival" else "departure"}")
             else -> Gdx.app.log("NavState", "Invalid latModes update mode: $mode")
         }
         if (updateUI && aircraft.isSelected && aircraft.isArrivalDeparture) aircraft.ui.updateState()
