@@ -72,7 +72,7 @@ class Route private constructor() {
         routeData.addAll(star.getRwyWpts(runway), star.getRwyRestrictions(runway), star.getRwyFlyOver(runway))
         holdProcedure = HoldProcedure(star)
         name = star.name
-        loadStarZone()
+        calculateStarZone()
     }
 
     /** Create new Route based on newly assigned SID  */
@@ -151,11 +151,11 @@ class Route private constructor() {
     constructor(jo: JSONObject, star: Star) : this(jo) {
         holdProcedure = HoldProcedure(star)
         name = star.name
-        loadStarZone()
+        calculateStarZone()
     }
 
     /** Loads sidStarZone for STAR routes  */
-    private fun loadStarZone() {
+    private fun calculateStarZone() {
         sidStarZone = SidStarZone(this, false)
         sidStarZone.calculatePolygons(0)
     }
@@ -292,6 +292,7 @@ class Route private constructor() {
         routeData.addAll(removedPoints)
         removedPoints.clear()
         apchTrans = ""
+        sidStarZone.calculatePolygons(0)
         return wpts.contains(direct, false)
     }
 
@@ -312,6 +313,7 @@ class Route private constructor() {
             apchTrans = trip.third?.name ?: "vector"
             routeData.addAll(trip.first)
         }
+        sidStarZone.calculatePolygons(0)
         return true
     }
 }

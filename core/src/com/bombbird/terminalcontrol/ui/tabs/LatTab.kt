@@ -494,7 +494,6 @@ class LatTab(ui: Ui) : Tab(ui) {
             }
         }
 
-    //If previous mode is not a heading mode, set clearedHdg to current aircraft heading
     override val choices: Unit
         get() {
             notListening = true

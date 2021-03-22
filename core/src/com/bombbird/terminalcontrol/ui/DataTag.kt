@@ -411,7 +411,7 @@ class DataTag(aircraft: Aircraft) {
                 if (Tab.latMode == NavState.SID_STAR && (aircraft.isLocCap || Tab.clearedWpt != aircraft.navState.clearedDirect.last()?.name || aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {
                     labelText[5] = Tab.clearedWpt ?: ""
                     changed = latTab.isLatModeChanged || latTab.isWptChanged
-                    if (aircraft.isLocCap && !changed) labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                    if (aircraft.isLocCap && !changed) labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                 } else if (Tab.latMode == NavState.HOLD_AT) {
                     labelText[5] = Tab.holdWpt ?: ""
                     changed = latTab.isLatModeChanged || latTab.isHoldWptChanged
@@ -424,7 +424,7 @@ class DataTag(aircraft: Aircraft) {
                     }
                 } else if (Tab.latMode == NavState.VECTORS) {
                     if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                     } else {
                         labelText[5] = Tab.clearedHdg.toString()
                         if (Tab.turnDir == NavState.TURN_LEFT) {
@@ -441,7 +441,7 @@ class DataTag(aircraft: Aircraft) {
             } else {
                 if (aircraft.isVectored) {
                     if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                     } else {
                         labelText[5] = aircraft.navState.clearedHdg.last().toString()
                         val turnDir: Int = aircraft.navState.clearedTurnDir.last()
@@ -456,7 +456,7 @@ class DataTag(aircraft: Aircraft) {
                 } else if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
                     labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
                 } else if (aircraft.isLocCap) {
-                    labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                    labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                 } else {
                     labelText[5] = ""
                 }
@@ -500,7 +500,7 @@ class DataTag(aircraft: Aircraft) {
                     labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
                 } else {
                     if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                        labelText[8] = ""
+                        labelText[8] = "" + (aircraft.navState.clearedApch.last()?.name ?: "")
                     } else {
                         labelText[8] = aircraft.sidStar.name
                         if (aircraft.navState.clearedApch.last() != null) {
@@ -540,7 +540,7 @@ $clearedAltStr  ${aircraft.icaoType}"""
                 var changed = false
                 if (Tab.latMode == NavState.VECTORS) {
                     if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                     } else {
                         labelText[5] = Tab.clearedHdg.toString()
                         if (Tab.turnDir == NavState.TURN_LEFT) {
@@ -561,7 +561,7 @@ $clearedAltStr  ${aircraft.icaoType}"""
                         labelText[5] = Tab.clearedWpt ?: ""
                         changed = latTab.isWptChanged
                         if (aircraft.isLocCap && !changed) {
-                            labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                            labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                         }
                     }
                 }
@@ -572,7 +572,7 @@ $clearedAltStr  ${aircraft.icaoType}"""
                     changed = latTab.isStarChanged
                 } else {
                     if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                        labelText[8] = ""
+                        labelText[8] = "" + (Tab.clearedILS ?: "")
                     } else {
                         labelText[8] = aircraft.sidStar.name
                         changed = latTab.isLatModeChanged && Tab.latMode == NavState.SID_STAR && aircraft.navState.dispLatMode.last() != NavState.AFTER_WPT_HDG && aircraft.navState.dispLatMode.last() != NavState.HOLD_AT || latTab.isIlsChanged
@@ -591,7 +591,7 @@ $clearedAltStr  ${aircraft.icaoType}"""
             } else {
                 if (aircraft.isVectored) {
                     if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                     } else {
                         labelText[5] = aircraft.navState.clearedHdg.last().toString()
                         val turnDir: Int = aircraft.navState.clearedTurnDir.last()
@@ -612,13 +612,13 @@ $clearedAltStr  ${aircraft.icaoType}"""
                         labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
                     } else if (aircraft.navState.clearedDirect.last() != null) {
                         labelText[5] = aircraft.navState.clearedDirect.last()?.name ?: ""
-                        if (aircraft.isLocCap) labelText[5] = if (aircraft.apch is RNP) "RNV" else "LOC"
+                        if (aircraft.isLocCap) labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
                     } else {
                         labelText[5] = ""
                     }
                 }
                 if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                    labelText[8] = ""
+                    labelText[8] = "" + (aircraft.navState.clearedApch.last()?.name ?: "")
                 } else {
                     labelText[8] = aircraft.sidStar.name
                     if (aircraft.isLocCap) {
