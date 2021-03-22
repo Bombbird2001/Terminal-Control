@@ -282,6 +282,7 @@ class Route private constructor() {
         return routeData.flyOver[findWptIndex(wptName)]
     }
 
+    /** Removes the waypoints from currently cleared approach, returns a boolean whether the aircraft is currently flying to one of the removed points */
     fun removeApchWpts(apch: Approach, direct: Waypoint?): Boolean {
         if (apch.routeDataMap.isEmpty() || routeData.waypoints.isEmpty) return false //No points to remove
         val wpts = apch.routeDataMap[apchTrans]?.waypoints ?: return false //If approach transition is not found, return
@@ -294,21 +295,23 @@ class Route private constructor() {
         return wpts.contains(direct, false)
     }
 
-    fun addApchWpts(apch: Approach, direct: Waypoint?) {
-        if (apch.routeDataMap.isEmpty()) return //No points to add
+    /** Adds the appropriate transition waypoints for the selected approach, returns a boolean whether any points were added */
+    fun addApchWpts(apch: Approach, direct: Waypoint?): Boolean {
+        if (apch.routeDataMap.isEmpty()) return false //No points to add
+        removedPoints.clear()
         val trip = apch.getNextPossibleTransition(direct, this)
         trip.second.waypoints.let {
             if (it.isEmpty) return@let
             val firstIndex = findWptIndex(it.first().name)
             if (firstIndex > -1) routeData.removeRange(firstIndex, size - 1)
+            removedPoints.addAll(trip.second)
         }
         trip.first.waypoints.let {
-            if (it.isEmpty) return@let
-            if (waypoints.contains(it.first(), false)) return //If waypoint already inside, don't add
+            if (it.isEmpty) return false
+            if (waypoints.contains(it.first(), false)) return false //If waypoint already inside, don't add
             apchTrans = trip.third?.name ?: "vector"
             routeData.addAll(trip.first)
         }
-        removedPoints.clear()
-        removedPoints.addAll(trip.second)
+        return true
     }
 }

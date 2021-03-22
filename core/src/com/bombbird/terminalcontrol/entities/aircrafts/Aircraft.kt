@@ -1544,7 +1544,8 @@ abstract class Aircraft : Actor {
             }
             ils?.let {
                 //Add all approach waypoints into route
-                route.addApchWpts(it, direct)
+                if (route.addApchWpts(it, direct) && !navState.latModes.contains(sidStar.name + " arrival", false))
+                    navState.updateLatModes(NavState.ADD_SIDSTAR_ONLY, true)
             }
         }
         this.apch = ils
