@@ -17,13 +17,14 @@ object WaypointShifter {
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON")
         putData("TCTT", 20, 0, "SCODI")
-        putData("TCTT", 0, -96, "BOMDA", "BALAD", "ADMON")
+        putData("TCTT", 0, -128, "BOMDA", "BALAD", "ADMON", "DOLLY")
         putData("TCTT", 16, 0, "COCOA", "MELAC", "COALL", "ROOLY", "COSTY")
         putData("TCTT", -64, -64, "GHOUL", "RALON")
         putData("TCTT", -48, -64, "CRICK", "NOMIN")
-        putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA")
+        putData("TCTT", 48, 0, "CLOWN", "SMITE", "EMMMA", "MALTY", "BRIDY")
         putData("TCTT", -88, -64, "RAZOR")
         putData("TCTT", -80, -80, "VALON", "LALLI")
+        putData("TCTT", -64, -64, "CONAN", "PEACH", "AGNII", "SMOKE")
         //TCHH
         putData("TCHH", 20, 0, "MUMMY", "CLIPP")
         //TCBB
