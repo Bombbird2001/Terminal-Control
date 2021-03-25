@@ -9,7 +9,6 @@ import kotlin.math.sin
 
 open class ILS(airport: Airport, name: String, jsonObject: JSONObject): Approach(airport, name, jsonObject) {
     init {
-        isNpa = false
         calculateGsRings()
     }
 
