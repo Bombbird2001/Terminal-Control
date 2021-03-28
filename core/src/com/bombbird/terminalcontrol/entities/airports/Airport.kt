@@ -129,8 +129,8 @@ class Airport {
     fun updateOtherRunwayInfo(save: JSONObject) {
         for (runway in runways.values) {
             val aircraftsOnAppr = Array<Aircraft>()
-            val queue = save.getJSONObject("runwayQueues").getJSONArray(runway.name)
-            for (i in 0 until queue.length()) {
+            val queue = save.getJSONObject("runwayQueues").optJSONArray(runway.name)
+            if (queue != null) for (i in 0 until queue.length()) {
                 aircraftsOnAppr.add(radarScreen.aircrafts[queue.getString(i)])
             }
             runway.aircraftOnApp = aircraftsOnAppr

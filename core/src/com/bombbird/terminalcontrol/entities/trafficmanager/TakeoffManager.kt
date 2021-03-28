@@ -47,15 +47,15 @@ class TakeoffManager {
         timers = HashMap()
         var index = 0
         for (runway in airport.runways.values) {
-            val info = save.getJSONObject("nextAircraft").getJSONArray(runway.name)
-            if (info.length() == 2) {
+            val info = save.getJSONObject("nextAircraft").optJSONArray(runway.name)
+            if (info != null && info.length() == 2) {
                 nextAircraft[runway.name] = arrayOf(info.getString(0), info.getString(1))
             } else {
                 nextAircraft[runway.name] = null
                 generateNewDeparture(runway.name, index)
                 index++
             }
-            timers[runway.name] = save.getJSONObject("timers").getDouble(runway.name).toFloat()
+            timers[runway.name] = save.getJSONObject("timers").optDouble(runway.name, 180.0).toFloat()
         }
     }
 

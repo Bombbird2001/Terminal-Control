@@ -14,6 +14,8 @@ object WaypointShifter {
         putData("TCTP", 64, -96, "HOKOU", "PILUT", "SLASH", "KINDY", "HERRO", "KEELL")
         //TCWS
         putData("TCWS", 80, -72, "GOBIS", "VAMOV", "VULUV", "SOPMI")
+        putData("TCWS", 48, -64, "RAYLU", "BELBY", "MINEL", "PLANE", "NELON", "NASIL")
+        putData("TCWS", -32, 0, "AGILE", "VIDAS", "RADIO", "MENNU", "KAYPO", "KANDI")
         //TCTT
         putData("TCTT", 32, 0, "LOBBI", "ABSON")
         putData("TCTT", 20, 0, "SCODI")
@@ -42,6 +44,8 @@ object WaypointShifter {
         //TCBD
         putData("TCBD", 0, -96, "LANNI")
         putData("TCBD", 32, 0, "DIVER")
+        putData("TCBD", 48, -64, "SOMEL", "SILLY", "CLANO", "SAUCE", "VANNY", "PAYRA", "SIRRE")
+        putData("TCBD", -32, 0, "CROWE", "YARUN", "MORRE", "DEPTH", "RYUKA", "NOLLY", "CALOS")
         //TCMD
         putData("TCMD", 16, -96, "DPT")
         putData("TCMD", -20, 0, "TENSI")
