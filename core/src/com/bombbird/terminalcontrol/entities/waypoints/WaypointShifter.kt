@@ -26,12 +26,19 @@ object WaypointShifter {
         putData("TCTT", -80, -80, "VALON", "LALLI")
         putData("TCTT", -64, -64, "CONAN", "PEACH", "AGNII", "SMOKE")
         //TCHH
-        putData("TCHH", 20, 0, "MUMMY", "CLIPP")
+        putData("TCHH", 20, 0, "MUMMY", "CLIPP", "GIVEN")
+        putData("TCHH", -32, 0, "IONIC")
+        putData("TCHH", 80, -72, "TESLA")
+        putData("TCHH", 32, -120, "HOOPP", "LITES")
+        putData("TCHH", -80, -16, "ITRF14.1")
+        putData("TCHH", 8, -120, "SOLUT")
+        putData("TCHH", -72, -120, "AIYOR")
         //TCBB
         putData("TCBB", -20, 0, "BANDE")
         putData("TCBB", 20, 0, "CLIPS", "BAYNO")
         putData("TCBB", 96, -24, "PONCH")
         putData("TCBB", 64, -112, "ERIGE", "GROND")
+        putData("TCBB", 56, -100, "RAMBE", "GAFET")
         //TCBD
         putData("TCBD", 0, -96, "LANNI")
         putData("TCBD", 32, 0, "DIVER")

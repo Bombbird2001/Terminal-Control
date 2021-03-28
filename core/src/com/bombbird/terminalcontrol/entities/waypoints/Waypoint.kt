@@ -69,11 +69,8 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
     /** Moves the restriction information labels for certain waypoints to reduce clutter  */
     private fun adjustPositions() {
         loadData()
-        if ("ITRF14.1" == name) {
+        if ("ITRF14.1" == name || "AIYOR" == name) {
             nameLabel.moveBy(-80f, -16f)
-            restrLabel.moveBy(-80f, -16f)
-            distToGoLabel.moveBy(-80f, -16f)
-            return
         }
         val icao = radarScreen.mainName
         if (WaypointShifter.movementData.containsKey(icao) && WaypointShifter.movementData[icao]?.containsKey(name) == true) {
