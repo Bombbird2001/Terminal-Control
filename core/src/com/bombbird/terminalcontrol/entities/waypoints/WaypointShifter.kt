@@ -52,6 +52,7 @@ object WaypointShifter {
         putData("TCMD", 88, -64, "ABSIT", "GLADI")
         putData("TCMD", 20, 0, "VERDE")
         putData("TCMD", -88, -64, "EMDOT", "PEGAS")
+        putData("TCMD", -72, -64, "LUCAS")
         //TCPG - No adjustments needed
         //TCHX
         putData("TCHX", -8, 0, "CS")
