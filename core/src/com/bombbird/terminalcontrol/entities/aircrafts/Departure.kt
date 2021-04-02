@@ -172,6 +172,16 @@ class Departure : Aircraft {
             navState.clearedHdg.removeFirst()
             navState.clearedHdg.addFirst(clearedHeading)
             heading = it.heading.toDouble()
+
+            if (sid.isRadarDep(it.name)) {
+                navState.dispLatMode.removeFirst()
+                navState.dispLatMode.addFirst(NavState.VECTORS)
+                navState.dispAltMode.removeFirst()
+                navState.dispAltMode.addFirst(NavState.NO_RESTR)
+                navState.dispSpdMode.removeFirst()
+                navState.dispSpdMode.addFirst(NavState.NO_RESTR)
+            }
+
             isTkOfLdg = true
         }
     }

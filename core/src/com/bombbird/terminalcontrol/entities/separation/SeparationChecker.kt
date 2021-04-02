@@ -299,11 +299,14 @@ class SeparationChecker : Actor() {
     /** Checks that each aircraft is separated from each obstacles/restricted area  */
     private fun checkRestrSep() {
         for (aircraft in radarScreen.aircrafts.values) {
-            if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap ||
-                    aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true ||
+            if (aircraft.isOnGround || aircraft.isGsCap || (aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap) ||
+                    (aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true) ||
                     aircraft.isGoAroundWindow ||
-                    (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0)) {
-                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around, or is on the visual segment of circling approach
+                    (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0) ||
+                    (aircraft is Departure && !aircraft.isSidSet)) {
+                //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground,
+                // or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around,
+                // or is on the visual segment of circling approach, or is a departure that has not climbed past initial climb
                 continue
             }
             var conflict = false

@@ -176,19 +176,27 @@ class TakeoffManager {
         for (runway1 in airport.takeoffRunways.values) {
             val distance: Float = if (runway1.aircraftOnApp.size > 0) pixelToNm(distanceBetween(runway1.aircraftOnApp.first().x, runway1.aircraftOnApp.first().y, runway1.x, runway1.y)) else 25f
             if (!runway1.isEmergencyClosed && checkPreceding(runway1.name) && checkLanding(runway1) && checkOppLanding(runway1.name) && checkPreceding(runway1.oppRwy.name) && checkGoAround(runway1.name) && (distance > dist || distance > 24.9) && !runway1.isStormInPath) {
-                if ("02L" == runway1.name && checkPreceding("02C") && checkOppLanding("02C") && checkGoAround("02C")) {
+                if ("02L" == runway1.name && checkPreceding("02C") && checkOppLanding("02C") && checkGoAround("02C") && checkPreceding("02R") && checkOppLanding("02R") && checkGoAround("02R")) {
                     runway = runway1
                     dist = distance
-                } else if ("02C" == runway1.name && checkPreceding("02L") && checkOppLanding("02L") && checkGoAround("02L")) {
+                } else if ("02C" == runway1.name && checkPreceding("02L") && checkOppLanding("02L") && checkGoAround("02L") && checkPreceding("02R") && checkOppLanding("02R") && checkGoAround("02R")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("20C" == runway1.name && checkPreceding("20R") && checkOppLanding("20R") && checkGoAround("20R")) {
+                } else if ("02R" == runway1.name && checkPreceding("02L") && checkOppLanding("02L") && checkGoAround("02L") && checkPreceding("02C") && checkOppLanding("02C") && checkGoAround("02C")) {
                     runway = runway1
                     if (distance > 24.9) break
                     dist = distance
-                } else if ("20R" == runway1.name && checkPreceding("20C") && checkOppLanding("20C") && checkGoAround("20C")) {
+                } else if ("20C" == runway1.name && checkPreceding("20R") && checkOppLanding("20R") && checkGoAround("20R") && checkPreceding("02R") && checkOppLanding("20L") && checkGoAround("20L")) {
                     runway = runway1
+                    if (distance > 24.9) break
+                    dist = distance
+                } else if ("20R" == runway1.name && checkPreceding("20C") && checkOppLanding("20C") && checkGoAround("20C") && checkPreceding("20L") && checkOppLanding("20L") && checkGoAround("20L")) {
+                    runway = runway1
+                    dist = distance
+                } else if ("20L" == runway1.name && checkPreceding("20C") && checkOppLanding("20C") && checkGoAround("20C") && checkPreceding("20L") && checkOppLanding("20L") && checkGoAround("20L")) {
+                    runway = runway1
+                    if (distance > 24.9) break
                     dist = distance
                 }
             }

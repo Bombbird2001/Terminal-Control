@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.aircrafts.Aircraft
 import com.bombbird.terminalcontrol.entities.aircrafts.Arrival
+import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
 import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.OffsetILS
@@ -52,9 +53,11 @@ class AreaPenetrationChecker {
                             //If aircraft is cleared for ILS approach, inhibit to prevent nuisance warnings
                             continue
                         }
-                        if (aircraft.isOnGround || aircraft.isGsCap || aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap || aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true ||
-                                aircraft.isGoAroundWindow || (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0)) {
-                            //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground, or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around, or is on the visual segment of circling approach
+                        if (aircraft.isOnGround || aircraft.isGsCap || (aircraft is Arrival && aircraft.apch is OffsetILS && aircraft.isLocCap) || (aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true) ||
+                                aircraft.isGoAroundWindow || (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0) || (aircraft is Departure && !aircraft.isSidSet)) {
+                            //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground,
+                            // or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around,
+                            // or is on the visual segment of circling approach, or is a departure that has not climbed past initial climb
                             continue
                         }
                         if (positionPoint.altitude < obstacle.minAlt - 50 && obstacle.isIn(positionPoint.x, positionPoint.y)) {
