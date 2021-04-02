@@ -77,4 +77,9 @@ class Sid : SidStar {
         if (runway == null) return null
         return initRouteData[runway]?.flyOver
     }
+
+    fun isRadarDep(runway: String?): Boolean {
+        if (runway == null) return false
+        return initRouteData[runway]?.size == 0 && routeData.size == 0
+    }
 }
