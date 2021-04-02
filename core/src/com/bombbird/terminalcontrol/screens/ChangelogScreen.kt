@@ -72,6 +72,14 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2103.1
+        val content24 = Array<String>()
+        content24.add("-Mechanics: Added approach transitions - transition is selected automatically based on aircraft flight path")
+        content24.add("-Mechanics: Added RNAV/RNP approaches for TCWS")
+        content24.add("-Mechanics: Added radar departures for TCWS")
+        content24.add("-Bug fixes")
+        changeLogContent["1.5.2103.1"] = content24
+
         //Version 1.5.2102.1
         val content23 = Array<String>()
         content23.add("-Weather: Greatly improved game performance when storms are enabled")
