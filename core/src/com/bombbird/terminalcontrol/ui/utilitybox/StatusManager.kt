@@ -62,7 +62,7 @@ class StatusManager(private val utilityBox: UtilityBox) {
                 text += when {
                     aircraft.emergency.isStayOnRwy && aircraft.isOnGround -> "Landed, runway ${aircraft.apch?.name?.substring(3)} closed"
                     aircraft.emergency.isReadyForApproach -> "Ready for approach" + if (aircraft.emergency.isStayOnRwy) ", will remain on runway" else ""
-                    aircraft.emergency.isDumpingFuel -> "Dumping fuel" + if (aircraft.emergency.isRemainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60)} mins remaining" else ""
+                    aircraft.emergency.isDumpingFuel -> "Dumping fuel" + if (aircraft.emergency.isRemainingTimeSaid) ", ${ceil(aircraft.emergency.fuelDumpTime.toDouble() / 60).toInt()} mins remaining" else ""
                     aircraft.emergency.isChecklistsSaid -> "Running checklists" + if (aircraft.emergency.isFuelDumpRequired) ", fuel dump required" else ""
                     else -> when (aircraft.emergency.type) {
                         Emergency.Type.MEDICAL -> "Medical emergency"
