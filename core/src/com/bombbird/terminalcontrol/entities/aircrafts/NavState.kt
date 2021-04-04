@@ -353,11 +353,9 @@ class NavState {
 
     /** Sets the direct aircraft navigation states  */
     fun updateAircraftInfo() {
-        if (aircraft is Arrival || aircraft is Departure && (aircraft as Departure).isSidSet) {
-            aircraft.clearedHeading = clearedHdg.first()
-        }
+        aircraft.clearedHeading = clearedHdg.first()
         aircraft.direct = clearedDirect.first()
-        aircraft.sidStarIndex = aircraft.direct?.name?.let { aircraft.route.findWptIndex(it) } ?: 0
+        aircraft.direct?.name?.let { aircraft.sidStarIndex = aircraft.route.findWptIndex(it) }
         aircraft.afterWaypoint = clearedAftWpt.first()
         aircraft.afterWptHdg = clearedAftWptHdg.first()
         aircraft.holdWpt = clearedHold.first()

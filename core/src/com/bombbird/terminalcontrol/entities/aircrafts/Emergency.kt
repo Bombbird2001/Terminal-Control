@@ -260,6 +260,8 @@ class Emergency {
         aircraft.navState.clearedSpd.clear()
         aircraft.navState.clearedSpd.addFirst(aircraft.clearedIas)
         aircraft.navState.length = 1
+        aircraft.route.routeData.clear()
+        aircraft.route.removedPoints.clear()
         aircraft.navState.updateAircraftInfo()
     }
 

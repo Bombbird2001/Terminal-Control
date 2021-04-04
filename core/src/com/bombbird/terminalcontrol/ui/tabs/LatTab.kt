@@ -574,19 +574,35 @@ class LatTab(ui: Ui) : Tab(ui) {
                 spdMode = NavState.NO_RESTR
             }
             if (it is Arrival) {
+                if (it.navState.containsCode(latMode, NavState.AFTER_WPT_HDG, NavState.HOLD_AT) && clearedILS != Ui.NOT_CLEARED_APCH) {
+                    val newMode = if (it.navState.containsCode(latMode, NavState.SID_STAR)) NavState.SID_STAR else NavState.VECTORS
+                    latMode = newMode
+                    modeButtons.mode = newMode
+                    afterWpt = null
+                    holdWpt = null
+                    it.navState.updateLatModes(NavState.REMOVE_AFTERHDG_HOLD, false)
+                }
                 if (latMode == NavState.SID_STAR && clearedILS != Ui.NOT_CLEARED_APCH) {
                     altMode = NavState.SID_STAR_RESTR
+                    spdMode = NavState.SID_STAR_RESTR
+                    ui.altTab.modeButtons.mode = NavState.SID_STAR_RESTR
+                    ui.spdTab.modeButtons.mode = NavState.SID_STAR_RESTR
                     it.navState.updateAltModes(NavState.REMOVE_UNRESTR, false)
+                    it.navState.updateSpdModes(NavState.REMOVE_UNRESTR, false)
                     var lowestAlt = if (it.route.apchTrans == "")
                         it.airport.approaches[clearedILS?.substring(3)]?.getNextPossibleTransition(radarScreen.waypoints[clearedWpt], it.route)?.first?.restrictions?.let { it2 -> if (it2.size > 0) it2[it2.size - 1][0] else null }
                     else it.route.getWptMinAlt(it.route.size - 1)
                     if (lowestAlt == -1) lowestAlt = radarScreen.minAlt
                     if (lowestAlt != null) clearedAlt = lowestAlt
                 } else if (clearedILS == Ui.NOT_CLEARED_APCH) {
-                    if (it.navState.containsCode(latMode, NavState.SID_STAR, NavState.AFTER_WPT_HDG, NavState.HOLD_AT)) {
+                    if (latMode == NavState.SID_STAR) {
+                        it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
+                        it.navState.updateSpdModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
                     } else {
+                        it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_UNRESTR_ONLY, false)
+                        it.navState.updateSpdModes(NavState.ADD_UNRESTR_ONLY, false)
                     }
                 }
             }

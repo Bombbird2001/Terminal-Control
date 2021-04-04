@@ -193,7 +193,7 @@ class Departure : Aircraft {
             targetHeading = clearedHeading.toDouble()
             isV2set = true
             //Ensure the aircraft clears at least the first waypoint restriction to prevent nuisance alerts
-            if (route.getWaypoint(0) != null && route.getWptMinAlt(0) != -1) {
+            if (!sid.isRadarDep(runway?.name) && route.getWaypoint(0) != null && route.getWptMinAlt(0) != -1) {
                 //Perform only if first waypoint has a minimum altitude
                 val wpt = route.getWaypoint(0)
                 val dist = if (wpt != null) pixelToNm(distanceBetween(x, y, wpt.posX.toFloat(), wpt.posY.toFloat())) else 0f //Distance in nm
