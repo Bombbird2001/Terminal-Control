@@ -18,7 +18,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.Route
 import com.bombbird.terminalcontrol.entities.sidstar.SidStar
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
-import com.bombbird.terminalcontrol.ui.DataTag
+import com.bombbird.terminalcontrol.ui.datatag.DataTag
 import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO

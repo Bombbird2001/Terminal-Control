@@ -109,13 +109,13 @@ class WakeManager() {
         val points = aircraftWakes[aircraft.callsign] ?: return
         var prevDist = 0
         for (i in 0..5) {
-            val reqDist = SeparationMatrix.getWakeSepDist(aircraft.recat, (i + 'A'.toInt()).toChar())
+            val reqDist = SeparationMatrix.getWakeSepDist(aircraft.recat, (i + 'A'.code).toChar())
             if (reqDist == 0) continue
             if (reqDist == prevDist) continue
             val index = points.size - 1 - reqDist * 2
             if (index < 0) break
-            var thing = (i + 'A'.toInt()).toChar().toString()
-            if (i < 5 && SeparationMatrix.getWakeSepDist(aircraft.recat, (i + 1 + 'A'.toInt()).toChar()) == reqDist) thing += "/" + (i + 1 + 'A'.toInt()).toChar()
+            var thing = (i + 'A'.code).toChar().toString()
+            if (i < 5 && SeparationMatrix.getWakeSepDist(aircraft.recat, (i + 1 + 'A'.code).toChar()) == reqDist) thing += "/" + (i + 1 + 'A'.code).toChar()
             val offset = if (thing.length > 1) 20 else 6
             Fonts.defaultFont6?.draw(batch, thing, points[index].x - offset, points[index].y)
             prevDist = reqDist

@@ -47,6 +47,8 @@ import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
 import com.bombbird.terminalcontrol.ui.*
+import com.bombbird.terminalcontrol.ui.datatag.DataTag
+import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
 import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager
@@ -102,7 +104,6 @@ class RadarScreen : GameScreen {
     var collisionWarning = -1
     var showMva = false
     var showIlsDash = false
-    var compactData = false
     var showUncontrolled = false
     var alwaysShowBordersBackground = false
     var lineSpacingValue = 0
@@ -221,6 +222,9 @@ class RadarScreen : GameScreen {
     var stormNumber: Int
     val thunderCellArray = Array<ThunderCell>()
 
+    //Datatag configuration
+    var dataTagConfig: DataTagConfig
+
     //Timer for checking whether time is up for airport
     private var lockTime = 5f
     var remainingTime = -1
@@ -263,7 +267,7 @@ class RadarScreen : GameScreen {
             collisionWarning = -1
             showMva = true
             showIlsDash = false
-            compactData = false
+            dataTagConfig = DataTagConfig(DataTagConfig.DEFAULT)
             showUncontrolled = false
             alwaysShowBordersBackground = true
             rangeCircleDist = 0
@@ -1111,7 +1115,7 @@ class RadarScreen : GameScreen {
 
     fun updateInformation() {
         information++
-        if (information.toInt() > 90) information -= 26
+        if (information.code > 90) information -= 26
         utilityBox.commsManager.normalMsg("Information $information is now current")
     }
 }

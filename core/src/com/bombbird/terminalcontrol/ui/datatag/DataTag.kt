@@ -1,4 +1,4 @@
-package com.bombbird.terminalcontrol.ui
+package com.bombbird.terminalcontrol.ui.datatag
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -20,6 +20,7 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
 import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.RNP
+import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.getRequiredTrack
@@ -41,6 +42,21 @@ class DataTag(aircraft: Aircraft) {
         var LOADED_ICONS = false
         private val tapTimer = Timer()
         private val flashTimer = Timer()
+
+        //Datatag value keys
+        const val CALLSIGN = "Callsign"
+        const val CALLSIGN_RECAT = "Callsign + Wake"
+        const val ICAO_TYPE = "Aircraft type"
+        const val ICAO_TYPE_WAKE = "Aircraft type + Wake"
+        const val ALTITUDE_FULL = "Full altitude info"
+        const val ALTITUDE = "Current altitude"
+        const val CLEARED_ALT = "Cleared altitude"
+        const val HEADING = "Heading"
+        const val LAT_CLEARED = "Cleared waypoint/heading"
+        const val SIDSTAR_CLEARED = "Cleared SID/STAR/Approach"
+        const val GROUND_SPEED = "Ground speed"
+        const val CLEARED_IAS = "Cleared speed"
+        const val AIRPORT = "Airport"
 
         /** Pauses all timers  */
         fun pauseTimers() {
@@ -66,7 +82,7 @@ class DataTag(aircraft: Aircraft) {
     private val radarScreen = TerminalControl.radarScreen!!
     private val aircraft: Aircraft
     private val label: Label
-    private val labelText: Array<String>
+    private val labelText: HashMap<String, String>
     private val icon: ImageButton
     private val labelButton: Button
     private val clickSpot: Button
@@ -86,8 +102,12 @@ class DataTag(aircraft: Aircraft) {
         icon.setSize(20f, 20f)
         icon.imageCell.size(20f, 20f)
         radarScreen.stage.addActor(icon)
-        labelText = arrayOf("", "", "", "", "", "", "", "", "", "", "")
-        labelText[9] = aircraft.airport.icao
+        labelText = HashMap()
+        labelText[CALLSIGN] = aircraft.callsign
+        labelText[CALLSIGN_RECAT] = "${aircraft.callsign}/${aircraft.recat}"
+        labelText[ICAO_TYPE] = aircraft.icaoType
+        labelText[ICAO_TYPE_WAKE] = "${aircraft.icaoType}/${aircraft.wakeCat}/${aircraft.recat}"
+        labelText[AIRPORT] = aircraft.airport.icao
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont6
         if (radarScreen.lineSpacingValue == 0) {
@@ -381,8 +401,6 @@ class DataTag(aircraft: Aircraft) {
             aircraft.radarVs > 150 -> " ^ "
             else -> " = "
         }
-        labelText[0] = aircraft.callsign
-        labelText[1] = aircraft.icaoType + "/" + aircraft.wakeCat + "/" + aircraft.recat
         labelText[2] = MathUtils.round(aircraft.radarAlt / 100).toString()
         labelText[3] = if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
             if (aircraft.apch?.name?.contains("IMG") == true || (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) || aircraft.apch is RNP) "VIS"

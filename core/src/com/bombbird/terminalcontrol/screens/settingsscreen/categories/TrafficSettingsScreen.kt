@@ -56,7 +56,7 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         emer.setItems("Off", "Low", "Medium", "High")
         emer.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                emerChance = Emergency.Chance.valueOf(emer.selected.toUpperCase(Locale.US))
+                emerChance = Emergency.Chance.valueOf(emer.selected.uppercase(Locale.US))
             }
         })
 
@@ -65,7 +65,7 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             tfcMode.setItems("Normal", "Arrivals only")
             tfcMode.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
-                    tfcSel = RadarScreen.TfcMode.valueOf(tfcMode.selected.toUpperCase(Locale.US).replace(" ".toRegex(), "_"))
+                    tfcSel = RadarScreen.TfcMode.valueOf(tfcMode.selected.uppercase(Locale.US).replace(" ".toRegex(), "_"))
                 }
             })
             night = createStandardSelectBox()
@@ -197,12 +197,12 @@ class TrafficSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Sets relevant options into select boxes  */
     override fun setOptions() {
         emerChance = radarScreen?.emerChance ?: TerminalControl.emerChance
-        val tmp = emerChance.toString().toLowerCase(Locale.US)
-        emer.selected = tmp.substring(0, 1).toUpperCase(Locale.ROOT) + tmp.substring(1)
+        val tmp = emerChance.toString().lowercase(Locale.US)
+        emer.selected = tmp.substring(0, 1).uppercase(Locale.ROOT) + tmp.substring(1)
         if (radarScreen != null) {
             tfcSel = radarScreen.tfcMode
-            val tmp2 = tfcSel.toString().toLowerCase(Locale.US)
-            tfcMode.selected = (tmp2.substring(0, 1).toUpperCase(Locale.ROOT) + tmp2.substring(1)).replace("_".toRegex(), " ")
+            val tmp2 = tfcSel.toString().lowercase(Locale.US)
+            tfcMode.selected = (tmp2.substring(0, 1).uppercase(Locale.ROOT) + tmp2.substring(1)).replace("_".toRegex(), " ")
             allowNight = radarScreen.allowNight
             night.selected = if (allowNight) "On" else "Off"
             nightStart = radarScreen.nightStart

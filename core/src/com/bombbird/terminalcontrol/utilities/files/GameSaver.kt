@@ -56,7 +56,7 @@ object GameSaver {
         jsonObject.put("playTime", radarScreen.playTime.toDouble())
         jsonObject.put("spawnTimer", radarScreen.spawnTimer.toDouble())
         jsonObject.put("previousOffset", radarScreen.previousOffset.toDouble())
-        jsonObject.put("information", radarScreen.information.toInt())
+        jsonObject.put("information", radarScreen.information.code)
         jsonObject.put("radarTime", radarScreen.radarTime.toDouble())
         jsonObject.put("trailTime", radarScreen.trailTime.toDouble())
         jsonObject.put("trajectoryLine", radarScreen.trajectoryLine)
@@ -150,7 +150,7 @@ object GameSaver {
             aircraftInfo.put("callsign", aircraft.callsign) //Callsign
             aircraftInfo.put("icaoType", aircraft.icaoType) //ICAO aircraft type
             aircraftInfo.put("wakeCat", aircraft.wakeCat.toString()) //Wake turbulence category
-            aircraftInfo.put("recat", aircraft.recat.toInt()) //Recat code
+            aircraftInfo.put("recat", aircraft.recat.code) //Recat code
             aircraftInfo.put("wakeInfringe", aircraft.isWakeInfringe) //Whether wake separation too low
             aircraftInfo.put("wakeTolerance", aircraft.wakeTolerance.toDouble()) //Wake tolerance of aircraft
             aircraftInfo.put("v2", aircraft.v2) //V2 speed
