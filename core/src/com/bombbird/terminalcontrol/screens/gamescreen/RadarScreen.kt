@@ -45,6 +45,8 @@ import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.TrafficFlowScreen
 import com.bombbird.terminalcontrol.sounds.Pronunciation
 import com.bombbird.terminalcontrol.ui.*
+import com.bombbird.terminalcontrol.ui.datatag.DataTag
+import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.ui.tutorial.TutorialManager
 import com.bombbird.terminalcontrol.ui.utilitybox.UtilityBox
@@ -98,7 +100,6 @@ class RadarScreen : GameScreen {
     var collisionWarning = -1
     var showMva = false
     var showIlsDash = false
-    var compactData = false
     var showUncontrolled = false
     var alwaysShowBordersBackground = false
     var lineSpacingValue = 0
@@ -217,6 +218,9 @@ class RadarScreen : GameScreen {
     var stormNumber: Int
     val thunderCellArray = Array<ThunderCell>()
 
+    //Datatag configuration
+    var dataTagConfig: DataTagConfig
+
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
         save = null
@@ -255,7 +259,7 @@ class RadarScreen : GameScreen {
             collisionWarning = -1
             showMva = true
             showIlsDash = false
-            compactData = false
+            dataTagConfig = DataTagConfig(DataTagConfig.DEFAULT)
             showUncontrolled = false
             alwaysShowBordersBackground = true
             rangeCircleDist = 0
@@ -1058,7 +1062,7 @@ class RadarScreen : GameScreen {
 
     fun updateInformation() {
         information++
-        if (information.toInt() > 90) information -= 26
+        if (information.code > 90) information -= 26
         utilityBox.commsManager.normalMsg("Information $information is now current")
     }
 }

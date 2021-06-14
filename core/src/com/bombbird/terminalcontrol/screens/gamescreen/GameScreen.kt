@@ -22,7 +22,7 @@ import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.PauseScreen
 import com.bombbird.terminalcontrol.sounds.SoundManager
-import com.bombbird.terminalcontrol.ui.DataTag
+import com.bombbird.terminalcontrol.ui.datatag.DataTag
 import com.bombbird.terminalcontrol.ui.RandomTip.loadTips
 import com.bombbird.terminalcontrol.ui.RandomTip.randomTip
 import com.bombbird.terminalcontrol.ui.RandomTip.tipsLoaded

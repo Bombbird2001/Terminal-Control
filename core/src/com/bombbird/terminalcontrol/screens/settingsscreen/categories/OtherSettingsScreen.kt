@@ -56,7 +56,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
                     //Go to weather change screen
                     game.screen = WeatherScreen(game)
                 } else {
-                    weatherSel = RadarScreen.Weather.valueOf(weather.selected.split(" ".toRegex()).toTypedArray()[0].toUpperCase(Locale.ROOT))
+                    weatherSel = RadarScreen.Weather.valueOf(weather.selected.split(" ".toRegex()).toTypedArray()[0].uppercase(Locale.ROOT))
                 }
             }
         })
@@ -109,7 +109,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             speed.setItems("1x", "2x", "4x")
             speed.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent, actor: Actor) {
-                    speedSel = speed.selected[0].toInt() - 48
+                    speedSel = speed.selected[0].code - 48
                 }
             })
         }
@@ -164,7 +164,7 @@ class OtherSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, back
             stormNumber = TerminalControl.stormNumber
             soundSel = TerminalControl.soundSel
         }
-        weather.selected = weatherSel.toString()[0].toString() + weatherSel.toString().substring(1).toLowerCase(Locale.ROOT) + " weather"
+        weather.selected = weatherSel.toString()[0].toString() + weatherSel.toString().substring(1).lowercase(Locale.ROOT) + " weather"
         storms.selected = when (stormNumber) {
             0 -> "Off"
             2 -> "Low"

@@ -22,7 +22,7 @@ class TextToSpeechManager {
             val newDirect: String? = if (Pronunciation.waypointPronunciations.containsKey(direct)) {
                 Pronunciation.waypointPronunciations[direct]
             } else {
-                Pronunciation.checkNumber(direct).toLowerCase(Locale.ROOT)
+                Pronunciation.checkNumber(direct).lowercase(Locale.ROOT)
             }
             directString = ", inbound $newDirect"
         }
@@ -76,7 +76,7 @@ class TextToSpeechManager {
         val newWpt: String? = if (Pronunciation.waypointPronunciations.containsKey(wpt)) {
             Pronunciation.waypointPronunciations[wpt]
         } else {
-            Pronunciation.checkNumber(wpt).toLowerCase(Locale.ROOT)
+            Pronunciation.checkNumber(wpt).lowercase(Locale.ROOT)
         }
         when (type) {
             0 -> text += " is established in the hold over $newWpt"

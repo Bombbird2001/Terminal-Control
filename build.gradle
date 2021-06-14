@@ -1,13 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.4.32'
+    ext.kotlin_version = '1.5.10'
 
     repositories {
         mavenLocal()
         mavenCentral()
-        jcenter()
+        //jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "http://maven.scijava.org/content/repositories/public/" }
         google()
     }
 
@@ -34,10 +35,11 @@ allprojects {
         google()
         mavenLocal()
         mavenCentral()
-        jcenter()
+        //jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "http://maven.scijava.org/content/repositories/public/" }
     }
 }
 

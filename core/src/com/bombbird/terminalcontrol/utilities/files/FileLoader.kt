@@ -145,7 +145,7 @@ object FileLoader {
                 } else if (index == 1 || index == 6) {
                     //Wake turb cat, recat
                     val cat = s1[0]
-                    perfData[index - 1] = cat.toInt()
+                    perfData[index - 1] = cat.code
                     if (index == 1 && !(cat == 'M' || cat == 'H' || cat == 'J')) Gdx.app.log("Wake cat error", "Unknown category for $icao")
                     if (index == 6 && cat !in 'A'..'F') Gdx.app.log("Recat error", "Unknown category for $icao")
                 } else {

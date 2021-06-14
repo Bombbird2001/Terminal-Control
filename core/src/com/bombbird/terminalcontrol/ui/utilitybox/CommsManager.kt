@@ -151,7 +151,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
         if (aircraft is Arrival) {
             if (!aircraft.isGoAroundWindow && aircraft.direct != null) {
                 text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + action + starString + inboundString + infoString
-                TerminalControl.ttsManager.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), starSaid, aircraft.direct?.name ?: "somewhere", inboundSaid, infoString)
+                TerminalControl.ttsManager.initArrContact(aircraft, apchCallsign, greeting, action, aircraft.sidStar.pronunciation.lowercase(Locale.ROOT), starSaid, aircraft.direct?.name ?: "somewhere", inboundSaid, infoString)
             } else {
                 action = (if (MathUtils.randomBoolean()) "going around, " else "missed approach, ") + action //Go around message
                 text = apchCallsign + ", " + aircraft.callsign + wake + " with you, " + action + ", heading " + aircraft.clearedHeading
@@ -167,7 +167,7 @@ class CommsManager(private val utilityBox: UtilityBox) {
             }
             val airborne = if (MathUtils.randomBoolean()) "" else "airborne "
             text = apchCallsign + greeting + ", " + aircraft.callsign + wake + " with you, " + outboundText + airborne + action + sidString
-            TerminalControl.ttsManager.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.sidStar.pronunciation.toLowerCase(Locale.ROOT), sidSaid)
+            TerminalControl.ttsManager.initDepContact(aircraft, apchCallsign, greeting, outboundText, airborne, action, aircraft.sidStar.pronunciation.lowercase(Locale.ROOT), sidSaid)
         }
         val finalText = text
         Gdx.app.postRunnable {
