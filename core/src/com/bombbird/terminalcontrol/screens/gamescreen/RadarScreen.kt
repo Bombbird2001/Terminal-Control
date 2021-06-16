@@ -279,7 +279,7 @@ class RadarScreen : GameScreen {
             collisionWarning = TerminalControl.collisionWarning
             showMva = TerminalControl.showMva
             showIlsDash = TerminalControl.showIlsDash
-            compactData = TerminalControl.compactData
+            dataTagConfig = DataTagConfig(TerminalControl.datatagConfig)
             showUncontrolled = TerminalControl.showUncontrolled
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground
             rangeCircleDist = TerminalControl.rangeCircleDist
@@ -342,7 +342,7 @@ class RadarScreen : GameScreen {
         collisionWarning = if (TerminalControl.full) save.optInt("collisionWarning", -1) else -1
         showMva = save.optBoolean("showMva", true)
         showIlsDash = save.optBoolean("showIlsDash", false)
-        compactData = save.optBoolean("compactData", false)
+        dataTagConfig = DataTagConfig(save.optString("datatagConfig", if (save.optBoolean("compactData", false)) "Compact" else "Default"))
         showUncontrolled = save.optBoolean("showUncontrolled", false)
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true)
         rangeCircleDist = save.optInt("rangeCircleDist", 0)

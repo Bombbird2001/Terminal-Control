@@ -40,6 +40,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
     init {
         TerminalControl.loadVersionInfo()
         TerminalControl.loadSettings()
+        TerminalControl.loadDatatagConfigs()
         UnlockManager.loadStats()
         if (!TerminalControl.loadedDiscord) TerminalControl.discordManager.initializeDiscord()
         TerminalControl.discordManager.updateRPC()
