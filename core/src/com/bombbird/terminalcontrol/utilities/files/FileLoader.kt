@@ -368,6 +368,16 @@ object FileLoader {
         return stats
     }
 
+    fun getAvailableDatatagConfigs(): kotlin.Array<String> {
+        val handle = getExtDir("datatags")
+        return if (handle != null && handle.exists() && handle.isDirectory) {
+            handle.list().map { it.name() }.toTypedArray()
+        } else {
+            handle?.mkdirs()
+            arrayOf()
+        }
+    }
+
     fun getExtDir(path: String): FileHandle? {
         var handle: FileHandle? = null
         if (Gdx.app.type == Application.ApplicationType.Desktop) {

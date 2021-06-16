@@ -20,7 +20,6 @@ import com.bombbird.terminalcontrol.entities.aircrafts.Departure
 import com.bombbird.terminalcontrol.entities.aircrafts.NavState
 import com.bombbird.terminalcontrol.entities.approaches.Circling
 import com.bombbird.terminalcontrol.entities.approaches.RNP
-import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.math.MathTools.getRequiredTrack
@@ -82,7 +81,7 @@ class DataTag(aircraft: Aircraft) {
     private val radarScreen = TerminalControl.radarScreen!!
     private val aircraft: Aircraft
     private val label: Label
-    private val labelText: HashMap<String, String>
+    private val labelFields: HashMap<String, String>
     private val icon: ImageButton
     private val labelButton: Button
     private val clickSpot: Button
@@ -102,12 +101,12 @@ class DataTag(aircraft: Aircraft) {
         icon.setSize(20f, 20f)
         icon.imageCell.size(20f, 20f)
         radarScreen.stage.addActor(icon)
-        labelText = HashMap()
-        labelText[CALLSIGN] = aircraft.callsign
-        labelText[CALLSIGN_RECAT] = "${aircraft.callsign}/${aircraft.recat}"
-        labelText[ICAO_TYPE] = aircraft.icaoType
-        labelText[ICAO_TYPE_WAKE] = "${aircraft.icaoType}/${aircraft.wakeCat}/${aircraft.recat}"
-        labelText[AIRPORT] = aircraft.airport.icao
+        labelFields = HashMap()
+        labelFields[CALLSIGN] = aircraft.callsign
+        labelFields[CALLSIGN_RECAT] = "${aircraft.callsign}/${aircraft.recat}"
+        labelFields[ICAO_TYPE] = aircraft.icaoType
+        labelFields[ICAO_TYPE_WAKE] = "${aircraft.icaoType}/${aircraft.wakeCat}/${aircraft.recat}"
+        labelFields[AIRPORT] = aircraft.airport.icao
         val labelStyle = Label.LabelStyle()
         labelStyle.font = Fonts.defaultFont6
         if (radarScreen.lineSpacingValue == 0) {
@@ -393,274 +392,87 @@ class DataTag(aircraft: Aircraft) {
 
     /** Updates the label on the radar given aircraft's radar data and other data  */
     fun updateLabel() {
+        val config = radarScreen.dataTagConfig
+
         val latTab = aircraft.ui.latTab
         val altTab = aircraft.ui.altTab
         val spdTab = aircraft.ui.spdTab
+
         val vertSpd: String = when {
             aircraft.radarVs < -150 -> " v "
             aircraft.radarVs > 150 -> " ^ "
             else -> " = "
         }
-        labelText[2] = MathUtils.round(aircraft.radarAlt / 100).toString()
-        labelText[3] = if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
+
+        val clearedVert = if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) "VIS" else if (aircraft.isGsCap) {
             if (aircraft.apch?.name?.contains("IMG") == true || (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) || aircraft.apch is RNP) "VIS"
             else "GS"
         } else if (aircraft.isLocCap && aircraft.apch?.isNpa == true) "NPA" else (aircraft.targetAltitude / 100).toString()
-        labelText[10] = (aircraft.navState.clearedAlt.last() / 100).toString()
-        if (aircraft.isSelected && aircraft.isArrivalDeparture) {
-            labelText[10] = (Tab.clearedAlt / 100).toString()
-            if (altTab.isAltChanged) labelText[10] = "[YELLOW]" + labelText[10] + "[WHITE]"
-        }
-        if (MathUtils.round(aircraft.radarHdg.toFloat()) == 0) {
-            aircraft.radarHdg = aircraft.radarHdg + 360
-        }
-        labelText[4] = MathUtils.round(aircraft.radarHdg.toFloat()).toString()
-        labelText[6] = (aircraft.radarGs.toInt()).toString()
-        labelText[7] = if (aircraft.isSelected && aircraft.isArrivalDeparture && spdTab.isSpdChanged) "[YELLOW]" + Tab.clearedSpd + "[WHITE]" else aircraft.navState.clearedSpd.last().toString()
+
         var exped = if (aircraft.navState.clearedExpedite.last()) " =>> " else " => "
         if (aircraft.isSelected && aircraft.isArrivalDeparture) {
             exped = if (Tab.clearedExpedite) " =>> " else " => "
             if (altTab.isExpediteChanged) exped = "[YELLOW]$exped[WHITE]"
         }
-        var updatedText: String
-        if (radarScreen.compactData) {
-            if (aircraft.isSelected && aircraft.isArrivalDeparture) {
-                var changed = false
-                if (Tab.latMode == NavState.SID_STAR && (aircraft.isLocCap || Tab.clearedWpt != aircraft.navState.clearedDirect.last()?.name || aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {
-                    labelText[5] = Tab.clearedWpt ?: ""
-                    changed = latTab.isLatModeChanged || latTab.isWptChanged
-                    if (aircraft.isLocCap && !changed) labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                } else if (Tab.latMode == NavState.HOLD_AT) {
-                    labelText[5] = Tab.holdWpt ?: ""
-                    changed = latTab.isLatModeChanged || latTab.isHoldWptChanged
-                } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
-                    if (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() || latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged) {
-                        labelText[5] = Tab.afterWpt + "=>" + Tab.afterWptHdg
-                        changed = latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged
-                    } else {
-                        labelText[5] = ""
-                    }
-                } else if (Tab.latMode == NavState.VECTORS) {
-                    if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                    } else {
-                        labelText[5] = Tab.clearedHdg.toString()
-                        if (Tab.turnDir == NavState.TURN_LEFT) {
-                            labelText[5] += "L"
-                        } else if (Tab.turnDir == NavState.TURN_RIGHT) {
-                            labelText[5] += "R"
-                        }
-                        changed = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
-                    }
-                } else {
-                    labelText[5] = ""
-                }
-                if (changed) labelText[5] = "[YELLOW]" + labelText[5] + "[WHITE]"
-            } else {
-                if (aircraft.isVectored) {
-                    if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                    } else {
-                        labelText[5] = aircraft.navState.clearedHdg.last().toString()
-                        val turnDir: Int = aircraft.navState.clearedTurnDir.last()
-                        if (turnDir == NavState.TURN_LEFT) {
-                            labelText[5] += "L"
-                        } else if (turnDir == NavState.TURN_RIGHT) {
-                            labelText[5] += "R"
-                        }
-                    }
-                } else if (aircraft.navState.dispLatMode.last() == NavState.HOLD_AT) {
-                    labelText[5] = aircraft.holdWpt?.name ?: ""
-                } else if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
-                    labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
-                } else if (aircraft.isLocCap) {
-                    labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                } else {
-                    labelText[5] = ""
-                }
-            }
-            if (aircraft.isSelected && aircraft.isArrivalDeparture) {
-                var changed = false
-                if (Tab.latMode == NavState.SID_STAR) {
-                    labelText[8] = aircraft.sidStar.name
-                    changed = latTab.isLatModeChanged && aircraft.navState.dispLatMode.last() != NavState.AFTER_WPT_HDG && aircraft.navState.dispLatMode.last() != NavState.HOLD_AT || latTab.isIlsChanged
-                    if (Ui.NOT_CLEARED_APCH != Tab.clearedILS) {
-                        if (aircraft.isLocCap) {
-                            labelText[8] = Tab.clearedILS ?: ""
-                        } else {
-                            labelText[8] += " " + Tab.clearedILS
-                        }
-                    }
-                } else if (Tab.latMode == NavState.AFTER_WPT_HDG || Tab.latMode == NavState.HOLD_AT) {
-                    labelText[8] = aircraft.sidStar.name
-                    changed = latTab.isIlsChanged
-                    if (Ui.NOT_CLEARED_APCH != Tab.clearedILS) labelText[8] += " " + (Tab.clearedILS ?: "")
-                } else if (Tab.latMode == NavState.VECTORS) {
-                    if (Ui.NOT_CLEARED_APCH == Tab.clearedILS) {
-                        if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                            labelText[8] = ""
-                        } else {
-                            labelText[8] = aircraft.sidStar.name
-                        }
-                    } else {
-                        labelText[8] = Tab.clearedILS ?: ""
-                        changed = latTab.isLatModeChanged || latTab.isIlsChanged
-                    }
-                } else if (Tab.latMode == NavState.CHANGE_STAR) {
-                    labelText[8] = Tab.newStar?.split(" ".toRegex())?.toTypedArray()?.get(0) ?: ""
-                    changed = latTab.isStarChanged
-                } else {
-                    labelText[8] = ""
-                }
-                if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]"
-            } else {
-                if (aircraft.isVectored && aircraft.navState.clearedApch.last() != null) {
-                    labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
-                } else {
-                    if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                        labelText[8] = "" + (aircraft.navState.clearedApch.last()?.name ?: "")
-                    } else {
-                        labelText[8] = aircraft.sidStar.name
-                        if (aircraft.navState.clearedApch.last() != null) {
-                            if (aircraft.isLocCap) {
-                                labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
-                            } else {
-                                labelText[8] += " " + (aircraft.navState.clearedApch.last()?.name ?: "")
-                            }
-                        }
-                    }
-                }
-            }
-            if (!isMinimized && aircraft.isArrivalDeparture) {
-                updatedText = """${labelText[0]} ${labelText[1]}
-${labelText[2]}$vertSpd${labelText[3]}$exped${labelText[10]}
-${labelText[5]}${if (labelText[5].isEmpty()) "" else " "}${labelText[8]}
-${labelText[6]} ${labelText[7]} ${labelText[9]}"""
-            } else {
-                if (System.currentTimeMillis() % 4000 >= 2000) {
-                    updatedText = """${labelText[0]}/${aircraft.recat}
-${labelText[2]}  ${labelText[6]}"""
-                } else {
-                    var clearedAltStr = labelText[10]
-                    if (aircraft.apch is Circling && aircraft is Arrival && aircraft.phase > 0) {
-                        clearedAltStr = "VIS"
-                    } else if (aircraft.isGsCap) {
-                        clearedAltStr = if (aircraft.apch?.name?.contains("IMG") == true || aircraft.apch is RNP) "VIS" else "GS"
-                    } else if (aircraft.isLocCap && aircraft.apch?.isNpa == true) {
-                        clearedAltStr = "NPA"
-                    }
-                    updatedText = """${labelText[0]}/${aircraft.recat}
-$clearedAltStr  ${aircraft.icaoType}"""
-                }
-            }
-        } else {
-            if (aircraft.isSelected && aircraft.isArrivalDeparture) {
-                var changed = false
-                if (Tab.latMode == NavState.VECTORS) {
-                    if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                    } else {
-                        labelText[5] = Tab.clearedHdg.toString()
-                        if (Tab.turnDir == NavState.TURN_LEFT) {
-                            labelText[5] += "L"
-                        } else if (Tab.turnDir == NavState.TURN_RIGHT) {
-                            labelText[5] += "R"
-                        }
-                        changed = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
-                    }
-                } else if (Tab.latMode == NavState.HOLD_AT) {
-                    labelText[5] = Tab.holdWpt ?: ""
-                    changed = latTab.isLatModeChanged || latTab.isHoldWptChanged
-                } else if (Tab.latMode == NavState.SID_STAR || Tab.latMode == NavState.AFTER_WPT_HDG) {
-                    if (Tab.latMode == NavState.AFTER_WPT_HDG && (aircraft.direct != null && Tab.afterWpt == aircraft.direct?.name || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged)) {
-                        labelText[5] = Tab.afterWpt + "=>" + Tab.afterWptHdg
-                        changed = latTab.isLatModeChanged || latTab.isAfterWptHdgChanged || latTab.isAfterWptChanged
-                    } else {
-                        labelText[5] = Tab.clearedWpt ?: ""
-                        changed = latTab.isWptChanged
-                        if (aircraft.isLocCap && !changed) {
-                            labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                        }
-                    }
-                }
-                if (changed) labelText[5] = "[YELLOW]" + labelText[5] + "[WHITE]"
-                changed = false
-                if (Tab.latMode == NavState.CHANGE_STAR) {
-                    labelText[8] = Tab.newStar?.split(" ".toRegex())?.toTypedArray()?.get(0) ?: ""
-                    changed = latTab.isStarChanged
-                } else {
-                    if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                        labelText[8] = "" + (Tab.clearedILS ?: "")
-                    } else {
-                        labelText[8] = aircraft.sidStar.name
-                        changed = latTab.isLatModeChanged && Tab.latMode == NavState.SID_STAR && aircraft.navState.dispLatMode.last() != NavState.AFTER_WPT_HDG && aircraft.navState.dispLatMode.last() != NavState.HOLD_AT || latTab.isIlsChanged
-                        if (aircraft.isLocCap) {
-                            if (Tab.clearedILS != Ui.NOT_CLEARED_APCH) {
-                                labelText[8] = Tab.clearedILS ?: ""
-                            }
-                        } else {
-                            if (Tab.clearedILS != Ui.NOT_CLEARED_APCH) {
-                                labelText[8] += " " + (Tab.clearedILS ?: "")
-                            }
-                        }
-                    }
-                }
-                if (changed) labelText[8] = "[YELLOW]" + labelText[8] + "[WHITE]"
-            } else {
-                if (aircraft.isVectored) {
-                    if (aircraft.isLocCap) {
-                        labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                    } else {
-                        labelText[5] = aircraft.navState.clearedHdg.last().toString()
-                        val turnDir: Int = aircraft.navState.clearedTurnDir.last()
-                        if (turnDir == NavState.TURN_LEFT) {
-                            labelText[5] += "L"
-                        } else if (turnDir == NavState.TURN_RIGHT) {
-                            labelText[5] += "R"
-                        }
-                    }
-                } else if (aircraft.navState.dispLatMode.last() == NavState.HOLD_AT) {
-                    if (aircraft.isHolding || aircraft.direct != null && aircraft.holdWpt != null && aircraft.direct == aircraft.holdWpt) {
-                        labelText[5] = aircraft.holdWpt?.name ?: ""
-                    } else if (aircraft.direct != null) {
-                        labelText[5] = aircraft.direct?.name ?: ""
-                    }
-                } else if (aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.SID_STAR, NavState.AFTER_WPT_HDG)) {
-                    if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
-                        labelText[5] = (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
-                    } else if (aircraft.navState.clearedDirect.last() != null) {
-                        labelText[5] = aircraft.navState.clearedDirect.last()?.name ?: ""
-                        if (aircraft.isLocCap) labelText[5] = if (aircraft.apch is RNP) "RNP" else "LOC"
-                    } else {
-                        labelText[5] = ""
-                    }
-                }
-                if (aircraft.emergency.isEmergency && aircraft.emergency.isActive && !aircraft.navState.latModes.get(0).contains("arrival")) {
-                    labelText[8] = "" + (aircraft.navState.clearedApch.last()?.name ?: "")
-                } else {
-                    labelText[8] = aircraft.sidStar.name
-                    if (aircraft.isLocCap) {
-                        if (aircraft.navState.clearedApch.last() != null) {
-                            labelText[8] = aircraft.navState.clearedApch.last()?.name ?: ""
-                        }
-                    } else {
-                        if (aircraft.navState.clearedApch.last() != null) {
-                            labelText[8] += " " + (aircraft.navState.clearedApch.last()?.name ?: "")
-                        }
-                    }
-                }
-            }
-            updatedText = if (!isMinimized && aircraft.isArrivalDeparture) {
-                """${labelText[0]} ${labelText[1]}
-${labelText[2]}$vertSpd${labelText[3]}$exped${labelText[10]}
-${labelText[4]} ${labelText[5]}${if (labelText[5].isEmpty()) "" else " "}${labelText[8]}
-${labelText[6]} ${labelText[7]} ${labelText[9]}"""
-            } else {
-                """${labelText[0]}/${aircraft.recat}
-${labelText[2]} ${labelText[4]}
-${labelText[6]}"""
-            }
+
+        var clearedAltFull = (aircraft.navState.clearedAlt.last() / 100).toString()
+        if (aircraft.isSelected && aircraft.isArrivalDeparture) {
+            clearedAltFull = (Tab.clearedAlt / 100).toString()
+            if (altTab.isAltChanged) clearedAltFull = "[YELLOW]$clearedAltFull[WHITE]"
         }
+
+        val clearedAlt = if (aircraft.isSelected && aircraft.isArrivalDeparture && altTab.isAltChanged) "[YELLOW]${(Tab.clearedAlt / 100)}[WHITE]"
+        else if (config.showOnlyWhenChanged(CLEARED_ALT)) ""
+        else (aircraft.navState.clearedAlt.last() / 100).toString()
+
+        labelFields[ALTITUDE] = MathUtils.round(aircraft.radarAlt / 100).toString()
+        labelFields[CLEARED_ALT] = clearedAlt
+        labelFields[ALTITUDE_FULL] = "${labelFields[ALTITUDE]}$vertSpd${clearedVert}$exped$clearedAltFull"
+
+        var heading = MathUtils.round(aircraft.radarHdg.toFloat())
+        if (heading == 0) heading = 360
+        labelFields[HEADING] = heading.toString()
+        labelFields[GROUND_SPEED] = (aircraft.radarGs.toInt()).toString()
+
+        val clearedSpd = if (aircraft.isSelected && aircraft.isArrivalDeparture && spdTab.isSpdChanged) "[YELLOW]" + Tab.clearedSpd + "[WHITE]"
+        else if (config.showOnlyWhenChanged(CLEARED_IAS)) ""
+        else aircraft.navState.clearedSpd.last().toString()
+        labelFields[CLEARED_IAS] = clearedSpd
+
+        var latChanged = false
+        var latCleared = if (Tab.latMode == NavState.SID_STAR && (aircraft.isLocCap || Tab.clearedWpt != aircraft.navState.clearedDirect.last()?.name || aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {
+            latChanged = latTab.isLatModeChanged || latTab.isWptChanged
+            if (aircraft.isLocCap && !latChanged) (if (aircraft.apch is RNP) "RNP" else "LOC") else Tab.clearedWpt ?: ""
+        } else if (Tab.latMode == NavState.HOLD_AT) {
+            latChanged = latTab.isLatModeChanged || latTab.isHoldWptChanged
+            Tab.holdWpt ?: ""
+        } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
+            if (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() || latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged) {
+                latChanged = latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged
+                Tab.afterWpt + "=>" + Tab.afterWptHdg
+            } else ""
+        } else if (Tab.latMode == NavState.VECTORS) {
+            if (aircraft.isLocCap) {
+                if (aircraft.apch is RNP) "RNP" else "LOC"
+            } else {
+                latChanged = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
+                Tab.clearedHdg.toString() + when(Tab.turnDir) {
+                    NavState.TURN_LEFT -> "L"
+                    NavState.TURN_RIGHT -> "R"
+                    else -> ""
+                }
+            }
+        } else ""
+        if (latChanged) latCleared = "[YELLOW]$latChanged[WHITE]"
+        else if (config.showOnlyWhenChanged(LAT_CLEARED) && !latChanged && latCleared != "RNP" && latCleared != "LOC") latCleared = ""
+        labelFields[LAT_CLEARED] = latCleared
+
+        val sidStarCleared = if (aircraft.isSelected && aircraft.isArrivalDeparture && latTab.isStarChanged) "[YELLOW]${Tab.newStar?.split(" ".toRegex())?.toTypedArray()?.get(0) ?: ""}[WHITE]"
+        else if (config.showOnlyWhenChanged(SIDSTAR_CLEARED)) ""
+        else aircraft.sidStar.name
+        labelFields[SIDSTAR_CLEARED] = sidStarCleared
+
+        var updatedText = config.generateTagText(labelFields, isMinimized)
         if (aircraft.emergency.isActive) {
             if (aircraft.emergency.isReadyForApproach && aircraft.emergency.isStayOnRwy) {
                 updatedText = "$updatedText\nStay on rwy"

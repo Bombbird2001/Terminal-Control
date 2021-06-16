@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.aircrafts.Emergency
 import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
@@ -60,6 +61,9 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         //Play Games interface
         lateinit var playServicesInterface: PlayServicesInterface
 
+        //Datatag config list
+        var datatagConfigs = Array<String>()
+
         //Default settings
         var trajectorySel = 0
         var pastTrajTime = 0
@@ -76,7 +80,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         var collisionWarning = 0
         var showMva = false
         var showIlsDash = false
-        var compactData = false
+        var datatagConfig = "Default"
         var showUncontrolled = false
         var alwaysShowBordersBackground = false
         var rangeCircleDist = 0
@@ -106,7 +110,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 collisionWarning = -1
                 showMva = true
                 showIlsDash = false
-                compactData = false
+                datatagConfig = "Default"
                 showUncontrolled = false
                 alwaysShowBordersBackground = true
                 rangeCircleDist = 0
@@ -143,7 +147,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 collisionWarning = settings.optInt("collisionWarning", -1)
                 showMva = settings.optBoolean("showMva", true)
                 showIlsDash = settings.optBoolean("showIlsDash", false)
-                compactData = settings.optBoolean("compactData", false)
+                datatagConfig = settings.optString("datatagConfig", if (settings.optBoolean("compactData", false)) "Compact" else "Default")
                 showUncontrolled = settings.optBoolean("showUncontrolled", false)
                 alwaysShowBordersBackground = settings.optBoolean("alwaysShowBordersBackground", true)
                 rangeCircleDist = settings.optInt("rangeCircleDist", 0)
@@ -170,6 +174,11 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         fun updateRevision() {
             revision = LATEST_REVISION
             GameSaver.saveSettings()
+        }
+
+        fun loadDatatagConfigs() {
+            datatagConfigs.add("Default", "Compact")
+            datatagConfigs.addAll(Array(FileLoader.getAvailableDatatagConfigs()))
         }
     }
 
