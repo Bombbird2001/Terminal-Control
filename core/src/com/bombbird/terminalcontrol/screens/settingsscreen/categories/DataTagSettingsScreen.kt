@@ -11,19 +11,20 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
+import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, background: Image?) : SettingsTemplateScreen(game, radarScreen, background) {
-    lateinit var dataTag: SelectBox<String>
-    lateinit var bordersBackground: SelectBox<String>
-    lateinit var lineSpacing: SelectBox<String>
-    lateinit var dataTagLabel: Label
-    var compactData = false
-    lateinit var bordersBackgroundLabel: Label
-    var alwaysShowBordersBackground = false
-    lateinit var lineSpacingLabel: Label
-    var lineSpacingValue = TerminalControl.lineSpacingValue
+    private lateinit var dataTag: SelectBox<String>
+    private lateinit var bordersBackground: SelectBox<String>
+    private lateinit var lineSpacing: SelectBox<String>
+    private lateinit var dataTagLabel: Label
+    private var datatagConfig = "Default"
+    private lateinit var bordersBackgroundLabel: Label
+    private var alwaysShowBordersBackground = false
+    private lateinit var lineSpacingLabel: Label
+    private var lineSpacingValue = TerminalControl.lineSpacingValue
 
     init {
         infoString = "Set the data tag display options below."
@@ -37,11 +38,7 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         dataTag.setItems("Default", "Compact")
         dataTag.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                when (dataTag.selected) {
-                    "Default" -> compactData = false
-                    "Compact" -> compactData = true
-                    else -> Gdx.app.log(className, "Unknown data tag setting " + dataTag.selected)
-                }
+                datatagConfig = dataTag.selected
             }
         })
 
@@ -86,15 +83,15 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Sets relevant options into select boxes  */
     override fun setOptions() {
         if (radarScreen == null) {
-            compactData = TerminalControl.compactData
+            datatagConfig = TerminalControl.datatagConfig
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground
             lineSpacingValue = TerminalControl.lineSpacingValue
         } else {
-            compactData = radarScreen.compactData
+            datatagConfig = radarScreen.datatagConfig.name
             alwaysShowBordersBackground = radarScreen.alwaysShowBordersBackground
             lineSpacingValue = radarScreen.lineSpacingValue
         }
-        dataTag.selected = if (compactData) "Compact" else "Default"
+        dataTag.selected = datatagConfig
         bordersBackground.selected = if (alwaysShowBordersBackground) "Always" else "When selected"
         lineSpacing.selectedIndex = lineSpacingValue
     }
@@ -102,7 +99,7 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Confirms and applies the changes set  */
     override fun sendChanges() {
         if (radarScreen != null) {
-            radarScreen.compactData = compactData
+            radarScreen.datatagConfig = DataTagConfig(datatagConfig)
             radarScreen.alwaysShowBordersBackground = alwaysShowBordersBackground
             val lineSpacingChanged = radarScreen.lineSpacingValue != lineSpacingValue
             radarScreen.lineSpacingValue = lineSpacingValue
@@ -126,7 +123,7 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
                 }
             }
         } else {
-            TerminalControl.compactData = compactData
+            TerminalControl.datatagConfig = datatagConfig
             TerminalControl.alwaysShowBordersBackground = alwaysShowBordersBackground
             TerminalControl.lineSpacingValue = lineSpacingValue
             GameSaver.saveSettings()

@@ -219,7 +219,7 @@ class RadarScreen : GameScreen {
     val thunderCellArray = Array<ThunderCell>()
 
     //Datatag configuration
-    var dataTagConfig: DataTagConfig
+    var datatagConfig: DataTagConfig
 
     constructor(game: TerminalControl, name: String, airac: Int, saveID: Int, tutorial: Boolean) : super(game) {
         //Creates new game
@@ -259,7 +259,7 @@ class RadarScreen : GameScreen {
             collisionWarning = -1
             showMva = true
             showIlsDash = false
-            dataTagConfig = DataTagConfig(DataTagConfig.DEFAULT)
+            datatagConfig = DataTagConfig(DataTagConfig.DEFAULT)
             showUncontrolled = false
             alwaysShowBordersBackground = true
             rangeCircleDist = 0
@@ -279,7 +279,7 @@ class RadarScreen : GameScreen {
             collisionWarning = TerminalControl.collisionWarning
             showMva = TerminalControl.showMva
             showIlsDash = TerminalControl.showIlsDash
-            dataTagConfig = DataTagConfig(TerminalControl.datatagConfig)
+            datatagConfig = DataTagConfig(TerminalControl.datatagConfig)
             showUncontrolled = TerminalControl.showUncontrolled
             alwaysShowBordersBackground = TerminalControl.alwaysShowBordersBackground
             rangeCircleDist = TerminalControl.rangeCircleDist
@@ -342,7 +342,7 @@ class RadarScreen : GameScreen {
         collisionWarning = if (TerminalControl.full) save.optInt("collisionWarning", -1) else -1
         showMva = save.optBoolean("showMva", true)
         showIlsDash = save.optBoolean("showIlsDash", false)
-        dataTagConfig = DataTagConfig(save.optString("datatagConfig", if (save.optBoolean("compactData", false)) "Compact" else "Default"))
+        datatagConfig = DataTagConfig(save.optString("datatagConfig", if (save.optBoolean("compactData", false)) "Compact" else "Default"))
         showUncontrolled = save.optBoolean("showUncontrolled", false)
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true)
         rangeCircleDist = save.optInt("rangeCircleDist", 0)
