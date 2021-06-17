@@ -392,7 +392,7 @@ class DataTag(aircraft: Aircraft) {
 
     /** Updates the label on the radar given aircraft's radar data and other data  */
     fun updateLabel() {
-        val config = radarScreen.dataTagConfig
+        val config = radarScreen.datatagConfig
 
         val latTab = aircraft.ui.latTab
         val altTab = aircraft.ui.altTab
@@ -472,7 +472,7 @@ class DataTag(aircraft: Aircraft) {
         else aircraft.sidStar.name
         labelFields[SIDSTAR_CLEARED] = sidStarCleared
 
-        var updatedText = config.generateTagText(labelFields, isMinimized)
+        var updatedText = config.generateTagText(labelFields, isMinimized || !aircraft.isArrivalDeparture)
         if (aircraft.emergency.isActive) {
             if (aircraft.emergency.isReadyForApproach && aircraft.emergency.isStayOnRwy) {
                 updatedText = "$updatedText\nStay on rwy"

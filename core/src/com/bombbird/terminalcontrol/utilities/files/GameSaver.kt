@@ -67,7 +67,7 @@ object GameSaver {
         jsonObject.put("collisionWarning", radarScreen.collisionWarning)
         jsonObject.put("showMva", radarScreen.showMva)
         jsonObject.put("showIlsDash", radarScreen.showIlsDash)
-        jsonObject.put("datatagConfig", radarScreen.dataTagConfig.name)
+        jsonObject.put("datatagConfig", radarScreen.datatagConfig.name)
         jsonObject.put("showUncontrolled", radarScreen.showUncontrolled)
         jsonObject.put("alwaysShowBordersBackground", radarScreen.alwaysShowBordersBackground)
         jsonObject.put("rangeCircleDist", radarScreen.rangeCircleDist)
