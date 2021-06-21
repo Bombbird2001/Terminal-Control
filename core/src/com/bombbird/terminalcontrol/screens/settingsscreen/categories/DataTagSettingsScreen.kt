@@ -11,6 +11,7 @@ import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
+import com.bombbird.terminalcontrol.screens.settingsscreen.customsetting.DataTagLayoutScreen
 import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.files.GameSaver
@@ -35,10 +36,13 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Loads selectBox for display settings  */
     override fun loadBoxes() {
         dataTag = createStandardSelectBox()
-        dataTag.setItems("Default", "Compact")
+        dataTag.setItems("Default", "Compact", "+ Add layout")
         dataTag.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                datatagConfig = dataTag.selected
+                if (dataTag.selected == "+ Add layout") {
+                    //New layout page
+                    game.screen = DataTagLayoutScreen(game)
+                } else datatagConfig = dataTag.selected
             }
         })
 
