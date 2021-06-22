@@ -2,42 +2,64 @@ package com.bombbird.terminalcontrol.ui.datatag
 
 import com.badlogic.gdx.utils.Array
 import org.json.JSONArray
+import org.json.JSONObject
 
-class DataTagConfig {
+class DataTagConfig() {
     companion object {
         const val DEFAULT = "Default"
         const val COMPACT = "Compact"
+        val CAN_BE_HIDDEN = HashSet<String>(listOf(DataTag.CLEARED_ALT, DataTag.LAT_CLEARED, DataTag.SIDSTAR_CLEARED, DataTag.CLEARED_IAS))
     }
 
     lateinit var name: String
-    private var onlyShowWhenChanged: HashSet<String> = HashSet()
-    private var arrangement: Array<Array<String>> = Array()
-    private var miniArrangement = Pair<Array<Array<String>>, Array<Array<String>>>(Array(3), Array(3))
-    private var firstEmpty = true
-    private var secondEmpty = true
+    var onlyShowWhenChanged: HashSet<String> = HashSet()
+    var arrangement: Array<Array<String>> = Array()
+    var miniArrangement = Pair<Array<Array<String>>, Array<Array<String>>>(Array(3), Array(3))
+    var firstEmpty = true
+    var secondEmpty = true
 
     init {
-        arrangement.add(Array(), Array(), Array(), Array())
-        miniArrangement.first.add(Array(), Array(), Array())
-        miniArrangement.second.add(Array(), Array(), Array())
+        arrangement.add(Array(4), Array(4), Array(4), Array(4))
+        miniArrangement.first.add(Array(2), Array(2), Array(2))
+        miniArrangement.second.add(Array(2), Array(2), Array(2))
     }
 
-    constructor(showWhenChanged: JSONArray, arrange: JSONArray) {
+    constructor(jsonObject: JSONObject): this() {
+        val showWhenChanged = jsonObject.getJSONArray("showWhenChanged")
         for (i in 0 until showWhenChanged.length()) {
             onlyShowWhenChanged.add(showWhenChanged.getString(i))
         }
 
-        for (i in 0 until arrange.length()) {
-            if (i > 3) break
+        val arrange = jsonObject.getJSONArray("arrange")
+        for (i in 0 until 4) {
             val lineData = arrange.getJSONArray(i)
-            for (j in 0 until lineData.length()) {
+            for (j in 0 until 4) {
                 arrangement[i].add(lineData.getString(j))
             }
-
         }
+
+        val miniArrange = jsonObject.getJSONArray("miniArrange")
+        val firstMini = miniArrange.getJSONArray(0)
+        for (i in 0 until 3) {
+            val lineData = firstMini.getJSONArray(i)
+            for (j in 0 until 2) {
+                miniArrangement.first[i].add(lineData.getString(j))
+            }
+        }
+
+        val secondMini = miniArrange.getJSONArray(1)
+        for (i in 0 until 3) {
+            val lineData = secondMini.getJSONArray(i)
+            for (j in 0 until 2) {
+                miniArrangement.second[i].add(lineData.getString(j))
+            }
+        }
+
+        firstEmpty = miniArrangement.first[0].isEmpty && miniArrangement.first[1].isEmpty && miniArrangement.first[2].isEmpty
+        secondEmpty = miniArrangement.second[0].isEmpty && miniArrangement.second[1].isEmpty && miniArrangement.second[2].isEmpty
     }
 
-    constructor(option: String) {
+    constructor(option: String): this() {
         name = option
         when (option) {
             DEFAULT -> {

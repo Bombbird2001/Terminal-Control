@@ -36,12 +36,12 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Loads selectBox for display settings  */
     override fun loadBoxes() {
         dataTag = createStandardSelectBox()
-        dataTag.setItems("Default", "Compact", "+ Add layout")
+        dataTag.setItems("Default", "Compact", "Manage layouts...")
         dataTag.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                if (dataTag.selected == "+ Add layout") {
+                if (dataTag.selected == "Manage layouts...") {
                     //New layout page
-                    game.screen = DataTagLayoutScreen(game)
+                    game.screen = DataTagLayoutScreen(game, background)
                 } else datatagConfig = dataTag.selected
             }
         })
