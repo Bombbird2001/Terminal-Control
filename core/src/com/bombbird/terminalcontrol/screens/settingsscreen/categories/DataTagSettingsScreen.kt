@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTab
@@ -36,7 +37,9 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     /** Loads selectBox for display settings  */
     override fun loadBoxes() {
         dataTag = createStandardSelectBox()
-        dataTag.setItems("Default", "Compact", "Manage layouts...")
+        val newItems = Array(TerminalControl.datatagConfigs)
+        newItems.add("Manage layouts...")
+        dataTag.items = newItems
         dataTag.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (dataTag.selected == "Manage layouts...") {

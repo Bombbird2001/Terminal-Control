@@ -22,6 +22,7 @@ import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.RouteData
 import com.bombbird.terminalcontrol.entities.waypoints.Waypoint
 import com.bombbird.terminalcontrol.screens.gamescreen.RadarScreen
+import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
 import com.bombbird.terminalcontrol.utilities.Revision
 import com.bombbird.terminalcontrol.utilities.files.FileLoader.getExtDir
 import org.json.JSONArray
@@ -786,5 +787,56 @@ object GameSaver {
             stats.put("unlocks", unlockArray)
             handle.writeString(stats.toString(4), false)
         }
+    }
+
+    /** Saves the datatag layout file */
+    fun saveDatatagLayout(config: DataTagConfig) {
+        val handle = getExtDir("datatags/${config.name}")
+        if (handle != null) {
+            val jo = JSONObject()
+
+            val showWhenChanged = JSONArray()
+            config.onlyShowWhenChanged.forEach { showWhenChanged.put(it) }
+            jo.put("showWhenChanged", showWhenChanged)
+
+            val arrange = JSONArray()
+            config.arrangement.forEach {
+                val row = JSONArray()
+                it.forEach { field -> row.put(field) }
+                arrange.put(row)
+            }
+            jo.put("arrange", arrange)
+
+            val miniArrange = JSONArray()
+            val firstMini = JSONArray()
+            config.miniArrangement.first.forEach {
+                val row = JSONArray()
+                it.forEach { field -> row.put(field) }
+                firstMini.put(row)
+            }
+            miniArrange.put(firstMini)
+
+            val secondMini = JSONArray()
+            config.miniArrangement.second.forEach {
+                val row = JSONArray()
+                it.forEach { field -> row.put(field) }
+                secondMini.put(row)
+            }
+            miniArrange.put(secondMini)
+            jo.put("miniArrange", miniArrange)
+
+            handle.writeString(jo.toString(4), false)
+
+            TerminalControl.datatagConfigs.add(config.name)
+        }
+    }
+
+    /** Deletes the datatag layout file with the supplied name */
+    fun deleteDatatagConfig(name: String) {
+        val handle = getExtDir("datatags/$name")
+        if (handle != null && handle.exists()) {
+            handle.delete()
+        }
+        TerminalControl.datatagConfigs.removeValue(name, false)
     }
 }

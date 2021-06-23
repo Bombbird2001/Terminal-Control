@@ -1,10 +1,9 @@
 package com.bombbird.terminalcontrol.ui.datatag
 
 import com.badlogic.gdx.utils.Array
-import org.json.JSONArray
 import org.json.JSONObject
 
-class DataTagConfig() {
+class DataTagConfig {
     companion object {
         const val DEFAULT = "Default"
         const val COMPACT = "Compact"
@@ -24,7 +23,8 @@ class DataTagConfig() {
         miniArrangement.second.add(Array(2), Array(2), Array(2))
     }
 
-    constructor(jsonObject: JSONObject): this() {
+    constructor(option: String, jsonObject: JSONObject) {
+        name = option
         val showWhenChanged = jsonObject.getJSONArray("showWhenChanged")
         for (i in 0 until showWhenChanged.length()) {
             onlyShowWhenChanged.add(showWhenChanged.getString(i))
@@ -33,7 +33,7 @@ class DataTagConfig() {
         val arrange = jsonObject.getJSONArray("arrange")
         for (i in 0 until 4) {
             val lineData = arrange.getJSONArray(i)
-            for (j in 0 until 4) {
+            for (j in 0 until lineData.length()) {
                 arrangement[i].add(lineData.getString(j))
             }
         }
@@ -42,7 +42,7 @@ class DataTagConfig() {
         val firstMini = miniArrange.getJSONArray(0)
         for (i in 0 until 3) {
             val lineData = firstMini.getJSONArray(i)
-            for (j in 0 until 2) {
+            for (j in 0 until lineData.length()) {
                 miniArrangement.first[i].add(lineData.getString(j))
             }
         }
@@ -50,7 +50,7 @@ class DataTagConfig() {
         val secondMini = miniArrange.getJSONArray(1)
         for (i in 0 until 3) {
             val lineData = secondMini.getJSONArray(i)
-            for (j in 0 until 2) {
+            for (j in 0 until lineData.length()) {
                 miniArrangement.second[i].add(lineData.getString(j))
             }
         }
@@ -59,7 +59,7 @@ class DataTagConfig() {
         secondEmpty = miniArrangement.second[0].isEmpty && miniArrangement.second[1].isEmpty && miniArrangement.second[2].isEmpty
     }
 
-    constructor(option: String): this() {
+    constructor(option: String) {
         name = option
         when (option) {
             DEFAULT -> {
@@ -86,7 +86,7 @@ class DataTagConfig() {
                 secondEmpty = false
             }
             else -> {
-                //TODO Load datatag json file with config
+                //TODO Load datatag json file with config, if name exists
             }
         }
     }

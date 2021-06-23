@@ -2,11 +2,10 @@ package com.bombbird.terminalcontrol.screens.settingsscreen.customsetting
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
@@ -15,11 +14,16 @@ import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.SettingsTemplateScreen
 import com.bombbird.terminalcontrol.screens.settingsscreen.categories.DataTagSettingsScreen
 import com.bombbird.terminalcontrol.ui.datatag.DataTagConfig
+import com.bombbird.terminalcontrol.ui.dialogs.CustomDialog
 import com.bombbird.terminalcontrol.utilities.Fonts
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 
 class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicScreen(game, 5760, 3240) {
     private lateinit var currLayoutBox: SelectBox<String>
     private lateinit var currLayout: DataTagConfig
+    private lateinit var layoutNameLabel: Label
+    private lateinit var layoutNameField: TextField
+    private lateinit var deleteButton: TextButton
     private lateinit var fullTagBoxes: Array<Array<SelectBox<String>>>
     private lateinit var availableFieldsFull: HashSet<String>
     private lateinit var miniTagBoxes1: Array<Array<SelectBox<String>>>
@@ -53,36 +57,71 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         headerLabel.setAlignment(Align.center)
         stage.addActor(headerLabel)
 
-        val airportLabel = Label("Layout: ", labelStyle)
-        airportLabel.setPosition(1340f - airportLabel.width, 3240 * 0.8f + 150 - airportLabel.height / 2)
-        stage.addActor(airportLabel)
+        val layoutLabel = Label("Layout: ", labelStyle)
+        layoutLabel.setPosition(700f - layoutLabel.width, 3240 * 0.77f + 150 - layoutLabel.height / 2)
+        stage.addActor(layoutLabel)
+
+        layoutNameLabel = Label("Layout name: ", labelStyle)
+        layoutNameLabel.setPosition(2400f - layoutNameLabel.width, 3240 * 0.77f + 150 - layoutNameLabel.height / 2)
+        stage.addActor(layoutNameLabel)
     }
 
     /** Loads the select boxes for datatag layout arrangement */
     private fun loadBoxes() {
         currLayoutBox = createStandardBox()
-        currLayoutBox.setPosition(1440f, 3240 * 0.8f)
+        currLayoutBox.setPosition(800f, 3240 * 0.77f)
         currLayoutBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (currLayoutBox.selected == "+ Add layout") {
+                    val newItems = Array(currLayoutBox.items)
+                    newItems.removeValue("(None)", false)
+                    newItems.add("New layout")
+                    currLayoutBox.items = newItems
                     currLayoutBox.selected = "New layout"
-                    currLayout = DataTagConfig()
-                    matchBoxesWithConfig()
+                    currLayout = DataTagConfig("New layout")
+                    GameSaver.saveDatatagLayout(currLayout)
+                    updateNewLayoutPage()
                 } else if (currLayoutBox.selected != "(None)") {
                     currLayout = DataTagConfig(currLayoutBox.selected)
-                    matchBoxesWithConfig()
+                    updateNewLayoutPage()
                 }
                 event.handle()
             }
         })
         stage.addActor(currLayoutBox)
 
+        val labelStyle = Label.LabelStyle()
+        labelStyle.font = Fonts.defaultFont20
+        labelStyle.fontColor = Color.WHITE
+
+        val textFieldStyle = TextField.TextFieldStyle()
+        textFieldStyle.background = TerminalControl.skin.getDrawable("Button_up")
+        textFieldStyle.font = Fonts.defaultFont24
+        textFieldStyle.fontColor = Color.WHITE
+        val oneCharSizeCalibrationThrowAway = Label("|", labelStyle)
+        val cursorColor = Pixmap(
+            oneCharSizeCalibrationThrowAway.width.toInt(),
+            oneCharSizeCalibrationThrowAway.height.toInt(),
+            Pixmap.Format.RGB888
+        )
+        cursorColor.setColor(Color.WHITE)
+        cursorColor.fill()
+        textFieldStyle.cursor = Image(Texture(cursorColor)).drawable
+
+        layoutNameField = TextField("", textFieldStyle)
+        layoutNameField.setSize(1000f, 300f)
+        layoutNameField.setPosition(2500f, 3240 * 0.77f)
+        layoutNameField.maxLength = 32
+        layoutNameField.alignment = Align.center
+        stage.addActor(layoutNameField)
+        stage.keyboardFocus = layoutNameField
+
         fullTagBoxes = Array()
         for (i in 0 until 4) {
             val lineArray = Array<SelectBox<String>>()
             for (j in 0 until 4) {
                 val theBox = createStandardBox()
-                theBox.setPosition(200 + j * (theBox.width + 50), 3240 * 0.65f - i * (theBox.height + 25))
+                theBox.setPosition(200 + j * (theBox.width + 50), 3240 * 0.6f - i * (theBox.height + 25))
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         updateConfig(0)
@@ -99,7 +138,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             val lineArray = Array<SelectBox<String>>()
             for (j in 0 until 2) {
                 val theBox = createStandardBox()
-                theBox.setPosition(200 + j * (theBox.width + 50), 3240 * 0.65f - i * (theBox.height + 25))
+                theBox.setPosition(200 + j * (theBox.width + 50), 3240 * 0.6f - i * (theBox.height + 25) - 162)
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         updateConfig(1)
@@ -116,7 +155,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             val lineArray = Array<SelectBox<String>>()
             for (j in 0 until 2) {
                 val theBox = createStandardBox()
-                theBox.setPosition(200 + j * (theBox.width + 50), 3240 * 0.65f - i * (theBox.height + 25))
+                theBox.setPosition(2000 + j * (theBox.width + 50), 3240 * 0.6f - i * (theBox.height + 25) - 162)
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         updateConfig(2)
@@ -189,9 +228,23 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
 
         if (currLayoutBox.selected != "(None)") {
             currLayout = DataTagConfig(currLayoutBox.selected)
-            matchBoxesWithConfig()
+            updateNewLayoutPage()
+        } else {
+            layoutNameField.isVisible = false
+            layoutNameLabel.isVisible = false
+            updatePage1Visibility(false)
+            updatePage2Visibility(false)
         }
-        updatePage1Visibility(currLayoutBox.selected != "(None)")
+    }
+
+    /** Resets the page elements when a new layout is selected */
+    private fun updateNewLayoutPage() {
+        matchBoxesWithConfig()
+        layoutNameField.text = currLayoutBox.selected
+        layoutNameField.isVisible = true
+        layoutNameLabel.isVisible = true
+        deleteButton.isVisible = true
+        updatePage1Visibility(true)
         updatePage2Visibility(false)
     }
 
@@ -212,6 +265,36 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         textButtonStyle.up = TerminalControl.skin.getDrawable("Button_up")
         textButtonStyle.down = TerminalControl.skin.getDrawable("Button_down")
 
+        deleteButton = TextButton("Delete layout", textButtonStyle)
+        deleteButton.setSize(900f, 300f)
+        deleteButton.setPosition(3900f, 3240 * 0.77f)
+        deleteButton.addListener(object: ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                object: CustomDialog("Delete layout", "Delete ${currLayout.name}?", "Keep", "Delete", height = 1000, width = 2400, fontScale = 2f) {
+                    override fun result(resObj: Any?) {
+                        if (resObj == DIALOG_POSITIVE) {
+                            GameSaver.deleteDatatagConfig(currLayout.name)
+                            val newItems = Array(currLayoutBox.items)
+                            newItems.removeValue(currLayout.name, false)
+                            if (newItems.size <= 1) newItems.insert(0, "(None)")
+                            currLayoutBox.items = newItems
+                            currLayoutBox.selectedIndex = 0
+                            if (currLayoutBox.selected != "(None)") {
+                                currLayout = DataTagConfig(currLayoutBox.selected)
+                                updateNewLayoutPage()
+                            } else {
+                                layoutNameField.isVisible = false
+                                layoutNameLabel.isVisible = false
+                                updatePage1Visibility(false)
+                                updatePage2Visibility(false)
+                            }
+                        }
+                    }
+                }.show(stage)
+            }
+        })
+        stage.addActor(deleteButton)
+
         val cancelButton = TextButton("Cancel", textButtonStyle)
         cancelButton.setSize(1200f, 300f)
         cancelButton.setPosition(5760 / 2f - 1600, 3240 - 2800f)
@@ -227,7 +310,27 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         confirmButton.setPosition(5760 / 2f + 400, 3240 - 2800f)
         confirmButton.addListener(object: ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
-                //TODO save new config file
+                if (layoutNameField.text.isBlank()) {
+                    CustomDialog("Invalid name", "Name cannot be empty", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                    return
+                }
+                if (layoutNameField.text == "+ Add new layout" || layoutNameField.text == "(None)") {
+                    CustomDialog("Invalid name", "Name is invalid", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                    return
+                }
+                if (currLayout.name != layoutNameField.text) {
+                    if (TerminalControl.datatagConfigs.contains(layoutNameField.text)) {
+                        CustomDialog("Invalid name", "Name already used for another layout", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                        return
+                    }
+                    GameSaver.deleteDatatagConfig(currLayout.name)
+                    val newItems = Array(currLayoutBox.items)
+                    newItems[newItems.indexOf(currLayout.name, false)] = layoutNameField.text
+                    currLayoutBox.items = newItems
+                    currLayout.name = layoutNameField.text
+                    currLayoutBox.selected = currLayout.name
+                }
+                GameSaver.saveDatatagLayout(currLayout)
                 returnToDataTagScreen()
             }
         })
