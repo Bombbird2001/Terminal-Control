@@ -378,6 +378,11 @@ object FileLoader {
         }
     }
 
+    fun getDatatagLayout(name: String): JSONObject? {
+        val handle = getExtDir("datatags/$name")
+        return if (handle != null && handle.exists()) JSONObject(handle.readString()) else null
+    }
+
     fun getExtDir(path: String): FileHandle? {
         var handle: FileHandle? = null
         if (Gdx.app.type == Application.ApplicationType.Desktop) {

@@ -318,6 +318,10 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                     CustomDialog("Invalid name", "Name is invalid", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
                     return
                 }
+                if (layoutNameField.text == "New layout") {
+                    CustomDialog("Set name", "Please set a new name", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
+                    return
+                }
                 if (currLayout.name != layoutNameField.text) {
                     if (TerminalControl.datatagConfigs.contains(layoutNameField.text)) {
                         CustomDialog("Invalid name", "Name already used for another layout", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
