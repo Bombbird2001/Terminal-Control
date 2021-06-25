@@ -4,9 +4,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
@@ -36,6 +40,15 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
     private lateinit var nextButton: TextButton
 
     private lateinit var fieldOrder: HashMap<String, Int>
+
+    private lateinit var previewTag: Label
+    private lateinit var previewClickspot: Button
+    private lateinit var previewLabelFields: HashMap<String, String>
+
+    private lateinit var showWhenChangedBox: CheckBox
+    private lateinit var currentSelectField: String
+
+    private var boxListening = true
 
     /** Load the UI */
     fun loadUI() {
@@ -67,6 +80,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         loadButton()
         loadBoxes()
         loadLabel()
+        loadPreview()
         loadOptions()
     }
 
@@ -92,10 +106,28 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
 
     /** Loads the select boxes for datatag layout arrangement */
     private fun loadBoxes() {
+        val checkBoxStyle = CheckBox.CheckBoxStyle()
+        checkBoxStyle.checkboxOn = TerminalControl.skin.getDrawable("Checked")
+        checkBoxStyle.checkboxOff = TerminalControl.skin.getDrawable("Unchecked")
+        checkBoxStyle.font = Fonts.defaultFont24
+        checkBoxStyle.fontColor = Color.WHITE
+        showWhenChangedBox = CheckBox(" Show only when changed", checkBoxStyle)
+        showWhenChangedBox.setPosition(3700f, 3240 * 0.6f)
+        showWhenChangedBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                if (showWhenChangedBox.isChecked) currLayout.onlyShowWhenChanged.add(currentSelectField)
+                else currLayout.onlyShowWhenChanged.remove(currentSelectField)
+                updatePreview()
+            }
+        })
+        showWhenChangedBox.isVisible = false
+        stage.addActor(showWhenChangedBox)
+
         currLayoutBox = createStandardBox()
         currLayoutBox.setPosition(800f, 3240 * 0.77f)
         currLayoutBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
+                if (!boxListening) return
                 if (currLayoutBox.selected == "+ Add layout") {
                     val newItems = Array(currLayoutBox.items)
                     newItems.removeValue("(None)", false)
@@ -152,10 +184,18 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                 theBox.items = Array(availableFieldsFull.map { it.first }.toTypedArray())
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        if (!boxListening) return
                         if (theBox.selected != "(None)") availableFieldsFull.remove(Pair(theBox.selected, fieldOrder[theBox.selected]!!))
-                        if (theBox.name != "(None)") availableFieldsFull.add(Pair(theBox.name, fieldOrder[theBox.name]!!))
+                        theBox.name?.let { if (it != "(None)") availableFieldsFull.add(Pair(it, fieldOrder[it]!!)) }
                         theBox.name = theBox.selected
-                        updateConfig(0)
+                        updateConfig(0, true)
+                        updateCheckbox(theBox.selected)
+                    }
+                })
+                theBox.addListener(object: ClickListener() {
+                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                        super.clicked(event, x, y)
+                        updateCheckbox(theBox.selected)
                     }
                 })
                 lineArray.add(theBox)
@@ -173,10 +213,18 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                 theBox.items = Array(availableFieldsMini1.map { it.first }.toTypedArray())
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        if (!boxListening) return
                         if (theBox.selected != "(None)") availableFieldsMini1.remove(Pair(theBox.selected, fieldOrder[theBox.selected]!!))
-                        if (theBox.name != "(None)") availableFieldsMini1.add(Pair(theBox.name, fieldOrder[theBox.name]!!))
+                        theBox.name?.let { if (it != "(None)") availableFieldsMini1.add(Pair(it, fieldOrder[it]!!)) }
                         theBox.name = theBox.selected
-                        updateConfig(1)
+                        updateConfig(1, true)
+                        updateCheckbox(theBox.selected)
+                    }
+                })
+                theBox.addListener(object: ClickListener() {
+                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                        super.clicked(event, x, y)
+                        updateCheckbox(theBox.selected)
                     }
                 })
                 lineArray.add(theBox)
@@ -194,10 +242,18 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                 theBox.items = Array(availableFieldsMini2.map { it.first }.toTypedArray())
                 theBox.addListener(object: ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        if (!boxListening) return
                         if (theBox.selected != "(None)") availableFieldsMini2.remove(Pair(theBox.selected, fieldOrder[theBox.selected]!!))
-                        if (theBox.name != "(None)") availableFieldsMini2.add(Pair(theBox.name, fieldOrder[theBox.name]!!))
+                        theBox.name?.let { if (it != "(None)") availableFieldsMini2.add(Pair(it, fieldOrder[it]!!)) }
                         theBox.name = theBox.selected
-                        updateConfig(2)
+                        updateConfig(2, true)
+                        updateCheckbox(theBox.selected)
+                    }
+                })
+                theBox.addListener(object: ClickListener() {
+                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                        super.clicked(event, x, y)
+                        updateCheckbox(theBox.selected)
                     }
                 })
                 lineArray.add(theBox)
@@ -228,6 +284,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
 
     /** Sets all select boxes to match config layout */
     private fun matchBoxesWithConfig() {
+        boxListening = false
         fullTagBoxes.forEach { it.forEach { box -> box.selected = "(None)" } }
         miniTagBoxes1.forEach { it.forEach { box -> box.selected = "(None)" } }
         miniTagBoxes2.forEach { it.forEach { box -> box.selected = "(None)" } }
@@ -239,27 +296,34 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         for ((row, line) in currLayout.arrangement.withIndex()) {
             for ((column, value) in line.withIndex()) {
                 fullTagBoxes[row][column].selected = value
+                fullTagBoxes[row][column].name = value
                 availableFieldsFull.remove(Pair(value, fieldOrder[value]!!))
             }
         }
+        updateConfig(0, false)
 
         for ((row, line) in currLayout.miniArrangement.first.withIndex()) {
             for ((column, value) in line.withIndex()) {
                 miniTagBoxes1[row][column].selected = value
+                miniTagBoxes1[row][column].name = value
                 availableFieldsMini1.remove(Pair(value, fieldOrder[value]!!))
             }
         }
+        updateConfig(1, false)
 
         for ((row, line) in currLayout.miniArrangement.second.withIndex()) {
             for ((column, value) in line.withIndex()) {
                 miniTagBoxes2[row][column].selected = value
+                miniTagBoxes2[row][column].name = value
                 availableFieldsMini2.remove(Pair(value, fieldOrder[value]!!))
             }
         }
+        updateConfig(2, true)
+        boxListening = true
     }
 
     /** Sets the config to the layout in the boxes */
-    private fun updateConfig(boxIndex: Int) {
+    private fun updateConfig(boxIndex: Int, updatePreview: Boolean) {
         when (boxIndex) {
             0 -> {
                 //Main box
@@ -267,11 +331,13 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                 for ((row, line) in fullTagBoxes.withIndex()) {
                     line.forEach {
                         val copy = Array(availableFieldsFull.toTypedArray())
-                        if (it.selected != "(None)") {
-                            currLayout.arrangement[row].add(it.selected)
-                            copy.add(Pair(it.selected, fieldOrder[it.selected]!!))
-                            copy.sort { o1, o2 -> o1.second - o2.second }
+                        it.selected?.let { selected ->
+                            if (selected != "(None)") {
+                                currLayout.arrangement[row].add(selected)
+                                copy.add(Pair(selected, fieldOrder[selected]!!))
+                            }
                         }
+                        copy.sort { o1, o2 -> o1.second - o2.second }
                         it.items = Array(copy.map { field -> field.first }.toTypedArray())
                     }
                 }
@@ -281,34 +347,49 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                 for ((row, line) in miniTagBoxes1.withIndex()) {
                     line.forEach {
                         val copy = Array(availableFieldsMini1.toTypedArray())
-                        if (it.selected != "(None)") {
-                            currLayout.miniArrangement.first[row].add(it.selected)
-                            copy.add(Pair(it.selected, fieldOrder[it.selected]!!))
-                            copy.sort { o1, o2 -> o1.second - o2.second }
+                        it.selected?.let { selected ->
+                            if (selected != "(None)") {
+                                currLayout.miniArrangement.first[row].add(selected)
+                                copy.add(Pair(selected, fieldOrder[selected]!!))
+                            }
                         }
+                        copy.sort { o1, o2 -> o1.second - o2.second }
                         it.items = Array(copy.map { field -> field.first }.toTypedArray())
                     }
                 }
+                currLayout.updateEmptyFields()
             }
             2 -> {
                 currLayout.miniArrangement.second.forEach { it.clear() }
                 for ((row, line) in miniTagBoxes2.withIndex()) {
                     line.forEach {
                         val copy = Array(availableFieldsMini2.toTypedArray())
-                        if (it.selected != "(None)") {
-                            currLayout.miniArrangement.second[row].add(it.selected)
-                            copy.add(Pair(it.selected, fieldOrder[it.selected]!!))
-                            copy.sort { o1, o2 -> o1.second - o2.second }
+                        it.selected?.let { selected ->
+                            if (selected != "(None)") {
+                                currLayout.miniArrangement.second[row].add(selected)
+                                copy.add(Pair(selected, fieldOrder[selected]!!))
+                            }
                         }
+                        copy.sort { o1, o2 -> o1.second - o2.second }
                         it.items = Array(copy.map { field -> field.first }.toTypedArray())
                     }
                 }
+                currLayout.updateEmptyFields()
             } else -> Gdx.app.log("Datatag config", "Unknown box code $boxIndex")
         }
+
+        if (updatePreview) updatePreview()
+    }
+
+    private fun updateCheckbox(field: String) {
+        currentSelectField = field
+        showWhenChangedBox.isVisible = DataTagConfig.CAN_BE_HIDDEN.contains(field)
+        if (DataTagConfig.CAN_BE_HIDDEN.contains(field)) showWhenChangedBox.isChecked = currLayout.showOnlyWhenChanged(field)
     }
 
     /** Loads the spawn box options */
     private fun loadOptions() {
+        boxListening = false
         val customLayouts = Array(TerminalControl.datatagConfigs.filter { it != "Default" && it != "Compact" }.toTypedArray())
         if (customLayouts.isEmpty) customLayouts.add("(None)")
         customLayouts.add("+ Add layout")
@@ -322,9 +403,12 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             layoutNameField.isVisible = false
             layoutNameLabel.isVisible = false
             deleteButton.isVisible = false
+            previewTag.isVisible = false
+            previewClickspot.isVisible = false
             updatePage1Visibility(false)
             updatePage2Visibility(false)
         }
+        boxListening = true
     }
 
     /** Resets the page elements when a new layout is selected */
@@ -334,6 +418,8 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         layoutNameField.isVisible = true
         layoutNameLabel.isVisible = true
         deleteButton.isVisible = true
+        previewTag.isVisible = true
+        previewClickspot.isVisible = true
         updatePage1Visibility(true)
         updatePage2Visibility(false)
     }
@@ -376,6 +462,9 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                                 layoutNameField.isVisible = false
                                 layoutNameLabel.isVisible = false
                                 deleteButton.isVisible = false
+                                previewTag.isVisible = false
+                                previewClickspot.isVisible = false
+                                showWhenChangedBox.isVisible = false
                                 updatePage1Visibility(false)
                                 updatePage2Visibility(false)
                             }
@@ -418,6 +507,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                         CustomDialog("Invalid name", "Name already used for another layout", "", "Ok", height = 1000, width = 2400, fontScale = 2f).show(stage)
                         return
                     }
+                    boxListening = false
                     GameSaver.deleteDatatagConfig(currLayout.name)
                     val newItems = Array(currLayoutBox.items)
                     newItems[newItems.indexOf(currLayout.name, false)] = layoutNameField.text
@@ -438,6 +528,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             override fun changed(event: ChangeEvent, actor: Actor) {
                 updatePage1Visibility(true)
                 updatePage2Visibility(false)
+                updatePreview()
             }
         })
         backButton.isVisible = false
@@ -449,6 +540,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             override fun changed(event: ChangeEvent, actor: Actor) {
                 updatePage1Visibility(false)
                 updatePage2Visibility(true)
+                updatePreview()
             }
         })
         stage.addActor(nextButton)
@@ -465,9 +557,72 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         backButton.isVisible = visible
     }
 
+    private fun loadPreview() {
+        val labelStyle = Label.LabelStyle()
+        labelStyle.font = Fonts.defaultFont24
+        labelStyle.fontColor = Color.WHITE
+        previewTag = Label("", labelStyle)
+
+        val drawableBlue = NinePatchDrawable(NinePatch(TerminalControl.skin.getPatch("labelBorderBlue")))
+        val clickSpotStyle = Button.ButtonStyle(drawableBlue, drawableBlue, drawableBlue)
+        previewClickspot = Button(clickSpotStyle)
+
+        stage.addActor(previewTag)
+        stage.addActor(previewClickspot)
+
+        previewLabelFields = HashMap()
+        previewLabelFields[DataTag.CALLSIGN] = "ABC123"
+        previewLabelFields[DataTag.CALLSIGN_RECAT] = "ABC123/B"
+        previewLabelFields[DataTag.ICAO_TYPE] = "B77W"
+        previewLabelFields[DataTag.ICAO_TYPE_WAKE] = "B77W/H/B"
+        previewLabelFields[DataTag.AIRPORT] = "TCTP"
+    }
+
+    private fun updatePreview() {
+        val vertSpd = " ^ "
+        val clearedVert = "90"
+        val exped = " => "
+        val clearedAltFull = "110"
+        val clearedAlt = if (currLayout.showOnlyWhenChanged(DataTag.CLEARED_ALT)) "" else "110"
+
+        previewLabelFields[DataTag.ALTITUDE] = "64"
+        previewLabelFields[DataTag.CLEARED_ALT] = clearedAlt
+        previewLabelFields[DataTag.ALTITUDE_FULL] = "${previewLabelFields[DataTag.ALTITUDE]}$vertSpd$clearedVert$exped$clearedAltFull"
+
+        val heading = 121
+        previewLabelFields[DataTag.HEADING] = heading.toString()
+        previewLabelFields[DataTag.GROUND_SPEED] = "270"
+
+        val clearedSpd = if (currLayout.showOnlyWhenChanged(DataTag.CLEARED_IAS)) ""
+        else "250"
+        previewLabelFields[DataTag.CLEARED_IAS] = clearedSpd
+
+        val latCleared = if (currLayout.showOnlyWhenChanged(DataTag.LAT_CLEARED)) "" else "HICAL"
+        previewLabelFields[DataTag.LAT_CLEARED] = latCleared
+
+        val sidStarCleared = if (currLayout.showOnlyWhenChanged(DataTag.SIDSTAR_CLEARED)) ""
+        else "HICAL1C"
+        previewLabelFields[DataTag.SIDSTAR_CLEARED] = sidStarCleared
+
+        var updatedText = currLayout.generateTagText(previewLabelFields, backButton.isVisible)
+        if (updatedText.isBlank()) updatedText = "Set fields and see\nthe preview here"
+        previewTag.setText(updatedText)
+        previewTag.pack()
+        previewTag.setPosition(4000f, 3240 * 0.45f - previewTag.height / 2)
+
+        previewClickspot.setSize(previewTag.width + 20, previewTag.height + 10)
+        previewClickspot.setPosition(previewTag.x - 10, previewTag.y - 5)
+    }
+
     /** Overrides show method of basic screen */
     override fun show() {
         loadUI()
+    }
+
+    /** Overrides render method to include updating of minimized preview tag */
+    override fun render(delta: Float) {
+        super.render(delta)
+        if (!currLayout.firstEmpty && !currLayout.secondEmpty) updatePreview()
     }
 
     /** Return to datatag settings screen */

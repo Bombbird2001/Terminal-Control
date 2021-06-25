@@ -827,7 +827,7 @@ object GameSaver {
 
             handle.writeString(jo.toString(4), false)
 
-            TerminalControl.datatagConfigs.add(config.name)
+            if (!TerminalControl.datatagConfigs.contains(config.name)) TerminalControl.datatagConfigs.add(config.name)
         }
     }
 

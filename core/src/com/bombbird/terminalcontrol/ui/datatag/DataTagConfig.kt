@@ -84,6 +84,10 @@ class DataTagConfig(var name: String) {
             }
         }
 
+        updateEmptyFields()
+    }
+
+    fun updateEmptyFields() {
         firstEmpty = miniArrangement.first[0].isEmpty && miniArrangement.first[1].isEmpty && miniArrangement.first[2].isEmpty
         secondEmpty = miniArrangement.second[0].isEmpty && miniArrangement.second[1].isEmpty && miniArrangement.second[2].isEmpty
     }
