@@ -427,7 +427,7 @@ class DataTag(aircraft: Aircraft) {
 
         labelFields[ALTITUDE] = MathUtils.round(aircraft.radarAlt / 100).toString()
         labelFields[CLEARED_ALT] = clearedAlt
-        labelFields[ALTITUDE_FULL] = "${labelFields[ALTITUDE]}$vertSpd${clearedVert}$exped$clearedAltFull"
+        labelFields[ALTITUDE_FULL] = "${labelFields[ALTITUDE]}$vertSpd$clearedVert$exped$clearedAltFull"
 
         var heading = MathUtils.round(aircraft.radarHdg.toFloat())
         if (heading == 0) heading = 360
