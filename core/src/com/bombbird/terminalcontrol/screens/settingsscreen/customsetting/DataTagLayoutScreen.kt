@@ -4,13 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
@@ -42,8 +40,8 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
     private lateinit var fieldOrder: HashMap<String, Int>
 
     private lateinit var previewTag: Label
-    private lateinit var previewClickspot: Button
     private lateinit var previewLabelFields: HashMap<String, String>
+    private lateinit var previewFiller: Image
 
     private lateinit var showWhenChangedBox: CheckBox
     private lateinit var currentSelectField: String
@@ -404,7 +402,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
             layoutNameLabel.isVisible = false
             deleteButton.isVisible = false
             previewTag.isVisible = false
-            previewClickspot.isVisible = false
+            previewFiller.isVisible = false
             updatePage1Visibility(false)
             updatePage2Visibility(false)
         }
@@ -419,7 +417,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         layoutNameLabel.isVisible = true
         deleteButton.isVisible = true
         previewTag.isVisible = true
-        previewClickspot.isVisible = true
+        previewFiller.isVisible = true
         updatePage1Visibility(true)
         updatePage2Visibility(false)
     }
@@ -463,7 +461,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
                                 layoutNameLabel.isVisible = false
                                 deleteButton.isVisible = false
                                 previewTag.isVisible = false
-                                previewClickspot.isVisible = false
+                                previewFiller.isVisible = false
                                 showWhenChangedBox.isVisible = false
                                 updatePage1Visibility(false)
                                 updatePage2Visibility(false)
@@ -563,12 +561,10 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         labelStyle.fontColor = Color.WHITE
         previewTag = Label("", labelStyle)
 
-        val drawableBlue = NinePatchDrawable(NinePatch(TerminalControl.skin.getPatch("labelBorderBlue")))
-        val clickSpotStyle = Button.ButtonStyle(drawableBlue, drawableBlue, drawableBlue)
-        previewClickspot = Button(clickSpotStyle)
+        previewFiller = Image(TerminalControl.skin.getDrawable("FillerImage"))
 
+        stage.addActor(previewFiller)
         stage.addActor(previewTag)
-        stage.addActor(previewClickspot)
 
         previewLabelFields = HashMap()
         previewLabelFields[DataTag.CALLSIGN] = "ABC123"
@@ -610,8 +606,8 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
         previewTag.pack()
         previewTag.setPosition(4000f, 3240 * 0.45f - previewTag.height / 2)
 
-        previewClickspot.setSize(previewTag.width + 20, previewTag.height + 10)
-        previewClickspot.setPosition(previewTag.x - 10, previewTag.y - 5)
+        previewFiller.setSize(previewTag.width + 60, previewTag.height + 30)
+        previewFiller.setPosition(previewTag.x - 30, previewTag.y - 15)
     }
 
     /** Overrides show method of basic screen */
