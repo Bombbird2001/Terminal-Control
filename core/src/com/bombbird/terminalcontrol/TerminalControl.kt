@@ -179,7 +179,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         fun loadDatatagConfigs() {
             datatagConfigs.clear()
             datatagConfigs.add("Default", "Compact")
-            datatagConfigs.addAll(Array(FileLoader.getAvailableDatatagConfigs()))
+            if (full) datatagConfigs.addAll(Array(FileLoader.getAvailableDatatagConfigs()))
         }
     }
 

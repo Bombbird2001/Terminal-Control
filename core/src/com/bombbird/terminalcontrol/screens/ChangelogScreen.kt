@@ -214,7 +214,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
 
         //Version 1.5.2101.1
         val content21 = Array<String>()
-        content21.add("-Feature: Allow to user to spawn custom arrivals under Settings => Traffic => Spawn custom arrival")
+        content21.add("-Feature: Allow user to spawn custom arrivals under Settings => Traffic => Spawn custom arrival")
         if (Gdx.app.type == Application.ApplicationType.Desktop) content21.add("-TTS: Added TTS for desktop (Linux, Windows XP and later); if you are using Windows, you can install more voices from Microsoft")
         content21.add("-Bug fixes, optimisations")
         addVersionInfo("1.5", "2101.1", content21)

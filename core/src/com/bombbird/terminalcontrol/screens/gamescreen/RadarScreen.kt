@@ -351,6 +351,7 @@ class RadarScreen : GameScreen {
         showMva = save.optBoolean("showMva", true)
         showIlsDash = save.optBoolean("showIlsDash", false)
         datatagConfig = DataTagConfig(save.optString("datatagConfig", if (save.optBoolean("compactData", false)) "Compact" else "Default"))
+        if (!TerminalControl.datatagConfigs.contains(datatagConfig.name, false)) datatagConfig = DataTagConfig("Default")
         showUncontrolled = save.optBoolean("showUncontrolled", false)
         alwaysShowBordersBackground = save.optBoolean("alwaysShowBordersBackground", true)
         rangeCircleDist = save.optInt("rangeCircleDist", 0)
