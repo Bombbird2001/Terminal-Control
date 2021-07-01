@@ -618,7 +618,7 @@ class DataTagLayoutScreen(game: TerminalControl, val background: Image?): BasicS
     /** Overrides render method to include updating of minimized preview tag */
     override fun render(delta: Float) {
         super.render(delta)
-        if (!currLayout.firstEmpty && !currLayout.secondEmpty) updatePreview()
+        if (backButton.isVisible && !currLayout.firstEmpty && !currLayout.secondEmpty) updatePreview()
     }
 
     /** Return to datatag settings screen */
