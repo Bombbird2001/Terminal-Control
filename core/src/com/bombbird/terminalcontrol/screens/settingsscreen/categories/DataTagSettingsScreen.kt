@@ -38,13 +38,13 @@ class DataTagSettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     override fun loadBoxes() {
         dataTag = createStandardSelectBox()
         val newItems = Array(TerminalControl.datatagConfigs)
-        newItems.add("Manage layouts...")
+        if (TerminalControl.full) newItems.add("Manage layouts...")
         dataTag.items = newItems
         dataTag.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 if (dataTag.selected == "Manage layouts...") {
                     //New layout page
-                    game.screen = DataTagLayoutScreen(game, background)
+                    if (TerminalControl.full) game.screen = DataTagLayoutScreen(game, background)
                 } else datatagConfig = dataTag.selected
             }
         })

@@ -31,13 +31,14 @@ object RandomTip {
         tips.add("Wake turbulence can cause an aircraft to go around")
         tips.add("Check out the help manual for more detailed descriptions of airports, game mechanics")
         tips.add("ILS display style can be changed in Settings => Display")
-        tips.add("Aircraft data tag display style can be changed in Settings => Datatag")
+        tips.add("Aircraft data tag display style can be changed in Settings => Data tag")
         tips.add("Screen too cluttered? MVA sector altitudes can be set to hidden in Settings => Display")
         tips.add("Airspace too congested? Go to Settings => Traffic => Arrival traffic settings to adjust the traffic")
         tips.add("Colour scheme can be changed in Settings => Display")
         tips.add("Choose whether to display remaining distance to each waypoint on aircraft routes, in Settings => Display")
         tips.add("Measure distance on the radar screen by ${if (Gdx.app.type == Application.ApplicationType.Android) "changing to \"Dist mode\" and tapping with 2 fingers" else "dragging with the right mouse button"}")
         if (TerminalControl.full || Gdx.app.type == Application.ApplicationType.Android) tips.add("Some airports have a night mode with different procedures from day operations. You can change these settings under Settings => Traffic")
+        if (TerminalControl.full) tips.add("Make your favourite data tag layout! You can customise layouts in Settings => Data tag => Datatag style => Manage layouts...")
         if (Gdx.app.type == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!")
     }
 
