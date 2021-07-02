@@ -187,6 +187,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2107.1
+        val content25 = Array<String>()
+        if (TerminalControl.full) content25.add("-Datatag: Added customisable data tags: go to Settings => Data tag => Datatag style => Manage layouts...")
+        content25.add("-UI: Refreshed changelog screen (you are looking at it right now!)")
+        content25.add("-Bug fixes, optimisations and code improvements for future updates")
+        addVersionInfo("1.5", "2107.1", content25)
+
         //Version 1.5.2103.1
         val content24 = Array<String>()
         content24.add("-Mechanics: Added approach transitions - transition is selected automatically based on aircraft flight path")
