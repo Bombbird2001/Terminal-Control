@@ -59,7 +59,7 @@ open class AndroidTextToSpeechManager : AndroidApplication(), OnInitListener, Te
                     toastManager.ttsLangNotSupported()
                 } else {
                     Gdx.app.log("Text to Speech", "TTS initialized successfully")
-                    tts?.setSpeechRate(1.7f)
+                    tts?.setSpeechRate(1.5f)
                     loadVoices()
                 }
             }
