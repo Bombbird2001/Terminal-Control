@@ -442,52 +442,50 @@ class DataTag(aircraft: Aircraft) {
         var latChanged = false
 
         var latCleared = if (aircraft.isSelected && aircraft.isArrivalDeparture) {
-            if (Tab.latMode == NavState.SID_STAR && (aircraft.isLocCap || Tab.clearedWpt != aircraft.navState.clearedDirect.last()?.name || aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.VECTORS, NavState.AFTER_WPT_HDG, NavState.HOLD_AT))) {
+            if (Tab.latMode == NavState.SID_STAR) {
                 latChanged = latTab.isLatModeChanged || latTab.isWptChanged
                 if (aircraft.isLocCap && !latChanged) (if (aircraft.apch is RNP) "RNP" else "LOC") else Tab.clearedWpt ?: ""
             } else if (Tab.latMode == NavState.HOLD_AT) {
                 latChanged = latTab.isLatModeChanged || latTab.isHoldWptChanged
                 Tab.holdWpt ?: ""
             } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
-                if (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() || latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged) {
+                if (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last()) {
                     latChanged = latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged
                     Tab.afterWpt + "=>" + Tab.afterWptHdg
                 } else ""
             } else if (Tab.latMode == NavState.VECTORS) {
-                if (aircraft.isLocCap) {
-                    if (aircraft.apch is RNP) "RNP" else "LOC"
-                } else {
-                    latChanged = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
-                    Tab.clearedHdg.toString() + when(Tab.turnDir) {
-                        NavState.TURN_LEFT -> "L"
-                        NavState.TURN_RIGHT -> "R"
-                        else -> ""
-                    }
+                latChanged = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
+                if (aircraft.isLocCap && !latChanged) (if (aircraft.apch is RNP) "RNP" else "LOC") else Tab.clearedHdg.toString() + when(Tab.turnDir) {
+                    NavState.TURN_LEFT -> "L"
+                    NavState.TURN_RIGHT -> "R"
+                    else -> ""
                 }
             } else ""
         } else {
-            if (aircraft.isVectored) {
-                if (aircraft.isLocCap) {
-                    if (aircraft.apch is RNP) "RNP" else "LOC"
-                } else {
-                    var hdg = aircraft.navState.clearedHdg.last().toString()
-                    val turnDir: Int = aircraft.navState.clearedTurnDir.last()
-                    if (turnDir == NavState.TURN_LEFT) {
-                        hdg += "L"
-                    } else if (turnDir == NavState.TURN_RIGHT) {
-                        hdg += "R"
-                    }
-                    hdg
-                }
-            } else if (aircraft.navState.dispLatMode.last() == NavState.HOLD_AT) {
-                aircraft.holdWpt?.name ?: ""
-            } else if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
-                (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
-            } else if (aircraft.isLocCap) {
+            if (aircraft.isLocCap) {
                 if (aircraft.apch is RNP) "RNP" else "LOC"
-            } else {
-                ""
-            }
+            } else if (aircraft.isVectored) {
+                var hdg = aircraft.navState.clearedHdg.last().toString()
+                val turnDir: Int = aircraft.navState.clearedTurnDir.last()
+                if (turnDir == NavState.TURN_LEFT) {
+                    hdg += "L"
+                } else if (turnDir == NavState.TURN_RIGHT) {
+                    hdg += "R"
+                }
+                hdg
+            } else if (aircraft.navState.dispLatMode.last() == NavState.HOLD_AT) {
+                if (aircraft.isHolding || aircraft.direct != null && aircraft.holdWpt != null && aircraft.direct == aircraft.holdWpt) {
+                    aircraft.holdWpt?.name ?: ""
+                } else if (aircraft.direct != null) {
+                    aircraft.direct?.name ?: ""
+                } else ""
+            } else if (aircraft.navState.containsCode(aircraft.navState.dispLatMode.last(), NavState.SID_STAR, NavState.AFTER_WPT_HDG)) {
+                if (aircraft.navState.clearedDirect.last() != null && aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last() && aircraft.navState.dispLatMode.last() == NavState.AFTER_WPT_HDG) {
+                    (aircraft.navState.clearedDirect.last()?.name ?: "") + "=>" + aircraft.navState.clearedAftWptHdg.last()
+                } else if (aircraft.navState.clearedDirect.last() != null) {
+                    aircraft.navState.clearedDirect.last()?.name ?: ""
+                } else ""
+            } else ""
         }
         if (latChanged) latCleared = "[YELLOW]$latCleared[WHITE]"
         else if (config.showOnlyWhenChanged(LAT_CLEARED) && !latChanged && latCleared != "RNP" && latCleared != "LOC") latCleared = ""
