@@ -51,6 +51,7 @@ class StormIntensity(var intensity: Int, val x: Int, val y: Int, private val cel
             }
             intensityPatch?.setSize(10f, 10f)
         }
+        intensity = newIntensity
     }
 
     fun draw() {
