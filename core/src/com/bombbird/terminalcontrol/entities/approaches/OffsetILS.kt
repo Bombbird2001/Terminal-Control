@@ -38,16 +38,13 @@ class OffsetILS(airport: Airport, name: String, jsonObject: JSONObject): ILS(air
 
     /** Overrides method in ILS to ignore it if NPA  */
     private fun calculateLDARings() {
-        if (!isNpa) {
-            super.calculateGsRings()
-        } else {
-            val gsRings = Array<Vector2>()
+        if (isNpa) {
+            gsRings.clear()
             nonPrecAlts?.let {
                 for (i in 0 until it.size) {
                     gsRings.add(Vector2(x + nmToPixel(it[i][1]) * MathUtils.cosDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f)), y + nmToPixel(it[i][1]) * MathUtils.sinDeg(270 - heading + (TerminalControl.radarScreen?.magHdgDev ?: 0f))))
                 }
             }
-            this.gsRings = gsRings
         }
     }
 }
