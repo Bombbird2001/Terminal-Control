@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Scaling
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScalingViewport
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.RangeCircle
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.isTCHXAvailable
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager.unlockEgg
@@ -865,13 +866,6 @@ class RadarScreen : GameScreen {
         //Draw the range circles if present
         renderRangeCircles()
 
-        //Additional adjustments for certain airports
-        shapeRenderer.color = Color.BLACK
-        if ("TCTP" == mainName) {
-            shapeRenderer.line(4500f, 2416f, 4500f, 2124f)
-            shapeRenderer.line(1256f, 2050f, 1256f, 1180f)
-        }
-
         //Draw runway(s) for each airport
         for (airport in airports.values) {
             airport.renderRunways()
@@ -903,6 +897,10 @@ class RadarScreen : GameScreen {
 
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+
+        shapeRenderer.color = RangeCircle.DARK_GREEN
+        shapeRenderer.line(1260f, 0f, 1260f, 3240f)
+        shapeRenderer.line(4500f, 0f, 4500f, 3240f)
 
         //Draw aircraft
         for (aircraft in aircrafts.values) {

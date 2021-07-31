@@ -20,7 +20,8 @@ object HelpManager {
                 "Hold - Aircraft will fly the STAR till a pre-defined holding pattern at the selected waypoint. The track is depicted on the radar screen. Not available in heading mode.",
                 "Change STAR - Changes the STAR used by an arrival. Arrival will change to vectors mode, and you will need to re-clear it to a waypoint on the new STAR.",
                 "Approach - Select the approach to the desired runway. If activated in vectors mode, aircraft will maintain cleared heading till intercepting the localizer. " +
-                        "If activated in STAR mode, aircraft will fly the STAR till the approach path, then capture the localizer and glide slope automatically when appropriate.",
+                        "If activated in STAR mode, aircraft will choose the closest available transition (if available), fly the STAR till the approach path, then capture the localizer and glide slope automatically when appropriate. " +
+                        "If the approach is an RNP approach, the aircraft will automatically descend to the FAF altitude and start final approach after reaching the FAF.",
                 "Altitude tab: Controls the altitude aspect of the aircraft.", "Descend via STAR/Climb via SID - Aircraft will fly to the selected altitude taking into consideration altitude restrictions of the SID/STAR. Not available in heading mode.",
                 "Unrestricted - Aircraft will fly directly to the selected altitude with no restrictions",
                 "Expedite - Aircraft will increase the rate of climb/descent when activated",
@@ -38,8 +39,9 @@ object HelpManager {
                     You also receive score penalties for certain mistakes:
                     -Separation infringement: 5% initial penalty, and 1 point penalty for every 3 seconds the infringement continues.
                     -Wake separation infringement: 1 point penalty for every 3 seconds the infringement continues.
-                    -An arrival inbound for the airport leaving your airspace: 5% penalty
-                    -Fuel emergency, diversion: 10% penalty when an arrival declares a fuel emergency (in which player has about 10 minutes to land it), and an additional 10% penalty if the arrival diverts to alternate airport
+                    -An arrival inbound for the airport leaving your airspace: 5% penalty.
+                    -Fuel emergency, diversion: 10% penalty when an arrival declares a fuel emergency (in which player has about 10 minutes to land it), and an additional 10% penalty if the arrival diverts to alternate airport.
+                    -Thunder storms: 1 point penalty for every 3 seconds the aircraft flies in an area of bad weather.
                     """.trimIndent())
         CONTENT_LIST["ILS, LDA"] = arrayOf("In this game, planes must capture the ILS/LDA before landing. To capture the ILS, the following must be ensured:",
                 "- The aircraft has been instructed to intercept the ILS in the pane's lateral tab. Some airports have STARs that line the plane up with the ILS" +
@@ -83,8 +85,9 @@ object HelpManager {
         CONTENT_LIST["TCTP"] = arrayOf("TCTP, Haoyuan International Airport", "Runways:", "05L-23R: 3660m", "05R-23L: 3800m", "Configurations: 05L and 05R or 23L and 23R",
                 "Segregated runway operations usually used, where 1 runway is used for arrivals and the other for departures. Mixed mode is also used sometimes.",
                 "TCSS, Rongshan Airport", "Runway:", "10-28: 2605m", "Configurations: 10 or 28", "Runway is used for both arrivals, departures. When 28 is in use, planes will use the LDA28 approach which is a non-precision approach with step down altitudes.")
-        CONTENT_LIST["TCWS"] = arrayOf("TCWS, Changli International Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R",
-                "Segregated runway operations usually used, where 02L-20R is usually used for arrivals, and 02C-20C used for departures. However when needed, independent simultaneous ILS approaches can be conducted for both runways.")
+        CONTENT_LIST["TCWS"] = arrayOf("TCWS, Changli International Airport", "Runways:", "02L-20R: 4000m", "02C-20C: 4000m", "Configurations: 02L and 02C or 20C and 20R or 02L and 02R or 20L and 20R",
+                "Segregated runway operations usually used, where 02L-20R is usually used for arrivals, and 02C-20C or 02R-20L used for departures. However when needed, independent simultaneous ILS approaches can be conducted for both runways.",
+                "02R-20L does not have ILS approaches, but utilises RNP approaches instead.")
         CONTENT_LIST["TCTT"] = arrayOf("TCTT, Naheda Airport", "Runways:", "34L-16R: 3000m", "34R-16L: 3360m", "04-22: 2500m", "05-23: 2500m", "Configurations: 34L, 34R and 05 or 16L, 16R, 22 and 23 or 16L, 16R and 22",
                 "Simultaneous approaches are used for 34L, 34R or 16L, 16R. Simultaneous LDA approaches are also used for 22, 23, which are non-precision approaches. Simultaneous departures are used for 16L, 16R or 16R, 22.",
                 "TCTT STARs get the aircraft to fly in an arc initially, and the controller can instruct the aircraft to fly direct towards DEWWY, GLISS, CAMER or EURON after ensuring sufficient separation.",
