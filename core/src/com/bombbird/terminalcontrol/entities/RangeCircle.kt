@@ -10,7 +10,7 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.nmToPixel
 
 class RangeCircle(private val range: Int) : Actor() {
     companion object {
-        private val DARK_GREEN = Color(0x005720ff)
+        val DARK_GREEN = Color(0x005720ff)
     }
 
     private val labelUp: Label
