@@ -529,7 +529,6 @@ object GameSaver {
             airportInfo.put("takeoffRunways", takeoffRunways)
 
             //Runway manager night mode
-            airportInfo.put("night", airport.night)
             airportInfo.put("icao", airport.icao) //ICAO code of airport
             airportInfo.put("elevation", airport.elevation) //Elevation of airport
             airportInfo.put("aircraftRatio", airport.aircraftRatio) //Ratio of flights to the airport

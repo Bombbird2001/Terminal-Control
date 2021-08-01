@@ -157,7 +157,7 @@ class Airport {
 
         //TerminalControl.tts.test(stars, sids);
         takeoffManager = TakeoffManager(this)
-        runwayManager = RunwayManager(this, isNight)
+        runwayManager = RunwayManager(this)
         loadZones()
         updateZoneStatus()
         RandomSTAR.loadEntryTiming(this)
@@ -196,7 +196,7 @@ class Airport {
         RandomSTAR.loadStarNoise(icao)
 
         takeoffManager = TakeoffManager(this, save.getJSONObject("takeoffManager"))
-        runwayManager = RunwayManager(this, save.optBoolean("night", isNight))
+        runwayManager = RunwayManager(this)
         loadZones()
         updateZoneStatus()
         RandomSTAR.loadEntryTiming(this)
@@ -382,8 +382,6 @@ class Airport {
         } else {
             metar.getInt("windGust")
         }
-    val night: Boolean
-        get() = runwayManager.prevNight
     val visibility: Int
         get() = metar.getInt("visibility")
 }
