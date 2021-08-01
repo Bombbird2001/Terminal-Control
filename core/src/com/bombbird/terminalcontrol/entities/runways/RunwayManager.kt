@@ -8,7 +8,7 @@ import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 
 /** Manages runway configurations for an airport */
-class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
+class RunwayManager(private val airport: Airport) {
     private val dayConfigs = Array<RunwayConfig>()
     private val nightConfigs = Array<RunwayConfig>()
     lateinit var latestRunwayConfig: RunwayConfig
@@ -101,14 +101,12 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
             Gdx.app.log("RunwayManager", "No runway configurations available for ${airport.icao}")
             return
         }
-        if (!requiresChange(windHdg, windSpd)) {
+        if (!requiresChange(windHdg, windSpd, arrayToUse)) {
             if (airport.isPendingRwyChange) {
                 airport.resetRwyChangeTimer()
             }
-            prevNight = DayNightManager.isNight
             return
         } //Return if no change needed
-        prevNight = DayNightManager.isNight
         for (config: RunwayConfig in arrayToUse) {
             config.calculateScores(windHdg, windSpd)
         }
@@ -125,7 +123,7 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
     }
 
     /** Check if the current runway configuration needs to be changed due to winds or change in night mode */
-    private fun requiresChange(windHdg: Int, windSpd: Int): Boolean {
+    private fun requiresChange(windHdg: Int, windSpd: Int, availableConfigs: Array<RunwayConfig>): Boolean {
         if (airport.takeoffRunways.isEmpty() && airport.landingRunways.isEmpty()) return true
         for (runway: Runway in airport.takeoffRunways.values) {
             if (MathTools.componentInDirection(windSpd, windHdg, runway.heading) < -5) return true
@@ -133,7 +131,8 @@ class RunwayManager(private val airport: Airport, var prevNight: Boolean) {
         for (runway: Runway in airport.landingRunways.values) {
             if (MathTools.componentInDirection(windSpd, windHdg, runway.heading) < -5) return true
         }
-        return prevNight != DayNightManager.isNight //Even if current config works, if config time no longer applies, needs to be changed also
+        if (!this::latestRunwayConfig.isInitialized) return true
+        return !availableConfigs.contains(latestRunwayConfig, false) //Even if current config works, if config time no longer applies, needs to be changed also
     }
 
     /** Returns a list of suitable configurations with all runway tailwind < 5 knots, will exclude the "blank configuration" if at least 1 other config is available */
