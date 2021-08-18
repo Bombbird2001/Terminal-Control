@@ -187,6 +187,13 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2108.1
+        val content26 = Array<String>()
+        content26.add("-Weather: Allow player to change airport visibility")
+        content26.add("-UI: Choose to show or hide the sector boundary (shown by default)")
+        content26.add("-Bug fixes")
+        addVersionInfo("1.5", "2108.1", content26)
+
         //Version 1.5.2107.1
         val content25 = Array<String>()
         if (TerminalControl.full) content25.add("-Datatag: Added customisable data tags: go to Settings => Data tag => Datatag style => Manage layouts...")
