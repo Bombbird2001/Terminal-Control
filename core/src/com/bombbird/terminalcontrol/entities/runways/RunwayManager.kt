@@ -131,7 +131,30 @@ class RunwayManager(private val airport: Airport) {
         for (runway: Runway in airport.landingRunways.values) {
             if (MathTools.componentInDirection(windSpd, windHdg, runway.heading) < -5) return true
         }
-        if (!this::latestRunwayConfig.isInitialized) return true
+        if (!this::latestRunwayConfig.isInitialized) {
+            //Search for config
+            var found = false
+            for (config in dayConfigs) {
+                if (config.landingRunwayMap.keys == airport.landingRunways.keys && config.takeoffRunwayMap.keys == airport.takeoffRunways.keys) {
+                    found = true
+                    latestRunwayConfig = config
+                    break
+                }
+            }
+            if (!found) {
+                for (config in nightConfigs) {
+                    if (config.landingRunwayMap.keys == airport.landingRunways.keys && config.takeoffRunwayMap.keys == airport.takeoffRunways.keys) {
+                        found = true
+                        latestRunwayConfig = config
+                        break
+                    }
+                }
+                if (!found) {
+                    Gdx.app.log("Runway manager", "Could not find current runway config in all configs! Runway change initialized")
+                    return true
+                }
+            }
+        }
         return !availableConfigs.contains(latestRunwayConfig, false) //Even if current config works, if config time no longer applies, needs to be changed also
     }
 
