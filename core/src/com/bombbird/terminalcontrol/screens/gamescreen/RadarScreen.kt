@@ -107,6 +107,7 @@ class RadarScreen : GameScreen {
     var colourStyle = 0
     var realisticMetar = false
     var distToGoVisible = 0
+    var showSectorBoundary = true
 
     //Advanced traffic settings
     var trafficMode: Int
@@ -271,6 +272,7 @@ class RadarScreen : GameScreen {
             soundSel = 2
             weatherSel = Weather.STATIC
             distToGoVisible = 0
+            showSectorBoundary = true
         } else {
             trajectoryLine = TerminalControl.trajectorySel
             pastTrajTime = TerminalControl.pastTrajTime
@@ -291,6 +293,7 @@ class RadarScreen : GameScreen {
             soundSel = TerminalControl.soundSel
             emerChance = TerminalControl.emerChance
             distToGoVisible = TerminalControl.distToGoVisible
+            showSectorBoundary = TerminalControl.showSectorBoundary
         }
         tfcMode = TfcMode.NORMAL
         allowNight = true
@@ -375,6 +378,7 @@ class RadarScreen : GameScreen {
         maxPlanes = save.optInt("maxPlanes", -1)
         flowRate = save.optInt("flowRate", -1)
         distToGoVisible = save.optInt("distToGoVisible", 0)
+        showSectorBoundary = save.optBoolean("showSectorBoundary", true)
         wakeManager = if (save.isNull("wakeManager")) WakeManager() else WakeManager(save.getJSONObject("wakeManager"))
         loadEasterEggQueue()
         simultaneousLanding = LinkedHashMap()
@@ -845,9 +849,11 @@ class RadarScreen : GameScreen {
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
 
-        shapeRenderer.color = RangeCircle.DARK_GREEN
-        shapeRenderer.line(1260f, 0f, 1260f, 3240f)
-        shapeRenderer.line(4500f, 0f, 4500f, 3240f)
+        if (showSectorBoundary) {
+            shapeRenderer.color = RangeCircle.DARK_GREEN
+            shapeRenderer.line(1260f, 0f, 1260f, 3240f)
+            shapeRenderer.line(4500f, 0f, 4500f, 3240f)
+        }
 
         //Draw aircraft
         for (aircraft in aircrafts.values) {

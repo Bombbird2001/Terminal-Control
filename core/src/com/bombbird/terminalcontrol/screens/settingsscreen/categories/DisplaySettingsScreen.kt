@@ -22,7 +22,8 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     lateinit var colour: SelectBox<String>
     lateinit var metar: SelectBox<String>
     lateinit var distToGo: SelectBox<String>
-    lateinit var trajectoryLabel: Label
+    lateinit var sectorBoundary: SelectBox<String>
+    private lateinit var trajectoryLabel: Label
     var trajectorySel = 0
     private lateinit var pastTrajLabel: Label
     var pastTrajTime = 0
@@ -40,6 +41,8 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
     var realisticMetar = false
     private lateinit var distToGoLabel: Label
     var distToGoVisible = 0
+    private lateinit var boundaryLabel: Label
+    var showSectorBoundary = true
 
     init {
         infoString = "Set the game display settings below."
@@ -148,6 +151,14 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
                 distToGoVisible = distToGo.selectedIndex
             }
         })
+
+        sectorBoundary = createStandardSelectBox()
+        sectorBoundary.setItems("Show", "Hide")
+        sectorBoundary.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                showSectorBoundary = "Show" == sectorBoundary.selected
+            }
+        })
     }
 
     /** Loads labels for display settings  */
@@ -162,6 +173,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         colourLabel = Label("Colour style:", labelStyle)
         metarLabel = Label("Metar display:", labelStyle)
         distToGoLabel = Label("Show distance to waypoint:\nwhen selected", labelStyle)
+        boundaryLabel = Label("Sector boundary: ", labelStyle)
     }
 
     /** Loads actors for display settings into tabs  */
@@ -178,6 +190,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         settingsTabs.add(tab1)
         val tab2 = SettingsTab(this, 2)
         tab2.addActors(distToGo, distToGoLabel)
+        tab2.addActors(sectorBoundary, boundaryLabel)
         settingsTabs.add(tab2)
     }
 
@@ -194,6 +207,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             colourStyle = TerminalControl.colourStyle
             realisticMetar = TerminalControl.realisticMetar
             distToGoVisible = TerminalControl.distToGoVisible
+            showSectorBoundary = TerminalControl.showSectorBoundary
         } else {
             //Use game settings
             trajectorySel = radarScreen.trajectoryLine
@@ -205,6 +219,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             colourStyle = radarScreen.colourStyle
             realisticMetar = radarScreen.realisticMetar
             distToGoVisible = radarScreen.distToGoVisible
+            showSectorBoundary = radarScreen.showSectorBoundary
         }
         trajectoryLine.selected = if (trajectorySel == 0) "Off" else "$trajectorySel sec"
         when (pastTrajTime) {
@@ -219,6 +234,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
         colour.selectedIndex = colourStyle
         metar.selected = if (realisticMetar) "Realistic" else "Simple"
         distToGo.selectedIndex = distToGoVisible
+        sectorBoundary.selected = if (showSectorBoundary) "Show" else "Hide"
     }
 
     /** Confirms and applies the changes set  */
@@ -236,6 +252,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             val metarChanged = radarScreen.realisticMetar != realisticMetar
             radarScreen.realisticMetar = realisticMetar
             radarScreen.distToGoVisible = distToGoVisible
+            radarScreen.showSectorBoundary = showSectorBoundary
             Gdx.app.postRunnable {
                 if (rangeDistChanged) radarScreen.loadRange() //Reload the range circles in case of any changes
                 if (colourChanged) radarScreen.updateColourStyle() //Update the label colours
@@ -251,6 +268,7 @@ class DisplaySettingsScreen(game: TerminalControl, radarScreen: RadarScreen?, ba
             TerminalControl.colourStyle = colourStyle
             TerminalControl.realisticMetar = realisticMetar
             TerminalControl.distToGoVisible = distToGoVisible
+            TerminalControl.showSectorBoundary = showSectorBoundary
             GameSaver.saveSettings()
         }
     }

@@ -7,7 +7,7 @@ import com.bombbird.terminalcontrol.utilities.HttpRequests
 import com.bombbird.terminalcontrol.utilities.RenameManager.reverseNameAirportICAO
 import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
 import org.json.JSONObject
-import java.util.*
+import kotlin.collections.HashMap
 
 class Metar(private val radarScreen: RadarScreen) {
     private var prevMetar: JSONObject? = null
@@ -73,7 +73,7 @@ class Metar(private val radarScreen: RadarScreen) {
     }
 
     /** Create new weather based on current (i.e. no big changes)  */
-    fun randomBasedOnCurrent(): JSONObject {
+    private fun randomBasedOnCurrent(): JSONObject {
         val airports = JSONObject()
         for (airport in radarScreen.airports.keys) {
             val jsonObject = JSONObject()
@@ -106,11 +106,10 @@ class Metar(private val radarScreen: RadarScreen) {
             //For each airport, create random weather and parse to JSON object
             var windSpd: Int
             var gust = -1
-            var ws: String
             val visibility: Int = VisibilityChance.randomVis
             val windDir: Int = WindDirChance.getRandomWindDir(airport)
             windSpd = WindspeedChance.getRandomWindspeed(airport, windDir)
-            ws = WindshearChance.getRandomWsForAllRwy(airport, windSpd)
+            val ws: String = WindshearChance.getRandomWsForAllRwy(airport, windSpd)
             if (windSpd >= 15 && MathUtils.random(2) == 2) {
                 //Gusts
                 gust = MathUtils.random(windSpd + 3, 40)
@@ -202,7 +201,7 @@ class Metar(private val radarScreen: RadarScreen) {
             newObject.put("windSpeed", value[1])
             val randomWs = WindshearChance.getRandomWsForAllRwy(key, value[1])
             newObject.put("windshear", if ("" == randomWs) JSONObject.NULL else randomWs)
-            newObject.put("visibility", VisibilityChance.randomVis)
+            newObject.put("visibility", value[2])
             newObject.put("metar", generateRawMetar(newObject))
         }
         updateRadarScreenState()

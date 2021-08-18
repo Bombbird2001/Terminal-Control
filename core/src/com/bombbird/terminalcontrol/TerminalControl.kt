@@ -88,6 +88,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         var colourStyle = 0
         var realisticMetar = false
         var distToGoVisible = 0
+        var showSectorBoundary = true
         var defaultTabNo = 0
         var revision = 0
         const val LATEST_REVISION = 1
@@ -118,6 +119,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 colourStyle = 0
                 realisticMetar = false
                 distToGoVisible = 0
+                showSectorBoundary = true
                 defaultTabNo = 0
                 emerChance = Emergency.Chance.MEDIUM
                 revision = 0
@@ -150,6 +152,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 datatagConfig = settings.optString("datatagConfig", if (settings.optBoolean("compactData", false)) "Compact" else "Default")
                 showUncontrolled = settings.optBoolean("showUncontrolled", false)
                 alwaysShowBordersBackground = settings.optBoolean("alwaysShowBordersBackground", true)
+                showSectorBoundary = settings.optBoolean("showSectorBoundary", true)
                 rangeCircleDist = settings.optInt("rangeCircleDist", 0)
                 lineSpacingValue = settings.optInt("lineSpacingValue", 1)
                 colourStyle = settings.optInt("colourStyle", 0)
