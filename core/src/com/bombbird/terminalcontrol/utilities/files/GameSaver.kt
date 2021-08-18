@@ -92,6 +92,7 @@ object GameSaver {
         jsonObject.put("maxPlanes", radarScreen.maxPlanes)
         jsonObject.put("flowRate", radarScreen.flowRate)
         jsonObject.put("distToGoVisible", radarScreen.distToGoVisible)
+        jsonObject.put("showSectorBoundary", radarScreen.showSectorBoundary)
         jsonObject.put("revision", Revision.CURRENT_REVISION)
         val jsonArray = JSONArray()
         for (aircraft in radarScreen.allAircraft) {
@@ -765,6 +766,7 @@ object GameSaver {
             settings.put("defaultTabNo", TerminalControl.defaultTabNo)
             settings.put("emerChance", TerminalControl.emerChance.toString())
             settings.put("distToGoVisible", TerminalControl.distToGoVisible)
+            settings.put("showSectorBoundary", TerminalControl.showSectorBoundary)
             settings.put("revision", TerminalControl.revision)
             handle.writeString(settings.toString(4), false)
         }
