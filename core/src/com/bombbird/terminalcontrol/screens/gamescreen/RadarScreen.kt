@@ -341,9 +341,12 @@ class RadarScreen : GameScreen {
         trajectoryLine = save.optInt("trajectoryLine", 90)
         pastTrajTime = save.optInt("pastTrajTime", -1)
         radarSweepDelay = save.optDouble("radarSweep", 2.0).toFloat()
-        advTraj = if (TerminalControl.full) save.optInt("advTraj", -1) else -1
-        areaWarning = if (TerminalControl.full) save.optInt("areaWarning", -1) else -1
-        collisionWarning = if (TerminalControl.full) save.optInt("collisionWarning", -1) else -1
+        val maxTraj = if (UnlockManager.trajAvailable.last() == "Off") -1 else UnlockManager.trajAvailable.last().split(" ")[0].toInt()
+        val maxArea = if (UnlockManager.areaAvailable.last() == "Off") -1 else UnlockManager.areaAvailable.last().split(" ")[0].toInt()
+        val maxCollision = if (UnlockManager.collisionAvailable.last() == "Off") -1 else UnlockManager.collisionAvailable.last().split(" ")[0].toInt()
+        advTraj = if (TerminalControl.full) save.optInt("advTraj", -1).coerceAtMost(maxTraj) else -1
+        areaWarning = if (TerminalControl.full) save.optInt("areaWarning", -1).coerceAtMost(maxArea) else -1
+        collisionWarning = if (TerminalControl.full) save.optInt("collisionWarning", -1).coerceAtMost(maxCollision) else -1
         showMva = save.optBoolean("showMva", true)
         showIlsDash = save.optBoolean("showIlsDash", false)
         datatagConfig = DataTagConfig(save.optString("datatagConfig", if (save.optBoolean("compactData", false)) "Compact" else "Default"))

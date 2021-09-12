@@ -30,6 +30,8 @@ class Emergency {
     var isEmergency = false
     var isActive: Boolean
     var type: Type
+    var mvaGraceTime //Grace period for departure emergencies that have not climbed above MVA
+            : Float
     var timeRequired //Preparation time required before dump/approach
             : Float
     var isChecklistsSaid //Whether aircraft has informed controller of running checklists, fuel dump
@@ -72,6 +74,7 @@ class Emergency {
         }
         isActive = false
         type = Type.values()[MathUtils.random(Type.values().size - 1)]
+        mvaGraceTime = if (aircraft is Departure) 60f else 0.5f
         timeRequired = MathUtils.random(300, 600).toFloat() //Between 5 to 10 minutes
         isChecklistsSaid = false
         isReadyForDump = false
@@ -93,6 +96,7 @@ class Emergency {
         isEmergency = forceEmergency
         isActive = false
         type = Type.values()[MathUtils.random(Type.values().size - 1)]
+        mvaGraceTime = if (aircraft is Departure) 60f else 0.5f
         timeRequired = MathUtils.random(300, 600).toFloat() //Between 5 to 10 minutes
         isChecklistsSaid = false
         isReadyForDump = false
@@ -113,6 +117,7 @@ class Emergency {
         isEmergency = save.getBoolean("emergency")
         isActive = save.getBoolean("active")
         type = Type.valueOf(save.getString("type"))
+        mvaGraceTime = save.optDouble("mvaGraceTime", if (aircraft is Departure) 60.0 else 0.5).toFloat()
         timeRequired = save.getDouble("timeRequired").toFloat()
         isChecklistsSaid = save.optBoolean("checklistsSaid")
         isReadyForDump = save.optBoolean("readyForDump")
@@ -166,6 +171,9 @@ class Emergency {
         if (isActive) {
             //Emergency ongoing
             timeRequired -= dt
+            if (mvaGraceTime > 0) {
+                mvaGraceTime -= dt
+            }
             if (timeRequired < 180 && !isChecklistsSaid) {
                 //When aircraft needs 3 more minutes, inform controller of remaining time and whether fuel dump is required
                 isChecklistsSaid = true
