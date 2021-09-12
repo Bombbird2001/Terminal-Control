@@ -171,10 +171,6 @@ class SeparationChecker : Actor() {
                     val plane2 = planesToCheck[k]
 
                     //Split up exception cases to make it easier to read
-                    if (plane1.emergency.isActive || plane2.emergency.isActive) {
-                        //If either plane is an emergency
-                        continue
-                    }
                     if (plane1.altitude < plane1.airport.elevation + 1400 || plane2.altitude < plane1.airport.elevation + 1400 || plane1.altitude > radarScreen.maxAlt && plane2.altitude > radarScreen.maxAlt) {
                         //If either plane is below 1400 feet or both above max alt
                         continue
@@ -209,11 +205,15 @@ class SeparationChecker : Actor() {
                     }
                     val dist = pixelToNm(distanceBetween(plane1.x, plane1.y, plane2.x, plane2.y))
                     var minima = radarScreen.separationMinima.toFloat()
-                    if (plane1.apch != null && plane2.apch != null && plane1.apch != plane2.apch && plane1.apch?.isInsideILS(plane1.x, plane1.y) == true && plane2.apch?.isInsideILS(plane2.x, plane2.y) == true) {
+                    var altMinima = 975
+                    if (plane1.emergency.isActive || plane2.emergency.isActive) {
+                        //If either plane is an emergency
+                        minima = 1.5f
+                        altMinima = 475
+                    } else if (plane1.apch != null && plane2.apch != null && plane1.apch != plane2.apch && plane1.apch?.isInsideILS(plane1.x, plane1.y) == true && plane2.apch?.isInsideILS(plane2.x, plane2.y) == true) {
                         //If both planes are on different ILS and both have captured LOC and are within at least 1 of the 2 arcs, reduce separation to 2nm (staggered separation)
                         minima = 2f
-                    }
-                    if (plane1.apch != null && plane1.apch == plane2.apch) {
+                    } else if (plane1.apch != null && plane1.apch == plane2.apch) {
                         val runway: Runway = plane1.apch?.rwy ?: continue
                         if (pixelToNm(distanceBetween(plane1.x, plane1.y, runway.x, runway.y)) < 10 &&
                                 pixelToNm(distanceBetween(plane2.x, plane2.y, runway.x, runway.y)) < 10) {
@@ -222,11 +222,11 @@ class SeparationChecker : Actor() {
                             //TODO If visibility is poor, reduced separation doesn't apply?
                         }
                     }
-                    if (abs(plane1.altitude - plane2.altitude) < 975 && dist < minima + 2) {
-                        if (abs(plane1.altitude - plane2.altitude) < 900 && dist < minima) {
+                    if (abs(plane1.altitude - plane2.altitude) < altMinima && dist < minima + 2) {
+                        if (abs(plane1.altitude - plane2.altitude) < altMinima - 75 && dist < minima) {
                             if (!plane1.isConflict || !plane2.isConflict) {
                                 //TODO Change separation minima depending on visibility(?)
-                                //Aircraft have infringed minima of 1000 feet and 3nm apart
+                                //Aircraft have infringed minima
                                 if (!plane1.isPrevConflict) plane1.isSilenced = false
                                 if (!plane2.isPrevConflict) plane2.isSilenced = false
                                 plane1.isConflict = true
@@ -234,6 +234,7 @@ class SeparationChecker : Actor() {
                                 lineStorage.add(floatArrayOf(plane1.radarX, plane1.radarY, plane2.radarX, plane2.radarY, 1f))
                                 if (abs(plane1.altitude - plane2.altitude) < 200 && dist < 0.5f) completeAchievement("thatWasClose")
                                 when (minima) {
+                                    1.5f -> allConflicts.add(NORMAL_CONFLICT)
                                     2f -> allConflicts.add(PARALLEL_ILS)
                                     2.5f -> allConflicts.add(ILS_LESS_THAN_10NM)
                                     else -> {
@@ -303,10 +304,12 @@ class SeparationChecker : Actor() {
                     (aircraft is Arrival && aircraft.apch != null && aircraft.apch?.name?.contains("IMG") == true) ||
                     aircraft.isGoAroundWindow ||
                     (aircraft is Arrival && aircraft.apch is Circling && aircraft.phase > 0) ||
-                    (aircraft is Departure && !aircraft.isSidSet)) {
+                    (aircraft is Departure && !aircraft.isSidSet) ||
+                    (aircraft.emergency.isActive && aircraft.emergency.mvaGraceTime > 0)) {
                 //Suppress terrain warnings if aircraft is already on the ILS's GS or is on the NPA, or is on the ground,
                 // or is on the imaginary ILS for LDA (if has not captured its GS yet), or just did a go around,
                 // or is on the visual segment of circling approach, or is a departure that has not climbed past initial climb
+                // or is an emergency aircraft that is still within the grace period for MVA compliance
                 continue
             }
             var conflict = false

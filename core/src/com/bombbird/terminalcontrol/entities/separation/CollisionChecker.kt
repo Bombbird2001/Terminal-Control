@@ -95,7 +95,7 @@ class CollisionChecker {
                             if (found) continue
                         }
 
-                        //Go around will not be considered as exceptions to the collision warning
+                        //Go around, emergencies will not be considered as exceptions to the collision warning
                         val dist = pixelToNm(distanceBetween(point1.x, point1.y, point2.x, point2.y))
                         var minima = radarScreen.separationMinima.toFloat()
                         if (aircraft1.apch != null && aircraft2.apch != null && aircraft1.apch?.isInsideILS(aircraft1.x, aircraft1.y) == true && aircraft2.apch?.isInsideILS(aircraft2.x, aircraft2.y) == true) {
