@@ -315,7 +315,7 @@ class Ui {
                 event.handle()
             }
         })
-        addActor(paneSwitchButton, 0.05f, 0.2f, 3240 * 0.42f, 250f)
+        addActor(paneSwitchButton, 0.775f, 0.175f, 2500f, 250f)
     }
 
     fun setNormalPane(show: Boolean) {
