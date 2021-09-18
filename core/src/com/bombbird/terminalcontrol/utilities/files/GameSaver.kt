@@ -769,6 +769,7 @@ object GameSaver {
             settings.put("distToGoVisible", TerminalControl.distToGoVisible)
             settings.put("showSectorBoundary", TerminalControl.showSectorBoundary)
             settings.put("revision", TerminalControl.revision)
+            settings.put("paneLeft", TerminalControl.paneLeft)
             handle.writeString(settings.toString(4), false)
         }
     }

@@ -87,6 +87,9 @@ class Ui {
     //Changes between zoom and distance measuring mode (for Android only)
     private lateinit var zoomDistButton: TextButton
 
+    //Moves pane from left to right/right to left
+    private lateinit var paneSwitchButton: TextButton
+
     //Array for METAR info on default pane
     private lateinit var metarPane: ScrollPane
     private lateinit var metarInfos: com.badlogic.gdx.utils.Array<Label>
@@ -297,6 +300,22 @@ class Ui {
         }
         if (inputListener != null) metarPane.removeListener(inputListener)
         addActor(metarPane, 1 / 19.2f, 0.6f, 1550f, 1200f)
+
+        //Switch pane side button
+        val textButtonStyle1 = TextButton.TextButtonStyle()
+        textButtonStyle1.fontColor = Color.BLACK
+        textButtonStyle1.font = Fonts.defaultFont20
+        textButtonStyle1.up = lightestBoxBackground
+        textButtonStyle1.down = lightestBoxBackground
+        paneSwitchButton = TextButton(if (TerminalControl.paneLeft) "Pane >" else "< Pane", textButtonStyle1)
+        paneSwitchButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent, actor: Actor) {
+                radarScreen.changeUIPaneSide()
+                paneSwitchButton.setText(if (TerminalControl.paneLeft) "Pane >" else "< Pane")
+                event.handle()
+            }
+        })
+        addActor(paneSwitchButton, 0.05f, 0.2f, 3240 * 0.42f, 250f)
     }
 
     fun setNormalPane(show: Boolean) {

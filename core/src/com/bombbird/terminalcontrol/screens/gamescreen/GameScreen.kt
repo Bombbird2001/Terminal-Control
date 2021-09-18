@@ -31,6 +31,7 @@ import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
 import com.bombbird.terminalcontrol.utilities.Fonts
 import com.bombbird.terminalcontrol.utilities.SafeStage
+import com.bombbird.terminalcontrol.utilities.files.GameSaver
 import kotlin.collections.HashMap
 
 open class GameScreen(val game: TerminalControl) : Screen, GestureListener, InputProcessor {
@@ -65,6 +66,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     lateinit var camera: OrthographicCamera
     lateinit var viewport: Viewport
     private var lastZoom = 1f
+    var xOffset = 990
 
     //Create 2nd camera for UI
     lateinit var ui: Ui
@@ -196,7 +198,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
             zooming = false
             zoomedIn = false
         }
-        camera.translate(-990 * (camera.zoom - lastZoom), 0f) //Ensure camera zooms into the current center
+        camera.translate(-xOffset * (camera.zoom - lastZoom), 0f) //Ensure camera zooms into the current center
         lastZoom = camera.zoom
     }
 
@@ -207,7 +209,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         val xDeviation = -(effectiveViewportWidth - camera.viewportWidth) / 2f
         val effectiveViewportHeight = camera.viewportHeight * camera.zoom
         val yDeviation = -(effectiveViewportHeight - camera.viewportHeight) / 2f
-        val xOffset = camera.zoom * 990 //Since I shifted camera to the left by 990 px
+        val xOffset = camera.zoom * xOffset //Since I shifted camera to the left by 990 px
         val leftLimit = effectiveViewportWidth / 2f - xOffset
         val rightLimit = leftLimit + 2 * xDeviation
         val downLimit = effectiveViewportHeight / 2f
@@ -224,6 +226,24 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         } else if (camera.position.y > upLimit) {
             camera.position.y = upLimit
         }
+    }
+
+    /** Sets the UI pane to be on the left or right side, adjusting the camera parameters to do so */
+    fun changeUIPaneSide() {
+        if (!TerminalControl.paneLeft) {
+            //Was right, change to left
+            xOffset = 990
+            TerminalControl.paneLeft = true
+            uiCam.position[uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f] = 0f
+        } else {
+            //Was left, change to right
+            xOffset = -990
+            TerminalControl.paneLeft = false
+            uiCam.position[- uiCam.viewportWidth / 2f + ui.paneWidth, uiCam.viewportHeight / 2f] = 0f
+        }
+        GameSaver.saveSettings()
+        val xOffset = camera.zoom * xOffset
+        camera.position[camera.viewportWidth / 2 - xOffset, camera.viewportHeight / 2] = 0f
     }
 
     /** Implements show method of screen; overridden in radarScreen class  */
@@ -332,14 +352,14 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                         else -> if (liveWeather) "Loading live weather.   " else "Loading.   "
                     }
                     loadingLabel.setText(loadingText)
-                    loadingLabel.setPosition(1920 - loadingLabel.prefWidth / 2, 1550f)
+                    loadingLabel.setPosition(2880 - xOffset - loadingLabel.prefWidth / 2, 1550f)
                     game.batch.begin()
                     loadingLabel.draw(game.batch, 1f)
                     if (!tipsLoaded()) loadTips()
                     try {
                         if ("" == tipLabel.text.toString()) {
                             tipLabel.setText(randomTip())
-                            tipLabel.setPosition(1920 - tipLabel.prefWidth / 2, 960f)
+                            tipLabel.setPosition(2880 - xOffset - tipLabel.prefWidth / 2, 960f)
                         } else tipLabel.draw(game.batch, 1f)
                     } catch (e: Exception) {}
                     game.batch.end()
@@ -385,11 +405,12 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         viewport.update(width, height, false)
         stage.viewport.update(width, height, false)
         labelStage.viewport.update(width, height, false)
-        val xOffset = camera.zoom * 990
+        val xOffset = camera.zoom * xOffset
         camera.position[camera.viewportWidth / 2 - xOffset, camera.viewportHeight / 2] = 0f
         uiViewport.update(width, height, true)
         uiStage.viewport.update(width, height, true)
-        uiCam.position[uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f] = 0f
+        if (TerminalControl.paneLeft) uiCam.position[uiCam.viewportWidth / 2f, uiCam.viewportHeight / 2f] = 0f
+        else uiCam.position[- uiCam.viewportWidth / 2f + ui.paneWidth, uiCam.viewportHeight / 2f] = 0f
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             var resizeAgain = false
             var newWidth = width

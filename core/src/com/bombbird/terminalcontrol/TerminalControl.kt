@@ -93,6 +93,8 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         var revision = 0
         const val LATEST_REVISION = 1
 
+        var paneLeft = true
+
         fun loadSettings() {
             val settings = FileLoader.loadSettings()
             if (settings == null) {
@@ -123,6 +125,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 defaultTabNo = 0
                 emerChance = Emergency.Chance.MEDIUM
                 revision = 0
+                paneLeft = true
             } else {
                 trajectorySel = settings.optInt("trajectory", 90)
                 pastTrajTime = settings.optInt("pastTrajTime", -1)
@@ -159,6 +162,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
                 realisticMetar = settings.optBoolean("realisticMetar", false)
                 distToGoVisible = settings.optInt("distToGoVisible", 0)
                 revision = settings.optInt("revision", 0)
+                paneLeft = settings.optBoolean("paneLeft", true)
             }
             GameSaver.saveSettings()
         }
