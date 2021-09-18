@@ -327,6 +327,7 @@ class Ui {
         infoLabel.isVisible = show && infoLabel.text.isNotEmpty()
         pauseButton.isVisible = show
         zoomDistButton.isVisible = show
+        paneSwitchButton.isVisible = show
         if (radarScreen.isUtilityBoxInitialized()) radarScreen.utilityBox.setVisible(show)
     }
 
