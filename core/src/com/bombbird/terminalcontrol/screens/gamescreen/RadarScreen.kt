@@ -457,7 +457,6 @@ class RadarScreen : GameScreen {
         uiCam.setToOrtho(false, 1920f, 3240f)
         uiViewport = ExtendViewport(TerminalControl.WIDTH.toFloat(), TerminalControl.HEIGHT.toFloat(), uiCam)
         uiViewport.apply()
-        uiCam.position[2880f, 1620f] = 0f
     }
 
     private fun loadAirports() {

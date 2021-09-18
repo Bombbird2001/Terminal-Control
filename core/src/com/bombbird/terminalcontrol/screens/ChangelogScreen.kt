@@ -187,6 +187,12 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
     private fun loadHashmapContent() {
         if (changeLogContent.size > 0) return
 
+        //Version 1.5.2109.1
+        val content27 = Array<String>()
+        content27.add("-UI: Allow player to switch pane between left and right")
+        content27.add("-Bug fixes")
+        addVersionInfo("1.5", "2109.1", content27)
+
         //Version 1.5.2108.1
         val content26 = Array<String>()
         content26.add("-Weather: Allow player to change airport visibility")
