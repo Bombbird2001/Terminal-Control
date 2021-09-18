@@ -457,6 +457,7 @@ object GameSaver {
         emer.put("emergency", aircraft.emergency.isEmergency)
         emer.put("active", aircraft.emergency.isActive)
         emer.put("type", aircraft.emergency.type.name)
+        emer.put("mvaGraceTime", aircraft.emergency.mvaGraceTime.toDouble())
         emer.put("timeRequired", aircraft.emergency.timeRequired.toDouble())
         emer.put("checklistsSaid", aircraft.emergency.isChecklistsSaid)
         emer.put("readyForDump", aircraft.emergency.isReadyForDump)
