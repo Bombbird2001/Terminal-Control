@@ -164,7 +164,7 @@ class Departure : Aircraft {
             updateClearedAltitude(it.initClimb)
             navState.clearedAlt.removeFirst()
             navState.clearedAlt.addFirst(clearedAltitude)
-            clearedHeading = if (sid.getInitClimb(it.name)?.get(0) ?: -1 != -1) {
+            clearedHeading = if ((sid.getInitClimb(it.name)?.get(0) ?: -1) != -1) {
                 sid.getInitClimb(it.name)?.get(0) ?: 360
             } else {
                 it.heading
@@ -231,7 +231,9 @@ class Departure : Aircraft {
             }
             isAccel = true
         }
-        if ((sid.getInitClimb(runway?.name) == null || altitude >= sid.getInitClimb(runway?.name)?.get(1) ?: -1) && !isSidSet) {
+        if ((sid.getInitClimb(runway?.name) == null || altitude >= (sid.getInitClimb(runway?.name)?.get(1)
+                ?: -1)) && !isSidSet
+        ) {
             isSidSet = true
             updateAltRestrictions()
             updateTargetAltitude()
