@@ -21,7 +21,7 @@ class Route private constructor() {
     private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
     private var isStar = false
     val routeData = RouteData()
-    private val routeDataDynamic = RouteData()
+    val routeDataDynamic = RouteData()
     lateinit var holdProcedure: HoldProcedure
         private set
     var heading: Int
@@ -340,28 +340,27 @@ class Route private constructor() {
         val foData = routeData.flyOver
         for (i in 0 until routeData.size) {
             if (isStar) {
-                //Loop through for maximum altitude, waypoints, flyover
-                if (maxAlt > restrData[i][1] || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
-                routeDataDynamic.add(wptData[i], intArrayOf(-1, maxAlt, -1), foData[i])
+                //Loop through for maximum altitude, waypoints, flyover, max speed
+                if ((restrData[i][1] != -1 && maxAlt > restrData[i][1]) || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
+                if ((restrData[i][2] != -1 && maxSpd > restrData[i][2]) || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
+                routeDataDynamic.add(wptData[i], intArrayOf(-1, maxAlt, maxSpd), foData[i])
             } else {
-                //Loop through for minimum altitude, max speed, waypoints, flyover
-                if (minAlt < restrData[i][0] || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
-                if (maxSpd < restrData[i][2] || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
-                routeDataDynamic.add(wptData[i], intArrayOf(minAlt, -1, maxSpd), foData[i])
+                //Loop through for minimum altitude, waypoints, flyover
+                if ((restrData[i][0] != -1 && minAlt < restrData[i][0]) || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
+                routeDataDynamic.add(wptData[i], intArrayOf(minAlt, -1, -1), foData[i])
             }
         }
         for (i in routeData.size - 1 downTo 0) {
             if (isStar) {
-                //Loop through for minimum altitude, max speed
-                if (minAlt < restrData[i][0] || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
-                //Offset index for max speed by 1; aircraft will only follow restriction after reaching waypoint
-                if (maxSpd < restrData[i][2] || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
+                //Loop through for minimum altitude
+                if ((restrData[i][0] != -1 && minAlt < restrData[i][0]) || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
                 routeDataDynamic.restrictions[i][0] = minAlt
-                routeDataDynamic.restrictions[i][2] = maxSpd
             } else {
-                //Loop through for maximum altitude
-                if (maxAlt > restrData[i][1] || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
+                //Loop through for maximum altitude, max speed
+                if ((restrData[i][1] != -1 && maxAlt > restrData[i][1]) || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
+                if ((restrData[i][2] != -1 && maxSpd > restrData[i][2]) || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
                 routeDataDynamic.restrictions[i][1] = maxAlt
+                routeDataDynamic.restrictions[i][2] = maxSpd
             }
         }
     }
