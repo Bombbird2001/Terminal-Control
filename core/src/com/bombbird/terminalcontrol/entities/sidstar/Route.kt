@@ -151,8 +151,8 @@ class Route private constructor() {
     constructor(jo: JSONObject, sid: Sid, runway: Runway, climbRate: Int) : this(jo) {
         isStar = false
         if ("null" == name) name = sid.name
-        loadSidZone(runway, sid, climbRate)
         recalculateRouteData()
+        loadSidZone(runway, sid, climbRate)
     }
 
     /** Create new Route based on saved route and STAR name  */
@@ -160,8 +160,8 @@ class Route private constructor() {
         isStar = true
         holdProcedure = HoldProcedure(star)
         name = star.name
-        calculateStarZone()
         recalculateRouteData()
+        calculateStarZone()
     }
 
     /** Loads sidStarZone for STAR routes  */
@@ -302,8 +302,8 @@ class Route private constructor() {
         routeData.addAll(removedPoints)
         removedPoints.clear()
         apchTrans = ""
-        sidStarZone.calculatePolygons(0)
         recalculateRouteData()
+        sidStarZone.calculatePolygons(0)
         return wpts.contains(direct, false)
     }
 
@@ -324,8 +324,8 @@ class Route private constructor() {
             apchTrans = trip.third?.name ?: "vector"
             routeData.addAll(trip.first)
         }
-        sidStarZone.calculatePolygons(0)
         recalculateRouteData()
+        sidStarZone.calculatePolygons(0)
         return true
     }
 
