@@ -1138,17 +1138,17 @@ abstract class Aircraft : Actor {
         } else if (this is Departure && navState.dispLatMode.first() == NavState.SID_STAR) {
             direct?.let {
                 //Force directions for certain departure procedures
-                if (sidStar.name.contains("ANNKO1") && runway?.name?.contains("06") == true && direct != null && "ANNKO" == it.name && heading > 90 && heading < 320) {
-                    //RJBB ANNKO1(6L) and ANNKO1(6R) departures
+                if ("ANNKO2" == sidStar.name && runway?.name?.contains("06") == true && direct != null && "ANNKO" == it.name && heading > 90 && heading < 320) {
+                    //RJBB ANNKO2(6L/6R) departures
                     forceDirection = 1
-                } else if (sidStar.name.contains("NKE1") && runway?.name?.contains("24") == true  && direct != null && "NKE" == it.name && heading > 180 && heading <= 360) {
-                    //RJBB NKE1(24L) and NKE1(24R) departures
+                } else if ("SIPUM1" == sidStar.name && runway?.name?.contains("24") == true  && direct != null && "SIPUM" == it.name && heading > 180 && heading <= 360) {
+                    //RJBB SIPUM1(24L/24R) departures
                     forceDirection = 2
                 } else if ("SAUKA4" == sidStar.name && direct != null && "SAUKA" == it.name && heading > 180 && heading <= 360) {
                     //RJOO SAUKA4 departure
                     forceDirection = 1
-                } else if ("APSU5" == sidStar.name && direct != null && "SHINY" == it.name && heading > 180 && heading <= 360) {
-                    //RJOO APSU5 departure
+                } else if ("SNAPP1" == sidStar.name && direct != null && "SNAPP" == it.name && heading > 180 && heading <= 360) {
+                    //RJOO SNAPP1 departure
                     forceDirection = 1
                 } else if ("IRNAC4" == sidStar.name && direct != null && "BOKUN" == it.name && heading > 180 && heading <= 360) {
                     //RJOO IRNAC4 departure
