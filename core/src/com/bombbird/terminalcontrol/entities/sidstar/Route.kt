@@ -19,7 +19,9 @@ import org.json.JSONObject
 
 class Route private constructor() {
     private val radarScreen: RadarScreen = TerminalControl.radarScreen!!
+    private var isStar = false
     val routeData = RouteData()
+    val routeDataDynamic = RouteData()
     lateinit var holdProcedure: HoldProcedure
         private set
     var heading: Int
@@ -28,9 +30,9 @@ class Route private constructor() {
     lateinit var name: String
         private set
     val size
-        get() = routeData.size
+        get() = routeDataDynamic.size
     val waypoints
-        get() = routeData.waypoints
+        get() = routeDataDynamic.waypoints
     var apchTrans = ""
     val removedPoints = RouteData()
 
@@ -41,6 +43,7 @@ class Route private constructor() {
 
     /** Create new Route based on newly assigned STAR  */
     constructor(aircraft: Aircraft, star: Star, changeSTAR: Boolean) : this() {
+        isStar = true
         val inbound = star.randomInbound
         for (i in 0 until inbound.size) {
             if ("HDG" == inbound[i].split(" ".toRegex()).toTypedArray()[0]) {
@@ -70,6 +73,7 @@ class Route private constructor() {
         }
         if (runway == null) throw RuntimeException("Runway selected is null")
         routeData.addAll(star.getRwyWpts(runway), star.getRwyRestrictions(runway), star.getRwyFlyOver(runway))
+        recalculateRouteData()
         holdProcedure = HoldProcedure(star)
         name = star.name
         calculateStarZone()
@@ -77,6 +81,7 @@ class Route private constructor() {
 
     /** Create new Route based on newly assigned SID  */
     constructor(aircraft: Aircraft, sid: Sid, runway: String, climbRate: Int) : this() {
+        isStar = false
         routeData.addAll(sid.getInitWpts(runway)!!, sid.getInitRestrictions(runway)!!, sid.getInitFlyOver(runway)!!)
         routeData.addAll(sid.routeData)
         val transition = sid.randomTransition
@@ -104,6 +109,7 @@ class Route private constructor() {
                 heading = aircraft.outboundHdg
             }
         }
+        recalculateRouteData()
         holdProcedure = HoldProcedure()
         name = sid.name
         loadSidZone(aircraft.airport.runways[runway], sid, climbRate)
@@ -143,14 +149,18 @@ class Route private constructor() {
 
     /** Create new Route based on saved route and SID name  */
     constructor(jo: JSONObject, sid: Sid, runway: Runway, climbRate: Int) : this(jo) {
+        isStar = false
         if ("null" == name) name = sid.name
+        recalculateRouteData()
         loadSidZone(runway, sid, climbRate)
     }
 
     /** Create new Route based on saved route and STAR name  */
     constructor(jo: JSONObject, star: Star) : this(jo) {
+        isStar = true
         holdProcedure = HoldProcedure(star)
         name = star.name
+        recalculateRouteData()
         calculateStarZone()
     }
 
@@ -206,9 +216,9 @@ class Route private constructor() {
     }
 
     fun getWaypoint(index: Int): Waypoint? {
-        return if (index >= routeData.waypoints.size) {
+        return if (index >= routeDataDynamic.waypoints.size) {
             null
-        } else routeData.waypoints[index]
+        } else routeDataDynamic.waypoints[index]
     }
 
     /** Calculates distance between remaining points, excluding distance between aircraft and current waypoint  */
@@ -233,7 +243,7 @@ class Route private constructor() {
     /** Returns an array of waypoints from start to end index inclusive  */
     fun getRemainingWaypoints(start: Int, end: Int): Array<Waypoint> {
         //Returns array of waypoints from index start to end
-        val newRange = Array(routeData.waypoints)
+        val newRange = Array(routeDataDynamic.waypoints)
         if (end >= start) {
             if (start > 0) {
                 newRange.removeRange(0, start - 1)
@@ -247,39 +257,39 @@ class Route private constructor() {
     }
 
     fun findWptIndex(wptName: String?): Int {
-        return routeData.waypoints.indexOf(radarScreen.waypoints[wptName], false)
+        return routeDataDynamic.waypoints.indexOf(radarScreen.waypoints[wptName], false)
     }
 
     fun getWptMinAlt(wptName: String?): Int {
         if (wptName == null) return -1
-        return routeData.restrictions[findWptIndex(wptName)][0]
+        return routeDataDynamic.restrictions[findWptIndex(wptName)][0]
     }
 
     fun getWptMinAlt(index: Int): Int {
-        return routeData.restrictions[index][0]
+        return routeDataDynamic.restrictions[index][0]
     }
 
     fun getWptMaxAlt(wptName: String?): Int {
         if (wptName == null) return -1
-        return routeData.restrictions[findWptIndex(wptName)][1]
+        return routeDataDynamic.restrictions[findWptIndex(wptName)][1]
     }
 
     fun getWptMaxAlt(index: Int): Int {
-        return routeData.restrictions[index][1]
+        return routeDataDynamic.restrictions[index][1]
     }
 
     fun getWptMaxSpd(wptName: String?): Int {
         if (wptName == null) return -1
-        return routeData.restrictions[findWptIndex(wptName)][2]
+        return routeDataDynamic.restrictions[findWptIndex(wptName)][2]
     }
 
     fun getWptMaxSpd(index: Int): Int {
-        return routeData.restrictions[index][2]
+        return routeDataDynamic.restrictions[index][2]
     }
 
     fun getWptFlyOver(wptName: String?): Boolean {
         if (wptName == null) return false
-        return routeData.flyOver[findWptIndex(wptName)]
+        return routeDataDynamic.flyOver[findWptIndex(wptName)]
     }
 
     /** Removes the waypoints from currently cleared approach, returns a boolean whether the aircraft is currently flying to one of the removed points */
@@ -292,6 +302,7 @@ class Route private constructor() {
         routeData.addAll(removedPoints)
         removedPoints.clear()
         apchTrans = ""
+        recalculateRouteData()
         sidStarZone.calculatePolygons(0)
         return wpts.contains(direct, false)
     }
@@ -313,7 +324,44 @@ class Route private constructor() {
             apchTrans = trip.third?.name ?: "vector"
             routeData.addAll(trip.first)
         }
+        recalculateRouteData()
         sidStarZone.calculatePolygons(0)
         return true
+    }
+
+    /** Performs a recalculation of the route waypoint restrictions, due to a change in waypoints */
+    private fun recalculateRouteData() {
+        routeDataDynamic.clear()
+        var minAlt = -1
+        var maxAlt = -1
+        var maxSpd = -1
+        val wptData = routeData.waypoints
+        val restrData = routeData.restrictions
+        val foData = routeData.flyOver
+        for (i in 0 until routeData.size) {
+            if (isStar) {
+                //Loop through for maximum altitude, waypoints, flyover, max speed
+                if ((restrData[i][1] != -1 && maxAlt > restrData[i][1]) || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
+                if ((restrData[i][2] != -1 && maxSpd > restrData[i][2]) || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
+                routeDataDynamic.add(wptData[i], intArrayOf(-1, maxAlt, maxSpd), foData[i])
+            } else {
+                //Loop through for minimum altitude, waypoints, flyover
+                if ((restrData[i][0] != -1 && minAlt < restrData[i][0]) || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
+                routeDataDynamic.add(wptData[i], intArrayOf(minAlt, -1, -1), foData[i])
+            }
+        }
+        for (i in routeData.size - 1 downTo 0) {
+            if (isStar) {
+                //Loop through for minimum altitude
+                if ((restrData[i][0] != -1 && minAlt < restrData[i][0]) || (minAlt == -1 && restrData[i][0] != -1)) minAlt = restrData[i][0]
+                routeDataDynamic.restrictions[i][0] = minAlt
+            } else {
+                //Loop through for maximum altitude, max speed
+                if ((restrData[i][1] != -1 && maxAlt > restrData[i][1]) || (maxAlt == -1 && restrData[i][1] != -1)) maxAlt = restrData[i][1]
+                if ((restrData[i][2] != -1 && maxSpd > restrData[i][2]) || (maxSpd == -1 && restrData[i][2] != -1)) maxSpd = restrData[i][2]
+                routeDataDynamic.restrictions[i][1] = maxAlt
+                routeDataDynamic.restrictions[i][2] = maxSpd
+            }
+        }
     }
 }
