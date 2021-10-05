@@ -6,19 +6,12 @@ import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager.checkNoiseAllowed
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
-import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import org.json.JSONObject
 import java.lang.IllegalStateException
 import java.util.*
 
 object RandomSTAR {
-    private val noise = HashMap<String, HashMap<String, Boolean>>()
     val time = HashMap<String, HashMap<String, Float>>()
-
-    /** Loads STAR noise info for the airport  */
-    fun loadStarNoise(icao: String) {
-        noise[icao] = FileLoader.loadNoise(icao, false)
-    }
 
     /** Loads arrival entry timings  */
     fun loadEntryTiming(airport: Airport) {
@@ -95,7 +88,7 @@ object RandomSTAR {
 
     /** Check whether a STAR is allowed to be used for the airport at the current time  */
     private fun checkNoise(airport: Airport, star: String): Boolean {
-        return noise[airport.icao]?.get(star)?.let { checkNoiseAllowed(it) } ?: true //Star can be used both during day, night if not in hashMap
+        return airport.stars[star]?.let { checkNoiseAllowed(it) } ?: false
     }
 
     /** Used to check if any STAR is available at airport, called before spawning new arrival  */

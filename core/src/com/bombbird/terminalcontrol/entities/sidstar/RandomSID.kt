@@ -6,18 +6,9 @@ import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.entities.airports.Airport
 import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager.checkNoiseAllowed
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
-import com.bombbird.terminalcontrol.utilities.files.FileLoader
 import java.lang.IllegalStateException
-import java.util.HashMap
 
 object RandomSID {
-    private val noise = HashMap<String, HashMap<String, Boolean>>()
-
-    /** Loads SID noise info for the airport  */
-    fun loadSidNoise(icao: String) {
-        noise[icao] = FileLoader.loadNoise(icao, true)
-    }
-
     /** Gets a random SID for the airport and runway  */
     fun randomSID(airport: Airport, rwy: String): Sid? {
         val possibleSids = Array<Sid>()
@@ -35,8 +26,6 @@ object RandomSID {
 
     /** Check whether a SID is allowed to be used for the airport at the current time  */
     private fun checkNoise(airport: Airport, sid: String): Boolean {
-        return noise[airport.icao]?.get(sid)?.let {
-            checkNoiseAllowed(it) //Check whether allowed
-        } ?: true //Sid can be used both during day, night if not found in hashMap
+        return airport.sids[sid]?.let { checkNoiseAllowed(it) } ?: false
     }
 }

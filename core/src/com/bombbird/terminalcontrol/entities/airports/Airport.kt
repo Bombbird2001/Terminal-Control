@@ -11,11 +11,9 @@ import com.bombbird.terminalcontrol.entities.procedures.holding.BackupHoldingPoi
 import com.bombbird.terminalcontrol.entities.procedures.holding.HoldingPoints
 import com.bombbird.terminalcontrol.entities.runways.Runway
 import com.bombbird.terminalcontrol.entities.runways.RunwayManager
-import com.bombbird.terminalcontrol.entities.sidstar.RandomSID
 import com.bombbird.terminalcontrol.entities.sidstar.RandomSTAR
 import com.bombbird.terminalcontrol.entities.sidstar.Sid
 import com.bombbird.terminalcontrol.entities.sidstar.Star
-import com.bombbird.terminalcontrol.entities.trafficmanager.DayNightManager.isNight
 import com.bombbird.terminalcontrol.entities.trafficmanager.TakeoffManager
 import com.bombbird.terminalcontrol.entities.weather.WindshearChance
 import com.bombbird.terminalcontrol.entities.zones.ApproachZone
@@ -152,8 +150,6 @@ class Airport {
         setOppRwys()
         stars = loadStars(this)
         sids = loadSids(this)
-        RandomSID.loadSidNoise(icao)
-        RandomSTAR.loadStarNoise(icao)
 
         //TerminalControl.tts.test(stars, sids);
         takeoffManager = TakeoffManager(this)
@@ -192,8 +188,6 @@ class Airport {
         setOppRwys()
         stars = loadStars(this)
         sids = loadSids(this)
-        RandomSID.loadSidNoise(icao)
-        RandomSTAR.loadStarNoise(icao)
 
         takeoffManager = TakeoffManager(this, save.getJSONObject("takeoffManager"))
         runwayManager = RunwayManager(this)
