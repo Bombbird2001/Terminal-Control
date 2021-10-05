@@ -2,6 +2,7 @@ package com.bombbird.terminalcontrol.entities.trafficmanager
 
 import com.badlogic.gdx.utils.Array
 import com.bombbird.terminalcontrol.TerminalControl
+import com.bombbird.terminalcontrol.entities.sidstar.SidStar
 import java.util.*
 
 object DayNightManager {
@@ -12,13 +13,11 @@ object DayNightManager {
     }
 
     /** Checks if a SID/STAR is allowed depending on whether night mode is active */
-
-    fun checkNoiseAllowed(night: Boolean): Boolean {
-        return if (isNight) night else !night
+    fun checkNoiseAllowed(sidStar: SidStar): Boolean {
+        return if (isNight) sidStar.night else sidStar.day
     }
 
     /** Checks whether airport is utilising night operations */
-
     val isNight: Boolean
         get() {
             TerminalControl.radarScreen?.let {
@@ -37,7 +36,6 @@ object DayNightManager {
         }
 
     /** Check whether this airport has night operations available */
-
     val isNightAvailable: Boolean
         get() {
             if (NIGHT_AVAILABLE.size == 0) loadArray()

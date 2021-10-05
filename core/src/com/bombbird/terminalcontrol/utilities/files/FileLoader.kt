@@ -302,23 +302,6 @@ object FileLoader {
         return callsigns
     }
 
-    fun loadNoise(icao: String, sid: Boolean): HashMap<String, Boolean> {
-        val noise = HashMap<String, Boolean>()
-        TerminalControl.radarScreen?.let {
-            val fileName = if (sid) "/noiseSid" else "/noiseStar"
-            val jo = JSONObject(Gdx.files.internal("game/" + it.mainName + "/" + it.airac + fileName + icao + ".noi").readString())
-            val nightArray = jo.getJSONArray("night")
-            for (i in 0 until nightArray.length()) {
-                noise[nightArray.getString(i)] = true
-            }
-            val dayArray = jo.getJSONArray("day")
-            for (i in 0 until dayArray.length()) {
-                noise[dayArray.getString(i)] = false
-            }
-        }
-        return noise
-    }
-
     fun loadShoreline(): Array<Array<Int>> {
         val shoreline = Array<Array<Int>>()
         TerminalControl.radarScreen?.let {

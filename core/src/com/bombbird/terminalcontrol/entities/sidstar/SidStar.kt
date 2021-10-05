@@ -13,6 +13,8 @@ open class SidStar(val airport: Airport) {
     val routeData = RouteData()
     val radarScreen = TerminalControl.radarScreen!!
     lateinit var pronunciation: String
+    var day = true
+    var night = true
 
     constructor(airport: Airport, wpts: JSONArray, restriction: JSONArray, fo: JSONArray, name: String) : this(airport) {
         runways = Array()
@@ -42,5 +44,7 @@ open class SidStar(val airport: Airport) {
                 data.size > 4 && data[4] == "FO"
             )
         }
+        day = jo.getBoolean("day")
+        night = jo.getBoolean("night")
     }
 }
