@@ -835,7 +835,8 @@ abstract class Aircraft : Actor {
                     if (it.rwy != runway) runway = it.rwy
                     val effectiveILS = if (it is Circling && this is Arrival && phase > 0) it.imaginaryIls else it
                     if (it is Circling && this is Arrival) {
-                        when (phase) {
+                        if (!isLocCap && phase == 0) targetHeading = clearedHeading.toDouble()
+                        else when (phase) {
                             0 -> if (altitude < breakoutAlt) phase = 1
                             1 -> {
                                 targetHeading = it.heading.toDouble() + if (it.isLeft) -45 else 45
