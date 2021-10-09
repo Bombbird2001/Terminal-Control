@@ -13,7 +13,7 @@ open class ILS(airport: Airport, name: String, jsonObject: JSONObject): Approach
     }
 
     /** Calculates positions of the GS rings */
-    fun calculateGsRings() {
+    private fun calculateGsRings() {
         minAlt = -1
         for (i in 2..gsAlt / 1000) {
             if (i * 1000 > airport.elevation + 1000) {

@@ -17,7 +17,7 @@ class ArrivalGenerator(val radarScreen: RadarScreen, private val allAircraft: Ha
             return
         }
         if (!RandomSTAR.starAvailable(airport)) {
-            Gdx.app.postRunnable { radarScreen.spawnTimer = 10f } //Wait for another 10 seconds if no spawn points available
+            Gdx.app.postRunnable { if (radarScreen.spawnTimer > 10) radarScreen.spawnTimer = 10f } //Wait for another 10 seconds if no spawn points available
             return
         }
         finalAirport = airport
