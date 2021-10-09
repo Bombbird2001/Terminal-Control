@@ -39,6 +39,7 @@ class RouteData {
         val data = RouteData()
 
         for (i in firstIndex..lastIndex) {
+            if (i >= waypoints.size) break
             data.add(waypoints[i], restrictions[i], flyOver[i])
         }
 
