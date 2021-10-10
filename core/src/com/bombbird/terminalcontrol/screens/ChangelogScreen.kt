@@ -190,8 +190,8 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         //Version 1.5.2110.1
         val content28 = Array<String>()
         content28.add("-Mechanics: Improvements to existing navigation data for more realism, accuracy")
-        content28.add("Fixed weird aircraft behaviour when being vectored to a circling approach")
-        content28.add("Fixed crash that sometimes occurs when clearing aircraft for approach")
+        content28.add("-Fixed weird aircraft behaviour when being vectored to a circling approach")
+        content28.add("-Fixed crash that sometimes occurs when clearing aircraft for approach")
         addVersionInfo("1.5", "2110.1", content28)
 
         //Version 1.5.2109.1
