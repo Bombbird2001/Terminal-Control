@@ -1,7 +1,9 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.test.java.srcDirs = ["src/test/"]
 
 project.ext.mainClassName = "com.bombbird.terminalcontrol.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assetsFull")
@@ -11,7 +13,7 @@ task run(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
+    setIgnoreExitValue(true)
 }
 
 task debug(dependsOn: classes, type: JavaExec) {
@@ -19,7 +21,7 @@ task debug(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
+    setIgnoreExitValue(true)
     debug = true
 }
 
@@ -58,4 +60,4 @@ task buildFull(type: Jar) {
     }
 }
 
-buildFull.dependsOn classes, checkVersionFull
+buildFull.dependsOn classes, test, checkVersionFull

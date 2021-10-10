@@ -63,6 +63,25 @@ project(":desktop") {
         implementation "de.dfki.mary:voice-dfki-poppy-hsmm:5.2"
         implementation "de.dfki.mary:voice-dfki-spike-hsmm:5.2"
         implementation "de.dfki.mary:voice-dfki-obadiah-hsmm:5.2"
+
+        //implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    }
+
+    test {
+        workingDir "../android/assetsFull"
+
+        // Enable JUnit 5 (Gradle 4.6+).
+        useJUnitPlatform()
+
+        // Always run tests, even when nothing changed.
+        dependsOn 'cleanTest'
+
+        // Show test results.
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
     }
 }
 
