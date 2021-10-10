@@ -64,6 +64,25 @@ project(":desktop") {
         implementation "de.dfki.mary:voice-dfki-poppy-hsmm:5.2"
         implementation "de.dfki.mary:voice-dfki-spike-hsmm:5.2"
         implementation "de.dfki.mary:voice-dfki-obadiah-hsmm:5.2"
+
+        //implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    }
+
+    test {
+        workingDir "../android/assetsLite"
+
+        // Enable JUnit 5 (Gradle 4.6+).
+        useJUnitPlatform()
+
+        // Always run tests, even when nothing changed.
+        dependsOn 'cleanTest'
+
+        // Show test results.
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
     }
 }
 
@@ -93,12 +112,12 @@ project(":android") {
         implementation "com.google.api-client:google-api-client-android:1.31.2"
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         implementation "com.google.http-client:google-http-client-gson:1.38.1"
-        implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
+        implementation "com.google.android.gms:play-services-ads-identifier:17.1.0"
         implementation "com.google.android.gms:play-services-base:17.6.0"
         implementation "com.pollfish:pollfish:5.6.0:googleplayRelease@aar"
         implementation "com.appodeal.ads:sdk:2.9.0.0"
         implementation "com.explorestack:consent:1.0.4"
-        implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1'
+        implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     }
 }
 
