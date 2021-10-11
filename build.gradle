@@ -70,14 +70,29 @@ project(":desktop") {
         runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     }
 
-    test {
+    task assetsLiteFullTest(type: Test) {
+        workingDir "../android/assetsLiteFull"
+
+        // Enable JUnit 5 (Gradle 4.6+).
+        useJUnitPlatform()
+
+        // Always run tests, even when nothing changed.
+        dependsOn 'cleanAssetsLiteFullTest'
+
+        // Show test results.
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+
+    task assetsLiteTest(type: Test) {
         workingDir "../android/assetsLite"
 
         // Enable JUnit 5 (Gradle 4.6+).
         useJUnitPlatform()
 
         // Always run tests, even when nothing changed.
-        dependsOn 'cleanTest'
+        dependsOn 'cleanAssetsLiteTest'
 
         // Show test results.
         testLogging {

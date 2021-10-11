@@ -59,7 +59,7 @@ task buildLite(type: Jar) {
     }
 }
 
-buildLite.dependsOn classes, checkVersionLite
+buildLite.dependsOn classes, assetsLiteFullTest, assetsLiteTest, checkVersionLite
 
 task copyJar(type: Copy) {
     from buildLite
@@ -157,4 +157,3 @@ task packageLite() {
     tasks.findByName('packrJar').mustRunAfter 'updateFileVersion'
     tasks.findByName('compressFolder').mustRunAfter 'packrJar'
 }
-buildLite.dependsOn classes, test, checkVersionLite
