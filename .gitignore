@@ -119,6 +119,8 @@ Thumbs.db
 
 /android/assetsFull
 !/android/assetsFull/game/type.type
+/android/assetsFullSKPQ
+!/android/assetsFullSKPQ/game/type.type
 /android/assetsLite
 !/android/assetsLite/game/type.type
 /android/assetsLiteFull
