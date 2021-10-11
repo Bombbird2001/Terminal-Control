@@ -75,6 +75,7 @@ abstract class Aircraft : Actor {
     val recat: Char
     var isWakeInfringe: Boolean
         private set
+    var wakeAlarmGracePeriod: Float
     var wakeTolerance: Float
     var v2: Int
     var typClimb: Int
@@ -196,6 +197,7 @@ abstract class Aircraft : Actor {
         wakeCat = AircraftType.getWakeCat(icaoType)
         recat = AircraftType.getRecat(icaoType)
         isWakeInfringe = false
+        wakeAlarmGracePeriod = 0f
         wakeTolerance = 0f
         val loadFactor = MathUtils.random(-1, 1) / 5f
         v2 = (AircraftType.getV2(icaoType) * (1 + loadFactor)).toInt()
@@ -261,6 +263,7 @@ abstract class Aircraft : Actor {
         wakeCat = aircraft.wakeCat
         recat = aircraft.recat
         isWakeInfringe = aircraft.isWakeInfringe
+        wakeAlarmGracePeriod = aircraft.wakeAlarmGracePeriod
         wakeTolerance = aircraft.wakeTolerance
         v2 = aircraft.v2
         typClimb = aircraft.typClimb
@@ -339,6 +342,7 @@ abstract class Aircraft : Actor {
         wakeCat = save.getString("wakeCat")[0]
         recat = if (save.isNull("recat")) AircraftType.getRecat(icaoType) else save.getInt("recat").toChar()
         isWakeInfringe = save.optBoolean("wakeInfringe")
+        wakeAlarmGracePeriod = 0f
         wakeTolerance = save.optDouble("wakeTolerance", 0.0).toFloat()
         v2 = save.getInt("v2")
         typClimb = save.getInt("typClimb")

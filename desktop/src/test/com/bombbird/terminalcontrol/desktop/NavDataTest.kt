@@ -3,12 +3,15 @@ package com.bombbird.terminalcontrol.desktop
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Files
 import com.badlogic.gdx.utils.Array
+import com.bombbird.terminalcontrol.screens.ChangelogScreen
 import com.bombbird.terminalcontrol.utilities.math.MathTools
 import org.apache.commons.lang.ArrayUtils
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 
 class NavDataTests {
@@ -33,6 +36,27 @@ class NavDataTests {
                 assertEquals(latestAirac, airac, "AIRAC $airac does not match latest AIRAC $latestAirac")
             }
         }
+    }
+
+    @DisplayName("Changelog check")
+    @Test
+    fun checkChangelog() {
+        Gdx.files = Lwjgl3Files()
+        val handle = Gdx.files.internal("game/type.type")
+        assertTrue(handle.exists(), "type.type missing")
+        val typeData = handle.readString().split(" ")
+        assertEquals(2, typeData.size, "Incorrect parameter length for type.type")
+        val versionData = typeData[0].split(".")
+        val major = "${versionData[0]}.${versionData[1]}"
+        val minor = "${versionData[2]}.${versionData[3]}"
+        ChangelogScreen.loadHashmapContent(full = true, android = true, desktop = true)
+        assertTrue(ChangelogScreen.changeLogContent.containsKey(major), "Major version $major not in changelog")
+        val minorVersions = ChangelogScreen.changeLogContent[major]!!
+        assertTrue(minorVersions.containsKey(minor), "Minor version $major.$minor not in changelog")
+        val changes = minorVersions[minor]!!
+        assertTrue(changes.notEmpty(), "Empty changelog for minor version $major.$minor")
+        assertEquals(major, ChangelogScreen.latestMajor, "Latest major version ${ChangelogScreen.latestMajor} does not match game major version $major")
+        assertEquals(minor, ChangelogScreen.latestMinor, "Latest minor version ${ChangelogScreen.latestMajor}.${ChangelogScreen.latestMinor} does not match game major version $major.$minor")
     }
 
     @TestFactory
