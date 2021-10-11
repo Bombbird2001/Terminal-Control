@@ -60,4 +60,4 @@ task buildFull(type: Jar) {
     }
 }
 
-buildFull.dependsOn classes, test, checkVersionFull
+buildFull.dependsOn classes, assetsFullTest, checkVersionFull
