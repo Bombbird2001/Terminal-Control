@@ -98,6 +98,8 @@ class Runway(toParse: String) {
         labelStyle.font = Fonts.defaultFont8
         labelStyle.fontColor = radarScreen.defaultColour
         val rwyInfo = toParse.split(",".toRegex()).toTypedArray()
+        var labelX = 0f
+        var labelY = 0f
         for ((index, s1) in rwyInfo.withIndex()) {
             when (index) {
                 0 -> {
@@ -114,22 +116,26 @@ class Runway(toParse: String) {
                     heading = s1.toInt()
                     trueHdg = heading - radarScreen.magHdgDev
                 }
-                5 -> label.x = s1.toFloat()
-                6 -> label.y = s1.toFloat()
+                5 -> labelX = s1.toFloat()
+                6 -> labelY = s1.toFloat()
                 7 -> elevation = s1.toInt()
                 8 -> initClimb = s1.toInt()
                 else -> Gdx.app.log("Load error", "Unexpected additional parameter in data for runway $name")
             }
         }
-        radarScreen.stage.addActor(label)
-        label.isVisible = false
+        Gdx.app.postRunnable {
+            label = Label(name, labelStyle)
+            label.setPosition(labelX, labelY)
+            radarScreen.stage.addActor(label)
+            label.isVisible = false
+        }
     }
 
     /** Sets runway status for landing, takeoffs  */
     fun setActive(landing: Boolean, takeoff: Boolean) {
         isLanding = landing
         isTakeoff = takeoff
-        label.isVisible = landing || takeoff
+        Gdx.app.postRunnable { label.isVisible = landing || takeoff }
     }
 
     /** Renders the runway rectangle  */

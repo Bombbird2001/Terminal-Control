@@ -66,7 +66,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
     lateinit var camera: OrthographicCamera
     lateinit var viewport: Viewport
     private var lastZoom = 1f
-    var xOffset = 990
+    private var xOffset = 990
 
     //Create 2nd camera for UI
     lateinit var ui: Ui
@@ -450,8 +450,10 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         stage.dispose()
         labelStage.clear()
         labelStage.dispose()
-        uiStage.clear()
-        uiStage.dispose()
+        if (this::uiStage.isInitialized) {
+            uiStage.clear()
+            uiStage.dispose()
+        }
         shapeRenderer.dispose()
         aircrafts.clear()
         airports.clear()
