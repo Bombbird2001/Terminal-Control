@@ -181,6 +181,7 @@ class Route private constructor() {
     fun joinLines(start: Int, end: Int, outbound: Int) {
         var prevPt: Waypoint? = null
         var index = start
+        if (start == -1 || end == -1) return
         while (index < end) {
             val waypoint = getWaypoint(index)
             if (prevPt != null && waypoint != null) {
@@ -216,7 +217,7 @@ class Route private constructor() {
     }
 
     fun getWaypoint(index: Int): Waypoint? {
-        return if (index >= routeDataDynamic.waypoints.size) {
+        return if (index >= routeDataDynamic.waypoints.size || index == -1) {
             null
         } else routeDataDynamic.waypoints[index]
     }
@@ -289,7 +290,9 @@ class Route private constructor() {
 
     fun getWptFlyOver(wptName: String?): Boolean {
         if (wptName == null) return false
-        return routeDataDynamic.flyOver[findWptIndex(wptName)]
+        val index = findWptIndex(wptName)
+        if (index == -1) return false
+        return routeDataDynamic.flyOver[index]
     }
 
     /** Removes the waypoints from currently cleared approach, returns a boolean whether the aircraft is currently flying to one of the removed points */
