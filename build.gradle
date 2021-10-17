@@ -129,10 +129,11 @@ project(":android") {
         implementation "com.google.http-client:google-http-client-gson:1.38.1"
         implementation "com.google.android.gms:play-services-ads-identifier:17.1.0"
         implementation "com.google.android.gms:play-services-base:17.6.0"
-        implementation "com.pollfish:pollfish:5.6.0:googleplayRelease@aar"
+        implementation "com.pollfish:pollfish-googleplay:6.1.6"
+        //noinspection GradleDynamicVersion
         implementation "com.appodeal.ads:sdk:2.10.2.+"
         implementation "com.explorestack:consent:1.0.5"
-        implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+        implementation "com.google.android.gms:play-services-ads-identifier:17.1.0"
     }
 }
 

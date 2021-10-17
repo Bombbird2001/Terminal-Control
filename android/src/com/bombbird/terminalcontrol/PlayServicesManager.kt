@@ -23,7 +23,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
-import com.pollfish.main.PollFish
+import com.pollfish.Pollfish
 import kotlin.collections.HashMap
 
 class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesInterface {
@@ -176,7 +176,7 @@ class PlayServicesManager(private val activity: AndroidLauncher): PlayServicesIn
     }
 
     override fun isSurveyAvailable(): Boolean {
-        return PollFish.isPollfishPresent()
+        return Pollfish.isPollfishPresent()
     }
 
     override fun showSurvey(airport: String) {
