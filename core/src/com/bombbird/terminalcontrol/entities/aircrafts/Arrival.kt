@@ -197,6 +197,7 @@ class Arrival : Aircraft {
         star = airport.stars[save.getString("star")] ?: Star(airport, route.getJSONArray("waypoints"), route.getJSONArray("restrictions"), route.getJSONArray("flyOver"), route.optString("name", "null"))
 
         this.route = Route(route, star)
+        if (!this.route.routeData.waypoints.contains(direct, false)) setAfterLastWpt()
         if (save.isNull("nonPrecAlts")) {
             //If non precision alt is null
             nonPrecAlts = null
