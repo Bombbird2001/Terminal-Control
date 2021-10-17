@@ -130,8 +130,8 @@ project(":android") {
         implementation "com.google.android.gms:play-services-ads-identifier:17.1.0"
         implementation "com.google.android.gms:play-services-base:17.6.0"
         implementation "com.pollfish:pollfish:5.6.0:googleplayRelease@aar"
-        implementation "com.appodeal.ads:sdk:2.9.0.0"
-        implementation "com.explorestack:consent:1.0.4"
+        implementation "com.appodeal.ads:sdk:2.10.2.+"
+        implementation "com.explorestack:consent:1.0.5"
         implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     }
 }
