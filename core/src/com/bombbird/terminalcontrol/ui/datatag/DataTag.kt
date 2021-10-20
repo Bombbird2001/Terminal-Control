@@ -449,10 +449,9 @@ class DataTag(aircraft: Aircraft) {
                 latChanged = latTab.isLatModeChanged || latTab.isHoldWptChanged
                 Tab.holdWpt ?: ""
             } else if (Tab.latMode == NavState.AFTER_WPT_HDG) {
-                if (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last()) {
-                    latChanged = latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged
-                    Tab.afterWpt + "=>" + Tab.afterWptHdg
-                } else ""
+                latChanged = latTab.isLatModeChanged || latTab.isAfterWptChanged || latTab.isAfterWptHdgChanged
+                if (latChanged || (aircraft.navState.clearedDirect.last() == aircraft.navState.clearedAftWpt.last())) Tab.afterWpt + "=>" + Tab.afterWptHdg
+                else aircraft.navState.clearedDirect.last()?.name ?: ""
             } else if (Tab.latMode == NavState.VECTORS) {
                 latChanged = latTab.isLatModeChanged || latTab.isHdgChanged || latTab.isDirectionChanged
                 if (aircraft.isLocCap && !latChanged) (if (aircraft.apch is RNP) "RNP" else "LOC") else Tab.clearedHdg.toString() + when(Tab.turnDir) {

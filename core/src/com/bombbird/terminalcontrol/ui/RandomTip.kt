@@ -9,8 +9,7 @@ object RandomTip {
     private val tips = Array<String>()
 
     /** Loads a list of tips to be shown during loading screen  */
-
-    fun loadTips() {
+    private fun loadTips() {
         tips.add("Double tap the label of a controlled aircraft to minimise/maximise it")
         tips.add("Separation is reduced to 2.5nm for aircraft on the same ILS both within 10nm from touchdown")
         tips.add("Staggered separation of 2nm is required for planes on approach to parallel runways (without an NTZ)")
@@ -42,15 +41,9 @@ object RandomTip {
         if (Gdx.app.type == Application.ApplicationType.Android) tips.add("Like this game? Please rate it on the Google Play Store!")
     }
 
-    /** Checks if the tips array has been loaded  */
-
-    fun tipsLoaded(): Boolean {
-        return tips.size > 0
-    }
-
     /** Returns a random tip to be used  */
-
     fun randomTip(): String {
+        if (tips.isEmpty) loadTips()
         return tips.random()
     }
 }

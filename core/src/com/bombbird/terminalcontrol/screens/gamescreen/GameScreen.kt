@@ -23,9 +23,7 @@ import com.bombbird.terminalcontrol.screens.MainMenuScreen
 import com.bombbird.terminalcontrol.screens.PauseScreen
 import com.bombbird.terminalcontrol.sounds.SoundManager
 import com.bombbird.terminalcontrol.ui.datatag.DataTag
-import com.bombbird.terminalcontrol.ui.RandomTip.loadTips
 import com.bombbird.terminalcontrol.ui.RandomTip.randomTip
-import com.bombbird.terminalcontrol.ui.RandomTip.tipsLoaded
 import com.bombbird.terminalcontrol.ui.RequestFlasher
 import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.utilities.errors.ErrorHandler
@@ -122,7 +120,11 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         val labelStyle1 = LabelStyle()
         labelStyle1.font = Fonts.defaultFont16
         labelStyle1.fontColor = Color.WHITE
-        tipLabel = Label("", labelStyle1)
+        Gdx.app.postRunnable {
+            tipLabel = Label("", labelStyle1)
+            tipLabel.setText(randomTip())
+            tipLabel.setPosition(2880 - xOffset - tipLabel.prefWidth / 2, 960f)
+        }
     }
 
     /** Handles input from keyboard, mouse, moderates them  */
@@ -355,13 +357,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     loadingLabel.setPosition(2880 - xOffset - loadingLabel.prefWidth / 2, 1550f)
                     game.batch.begin()
                     loadingLabel.draw(game.batch, 1f)
-                    if (!tipsLoaded()) loadTips()
-                    try {
-                        if ("" == tipLabel.text.toString()) {
-                            tipLabel.setText(randomTip())
-                            tipLabel.setPosition(2880 - xOffset - tipLabel.prefWidth / 2, 960f)
-                        } else tipLabel.draw(game.batch, 1f)
-                    } catch (e: Exception) {}
+                    if (this::tipLabel.isInitialized) tipLabel.draw(game.batch, 1f)
                     game.batch.end()
                 } else {
                     stage.draw()
