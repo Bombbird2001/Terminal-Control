@@ -116,11 +116,11 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         val labelStyle = LabelStyle()
         labelStyle.font = Fonts.defaultFont20
         labelStyle.fontColor = Color.WHITE
-        loadingLabel = Label("", labelStyle)
         val labelStyle1 = LabelStyle()
         labelStyle1.font = Fonts.defaultFont16
         labelStyle1.fontColor = Color.WHITE
         Gdx.app.postRunnable {
+            loadingLabel = Label("", labelStyle)
             tipLabel = Label("", labelStyle1)
             tipLabel.setText(randomTip())
             tipLabel.setPosition(2880 - xOffset - tipLabel.prefWidth / 2, 960f)
@@ -353,10 +353,12 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                         loadedTime > 0.5 -> if (liveWeather) "Loading live weather..  " else "Loading..  "
                         else -> if (liveWeather) "Loading live weather.   " else "Loading.   "
                     }
-                    loadingLabel.setText(loadingText)
-                    loadingLabel.setPosition(2880 - xOffset - loadingLabel.prefWidth / 2, 1550f)
                     game.batch.begin()
-                    loadingLabel.draw(game.batch, 1f)
+                    if (this::loadingLabel.isInitialized) {
+                        loadingLabel.setText(loadingText)
+                        loadingLabel.setPosition(2880 - xOffset - loadingLabel.prefWidth / 2, 1550f)
+                        loadingLabel.draw(game.batch, 1f)
+                    }
                     if (this::tipLabel.isInitialized) tipLabel.draw(game.batch, 1f)
                     game.batch.end()
                 } else {
