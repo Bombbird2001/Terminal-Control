@@ -131,10 +131,8 @@ class SeparationChecker : Actor() {
             radarScreen.setScore(radarScreen.score - allConflicts.size)
         }
         for (aircraft in radarScreen.aircrafts.values) {
-            aircraft.wakeAlarmGracePeriod -= Gdx.graphics.deltaTime
             if ((aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isWakeInfringe) && !aircraft.isSilenced) {
-                if (aircraft.isConflict || aircraft.isTerrainConflict || (aircraft.isWakeInfringe && aircraft.wakeAlarmGracePeriod < 0)) radarScreen.soundManager.playConflict()
-                if (aircraft.isWakeInfringe && aircraft.wakeAlarmGracePeriod < 0) aircraft.wakeAlarmGracePeriod = 10f
+                if (aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isWakeInfringe) radarScreen.soundManager.playConflict()
                 break
             }
             aircraft.isPrevConflict = aircraft.isConflict || aircraft.isTerrainConflict || aircraft.isWakeInfringe

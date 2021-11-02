@@ -1098,9 +1098,11 @@ abstract class Aircraft : Actor {
             //Safe separation
             isWakeInfringe = false
             wakeTolerance -= Gdx.graphics.deltaTime * 2
+            if (wakeAlarmGracePeriod >= 0) wakeAlarmGracePeriod -= Gdx.graphics.deltaTime
         } else {
             isWakeInfringe = true
-            if (!isPrevConflict) isSilenced = false
+            if (!isPrevConflict && wakeAlarmGracePeriod < 0) isSilenced = false
+            wakeAlarmGracePeriod = 10f
             wakeTolerance += Gdx.graphics.deltaTime * diffDist
             incrementWakeConflictTime(Gdx.graphics.deltaTime)
             radarScreen.wakeInfringeTime = radarScreen.wakeInfringeTime + Gdx.graphics.deltaTime
