@@ -35,6 +35,15 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         fun loadHashmapContent(full: Boolean, android: Boolean, desktop: Boolean) {
             if (changeLogContent.size > 0) return
 
+            //Version 1.5.2111.1
+            val content29 = Array<String>()
+            content29.add("-Alarms will no longer play for subsequent wake infringement that occur in quick succession if already previously silenced by player, to prevent nuisance")
+            content29.add("-Fixed text at loading screen occasionally getting corrupted")
+            content29.add("-Fixed a bug occasionally causing game load fails")
+            content29.add("-Fixed an aircraft route bug that causes crashes in some situations")
+            content29.add("-Fixed a bug where waypoint name is sometimes not displayed in the default datatag configuration")
+            addVersionInfo("1.5", "2111.1", content29)
+
             //Version 1.5.2110.1
             val content28 = Array<String>()
             content28.add("-Mechanics: Improvements to existing navigation data for more realism, accuracy")
