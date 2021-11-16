@@ -524,21 +524,23 @@ abstract class Aircraft : Actor {
 
     /** Draws the cleared sidStar when selected  */
     open fun drawSidStar() {
+        val lastWpt = if (route.size == 0) return else route.waypoints[route.size - 1]
         shapeRenderer.color = radarScreen.defaultColour
         navState.clearedDirect.last()?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
             route.joinLines(route.findWptIndex(it.name), route.size, -1)
-            calculateAndSetDistToGo(it, route.waypoints[route.size - 1])
+            calculateAndSetDistToGo(it, lastWpt)
         }
         //route.drawPolygons();
     }
 
     /** Draws the sidStar for the UI  */
     open fun uiDrawSidStar() {
+        val lastWpt = if (route.size == 0) return else route.waypoints[route.size - 1]
         shapeRenderer.color = Color.YELLOW
         radarScreen.waypoints[Tab.clearedWpt]?.let {
             shapeRenderer.line(radarX, radarY, it.posX.toFloat(), it.posY.toFloat())
-            calculateAndSetDistToGo(it, route.waypoints[route.size - 1])
+            calculateAndSetDistToGo(it, lastWpt)
         }
         route.joinLines(route.findWptIndex(Tab.clearedWpt), route.size, -1)
     }
