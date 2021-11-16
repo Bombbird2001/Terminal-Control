@@ -330,7 +330,6 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     }
                     //Update playtime counter
                     playTime += delta
-                    drawWeatherCells()
                     //Render shapes only if METAR has finished loading
                     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                     renderShape()
@@ -362,6 +361,7 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
                     if (this::tipLabel.isInitialized) tipLabel.draw(game.batch, 1f)
                     game.batch.end()
                 } else {
+                    drawWeatherCells()
                     stage.draw()
                     labelStage.viewport.apply()
                     labelStage.draw()
