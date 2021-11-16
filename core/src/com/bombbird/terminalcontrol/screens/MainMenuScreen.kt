@@ -5,13 +5,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
+import com.bombbird.terminalcontrol.screens.informationscreen.FullVersionAdScreen
 import com.bombbird.terminalcontrol.screens.informationscreen.InfoScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
@@ -205,6 +208,28 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
                 }
             })
             stage.addActor(playGameButton)
+
+            if (!TerminalControl.full) {
+                //Full version ad button
+                val imageButtonStyle6 = ImageButton.ImageButtonStyle()
+                val upSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/IconFull_up.png")))
+                val downSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/IconFull_down.png")))
+                upSprite.setSize(350f, 350f)
+                downSprite.setSize(350f, 350f)
+                imageButtonStyle6.imageUp = SpriteDrawable(upSprite)
+                imageButtonStyle6.imageDown = SpriteDrawable(downSprite)
+
+                val fullVersionButton = ImageButton(imageButtonStyle6)
+                fullVersionButton.setSize(350f, 350f)
+                fullVersionButton.setPosition(2880 - fullVersionButton.width, 1620 * 0.3f)
+                fullVersionButton.addListener(object : ChangeListener() {
+                    override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        //Go to full version ad screen
+                        game.screen = FullVersionAdScreen(game, background)
+                    }
+                })
+                stage.addActor(fullVersionButton)
+            }
         }
 
         //Changelog button
