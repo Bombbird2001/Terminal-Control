@@ -1,10 +1,11 @@
 # Terminal Control
-![Build Status](https://terminalcontrol.pythonanywhere.com/jenkinsBuildFull)
 \
 \
 A realistic approach TRACON simulation game made with [LibGDX](https://libgdx.badlogicgames.com/).
 
 ## V1.5 is released
+
+## Terminal Control 2 is under development [here](https://github.com/Bombbird2001/Terminal-Control-2)!
 
 ### Downloads
 
