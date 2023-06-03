@@ -3,11 +3,11 @@ package com.bombbird.terminalcontrol
 import android.app.Activity
 import android.content.Context
 import android.widget.Toast
-import com.adcolony.sdk.AdColony
-import com.adcolony.sdk.AdColonyAppOptions
-import com.applovin.sdk.AppLovinPrivacySettings
+import com.explorestack.consent.Consent
 import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
+import com.appodeal.ads.initializing.ApdInitializationCallback
+import com.appodeal.ads.initializing.ApdInitializationError
 import com.badlogic.gdx.Game
 import com.bombbird.terminalcontrol.screens.BasicScreen
 import com.bombbird.terminalcontrol.screens.PauseScreen
@@ -28,7 +28,7 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
         consentManager = ConsentManager.getInstance(activity)
         consentManager.requestConsentInfoUpdate(Values.APPODEAL_KEY,
             object : ConsentInfoUpdateListener {
-                override fun onConsentInfoUpdated(p0: Consent?) {
+                override fun onConsentInfoUpdated(p0: Consent) {
                     println("Consent info updated!")
                     val pref = activity.getPreferences(Context.MODE_PRIVATE)
                     if (pref.getBoolean("appodealConsentShown", false)) initializeAds() //If user already indicated consent preference, can initialize ads immediately
@@ -78,56 +78,52 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
     }
 
     private fun initializeAds() {
-        consentManager.consent?.let {
-            println("Consent is ${it.status.name}")
-            val adColonyAppOptions = AdColonyAppOptions()
-                .setPrivacyFrameworkRequired(AdColonyAppOptions.GDPR, consentManager.consentZone == Consent.Zone.GDPR)
-            it.iabConsentString?.let { it2 ->
-                adColonyAppOptions.setPrivacyConsentString(AdColonyAppOptions.GDPR, it2)
+        Appodeal.initialize(activity, Values.APPODEAL_KEY, Appodeal.REWARDED_VIDEO, object :
+            ApdInitializationCallback {
+            override fun onInitializationFinished(errors: List<ApdInitializationError>?) {
+                // Appodeal initialization finished
             }
-            Appodeal.disableLocationPermissionCheck()
-            Appodeal.initialize(activity, Values.APPODEAL_KEY, Appodeal.REWARDED_VIDEO, it)
-            AdColony.setAppOptions(adColonyAppOptions)
-            AppLovinPrivacySettings.setHasUserConsent(it.status == Consent.Status.PERSONALIZED, activity)
-            AppLovinPrivacySettings.setDoNotSell(false, activity)
-            Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
-                override fun onRewardedVideoLoaded(p0: Boolean) {
-                }
+        })
 
-                override fun onRewardedVideoFailedToLoad() {
-                }
+        Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
+            override fun onRewardedVideoLoaded(isPrecache: Boolean) {
+            }
 
-                override fun onRewardedVideoShown() {
-                }
+            override fun onRewardedVideoFailedToLoad() {
+            }
 
-                override fun onRewardedVideoShowFailed() {
-                }
+            override fun onRewardedVideoShown() {
+            }
 
-                override fun onRewardedVideoFinished(p0: Double, p1: String?) {
-                    val newExpiry = SurveyAdsManager.getExpiryDateTime(1)
-                    val pref = activity.getPreferences(Context.MODE_PRIVATE)
-                    pref.edit().putString(currentAirport, newExpiry).apply()
-                    SurveyAdsManager.loadData()
-                    game.screen?.let { it2 ->
-                        if (it2 is LoadGameScreen || it2 is NewGameScreen) {
-                            CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!").show((it2 as BasicScreen).stage)
-                        } else if (it2 is PauseScreen) {
+            override fun onRewardedVideoShowFailed() {
+            }
+
+            override fun onRewardedVideoFinished(amount: Double, name: String?) {
+                val newExpiry = SurveyAdsManager.getExpiryDateTime(1)
+                val pref = activity.getPreferences(Context.MODE_PRIVATE)
+                pref.edit().putString(currentAirport, newExpiry).apply()
+                SurveyAdsManager.loadData()
+                game.screen?.let { it2 ->
+                    when (it2) {
+                        is LoadGameScreen, is NewGameScreen -> CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!").show((it2 as BasicScreen).stage)
+                        is PauseScreen -> {
                             CustomDialog("Ad", "Thank you for watching the ad -\n$currentAirport is now unlocked for 1 hour from now", "", "Ok!", height = 1000, width = 2400, fontScale = 2f).show((it2 as BasicScreen).stage)
                             TerminalControl.radarScreen?.remainingTime = 60
-                        } else Unit
+                        }
+                        else -> Unit
                     }
                 }
+            }
 
-                override fun onRewardedVideoClosed(p0: Boolean) {
-                }
+            override fun onRewardedVideoClosed(finished: Boolean) {
+            }
 
-                override fun onRewardedVideoExpired() {
-                }
+            override fun onRewardedVideoExpired() {
+            }
 
-                override fun onRewardedVideoClicked() {
-                }
-            })
-        }
+            override fun onRewardedVideoClicked() {
+            }
+        })
     }
 
     fun showAd(airport: String): Boolean {

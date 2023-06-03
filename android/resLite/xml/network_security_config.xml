@@ -3,7 +3,40 @@
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
-            <certificates src="user" />
         </trust-anchors>
     </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">samplicio.us</domain>
+        <domain includeSubdomains="true">cint.com</domain>
+        <domain includeSubdomains="true">qualtrics.com</domain>
+        <domain includeSubdomains="true">spectrumsurveys.com</domain>
+        <domain includeSubdomains="true">decipherinc.com</domain>
+        <domain includeSubdomains="true">ssisurveys.com</domain>
+        <domain includeSubdomains="true">lucidhq.com</domain>
+        <domain includeSubdomains="true">paradigmsample.com</domain>
+        <domain includeSubdomains="true">focusvision.com</domain>
+        <domain includeSubdomains="true">vi.ga</domain>
+        <domain includeSubdomains="true">opinionetwork.com</domain>
+        <domain includeSubdomains="true">surveyrouter.com</domain>
+        <domain includeSubdomains="true">opinionbar.com</domain>
+        <domain includeSubdomains="true">prsrvy.com</domain>
+        <domain includeSubdomains="true">ptrack1.com</domain>
+        <domain includeSubdomains="true">globaltestmarket.com</domain>
+        <domain includeSubdomains="true">eocucom.com</domain>
+        <domain includeSubdomains="true">prodegemr.com</domain>
+        <domain includeSubdomains="true">swagbucks.com</domain>
+        <domain includeSubdomains="true">sgizmo.com</domain>
+        <domain includeSubdomains="true">surveygizmo.com</domain>
+        <domain includeSubdomains="true">reviewrobin.com</domain>
+        <domain includeSubdomains="true">questmindshare.com</domain>
+        <domain includeSubdomains="true">peanutlabs.com</domain>
+        <domain includeSubdomains="true">marketknowledgesurveys.com</domain>
+        <domain includeSubdomains="true">dubinterviewer.com</domain>
+        <domain includeSubdomains="true">confirmit.com</domain>
+        <domain includeSubdomains="true">survia.com</domain>
+        <domain includeSubdomains="true">insights.supply</domain>
+        <domain includeSubdomains="true">roirocket.com</domain>
+        <domain includeSubdomains="true">yunosurveys.com</domain>
+    </domain-config>
 </network-security-config>
