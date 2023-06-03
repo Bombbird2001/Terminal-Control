@@ -120,7 +120,7 @@ class ThunderCell(save: JSONObject?) {
             val x = spot.split(" ")[0].toInt()
             val y = spot.split(" ")[1].toInt()
             val distSqr = x * x + y * y
-            val probability = (baseProbability * (15625 - distSqr.toFloat().pow(3 / 2f)).pow(1 / 3f) / 25 * if (intensityMap[spot]?.intensity ?: continue >= 2) 2.5f else 1f).coerceAtLeast(0.002f)
+            val probability = (baseProbability * (15625 - distSqr.toFloat().pow(3 / 2f)).pow(1 / 3f) / 25 * (if ((intensityMap[spot]?.intensity ?: continue) >= 2) 2.5f else 1f)).coerceAtLeast(0.002f)
             var allBordersFilled = true
             for (i in x - 1..x + 1) {
                 for (j in y - 1..y + 1) {
@@ -149,7 +149,7 @@ class ThunderCell(save: JSONObject?) {
                     if (i == 0 && j == 0) continue
                     val intensity = intensityMap["$i $j"]?.intensity ?: continue
                     probability *= when (intensity >= 4) {
-                        intensity <= 6 -> 1.2f
+                        (intensity <= 6) -> 1.2f
                         else -> 1.125f
                     }
                 }

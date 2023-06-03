@@ -35,6 +35,14 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
         fun loadHashmapContent(full: Boolean, android: Boolean, desktop: Boolean) {
             if (changeLogContent.size > 0) return
 
+            //Version 1.5.2111.2
+            val content30 = Array<String>()
+            content30.add("Terminal Control 2 beta will be released soon!\n")
+//            content30.add("-Fixed aircraft occasionally going in circles")
+//            content30.add("-Fixed emergencies being declared when aircraft is near border")
+//            content30.add("-Fixed crash when hold is selected when aircraft has no route waypoints")
+            addVersionInfo("1.5", "2111.2", content30)
+
             //Version 1.5.2111.1
             val content29 = Array<String>()
             content29.add("-Alarms will no longer play for subsequent wake infringement that occur in quick succession if already previously silenced by player, to prevent nuisance")

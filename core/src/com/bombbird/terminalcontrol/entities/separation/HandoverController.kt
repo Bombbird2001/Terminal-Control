@@ -46,27 +46,27 @@ class HandoverController {
 
             //Only modify cleared altitude if aircraft is not under your control, and is under centre control (not tower)
             when (acft1.isEligibleForHandoverCheck || acft2.isEligibleForHandoverCheck) {
-                acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude -> {
+                (acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude) -> {
                     //Case 1: 1st aircraft is descending from above, 2nd aircraft climbing from below
                     updateAIAltitude(acft1, ceil(avgAlt / 1000).toInt() * 1000)
                     updateAIAltitude(acft2, floor(avgAlt / 1000).toInt() * 1000)
                 }
-                acft1.altitude < avgAlt && acft1.clearedAltitude > acft1.altitude && acft2.altitude > avgAlt && acft2.clearedAltitude < acft2.altitude -> {
+                (acft1.altitude < avgAlt && acft1.clearedAltitude > acft1.altitude && acft2.altitude > avgAlt && acft2.clearedAltitude < acft2.altitude) -> {
                     //Reverse of case 1
                     updateAIAltitude(acft1, floor(avgAlt / 1000).toInt() * 1000)
                     updateAIAltitude(acft2, ceil(avgAlt / 1000).toInt() * 1000)
                 }
-                acft1.altitude < avgAlt && acft1.clearedAltitude > acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude -> {
+                (acft1.altitude < avgAlt && acft1.clearedAltitude > acft1.altitude && acft2.altitude < avgAlt && acft2.clearedAltitude > acft2.altitude) -> {
                     //Case 2: Both aircraft climbing from below, but will intersect due to vertical speed differences
                     //Clear the aircraft below to 2000 feet below the conflict alt floored
                     updateAIAltitude(if (acft1.altitude < acft2.altitude) acft1 else acft2, floor(avgAlt / 1000).toInt() * 1000 - 2000)
                 }
-                acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude > avgAlt && acft2.clearedAltitude < acft2.altitude -> {
+                (acft1.altitude > avgAlt && acft1.clearedAltitude < acft1.altitude && acft2.altitude > avgAlt && acft2.clearedAltitude < acft2.altitude) -> {
                     //Case 3: Both aircraft descending from above, but will intersect due to vertical speed differences
                     //Clear the aircraft above to 2000 feet above the conflict alt ceiling-ed
                     updateAIAltitude(if (acft1.altitude > acft2.altitude) acft1 else acft2, ceil(avgAlt / 1000).toInt() * 1000 + 2000)
                 }
-                acft1.altitude == avgAlt && acft1.clearedAltitude == avgAlt.toInt() && avgAlt == acft2.altitude && acft2.clearedAltitude == avgAlt.toInt() -> {
+                (acft1.altitude == avgAlt && acft1.clearedAltitude == avgAlt.toInt() && avgAlt == acft2.altitude && acft2.clearedAltitude == avgAlt.toInt()) -> {
                     //Case 4: Both aircraft flying level at same altitude
                     if (acft1 is Arrival && acft2 is Departure) {
                         updateAIAltitude(acft1, floor(avgAlt / 1000).toInt() * 1000)
@@ -76,6 +76,7 @@ class HandoverController {
                         updateAIAltitude(acft2, floor(avgAlt / 1000).toInt() * 1000)
                     }
                 }
+                else -> {}
             }
         }
     }
