@@ -6,6 +6,8 @@ A realistic approach TRACON simulation game made with [LibGDX](https://libgdx.ba
 
 ## V1.5 is released
 
+## Terminal Control 2 is under development [here](https://github.com/Bombbird2001/Terminal-Control-2)!
+
 ### Downloads
 
 [<img src="https://static.itch.io/images/badge.svg"

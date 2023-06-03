@@ -30,7 +30,7 @@ class TerminalControl(tts: TextToSpeechInterface, toastManager: ToastManager, di
         var useDiscord = false
 
         //Version info
-        var full = false
+        const val full = true
         lateinit var versionName: String
         var versionCode = 0
 

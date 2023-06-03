@@ -147,8 +147,7 @@ class LoadGameScreen(game: TerminalControl, background: Image?) : SelectGameScre
                     """.trimIndent()
             if (jsonObject.optBoolean("incompatible", false)) toDisplay += "\nIncompatible save"
             val saveButton = TextButton(toDisplay, listButtonStyle)
-            val name = toDisplay.substring(0, 4)
-            saveButton.name = name
+            saveButton.name = toDisplay.substring(0, 4)
             val handle = Gdx.files.internal("game/available.arpt")
             val airacs = Array<IntArray>()
             val airports = handle.readString().split("\\r?\\n".toRegex()).toTypedArray()

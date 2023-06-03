@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.8.21'
 
     repositories {
         mavenLocal()
@@ -8,14 +8,15 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://repo.spring.io/plugins-release/" }
-        maven { url "http://maven.scijava.org/content/repositories/public/" }
+        maven { url "https://maven.scijava.org/content/repositories/public/" }
         google()
     }
 
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.5'
+        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.18'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -23,12 +24,12 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '1.5.2111.1'
+    version = '1.5.2111.2'
     ext {
         appName = "Terminal Control"
-        gdxVersion = '1.9.13'
-        roboVMVersion = '2.3.12'
-        versionCode = 80
+        gdxVersion = '1.11.0'
+        roboVMVersion = '2.3.18'
+        versionCode = 81
     }
 
     repositories {
@@ -39,8 +40,8 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "https://maven.scijava.org/content/repositories/public/" }
         maven { url "https://artifactory.appodeal.com/appodeal" }
-        maven { url "http://maven.scijava.org/content/repositories/public/" }
     }
 }
 
@@ -66,8 +67,8 @@ project(":desktop") {
         implementation "de.dfki.mary:voice-dfki-obadiah-hsmm:5.2"
 
         //implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-        implementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     }
 
     task assetsLiteFullTest(type: Test) {
@@ -122,8 +123,8 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        implementation "com.google.android.gms:play-services-games:21.0.0"
-        implementation "com.google.android.gms:play-services-auth:19.2.0"
+        implementation "com.google.android.gms:play-services-games:23.1.0"
+        implementation "com.google.android.gms:play-services-auth:20.5.0"
         implementation "com.google.api-client:google-api-client-android:1.31.2"
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         implementation "com.google.http-client:google-http-client-gson:1.38.1"
@@ -159,8 +160,8 @@ project(":core") {
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        api "com.squareup.okhttp3:okhttp:4.9.0"
-        api "org.json:json:20201115"
+        api "com.squareup.okhttp3:okhttp:4.10.0"
+        api "org.json:json:20230227"
         api "org.apache.commons:commons-lang3:3.11"
     }
 }

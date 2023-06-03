@@ -26,7 +26,7 @@ class InfoScreen(game: TerminalControl, background: Image?) : StandardUIScreen(g
         labelStyle.fontColor = Color.WHITE
         val copyright = Label("""
             Terminal Control${if (TerminalControl.full) "" else ": Lite"}
-            Copyright © 2018-2021, Bombbird
+            Copyright © 2018-2023, Bombbird
             All rights reserved
             Version ${TerminalControl.versionName}, build ${TerminalControl.versionCode}
             """.trimIndent(), labelStyle)
