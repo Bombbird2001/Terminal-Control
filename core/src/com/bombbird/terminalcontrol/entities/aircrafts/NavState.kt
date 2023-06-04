@@ -633,7 +633,7 @@ class NavState {
             clearedDirect.addLast(null)
             clearedAftWpt.addLast(null)
             clearedHold.addLast(null)
-            updateLatModes(REMOVE_ALL_SIDSTAR, false)
+            updateLatModes(REMOVE_ALL_SIDSTAR, true)
         } else {
             clearedDirect.addLast(null)
             clearedAftWpt.addLast(null)

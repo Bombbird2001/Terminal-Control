@@ -105,7 +105,7 @@ class Waypoint(private var name: String, val posX: Int, val posY: Int) : Actor()
     }
 
     /** Checks whether the waypoint is marked as a flyover waypoint for correct rendering  */
-    fun isFlyOver(): Boolean {
+    fun shouldRenderAsFlyOver(): Boolean {
         val selectedAircraft = radarScreen.selectedAircraft
         return if (selectedAircraft != null && selectedAircraft.remainingWaypoints.contains(this, true)) {
             //If there is aircraft selected, and remaining waypoints contains this waypoint, return whether this waypoint is flyover

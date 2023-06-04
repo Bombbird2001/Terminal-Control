@@ -301,7 +301,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 }
                 if (!waypoints.contains(holdWpt, false)) {
                     holdWpt = if (waypoints.isEmpty) {
-                        it.navState.updateLatModes(NavState.REMOVE_HOLD_ONLY, true)
+                        it.navState.updateLatModes(NavState.REMOVE_HOLD_ONLY, false)
                         null
                     } else {
                         waypoints.first()
@@ -599,7 +599,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                         it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
                         it.navState.updateSpdModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
-                    } else {
+                    } else if (it.navState.clearedNewStar.filterNotNull().isEmpty()) {
                         it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_UNRESTR_ONLY, false)
                         it.navState.updateSpdModes(NavState.ADD_UNRESTR_ONLY, false)

@@ -38,9 +38,10 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
             //Version 1.5.2111.2
             val content30 = Array<String>()
             content30.add("Terminal Control 2 beta will be released soon!\n")
-//            content30.add("-Fixed aircraft occasionally going in circles")
-//            content30.add("-Fixed emergencies being declared when aircraft is near border")
-//            content30.add("-Fixed crash when hold is selected when aircraft has no route waypoints")
+            content30.add("-Fixed aircraft occasionally going in circles")
+            content30.add("-Fixed emergencies being declared when aircraft is very near border")
+            content30.add("-Disable hold mode when aircraft is changing STAR to prevent crash")
+            content30.add("-Fixed thunderstorms not strengthening to max intensity")
             addVersionInfo("1.5", "2111.2", content30)
 
             //Version 1.5.2111.1

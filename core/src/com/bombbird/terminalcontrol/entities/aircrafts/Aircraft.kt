@@ -23,6 +23,7 @@ import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.SafeStage
+import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.iasToTas
 import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
@@ -929,7 +930,15 @@ abstract class Aircraft : Actor {
                     //If departure hasn't contacted centre before reaching last waypoint, contact centre immediately
                     contactOther()
                 }
-                if (distance <= requiredDistance) {
+
+                // Fix to prevent planes from going in circles
+                val trackVector = Vector2()
+                trackVector.x = nmToPixel(gs) / 3600 * cos(Math.toRadians(90 - track)).toFloat()
+                trackVector.y = nmToPixel(gs) / 3600 * sin(Math.toRadians(90 - track)).toFloat()
+                val posToWptVector = Vector2(it.x - x, it.y - y)
+                val withinDistOvershot = distance <= nmToPixel(1.5f) && trackVector.dot(posToWptVector) < 0 && route.getWptFlyOver(it.name)
+
+                if (distance <= requiredDistance || withinDistOvershot) {
                     updateDirect()
                 }
             }
