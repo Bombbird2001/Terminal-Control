@@ -43,7 +43,7 @@ open class Tab(ui: Ui) {
     var selectedAircraft: Aircraft? = null
     var tabChanged = false
     var visible: Boolean
-    var infoQueue: Queue<Array<Any>>
+    private var infoQueue: Queue<Array<Any>>
 
     val modeButtons: ModeButtons = ModeButtons(this)
     private val hideArray: com.badlogic.gdx.utils.Array<Actor> = com.badlogic.gdx.utils.Array()
@@ -104,7 +104,7 @@ open class Tab(ui: Ui) {
         //Valuebox for waypoint/altitude/speed selections
         valueBox = SelectBox(boxStyle2)
         valueBox.setAlignment(Align.center)
-        valueBox.list.setAlignment(Align.center)
+        valueBox.list.alignment = Align.center
         valueBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent, actor: Actor) {
                 choiceMade()

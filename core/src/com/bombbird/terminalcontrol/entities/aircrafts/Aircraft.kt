@@ -23,7 +23,6 @@ import com.bombbird.terminalcontrol.ui.Ui
 import com.bombbird.terminalcontrol.ui.tabs.Tab
 import com.bombbird.terminalcontrol.utilities.RenameManager.renameAirportICAO
 import com.bombbird.terminalcontrol.utilities.SafeStage
-import com.bombbird.terminalcontrol.utilities.math.MathTools
 import com.bombbird.terminalcontrol.utilities.math.MathTools.distanceBetween
 import com.bombbird.terminalcontrol.utilities.math.MathTools.iasToTas
 import com.bombbird.terminalcontrol.utilities.math.MathTools.modulateHeading
@@ -76,7 +75,7 @@ abstract class Aircraft : Actor {
     val recat: Char
     var isWakeInfringe: Boolean
         private set
-    var wakeAlarmGracePeriod: Float
+    private var wakeAlarmGracePeriod: Float
     var wakeTolerance: Float
     var v2: Int
     var typClimb: Int
