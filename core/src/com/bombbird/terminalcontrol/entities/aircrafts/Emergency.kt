@@ -7,8 +7,12 @@ import com.bombbird.terminalcontrol.utilities.math.MathTools.withinRange
 import com.bombbird.terminalcontrol.TerminalControl
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
+import com.bombbird.terminalcontrol.utilities.math.MathTools
 import org.apache.commons.lang3.ArrayUtils
 import org.json.JSONObject
+import kotlin.math.cos
+import kotlin.math.sin
 
 class Emergency {
     companion object {
@@ -139,6 +143,16 @@ class Emergency {
         if (aircraft is Departure) {
             //Outbound emergency
             if (aircraft.altitude > emergencyStartAlt && !isActive) {
+                // Check aircraft is not near the border (<60 seconds from border) - if it is then disable its emergency
+                val deltaPosition90s = Vector2()
+                deltaPosition90s.x = 60 * MathTools.nmToPixel(aircraft.gs) / 3600 * cos(Math.toRadians(90 - aircraft.track)).toFloat()
+                deltaPosition90s.y = 60 * MathTools.nmToPixel(aircraft.gs) / 3600 * sin(Math.toRadians(90 - aircraft.track)).toFloat()
+                val finalPos = deltaPosition90s.add(aircraft.x, aircraft.y)
+                if (!withinRange(finalPos.x, 1260f, 4500f) || !withinRange(finalPos.y, 0f, 3240f)) {
+                    isEmergency = false
+                    return
+                }
+
                 //Initiate the emergency
                 aircraft.dataTag.setEmergency()
                 cancelSidStar()

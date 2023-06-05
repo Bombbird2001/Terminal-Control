@@ -81,7 +81,7 @@ class LatTab(ui: Ui) : Tab(ui) {
         boxStyle.background = Ui.lightBoxBackground
         ilsBox = SelectBox(boxStyle)
         ilsBox.setAlignment(Align.center)
-        ilsBox.list.setAlignment(Align.center)
+        ilsBox.list.alignment = Align.center
         ilsBox.items = ils
         //And set ILS box visible
         ilsBox.isVisible = false
@@ -188,12 +188,10 @@ class LatTab(ui: Ui) : Tab(ui) {
             }
         })
         var offset = 1700
-        if (value == -90 || value == 90) {
-            offset = 2000
-        } else if (value == -10 || value == 10) {
-            offset = 2300
-        } else if (value == -5 || value == 5) {
-            offset = 2600
+        when (value) {
+            -90, 90 -> offset = 2000
+            -10, 10 -> offset = 2300
+            -5, 5 -> offset = 2600
         }
         addActor(button, (if (value > 0) 1.9f else 0.3f) / 3, 0.8f / 3, 3240 - offset.toFloat(), 300f)
         radarScreen.uiStage.addActor(button)
@@ -301,7 +299,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                 }
                 if (!waypoints.contains(holdWpt, false)) {
                     holdWpt = if (waypoints.isEmpty) {
-                        it.navState.updateLatModes(NavState.REMOVE_HOLD_ONLY, true)
+                        it.navState.updateLatModes(NavState.REMOVE_HOLD_ONLY, false)
                         null
                     } else {
                         waypoints.first()
@@ -599,7 +597,7 @@ class LatTab(ui: Ui) : Tab(ui) {
                         it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
                         it.navState.updateSpdModes(NavState.ADD_SIDSTAR_RESTR_UNRESTR, false)
-                    } else {
+                    } else if (it.navState.clearedNewStar.filterNotNull().isEmpty()) {
                         it.navState.updateLatModes(NavState.ADD_ALL_SIDSTAR, false)
                         it.navState.updateAltModes(NavState.ADD_UNRESTR_ONLY, false)
                         it.navState.updateSpdModes(NavState.ADD_UNRESTR_ONLY, false)

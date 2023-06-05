@@ -886,7 +886,7 @@ class RadarScreen : GameScreen {
         val flyOver = Array<Waypoint>()
         for (waypoint in waypoints.values) {
             waypoint.setRestrDisplay(-1, -1, -1) //Reset all restrictions before drawing in renderShape
-            if (waypoint.isFlyOver()) {
+            if (waypoint.shouldRenderAsFlyOver()) {
                 //Save flyovers for later
                 flyOver.add(waypoint)
             } else {
