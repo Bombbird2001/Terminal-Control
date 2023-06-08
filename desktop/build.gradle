@@ -44,6 +44,8 @@ task checkVersionLite() {
 }
 
 task buildLite(type: Jar) {
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compileClasspath.collect {zipTree(it)}}
