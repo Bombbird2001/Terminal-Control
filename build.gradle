@@ -29,7 +29,7 @@ allprojects {
         appName = "Terminal Control"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.18'
-        versionCode = 81
+        versionCode = 82
     }
 
     repositories {
@@ -127,14 +127,13 @@ project(":android") {
         implementation "com.google.android.gms:play-services-auth:20.5.0"
         implementation "com.google.api-client:google-api-client-android:1.31.2"
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
-        implementation "com.google.http-client:google-http-client-gson:1.38.1"
+        implementation "com.google.http-client:google-http-client-gson:1.43.2"
         implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
         implementation "com.google.android.gms:play-services-base:18.2.0"
         implementation "com.pollfish:pollfish-googleplay:6.4.0"
         //noinspection GradleDynamicVersion
-        implementation "com.appodeal.ads:sdk:3.0.0.4"
+        implementation "com.appodeal.ads:sdk:3.0.2.0"
         implementation "com.explorestack:consent:1.0.5"
-        implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
     }
 }
 
