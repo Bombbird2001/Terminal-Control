@@ -37,7 +37,7 @@ class ChangelogScreen(game: TerminalControl, background: Image?) : StandardUIScr
 
             //Version 1.5.2111.2
             val content30 = Array<String>()
-            content30.add("Terminal Control 2 beta will be released soon!\n")
+            content30.add("Terminal Control 2 beta has been released!\n")
             content30.add("-Fixed aircraft occasionally going in circles")
             content30.add("-Fixed emergencies being declared when aircraft is very near border")
             content30.add("-Disable hold mode when aircraft is changing STAR to prevent crash")

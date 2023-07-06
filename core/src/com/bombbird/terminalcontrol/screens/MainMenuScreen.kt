@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
 import com.badlogic.gdx.utils.Align
 import com.bombbird.terminalcontrol.TerminalControl
 import com.bombbird.terminalcontrol.entities.achievements.UnlockManager
-import com.bombbird.terminalcontrol.screens.informationscreen.FullVersionAdScreen
+import com.bombbird.terminalcontrol.screens.informationscreen.TC2AdScreen
 import com.bombbird.terminalcontrol.screens.informationscreen.InfoScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.HelpScreen
 import com.bombbird.terminalcontrol.screens.selectgamescreen.LoadGameScreen
@@ -208,29 +208,27 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
                 }
             })
             stage.addActor(playGameButton)
-
-            if (!TerminalControl.full) {
-                //Full version ad button
-                val imageButtonStyle6 = ImageButton.ImageButtonStyle()
-                val upSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/IconFull_up.png")))
-                val downSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/IconFull_down.png")))
-                upSprite.setSize(350f, 350f)
-                downSprite.setSize(350f, 350f)
-                imageButtonStyle6.imageUp = SpriteDrawable(upSprite)
-                imageButtonStyle6.imageDown = SpriteDrawable(downSprite)
-
-                val fullVersionButton = ImageButton(imageButtonStyle6)
-                fullVersionButton.setSize(350f, 350f)
-                fullVersionButton.setPosition(2880 - fullVersionButton.width, 1620 * 0.3f)
-                fullVersionButton.addListener(object : ChangeListener() {
-                    override fun changed(event: ChangeEvent?, actor: Actor?) {
-                        //Go to full version ad screen
-                        game.screen = FullVersionAdScreen(game, background)
-                    }
-                })
-                stage.addActor(fullVersionButton)
-            }
         }
+
+        // TC2 ad button
+        val imageButtonStyle6 = ImageButton.ImageButtonStyle()
+        val upSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/TC2_up.png")))
+        val downSprite = Sprite(Texture(Gdx.files.internal("game/ui/mainMenuImages/TC2_down.png")))
+        upSprite.setSize(350f, 350f)
+        downSprite.setSize(350f, 350f)
+        imageButtonStyle6.imageUp = SpriteDrawable(upSprite)
+        imageButtonStyle6.imageDown = SpriteDrawable(downSprite)
+
+        val tc2Button = ImageButton(imageButtonStyle6)
+        tc2Button.setSize(350f, 350f)
+        tc2Button.setPosition(2880 - tc2Button.width, 1620 * 0.3f)
+        tc2Button.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                // Go to TC2 ad screen
+                game.screen = TC2AdScreen(game, background)
+            }
+        })
+        stage.addActor(tc2Button)
 
         //Changelog button
         val textButtonStyle = TextButton.TextButtonStyle()
@@ -251,6 +249,25 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
 
         //Loads the quit game dialog
         loadDialog()
+
+        // Terminal Control 2 beta message
+        val prefs = Gdx.app.getPreferences("com.bombbird.terminalcontrol.prefs")
+        if (!prefs.getBoolean("tc2Shown", false)) {
+            object : CustomDialog("Terminal Control 2 beta",
+                "Terminal Control 2 has been released in beta! Play with others using\nthe new LAN & public multiplayer functionality and explore the\nnew mechanics. Get it at huge discount for the first week!",
+                "Close", "Take me there!", height = 800, width = 1800) {
+                override fun result(resObj: Any?) {
+                    if (resObj == DIALOG_POSITIVE) {
+                        // Open link to play store/itch.io listing
+                        TerminalControl.browserInterface.openBrowser(
+                            if (Gdx.app.type == Application.ApplicationType.Android) "https://play.google.com/store/apps/details?id=com.bombbird.terminalcontrol2"
+                            else "https://bombbird2001.itch.io/terminal-control-2")
+                    }
+                }
+            }.show(stage)
+            prefs.putBoolean("tc2Shown", true)
+            prefs.flush()
+        }
 
         //Set quit button params if desktop
         if (Gdx.app.type == Application.ApplicationType.Android) {
