@@ -29,7 +29,7 @@ allprojects {
         appName = "Terminal Control"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.18'
-        versionCode = 82
+        versionCode = 83
     }
 
     repositories {
