@@ -252,7 +252,7 @@ class MainMenuScreen(game: TerminalControl, private var background: Image?) : Ba
         val prefs = Gdx.app.getPreferences("com.bombbird.terminalcontrolfull.prefs")
         if (!prefs.getBoolean("tc2Shown", false)) {
             object : CustomDialog("Terminal Control 2 beta",
-                "Terminal Control 2 has been released in beta! Play with others using\nthe new LAN & public multiplayer functionality and explore the\nnew mechanics. Get it at huge discount for the first week!",
+                "Terminal Control 2 has been released in beta! Play with others using\nthe new LAN & public multiplayer functionality and explore the\nnew mechanics.",
                 "Close", "Take me there!", height = 800, width = 1800) {
                 override fun result(resObj: Any?) {
                     if (resObj == DIALOG_POSITIVE) {

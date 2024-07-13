@@ -1,6 +1,6 @@
 android {
-    setBuildToolsVersion("33.0.2")
-    setCompileSdk(33)
+    setBuildToolsVersion("34.0.0")
+    setCompileSdk(34)
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -36,7 +36,7 @@ android {
     defaultConfig {
         applicationId "com.bombbird.terminalcontrol"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         ext {
             versionCode project.versionCode
             versionName project.version.toString()
