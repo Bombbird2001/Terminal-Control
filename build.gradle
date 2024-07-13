@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.8.21'
+    ext.kotlin_version = '1.9.20'
 
     repositories {
         mavenLocal()
@@ -14,7 +14,7 @@ buildscript {
 
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.18'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -29,7 +29,7 @@ allprojects {
         appName = "Terminal Control"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.18'
-        versionCode = 83
+        versionCode = 84
     }
 
     repositories {
@@ -67,8 +67,8 @@ project(":desktop") {
         implementation "de.dfki.mary:voice-dfki-obadiah-hsmm:5.2"
 
         //implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-        implementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+        runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
     }
 
     task assetsLiteFullTest(type: Test) {
@@ -123,16 +123,16 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        implementation "com.google.android.gms:play-services-games:23.1.0"
-        implementation "com.google.android.gms:play-services-auth:20.5.0"
+        implementation "com.google.android.gms:play-services-games:23.2.0"
+        implementation "com.google.android.gms:play-services-auth:21.2.0"
         implementation "com.google.api-client:google-api-client-android:1.31.2"
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         implementation "com.google.http-client:google-http-client-gson:1.43.2"
-        implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
-        implementation "com.google.android.gms:play-services-base:18.2.0"
+        implementation "com.google.android.gms:play-services-ads-identifier:18.1.0"
+        implementation "com.google.android.gms:play-services-base:18.5.0"
         implementation "com.pollfish:pollfish-googleplay:6.4.0"
         //noinspection GradleDynamicVersion
-        implementation "com.appodeal.ads:sdk:3.0.2.0"
+        implementation "com.appodeal.ads:sdk:3.3.1.0"
         implementation "com.explorestack:consent:1.0.5"
     }
 }

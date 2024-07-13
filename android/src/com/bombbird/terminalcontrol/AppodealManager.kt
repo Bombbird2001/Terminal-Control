@@ -98,7 +98,7 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
             override fun onRewardedVideoShowFailed() {
             }
 
-            override fun onRewardedVideoFinished(amount: Double, name: String?) {
+            override fun onRewardedVideoFinished(amount: Double, currency: String) {
                 val newExpiry = SurveyAdsManager.getExpiryDateTime(1)
                 val pref = activity.getPreferences(Context.MODE_PRIVATE)
                 pref.edit().putString(currentAirport, newExpiry).apply()
