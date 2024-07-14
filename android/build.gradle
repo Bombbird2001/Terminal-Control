@@ -1,4 +1,5 @@
 android {
+    namespace "com.bombbird.terminalcontrollite"
     setBuildToolsVersion("34.0.0")
     setCompileSdk(34)
     sourceSets {
@@ -21,16 +22,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         return void
     }
+    kotlin {
+        jvmToolchain(8)
+    }
     packagingOptions {
-        exclude 'META-INF/robovm/ios/robovm.xml'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
+        resources {
+            excludes += ['META-INF/robovm/ios/robovm.xml', 'META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/license.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt', 'META-INF/notice.txt', 'META-INF/ASL2.0']
+        }
         return void
     }
     defaultConfig {
@@ -56,9 +54,13 @@ android {
         }
     }
 
-    lintOptions {
+    buildFeatures {
+        renderScript true
+        aidl true
+    }
+
+    lint {
         abortOnError false
-        return void
     }
 }
 
