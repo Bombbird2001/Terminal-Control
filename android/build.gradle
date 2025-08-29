@@ -1,7 +1,7 @@
 android {
     namespace "com.bombbird.terminalcontrol"
-    setBuildToolsVersion("34.0.0")
-    setCompileSdk(34)
+    setBuildToolsVersion("36.0.0")
+    setCompileSdk(36)
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -34,7 +34,7 @@ android {
     defaultConfig {
         applicationId "com.bombbird.terminalcontrol"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
         ext {
             versionCode project.versionCode
             versionName project.version.toString()
@@ -58,6 +58,7 @@ android {
     buildFeatures {
         renderScript true
         aidl true
+        buildConfig true
     }
     lint {
         abortOnError false

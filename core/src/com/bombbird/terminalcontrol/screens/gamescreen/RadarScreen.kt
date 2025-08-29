@@ -119,7 +119,7 @@ class RadarScreen : GameScreen {
 
     //Score of current game
     var planesToControl //To keep track of how well the user is coping; number of arrivals to control is approximately this value
-            : Float
+            : Float = 6f
         set(value) {
             field = if (trafficMode == TrafficFlowScreen.PLANES_IN_CONTROL) maxPlanes.toFloat() else MathUtils.clamp(value, 4f, getMaxTraffic(mainName))
         }

@@ -3,7 +3,11 @@ apply plugin: "java"
 targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_1_8
 sourceSets.main.java.srcDirs = ["src/"]
-sourceSets.test.java.srcDirs = ["src/test/"]
+//sourceSets.test.java.srcDirs = ["src/test/"]
+
+kotlin {
+    jvmToolchain(8)
+}
 
 project.ext.mainClassName = "com.bombbird.terminalcontrol.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assetsFull")
