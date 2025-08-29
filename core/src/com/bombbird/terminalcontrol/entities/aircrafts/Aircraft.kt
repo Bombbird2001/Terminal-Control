@@ -87,7 +87,7 @@ abstract class Aircraft : Actor {
         private set
     lateinit var navState: NavState
     var isGoAround: Boolean
-    var isGoAroundWindow: Boolean
+    var isGoAroundWindow: Boolean = false
         set(value) {
             field = value
             if (value) {

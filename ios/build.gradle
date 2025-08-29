@@ -2,7 +2,9 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
+kotlin {
+    jvmToolchain(8)
+}
 ext {
 	mainClassName = "com.bombbird.terminalcontrol.IOSLauncher"
 }

@@ -569,6 +569,11 @@ open class GameScreen(val game: TerminalControl) : Screen, GestureListener, Inpu
         return false
     }
 
+    /** Implements touchCancelled method of inputListener  */
+    override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return false
+    }
+
     /** Implements mouseMoved method of inputListener  */
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         return false
