@@ -41,6 +41,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
 //        maven { url "https://repo.spring.io/plugins-release/" }
         maven { url "https://maven.scijava.org/content/repositories/public/" }
+        maven { url "https://artifactory.appodeal.com/appodeal" }
     }
 }
 
@@ -128,12 +129,11 @@ project(":android") {
         implementation "com.google.api-client:google-api-client-android:2.8.1"
         implementation "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         implementation "com.google.http-client:google-http-client-gson:2.0.0"
-        implementation "com.google.android.gms:play-services-ads-identifier:18.1.0"
-        implementation "com.google.android.gms:play-services-base:18.5.0"
-        implementation "com.pollfish:pollfish-googleplay:6.4.0"
+        implementation "com.google.android.gms:play-services-ads-identifier:18.2.0"
+        implementation "com.google.android.gms:play-services-base:18.7.2"
+        implementation "com.pollfish:pollfish-googleplay:6.5.0"
         //noinspection GradleDynamicVersion
-        implementation "com.appodeal.ads:sdk:3.3.1.0"
-        implementation "com.explorestack:consent:1.0.5"
+        implementation "com.appodeal.ads:sdk:3.3.3.0"
     }
 }
 

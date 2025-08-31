@@ -5,7 +5,6 @@ import android.system.OsConstants
 import android.widget.Toast
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.bombbird.terminalcontrol.utilities.ToastManager
-import com.bombbird.terminalcontrollite.R
 import java.io.IOException
 
 class AndroidToastManager(private val androidLauncher: AndroidLauncher) : ToastManager {
