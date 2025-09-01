@@ -50,7 +50,7 @@ interface PlayServicesInterface {
         return false
     }
 
-    fun showAdConsentForm(showAdAfter: Boolean) {
+    fun showAdConsentForm() {
         //No default implementation
     }
 

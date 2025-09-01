@@ -86,4 +86,10 @@ class AppodealManager(private val activity: Activity, private val game: Game) {
         if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) return Appodeal.show(activity, Appodeal.REWARDED_VIDEO)
         return false
     }
+
+    fun showConsentForm() {
+        ConsentManager.load(activity, { form ->
+            form.show(activity) {}
+        }) {}
+    }
 }

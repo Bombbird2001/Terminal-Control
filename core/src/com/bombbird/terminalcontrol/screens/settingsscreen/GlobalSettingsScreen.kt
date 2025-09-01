@@ -110,7 +110,7 @@ class GlobalSettingsScreen(game: TerminalControl, background: Image?) : Settings
             consentButton.label.setAlignment(Align.center)
             consentButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    TerminalControl.playServicesInterface.showAdConsentForm(false)
+                    TerminalControl.playServicesInterface.showAdConsentForm()
                 }
             })
             stage.addActor(consentButton)
