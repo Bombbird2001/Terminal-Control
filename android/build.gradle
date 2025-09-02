@@ -9,10 +9,8 @@ android {
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
             jniLibs.srcDirs = ['libs']
-        }
-        lite {
             assets.srcDirs = ['assetsLiteFull']
-            res.srcDirs = ['resLite']
+            res.srcDirs = ['resLite', 'src/main/res']
         }
         main.assets.filter.exclude '**/tts/*.*'
     }
@@ -33,7 +31,7 @@ android {
     }
     defaultConfig {
         applicationId "com.bombbird.terminalcontrollite"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 36
         ext {
             versionCode project.versionCode
@@ -47,12 +45,12 @@ android {
         }
     }
 
-    flavorDimensions "version"
-    productFlavors {
-        lite {
-            dimension "version"
-        }
-    }
+//    flavorDimensions "version"
+//    productFlavors {
+//        lite {
+//            dimension "version"
+//        }
+//    }
 
     buildFeatures {
         renderScript true

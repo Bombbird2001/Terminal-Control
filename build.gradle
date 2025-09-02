@@ -133,7 +133,9 @@ project(":android") {
         implementation "com.google.android.gms:play-services-base:18.7.2"
         implementation "com.pollfish:pollfish-googleplay:6.5.0"
         //noinspection GradleDynamicVersion
-        implementation "com.appodeal.ads:sdk:3.3.3.0"
+        implementation("com.appodeal.ads:sdk:3.8.1.0") {
+            exclude group: "com.applovin.mediation", module: "moloco-adapter"
+        }
     }
 }
 
